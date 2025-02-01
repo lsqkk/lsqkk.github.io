@@ -47,7 +47,6 @@ body {
     background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
     padding: 20px;
-    margin-bottom: 20px;
 }
 .article-link {
     text-decoration: none;
