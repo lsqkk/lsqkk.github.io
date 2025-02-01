@@ -32,11 +32,12 @@ body {
     text-decoration: underline;
 }
 .nav ul li a.active {
-    background-color: #0056b3;
+    background-color: #99ddf3;
     padding: 5px 10px;
     border-radius: 5px;
 }
 .content {
+    border-radius: 10px;
     margin: 20px;
     padding: 20px;
     background-color: #fff;
