@@ -1,12 +1,12 @@
 /* style.css */
 body {
-    font-family: '微软雅黑', sans-serif;
+    font-family: '华文细黑', sans-serif;
     background-color: #f0f8ff;
     margin: 0;
     padding: 0;
 }
 p {
-line-height: 20px; 
+    line-height: 20px;
 }
 .header {
     background-color: #007bff;
