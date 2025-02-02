@@ -5,10 +5,6 @@ body {
     margin: 0;
     padding: 0;
 }
-p {
-  line-height: 1.3em; 
-  margin-bottom: 1.3em;
-}
 .header {
     background-color: #007bff;
     color: #fff;
@@ -72,6 +68,8 @@ p {
     width: 100%;
 }
 .moren {
+    line-height: 1.3em; 
+    margin-bottom: 1.3em;
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
