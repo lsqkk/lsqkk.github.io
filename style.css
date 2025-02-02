@@ -76,3 +76,11 @@ body {
     padding: 12px;
     margin: 12px;
 }
+.centered-div {
+    width: 100%; /* div宽度设置为100% */
+    text-align: center; /* 使div内的内容居中 */
+}
+.centered-div img {
+    width: 70%; /* 图片宽度设置为div宽度的70% */
+    height: auto; /* 图片高度自适应，保持宽高比 */
+}
