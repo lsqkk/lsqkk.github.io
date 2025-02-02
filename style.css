@@ -38,8 +38,8 @@ body {
 }
 .content {
     border-radius: 30px;
-    margin: 20px;
-    padding: 20px;
+    margin: 12px;
+    padding: 12px;
     background-color: #fff;
 }
 .article-list {
@@ -73,6 +73,6 @@ body {
     border-radius: 30px;
     background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
-    padding: 20px;
-    margin: 20px;
+    padding: 12px;
+    margin: 12px;
 }
