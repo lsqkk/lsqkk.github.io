@@ -5,6 +5,9 @@ body {
     margin: 0;
     padding: 0;
 }
+p {
+line-height: 20px; 
+}
 .header {
     background-color: #007bff;
     color: #fff;
