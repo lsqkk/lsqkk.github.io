@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>25min番茄钟 - 蓝色奇夸克 - 个人博客</title>
+<style>
+  
+  .container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* 计时器样式，放大一倍 */
+  .timer-container {
+    text-align: center;
+    margin-top: 100px; /* 放大一倍 */
+  }
+
+  .timer {
+    font-size: 96px; /* 放大一倍 */
+    margin: 40px 0; /* 放大一倍 */
+  }
+
+  button {
+    padding: 20px 40px; /* 放大一倍 */
+    font-size: 36px; /* 放大一倍 */
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+</style>
+</head>
+
+<body>
+<li><a href="tool.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px;">返回工具箱</a></li>
+<div class="container">
+  <div class="timer-container">
+    <div id="timer" class="timer">25:00</div>
+    <button id="start">开始</button>
+    <button id="stop" disabled>停止</button>
+    <button id="reset">重置</button>
+  </div>
+</div>
+
+<script>
+  // JavaScript 代码保持不变
+  let countdown;
+  const timerDisplay = document.getElementById('timer');
+  const startButton = document.getElementById('start');
+  const stopButton = document.getElementById('stop');
+  const resetButton = document.getElementById('reset');
+  let timeLeft = 1500; // 25分钟，以秒为单位
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    timerDisplay.textContent = `${minutes}:${seconds}`;
+    if (timeLeft <= 0) {
+      clearInterval(countdown);
+      timerDisplay.textContent = '00:00';
+      stopButton.disabled = true;
+      return;
+    }
+    timeLeft -= 1;
+  }
+
+  startButton.addEventListener('click', () => {
+    countdown = setInterval(updateTimer, 1000);
+    startButton.disabled = true;
+    stopButton.disabled = false;
+  });
+
+  stopButton.addEventListener('click', () => {
+    clearInterval(countdown);
+    startButton.disabled = false;
+    stopButton.disabled = true;
+  });
+
+  resetButton.addEventListener('click', () => {
+    clearInterval(countdown);
+    timeLeft = 1500;
+    updateTimer();
+    startButton.disabled = false;
+    stopButton.disabled = true;
+  });
+</script>
+<div style="background-color: #007bff; color: #fff; text-align: center; padding: 10px 20px; position: fixed; bottom: 0; width: 100%;">© 2025 蓝色奇夸克 - 个人博客 </div>
+</body>
+</html>
