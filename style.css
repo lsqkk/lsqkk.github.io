@@ -41,7 +41,13 @@ body {
     padding: 5px 10px;
     border-radius: 5px;
 }
+
+.header-placeholder {
+    height: 60px; /* 根据你的.header元素高度进行调整 */
+}
+
 .content {
+    margin-top: 60px;
     border-radius: 30px;
     margin: 12px;
     padding: 12px;
@@ -101,3 +107,6 @@ body {
     width: 100%; /* 使图片填充整个容器 */
     height: auto; /* 高度自适应 */
   }
+
+
+/* 你可能还需要为页面内容添加一个上边距，以避免被.header遮挡 */
