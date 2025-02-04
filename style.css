@@ -89,10 +89,9 @@ body {
     width: 200px; /* 设置图片显示的宽度 */
     height: 200px; /* 设置图片显示的高度 */
     border-radius: 50%; /* 使图片变成圆形 */
-    box-shadow: 0 0 10px rgba(0,0,0,0.5); /* 添加阴影效果 */
+    box-shadow: 0 0 15px rgba(0,0,0,0.5); /* 添加阴影效果 */
     overflow: hidden; /* 防止图片超出圆形区域 */
-    justify-content: center;
-    transform: translate(-50%, -50%); /* 使用transform调整图片位置，使其真正居中 */
+    text-align: center;
   }
   img {
     width: 100%; /* 使图片填充整个容器 */
