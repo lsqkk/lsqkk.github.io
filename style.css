@@ -11,6 +11,10 @@ body {
     padding: 10px 20px;
     text-align: left;
     width: 100%;
+    position: fixed;       /* 固定位置 */
+    top: 0;                /* 距离顶部为0 */
+    left: 0;               /* 距离左侧为0 */
+    z-index: 1000;         /* 确保它位于其他内容之上 */
 }
 .nav {
     background-color: #e7f3ff;
