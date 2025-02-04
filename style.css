@@ -10,10 +10,9 @@ body {
     color: #fff;
     padding: 10px 20px;
     text-align: center;
-	  width: 100%;
-	  position: fixed;
-	  top: 0;
-	  z-index: 1000;
+    width: 100%;
+    position: fixed;
+    top: 0;
 }
 .nav {
     background-color: #e7f3ff;
