@@ -6,13 +6,11 @@ body {
     padding: 0;
 }
 .header {
-    background-color: #007bff;
+    background-color: linear-gradient(rgba(0,123,255,1), rgba(0,123,255,0));
     color: #fff;
     padding: 10px 20px;
     text-align: center;
     width: 100%;
-    position: fixed;
-    top: 0;
 }
 .nav {
     background-color: #e7f3ff;
