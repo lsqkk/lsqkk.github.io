@@ -1,6 +1,10 @@
 /* style.css */
 body {
-    font-family: '微软雅黑', sans-serif;
+    font-family: Georgia, "Times New Roman", 
+          "Microsoft YaHei", "微软雅黑", 
+          STXihei, "华文细黑", 
+          serif;
+
     background-color: #f0f8ff;
     margin: 0;
     padding: 0;
