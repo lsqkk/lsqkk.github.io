@@ -1,9 +1,6 @@
 /* style.css */
 body {
-    font-family: Georgia, "Times New Roman", 
-          "Microsoft YaHei", "微软雅黑", 
-          STXihei, "华文细黑", 
-          serif;
+    font-family: "微软雅黑", "Times New Roman", serif;
 
     background-color: #f0f8ff;
     margin: 0;
