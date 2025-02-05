@@ -10,6 +10,8 @@
 
 主页背景图为[云のむこう、约束の场所](https://www.bilibili.com/bangumi/play/ss2545)的海报。
 
+部分图片托管于[Postimages]([https://chatglm.cn/](https://postimages.org/))。
+
 部分工具箱项目、博客显示页背景图采用了[Bing壁纸开放API](https://bing.img.run/api.html)。
 
 >本站原本打算使用Hugo进行升级维护，本地服务器已经测试成功，但在上传Git仓库时遇到了无法问题，遂弃之。。
