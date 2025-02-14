@@ -2,7 +2,7 @@
 
 更新：2025年2月14日
 
->以下内容中，“本网站”“本博客”指代本站（https://lsqkk.github.io/），“新版博客”指代https://bsquark.github.io/。
+>以下内容中，“本网站”“本博客”指代[本站](https://lsqkk.github.io)，“新版博客”指代[新版博客](https://bsquark.github.io)。
 
 >为保持基本良好的UI体验，强烈建议您在PC端而非移动端访问本站！
 
@@ -10,9 +10,9 @@
 
 本网站由站主[蓝色奇夸克](https://space.bilibili.com/2105459088)搭建，直接托管于<a href="pages.github.com">Github pages</a>（没钱买域名是这样的）。
 
-“我的工具箱”中，“当前天气”和“天气查询”使用了[OpenWeather](https://openweathermap.org/api)API。
+“我的工具箱”中，“当前天气”和“天气查询”使用了[OpenWeatherAPI](https://openweathermap.org/api)。
 
-`.md`博客的$TeX$渲染使用[$\KaTeX$](https://katex.org/)服务。新版博客为做对照，使用了[MathJax](https://github.com/mathjax/MathJax)。
+`.md`博客的$\TeX$渲染使用 [$\KaTeX$](https://katex.org/) 服务。新版博客为做对照，使用了 [MathJax](https://github.com/mathjax/MathJax) 引擎。
 
 主页背景图为[云のむこう、约束の场所](https://www.bilibili.com/bangumi/play/ss2545)的海报。
 
