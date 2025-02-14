@@ -1,12 +1,18 @@
 ﻿# 关于本站 & 版权声明
 
+更新：2025年2月14日
+
+>以下内容中，“本网站”“本博客”指代本站（https://lsqkk.github.io/），“新版博客”指代https://bsquark.github.io/。
+
+>为保持基本良好的UI体验，强烈建议您在PC端而非移动端访问本站！
+
 ## 版权信息
 
-本网站由站主[蓝色奇夸克](https://space.bilibili.com/2105459088)搭建，直接托管于<a href="pages.github.com">Github pages</a>（没钱买域名是这样的），搭建过程得到[ChatGLM](https://chatglm.cn/)和[DeepSeek](https://www.deepseek.com/)的辅助。
+本网站由站主[蓝色奇夸克](https://space.bilibili.com/2105459088)搭建，直接托管于<a href="pages.github.com">Github pages</a>（没钱买域名是这样的）。
 
 “我的工具箱”中，“当前天气”和“天气查询”使用了[OpenWeather](https://openweathermap.org/api)API。
 
-`.md`博客的$TeX$渲染使用[$KaTeX$](https://katex.org/)服务。
+`.md`博客的$TeX$渲染使用[$\KaTeX$](https://katex.org/)服务。新版博客为做对照，使用了[MathJax](https://github.com/mathjax/MathJax)。
 
 主页背景图为[云のむこう、约束の场所](https://www.bilibili.com/bangumi/play/ss2545)的海报。
 
@@ -14,14 +20,15 @@
 
 部分工具箱项目、博客显示页背景图采用了[Bing壁纸开放API](https://bing.img.run/api.html)。
 
->本站原本打算使用Hugo进行升级维护，本地服务器已经测试成功，但在上传Git仓库时遇到了无法解决的问题，遂弃之。。
+>本页也为`.md`显示页，如背景图无法加载，请点击上述API链接选择允许访问即可。
 
->故您现在看到的博客版本仍是站主手搓的，请勿责怪博客页面简陋（）
+>您现在看到的本站UI是站主手搓的，请勿责怪页面简陋（抱拳）
 
->以及使用`.md`博客后移动端适配好像有亿点问题。。不管了摆烂中。。
+>为获得更好的显示效果，本站于2025年2月使用 [Hugo](https://gohugo.io) + [Blowfish](https://blowfish.page/zh-cn/) 升级维护，点此访问[新版博客](https://bsquark.github.io)。为保留老版博客除文章外的其他内容，新版博客启用了新网址，两个网址将保持内容同步更新。
 
+>新版博客同样适用以下免责声明、使用条款等内容。（绝对不是懒得给新站再写一个版权页
 
-博客文章内容由[蓝色奇夸克](https://space.bilibili.com/2105459088)撰写，Copyright 2024 - 2025 蓝色奇夸克 All Rights Reserved.
+博客文章内容由[蓝色奇夸克](https://space.bilibili.com/2105459088)撰写，Copyright © 2024 - 2025 蓝色奇夸克 All Rights Reserved.
 
 
 ## 免责声明
