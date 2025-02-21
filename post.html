@@ -10,6 +10,7 @@
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.1.0/index.js"></script>
     <style>
         body { max-width: 800px; margin: 0 auto; padding: 20px; }
         .post-content { 
@@ -74,48 +75,48 @@
 
         // 加载文章内容
         async function loadPost() {
-            const filename = getQueryParam('file');
-            if (!filename) {
-                document.getElementById('content').innerHTML = '<p>文章未找到</p>';
-                return;
-            }
+    const filename = getQueryParam('file');
+    if (!filename) {
+        document.getElementById('content').innerHTML = '<p>文章未找到</p>';
+        return;
+    }
 
-            try {
-                const mdContent = await fetch(`${filename}`).then(r => r.text());
-                
-                // 提取 YAML Front Matter
-                const yamlRegex = /^---\n([\s\S]*?)\n---/; // 匹配 YAML Front Matter
-                const yamlMatch = mdContent.match(yamlRegex);
-                let title = "默认标题"; // 如果没有提取到标题，使用默认值
+    try {
+        const mdContent = await fetch(`${filename}`).then(r => r.text());
 
-                if (yamlMatch && yamlMatch[1]) {
-                    const yamlContent = yamlMatch[1];
-                    const titleMatch = yamlContent.match(/title:\s*(.*)/); // 提取 title
-                    if (titleMatch && titleMatch[1]) {
-                        title = titleMatch[1].trim(); // 获取标题
-                    }
-                }
+        // 提取 TOML Front Matter
+        const tomlRegex = /^---\n([\s\S]*?)\n---/; // 匹配 TOML Front Matter
+        const tomlMatch = mdContent.match(tomlRegex);
+        let title = "默认标题"; // 如果没有提取到标题，使用默认值
+        let date = "未知日期"; // 如果没有提取到日期，使用默认值
 
-                // 设置页面标题和 Meta 标签
-                document.title = title; // 设置页面标题
-                document.querySelector('meta[name="title"]').setAttribute('content', title); // 设置 Meta 标签
-
-                // 渲染 Markdown 内容
-                const htmlContent = marked.parse(mdContent.replace(yamlRegex, '')); // 移除 YAML Front Matter
-                document.getElementById('content').innerHTML = htmlContent;
-
-                // 渲染数学公式
-                renderMathInElement(document.getElementById('content'), {
-                    delimiters: [
-                        { left: '$$', right: '$$', display: true },
-                        { left: '$', right: '$', display: false }
-                    ],
-                    throwOnError: false
-                });
-            } catch (error) {
-                document.getElementById('content').innerHTML = '<p>加载文章失败</p>';
-            }
+        if (tomlMatch && tomlMatch[1]) {
+            const tomlContent = tomlMatch[1];
+            const parsedToml = TOML.parse(tomlContent); // 解析 TOML
+            title = parsedToml.title || title; // 获取标题
+            date = parsedToml.date || date; // 获取日期
         }
+
+        // 设置页面标题和 Meta 标签
+        document.title = title; // 设置页面标题
+        document.querySelector('meta[name="title"]').setAttribute('content', title); // 设置 Meta 标签
+
+        // 在文章开头显示标题和日期
+        const headerHtml = `<h1>${title}</h1><div class="post-date">${date}</div>`;
+        document.getElementById('content').innerHTML = headerHtml + marked.parse(mdContent.replace(tomlRegex, '')); // 移除 TOML Front Matter
+
+        // 渲染数学公式
+        renderMathInElement(document.getElementById('content'), {
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+        });
+    } catch (error) {
+        document.getElementById('content').innerHTML = '<p>加载文章失败</p>';
+    }
+}
 
         // 分享到QQ空间
         function shareToQZone() {
