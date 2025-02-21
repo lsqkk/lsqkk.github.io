@@ -83,23 +83,7 @@
             try {
                 const mdContent = await fetch(`${filename}`).then(r => r.text());
                 
-                // 提取 YAML Front Matter
-                const yamlRegex = /^---\n([\s\S]*?)\n---/; // 匹配 YAML Front Matter
-                const yamlMatch = mdContent.match(yamlRegex);
-                let title = "默认标题"; // 如果没有提取到标题，使用默认值
-
-                if (yamlMatch && yamlMatch[1]) {
-                    const yamlContent = yamlMatch[1];
-                    const titleMatch = yamlContent.match(/title:\s*(.*)/); // 提取 title
-                    if (titleMatch && titleMatch[1]) {
-                        title = titleMatch[1].trim(); // 获取标题
-                    }
-                }
-
-                // 设置页面标题和 Meta 标签
-                document.title = title; // 设置页面标题
-                document.querySelector('meta[name="title"]').setAttribute('content', title); // 设置 Meta 标签
-
+                
                 // 渲染 Markdown 内容
                 const htmlContent = marked.parse(mdContent.replace(yamlRegex, '')); // 移除 YAML Front Matter
                 document.getElementById('content').innerHTML = htmlContent;
@@ -117,38 +101,15 @@
             }
         }
 
-        // 生成短链
-        async function generateShortUrl(longUrl) {
-            try {
-                const response = await fetch(`https://api.tinyurl.com/create?api_token=NczIPVCgeJe92VFGpJQbYM36ZZLPwVarUvIeZElFYVEyxCQxQUtKTKQBei5g`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        url: longUrl
-                    })
-                });
-                const data = await response.json();
-                return data.data.tiny_url;
-            } catch (error) {
-                console.error("生成短链失败：", error);
-                return longUrl; // 如果生成失败，返回原始链接
-            }
-        }
-
         // 分享到QQ空间
-        async function shareToQZone() {
+        function shareToQZone() {
             console.log("分享按钮被点击"); // 调试信息
-            var longUrl = window.location.href; // 当前页面URL
+            var url = encodeURIComponent(window.location.href); // 当前页面URL
             var title = encodeURIComponent(document.title); // 页面标题
             var desc = encodeURIComponent(document.querySelector('meta[name="description"]').content); // 页面描述
-            var images = document.querySelector('img') ? encodeURIComponent(document.querySelector('img').src) : encodeURIComponent("https://lsqkk.github.io/touxiang.png"); // 页面图片
+            var images = document.querySelector('img') ? encodeURIComponent(document.querySelector('img').src) : encodeURIComponent("https://example.com/default-image.jpg"); // 页面图片
 
-            // 生成短链
-            var shortUrl = await generateShortUrl(longUrl);
-
-            var shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${shortUrl}&title=${title}&desc=${desc}&pics=${images}`;
+            var shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${url}&title=${title}&desc=${desc}&pics=${images}`;
             console.log("生成的分享链接:", shareUrl); // 调试信息
             window.open(shareUrl, '_blank');
         }
