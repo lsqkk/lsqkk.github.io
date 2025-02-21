@@ -43,6 +43,8 @@
         <a href="article-list.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff; ">返回列表</a>
         &emsp;&emsp;
         <a class="share-button" onclick="shareToQZone()">分享到QQ空间</a>
+        &emsp;&emsp;
+        <a class="share-button" onclick="shareToWechat()">分享到微信朋友圈</a>
     </div>
 
     <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
@@ -108,6 +110,17 @@
 
             var shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${url}&title=${title}&desc=${desc}&pics=${images}`;
             console.log("生成的分享链接:", shareUrl); // 调试信息
+            window.open(shareUrl, '_blank');
+        }
+
+        // 分享到微信朋友圈
+        function shareToWechat() {
+            console.log("分享到微信朋友圈按钮被点击"); // 调试信息
+            var url = encodeURIComponent(window.location.href); // 当前页面URL
+            var title = encodeURIComponent(document.title); // 页面标题
+
+            var shareUrl = `https://www.addtoany.com/add_to/wechat?linkurl=${url}&linkname=${title}`;
+            console.log("生成的微信朋友圈分享链接:", shareUrl); // 调试信息
             window.open(shareUrl, '_blank');
         }
 
