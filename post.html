@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>蓝色奇夸克の博客</title>
     <!-- Meta 标签 -->
-    <meta name="title" content="">
-    <meta name="description" content="蓝色奇夸克的博文">
-    <meta property="og:image" content="https://lsqkk.github.io/touxiang.png">
+    <meta name="title" content="文章标题">
+    <meta name="description" content="文章描述">
+    <meta property="og:image" content="https://example.com/path/to/image.jpg">
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
@@ -82,12 +82,9 @@
 
             try {
                 const mdContent = await fetch(`${filename}`).then(r => r.text());
-                
-                
-                // 渲染 Markdown 内容
-                const htmlContent = marked.parse(mdContent.replace(yamlRegex, '')); // 移除 YAML Front Matter
+                const htmlContent = marked.parse(mdContent);
                 document.getElementById('content').innerHTML = htmlContent;
-
+                
                 // 渲染数学公式
                 renderMathInElement(document.getElementById('content'), {
                     delimiters: [
