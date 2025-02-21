@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>蓝色奇夸克の博客</title>
+    <!-- Meta 标签 -->
+    <meta name="title" content="">
+    <meta name="description" content="文章描述">
+    <meta property="og:image" content="https://example.com/path/to/image.jpg">
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
@@ -78,9 +82,28 @@
 
             try {
                 const mdContent = await fetch(`${filename}`).then(r => r.text());
-                const htmlContent = marked.parse(mdContent);
-                document.getElementById('content').innerHTML = htmlContent;
                 
+                // 提取 YAML Front Matter
+                const yamlRegex = /^---\n([\s\S]*?)\n---/; // 匹配 YAML Front Matter
+                const yamlMatch = mdContent.match(yamlRegex);
+                let title = "默认标题"; // 如果没有提取到标题，使用默认值
+
+                if (yamlMatch && yamlMatch[1]) {
+                    const yamlContent = yamlMatch[1];
+                    const titleMatch = yamlContent.match(/title:\s*(.*)/); // 提取 title
+                    if (titleMatch && titleMatch[1]) {
+                        title = titleMatch[1].trim(); // 获取标题
+                    }
+                }
+
+                // 设置页面标题和 Meta 标签
+                document.title = title; // 设置页面标题
+                document.querySelector('meta[name="title"]').setAttribute('content', title); // 设置 Meta 标签
+
+                // 渲染 Markdown 内容
+                const htmlContent = marked.parse(mdContent.replace(yamlRegex, '')); // 移除 YAML Front Matter
+                document.getElementById('content').innerHTML = htmlContent;
+
                 // 渲染数学公式
                 renderMathInElement(document.getElementById('content'), {
                     delimiters: [
@@ -96,12 +119,14 @@
 
         // 分享到QQ空间
         function shareToQZone() {
+            console.log("分享按钮被点击"); // 调试信息
             var url = encodeURIComponent(window.location.href); // 当前页面URL
             var title = encodeURIComponent(document.title); // 页面标题
             var desc = encodeURIComponent(document.querySelector('meta[name="description"]').content); // 页面描述
-            var images = encodeURIComponent(document.querySelector('img').src); // 页面图片
+            var images = document.querySelector('img') ? encodeURIComponent(document.querySelector('img').src) : encodeURIComponent("https://example.com/default-image.jpg"); // 页面图片
 
             var shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${url}&title=${title}&desc=${desc}&pics=${images}`;
+            console.log("生成的分享链接:", shareUrl); // 调试信息
             window.open(shareUrl, '_blank');
         }
 
