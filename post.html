@@ -3,10 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>蓝色奇夸克の博客</title>
-    <!-- Meta 标签 -->
-    <meta name="title" content="文章标题">
-    <meta name="description" content="文章描述">
-    <meta property="og:image" content="https://example.com/path/to/image.jpg">
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
@@ -98,18 +94,6 @@
             }
         }
 
-        // 分享到QQ空间
-        function shareToQZone() {
-            console.log("分享按钮被点击"); // 调试信息
-            var url = encodeURIComponent(window.location.href); // 当前页面URL
-            var title = encodeURIComponent(document.title); // 页面标题
-            var desc = encodeURIComponent(document.querySelector('meta[name="description"]').content); // 页面描述
-            var images = document.querySelector('img') ? encodeURIComponent(document.querySelector('img').src) : encodeURIComponent("https://example.com/default-image.jpg"); // 页面图片
-
-            var shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${url}&title=${title}&desc=${desc}&pics=${images}`;
-            console.log("生成的分享链接:", shareUrl); // 调试信息
-            window.open(shareUrl, '_blank');
-        }
 
         // 初始化加载
         document.addEventListener('DOMContentLoaded', loadPost);
