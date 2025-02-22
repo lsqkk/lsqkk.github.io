@@ -123,56 +123,40 @@
         async function shareToQZone() {
             const errorToast = document.getElementById('errorToast');
             try {
-                // 使用HTTPS协议并添加CORS代理
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS代理
+                // 生成短链
                 const longUrl = encodeURIComponent(window.location.href);
                 const apiKey = "67bda62825cb302232dfd67295@0600f2d2abf20a43beb969c73eb07075";
-                const expireDate = "2025-01-01";
-                const domain = "your-domain.com";  // 替换实际域名
+                const expireDate = "2025-01-01";  // 过期日期
+                const domain = "mrw.so";  // 替换为你的实际域名
                 
-                // 构造API请求（通过代理）
-                const apiUrl = `https://api.suolink.cn/api?format=json&url=${longUrl}&key=${apiKey}&expireDate=${expireDate}&domain=${domain}`;
+                const response = await fetch(
+                    `http://api.suolink.cn/api?format=json&url=${longUrl}&key=${apiKey}&expireDate=${expireDate}&domain=${domain}`
+                );
                 
-                const response = await fetch(proxyUrl + apiUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // 部分代理需要此头
-                    }
-                });
-                
-                // 检查HTTP状态码
-                if (!response.ok) {
-                    throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
-                }
-
                 const result = await response.json();
                 if (result.err) throw new Error(result.err);
 
-                // 构造分享链接（验证短链有效性）
-                if (!result.url.startsWith('http')) {
-                    throw new Error('无效的短链格式');
-                }
+                // 构造分享链接
+                const shortUrl = encodeURIComponent(result.url);
+                const title = encodeURIComponent(document.title);
+                const desc = encodeURIComponent(document.querySelector('meta[name="description"]').content);
+                const images = document.querySelector('img') ? 
+                    encodeURIComponent(document.querySelector('img').src) : 
+                    encodeURIComponent("https://lsqkk.github.io/touxiang.png");  // 默认图片
 
-                const shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${encodeURIComponent(result.url)}&title=${encodeURIComponent(document.title)}&desc=${encodeURIComponent(document.querySelector('meta[name="description"]').content)}&pics=${document.querySelector('img') ? encodeURIComponent(document.querySelector('img').src) : encodeURIComponent("https://lsqkk.github.io/touxiang.png")}`;
-                
-                // 新窗口打开前验证
-                const testWindow = window.open('', '_blank');
-                if (testWindow === null) {
-                    throw new Error('弹出窗口被浏览器阻止，请允许本站点弹出窗口');
-                }
-                testWindow.close();
-                
+                const shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${shortUrl}&title=${title}&desc=${desc}&pics=${images}`;
                 window.open(shareUrl, '_blank');
 
             } catch (error) {
-                console.error("分享失败详情:", {
-                    error: error.stack,  // 输出完整错误堆栈
-                    timestamp: new Date().toISOString()
-                });
-                errorToast.textContent = `分享失败: ${error.message.replace(/\.?$/, '，请检查网络或稍后重试')}`;
+                console.error("分享失败:", error);
+                errorToast.textContent = `分享失败: ${error.message}`;
                 errorToast.style.display = 'block';
-                setTimeout(() => { errorToast.style.display = 'none' }, 7000);
+                setTimeout(() => { errorToast.style.display = 'none' }, 5000);
             }
         }
+
+        // 初始化加载
+        document.addEventListener('DOMContentLoaded', loadPost);
     </script>
     
     <hr>
