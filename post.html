@@ -7,11 +7,19 @@
     <meta name="title" content="文章标题">
     <meta name="description" content="文章描述">
     <meta property="og:image" content="https://lsqkk.github.io/touxiang.png">
-    <!-- KaTeX样式 -->
+    <!-- 样式表 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: url('https://cn.bing.com/th?id=OHR.LlanberisSnowdoniaSunset_ZH-CN6682238671_UHD.jpg') no-repeat center center; 
+            background-size: cover; 
+            position: relative; 
+            background-attachment: fixed;
+        }
         .post-content { 
             line-height: 1.6;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -24,7 +32,7 @@
             border-radius: 6px;
             line-height: 1.45;
         }
-        .back-link { display: inline-block; margin-bottom: 20px; }
+        .header { margin-bottom: 20px; }
         .share-button {
             background-color: #99ddf3;
             padding: 5px 10px;
@@ -33,18 +41,30 @@
             color: #007bff;
             cursor: pointer;
         }
+        /* 新增错误提示样式 */
+        .error-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+        }
     </style>
 </head>
-<body style=" background: url('https://cn.bing.com/th?id=OHR.LlanberisSnowdoniaSunset_ZH-CN6682238671_UHD.jpg') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-    <div class="header-placeholder"></div>
+<body>
+    <!-- 错误提示容器 -->
+    <div class="error-toast" id="errorToast"></div>
+    
     <div class="header">
         <a href="index.html" style="text-decoration: none; color:white;"><h2 style="display: inline;">蓝色奇夸克の博客</h2> </a>
         &emsp;&emsp;
         <a href="article-list.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff; ">返回列表</a>
         &emsp;&emsp;
         <a class="share-button" onclick="shareToQZone()">分享到QQ空间</a>
-        &emsp;&emsp;
-        <a class="share-button" onclick="shareToWechat()">分享到微信朋友圈</a>
     </div>
 
     <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
@@ -63,13 +83,13 @@
             return urlParams.get(param);
         }
 
-        // 自定义Markdown渲染器以保留TeX
+        // Markdown渲染配置
         const renderer = {
             code(code, infostring) {
                 if (infostring === 'math') {
                     return `<div class="math-block">${code}</div>`;
                 }
-                return false; // 使用默认渲染
+                return false;
             }
         };
         marked.use({ renderer });
@@ -87,7 +107,6 @@
                 const htmlContent = marked.parse(mdContent);
                 document.getElementById('content').innerHTML = htmlContent;
                 
-                // 渲染数学公式
                 renderMathInElement(document.getElementById('content'), {
                     delimiters: [
                         { left: '$$', right: '$$', display: true },
@@ -100,34 +119,49 @@
             }
         }
 
-        // 分享到QQ空间
-        function shareToQZone() {
-            console.log("分享按钮被点击"); // 调试信息
-            var url = encodeURIComponent(window.location.href); // 当前页面URL
-            var title = encodeURIComponent(document.title); // 页面标题
-            var desc = encodeURIComponent(document.querySelector('meta[name="description"]').content); // 页面描述
-            var images = document.querySelector('img') ? encodeURIComponent(document.querySelector('img').src) : encodeURIComponent("https://example.com/default-image.jpg"); // 页面图片
+        // 分享到QQ空间（带短链生成）
+        async function shareToQZone() {
+            const errorToast = document.getElementById('errorToast');
+            try {
+                // 生成短链
+                const longUrl = encodeURIComponent(window.location.href);
+                const apiKey = "67bda62825cb302232dfd67295@0600f2d2abf20a43beb969c73eb07075";
+                const expireDate = "2025-01-01";  // 过期日期
+                const domain = "mrw.so";  // 替换为你的实际域名
+                
+                const response = await fetch(
+                    `http://api.suolink.cn/api?format=json&url=${longUrl}&key=${apiKey}&expireDate=${expireDate}&domain=${domain}`
+                );
+                
+                const result = await response.json();
+                if (result.err) throw new Error(result.err);
 
-            var shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${url}&title=${title}&desc=${desc}&pics=${images}`;
-            console.log("生成的分享链接:", shareUrl); // 调试信息
-            window.open(shareUrl, '_blank');
-        }
+                // 构造分享链接
+                const shortUrl = encodeURIComponent(result.url);
+                const title = encodeURIComponent(document.title);
+                const desc = encodeURIComponent(document.querySelector('meta[name="description"]').content);
+                const images = document.querySelector('img') ? 
+                    encodeURIComponent(document.querySelector('img').src) : 
+                    encodeURIComponent("https://lsqkk.github.io/touxiang.png");  // 默认图片
 
-        // 分享到微信朋友圈
-        function shareToWechat() {
-            console.log("分享到微信朋友圈按钮被点击"); // 调试信息
-            var url = encodeURIComponent(window.location.href); // 当前页面URL
-            var title = encodeURIComponent(document.title); // 页面标题
+                const shareUrl = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${shortUrl}&title=${title}&desc=${desc}&pics=${images}`;
+                window.open(shareUrl, '_blank');
 
-            var shareUrl = `https://www.addtoany.com/add_to/wechat?linkurl=${url}&linkname=${title}`;
-            console.log("生成的微信朋友圈分享链接:", shareUrl); // 调试信息
-            window.open(shareUrl, '_blank');
+            } catch (error) {
+                console.error("分享失败:", error);
+                errorToast.textContent = `分享失败: ${error.message}`;
+                errorToast.style.display = 'block';
+                setTimeout(() => { errorToast.style.display = 'none' }, 5000);
+            }
         }
 
         // 初始化加载
         document.addEventListener('DOMContentLoaded', loadPost);
     </script>
+    
     <hr>
-    <div class="moren"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black;">© 2025 蓝色奇夸克 - 个人博客</a></div>
+    <div class="moren">
+        <a href="post.html?file=copyright.md" style="text-decoration: none; color: black;">© 2025 蓝色奇夸克 - 个人博客</a>
+    </div>
 </body>
 </html>
