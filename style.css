@@ -53,6 +53,13 @@ body {
     margin: 12px;
     padding: 12px;
     background-color: #fff;
+    padding-bottom: 60px; /* 给footer留出固定高度的空间 */
+    min-height: calc(100vh - 150px);
+}
+.recent-posts {
+    max-width: 800px;
+    margin: 20px auto 0;
+    /* 其他原有样式保持 */
 }
 .article-list {
     font-size: 1.2em;
@@ -78,6 +85,9 @@ body {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 100; /* 确保在最顶层 */
+    left: 0; /* 关键修复 */
+    right: 0; /* 关键修复 */
 }
 .moren {
     line-height: 1.3em; 
