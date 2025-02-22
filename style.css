@@ -55,12 +55,26 @@ body {
     background-color: #fff;
     padding-bottom: 60px; /* 给footer留出固定高度的空间 */
     min-height: calc(100vh - 150px);
-}
-.recent-posts {
-    max-width: 800px;
-    margin: 20px auto 0;
-    /* 其他原有样式保持 */
-}
+}   
+.recent-posts { 
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px auto 0;  /* 修改这里 */
+            max-width: 800px;
+        }
+        .recent-header {
+            color: #0366d6;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .post-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+        }
 .article-list {
     font-size: 1.2em;
     border-radius: 15px;
@@ -84,10 +98,11 @@ body {
     padding: 10px 20px;
     position: fixed;
     bottom: 0;
-    width: 100%;
-    z-index: 100; /* 确保在最顶层 */
-    left: 0; /* 关键修复 */
-    right: 0; /* 关键修复 */
+    left: 0;
+    right: 0;
+    width: 100vw;
+    margin: 0 !important;
+    z-index: 100;
 }
 .moren {
     line-height: 1.3em; 
