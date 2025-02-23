@@ -1,0 +1,71 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q-tv | 遇见热爱aaa</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style=" background: url('https://img01.sogoucdn.com/app/a/200765/e30b66f92044439d0eed7d97ee0bf971') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+  <header>
+    <div class="logo">Q-tv | 遇见热爱</div>
+    <nav>
+      <a href="https://lsqkk.github.io">我的博客</a>
+      <a href="#">首页</a>
+      <a href="https://space.bilibili.com/2105459088"  target="blank">我的B站</a>
+      <a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言板</a>
+    </nav>
+  </header>
+
+  <div class="header-placeholder"></div>
+
+  <main>
+    <section class="video-list" id="videoList">
+      <!-- 视频卡片将通过JavaScript动态生成 -->
+    </section>
+  </main>
+
+  <br><br><br><br><br>
+  <div style="  background: rgba(255, 255, 255, 0.7); text-align: center; padding: 10px; width: 100%; box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
+    © 2024 - 2025 Q-tv All rights reserved.
+  </div>
+
+  <br>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const videoList = document.getElementById("videoList");
+
+      // 从JSON文件加载视频信息
+      fetch("videos.json")
+        .then(response => response.json())
+        .then(data => {
+          data.videos.forEach(video => {
+            const videoCard = document.createElement("div");
+            videoCard.className = "video-card";
+
+            // 创建视频卡片内容
+            videoCard.innerHTML = `
+              <img src="${video.thumbnail}" alt="${video.title}" class="video-thumbnail">
+              <div class="video-card-info">
+                <h3>${video.title}</h3>
+                <p>${video.description}</p>
+              </div>
+            `;
+
+            // 点击卡片直接跳转到B站视频页面
+            videoCard.onclick = () => {
+              window.location.href = video.url; // 使用B站视频的完整URL
+            };
+
+            videoList.appendChild(videoCard);
+          });
+        })
+        .catch(error => {
+          console.error("加载视频信息失败:", error);
+          videoList.innerHTML = "<p>加载视频列表失败，请检查网络连接。</p>";
+        });
+    });
+  </script>
+</body>
+</html>
