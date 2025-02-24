@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Md-富文本转换器 - 蓝色奇夸克 - 个人博客</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .textarea {
+            width: 100%;
+            height: 500px;
+            padding: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .preview {
+            width: 100%;
+            height: 500px;
+            padding: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            overflow-y: auto;
+            background-color: white;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #f3f4f6;
+        }
+
+        .copy-button svg {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Preview Styles */
+        .preview h1 {
+            font-size: 2em;
+            margin: 0.67em 0;
+        }
+
+        .preview h2 {
+            font-size: 1.5em;
+            margin: 0.83em 0;
+        }
+
+        .preview h3 {
+            font-size: 1.17em;
+            margin: 1em 0;
+        }
+
+        .preview ul, .preview ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+
+        .preview p {
+            margin: 1em 0;
+        }
+
+        .preview code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .preview pre {
+            background-color: #f3f4f6;
+            padding: 1em;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        .preview pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .preview a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .preview a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Md-富文本转换器</h1>
+        </div>
+        
+        <li><a href="tool.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff;">返回工具箱</a></li>
+        
+        <div class="grid">
+            <div>
+                <label class="label">Markdown 输入</label>
+                <textarea
+                    id="markdown-input"
+                    class="textarea"
+                    placeholder="在这里输入 Markdown 文本..."
+                ></textarea>
+            </div>
+            <div>
+                <div class="button-container">
+                    <button id="copy-button" class="copy-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                        </svg>
+                        复制富文本
+                    </button>
+                </div>
+                <div id="preview" class="preview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const markdownInput = document.getElementById('markdown-input');
+        const preview = document.getElementById('preview');
+        const copyButton = document.getElementById('copy-button');
+
+        // Markdown转换函数
+        function convertToHTML(md) {
+            let html = md;
+            
+            // Headers
+            html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+            
+            // Bold
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            
+            // Italic
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+            
+            // Lists
+            html = html.replace(/^\s*\d+\.\s+(.*)$/gm, '<ol><li>$1</li></ol>');
+            html = html.replace(/^\s*[\-\*]\s+(.*)$/gm, '<ul><li>$1</li></ul>');
+            
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            
+            // Code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Paragraphs
+            html = html.replace(/\n\n([^<].*)/g, '<p>$1</p>');
+            
+            return html;
+        }
+
+        // 实时预览
+        markdownInput.addEventListener('input', function() {
+            preview.innerHTML = convertToHTML(this.value);
+        });
+
+        // 复制富文本
+        copyButton.addEventListener('click', function() {
+            const htmlContent = preview.innerHTML;
+            
+            // 创建一个临时容器来保存HTML内容
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            
+            // 使用Clipboard API复制富文本
+            try {
+                const clipboardData = new DataTransfer();
+                clipboardData.setData('text/html', htmlContent);
+                clipboardData.setData('text/plain', tempDiv.textContent);
+                
+                navigator.clipboard.write([
+                    new ClipboardItem({
+                        'text/html': new Blob([htmlContent], { type: 'text/html' }),
+                        'text/plain': new Blob([tempDiv.textContent], { type: 'text/plain' })
+                    })
+                ]).then(() => {
+                    alert('富文本已复制到剪贴板！');
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    fallbackCopy(tempDiv.textContent);
+                });
+            } catch (err) {
+                console.error('复制失败:', err);
+                fallbackCopy(tempDiv.textContent);
+            }
+        });
+
+        // 降级复制方案
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('内容已复制到剪贴板（纯文本格式）');
+            } catch (err) {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动复制');
+            }
+            document.body.removeChild(textarea);
+        }
+    </script>
+    <div style="background-color: #007bff; color: #fff; text-align: center; padding: 10px 20px; position: fixed; bottom: 0; width: 100%;">© 2025 蓝色奇夸克 - 个人博客 </div>
+</body>
+</html>
