@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>开屏广告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        .ad-container {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            background: #000 url('ad.jpg') no-repeat center center;
+            background-size: cover;
+        }
+
+        .skip-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .skip-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .countdown {
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 广告关闭开关（true=关闭广告，false=显示广告） -->
+    <script>
+        // 修改此处开关状态
+        const AD_DISABLED = false;  // 设置为true时直接跳转
+
+        if (AD_DISABLED) {
+            window.location.href = 'https://lsqkk.github.io';
+        }
+    </script>
+
+    <div class="ad-container">
+        <div class="skip-btn" onclick="goToMain()">
+            <span class="countdown">4</span> 跳过
+        </div>
+    </div>
+
+    <script>
+        let countdown = 4;
+        const countdownElement = document.querySelector('.countdown');
+        const timer = setInterval(() => {
+            countdown -= 1;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                goToMain();
+            }
+        }, 1000);
+
+        function goToMain() {
+            clearInterval(timer);
+            window.location.href = 'https://lsqkk.github.io';
+        }
+    </script>
+</body>
+</html>
