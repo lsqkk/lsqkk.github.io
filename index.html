@@ -153,11 +153,45 @@
             }, 500); // 500ms 是渐隐动画的持续时间
         }
 
-        // 初始化加载
-        document.addEventListener('DOMContentLoaded', () => {
-            startCountdown();
-            document.querySelector('.skip-btn').addEventListener('click', skipAd);
-        });
+
+        // 广告显示间隔时间（单位：毫秒）
+const AD_INTERVAL = 30 * 60 * 1000; // 30分钟
+
+// 检查是否需要显示广告
+function shouldShowAd() {
+    const lastAdTime = localStorage.getItem('lastAdTime');
+    if (!lastAdTime) {
+        return true; // 如果从未显示过广告，则显示
+    }
+    const currentTime = new Date().getTime();
+    return (currentTime - lastAdTime) > AD_INTERVAL; // 判断是否超过30分钟
+}
+
+// 记录广告显示时间
+function recordAdTime() {
+    localStorage.setItem('lastAdTime', new Date().getTime());
+}
+
+// 初始化广告逻辑
+function initAd() {
+    if (shouldShowAd()) {
+        // 显示广告页
+        startCountdown();
+        document.querySelector('.skip-btn').addEventListener('click', skipAd);
+        recordAdTime(); // 记录广告显示时间
+    } else {
+        // 不显示广告页，直接隐藏广告容器
+        adContainer.style.display = 'none';
+        mainContent.classList.add('fade-in');
+    }
+}
+
+        
+// 初始化加载
+document.addEventListener('DOMContentLoaded', () => {
+    initAd(); // 初始化广告逻辑
+    loadRecentPosts(); // 加载文章
+});
 
         // 加载最近三篇文章
         async function loadRecentPosts() {
