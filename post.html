@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>蓝色奇夸克の博客</title>
     
- 
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
@@ -32,6 +31,11 @@
             color: #007bff;
             cursor: pointer;
         }
+        .mode-toggle {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body style=" background: url('https://lsqkk.github.io/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
@@ -40,42 +44,42 @@
         <a href="index.html" style="text-decoration: none; color:white;"><h2 style="display: inline;">蓝色奇夸克の博客</h2> </a>
         &emsp;&emsp;
         <a href="article-list.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff; ">返回列表</a>
-    </div> 
+        <span class="mode-toggle" onclick="toggleMode()">🌙</span>
+    </div> 
     
- 
-
     <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
         <div id="content" class="post-content"></div>
+        <hr>
+        <p>本文阅读量: <span id="pageView">0</span> 次</p>
         <div style="margin-top: 20px;">
             <button class="share-button" onclick="copyLink()">分享本文链接</button>
             <span id="copy-notice" style="color: #666; margin-left: 10px; display: none;">链接已复制！</span>
         </div>
     </div>
 
+    <!-- 显示阅读量 -->
 
-  <!-- 显示阅读量 -->
-  <p>本文阅读量: <span id="pageView">0</span> 次</p>
 
-  <script>
-    // 获取当前 URL 参数
-    const urlParams = new URLSearchParams(window.location.search);
-    const fileParam = urlParams.get('file'); // 例如：xxx.md
+    <script>
+        // 获取当前 URL 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileParam = urlParams.get('file'); // 例如：xxx.md
 
-    // 初始化阅读量数据
-    let pageViewData = JSON.parse(localStorage.getItem('pageViewData')) || {};
+        // 初始化阅读量数据
+        let pageViewData = JSON.parse(localStorage.getItem('pageViewData')) || {};
 
-    // 如果当前文章没有阅读量数据，初始化为 0
-    if (!pageViewData[fileParam]) {
-      pageViewData[fileParam] = 0;
-    }
+        // 如果当前文章没有阅读量数据，初始化为 0
+        if (!pageViewData[fileParam]) {
+            pageViewData[fileParam] = 0;
+        }
 
-    // 更新阅读量
-    pageViewData[fileParam] += 1;
-    localStorage.setItem('pageViewData', JSON.stringify(pageViewData));
+        // 更新阅读量
+        pageViewData[fileParam] += 1;
+        localStorage.setItem('pageViewData', JSON.stringify(pageViewData));
 
-    // 显示阅读量
-    document.getElementById('pageView').innerText = pageViewData[fileParam];
-  </script>
+        // 显示阅读量
+        document.getElementById('pageView').innerText = pageViewData[fileParam];
+    </script>
 
     <!-- 依赖库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -127,21 +131,36 @@
         }
 
         // 复制链接功能
-function copyLink() {
-    const currentURL = window.location.href;
-    navigator.clipboard.writeText(currentURL).then(() => {
-        const notice = document.getElementById('copy-notice');
-        notice.style.display = 'inline';
-        setTimeout(() => notice.style.display = 'none', 2000);
-    }).catch(err => {
-        console.error('复制失败:', err);
-    });
-}
+        function copyLink() {
+            const currentURL = window.location.href;
+            navigator.clipboard.writeText(currentURL).then(() => {
+                const notice = document.getElementById('copy-notice');
+                notice.style.display = 'inline';
+                setTimeout(() => notice.style.display = 'none', 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+            });
+        }
+
+        // 切换黑暗/白天模式
+        function toggleMode() {
+            const body = document.body;
+            const modeToggle = document.querySelector('.mode-toggle');
+            const isDarkMode = body.style.backgroundImage.includes('star.gif');
+
+            if (isDarkMode) {
+                body.style.backgroundImage = "url('https://lsqkk.github.io/light.gif')";
+                modeToggle.innerText = '☀️';
+            } else {
+                body.style.backgroundImage = "url('https://lsqkk.github.io/star.gif')";
+                modeToggle.innerText = '🌙';
+            }
+        }
 
         // 初始化加载
         document.addEventListener('DOMContentLoaded', loadPost);
     </script>
-    <hr>
+
     <div class="moren"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black;">© 2025 蓝色奇夸克 - 个人博客</a></div>
 </body>
 </html>
