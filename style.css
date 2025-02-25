@@ -138,5 +138,81 @@ body {
     height: auto; /* 高度自适应 */
   }
 
+        .ad-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000 url('ad.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: 1000; /* 确保广告页在最上层 */
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
 
-/* 你可能还需要为页面内容添加一个上边距，以避免被.header遮挡 */
+        .ad-container.fade-out {
+            opacity: 0;
+        }
+
+        .skip-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .skip-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .countdown {
+            margin-right: 6px;
+        }
+
+        /* 主页内容初始隐藏 */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .main-content.fade-in {
+            opacity: 1;
+        }
+
+#searchInput {
+    margin-right: 5px;
+}
+
+button {
+    background-color: #0366d6;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+.search-results {
+    margin-top: 20px;
+}
+
+.search-result-item {
+    background-color: rgba(255,255,255,0.5);
+    margin: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    border-radius: 15px;
+}
+
+.search-result-item:hover {
+    background-color: #f9f9f9;
+}
