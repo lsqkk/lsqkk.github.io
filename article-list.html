@@ -30,7 +30,11 @@
             <li><a href="#" class="active">文章列表</a></li>
             <li><a href="qtv">Q-tv视频博客</a></li>
             <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言板</a></li>
-            <li><a href="https://bsquark.github.io/posts/" target="blank">👉新版博客👈</a></li>
+            <li><a href="https://bsquark.github.io/posts/" target="blank">新版博客</a></li>
+            <li>
+                <input type="text" id="searchInput" placeholder="搜索博客..." style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                <button onclick="searchBlog()" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;">搜索</button>
+            </li>
         </ul>
     </div>
 
@@ -53,6 +57,35 @@
 
         // 初始化加载
         document.addEventListener('DOMContentLoaded', loadPosts);
+
+        // 搜索博客功能
+async function searchBlog() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const posts = await fetch('posts.json').then(r => r.json());
+    const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+
+    const searchResultsContainer = document.getElementById('searchResults');
+    searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
+
+    if (filteredPosts.length > 0) {
+        // 如果有匹配的博客，展示结果
+        filteredPosts.forEach(post => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.innerHTML = `
+                <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
+                    ${post.title}
+                </a>
+                <div style="color: #666; font-size: 0.9em;">${post.date}</div>
+            `;
+            searchResultsContainer.appendChild(resultItem);
+        });
+    } else {
+        // 如果没有匹配的博客，显示提示信息
+        searchResultsContainer.innerHTML = '<div style="color: #666;">未找到相关博客</div>';
+    }
+}
+
     </script>
     <div class="footer">
         <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2025 蓝色奇夸克 - 个人博客</a>
