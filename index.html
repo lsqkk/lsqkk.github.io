@@ -52,11 +52,7 @@
             <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1"  scrolling="no"  border="0"  frameborder="no"  framespacing="0"  allowfullscreen="true"   style="width:100%; aspect-ratio: 2 / 1;"> </iframe>
             <br>
              
-<p>
-    <span id="busuanzi_container_page_pv">
-        小伙伴们来过 <span id="busuanzi_value_page_pv"></span> 次
-    </span>
-</p>
+  <p>伙伴们来过<span id="pageView">0</span> 次</p>
  
             <hr>
             <a href="post.html?file=copyright.md" target="blank" style="text-decoration: none; color: black">© 2025 蓝色奇夸克 All Rights Reserved. </a>
@@ -66,7 +62,27 @@
         <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2025 蓝色奇夸克 - 个人博客</a>
     </div>
         
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+    // 获取当前 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileParam = urlParams.get('file'); // 例如：xxx.md
+
+    // 初始化阅读量数据
+    let pageViewData = JSON.parse(localStorage.getItem('pageViewData')) || {};
+
+    // 如果当前文章没有阅读量数据，初始化为 0
+    if (!pageViewData[fileParam]) {
+      pageViewData[fileParam] = 0;
+    }
+
+    // 更新阅读量
+    pageViewData[fileParam] += 1;
+    localStorage.setItem('pageViewData', JSON.stringify(pageViewData));
+
+    // 显示阅读量
+    document.getElementById('pageView').innerText = pageViewData[fileParam];
+  </script>
+
     
     <script>
         // 加载最近三篇文章
