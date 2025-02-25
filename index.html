@@ -6,58 +6,6 @@
     <title>蓝色奇夸克のBlog</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="logo_blue.png" type="image/png">
-    <style>
-        /* 广告页样式 */
-        .ad-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #000 url('ad.jpg') no-repeat center center;
-            background-size: cover;
-            z-index: 1000; /* 确保广告页在最上层 */
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        .ad-container.fade-out {
-            opacity: 0;
-        }
-
-        .skip-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border-radius: 15px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-        }
-
-        .skip-btn:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        .countdown {
-            margin-right: 6px;
-        }
-
-        /* 主页内容初始隐藏 */
-        .main-content {
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        .main-content.fade-in {
-            opacity: 1;
-        }
-    </style>
 </head>
 <body>
     <!-- 广告页 -->
@@ -81,10 +29,16 @@
                 <li><a href="qtv">Q-tv视频博客</a></li>
                 <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言板</a></li>
                 <li><a href="https://bsquark.github.io/" target="blank">👉新版博客👈</a></li>
+                <li>
+                    <input type="text" id="searchInput" placeholder="搜索博客..." style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                    <button onclick="searchBlog()" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;">搜索</button>
+                </li>
             </ul>
         </div>
-
         <div class="content" style=" background: url('https://i.postimg.cc/x8kqbhWZ/1.png') no-repeat center center; background-size: cover; position: relative; ">
+            <div class="search-results">
+                <div id="searchResults"></div>
+            </div>
             <div class="moren">
                 <a href="post.html?file=about.md"><img src="touxiang.png" alt="头像" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); overflow: hidden; position: absolute; top:70px; left: 50%; transform: translate(-50%, -50%)"></a>
                 <br><br><br><br><br><br>
@@ -104,7 +58,7 @@
                 <div class="recent-posts">
                         <h2 class="recent-header">📚 最新文章</h2>
                         <div id="recent-posts"></div>
-                        <a href="article-list.html"><h3 class="recent-header">更多</h3></a>
+                        <a href="article-list.html"><h3 class="recent-header" style="text-decoration: none;">更多文章</h3></a>
                 </div>
                 <br>
                 <p>本页有一个隐藏彩蛋~ </p>
@@ -209,6 +163,35 @@ document.addEventListener('DOMContentLoaded', () => {
             
             document.getElementById('recent-posts').innerHTML = list;
         }
+
+
+// 搜索博客功能
+async function searchBlog() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const posts = await fetch('posts.json').then(r => r.json());
+    const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+
+    const searchResultsContainer = document.getElementById('searchResults');
+    searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
+
+    if (filteredPosts.length > 0) {
+        // 如果有匹配的博客，展示结果
+        filteredPosts.forEach(post => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.innerHTML = `
+                <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
+                    ${post.title}
+                </a>
+                <div style="color: #666; font-size: 0.9em;">${post.date}</div>
+            `;
+            searchResultsContainer.appendChild(resultItem);
+        });
+    } else {
+        // 如果没有匹配的博客，显示提示信息
+        searchResultsContainer.innerHTML = '<div style="color: #666;">未找到相关博客</div>';
+    }
+}
 
         // 加载文章
         loadRecentPosts();
