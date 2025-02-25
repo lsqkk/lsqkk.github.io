@@ -43,11 +43,18 @@
         <a href="article-list.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff; ">返回列表</a>
     </div> 
     
+ 
 <p>
-    <span id="busuanzi_container_page_pv">
-        本文总阅读量 <span id="busuanzi_value_page_pv"></span> 次
-    </span>
+  本文阅读量：<span id="busuanzi_value_page_pv"></span>
+  <script>
+    // 假设您的URL参数是 ?filexxx.md
+    var filePath = window.location.search.substring(1); // 获取查询参数
+    var postId = filePath.replace('.md', ''); // 去除.md后缀作为postId
+    // 设置不蒜子的页面标识符
+    document.getElementById('busuanzi_value_page_pv').setAttribute('data-bz-pub-idx', postId);
+  </script>
 </p>
+ 
  
 
     <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
