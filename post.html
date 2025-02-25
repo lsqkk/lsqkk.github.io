@@ -3,17 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>蓝色奇夸克の博客</title>
-     
-<script>
-  // 获取当前页面的完整 URL（包括参数）
-  var currentUrl = window.location.href;
-
-  // 动态创建不蒜子脚本
-  var busuanziScript = document.createElement("script");
-  busuanziScript.src = "//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js";
-  busuanziScript.setAttribute("data-url", currentUrl); // 传递当前 URL
-  document.head.appendChild(busuanziScript);
-</script>
+    
  
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -52,9 +42,6 @@
         <a href="article-list.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff; ">返回列表</a>
     </div> 
     
-<span id="busuanzi_container_page_pv" style="display:none">
-  本文阅读量 <span id="busuanzi_value_page_pv"></span> 次
-</span>
  
 
     <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
@@ -64,6 +51,31 @@
             <span id="copy-notice" style="color: #666; margin-left: 10px; display: none;">链接已复制！</span>
         </div>
     </div>
+
+
+  <!-- 显示阅读量 -->
+  <p>本文阅读量: <span id="pageView">0</span> 次</p>
+
+  <script>
+    // 获取当前 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileParam = urlParams.get('file'); // 例如：xxx.md
+
+    // 初始化阅读量数据
+    let pageViewData = JSON.parse(localStorage.getItem('pageViewData')) || {};
+
+    // 如果当前文章没有阅读量数据，初始化为 0
+    if (!pageViewData[fileParam]) {
+      pageViewData[fileParam] = 0;
+    }
+
+    // 更新阅读量
+    pageViewData[fileParam] += 1;
+    localStorage.setItem('pageViewData', JSON.stringify(pageViewData));
+
+    // 显示阅读量
+    document.getElementById('pageView').innerText = pageViewData[fileParam];
+  </script>
 
     <!-- 依赖库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
