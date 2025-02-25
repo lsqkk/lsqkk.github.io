@@ -30,7 +30,7 @@ body {
 .nav ul li {
     display: inline;
     margin-right: 20px;
-    line-height: 25px;
+    line-height: 30px;
 }
 .nav ul li a {
     color: #007bff;
@@ -192,15 +192,6 @@ body {
     margin-right: 5px;
 }
 
-button {
-    background-color: #0366d6;
-    color: white;
-    border: none;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
 .search-results {
     margin-top: 20px;
 }
