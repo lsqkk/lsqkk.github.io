@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <title>蓝色奇夸克の博客</title>
      
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+  // 获取当前页面的完整 URL（包括参数）
+  var currentUrl = window.location.href;
+
+  // 动态创建不蒜子脚本
+  var busuanziScript = document.createElement("script");
+  busuanziScript.src = "//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js";
+  busuanziScript.setAttribute("data-url", currentUrl); // 传递当前 URL
+  document.head.appendChild(busuanziScript);
+</script>
  
     <!-- KaTeX样式 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
