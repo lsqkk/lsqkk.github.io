@@ -312,28 +312,57 @@
 // 新增变量：用于标记是否正在拖动飞船
 let isDragging = false;
 
-// 新增函数：判断鼠标是否点击在飞船范围内
-function isMouseOverPlayer(mouseX, mouseY) {
+// 新增函数：判断触摸点是否在飞船范围内
+function isTouchOverPlayer(touchX, touchY) {
     const { x, y, size } = game.player;
     return (
-        mouseX >= x - size / 2 &&
-        mouseX <= x + size / 2 &&
-        mouseY >= y - size / 2 &&
-        mouseY <= y + size / 2
+        touchX >= x - size / 2 &&
+        touchX <= x + size / 2 &&
+        touchY >= y - size / 2 &&
+        touchY <= y + size / 2
     );
 }
 
 // 新增函数：更新飞船位置
-function updatePlayerPosition(mouseX) {
+function updatePlayerPosition(newX) {
     const { size } = game.player;
     const minX = size / 2; // 飞船的最小 x 位置
     const maxX = canvas.width - size / 2; // 飞船的最大 x 位置
 
     // 确保飞船不会移出画布范围
-    game.player.x = Math.max(minX, Math.min(maxX, mouseX));
+    game.player.x = Math.max(minX, Math.min(maxX, newX));
 }
 
-// 鼠标按下事件
+// 触摸开始事件
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // 阻止默认行为（如页面滚动）
+    const touch = e.touches[0]; // 获取第一个触摸点
+    const rect = canvas.getBoundingClientRect();
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+
+    if (isTouchOverPlayer(touchX, touchY)) {
+        isDragging = true; // 开始拖动
+    }
+});
+
+// 触摸移动事件
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // 阻止默认行为
+    if (isDragging) {
+        const touch = e.touches[0]; // 获取第一个触摸点
+        const rect = canvas.getBoundingClientRect();
+        const touchX = touch.clientX - rect.left;
+        updatePlayerPosition(touchX); // 更新飞船位置
+    }
+});
+
+// 触摸结束事件
+canvas.addEventListener('touchend', () => {
+    isDragging = false; // 停止拖动
+});
+
+// 鼠标事件（保留之前的鼠标拖动逻辑）
 canvas.addEventListener('mousedown', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -344,7 +373,6 @@ canvas.addEventListener('mousedown', (e) => {
     }
 });
 
-// 鼠标移动事件
 canvas.addEventListener('mousemove', (e) => {
     if (isDragging) {
         const rect = canvas.getBoundingClientRect();
@@ -353,14 +381,12 @@ canvas.addEventListener('mousemove', (e) => {
     }
 });
 
-// 鼠标释放事件
 canvas.addEventListener('mouseup', () => {
     isDragging = false; // 停止拖动
 });
 
-// 鼠标移出画布事件（防止鼠标移出画布时仍然拖动飞船）
 canvas.addEventListener('mouseleave', () => {
-    isDragging = false; // 停止拖动
+    isDragging = false; // 防止鼠标移出画布时仍然拖动飞船
 });
 
 
