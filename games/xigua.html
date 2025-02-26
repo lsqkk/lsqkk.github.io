@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>合成大西瓜-物理版</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            overflow: hidden;
+            background: linear-gradient(160deg, #90e0ef 0%, #0077b6 100%);
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+        }
+        #stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-align: right;
+        }
+        .game-over {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            z-index: 100;
+        }
+        .game-over button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="stats">
+        <div>得分: <span id="score">0</span></div>
+        <div>次数: <span id="clickCount">0</span></div>
+    </div>
+    <div class="game-over" id="gameOver">
+        <h2>游戏结束!</h2>
+        <p>最终得分: <span id="finalScore">0</span></p>
+        <p>总次数: <span id="finalClickCount">0</span></p>
+        <button onclick="location.reload()">再玩一次</button>
+    </div>
+
+<script>
+const FRUITS = [
+    { name: '🍒', color: '#FF0000', radius: 20, score: 1 },
+    { name: '🍓', color: '#FF1493', radius: 25, score: 3 },
+    { name: '🍇', color: '#9370DB', radius: 30, score: 6 },
+    { name: '🍊', color: '#FFA500', radius: 35, score: 10 },
+    { name: '🥝', color: '#9ACD32', radius: 40, score: 15 },
+    { name: '🍅', color: '#FF4500', radius: 45, score: 21 },
+    { name: '🍑', color: '#FFB6C1', radius: 50, score: 28 },
+    { name: '🍍', color: '#FFD700', radius: 55, score: 36 },
+    { name: '🥥', color: '#8B4513', radius: 60, score: 45 },
+    { name: '🍉', color: '#228B22', radius: 65, score: 55 }
+];
+
+class PhysicsGame {
+    constructor() {
+        this.engine = Matter.Engine.create();
+        this.world = this.engine.world;
+        this.render = Matter.Render.create({
+            element: document.body,
+            engine: this.engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: 'transparent',
+                hasBounds: true
+            }
+        });
+        
+        this.maxFruitLevel = 0;
+        this.score = 0;
+        this.clickCount = 0;
+        this.gameOver = false;
+        
+        this.initWorld();
+        this.setupEvents();
+        Matter.Runner.run(this.engine);
+        Matter.Render.run(this.render);
+        
+        // 初始化统计显示
+        this.updateStats();
+    }
+
+    initWorld() {
+        // 创建边界
+        const ground = Matter.Bodies.rectangle(
+            window.innerWidth/2, 
+            window.innerHeight - 20,
+            window.innerWidth, 
+            40, 
+            { isStatic: true, render: { visible: false } }
+        );
+        
+        const leftWall = Matter.Bodies.rectangle(
+            0, window.innerHeight/2, 
+            40, window.innerHeight, 
+            { isStatic: true, render: { visible: false } }
+        );
+        
+        const rightWall = Matter.Bodies.rectangle(
+            window.innerWidth, window.innerHeight/2, 
+            40, window.innerHeight, 
+            { isStatic: true, render: { visible: false } }
+        );
+        
+        const ceiling = Matter.Bodies.rectangle(
+            window.innerWidth/2, 50,
+            window.innerWidth, 10,
+            { isStatic: true, render: { visible: false } }
+        );
+
+        Matter.World.add(this.world, [ground, leftWall, rightWall, ceiling]);
+    }
+
+    setupEvents() {
+        // 窗口大小调整
+        window.addEventListener('resize', () => {
+            this.render.canvas.width = window.innerWidth;
+            this.render.canvas.height = window.innerHeight;
+        });
+
+        // 鼠标/触摸事件
+        const canvas = this.render.canvas;
+        canvas.addEventListener('mousedown', (e) => {
+            this.clickCount++;
+            this.createFruit(e);
+            this.updateStats();
+        });
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.clickCount++;
+            this.createFruit(e.touches[0]);
+            this.updateStats();
+        });
+
+        // 碰撞事件
+        Matter.Events.on(this.engine, 'collisionStart', (event) => {
+            event.pairs.forEach((pair) => {
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+                
+                if (bodyA.fruitType !== undefined && 
+                    bodyB.fruitType !== undefined &&
+                    bodyA.fruitType === bodyB.fruitType) {
+                    this.mergeFruits(bodyA, bodyB);
+                }
+            });
+        });
+    }
+
+    updateStats() {
+        document.getElementById('score').textContent = this.score;
+        document.getElementById('clickCount').textContent = this.clickCount;
+    }
+
+    getNextFruitType() {
+        if (this.maxFruitLevel < 3) return 0;
+        const minLevel = Math.max(0, this.maxFruitLevel - 3);
+        return Math.floor(Math.random() * (this.maxFruitLevel - minLevel + 1)) + minLevel;
+    }
+
+    createFruit(event) {
+        if(this.gameOver) return;
+        
+        const type = this.getNextFruitType();
+        const fruit = FRUITS[type];
+        
+        const newFruit = Matter.Bodies.circle(
+            event.clientX, 
+            100, 
+            fruit.radius,
+            {
+                restitution: 0.2,
+                friction: 0.5,
+                render: {
+                    fillStyle: fruit.color,
+                    text: {
+                        content: fruit.name,
+                        color: '#fff',
+                        size: fruit.radius,
+                        family: 'Arial'
+                    }
+                },
+                fruitType: type
+            }
+        );
+        
+        Matter.World.add(this.world, newFruit);
+    }
+
+    mergeFruits(bodyA, bodyB) {
+        const type = bodyA.fruitType;
+        if(type >= FRUITS.length-1) {
+            this.showGameOver(true);
+            return;
+        }
+
+        // 移除旧物体
+        Matter.World.remove(this.world, [bodyA, bodyB]);
+        
+        // 创建新水果
+        const newType = type + 1;
+        this.maxFruitLevel = Math.max(this.maxFruitLevel, newType);
+        
+        const newFruit = Matter.Bodies.circle(
+            (bodyA.position.x + bodyB.position.x)/2,
+            (bodyA.position.y + bodyB.position.y)/2,
+            FRUITS[newType].radius,
+            {
+                restitution: 0.2,
+                friction: 0.5,
+                render: {
+                    fillStyle: FRUITS[newType].color,
+                    text: {
+                        content: FRUITS[newType].name,
+                        color: '#fff',
+                        size: FRUITS[newType].radius,
+                        family: 'Arial'
+                    }
+                },
+                fruitType: newType
+            }
+        );
+        
+        // 添加分数
+        this.score += FRUITS[newType].score;
+        this.updateStats();
+        
+        Matter.World.add(this.world, newFruit);
+    }
+
+    showGameOver(success) {
+        this.gameOver = true;
+        document.getElementById('finalScore').textContent = this.score;
+        document.getElementById('finalClickCount').textContent = this.clickCount;
+        document.getElementById('gameOver').style.display = 'block';
+    }
+}
+
+// 启动游戏
+new PhysicsGame();
+</script>
+</body>
+</html>
