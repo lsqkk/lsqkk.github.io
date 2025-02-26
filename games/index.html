@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克游戏</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo_blue.png" type="image/png">
+</head>
+<body style=" background: url('https://lsqkk.github.io/games/light.gif') no-repeat center center; background-size: cover; position: relative; ">
+    <div class="header-placeholder"></div>
+    <div class="header">
+        <h1>夸克游戏</h1>
+    </div>
+    <div class="nav">
+        <ul>
+            <li><a href="index.html" class="active">首页</a></li>
+            <li><a href="https://lsqkk.github.io">我的博客</a></li>
+            <li><a href="https://lsqkk.github.io/qtv">Q-tv | 遇见热爱</a></li>
+            <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言板</a></li>
+        </ul>
+    </div>
+    <div class="content" id="game-content">
+        <!-- 游戏列表将通过 JavaScript 动态加载 -->
+    </div>
+    <div class="footer">
+        <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2025 蓝色奇夸克 - 游戏主页</a>
+    </div>
+
+<script>
+    async function loadGames() {
+        const games = await fetch('game.json').then(r => r.json());
+        const gameContent = document.getElementById('game-content');
+
+        games.forEach(game => {
+            const gameBox = document.createElement('div');
+            gameBox.className = 'game-box';
+            gameBox.style.backgroundImage = `url('${game.image}')`; /* 动态设置背景图 */
+            gameBox.innerHTML = `
+                <a href="${game.link}" target="_blank">
+                    ${game.name}
+                </a>
+            `;
+            gameContent.appendChild(gameBox);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGames();
+    });
+</script>
+
+</body>
+</html>

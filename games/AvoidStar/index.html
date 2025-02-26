@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>太空冒险 - 躲避陨石</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+        #gameCanvas {
+            background: url('1.gif') center/cover;
+        }
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #FFF;
+            font-size: 20px;
+            text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+        }
+        #restartBtn {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #rulesModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+        }
+        #rulesModal button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="gameUI">
+        <div>得分: <span id="score">0</span></div>
+        <div>生命: <span id="lives">3</span></div>
+        <div>等级: <span id="level">1</span></div>
+        <div>最佳: <span id="highScore">0</span></div>
+    </div>
+    <button id="restartBtn">重新开始</button>
+
+    <!-- 游戏规则弹窗 -->
+    <div id="rulesModal">
+        <h2>游戏规则</h2>
+        <p>使用左右方向键控制飞船移动</p>
+        <p>躲避陨石，每坚持10秒得10分</p>
+        <p>每100分提升一个等级，难度增加</p>
+        <p>初始3条生命，碰撞陨石会损失生命</p>
+        <button id="startGame">知道了，开始游戏</button>
+        <br>
+        <label>
+            <input type="checkbox" id="dontShowAgain"> 下次不再显示
+        </label>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const levelElement = document.getElementById('level');
+        const highScoreElement = document.getElementById('highScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const rulesModal = document.getElementById('rulesModal');
+        const startGameBtn = document.getElementById('startGame');
+        const dontShowAgain = document.getElementById('dontShowAgain');
+
+        // 加载资源
+        const resources = {
+            player: new Image(),
+            flame: new Image(),
+            loaded: 0
+        };
+        resources.player.src = '1.png';
+        resources.flame.src = '2.png';
+
+        // 设置画布尺寸
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 游戏对象
+        const game = {
+            player: {
+                x: canvas.width/2,
+                y: canvas.height - 100,
+                size: 60,
+                speed: 8,
+                isMovingLeft: false,
+                isMovingRight: false
+            },
+            meteors: [],
+            score: 0,
+            lives: 3,
+            level: 1,
+            spawnRate: 100,
+            gameOver: false,
+            highScore: localStorage.getItem('highScore') || 0
+        };
+
+        // 显示游戏规则
+        function showRules() {
+            if(!localStorage.getItem('dontShowRules')) {
+                rulesModal.style.display = 'block';
+            } else {
+                startGame();
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            rulesModal.style.display = 'none';
+            if(dontShowAgain.checked) {
+                localStorage.setItem('dontShowRules', true);
+            }
+            gameLoop();
+        }
+
+        // 玩家飞船
+        function drawPlayer() {
+            if(!resources.player.complete) return;
+            
+            ctx.save();
+            ctx.translate(game.player.x, game.player.y);
+            
+            // 绘制火焰
+            if(game.player.isMovingLeft || game.player.isMovingRight) {
+                if(resources.flame.complete) {
+                    ctx.drawImage(
+                        resources.flame,
+                        -game.player.size/2 - 10,
+                        game.player.size/2 - 10,
+                        game.player.size + 20,
+                        game.player.size/2 + 20
+                    );
+                }
+            }
+            
+            // 绘制飞船
+            ctx.drawImage(
+                resources.player,
+                -game.player.size/2,
+                -game.player.size/2,
+                game.player.size,
+                game.player.size
+            );
+            
+            ctx.restore();
+        }
+
+        // 陨石
+        function createMeteor() {
+            const size = 30 + Math.random() * 50;
+            return {
+                x: Math.random() * canvas.width,
+                y: -size,
+                size: size,
+                speed: 3 + game.level * 1.5,
+                color: `hsl(${Math.random()*360}, 70%, 50%)`,
+                glowSize: size * 2
+            };
+        }
+
+        // 绘制发光陨石
+        function drawMeteor(meteor) {
+            // 绘制光晕
+            const gradient = ctx.createRadialGradient(
+                meteor.x, meteor.y, meteor.size * 0.2,
+                meteor.x, meteor.y, meteor.glowSize
+            );
+            gradient.addColorStop(0, meteor.color);
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.beginPath();
+            ctx.arc(meteor.x, meteor.y, meteor.glowSize, 0, Math.PI*2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // 绘制陨石本体
+            ctx.beginPath();
+            ctx.arc(meteor.x, meteor.y, meteor.size/2, 0, Math.PI*2);
+            ctx.fillStyle = meteor.color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // 游戏循环
+        function gameLoop() {
+            if(game.gameOver) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 玩家移动
+            if(game.player.isMovingLeft && game.player.x > game.player.size/2) {
+                game.player.x -= game.player.speed;
+            }
+            if(game.player.isMovingRight && game.player.x < canvas.width - game.player.size/2) {
+                game.player.x += game.player.speed;
+            }
+
+            // 生成陨石
+            if(Math.random() < 1/game.spawnRate) {
+                game.meteors.push(createMeteor());
+            }
+
+            // 更新陨石
+            game.meteors.forEach((meteor, index) => {
+                meteor.y += meteor.speed;
+                
+                // 绘制陨石
+                drawMeteor(meteor);
+
+                // 碰撞检测
+                const dx = meteor.x - game.player.x;
+                const dy = meteor.y - game.player.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                if(distance < (meteor.size/2 + game.player.size/2)) {
+                    game.lives--;
+                    livesElement.textContent = game.lives;
+                    game.meteors.splice(index, 1);
+                    if(game.lives <= 0) {
+                        gameOver();
+                    }
+                }
+
+                // 移除屏幕外的陨石
+                if(meteor.y > canvas.height + meteor.size) {
+                    game.meteors.splice(index, 1);
+                    game.score += 10;
+                    scoreElement.textContent = game.score;
+                    if(game.score > game.highScore) {
+                        game.highScore = game.score;
+                        localStorage.setItem('highScore', game.highScore);
+                        highScoreElement.textContent = game.highScore;
+                    }
+                }
+            });
+
+            // 升级系统（每100分提升难度）
+            if(game.score >= game.level * 100) {
+                game.level++;
+                levelElement.textContent = game.level;
+                game.spawnRate = Math.max(20, 100 - game.level*8);
+            }
+
+            drawPlayer();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            game.gameOver = true;
+            restartBtn.style.display = 'block';
+        }
+
+        // 事件监听
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowLeft') game.player.isMovingLeft = true;
+            if(e.key === 'ArrowRight') game.player.isMovingRight = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if(e.key === 'ArrowLeft') game.player.isMovingLeft = false;
+            if(e.key === 'ArrowRight') game.player.isMovingRight = false;
+        });
+
+        restartBtn.addEventListener('click', () => {
+            game.meteors = [];
+            game.score = 0;
+            game.lives = 3;
+            game.level = 1;
+            game.spawnRate = 100;
+            game.gameOver = false;
+            scoreElement.textContent = '0';
+            livesElement.textContent = '3';
+            levelElement.textContent = '1';
+            restartBtn.style.display = 'none';
+            gameLoop();
+        });
+      
+
+// 新增变量：用于标记是否正在拖动飞船
+let isDragging = false;
+
+// 新增函数：判断鼠标是否点击在飞船范围内
+function isMouseOverPlayer(mouseX, mouseY) {
+    const { x, y, size } = game.player;
+    return (
+        mouseX >= x - size / 2 &&
+        mouseX <= x + size / 2 &&
+        mouseY >= y - size / 2 &&
+        mouseY <= y + size / 2
+    );
+}
+
+// 新增函数：更新飞船位置
+function updatePlayerPosition(mouseX) {
+    const { size } = game.player;
+    const minX = size / 2; // 飞船的最小 x 位置
+    const maxX = canvas.width - size / 2; // 飞船的最大 x 位置
+
+    // 确保飞船不会移出画布范围
+    game.player.x = Math.max(minX, Math.min(maxX, mouseX));
+}
+
+// 鼠标按下事件
+canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    if (isMouseOverPlayer(mouseX, mouseY)) {
+        isDragging = true; // 开始拖动
+    }
+});
+
+// 鼠标移动事件
+canvas.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        updatePlayerPosition(mouseX); // 更新飞船位置
+    }
+});
+
+// 鼠标释放事件
+canvas.addEventListener('mouseup', () => {
+    isDragging = false; // 停止拖动
+});
+
+// 鼠标移出画布事件（防止鼠标移出画布时仍然拖动飞船）
+canvas.addEventListener('mouseleave', () => {
+    isDragging = false; // 停止拖动
+});
+
+
+
+        startGameBtn.addEventListener('click', startGame);
+
+        // 初始化
+        highScoreElement.textContent = game.highScore;
+        showRules();
+    </script>
+</body>
+</html>
