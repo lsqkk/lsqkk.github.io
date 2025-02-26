@@ -179,43 +179,57 @@
         }
 
         // 陨石
-        function createMeteor() {
-            const size = 30 + Math.random() * 50;
-            return {
-                x: Math.random() * canvas.width,
-                y: -size,
-                size: size,
-                speed: 3 + game.level * 1.5,
-                color: `hsl(${Math.random()*360}, 70%, 50%)`,
-                glowSize: size * 2
-            };
-        }
+function createMeteor() {
+    const size = 30 + Math.random() * 50; // 陨石大小随机
+    const isGolden = Math.random() < 0.05; // 5% 的概率生成金色彗星
+
+    return {
+        x: Math.random() * canvas.width, // 随机生成位置
+        y: -size, // 从屏幕外上方开始
+        size: size, // 陨石大小
+        speed: 3 + game.level * 1.5, // 随着等级提升速度
+        color: isGolden ? 'gold' : `hsl(${Math.random() * 360}, 70%, 50%)`, // 金色彗星颜色
+        glowSize: size * 2, // 发光范围
+        isGolden: isGolden // 是否是金色彗星
+    };
+}
 
         // 绘制发光陨石
-        function drawMeteor(meteor) {
-            // 绘制光晕
-            const gradient = ctx.createRadialGradient(
-                meteor.x, meteor.y, meteor.size * 0.2,
-                meteor.x, meteor.y, meteor.glowSize
-            );
-            gradient.addColorStop(0, meteor.color);
-            gradient.addColorStop(1, 'rgba(0,0,0,0)');
-            
-            ctx.save();
-            ctx.globalCompositeOperation = 'lighter';
-            ctx.beginPath();
-            ctx.arc(meteor.x, meteor.y, meteor.glowSize, 0, Math.PI*2);
-            ctx.fillStyle = gradient;
-            ctx.fill();
-            
-            // 绘制陨石本体
-            ctx.beginPath();
-            ctx.arc(meteor.x, meteor.y, meteor.size/2, 0, Math.PI*2);
-            ctx.fillStyle = meteor.color;
-            ctx.fill();
-            ctx.restore();
-        }
+function drawMeteor(meteor) {
+    // 绘制光晕
+    const gradient = ctx.createRadialGradient(
+        meteor.x, meteor.y, meteor.size * 0.2, // 光晕中心
+        meteor.x, meteor.y, meteor.glowSize // 光晕范围
+    );
+    gradient.addColorStop(0, meteor.color); // 光晕颜色
+    gradient.addColorStop(1, 'rgba(0,0,0,0)'); // 透明边缘
 
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.beginPath();
+    ctx.arc(meteor.x, meteor.y, meteor.glowSize, 0, Math.PI * 2); // 光晕区域
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // 绘制彗星本体
+    ctx.beginPath();
+    if (meteor.isGolden) {
+        // 绘制金色菱形
+        const halfSize = meteor.size / 2;
+        ctx.moveTo(meteor.x, meteor.y - halfSize); // 上顶点
+        ctx.lineTo(meteor.x + halfSize, meteor.y); // 右顶点
+        ctx.lineTo(meteor.x, meteor.y + halfSize); // 下顶点
+        ctx.lineTo(meteor.x - halfSize, meteor.y); // 左顶点
+        ctx.closePath(); // 闭合路径
+    } else {
+        // 普通圆形陨石
+        ctx.arc(meteor.x, meteor.y, meteor.size / 2, 0, Math.PI * 2);
+    }
+
+    ctx.fillStyle = meteor.color;
+    ctx.fill();
+    ctx.restore();
+}
         // 游戏循环
         function gameLoop() {
             if(game.gameOver) return;
@@ -236,23 +250,31 @@
             }
 
             // 更新陨石
-            game.meteors.forEach((meteor, index) => {
-                meteor.y += meteor.speed;
-                
-                // 绘制陨石
-                drawMeteor(meteor);
+game.meteors.forEach((meteor, index) => {
+    meteor.y += meteor.speed;
 
-                // 碰撞检测
-                const dx = meteor.x - game.player.x;
-                const dy = meteor.y - game.player.y;
-                const distance = Math.sqrt(dx*dx + dy*dy);
-                if(distance < (meteor.size/2 + game.player.size/2)) {
-                    game.lives--;
-                    livesElement.textContent = game.lives;
-                    game.meteors.splice(index, 1);
-                    if(game.lives <= 0) {
-                        gameOver();
-                    }
+    // 绘制彗星
+    drawMeteor(meteor);
+
+    // 碰撞检测
+    const dx = meteor.x - game.player.x;
+    const dy = meteor.y - game.player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < (meteor.size / 2 + game.player.size / 2)) {
+        if (meteor.isGolden) {
+            // 碰到金色彗星，增加2条生命
+            game.lives += 2;
+            livesElement.textContent = game.lives;
+        } else {
+            // 碰到普通陨石，减少一条生命
+            game.lives--;
+            livesElement.textContent = game.lives;
+        }
+        game.meteors.splice(index, 1); // 移除碰撞的彗星
+        if (game.lives <= 0) {
+            gameOver();
+        }
                 }
 
                 // 移除屏幕外的陨石
