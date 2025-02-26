@@ -390,7 +390,7 @@ canvas.addEventListener('mousedown', (e) => {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    if (isMouseOverPlayer(mouseX, mouseY)) {
+    if (isTouchOverPlayer(mouseX, mouseY)) {
         isDragging = true; // 开始拖动
     }
 });
