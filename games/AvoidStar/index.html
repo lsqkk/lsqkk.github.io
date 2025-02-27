@@ -379,7 +379,18 @@ backgroundAudio.pause();
 
     // 事件监听
     pauseBtn.addEventListener('click', togglePause);
+// 静音按钮
+const muteBtn = document.getElementById('muteBtn');
 
+muteBtn.addEventListener('click', () => {
+    if (backgroundAudio.muted) {
+        backgroundAudio.muted = false; // 取消静音
+        muteBtn.textContent = '静音';
+    } else {
+        backgroundAudio.muted = true; // 静音
+        muteBtn.textContent = '取消静音';
+    }
+});
     window.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') game.player.isMovingLeft = true;
         if (e.key === 'ArrowRight') game.player.isMovingRight = true;
