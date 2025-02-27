@@ -81,8 +81,28 @@
             <input type="checkbox" id="dontShowAgain"> 下次不再显示
         </label>
     </div>
-
+<!-- 音频 -->
+<audio id="backgroundAudio" loop>
+    <source src="1.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+<audio id="collisionAudio">
+    <source src="2.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+<audio id="goldenMeteorAudio">
+    <source src="3.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+<audio id="levelUpAudio">
+    <source src="4.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
 <script>
+const backgroundAudio = document.getElementById('backgroundAudio');
+const collisionAudio = document.getElementById('collisionAudio');
+const goldenMeteorAudio = document.getElementById('goldenMeteorAudio');
+const levelUpAudio = document.getElementById('levelUpAudio');
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
@@ -161,18 +181,22 @@
         if (dontShowAgain.checked) {
             localStorage.setItem('dontShowRules', true);
         }
+    backgroundAudio.play();
         gameLoop();
     }
 
     // 暂停/继续游戏
-    function togglePause() {
-        game.isPaused = !game.isPaused;
-        pauseBtn.textContent = game.isPaused ? '继续' : '暂停';
+function togglePause() {
+    game.isPaused = !game.isPaused;
+    pauseBtn.textContent = game.isPaused ? '继续' : '暂停';
 
-        if (!game.isPaused && !game.gameOver) {
-            gameLoop();
-        }
+    if (!game.isPaused && !game.gameOver) {
+        backgroundAudio.play(); // 恢复背景音乐
+        gameLoop();
+    } else {
+        backgroundAudio.pause(); // 暂停背景音乐
     }
+}
 
     // 玩家飞船
     function drawPlayer() {
@@ -306,19 +330,21 @@
             const dy = meteor.y - game.player.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < (meteor.size / 2 + game.player.size / 2)) {
-                if (meteor.isGolden) {
-                    game.lives += 2;
-                    livesElement.textContent = game.lives;
-                } else {
-                    game.lives--;
-                    livesElement.textContent = game.lives;
-                }
-                game.meteors.splice(index, 1);
-                if (game.lives <= 0) {
-                    gameOver();
-                }
-            }
+if (distance < (meteor.size / 2 + game.player.size / 2)) {
+    if (meteor.isGolden) {
+        game.lives += 2;
+        livesElement.textContent = game.lives;
+        goldenMeteorAudio.play(); // 播放金色陨石音效
+    } else {
+        game.lives--;
+        livesElement.textContent = game.lives;
+        collisionAudio.play(); // 播放碰撞音效
+    }
+    game.meteors.splice(index, 1);
+    if (game.lives <= 0) {
+        gameOver();
+    }
+}
 
             // 移除屏幕外的陨石
             if (meteor.y > canvas.height + meteor.size) {
@@ -338,6 +364,7 @@
             game.level++;
             levelElement.textContent = game.level;
             game.spawnRate = Math.max(20, 100 - game.level * 8);
+levelUpAudio.play(); 
         }
 
         drawPlayer();
@@ -347,6 +374,7 @@
     function gameOver() {
         game.gameOver = true;
         restartBtn.style.display = 'block';
+backgroundAudio.pause();
     }
 
     // 事件监听
@@ -380,6 +408,8 @@
         levelElement.textContent = '1';
         restartBtn.style.display = 'none';
         pauseBtn.textContent = '暂停';
+    backgroundAudio.currentTime = 0; // 重置背景音乐
+    backgroundAudio.play(); // 重新播放背景音乐
         gameLoop();
     });
 
