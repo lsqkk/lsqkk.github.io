@@ -1,24 +1,17 @@
 {
-  "name": "lsqkk.github.io",
+  "name": "vercel-deepseek-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A Vercel Serverless Function to call DeepSeek API",
+  "main": "api/deepseek.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lsqkk/lsqkk.github.io.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/lsqkk/lsqkk.github.io/issues"
-  },
-  "homepage": "https://github.com/lsqkk/lsqkk.github.io#readme",
-  "description": "",
   "dependencies": {
-    "express": "^4.21.2",
-    "node-fetch": "^3.3.2"
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@vercel/node": "^23.0.0"
   }
 }
