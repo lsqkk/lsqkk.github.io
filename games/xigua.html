@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>合成大西瓜-物理版</title>
+    <title>合成大西瓜 - 夸克游戏</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
     <style>
         * {
@@ -22,6 +22,14 @@
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             text-align: right;
+        }
+        #preview {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
         .game-over {
             display: none;
@@ -49,6 +57,10 @@
         <div>得分: <span id="score">0</span></div>
         <div>次数: <span id="clickCount">0</span></div>
     </div>
+    <div id="preview">
+        <div>下一个水果:</div>
+        <div id="nextFruitPreview" style="font-size: 40px;"></div>
+    </div>
     <div class="game-over" id="gameOver">
         <h2>游戏结束!</h2>
         <p>最终得分: <span id="finalScore">0</span></p>
@@ -71,7 +83,7 @@ const FRUITS = [
 ];
 
 class PhysicsGame {
-    constructor() {
+  constructor() {
         this.engine = Matter.Engine.create();
         this.world = this.engine.world;
         this.render = Matter.Render.create({
@@ -85,11 +97,19 @@ class PhysicsGame {
                 hasBounds: true
             }
         });
+
+        // 添加自定义渲染逻辑
+        Matter.Events.on(this.render, 'afterRender', () => {
+            this.customRenderFruits();
+        });
         
         this.maxFruitLevel = 0;
         this.score = 0;
         this.clickCount = 0;
         this.gameOver = false;
+        
+        // 初始化下一个水果的类型
+        this.nextFruitType = this.getNextFruitType();
         
         this.initWorld();
         this.setupEvents();
@@ -98,6 +118,35 @@ class PhysicsGame {
         
         // 初始化统计显示
         this.updateStats();
+        
+        // 初始化预览
+        this.updatePreview();
+    }
+    customRenderFruits() {
+        const context = this.render.context;
+        const bodies = Matter.Composite.allBodies(this.world);
+
+        bodies.forEach(body => {
+            if (body.fruitType !== undefined) {
+                const fruit = FRUITS[body.fruitType];
+                const { x, y } = body.position;
+                const radius = body.circleRadius;
+
+                // 绘制圆形背景
+                context.beginPath();
+                context.arc(x, y, radius, 0, Math.PI * 2);
+                context.fillStyle = fruit.color;
+                context.fill();
+                context.closePath();
+
+                // 绘制水果图标
+                context.font = `${radius * 1.5}px Arial`;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillStyle = '#fff';
+                context.fillText(fruit.name, x, y);
+            }
+        });
     }
 
     initWorld() {
@@ -172,6 +221,12 @@ class PhysicsGame {
         document.getElementById('clickCount').textContent = this.clickCount;
     }
 
+    updatePreview() {
+        const fruit = FRUITS[this.nextFruitType];
+        document.getElementById('nextFruitPreview').textContent = fruit.name;
+        document.getElementById('nextFruitPreview').style.color = fruit.color;
+    }
+
     getNextFruitType() {
         if (this.maxFruitLevel < 3) return 0;
         const minLevel = Math.max(0, this.maxFruitLevel - 3);
@@ -181,7 +236,8 @@ class PhysicsGame {
     createFruit(event) {
         if(this.gameOver) return;
         
-        const type = this.getNextFruitType();
+        // 使用当前预览的水果类型生成水果
+        const type = this.nextFruitType;
         const fruit = FRUITS[type];
         
         const newFruit = Matter.Bodies.circle(
@@ -205,6 +261,10 @@ class PhysicsGame {
         );
         
         Matter.World.add(this.world, newFruit);
+        
+        // 生成下一个水果的类型并更新预览
+        this.nextFruitType = this.getNextFruitType();
+        this.updatePreview();
     }
 
     mergeFruits(bodyA, bodyB) {
