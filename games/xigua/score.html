@@ -301,46 +301,33 @@ class PhysicsGame {
         this.updatePreview();
     }
 
-    mergeFruits(bodyA, bodyB) {
-        const type = bodyA.fruitType;
-        if(type >= FRUITS.length-1) {
-            this.showGameOver(true);
-            return;
-        }
+mergeFruits(bodyA, bodyB) {
+    // 保存是否为西瓜合成的标记
+    const isWatermelonMerge = 
+        bodyA.fruitType === FRUITS.length - 1 || 
+        bodyB.fruitType === FRUITS.length - 1;
 
-        // 移除旧物体
-        Matter.World.remove(this.world, [bodyA, bodyB]);
-        
-        // 创建新水果
-        const newType = type + 1;
-        this.maxFruitLevel = Math.max(this.maxFruitLevel, newType);
-        
-        const newFruit = Matter.Bodies.circle(
-            (bodyA.position.x + bodyB.position.x)/2,
-            (bodyA.position.y + bodyB.position.y)/2,
-            FRUITS[newType].radius,
-            {
-                restitution: 0.2,
-                friction: 0.5,
-                render: {
-                    fillStyle: FRUITS[newType].color,
-                    text: {
-                        content: FRUITS[newType].name,
-                        color: '#fff',
-                        size: FRUITS[newType].radius,
-                        family: 'Arial'
-                    }
-                },
-                fruitType: newType
+    // 执行父类合并逻辑（生成新水果）
+    super.mergeFruits(bodyA, bodyB);
+
+    // 仅当合成西瓜时触发关卡验证
+    if (isWatermelonMerge) {
+        if (this.score >= this.targetScore) {
+            if (this.currentLevel < SCORE_MODE_CONFIG.TOTAL_LEVELS) {
+                this.currentLevel++;
+                this.maxUnlockedLevel = Math.max(this.maxUnlockedLevel, this.currentLevel);
+                localStorage.setItem('maxUnlockedLevel', this.maxUnlockedLevel);
+                this.targetScore += SCORE_MODE_CONFIG.SCORE_STEP;
+                this.resetGameState();
+                this.updateDisplay();
+            } else {
+                this.showGameResult(true);
             }
-        );
-        
-        // 添加分数
-        this.score += FRUITS[newType].score;
-        this.updateStats();
-        
-        Matter.World.add(this.world, newFruit);
+        } else {
+            this.showGameResult(false);
+        }
     }
+}
 
     showGameOver(success) {
         this.gameOver = true;
