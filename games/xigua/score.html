@@ -301,33 +301,47 @@ class PhysicsGame {
         this.updatePreview();
     }
 
-mergeFruits(bodyA, bodyB) {
-    // 保存是否为西瓜合成的标记
-    const isWatermelonMerge = 
-        bodyA.fruitType === FRUITS.length - 1 || 
-        bodyB.fruitType === FRUITS.length - 1;
-
-    // 执行父类合并逻辑（生成新水果）
-    super.mergeFruits(bodyA, bodyB);
-
-    // 仅当合成西瓜时触发关卡验证
-    if (isWatermelonMerge) {
-        if (this.score >= this.targetScore) {
-            if (this.currentLevel < SCORE_MODE_CONFIG.TOTAL_LEVELS) {
-                this.currentLevel++;
-                this.maxUnlockedLevel = Math.max(this.maxUnlockedLevel, this.currentLevel);
-                localStorage.setItem('maxUnlockedLevel', this.maxUnlockedLevel);
-                this.targetScore += SCORE_MODE_CONFIG.SCORE_STEP;
-                this.resetGameState();
-                this.updateDisplay();
-            } else {
-                this.showGameResult(true);
-            }
-        } else {
-            this.showGameResult(false);
+    mergeFruits(bodyA, bodyB) {
+        const type = bodyA.fruitType;
+        if(type >= FRUITS.length-1) {
+            this.showGameOver(true);
+            return; // 如果是西瓜直接返回
         }
+
+        // 移除旧物体
+        Matter.World.remove(this.world, [bodyA, bodyB]);
+        
+        // 生成新水果
+        const newType = type + 1;
+        this.maxFruitLevel = Math.max(this.maxFruitLevel, newType);
+        
+        const newFruit = Matter.Bodies.circle(
+            (bodyA.position.x + bodyB.position.x)/2,
+            (bodyA.position.y + bodyB.position.y)/2,
+            FRUITS[newType].radius,
+            {
+                restitution: 0.2,
+                friction: 0.5,
+                render: {
+                    fillStyle: FRUITS[newType].color,
+                    text: {
+                        content: FRUITS[newType].name,
+                        color: '#fff',
+                        size: FRUITS[newType].radius,
+                        family: 'Arial'
+                    }
+                },
+                fruitType: newType
+            }
+        );
+        
+        // 添加分数
+        this.score += FRUITS[newType].score;
+        this.updateStats();
+        
+        Matter.World.add(this.world, newFruit);
+        return newFruit; // 新增返回新水果对象
     }
-}
 
     showGameOver(success) {
         this.gameOver = true;
@@ -368,22 +382,21 @@ class ScoreModeGame extends PhysicsGame {
     }
 
     mergeFruits(bodyA, bodyB) {
-        // 先检查是否是西瓜合成（在父类合并前）
-        const isWatermelonMerge = 
-            (bodyA.fruitType === FRUITS.length - 1 || 
-             bodyB.fruitType === FRUITS.length - 1);
+        // 先检查是否为西瓜合成
+        const isWatermelon = 
+            bodyA.fruitType === FRUITS.length-1 || 
+            bodyB.fruitType === FRUITS.length-1;
 
-        // 调用父类合并逻辑（正常处理水果合并）
-        super.mergeFruits(bodyA, bodyB);
+        // 执行父类合并逻辑并获取新水果
+        const newFruit = super.mergeFruits(bodyA, bodyB);
 
-        // 仅在合成西瓜时触发分数验证
-        if (isWatermelonMerge) {
-            if (this.score >= this.targetScore) {
-                if (this.currentLevel < SCORE_MODE_CONFIG.TOTAL_LEVELS) {
-                    this.handleLevelSuccess();
-                } else {
-                    this.showGameResult(true);
-                }
+        // 如果父类已处理西瓜合成直接返回
+        if(isWatermelon && !newFruit) return;
+
+        // 仅当合成西瓜时触发关卡验证
+        if(isWatermelon) {
+            if(this.score >= this.targetScore) {
+                this.handleLevelSuccess();
             } else {
                 this.showGameResult(false);
             }
