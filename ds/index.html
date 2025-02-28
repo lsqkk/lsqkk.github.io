@@ -19,122 +19,131 @@
     </div>
   </div>
 
-  <script>
-    // 配置
-    const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
+ <script>
+  // 配置
+  const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
 
-// 发送消息
-async function sendMessage() {
-  const input = document.getElementById('user-input');
-  const historyDiv = document.getElementById('chat-history');
-  const sendBtn = document.getElementById('send-btn');
+  // 发送消息
+  async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const historyDiv = document.getElementById('chat-history');
+    const sendBtn = document.getElementById('send-btn');
 
-  // 禁用按钮，防止重复提交
-  sendBtn.disabled = true;
+    // 禁用按钮，防止重复提交
+    sendBtn.disabled = true;
 
-  // 添加用户消息
-  const userMessage = input.value.trim();
-  if (!userMessage) return; // 空消息不处理
-  historyDiv.innerHTML += `<div class="user-msg">${userMessage}</div>`;
-  historyDiv.innerHTML += `<div class="loading">思考中...</div>`;
-  historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+    // 添加用户消息
+    const userMessage = input.value.trim();
+    if (!userMessage) {
+      sendBtn.disabled = false; // 如果输入为空，直接启用按钮并返回
+      return;
+    }
+    historyDiv.innerHTML += `<div class="user-msg">${userMessage}</div>`;
+    historyDiv.innerHTML += `<div class="loading">思考中...</div>`;
+    historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
 
-  try {
-    // 构造请求体
-    const payload = {
-      model: "deepseek-reasoner", // 修改为 deepseek-reasoner
-      messages: [{
-        role: "user",
-        content: userMessage
-      }],
-      stream: true // 启用流式输出
-    };
+    try {
+      // 构造请求体
+      const payload = {
+        model: "deepseek-reasoner", // 指定模型
+        messages: [{
+          role: "user",
+          content: userMessage
+        }],
+        stream: true // 启用流式输出
+      };
 
-    // 发送请求
-    const response = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+      // 发送请求
+      const response = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    // 流式读取响应
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let botMessage = '';
-    let thinkContent = ''; // 存储思考内容
-    let isThinking = false; // 是否正在解析思考内容
+      // 流式读取响应
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let botMessage = '';
+      let thinkContent = ''; // 存储思考内容
+      let isThinking = false; // 是否正在解析思考内容
+      let buffer = ''; // 缓冲区，用于累积未解析的数据
 
-    historyDiv.innerHTML = historyDiv.innerHTML.replace('<div class="loading">思考中...</div>', '');
-    historyDiv.innerHTML += `
-      <div class="bot-msg">
-        <div class="markdown-content"></div>
-        <div class="think-content"></div> <!-- 思考内容容器 -->
-      </div>
-    `;
-    const markdownDiv = historyDiv.querySelector('.bot-msg:last-child .markdown-content');
-    const thinkDiv = historyDiv.querySelector('.bot-msg:last-child .think-content');
+      historyDiv.innerHTML = historyDiv.innerHTML.replace('<div class="loading">思考中...</div>', '');
+      historyDiv.innerHTML += `
+        <div class="bot-msg">
+          <div class="markdown-content"></div>
+          <div class="think-content"></div> <!-- 思考内容容器 -->
+        </div>
+      `;
+      const markdownDiv = historyDiv.querySelector('.bot-msg:last-child .markdown-content');
+      const thinkDiv = historyDiv.querySelector('.bot-msg:last-child .think-content');
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      // 解析流式数据
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-      for (const line of lines) {
-        if (line.trim() === 'data: [DONE]') {
-          continue; // 忽略 [DONE] 消息
-        }
-        if (line.startsWith('data:')) {
-          try {
-            const data = JSON.parse(line.slice(5));
-            if (data.choices[0].delta.content) {
-              const content = data.choices[0].delta.content;
+        // 解析流式数据
+        const chunk = decoder.decode(value);
+        buffer += chunk; // 将当前数据块累积到缓冲区
 
-              // 检测思考内容
-              if (content.includes('<think>')) {
-                isThinking = true;
-                thinkContent = '';
-              } else if (content.includes('</think>')) {
-                isThinking = false;
-                thinkDiv.innerHTML = marked.parse(thinkContent); // 渲染思考内容
-              } else if (isThinking) {
-                thinkContent += content; // 累积思考内容
-                thinkDiv.innerHTML = marked.parse(thinkContent); // 实时更新
-              } else {
-                botMessage += content; // 累积普通消息
-                markdownDiv.innerHTML = marked.parse(botMessage); // 渲染普通消息
+        // 按行分割缓冲区内容
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // 最后一行可能不完整，保留到下一次处理
+
+        for (const line of lines) {
+          if (line.trim() === 'data: [DONE]') {
+            continue; // 忽略 [DONE] 消息
+          }
+          if (line.startsWith('data:')) {
+            try {
+              const data = JSON.parse(line.slice(5));
+              if (data.choices[0].delta.content) {
+                const content = data.choices[0].delta.content;
+
+                // 检测思考内容
+                if (content.includes('<think>')) {
+                  isThinking = true;
+                  thinkContent = ''; // 清空之前的思考内容
+                } else if (content.includes('</think>')) {
+                  isThinking = false;
+                  thinkDiv.innerHTML = marked.parse(thinkContent); // 渲染思考内容
+                } else if (isThinking) {
+                  thinkContent += content; // 累积思考内容
+                  thinkDiv.innerHTML = marked.parse(thinkContent); // 实时更新思考内容
+                } else {
+                  botMessage += content; // 累积普通消息
+                  markdownDiv.innerHTML = marked.parse(botMessage); // 渲染普通消息
+                }
+
+                historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
               }
-
-              historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+            } catch (err) {
+              console.error('JSON 解析错误:', err);
             }
-          } catch (err) {
-            console.error('JSON 解析错误:', err);
           }
         }
       }
-    }
 
-    // 添加复制按钮
-    const copyButton = document.createElement('button');
-    copyButton.className = 'copy-btn';
-    copyButton.innerText = '复制';
-    copyButton.onclick = () => {
-      navigator.clipboard.writeText(botMessage);
-      copyButton.innerText = '已复制';
-      setTimeout(() => copyButton.innerText = '复制', 2000);
-    };
-    historyDiv.querySelector('.bot-msg:last-child').appendChild(copyButton);
-  } catch (err) {
-    historyDiv.innerHTML = historyDiv.innerHTML.replace('<div class="loading">思考中...</div>', '');
-    historyDiv.innerHTML += `<div class="error">错误：${err.message}</div>`;
-  } finally {
-    // 清空输入框并启用按钮
-    input.value = '';
-    sendBtn.disabled = false;
-    historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+      // 添加复制按钮
+      const copyButton = document.createElement('button');
+      copyButton.className = 'copy-btn';
+      copyButton.innerText = '复制';
+      copyButton.onclick = () => {
+        navigator.clipboard.writeText(botMessage);
+        copyButton.innerText = '已复制';
+        setTimeout(() => copyButton.innerText = '复制', 2000);
+      };
+      historyDiv.querySelector('.bot-msg:last-child').appendChild(copyButton);
+    } catch (err) {
+      historyDiv.innerHTML = historyDiv.innerHTML.replace('<div class="loading">思考中...</div>', '');
+      historyDiv.innerHTML += `<div class="error">错误：${err.message}</div>`;
+    } finally {
+      // 清空输入框并启用按钮
+      input.value = '';
+      sendBtn.disabled = false;
+      historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+    }
   }
-}
-  </script>
+</script>
 </body>
 </html>
