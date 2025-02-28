@@ -301,38 +301,47 @@ class PhysicsGame {
         this.updatePreview();
     }
 
-   mergeFruits(bodyA, bodyB) {
-        const type = bodyA.fruitType;
-        
-        // 如果是最高级水果（西瓜），直接触发游戏结束
-        if (type >= FRUITS.length - 1) {
-            this.showGameOver(true);
-            return null; // 明确返回 null 表示未生成新水果
-        }
-
-        // 正常合并流程
-        Matter.World.remove(this.world, [bodyA, bodyB]);
-
-        const newType = type + 1;
-        const newFruit = Matter.Bodies.circle(
-            (bodyA.position.x + bodyB.position.x) / 2,
-            (bodyA.position.y + bodyB.position.y) / 2,
-            FRUITS[newType].radius,
-            {
-                restitution: 0.2,
-                friction: 0.5,
-                render: { /* ... */ },
-                fruitType: newType
-            }
-        );
-
-        this.score += FRUITS[newType].score;
-        this.updateStats();
-        Matter.World.add(this.world, newFruit);
-        
-        return newFruit; // 返回新生成的水果对象
+mergeFruits(bodyA, bodyB) {
+    const type = bodyA.fruitType;
+    
+    // 如果是最高级水果（西瓜），直接触发游戏结束
+    if (type >= FRUITS.length - 1) {
+        this.showGameOver(true);
+        return null;
     }
 
+    // 正常合并流程
+    Matter.World.remove(this.world, [bodyA, bodyB]);
+
+    const newType = type + 1;
+    this.maxFruitLevel = Math.max(this.maxFruitLevel, newType); // 新增状态更新
+    
+    const newFruit = Matter.Bodies.circle(
+        (bodyA.position.x + bodyB.position.x) / 2,
+        (bodyA.position.y + bodyB.position.y) / 2,
+        FRUITS[newType].radius,
+        {
+            restitution: 0.2,
+            friction: 0.5,
+            render: {
+                fillStyle: FRUITS[newType].color,
+                text: {
+                    content: FRUITS[newType].name,
+                    color: '#fff',
+                    size: FRUITS[newType].radius,
+                    family: 'Arial'
+                }
+            },
+            fruitType: newType
+        }
+    );
+
+    this.score += FRUITS[newType].score;
+    this.updateStats();
+    Matter.World.add(this.world, newFruit);
+    
+    return newFruit;
+}
     showGameOver(success) {
         this.gameOver = true;
         document.getElementById('finalScore').textContent = this.score;
@@ -371,23 +380,22 @@ class ScoreModeGame extends PhysicsGame {
         }
     }
 
-    mergeFruits(bodyA, bodyB) {
-        // 1. 先执行父类合并逻辑
-        const newFruit = super.mergeFruits(bodyA, bodyB);
-
-        // 2. 如果父类返回 null 表示是西瓜合成
-        if (newFruit === null) {
-            // 西瓜合成时的分数验证逻辑
-            if (this.score >= this.targetScore) {
-                this.handleLevelSuccess();
-            } else {
-                this.showGameResult(false);
-            }
-            return; // 直接返回不干扰其他逻辑
+mergeFruits(bodyA, bodyB) {
+    // 执行父类合并逻辑并获取状态
+    const newFruit = super.mergeFruits(bodyA, bodyB);
+    
+    // 仅处理西瓜合成逻辑
+    if (newFruit === null) {
+        if (this.score >= this.targetScore) {
+            this.handleLevelSuccess();
+        } else {
+            this.showGameResult(false);
         }
-
-        // 3. 普通水果合并后的额外逻辑（如有需要可在此扩展）
     }
+    
+    return newFruit; // 关键修复：保持方法链完整
+}
+    
     handleLevelSuccess() {
         this.currentLevel++;
         this.maxUnlockedLevel = Math.max(this.maxUnlockedLevel, this.currentLevel);
