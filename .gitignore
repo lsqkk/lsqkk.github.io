@@ -1,0 +1,7 @@
+# 忽略 config.js 文件
+config.js
+
+# 忽略其他不需要的文件（可选）
+node_modules/
+.DS_Store
+.env
