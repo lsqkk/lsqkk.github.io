@@ -301,46 +301,36 @@ class PhysicsGame {
         this.updatePreview();
     }
 
-    mergeFruits(bodyA, bodyB) {
+   mergeFruits(bodyA, bodyB) {
         const type = bodyA.fruitType;
-        if(type >= FRUITS.length-1) {
+        
+        // 如果是最高级水果（西瓜），直接触发游戏结束
+        if (type >= FRUITS.length - 1) {
             this.showGameOver(true);
-            return; // 如果是西瓜直接返回
+            return null; // 明确返回 null 表示未生成新水果
         }
 
-        // 移除旧物体
+        // 正常合并流程
         Matter.World.remove(this.world, [bodyA, bodyB]);
-        
-        // 生成新水果
+
         const newType = type + 1;
-        this.maxFruitLevel = Math.max(this.maxFruitLevel, newType);
-        
         const newFruit = Matter.Bodies.circle(
-            (bodyA.position.x + bodyB.position.x)/2,
-            (bodyA.position.y + bodyB.position.y)/2,
+            (bodyA.position.x + bodyB.position.x) / 2,
+            (bodyA.position.y + bodyB.position.y) / 2,
             FRUITS[newType].radius,
             {
                 restitution: 0.2,
                 friction: 0.5,
-                render: {
-                    fillStyle: FRUITS[newType].color,
-                    text: {
-                        content: FRUITS[newType].name,
-                        color: '#fff',
-                        size: FRUITS[newType].radius,
-                        family: 'Arial'
-                    }
-                },
+                render: { /* ... */ },
                 fruitType: newType
             }
         );
-        
-        // 添加分数
+
         this.score += FRUITS[newType].score;
         this.updateStats();
-        
         Matter.World.add(this.world, newFruit);
-        return newFruit; // 新增返回新水果对象
+        
+        return newFruit; // 返回新生成的水果对象
     }
 
     showGameOver(success) {
@@ -382,27 +372,22 @@ class ScoreModeGame extends PhysicsGame {
     }
 
     mergeFruits(bodyA, bodyB) {
-        // 先检查是否为西瓜合成
-        const isWatermelon = 
-            bodyA.fruitType === FRUITS.length-1 || 
-            bodyB.fruitType === FRUITS.length-1;
-
-        // 执行父类合并逻辑并获取新水果
+        // 1. 先执行父类合并逻辑
         const newFruit = super.mergeFruits(bodyA, bodyB);
 
-        // 如果父类已处理西瓜合成直接返回
-        if(isWatermelon && !newFruit) return;
-
-        // 仅当合成西瓜时触发关卡验证
-        if(isWatermelon) {
-            if(this.score >= this.targetScore) {
+        // 2. 如果父类返回 null 表示是西瓜合成
+        if (newFruit === null) {
+            // 西瓜合成时的分数验证逻辑
+            if (this.score >= this.targetScore) {
                 this.handleLevelSuccess();
             } else {
                 this.showGameResult(false);
             }
+            return; // 直接返回不干扰其他逻辑
         }
-    }
 
+        // 3. 普通水果合并后的额外逻辑（如有需要可在此扩展）
+    }
     handleLevelSuccess() {
         this.currentLevel++;
         this.maxUnlockedLevel = Math.max(this.maxUnlockedLevel, this.currentLevel);
