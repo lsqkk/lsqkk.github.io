@@ -50,50 +50,34 @@
             font-size: 16px;
             cursor: pointer;
         }
-        #modeDisplay {
+        #modeIndicator {
             position: fixed;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 24px;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-        #levelInfo {
-            position: fixed;
-            top: 60px;
-            left: 20px;
-            font-size: 20px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        .level-select {
-            margin-top: 10px;
-            padding: 5px;
-            width: 120px;
-        }
     </style>
 </head>
 <body>
-    <div id="modeDisplay">当前模式：分数模式</div>
+    <div id="modeIndicator">当前模式：分数模式</div>
     <div id="stats">
         <div>得分: <span id="score">0</span></div>
-        <div>目标: <span id="targetScore">600</span></div>
-        <div>关卡: <span id="currentLevel">1</span>/10</div>
+        <div>次数: <span id="clickCount">0</span></div>
+        <div>当前关卡: <span id="currentLevel">1</span></div>
+        <div>目标分数: <span id="targetScore">600</span></div>
     </div>
     <div id="preview">
         <div>下一个水果:</div>
         <div id="nextFruitPreview" style="font-size: 40px;"></div>
     </div>
     <div class="game-over" id="gameOver">
-        <h2 id="resultText">游戏结束!</h2>
+        <h2 id="gameOverText"></h2>
         <p>最终得分: <span id="finalScore">0</span></p>
-        <p>最高关卡: <span id="finalLevel">0</span></p>
-        <div>
-            选择关卡: 
-            <select id="levelSelect" class="level-select"></select>
-        </div>
-        <button onclick="startGame()">开始游戏</button>
+        <p>总次数: <span id="finalClickCount">0</span></p>
+        <button onclick="location.reload()">再玩一次</button>
     </div>
 
 <script>
@@ -110,14 +94,8 @@ const FRUITS = [
     { name: '🍉', color: '#228B22', radius: 65, score: 55 }
 ];
 
-const SCORE_MODE_CONFIG = {
-    TOTAL_LEVELS: 10,
-    BASE_SCORE: 600,
-    SCORE_STEP: 60
-};
-
-class PhysicsGame {
-  constructor() {
+class ScoreModeGame {
+    constructor() {
         this.engine = Matter.Engine.create();
         this.world = this.engine.world;
         this.render = Matter.Render.create({
@@ -136,26 +114,32 @@ class PhysicsGame {
         Matter.Events.on(this.render, 'afterRender', () => {
             this.customRenderFruits();
         });
-        
+
         this.maxFruitLevel = 0;
         this.score = 0;
         this.clickCount = 0;
+        this.currentLevel = 1;
+        this.targetScore = 600;
         this.gameOver = false;
-        
+
         // 初始化下一个水果的类型
         this.nextFruitType = this.getNextFruitType();
-        
+
         this.initWorld();
         this.setupEvents();
         Matter.Runner.run(this.engine);
         Matter.Render.run(this.render);
-        
+
         // 初始化统计显示
         this.updateStats();
-        
+
         // 初始化预览
         this.updatePreview();
+
+        // 加载本地存储的通关记录
+        this.loadProgress();
     }
+
     customRenderFruits() {
         const context = this.render.context;
         const bodies = Matter.Composite.allBodies(this.world);
@@ -253,6 +237,8 @@ class PhysicsGame {
     updateStats() {
         document.getElementById('score').textContent = this.score;
         document.getElementById('clickCount').textContent = this.clickCount;
+        document.getElementById('currentLevel').textContent = this.currentLevel;
+        document.getElementById('targetScore').textContent = this.targetScore;
     }
 
     updatePreview() {
@@ -301,140 +287,91 @@ class PhysicsGame {
         this.updatePreview();
     }
 
-mergeFruits(bodyA, bodyB) {
-    const type = bodyA.fruitType;
-    
-    // 如果是最高级水果（西瓜），直接触发游戏结束
-    if (type >= FRUITS.length - 1) {
-        this.showGameOver(true);
-        return null;
+    mergeFruits(bodyA, bodyB) {
+        const type = bodyA.fruitType;
+        if(type >= FRUITS.length-1) {
+            this.showGameOver(false);
+            return;
+        }
+
+        // 移除旧物体
+        Matter.World.remove(this.world, [bodyA, bodyB]);
+        
+        // 创建新水果
+        const newType = type + 1;
+        this.maxFruitLevel = Math.max(this.maxFruitLevel, newType);
+        
+        const newFruit = Matter.Bodies.circle(
+            (bodyA.position.x + bodyB.position.x)/2,
+            (bodyA.position.y + bodyB.position.y)/2,
+            FRUITS[newType].radius,
+            {
+                restitution: 0.2,
+                friction: 0.5,
+                render: {
+                    fillStyle: FRUITS[newType].color,
+                    text: {
+                        content: FRUITS[newType].name,
+                        color: '#fff',
+                        size: FRUITS[newType].radius,
+                        family: 'Arial'
+                    }
+                },
+                fruitType: newType
+            }
+        );
+        
+        // 添加分数
+        this.score += FRUITS[newType].score;
+        this.updateStats();
+
+        // 检查是否达到目标分数
+        if (this.score >= this.targetScore) {
+            this.levelUp();
+        }
+
+        Matter.World.add(this.world, newFruit);
     }
 
-    // 正常合并流程
-    Matter.World.remove(this.world, [bodyA, bodyB]);
+    levelUp() {
+        this.currentLevel++;
+        this.score = 0; // 重置分数
+        this.targetScore += 60; // 增加目标分数
+        this.updateStats();
 
-    const newType = type + 1;
-    this.maxFruitLevel = Math.max(this.maxFruitLevel, newType); // 新增状态更新
-    
-    const newFruit = Matter.Bodies.circle(
-        (bodyA.position.x + bodyB.position.x) / 2,
-        (bodyA.position.y + bodyB.position.y) / 2,
-        FRUITS[newType].radius,
-        {
-            restitution: 0.2,
-            friction: 0.5,
-            render: {
-                fillStyle: FRUITS[newType].color,
-                text: {
-                    content: FRUITS[newType].name,
-                    color: '#fff',
-                    size: FRUITS[newType].radius,
-                    family: 'Arial'
-                }
-            },
-            fruitType: newType
+        // 检查是否通关
+        if (this.currentLevel > 10) {
+            this.showGameOver(true);
         }
-    );
+    }
 
-    this.score += FRUITS[newType].score;
-    this.updateStats();
-    Matter.World.add(this.world, newFruit);
-    
-    return newFruit;
-}
     showGameOver(success) {
         this.gameOver = true;
         document.getElementById('finalScore').textContent = this.score;
         document.getElementById('finalClickCount').textContent = this.clickCount;
         document.getElementById('gameOver').style.display = 'block';
-    }
-}
 
-
-class ScoreModeGame extends PhysicsGame {
-    constructor(initialLevel = 1) {
-        super();
-        this.mode = "SCORE";
-        this.currentLevel = initialLevel;
-        this.maxUnlockedLevel = parseInt(localStorage.getItem('maxUnlockedLevel')) || 1;
-        this.targetScore = SCORE_MODE_CONFIG.BASE_SCORE + (this.currentLevel - 1) * SCORE_MODE_CONFIG.SCORE_STEP;
-        this.updateDisplay();
-        this.initLevelSelect();
-    }
-
-    updateDisplay() {
-        document.getElementById('targetScore').textContent = this.targetScore;
-        document.getElementById('currentLevel').textContent = this.currentLevel;
-        document.getElementById('score').textContent = this.score;
-    }
-
-    initLevelSelect() {
-        const select = document.getElementById('levelSelect');
-        select.innerHTML = '';
-        for(let lv=1; lv<=this.maxUnlockedLevel; lv++) {
-            const option = document.createElement('option');
-            option.value = lv;
-            option.text = `第 ${lv} 关`;
-            select.selectedIndex = this.currentLevel - 1;
-            select.appendChild(option);
-        }
-    }
-
-mergeFruits(bodyA, bodyB) {
-    // 执行父类合并逻辑并获取状态
-    const newFruit = super.mergeFruits(bodyA, bodyB);
-    
-    // 仅处理西瓜合成逻辑
-    if (newFruit === null) {
-        if (this.score >= this.targetScore) {
-            this.handleLevelSuccess();
+        if (success) {
+            document.getElementById('gameOverText').textContent = '恭喜通关！';
+            // 保存通关记录
+            localStorage.setItem('scoreModeLevel', this.currentLevel);
         } else {
-            this.showGameResult(false);
+            document.getElementById('gameOverText').textContent = '游戏失败，再接再厉！';
         }
     }
-    
-    return newFruit; // 关键修复：保持方法链完整
-}
-    
-    handleLevelSuccess() {
-        this.currentLevel++;
-        this.maxUnlockedLevel = Math.max(this.maxUnlockedLevel, this.currentLevel);
-        localStorage.setItem('maxUnlockedLevel', this.maxUnlockedLevel);
-        this.targetScore += SCORE_MODE_CONFIG.SCORE_STEP;
-        this.resetGameState();
-        this.updateDisplay();
-    }
 
-    resetGameState() {
-        Matter.Composite.clear(this.world);
-        this.initWorld();
-        this.score = 0;
-        this.clickCount = 0;
-        this.gameOver = false;
-    }
-
-    showGameResult(success) {
-        this.gameOver = true;
-        document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('finalLevel').textContent = success ? this.currentLevel : this.currentLevel-1;
-        document.getElementById('resultText').textContent = success ? "关卡达成!" : "挑战失败!";
-        document.getElementById('gameOver').style.display = 'block';
-        this.initLevelSelect();
+    loadProgress() {
+        const savedLevel = localStorage.getItem('scoreModeLevel');
+        if (savedLevel) {
+            this.currentLevel = parseInt(savedLevel);
+            this.targetScore = 600 + (this.currentLevel - 1) * 60;
+            this.updateStats();
+        }
     }
 }
 
-// 游戏启动逻辑
-function startGame() {
-    const selectedLevel = parseInt(document.getElementById('levelSelect').value);
-    new ScoreModeGame(selectedLevel);
-    document.getElementById('gameOver').style.display = 'none';
-}
-
-// 初始化游戏
-window.onload = () => {
-    const savedLevel = parseInt(localStorage.getItem('maxUnlockedLevel')) || 1;
-    new ScoreModeGame(savedLevel);
-};
+// 启动游戏
+new ScoreModeGame();
 </script>
 </body>
 </html>
