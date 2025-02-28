@@ -5,45 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DeepSeek Chat</title>
 </head>
+  
+<style>
+/* 基础样式 */
+#chat-container {
+  max-width: 600px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  padding: 15px;
+}
+
+.user-msg { color: #666; margin: 10px 0; }
+.bot-msg { color: #333; margin: 10px 0; padding-left: 15px; }
+.error { color: red; }
+</style>
+  
 <body>
   <h1>DeepSeek 聊天助手</h1>
-  <div id="chat"></div>
-  <input type="text" id="input" placeholder="输入你的问题...">
+<!-- 对话容器 -->
+<div id="chat-container">
+  <div id="chat-history"></div>
+  <input type="text" id="user-input" placeholder="输入你的问题...">
   <button onclick="sendMessage()">发送</button>
+</div>
 
-  <!-- 引入动态生成的配置文件 -->
-  <script src="config.js"></script>
-  <script>
-    async function sendMessage() {
-      const input = document.getElementById('input').value;
-      if (!input) return;
+<script>
+// 配置
+const WORKER_URL = 'https://your-worker-name.cloudflareworkers.com' // 替换为你的Worker地址
 
-      const chat = document.getElementById('chat');
-      chat.innerHTML += `<p><strong>你：</strong>${input}</p>`;
+// 对话处理
+async function sendMessage() {
+  const input = document.getElementById('user-input')
+  const historyDiv = document.getElementById('chat-history')
+  
+  // 添加用户消息
+  historyDiv.innerHTML += `<div class="user-msg">${input.value}</div>`
+  
+  // 构造请求体
+  const payload = {
+    model: "deepseek-chat",
+    messages: [{
+      role: "user",
+      content: input.value
+    }]
+  }
 
-      try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}` // 使用注入的 API Key
-          },
-          body: JSON.stringify({
-            model: "deepseek-chat",
-            messages: [{ role: "user", content: input }]
-          })
-        });
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    
+    const data = await response.json()
+    historyDiv.innerHTML += `<div class="bot-msg">${data.choices[0].message.content}</div>`
+  } catch (err) {
+    historyDiv.innerHTML += `<div class="error">请求失败，请重试</div>`
+  }
+  
+  input.value = ''
+}
+</script>
 
-        if (!response.ok) {
-          throw new Error('请求失败');
-        }
-
-        const data = await response.json();
-        chat.innerHTML += `<p><strong>助手：</strong>${data.choices[0].message.content}</p>`;
-      } catch (error) {
-        chat.innerHTML += `<p style="color: red;">错误：${error.message}</p>`;
-      }
-    }
-  </script>
 </body>
 </html>
