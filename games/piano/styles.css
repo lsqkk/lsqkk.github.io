@@ -18,10 +18,10 @@ body {
 }
 
 .piano-keys {
-    display: flex;
     position: relative;
-    margin: 0 auto;
     height: 200px;
+    width: fit-content; /* 新增 */
+    margin: 0 auto; /* 新增居中 */
 }
 
 .piano-keys {
@@ -30,6 +30,11 @@ body {
     min-width: 100%;
 }
 
+@media (max-width: 768px) {
+    .piano-keys {
+        width: 600px; /* 调整移动端显示宽度 */
+    }
+}
 
 .key {
     position: relative;
