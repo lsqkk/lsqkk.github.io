@@ -22,84 +22,60 @@ const noteColors = {
     const BLACK_KEY_WIDTH = 24;
 
     // 创建钢琴键盘
-// 修改后的createPiano函数
-function createPiano() {
-    pianoKeys.innerHTML = '';
-    let whiteKeyCount = 0;
+    function createPiano() {
+        pianoKeys.innerHTML = '';
+        let whiteKeyCount = 0;
 
-    // 创建白键 (总数减至85)
-    for (let note = 0; note < 85; note++) {
-        const isBlack = [1, 3, 6, 8, 10].includes(note % 12);
-        
-        if (!isBlack) {
-            createWhiteKey(note, whiteKeyCount);
-            whiteKeyCount++;
+        for (let note = 0; note < 88; note++) {
+            const isBlack = [1, 3, 6, 8, 10].includes(note % 12);
+            
+            if (!isBlack) {
+                createWhiteKey(note, whiteKeyCount);
+                whiteKeyCount++;
+            }
+        }
+
+        // 单独创建黑键确保正确覆盖
+        for (let note = 0; note < 88; note++) {
+            const isBlack = [1, 3, 6, 8, 10].includes(note % 12);
+            if (isBlack) createBlackKey(note);
         }
     }
 
-    // 创建黑键 (同步减至85)
-    for (let note = 0; note < 85; note++) {
-        const isBlack = [1, 3, 6, 8, 10].includes(note % 12);
-        if (isBlack) createBlackKey(note);
+    function createWhiteKey(note, position) {
+        const key = document.createElement('div');
+        key.className = 'key white-key';
+        key.style.left = `${position * WHITE_KEY_WIDTH}px`;
+        key.dataset.note = note;
+        
+        const label = document.createElement('div');
+        label.className = 'key-label';
+        label.textContent = getKeyLabel(note);
+        key.appendChild(label);
+        
+        pianoKeys.appendChild(key);
     }
 
-    // 居中调整
-    const totalWidth = whiteKeyCount * WHITE_KEY_WIDTH;
-    pianoKeys.style.width = `${totalWidth}px`;
-}
-
-// 修改后的createWhiteKey函数
-function createWhiteKey(note, position) {
-    const key = document.createElement('div');
-    key.className = 'key white-key';
-    key.style.cssText = `
-        position: relative;
-        display: inline-block;
-        width: ${WHITE_KEY_WIDTH}px;
-        height: 200px;
-        margin-left: -1px; /* 消除间隙 */
-    `;
-    key.dataset.note = note;
-    
-    // 标签生成
-    const label = document.createElement('div');
-    label.className = 'key-label';
-    label.textContent = getKeyLabel(note);
-    key.appendChild(label);
-    
-    pianoKeys.appendChild(key);
-}
-
-// 修改后的createBlackKey函数
-function createBlackKey(note) {
-    const key = document.createElement('div');
-    key.className = 'key black-key';
-    
-    // 计算相对位置
-    const referenceNote = note - (note % 12);
-    const basePosition = Math.floor(referenceNote / 12) * 7;
-    const offsetMap = {1:1, 3:2, 6:4, 8:5, 10:6};
-    const whiteKeyIndex = basePosition + offsetMap[note % 12];
-    
-    key.style.cssText = `
-        position: absolute;
-        width: ${BLACK_KEY_WIDTH}px;
-        height: 120px;
-        left: ${whiteKeyIndex * WHITE_KEY_WIDTH - BLACK_KEY_WIDTH/2}px;
-        top: 0;
-        z-index: 2;
-    `;
-    
-    key.dataset.note = note;
-    
-    // 标签生成
-    const label = document.createElement('div');
-    label.className = 'key-label';
-    label.textContent = getKeyLabel(note);
-    key.appendChild(label);
-    
-    pianoKeys.appendChild(key);
-}
+    function createBlackKey(note) {
+        const key = document.createElement('div');
+        key.className = 'key black-key';
+        
+        // 计算黑键位置
+        const referenceNote = note - (note % 12);
+        const basePosition = Math.floor(referenceNote / 12) * 7;
+        const offsetMap = {1:1, 3:2, 6:4, 8:5, 10:6};
+        const position = basePosition + offsetMap[note % 12];
+        
+        key.style.left = `${position * WHITE_KEY_WIDTH - BLACK_KEY_WIDTH/2}px`;
+        key.dataset.note = note;
+        
+        const label = document.createElement('div');
+        label.className = 'key-label';
+        label.textContent = getKeyLabel(note);
+        key.appendChild(label);
+        
+        pianoKeys.appendChild(key);
+    }
 
     // 修正音名标签计算
 function getKeyLabel(note) {
