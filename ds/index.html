@@ -61,10 +61,18 @@ async function sendMessage() {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let botMessage = '';
+    let thinkContent = ''; // 存储思考内容
+    let isThinking = false; // 是否正在解析思考内容
 
     historyDiv.innerHTML = historyDiv.innerHTML.replace('<div class="loading">思考中...</div>', '');
-    historyDiv.innerHTML += `<div class="bot-msg"><div class="markdown-content"></div></div>`;
+    historyDiv.innerHTML += `
+      <div class="bot-msg">
+        <div class="markdown-content"></div>
+        <div class="think-content"></div> <!-- 思考内容容器 -->
+      </div>
+    `;
     const markdownDiv = historyDiv.querySelector('.bot-msg:last-child .markdown-content');
+    const thinkDiv = historyDiv.querySelector('.bot-msg:last-child .think-content');
 
     while (true) {
       const { done, value } = await reader.read();
@@ -81,8 +89,23 @@ async function sendMessage() {
           try {
             const data = JSON.parse(line.slice(5));
             if (data.choices[0].delta.content) {
-              botMessage += data.choices[0].delta.content;
-              markdownDiv.innerHTML = marked.parse(botMessage); // 渲染 Markdown
+              const content = data.choices[0].delta.content;
+
+              // 检测思考内容
+              if (content.includes('<think>')) {
+                isThinking = true;
+                thinkContent = '';
+              } else if (content.includes('</think>')) {
+                isThinking = false;
+                thinkDiv.innerHTML = marked.parse(thinkContent); // 渲染思考内容
+              } else if (isThinking) {
+                thinkContent += content; // 累积思考内容
+                thinkDiv.innerHTML = marked.parse(thinkContent); // 实时更新
+              } else {
+                botMessage += content; // 累积普通消息
+                markdownDiv.innerHTML = marked.parse(botMessage); // 渲染普通消息
+              }
+
               historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
             }
           } catch (err) {
