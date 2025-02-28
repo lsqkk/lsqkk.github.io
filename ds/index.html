@@ -6,6 +6,7 @@
   <title>DeepSeek - 夸克博客</title>
   <link rel="stylesheet" href="styles.css"> <!-- 引入外部 CSS -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Markdown 解析 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body style=" background: url('https://lsqkk.github.io/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
   <div id="chat-container">
@@ -22,7 +23,36 @@
  <script>
   // 配置
   const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
+   
+  const CORRECT_PASSWORD_HASH = "5d41402abc4b2a76b9719d911017c592"; // "helloworld" 的 MD5 哈希值
 
+   
+  // 页面加载时验证密码
+  window.onload = function () {
+    const password = prompt("请输入密码：");
+    if (!password) {
+      alert("密码不能为空！");
+      disablePage();
+      return;
+    }
+
+    const hashedPassword = CryptoJS.MD5(password).toString();
+    if (hashedPassword !== CORRECT_PASSWORD_HASH) {
+      alert("密码错误！");
+      disablePage();
+    }
+  };
+
+  // 禁用页面功能
+  function disablePage() {
+    const input = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    input.disabled = true;
+    sendBtn.disabled = true;
+    document.getElementById('chat-container').innerHTML += '<div class="error">密码错误，无法使用该页面。</div>';
+  }
+
+   
   // 发送消息
 async function sendMessage() {
   const input = document.getElementById('user-input');
