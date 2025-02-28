@@ -381,12 +381,18 @@ class ScoreModeGame extends PhysicsGame {
     }
 
     mergeFruits(bodyA, bodyB) {
+        // 先检查是否是西瓜合成（在父类合并前）
+        const isWatermelonMerge = 
+            (bodyA.fruitType === FRUITS.length - 1 || 
+             bodyB.fruitType === FRUITS.length - 1);
+
+        // 调用父类合并逻辑（正常处理水果合并）
         super.mergeFruits(bodyA, bodyB);
-        
-        // 合成西瓜时验证分数
-        if(bodyA.fruitType === FRUITS.length-1 || bodyB.fruitType === FRUITS.length-1) {
-            if(this.score >= this.targetScore) {
-                if(this.currentLevel < SCORE_MODE_CONFIG.TOTAL_LEVELS) {
+
+        // 仅在合成西瓜时触发分数验证
+        if (isWatermelonMerge) {
+            if (this.score >= this.targetScore) {
+                if (this.currentLevel < SCORE_MODE_CONFIG.TOTAL_LEVELS) {
                     this.handleLevelSuccess();
                 } else {
                     this.showGameResult(true);
