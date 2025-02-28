@@ -103,3 +103,13 @@ body {
   color: #ff0000;
   font-weight: bold;
 }
+/* 思考内容样式 */
+.think-content {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #007bff;
+  color: #aaa;
+  font-size: 0.9em;
+}
