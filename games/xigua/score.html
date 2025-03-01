@@ -292,7 +292,7 @@ mergeFruits(bodyA, bodyB) {
     if (type >= FRUITS.length - 1) { // 如果合成的是最高水果（大西瓜）
         // 检查分数是否达到目标分数
         if (this.score >= this.targetScore) {
-            this.levelUp(); // 如果达到目标分数，进入下一关
+            this.showLevelComplete(); // 如果达到目标分数，显示本关通关
         } else {
             this.showGameOver(false); // 如果未达到目标分数，游戏失败
         }
@@ -332,6 +332,40 @@ mergeFruits(bodyA, bodyB) {
 
     Matter.World.add(this.world, newFruit);
 }
+
+nextLevel() {
+    this.currentLevel++; // 进入下一关
+    this.score = 0; // 清空当前分数
+    this.targetScore += 60; // 增加目标分数
+    this.updateStats(); // 更新UI显示
+
+    // 检查是否通关
+    if (this.currentLevel > 10) {
+        this.showGameOver(true); // 如果超过10关，显示通关提示
+    } else {
+        this.gameOver = false; // 重新开始游戏
+        document.querySelector('.game-over').remove(); // 移除通关提示
+    }
+}
+    
+showLevelComplete() {
+    this.gameOver = true; // 暂停游戏
+    const levelCompleteOverlay = document.createElement('div');
+    levelCompleteOverlay.className = 'game-over';
+    levelCompleteOverlay.innerHTML = `
+        <h2>本关通关！</h2>
+        <p>当前关卡：${this.currentLevel}</p>
+        <p>当前得分：${this.score}</p>
+        <button id="nextLevelButton">进入下一关</button>
+    `;
+    document.body.appendChild(levelCompleteOverlay);
+
+    // 添加按钮点击事件
+    const nextLevelButton = document.getElementById('nextLevelButton');
+    nextLevelButton.addEventListener('click', () => {
+        this.nextLevel(); // 进入下一关
+    });
+}
     
 levelUp() {
     this.currentLevel++; // 进入下一关
@@ -356,16 +390,6 @@ showGameOver(success) {
         localStorage.setItem('scoreModeLevel', this.currentLevel);
     } else {
         document.getElementById('gameOverText').textContent = '游戏失败，再接再厉！';
-    }
-}
-
-    loadProgress() {
-        const savedLevel = localStorage.getItem('scoreModeLevel');
-        if (savedLevel) {
-            this.currentLevel = parseInt(savedLevel);
-            this.targetScore = 600 + (this.currentLevel - 1) * 60;
-            this.updateStats();
-        }
     }
 }
 
