@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 创建丝带效果
         createRibbon(note, key);
+        playNote(note);
     }
 
     function deactivateKey(note) {
