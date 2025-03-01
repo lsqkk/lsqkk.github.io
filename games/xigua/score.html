@@ -334,12 +334,11 @@ class ScoreModeGame {
     }
 
     levelUp() {
-        this.currentLevel++;
-        this.score = 0; // 重置分数
+        this.currentLevel++; // 进入下一关
         this.targetScore += 60; // 增加目标分数
-        this.updateStats();
+        this.updateStats(); // 更新UI显示
 
-        // 检查是否通关
+    // 检查是否通关
         if (this.currentLevel > 10) {
             this.showGameOver(true);
         }
