@@ -148,3 +148,19 @@ body {
         transform: translate(-50%, -100vh); /* 向上飘出屏幕 */
     }
 }
+
+/* styles.css */
+.player-controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.player-controls select, .player-controls button {
+    margin: 5px;
+    padding: 5px;
+}
