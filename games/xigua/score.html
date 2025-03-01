@@ -344,20 +344,20 @@ levelUp() {
     }
 }
 
-    showGameOver(success) {
-        this.gameOver = true;
-        document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('finalClickCount').textContent = this.clickCount;
-        document.getElementById('gameOver').style.display = 'block';
+showGameOver(success) {
+    this.gameOver = true;
+    document.getElementById('finalScore').textContent = this.score;
+    document.getElementById('finalClickCount').textContent = this.clickCount;
+    document.getElementById('gameOver').style.display = 'block';
 
-        if (success) {
-            document.getElementById('gameOverText').textContent = '恭喜通关！';
-            // 保存通关记录
-            localStorage.setItem('scoreModeLevel', this.currentLevel);
-        } else {
-            document.getElementById('gameOverText').textContent = '游戏失败，再接再厉！';
-        }
+    if (success) {
+        document.getElementById('gameOverText').textContent = '恭喜通关！';
+        // 保存通关记录
+        localStorage.setItem('scoreModeLevel', this.currentLevel);
+    } else {
+        document.getElementById('gameOverText').textContent = '游戏失败，再接再厉！';
     }
+}
 
     loadProgress() {
         const savedLevel = localStorage.getItem('scoreModeLevel');
