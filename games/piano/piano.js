@@ -359,4 +359,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始化
     createPiano();
  loadMusicList();
+// 新增：处理上传的MIDI文件
+document.getElementById('uploadPlayButton').addEventListener('click', () => {
+    // 创建隐藏的文件输入元素
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.mid,.midi';
+    
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // 先执行停止操作
+        document.getElementById('stopButton').click();
+
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const midi = await new Midi(arrayBuffer);
+            scheduleNotes(midi.tracks);
+            isPlaying = true;
+        } catch (error) {
+            console.error('上传文件播放失败:', error);
+            isPlaying = false;
+        }
+    });
+
+    fileInput.click();
+});
 });
