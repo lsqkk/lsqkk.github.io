@@ -1,19 +1,18 @@
-
 document.addEventListener('DOMContentLoaded', () => {
-const noteColors = {
-    0: 0,    // C
-    1: 30,   // C#
-    2: 60,   // D（修复D键颜色）
-    3: 90,   // D#
-    4: 120,  // E
-    5: 150,  // F
-    6: 180,  // F#
-    7: 210,  // G
-    8: 240,  // G#
-    9: 270,  // A
-    10: 300, // A#
-    11: 330  // B
-};
+    const noteColors = {
+        0: 0,    // C
+        1: 30,   // C#
+        2: 60,   // D
+        3: 90,   // D#
+        4: 120,  // E
+        5: 150,  // F
+        6: 180,  // F#
+        7: 210,  // G
+        8: 240,  // G#
+        9: 270,  // A
+        10: 300, // A#
+        11: 330  // B
+    };
 
     const pianoKeys = document.getElementById('pianoKeys');
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -78,22 +77,22 @@ const noteColors = {
     }
 
     // 修正音名标签计算
-function getKeyLabel(note) {
-    const shiftedNote = note + 3; // 整体提升3个半音
-    if(shiftedNote > 87) return ''; // 超出范围不显示
-    
-    const midiNumber = shiftedNote + 21; // 转换为MIDI编号
-    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    const octave = Math.floor(midiNumber / 12) - 1;
-    const noteIndex = midiNumber % 12;
-    return notes[noteIndex] + octave;
-}
+    function getKeyLabel(note) {
+        const shiftedNote = note + 3; // 整体提升3个半音
+        if(shiftedNote > 87) return ''; // 超出范围不显示
+        
+        const midiNumber = shiftedNote + 21; // 转换为MIDI编号
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octave = Math.floor(midiNumber / 12) - 1;
+        const noteIndex = midiNumber % 12;
+        return notes[noteIndex] + octave;
+    }
+
     // 播放声音
     async function playNote(note) {
-const targetNote = note + 3; // 实际播放的音符
-    if(targetNote > 87) return; // 禁止播放超出范围的音频
+        const targetNote = note + 3; // 实际播放的音符
+        if(targetNote > 87) return; // 禁止播放超出范围的音频
         try {
-
             const source = audioContext.createBufferSource();
             const audioBuffer = await loadAudio(targetNote);
             source.buffer = audioBuffer;
@@ -116,52 +115,49 @@ const targetNote = note + 3; // 实际播放的音符
     }
 
     // 事件处理
-// 修改piano.js中的activateKey函数
-function activateKey(note) {
-    if (activeKeys.has(note)) return;
-    activeKeys.add(note);
-    
-    const key = document.querySelector(`[data-note="${note}"]`);
-    if (!key) return;
+    function activateKey(note) {
+        if (activeKeys.has(note)) return;
+        activeKeys.add(note);
+        
+        const key = document.querySelector(`[data-note="${note}"]`);
+        if (!key) return;
 
-    // 添加active类（按下效果）
-    key.classList.add('active');
+        // 添加active类（按下效果）
+        key.classList.add('active');
 
-    // 计算按键中心绝对位置
-    const rect = key.getBoundingClientRect();
-    const centerX = rect.left + rect.width/2;
-    const startY = window.innerHeight;
+        // 创建丝带效果
+        createRibbon(note, key);
+    }
 
-    // 创建彩带元素
-    const effect = document.createElement('div');
-    effect.className = 'key-effect';
-    
-    // 设置动态CSS变量
-    const hue = noteColors[note % 12];
-    effect.style.setProperty('--hue', hue);
-    
-    // 设置初始位置
-    effect.style.left = `${centerX}px`;
-    effect.style.bottom = `${startY}px`;
+    function deactivateKey(note) {
+        activeKeys.delete(note);
+        const key = document.querySelector(`[data-note="${note}"]`);
+        key?.classList.remove('active');
+    }
 
-    // 添加动画结束监听
-    effect.addEventListener('animationend', function() {
-        this.remove();
-    });
+    function createRibbon(note, key) {
+        const hue = noteColors[note % 12];
+        const ribbon = document.createElement('div');
+        ribbon.className = 'ribbon';
+        ribbon.style.setProperty('--hue', hue);
+        ribbon.style.left = `${key.offsetLeft + key.offsetWidth / 2}px`;
 
-    // 调试日志
-    console.log('Creating ribbon at:', centerX, startY);
-    console.log('Effect element:', effect);
+        document.body.appendChild(ribbon);
 
-    document.body.appendChild(effect);
-    playNote(note);
-}
+        // 动态调整丝带长度
+        const growInterval = setInterval(() => {
+            if (!activeKeys.has(note)) {
+                clearInterval(growInterval);
+                ribbon.classList.add('release');
+            } else {
+                ribbon.style.height = `${ribbon.offsetHeight + 5}px`;
+            }
+        }, 20);
 
-function deactivateKey(note) {
-    activeKeys.delete(note);
-    const key = document.querySelector(`[data-note="${note}"]`);
-    key?.classList.remove('active');
-}
+        ribbon.addEventListener('animationend', () => {
+            ribbon.remove();
+        });
+    }
 
     // 鼠标事件
     pianoKeys.addEventListener('mousedown', (e) => {
