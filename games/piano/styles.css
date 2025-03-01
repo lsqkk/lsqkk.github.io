@@ -11,30 +11,17 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: #fff;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    overflow-x: auto;
+    overflow-x: hidden;
     padding: 20px 0;
 }
 
 .piano-keys {
+    display: flex;
     position: relative;
+    margin: 0 auto;
     height: 200px;
-    width: fit-content; /* 新增 */
-    margin: 0 auto; /* 新增居中 */
 }
 
-.piano-keys {
-    position: relative;
-    height: 200px;
-    min-width: 100%;
-}
-
-@media (max-width: 768px) {
-    .piano-keys {
-        width: 600px; /* 调整移动端显示宽度 */
-    }
-}
 
 .key {
     position: relative;
@@ -59,6 +46,7 @@ body {
     z-index: 2;
     top: 0;
 }
+
 .white-key.active {
     background-color: #e0e0e0;
 }
@@ -66,7 +54,6 @@ body {
 .black-key.active {
     background-color: #333;
 }
-
 
 @media (max-width: 768px) {
     body {
@@ -82,6 +69,7 @@ body {
         height: 90px;
     }
 }
+
 .key-label {
     position: absolute;
     bottom: 8px;
@@ -98,37 +86,65 @@ body {
     bottom: 5px;
     font-size: 10px;
 }
-/* 添加在文件末尾 */
-/* 修改styles.css中的.key-effect */
-/* 修改styles.css中的.key-effect */
-.key-effect {
+
+/* 新增的丝带效果 */
+.ribbon {
     position: fixed;
     width: 10px;
-    height: 150vh;
-    left: 0;
-    bottom: -150vh; /* 初始位置在屏幕下方 */
-    opacity: 0.9;
-    z-index: 9999;
-    border-radius: 5px;
-    animation: ribbon-flow 2s linear forwards;
-    pointer-events: none;
+    bottom: 0;
+    height: 0;
     background: linear-gradient(
         to top,
         hsl(var(--hue), 100%, 50%),
         hsl(calc(var(--hue) + 30), 70%, 50%)
     );
+    border-radius: 5px;
     transform: translateX(-50%);
-    box-shadow: 0 0 15px rgba(255,255,255,0.3);
-    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 9999;
 }
 
-@keyframes ribbon-flow {
+.ribbon {
+    position: fixed;
+    width: 10px;
+    height: 0; /* 初始高度为0 */
+    background: linear-gradient(
+        to top,
+        hsl(var(--hue), 100%, 50%),
+        hsl(calc(var(--hue) + 30), 70%, 50%)
+    );
+    border-radius: 5px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.ribbon {
+    position: fixed;
+    width: 10px;
+    height: 0; /* 初始高度为0 */
+    background: linear-gradient(
+        to top,
+        hsl(var(--hue), 100%, 50%),
+        hsl(calc(var(--hue) + 30), 70%, 50%)
+    );
+    border-radius: 5px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.ribbon.release {
+    animation: ribbon-release 2s linear forwards;
+}
+
+@keyframes ribbon-release {
     0% {
-        transform: translate(-50%, 0);
-        opacity: 0.9;
+        opacity: 1;
+        transform: translate(-50%, 0); /* 初始位置在琴键顶部 */
     }
     100% {
-        transform: translate(-50%, -150vh);
         opacity: 0;
+        transform: translate(-50%, -100vh); /* 向上飘出屏幕 */
     }
 }
