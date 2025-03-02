@@ -117,6 +117,15 @@ body {
     padding: 20px;
     margin: 15px;
 }
+.morenpost {
+    line-height: 1.3em; 
+    margin-bottom: 1.3em;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin: 15px;
+}
 .centered-div {
     width: 100%; /* div宽度设置为100% */
     text-align: center; /* 使div内的内容居中 */
@@ -266,7 +275,7 @@ button {
         top: 100px;
        width: 200px;
     }
-    .moren {
+    .morenpost {
         margin-left: 100px;
     }
 }
