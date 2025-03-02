@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="logo_blue.png" type="image/png">
+    <script>
+// 提取当前页面的file参数值
+const urlParams = new URLSearchParams(window.location.search);
+const fileParam = urlParams.get('file');
+
+// 为不蒜子创建虚拟路径（核心逻辑）
+if(fileParam) {
+    window.busuanzi_page_url = window.location.pathname + '/' + fileParam;
+}
+</script>
+    
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <style>
         body { max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -137,25 +148,16 @@
                 // 查找当前文章的标题
                 const post = posts.find(p => p.file === fileName);
                 if (post) {
-                    document.title = `${post.title} - 我的博客`; // 设置页面标题
+                    document.title = `${post.title} - 夸克博客`; // 设置页面标题
                 } else {
-                    document.title = `文章未找到 - 我的博客`; // 如果未找到文章
+                    document.title = `文章未找到 - 夸克博客`; // 如果未找到文章
                 }
             } catch (error) {
                 console.error('加载 JSON 数据失败:', error);
-                document.title = `加载失败 - 我的博客`;
-            }
-        }
-        function setPathForBusuanzi() {
-            const fileName = getFileNameFromURL();
-            if (fileName) {
-                history.pushState({}, '', `/post/${fileName}`); // 修改路径
+                document.title = `加载失败 - 夸克博客`;
             }
         }
 
-        // 页面加载时执行
-        window.onload = setPathForBusuanzi;
-        // 页面加载时执行
         window.onload = fetchPostTitle;
     </script>
     
