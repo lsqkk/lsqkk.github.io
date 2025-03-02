@@ -1,6 +1,4 @@
-// 全局声明（文件顶部新增）
 let isMidiPlayback = false; // 新增标志
-// 全局声明（文件顶部）
 let activeSources = new Set(); // 存储活动的音频源
 let activeKeys = new Set();
 let isPlaying = false;
@@ -57,7 +55,7 @@ isMidiPlayback = true; // 标记为MIDI播放状态
 
             const event = {
                 time: note.time,
-                duration: note.duration - 0.018, // 减一个微小的时间值
+                duration: note.duration, // 减一个微小的时间值
                 note: pianoNote,
                 timeoutId: null, // 添加 timeoutId 属性
                 source: null // 添加 source 属性
@@ -134,10 +132,16 @@ async function loadAudio(note) {
 
 
     function createRibbon(note, key) {
+
+    if (window.innerWidth < 1200) {
+        return;
+    }
         const hue = noteColors[note % 12];
         const ribbon = document.createElement('div');
         ribbon.className = 'ribbon';
         ribbon.style.setProperty('--hue', hue);
+
+
         ribbon.style.left = `${key.offsetLeft + key.offsetWidth / 2}px`;
 
         document.body.appendChild(ribbon);
@@ -267,10 +271,58 @@ async function preloadAllNotes() {
     }
     console.log("所有音符加载完成");
 }
+// 轮播字幕配置
+// 轮播字幕配置
+const marqueeTexts = [
+    "欢迎使用夸客博客在线钢琴",
+    "可选音乐播放，支持上传本地MIDI文件",
+    "初次加载较慢，建议等待一段时间再播放音乐",
+    "点击琴键或使用键盘演奏",
+    "如有意见、建议或MIDI资源投稿，欢迎联系站主jsxzznz@163.com"
+];
+
+// 轮播控制函数
+function startMarquee() {
+    const container = document.getElementById('marqueeText');
+    if (!container) return;
+
+    // 清空容器并移除初始的marquee-text类
+    container.innerHTML = '';
+    container.className = 'marquee-container';
+
+    // 初始化字幕元素
+    marqueeTexts.forEach((text, i) => {
+        const el = document.createElement('div');
+        el.className = `marquee-text ${i === 0 ? 'active' : ''}`; // 第一个元素默认激活
+        el.textContent = text;
+        container.appendChild(el);
+    });
+
+    const elements = document.querySelectorAll('.marquee-text');
+    let index = 0;
+
+    function updateMarquee() {
+        console.log("更新轮播，当前索引:", index); // 调试日志
+
+        // 移除所有元素的 active 类
+        elements.forEach(el => el.classList.remove('active'));
+
+        // 为当前元素添加 active 类
+        elements[index].classList.add('active');
+
+        // 更新索引
+        index = (index + 1) % elements.length;
+
+        // 设置下一次轮播
+        setTimeout(updateMarquee, 5000);
+    }
+
+    // 启动轮播
+    setTimeout(updateMarquee, 5000);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-   
-
+     startMarquee();
     const pianoKeys = document.getElementById('pianoKeys');
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const WHITE_KEY_WIDTH = 40;
