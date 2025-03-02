@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -47,7 +46,7 @@
   <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
 
 
-  <div class="sidebar-content" id="sidebarContent"></div>
+  <div class="sidebar-content" id="sidebarContent"><div id="toc-loading" style="display: none;">目录加载中...</div></div>
   <br>
    <div class="sidebar-content">
         <a href="index.html" style="text-decoration: none; ">博客主页</a>
@@ -73,7 +72,6 @@
         <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
         <img src="https://i.postimg.cc/Qtp0507J/R-C.png" alt="浏览量" style="width: 15px; display: inline;">
        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"><span id="busuanzi_value_page_pv"></span></div>
-        <div>本文阅读量：<span id="article-views">加载中...</span>次</div>
        <div id="content" class="post-content"></div>
         <hr>
 
@@ -178,7 +176,7 @@
             }
 
             try {
-const postsData = await fetch('posts.json').then(r => r.json());
+	const postsData = await fetch('posts.json').then(r => r.json());
         const post = postsData.find(p => p.file === filename);
         if (post) {
             // 显示日期
@@ -201,6 +199,10 @@ const postsData = await fetch('posts.json').then(r => r.json());
                     ],
                     throwOnError: false
                 });
+
+        generateTOC();
+addPostNavigation(filename);
+
             } catch (error) {
                 document.getElementById('content').innerHTML = '<p>加载文章失败</p>';
             }
@@ -250,7 +252,18 @@ function generateTOC() {
         `;
     });
     
+
+   html += `
+        <div style="margin-top: 20px;">
+            <a id="prevPost" class="nav-arrow" style="cursor:pointer;margin-right:15px;">← 前一篇</a>
+            <a id="nextPost" class="nav-arrow" style="cursor:pointer;">后一篇 →</a>
+        </div>
+    `;
+
     toc.innerHTML = html;
+
+    setTimeout(() => toc.style.opacity = 1, 10);
+
 }
 
 // 切换侧栏
@@ -259,63 +272,39 @@ function toggleSidebar() {
     sidebar.classList.toggle('active');
 }
 
-// 在loadPost函数末尾添加：
-setTimeout(generateTOC, 100); // 等待内容渲染完成后生成目录
+async function addPostNavigation(currentFile) {
+    const posts = await fetch('posts.json').then(r => r.json());
+    const currentIndex = posts.findIndex(p => p.file === currentFile);
+    
+    const prevPost = posts[currentIndex + 1]; // 因为文章是按时间倒序排列
+    const nextPost = posts[currentIndex - 1];
+    
+    const prevBtn = document.getElementById('prevPost');
+    const nextBtn = document.getElementById('nextPost');
+    
+    if (prevPost) {
+        prevBtn.innerHTML = `← ${prevPost.title}`;
+        prevBtn.href = `post.html?file=${prevPost.file}`;
+    } else {
+        prevBtn.style.display = 'none';
+    }
+    
+    if (nextPost) {
+        nextBtn.innerHTML = `${nextPost.title} →`;
+        nextBtn.href = `post.html?file=${nextPost.file}`;
+    } else {
+        nextBtn.style.display = 'none';
+    }
+}
+
 
         // 初始化加载
-        document.addEventListener('DOMContentLoaded', loadPost);
-    </script>
-<script>
-  (function () {
-    const app_id = 'arZa412eItrOiRKJ7cvfOMUN-gzGzoHsz';
-    const app_key = 'Rnjzjl3J1MYZaC9C9GeAcbB2';
-    const server_url = 'https://arza412eitroirkj7cvfomun-gzgzohsz.api.leancloud.cn/'; // 国内用户必填
-
-    const target = new URLSearchParams(window.location.search).get('file'); // 获取文章的 file 参数
-    const Counter = (method, url, data) => {
-      return fetch(`${server_url}/1.1${url}`, {
-        method,
-        headers: {
-          'X-LC-Id': app_id,
-          'X-LC-Key': app_key,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-    };
-
-    // 获取或创建文章的统计记录
-    function getRecord(target) {
-      return Counter('get', `/classes/Counter?where=${encodeURIComponent(JSON.stringify({target}))}`)
-        .then(resp => resp.json())
-        .then(({results}) => {
-          if (results && results.length > 0) {
-            return results[0];
-          } else {
-            return Counter('post', '/classes/Counter', {target, time: 0})
-              .then(resp => resp.json());
-          }
-        });
-    }
-
-    // 自增访问量
-    function increment(objectId) {
-      return Counter('put', `/classes/Counter/${objectId}`, {time: {__op: 'Increment', amount: 1}});
-    }
-
-    // 显示访问量
-    function displayCount(count) {
-      document.getElementById('article-views').innerText = count.time;
-    }
-
-    // 主逻辑
-    getRecord(target).then(record => {
-      increment(record.objectId).then(() => {
-        displayCount(record);
-      });
+document.addEventListener('DOMContentLoaded', () => {
+    loadPost().then(() => {
+        document.getElementById('sidebarContent').style.opacity = 1;
     });
-  })();
-</script>
+});
+    </script>
 
 </body>
 </html>
