@@ -66,14 +66,17 @@
 
     </div> 
     
-    <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
+    <div class="morenpost" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
        <a href="post.html?file=about.md"><img src="touxiang.png" alt="头像" style="width: 15px; height: 15; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "></a>
        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">文 / 蓝色奇夸克 /</div>
         <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
        <div id="content" class="post-content"></div>
         <hr>
-        <p>您已经阅读本文 <span id="pageView">0</span> 次</p>
-        <div  style="width: 100px; height: auto;"><a href="https://info.flagcounter.com/Rb7g" ><img src="https://s05.flagcounter.com/count/Rb7g/bg_FFFFFF/txt_000000/border_FFFFFF/columns_2/maxflags_4/viewers_3/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a></div>
+        <span id="busuanzi_container_page_pv">
+                <div class="padding border border-sub border-dotted fadein-left">
+                    本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+                </div>
+        </span>
 
         <div><center>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
@@ -88,11 +91,11 @@
     </div>
 
 <!-- 评论区域 -->
-<div class="moren" style="margin-top: 30px;">
+<div class="morenpost" style="margin-top: 30px;">
   <div class="giscus"></div>
 </div>
 
-    <div class="moren"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black; ">© 2025 蓝色奇夸克 - 个人博客</a></div>
+    <div class="morenpost"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black; ">© 2025 蓝色奇夸克 - 个人博客</a></div>
 
 
 <script src="https://giscus.app/client.js"
@@ -110,30 +113,6 @@
         crossorigin="anonymous"
         async>
 </script>
-
-    <!-- 显示阅读量 -->
-
-
-    <script>
-        // 获取当前 URL 参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const fileParam = urlParams.get('file'); // 例如：xxx.md
-
-        // 初始化阅读量数据
-        let pageViewData = JSON.parse(localStorage.getItem('pageViewData')) || {};
-
-        // 如果当前文章没有阅读量数据，初始化为 0
-        if (!pageViewData[fileParam]) {
-            pageViewData[fileParam] = 0;
-        }
-
-        // 更新阅读量
-        pageViewData[fileParam] += 1;
-        localStorage.setItem('pageViewData', JSON.stringify(pageViewData));
-
-        // 显示阅读量
-        document.getElementById('pageView').innerText = pageViewData[fileParam];
-    </script>
 
     <!-- 依赖库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
