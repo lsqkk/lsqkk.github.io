@@ -73,6 +73,7 @@
         <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
         <img src="https://i.postimg.cc/Qtp0507J/R-C.png" alt="浏览量" style="width: 15px; display: inline;">
        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"><span id="busuanzi_value_page_pv"></span></div>
+        <div>本文阅读量：<span id="article-views">加载中...</span>次</div>
        <div id="content" class="post-content"></div>
         <hr>
 
@@ -264,7 +265,57 @@ setTimeout(generateTOC, 100); // 等待内容渲染完成后生成目录
         // 初始化加载
         document.addEventListener('DOMContentLoaded', loadPost);
     </script>
+<script>
+  (function () {
+    const app_id = 'arZa412eItrOiRKJ7cvfOMUN-gzGzoHsz';
+    const app_key = 'Rnjzjl3J1MYZaC9C9GeAcbB2';
+    const server_url = 'https://arza412eitroirkj7cvfomun-gzgzohsz.api.leancloud.cn/'; // 国内用户必填
 
+    const target = new URLSearchParams(window.location.search).get('file'); // 获取文章的 file 参数
+    const Counter = (method, url, data) => {
+      return fetch(`${server_url}/1.1${url}`, {
+        method,
+        headers: {
+          'X-LC-Id': app_id,
+          'X-LC-Key': app_key,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+    };
+
+    // 获取或创建文章的统计记录
+    function getRecord(target) {
+      return Counter('get', `/classes/Counter?where=${encodeURIComponent(JSON.stringify({target}))}`)
+        .then(resp => resp.json())
+        .then(({results}) => {
+          if (results && results.length > 0) {
+            return results[0];
+          } else {
+            return Counter('post', '/classes/Counter', {target, time: 0})
+              .then(resp => resp.json());
+          }
+        });
+    }
+
+    // 自增访问量
+    function increment(objectId) {
+      return Counter('put', `/classes/Counter/${objectId}`, {time: {__op: 'Increment', amount: 1}});
+    }
+
+    // 显示访问量
+    function displayCount(count) {
+      document.getElementById('article-views').innerText = count.time;
+    }
+
+    // 主逻辑
+    getRecord(target).then(record => {
+      increment(record.objectId).then(() => {
+        displayCount(record);
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
