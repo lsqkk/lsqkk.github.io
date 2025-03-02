@@ -9,17 +9,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="logo_blue.png" type="image/png">
-    <script>
-// 提取当前页面的file参数值
-const urlParams = new URLSearchParams(window.location.search);
-const fileParam = urlParams.get('file');
-
-// 为不蒜子创建虚拟路径（核心逻辑）
-if(fileParam) {
-    window.busuanzi_page_url = window.location.pathname + '/' + fileParam;
-}
-</script>
-    
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <style>
         body { max-width: 800px; margin: 0 auto; padding: 20px; }
