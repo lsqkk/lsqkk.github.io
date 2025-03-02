@@ -116,15 +116,48 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
+ 
     <script>
-        document.title = fileParameter + " - 夸克博客";
+        // 获取当前页面的 file 参数
+        function getFileNameFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('file') || '';
+        }
+
+        // 从 JSON 数据中查找文章标题
+        async function fetchPostTitle() {
+            const fileName = getFileNameFromURL(); // 获取文件名
+            if (!fileName) return;
+
+            try {
+                // 加载 posts.json 文件
+                const response = await fetch('posts.json');
+                const posts = await response.json();
+
+                // 查找当前文章的标题
+                const post = posts.find(p => p.file === fileName);
+                if (post) {
+                    document.title = `${post.title} - 我的博客`; // 设置页面标题
+                } else {
+                    document.title = `文章未找到 - 我的博客`; // 如果未找到文章
+                }
+            } catch (error) {
+                console.error('加载 JSON 数据失败:', error);
+                document.title = `加载失败 - 我的博客`;
+            }
+        }
+
+        // 页面加载时执行
+        window.onload = fetchPostTitle;
+    </script>
+    
+    <script>
         // 获取URL参数
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
-
+        
         // 自定义Markdown渲染器以保留TeX
         const renderer = {
             code(code, infostring) {
