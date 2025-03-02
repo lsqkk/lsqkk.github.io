@@ -1,3 +1,5 @@
+// 全局声明（文件顶部新增）
+let isMidiPlayback = false; // 新增标志
 // 全局声明（文件顶部）
 let activeSources = new Set(); // 存储活动的音频源
 let activeKeys = new Set();
@@ -46,10 +48,11 @@ function scheduleNotes(tracks) {
     console.log('开始调度音符:', tracks); // 调试信息
     const startTime = audioContext.currentTime; // 使用全局 audioContext
     currentSchedule = []; // 清空之前的调度计划
+isMidiPlayback = true; // 标记为MIDI播放状态
 
     tracks.forEach(track => {
         track.notes.forEach(note => {
-            const pianoNote = note.midi - 24;
+            const pianoNote = note.midi - 24; // 将MIDI编号转换为0-87范围
             if (pianoNote < 0 || pianoNote > 87) return;
 
             const event = {
@@ -72,25 +75,25 @@ function scheduleNotes(tracks) {
         source.connect(audioContext.destination); // 使用全局 audioContext
         source.start(triggerTime, 0, event.duration);
 
-        // 保存 source 和 timeoutId
-        event.source = source;
-        event.timeoutId = setTimeout(() => {
-            activateKey(event.note);
+
+    event.timeoutId = setTimeout(() => {
+            activateKey(event.note, true); // 新增参数表示是MIDI触发的
             setTimeout(() => deactivateKey(event.note), event.duration * 1000);
         }, event.time * 1000);
+
+        event.source = source;
     });
+
 }
 async function playNote(note) {
-    const targetNote = note+3;
-    if (targetNote > 87) return;
+    if (note > 87) return;
 
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        console.log('音频上下文已初始化');
     }
 
     try {
-        const audioBuffer = await loadAudio(targetNote);
+        const audioBuffer = await loadAudio(note);
         
         // 创建新的音频源实例
         const source = audioContext.createBufferSource();
@@ -112,9 +115,15 @@ async function playNote(note) {
 }
 
 async function loadAudio(note) {
+    // 确保 audioContext 已初始化
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log("音频上下文初始化完成");
+    }
+
     if (!audioCache.has(note)) {
-        console.log('加载音频文件:', note); // 调试信息
-        const response = await fetch(`sounds/piano_key_${note}.ogg`);
+        console.log(`加载音频文件: ${note}`); // 调试信息
+        const response = await fetch(`sounds/piano_key_${note+3}.ogg`);
         if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer); // 使用全局 audioContext
@@ -122,6 +131,7 @@ async function loadAudio(note) {
     }
     return audioCache.get(note);
 }
+
 
     function createRibbon(note, key) {
         const hue = noteColors[note % 12];
@@ -171,7 +181,7 @@ document.getElementById('playButton').addEventListener('click', async () => {
 
 document.getElementById('stopButton').addEventListener('click', () => {
     isPlaying = false;
-
+isMidiPlayback = false;
     // 停止所有正在播放的音频源
     activeSources.forEach(source => {
         if (source.state === 'playing') {
@@ -211,7 +221,8 @@ function clearTimeouts() {
         }
     });
 }
-    function activateKey(note) {
+
+function activateKey(note, isFromMidi = false) {
         if (activeKeys.has(note)) return;
         activeKeys.add(note);
         
@@ -223,7 +234,9 @@ function clearTimeouts() {
 
         // 创建丝带效果
         createRibbon(note, key);
-playNote(note);
+    if (!isFromMidi) {
+        playNote(note);
+    }
     }
 
     function deactivateKey(note) {
@@ -233,6 +246,27 @@ playNote(note);
     }
 
 
+async function preloadAllNotes() {
+    console.log("开始预加载所有音符...");
+    const startNote = 0; // 音符范围的起始值
+    const endNote = 87;  // 音符范围的结束值
+
+    // 确保 audioContext 已初始化
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log("音频上下文初始化完成");
+    }
+
+    for (let note = startNote; note <= endNote; note++) {
+        try {
+            await loadAudio(note); // 调用 loadAudio 函数加载音符
+            console.log(`音符 ${note} 加载完成`);
+        } catch (error) {
+            console.error(`音符 ${note} 加载失败:`, error);
+        }
+    }
+    console.log("所有音符加载完成");
+}
 
 document.addEventListener('DOMContentLoaded', () => {
    
@@ -299,16 +333,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 修正音名标签计算
-    function getKeyLabel(note) {
-        const shiftedNote = note + 3; // 整体提升3个半音
-        if(shiftedNote > 87) return ''; // 超出范围不显示
-        
-        const midiNumber = shiftedNote + 21; // 转换为MIDI编号
-        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-        const octave = Math.floor(midiNumber / 12) - 1;
-        const noteIndex = midiNumber % 12;
-        return notes[noteIndex] + octave;
-    }
+function getKeyLabel(note) {
+    const midiNumber = note + 24; // 直接对应MIDI编号21（A0）
+    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const octave = Math.floor((midiNumber) / 12) - 1;
+    const noteIndex = midiNumber % 12;
+    return notes[noteIndex] + octave;
+}
 
     // 播放声音
 
@@ -356,9 +387,16 @@ document.addEventListener('DOMContentLoaded', () => {
         activeKeys.forEach(note => deactivateKey(note));
     });
 
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log("音频上下文初始化完成");
+    }
+
+
     // 初始化
     createPiano();
  loadMusicList();
+preloadAllNotes();
 // 新增：处理上传的MIDI文件
 document.getElementById('uploadPlayButton').addEventListener('click', () => {
     // 创建隐藏的文件输入元素
