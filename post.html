@@ -39,7 +39,7 @@
         }
     </style>
 </head>
-<body style=" background: url('https://lsqkk.github.io/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+<body style=" background: url('image/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
     <div class="header-placeholder"></div>
 
 <div class="sidebar">
@@ -67,7 +67,7 @@
     </div> 
     
     <div class="morenpost" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
-        <a href="post.html?file=about.md"><img src="touxiang.png" alt="头像" style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "></a>
+        <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "></a>
        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">文 / 蓝色奇夸克 /</div>
         <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
         <img src="https://i.postimg.cc/Qtp0507J/R-C.png" alt="浏览量" style="width: 15px; display: inline;">
@@ -224,13 +224,13 @@ addPostNavigation(filename);
         function toggleMode() {
             const body = document.body;
             const modeToggle = document.querySelector('.mode-toggle');
-            const isDarkMode = body.style.backgroundImage.includes('star.gif');
+            const isDarkMode = body.style.backgroundImage.includes('image/star.gif');
 
             if (isDarkMode) {
-                body.style.backgroundImage = "url('https://lsqkk.github.io/light.gif')";
+                body.style.backgroundImage = "url('image/light.gif')";
                 modeToggle.innerText = '☀️';
             } else {
-                body.style.backgroundImage = "url('https://lsqkk.github.io/star.gif')";
+                body.style.backgroundImage = "url('image/star.gif')";
                 modeToggle.innerText = '🌙';
             }
         }
