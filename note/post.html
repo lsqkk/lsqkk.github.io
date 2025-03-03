@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>蓝色奇夸克の笔记</title>
+    
+    <!-- KaTeX样式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="logo_blue.png" type="image/png">
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <style>
+        body { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .post-content { 
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        code { background-color: #f6f8fa; padding: 2px 4px; border-radius: 4px; }
+        pre { 
+            background-color: #f6f8fa; 
+            padding: 16px; 
+            overflow: auto;
+            border-radius: 6px;
+            line-height: 1.45;
+        }
+        .back-link { display: inline-block; margin-bottom: 20px; }
+        .share-button {
+            background-color: #99ddf3;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #007bff;
+            cursor: pointer;
+        }
+        .mode-toggle {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body style=" background: url('https://lsqkk.github.io/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+    <div class="header-placeholder"></div>
+
+<div class="sidebar">
+  <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+
+
+  <div class="sidebar-content" id="sidebarContent"><div id="toc-loading" style="display: none;">目录加载中...</div></div>
+  <br>
+   <div class="sidebar-content">
+        <a href="https://lsqkk.github.io/index.html" style="text-decoration: none; ">博客主页</a>
+        <a href="index.html" style="text-decoration: none; ">笔记列表</a>
+   </div>
+</div>
+
+    <div class="header">
+        <a href="index.html" style="text-decoration: none; color:white;"><h2 style="display: inline;">蓝色奇夸克の笔记</h2> </a>
+        &emsp;&emsp;
+        <a href="article-list.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff; ">返回列表</a>
+        <span class="mode-toggle" onclick="toggleMode()">🌙</span>
+
+
+
+    </div> 
+    
+    <div class="morenpost" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
+        <a href="post.html?file=about.md"><img src="touxiang.png" alt="头像" style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "></a>
+       <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">文 / 蓝色奇夸克 /</div>
+        <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
+        <img src="https://i.postimg.cc/Qtp0507J/R-C.png" alt="浏览量" style="width: 15px; display: inline;">
+       <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"><span id="busuanzi_value_page_pv"></span></div>
+       <div id="content" class="post-content"></div>
+        <hr>
+
+        <div><center>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+<div class="social-share" data-sites="weibo, qq, qzone,wechat"></div>
+<script src="http://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+</center></div>
+        <div style="margin-top: 20px;">
+            <button class="share-button" onclick="copyLink()">分享本文链接</button>
+            <span id="copy-notice" style="color: #666; margin-left: 10px; display: none;">链接已复制！</span>
+        </div>
+    </div>
+
+<!-- 评论区域 -->
+<div class="morenpost" style="margin-top: 30px;">
+  <div class="giscus"></div>
+</div>
+
+    <div class="morenpost"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black; ">© 2025 蓝色奇夸克 - 个人博客</a></div>
+
+
+<script src="https://giscus.app/client.js"
+        data-repo="lsqkk/lsqkk.github.io"
+        data-repo-id="R_kgDONya5nQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDONya5nc4CnVr4"
+        data-mapping="url"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+
+    <!-- 依赖库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+ 
+    <script>
+        // 获取当前页面的 file 参数
+        function getFileNameFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('file') || '';
+        }
+
+        // 从 JSON 数据中查找文章标题
+        async function fetchPostTitle() {
+            const fileName = getFileNameFromURL(); // 获取文件名
+            if (!fileName) return;
+
+            try {
+                // 加载 posts.json 文件
+                const response = await fetch('posts.json');
+                const posts = await response.json();
+
+                // 查找当前文章的标题
+                const post = posts.find(p => p.file === fileName);
+                if (post) {
+                    document.title = `${post.title} - 夸克博客`; // 设置页面标题
+                } else {
+                    document.title = `文章未找到 - 夸克博客`; // 如果未找到文章
+                }
+            } catch (error) {
+                console.error('加载 JSON 数据失败:', error);
+                document.title = `加载失败 - 夸克博客`;
+            }
+        }
+
+        window.onload = fetchPostTitle;
+    </script>
+    
+    <script>
+        // 获取URL参数
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        // 自定义Markdown渲染器以保留TeX
+        const renderer = {
+            code(code, infostring) {
+                if (infostring === 'math') {
+                    return `<div class="math-block">${code}</div>`;
+                }
+                return false; // 使用默认渲染
+            }
+        };
+        marked.use({ renderer });
+
+        // 加载文章内容
+        async function loadPost() {
+            const filename = getQueryParam('file');
+            if (!filename) {
+                document.getElementById('content').innerHTML = '<p>文章未找到</p>';
+                return;
+            }
+
+            try {
+	const postsData = await fetch('posts.json').then(r => r.json());
+        const post = postsData.find(p => p.file === filename);
+        if (post) {
+            // 显示日期
+            const dateElement = document.getElementById('post-date');
+            dateElement.textContent = `发表于 ${post.date}`;
+        } else {
+            console.warn('未找到文章信息');
+        }
+
+                const mdContent = await fetch(`/posts/${filename}`).then(r => r.text());
+                const htmlContent = marked.parse(mdContent);
+                document.getElementById('content').innerHTML = htmlContent;
+                
+
+                // 渲染数学公式
+                renderMathInElement(document.getElementById('content'), {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+
+        generateTOC();
+addPostNavigation(filename);
+
+            } catch (error) {
+                document.getElementById('content').innerHTML = '<p>加载文章失败</p>';
+            }
+        }
+
+        // 复制链接功能
+        function copyLink() {
+            const currentURL = window.location.href;
+            navigator.clipboard.writeText(currentURL).then(() => {
+                const notice = document.getElementById('copy-notice');
+                notice.style.display = 'inline';
+                setTimeout(() => notice.style.display = 'none', 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+            });
+        }
+
+        // 切换黑暗/白天模式
+        function toggleMode() {
+            const body = document.body;
+            const modeToggle = document.querySelector('.mode-toggle');
+            const isDarkMode = body.style.backgroundImage.includes('star.gif');
+
+            if (isDarkMode) {
+                body.style.backgroundImage = "url('https://lsqkk.github.io/light.gif')";
+                modeToggle.innerText = '☀️';
+            } else {
+                body.style.backgroundImage = "url('https://lsqkk.github.io/star.gif')";
+                modeToggle.innerText = '🌙';
+            }
+        }
+// 生成目录
+function generateTOC() {
+    const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3');
+    const toc = document.getElementById('sidebarContent');
+    let html = '<h4>目录</h4>';
+    
+    headings.forEach((heading, index) => {
+        const level = heading.tagName.toLowerCase();
+        const id = `heading-${index}`;
+        heading.id = id;
+        
+        html += `
+            <div class="toc-item ${level}" style="margin-left: ${parseInt(level[1])*10}px">
+                <a href="#${id}">${heading.textContent}</a>
+            </div>
+        `;
+    });
+    
+
+   html += `
+        <div style="margin-top: 20px;">
+            <a id="prevPost" class="nav-arrow" style="cursor:pointer;margin-right:15px;">← 前一篇</a>
+            <a id="nextPost" class="nav-arrow" style="cursor:pointer;">后一篇 →</a>
+        </div>
+    `;
+
+    toc.innerHTML = html;
+
+    setTimeout(() => toc.style.opacity = 1, 10);
+
+}
+
+// 切换侧栏
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('active');
+}
+
+async function addPostNavigation(currentFile) {
+    const posts = await fetch('posts.json').then(r => r.json());
+    const currentIndex = posts.findIndex(p => p.file === currentFile);
+    
+    const prevPost = posts[currentIndex + 1]; // 因为文章是按时间倒序排列
+    const nextPost = posts[currentIndex - 1];
+    
+    const prevBtn = document.getElementById('prevPost');
+    const nextBtn = document.getElementById('nextPost');
+    
+    if (prevPost) {
+        prevBtn.innerHTML = `← ${prevPost.title}`;
+        prevBtn.href = `post.html?file=${prevPost.file}`;
+    } else {
+        prevBtn.style.display = 'none';
+    }
+    
+    if (nextPost) {
+        nextBtn.innerHTML = `${nextPost.title} →`;
+        nextBtn.href = `post.html?file=${nextPost.file}`;
+    } else {
+        nextBtn.style.display = 'none';
+    }
+}
+
+
+        // 初始化加载
+document.addEventListener('DOMContentLoaded', () => {
+    loadPost().then(() => {
+        document.getElementById('sidebarContent').style.opacity = 1;
+    });
+});
+    </script>
+
+</body>
+</html>
