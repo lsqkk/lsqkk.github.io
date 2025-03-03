@@ -184,7 +184,7 @@
             console.warn('未找到文章信息');
         }
 
-                const mdContent = await fetch(`/posts/${filename}`).then(r => r.text());
+                const mdContent = await fetch(`${filename}`).then(r => r.text());
                 const htmlContent = marked.parse(mdContent);
                 document.getElementById('content').innerHTML = htmlContent;
                 
