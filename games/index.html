@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克游戏</title>
-    <base href="localhost:8000/">
     <link rel="stylesheet" href="games/style.css">
-    <link rel="icon" href="image/logo_blue.png" type="image/png">
+    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
 </head>
-<body style=" background: url('image/light.gif') no-repeat center center; background-size: cover; position: relative; ">
+<body style=" background: url('https://lsqkk.github.io/image/light.gif') no-repeat center center; background-size: cover; position: relative; ">
     <div class="header-placeholder"></div>
     <div class="header">
         <h1>夸克游戏</h1>
@@ -36,9 +35,9 @@
         games.forEach(game => {
             const gameBox = document.createElement('div');
             gameBox.className = 'game-box';
-            gameBox.style.backgroundImage = `url('games/${game.image}')`; /* 动态设置背景图 */
+            gameBox.style.backgroundImage = `url('${game.image}')`; /* 动态设置背景图 */
             gameBox.innerHTML = `
-                <a href="games/${game.link}" target="_blank">
+                <a href="${game.link}" target="_blank">
                     ${game.name}
                 </a>
             `;
