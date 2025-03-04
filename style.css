@@ -1,4 +1,20 @@
 /* style.css */
+.zhuyebox {
+    line-height: 1.3em;
+    margin-bottom: 1.3em;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin: 15px;
+    box-shadow: 0 0 15px rgba(255,255,255  , 0.5);
+    width: 180px;
+    height:60px; /* 高度自适应 */
+line-height: 60px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
 body {
     font-family: "微软雅黑", "Times New Roman", serif;
 
