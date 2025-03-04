@@ -1,24 +1,21 @@
 [
     {
+        "name": "每日答题",
+        "image": "1.png",
+        "link": "https://lsqkk.github.io/games/dati"
+    },
+    {
         "name": "躲避陨石",
         "image": "1.png",
-        "link": "https://lsqkk.github.io/games/AvoidStar"
+        "link": "https://lsqkk.github.io/games/pd.html?game=AvoidStar"
     },
     {
         "name": "合成大西瓜（测试版）",
         "image": "2.png",
-        "link": "https://lsqkk.github.io/games/xigua"
+        "link": "https://lsqkk.github.io/games/pd.html?game=xigua"
     },    {
         "name": "钢琴",
         "image": "3.png",
-        "link": "https://lsqkk.github.io/games/piano"
-    },    {
-        "name": "躲避陨石",
-        "image": "1.png",
-        "link": "https://lsqkk.github.io/games/AvoidStar"
-    },    {
-        "name": "躲避陨石",
-        "image": "1.png",
-        "link": "https://lsqkk.github.io/games/AvoidStar"
+        "link": "https://lsqkk.github.io/games/pd.html?game=piano"
     }
 ]
