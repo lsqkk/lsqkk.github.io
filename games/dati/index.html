@@ -243,9 +243,9 @@ function showMessage(text, type) {
 function playSound(type) {
     const audio = new Audio();
     if (type === 'correct') {
-        audio.src = '2.MP3'; // 答对时播放的音频文件
+        audio.src = '3.MP3'; // 答对时播放的音频文件
     } else if (type === 'wrong') {
-        audio.src = '3.MP3'; // 答错时播放的音频文件
+        audio.src = '2.MP3'; // 答错时播放的音频文件
     }
     audio.play();
 }
