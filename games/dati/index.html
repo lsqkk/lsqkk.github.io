@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>每日知识挑战 - 夸克博客</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .options {
+            margin: 15px 0;
+        }
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+color: black;
+        }
+        .option-btn:hover {
+            background: #e9ecef;
+        }
+        .selected {
+            background: #cfe2ff;
+            border-color: #9ec5fe;
+        }
+        #stats {
+            background: #e2e3e5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        button {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #6c757d;
+        }
+#submitBtn {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block; /* 设置为行内块元素 */
+}
+
+#resultMessage {
+    display: inline-block; /* 设置为行内块元素 */
+    margin-left: 10px; /* 添加左边距 */
+    font-weight: bold; /* 加粗字体 */
+    font-size: 16px; /* 设置字体大小 */
+}
+
+.success {
+    color: #28a745; /* 答对时的绿色 */
+}
+
+.error {
+    color: #dc3545; /* 答错时的红色 */
+}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>每日知识挑战 - 夸克博客</h2>
+        <div id="question"></div>
+        <div class="options" id="options"></div>
+        <button onclick="submitAnswer()" id="submitBtn" disabled>提交答案</button>
+<div id="resultMessage" class="result-message"></div>
+        <div id="stats"></div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        let currentAnswer = '';
+        let selectedOption = null;
+        let selectedAnswer = '';
+
+        // 初始化统计信息
+        let stats = {
+            total: 0,
+            correct: 0,
+            date: new Date().toLocaleDateString()
+        };
+
+        // 从localStorage加载数据
+        function loadStats() {
+            const saved = localStorage.getItem('quizStats');
+            if (saved) {
+                const savedStats = JSON.parse(saved);
+                if (savedStats.date === new Date().toLocaleDateString()) {
+                    stats = savedStats;
+                }
+            }
+        }
+
+        // 保存统计信息
+        function saveStats() {
+            stats.date = new Date().toLocaleDateString();
+            localStorage.setItem('quizStats', JSON.stringify(stats));
+            
+            // 检查每日成就
+            if (stats.correct >= 10) {
+                localStorage.setItem('dailyAchievement', new Date().toLocaleDateString());
+            }
+        }
+
+// 显示正确答案及其内容
+// 显示正确答案及其内容
+function displayCorrectAnswer(correctAnswer) {
+    const optionsContainer = document.getElementById('options');
+    const correctOption = optionsContainer.querySelector(`button[data-answer="${correctAnswer}"]`);
+    if (correctOption) {
+        const correctText = correctOption.textContent.trim();
+        const msgDiv = document.getElementById('resultMessage');
+        msgDiv.innerHTML += ` 正确答案是：${correctAnswer} - ${correctText}`; // 不换行，直接追加
+    }
+}        // 获取题目
+        async function getQuestion() {
+            try {
+                const response = await fetch('https://xiaoapi.cn/API/game_dati.php?id=1828222534&msg=开始游戏');
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    currentAnswer = data.data.answer;
+                    displayQuestion(data.data);
+                } else {
+                    throw new Error('API返回错误');
+                }
+            } catch (error) {
+                console.error('获取题目失败:', error);
+                showMessage('获取题目失败，请重试', 'error');
+                // 5秒后重试
+                setTimeout(getQuestion, 5000);
+            }
+        }
+
+        // 显示题目
+function displayQuestion(data) {
+    document.getElementById('question').innerHTML = `
+        <p>${data.msg.replace(/\n/g, '<br>')}</p>
+    `;
+
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = data.option.split('\n').map(opt => `
+        <button class="option-btn" onclick="selectOption(this, '${opt[0]}')" data-answer="${opt[0]}">
+            ${opt}
+        </button>
+    `).join('');
+
+    updateStatsDisplay();
+}
+        // 选择选项
+        function selectOption(btn, value) {
+            if (selectedOption) selectedOption.classList.remove('selected');
+            selectedOption = btn;
+            selectedAnswer = value;
+            selectedOption.classList.add('selected');
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        // 提交答案
+// 提交答案
+// 提交答案
+async function submitAnswer() {
+    if (!selectedOption) return;
+
+    const isCorrect = selectedAnswer === currentAnswer;
+    stats.total++;
+    if (isCorrect) {
+        stats.correct++;
+        playSound('correct'); // 答对时播放正确音效
+        showMessage('🎉 回答正确！', 'success');
+    } else {
+        playSound('wrong'); // 答错时播放错误音效
+        showMessage('❌ 回答错误', 'error');
+        displayCorrectAnswer(currentAnswer);
+    }
+
+    saveStats();
+
+    // 清除当前选择
+    if (selectedOption) {
+        selectedOption.classList.remove('selected');
+    }
+    selectedOption = null;
+    selectedAnswer = '';
+    document.getElementById('submitBtn').disabled = true;
+
+    // 获取下一题
+    await getQuestion();
+}
+
+        // 更新统计显示
+        function updateStatsDisplay() {
+            document.getElementById('stats').innerHTML = `
+                今日答题统计：
+                答题数：${stats.total}次 | 
+                正确率：${stats.total ? ((stats.correct/stats.total)*100).toFixed(1) : 0}% |
+                正确数：${stats.correct}
+            `;
+        }
+
+        // 显示提示信息
+// 显示提示信息
+function showMessage(text, type) {
+    const msgDiv = document.getElementById('resultMessage');
+    msgDiv.textContent = text;
+    msgDiv.className = type; // 根据答对或答错设置样式
+    setTimeout(() => msgDiv.textContent = '', 2000); // 2秒后清除提示信息
+}
+
+        // 初始化
+        function init() {
+            loadStats();
+            getQuestion();
+            updateStatsDisplay();
+        }
+// 播放音效
+function playSound(type) {
+    const audio = new Audio();
+    if (type === 'correct') {
+        audio.src = '2.MP3'; // 答对时播放的音频文件
+    } else if (type === 'wrong') {
+        audio.src = '3.MP3'; // 答错时播放的音频文件
+    }
+    audio.play();
+}
+        // 页面加载时启动
+        init();
+    </script>
+</body>
+</html>
