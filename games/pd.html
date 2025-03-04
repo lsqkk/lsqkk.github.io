@@ -47,20 +47,26 @@
 
         // 判断是否通关或处于周末黄金时段
         if (dailyAchievement === today || isWeekendPrimeTime) {
-            // 如果已通关或处于周末黄金时段，直接跳转到指定游戏页面
+            // 如果已通关或处于周末黄金时段，延迟一秒后跳转到指定游戏页面
             if (gameUrl) {
-                window.location.href = gameUrl;
+                setTimeout(() => {
+                    window.location.href = gameUrl;
+                }, 1000); // 延迟1000毫秒（1秒）
             } else {
                 alert("未指定游戏页面，请检查 URL 参数！");
-                window.location.href = "https://lsqkk.github.io/games/dati";
+                setTimeout(() => {
+                    window.location.href = "https://lsqkk.github.io/games/dati";
+                }, 1000); // 延迟1秒后跳转到答题页面
             }
         } else {
             // 如果未通关且不在周末黄金时段，显示提示信息
             document.getElementById('message').textContent = "今日未通关，请先完成挑战！";
             document.getElementById('confirmButton').style.display = 'block';
             document.getElementById('confirmButton').onclick = () => {
-                // 用户点击确定后跳转到答题页面
-                window.location.href = "https://lsqkk.github.io/games/dati";
+                // 用户点击确定后延迟一秒跳转到答题页面
+                setTimeout(() => {
+                    window.location.href = "https://lsqkk.github.io/games/dati";
+                }, 1000); // 延迟1秒
             };
         }
     </script>
