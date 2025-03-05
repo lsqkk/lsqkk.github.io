@@ -260,9 +260,7 @@
             messagesRef.push(message);
             messageInput.value = '';
         }
-   document.addEventListener('contextmenu', function(event) {
-    event.preventDefault(); // 阻止默认右键菜单
-});
+
 
         
         // 请求通知权限
@@ -281,7 +279,7 @@ function showNotification(title, body) {
     if (Notification.permission === 'granted') {
         new Notification(title, {
             body: body,
-            icon: 'https://your-website.com/icon.png' // 可选：通知图标
+            icon: 'https://lsqkk.github.io/image/touxiang.png' // 可选：通知图标
         });
     }
 }
