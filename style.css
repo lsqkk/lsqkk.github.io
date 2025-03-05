@@ -3,14 +3,14 @@
     line-height: 1.3em;
     margin-bottom: 1.3em;
     border-radius: 30px;
-    background-color: rgba(255, 255, 255, 0);
+    background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 20px;
+    padding: 12px;
     margin: 12px;
     box-shadow: 0 0 15px rgba(255,255,255  , 0.5);
-    width: 120px;
-    height:40px; /* 高度自适应 */
-line-height: 40px;
+    width: 90px;
+    height:30px; /* 高度自适应 */
+    line-height: 30px;
     display: flex;
     justify-content: center;
     text-align: center;
