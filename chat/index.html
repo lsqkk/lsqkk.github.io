@@ -1,69 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simple Firebase Chat</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聊天室 - 夸克博客</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        :root {
+            --primary-color: rgba(64, 224, 208, 0.9);
+            --background: rgba(25, 25, 35, 0.95);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            height: 90%;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+            background: var(--background);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        input, button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 200px;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(64, 224, 208, 0.4);
+        }
+
+        #chatArea {
+            margin-top: 2rem;
+        }
+
+        #messagesList {
+            list-style: none;
+            padding: 0;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .message-content {
+            flex-grow: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .username {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .profile-setup {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option.selected {
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+    </style>
 </head>
-<body>
+<body style=" background: url('https://lsqkk.github.io/image/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+    <div class="container">
+        <h2>🚀夸克聊天室</h2>
+        
+        <div>
+            <input type="text" id="roomInput" placeholder="房间号">
+            <button onclick="joinRoom()">加入房间</button>
+        </div>
 
-<h2>Simple Chat Room</h2>
+        <div class="profile-setup" id="profileSetup" style="display: none;">
+            <div class="color-picker" id="colorPicker">
+                <div class="color-option" style="background: #40E0D0" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FF6B6B" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #7B68EE" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FFD700" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #C7EDCC" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FAF9DE" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FFF2E2" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FDE6E0" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #E3EDCD" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #E3EDCD" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #E9EBFE" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #EAEAEF" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #B7E8BD" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #CCE8CF" onclick="selectColor(this)"></div>
+            </div>
+            <input type="text" id="nicknameInput" placeholder="Your nickname">
+            <button onclick="saveProfile()">Save Profile</button>
+        </div>
 
-<div>
-  <input type="text" id="roomInput" placeholder="Enter room name">
-  <button onclick="joinRoom()">Join Room</button>
-</div>
+        <div id="chatArea" style="display: none; height: 100%;">
+            <ul id="messagesList"></ul>
+            <input type="text" id="messageInput" placeholder="输入消息...">
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
 
-<div id="chatArea" style="display:none;">
-  <ul id="messagesList"></ul>
-  <input type="text" id="messageInput" placeholder="Type a message">
-  <button onclick="sendMessage()">Send</button>
-</div>
+    <script>
+        // Firebase configuration and initialization
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
+            authDomain: "quark-b7305.firebaseapp.com",
+            projectId: "quark-b7305",
+            storageBucket: "quark-b7305.firebasestorage.app",
+            messagingSenderId: "843016834358",
+            appId: "1:843016834358:web:9438c729be28c4d492f797",
+            measurementId: "G-5BVT26KRT6"
+        };
+        firebase.initializeApp(firebaseConfig);
 
-<script>
-// Your web app's Firebase configuration
-var firebaseConfig = {
-apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
-    authDomain: "quark-b7305.firebaseapp.com",
-    projectId: "quark-b7305",
-    storageBucket: "quark-b7305.firebasestorage.app",
-    messagingSenderId: "843016834358",
-    appId: "1:843016834358:web:9438c729be28c4d492f797",
-    measurementId: "G-5BVT26KRT6"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+        let roomName;
+        let messagesRef;
+        let userColor = localStorage.getItem('userColor') || '#40E0D0';
+        let nickname = localStorage.getItem('nickname') || '';
 
-var roomName;
-var messagesRef;
+        function joinRoom() {
+            roomName = document.getElementById('roomInput').value;
+            if (!roomName) return;
 
-function joinRoom() {
-  roomName = document.getElementById('roomInput').value;
-  if (roomName) {
-    document.getElementById('chatArea').style.display = 'block';
-    messagesRef = firebase.database().ref('chatrooms/' + roomName + '/messages');
-    messagesRef.on('child_added', function(snapshot) {
-      var message = snapshot.val();
-      var messageElement = document.createElement('li');
-      messageElement.textContent = message.text;
-      document.getElementById('messagesList').appendChild(messageElement);
-      window.scrollTo(0, document.body.scrollHeight);
-    });
-  }
-}
+            if (!nickname) {
+                document.getElementById('profileSetup').style.display = 'block';
+                document.getElementById('nicknameInput').value = nickname;
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.classList.toggle('selected', opt.style.background === userColor);
+                });
+            } else {
+                initializeChat();
+            }
+        }
 
-function sendMessage() {
-  var messageInput = document.getElementById('messageInput');
-  var message = {
-    text: messageInput.value,
-    timestamp: firebase.database.ServerValue.TIMESTAMP
-  };
-  messagesRef.push(message);
-  messageInput.value = '';
-}
-</script>
+        function selectColor(element) {
+            document.querySelectorAll('.color-option').forEach(opt => 
+                opt.classList.remove('selected'));
+            element.classList.add('selected');
+            userColor = element.style.backgroundColor;
+        }
 
+        function saveProfile() {
+            nickname = document.getElementById('nicknameInput').value;
+            if (!nickname) return;
+
+            localStorage.setItem('nickname', nickname);
+            localStorage.setItem('userColor', userColor);
+            initializeChat();
+        }
+
+        function initializeChat() {
+            document.getElementById('profileSetup').style.display = 'none';
+            document.getElementById('chatArea').style.display = 'block';
+            
+            messagesRef = firebase.database().ref(`chatrooms/${roomName}/messages`);
+            messagesRef.on('child_added', snapshot => {
+                const { text, nickname, color, timestamp } = snapshot.val();
+                const li = document.createElement('li');
+                li.className = 'message-item';
+                li.innerHTML = `
+                    <div class="avatar" style="background: ${color}">${nickname[0]}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="username">${nickname}</span>
+                            <span class="timestamp">${new Date(timestamp).toLocaleTimeString()}</span>
+                        </div>
+                        <div>${text}</div>
+                    </div>
+                `;
+                document.getElementById('messagesList').appendChild(li);
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = {
+                text: messageInput.value,
+                nickname,
+                color: userColor,
+                timestamp: Date.now()
+            };
+            messagesRef.push(message);
+            messageInput.value = '';
+        }
+   document.addEventListener('contextmenu', function(event) {
+    event.preventDefault(); // 阻止默认右键菜单
+});
+    </script>
 </body>
 </html>
