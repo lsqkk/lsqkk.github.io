@@ -267,22 +267,31 @@
 function requestNotificationPermission() {
     if (Notification.permission !== 'granted') {
         Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('通知权限已授予');
-            }
+             if (permission === 'granted') {
+            console.log('通知权限已授予');
+        } else {
+            console.log('通知权限被拒绝');
+        }
         });
     }
+    if (!('Notification' in window)) {
+    console.log('当前浏览器不支持通知功能');
+}
 }
 
 // 显示通知
 function showNotification(title, body) {
     if (Notification.permission === 'granted') {
+        console.log('正在显示通知:', title, body); // 添加日志
         new Notification(title, {
             body: body,
-            icon: 'https://lsqkk.github.io/image/touxiang.png' // 可选：通知图标
+            icon: 'https://lsqkk.github.io/image/touxiang.png'
         });
+    } else {
+        console.log('通知权限未授予');
     }
 }
+
 
 // 页面加载时请求权限
 window.onload = function() {
