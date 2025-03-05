@@ -263,6 +263,57 @@
    document.addEventListener('contextmenu', function(event) {
     event.preventDefault(); // 阻止默认右键菜单
 });
+
+        
+        // 请求通知权限
+function requestNotificationPermission() {
+    if (Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('通知权限已授予');
+            }
+        });
+    }
+}
+
+// 显示通知
+function showNotification(title, body) {
+    if (Notification.permission === 'granted') {
+        new Notification(title, {
+            body: body,
+            icon: 'https://your-website.com/icon.png' // 可选：通知图标
+        });
+    }
+}
+
+// 页面加载时请求权限
+window.onload = function() {
+    requestNotificationPermission();
+};
+
+// 修改消息接收逻辑
+messagesRef.on('child_added', snapshot => {
+    const { text, nickname, color, timestamp } = snapshot.val();
+    
+    // 显示消息
+    const li = document.createElement('li');
+    li.className = 'message-item';
+    li.innerHTML = `
+        <div class="avatar" style="background: ${color}">${nickname[0]}</div>
+        <div class="message-content">
+            <div class="message-header">
+                <span class="username">${nickname}</span>
+                <span class="timestamp">${new Date(timestamp).toLocaleTimeString()}</span>
+            </div>
+            <div>${text}</div>
+        </div>
+    `;
+    document.getElementById('messagesList').appendChild(li);
+    window.scrollTo(0, document.body.scrollHeight);
+
+    // 显示通知
+    showNotification(`新消息来自 ${nickname}`, text);
+});
     </script>
 </body>
 </html>
