@@ -290,7 +290,7 @@ function showNotification(title, body) {
         console.log('正在显示通知:', title, body); // 调试日志
         new Notification(title, {
             body: body,
-            icon: 'https://your-website.com/icon.png'
+            icon: 'https://lsqkk.github.io/image/logo_blue.png'
         });
     } else {
         console.log('通知权限未授予');
@@ -305,13 +305,13 @@ window.onload = function() {
 // 监听新消息
 function listenForMessages() {
     messagesRef.on('child_added', snapshot => {
-        const { text, nickname, timestamp } = snapshot.val();
 
         // 显示消息
+        const { text, nickname, color, timestamp } = snapshot.val(); // 确保解构出 color
         const li = document.createElement('li');
         li.className = 'message-item';
         li.innerHTML = `
-            <div class="avatar" style="background: ${userColor}">${nickname[0]}</div>
+            <div class="avatar" style="background: ${color}">${nickname[0]}</div>
             <div class="message-content">
                 <div class="message-header">
                     <span class="username">${nickname}</span>
