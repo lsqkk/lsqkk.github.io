@@ -262,63 +262,49 @@
         }
 
 
-        
-        // 请求通知权限
+// 请求通知权限
 function requestNotificationPermission() {
-    if (Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-             if (permission === 'granted') {
-            console.log('通知权限已授予');
-        } else {
-            console.log('通知权限被拒绝');
-        }
-        });
-    }
     if (!('Notification' in window)) {
-    console.log('当前浏览器不支持通知功能');
-}
+        console.log('当前浏览器不支持通知功能');
+        return;
+    }
+
+    if (Notification.permission === 'granted') {
+        console.log('通知权限已授予');
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('通知权限已授予');
+            } else {
+                console.log('通知权限被拒绝');
+            }
+        });
+    } else {
+        console.log('通知权限被拒绝，需手动启用');
+    }
 }
 
 // 显示通知
 function showNotification(title, body) {
     if (Notification.permission === 'granted') {
-        console.log('正在显示通知:', title, body); // 添加日志
+        console.log('正在显示通知:', title, body); // 调试日志
         new Notification(title, {
             body: body,
-            icon: 'https://lsqkk.github.io/image/touxiang.png'
+            icon: 'https://your-website.com/icon.png'
         });
     } else {
         console.log('通知权限未授予');
     }
 }
 
-
 // 页面加载时请求权限
 window.onload = function() {
     requestNotificationPermission();
 };
 
-// 修改消息接收逻辑
+// 示例：在收到新消息时显示通知
 messagesRef.on('child_added', snapshot => {
-    const { text, nickname, color, timestamp } = snapshot.val();
-    
-    // 显示消息
-    const li = document.createElement('li');
-    li.className = 'message-item';
-    li.innerHTML = `
-        <div class="avatar" style="background: ${color}">${nickname[0]}</div>
-        <div class="message-content">
-            <div class="message-header">
-                <span class="username">${nickname}</span>
-                <span class="timestamp">${new Date(timestamp).toLocaleTimeString()}</span>
-            </div>
-            <div>${text}</div>
-        </div>
-    `;
-    document.getElementById('messagesList').appendChild(li);
-    window.scrollTo(0, document.body.scrollHeight);
-
-    // 显示通知
+    const { text, nickname } = snapshot.val();
     showNotification(`新消息来自 ${nickname}`, text);
 });
     </script>
