@@ -302,11 +302,43 @@ window.onload = function() {
     requestNotificationPermission();
 };
 
-// 示例：在收到新消息时显示通知
-messagesRef.on('child_added', snapshot => {
-    const { text, nickname } = snapshot.val();
-    showNotification(`新消息来自 ${nickname}`, text);
-});
+// 监听新消息
+function listenForMessages() {
+    messagesRef.on('child_added', snapshot => {
+        const { text, nickname, timestamp } = snapshot.val();
+
+        // 显示消息
+        const li = document.createElement('li');
+        li.className = 'message-item';
+        li.innerHTML = `
+            <div class="avatar" style="background: ${userColor}">${nickname[0]}</div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="username">${nickname}</span>
+                    <span class="timestamp">${new Date(timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div>${text}</div>
+            </div>
+        `;
+        document.getElementById('messagesList').appendChild(li);
+        window.scrollTo(0, document.body.scrollHeight);
+
+        // 显示通知（仅当消息不是当前用户发送时）
+        if (nickname !== localStorage.getItem('nickname')) {
+            showNotification(`新消息来自 ${nickname}`, text);
+        }
+    });
+}
+
+// 加入房间后开始监听消息
+function joinRoom() {
+    roomName = document.getElementById('roomInput').value;
+    if (roomName) {
+        document.getElementById('chatArea').style.display = 'block';
+        messagesRef = firebase.database().ref('chatrooms/' + roomName + '/messages');
+        listenForMessages(); // 开始监听消息
+    }
+}
     </script>
 </body>
 </html>
