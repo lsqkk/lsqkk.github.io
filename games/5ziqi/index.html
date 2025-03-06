@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN"> 
 <head> 
@@ -6,6 +7,10 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script> 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script> 
 <style>
+#chessboard.active {
+    box-shadow: 0 0 15px var(--primary-color);
+    cursor: pointer;
+}
         :root {
             --primary-color: rgba(64, 224, 208, 0.9);
             --background: rgba(25, 25, 35, 0.95);
@@ -270,12 +275,61 @@
         }
     }
 
+const playersRef = gameRef.child('players');
+playersRef.transaction(currentPlayers => {
+    currentPlayers = currentPlayers || {};
+    if (Object.keys(currentPlayers).length < 2) {
+        currentPlayers[currentPlayerId] = {
+            nickname: localStorage.getItem('nickname') || '玩家',
+            color: localStorage.getItem('userColor') || '#40E0D0',
+            joinedAt: Date.now()
+        };
+    }
+    return currentPlayers;
+});
+
+
+function initGame(players) {
+document.getElementById('chessboard').classList.add('active');
+    // 确定玩家顺序
+    const playerIds = Object.keys(players);
+    isMyTurn = playerIds[0] === currentPlayerId;
+    
+    // 激活棋盘点击
+    document.getElementById('chessboard').addEventListener('click', handleClick);
+    
+    // 更新游戏状态
+    gameRef.update({
+        status: 'playing',
+        currentPlayer: playerIds[0]
+    });
+    
+    // 清空历史棋局
+    gameRef.child('moves').remove();
+    
+    // 显示游戏提示
+    document.getElementById('gameStatus').textContent = 
+        isMyTurn ? "轮到您下棋（黑棋）" : "等待对方落子...";
+}
+
+// 修正3：添加玩家数量监听
+gameRef.child('players').on('value', snapshot => {
+    const players = snapshot.val() || {};
+    updatePlayersList(players);
+    
+    // 当有2个不同玩家时开始游戏
+    if (Object.keys(players).length > 2 && 
+        !document.getElementById('chessboard').hasChildNodes()) {
+        initGame(players);
+    }
+});
+
     // 玩家加入房间逻辑
     function joinGameRoom() {
         roomName = document.getElementById('roomInput').value;
         if (!roomName) return;
 
-        gameRef = firebase.database().ref(`gamerrooms/${roomName}`);
+gameRef = firebase.database().ref(`chatrooms/${roomName}_game`);
         const playerRef = gameRef.child('players').push();
 
         currentPlayerId = playerRef.key;
@@ -310,7 +364,8 @@
 
     // 下棋逻辑
     function handleClick(e) {
-        if (!isMyTurn) return;
+
+ if (!isMyTurn || document.getElementById('chessboard').contains(e.target)) return;
         
         const rect = e.target.getBoundingClientRect();
         const x = Math.round((e.clientX - rect.left - 20) / GRID_SIZE);
