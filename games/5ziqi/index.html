@@ -191,9 +191,27 @@
     </div>
 
     <!-- 保留个人资料设置 -->
-    <div class="profile-setup" id="profileSetup" style="display: none;">
-        <!-- 原有颜色选择和昵称输入 -->
-    </div>
+        <div class="profile-setup" id="profileSetup" style="display: none;">
+            <div class="color-picker" id="colorPicker">
+                <div class="color-option" style="background: #40E0D0" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FF6B6B" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #7B68EE" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FFD700" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #C7EDCC" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FAF9DE" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #FFF2E2" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #2b4490" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #faa755" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #f391a9" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #843900" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #a3cf62" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #b22c46" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
+            </div>
+            <input type="text" id="nicknameInput" placeholder="Your nickname">
+            <button onclick="saveProfile()">Save Profile</button>
+        </div>
+
 
     <div id="gameArea" style="display: none;">
         <div class="game-container">
@@ -208,9 +226,15 @@
 </div>
 
 <script>
-    const firebaseConfig = {
-        // 保留原有配置
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
+            authDomain: "quark-b7305.firebaseapp.com",
+            projectId: "quark-b7305",
+            storageBucket: "quark-b7305.firebasestorage.app",
+            messagingSenderId: "843016834358",
+            appId: "1:843016834358:web:9438c729be28c4d492f797",
+            measurementId: "G-5BVT26KRT6"
+        };
     firebase.initializeApp(firebaseConfig);
 
     let roomName;
