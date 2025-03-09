@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>戳气泡</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+        }
+
+        #gameCanvas {
+            border: 3px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .info {
+            color: white;
+            margin: 15px;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            gap: 30px;
+        }
+
+        #restartBtn {
+            display: none;
+            margin: 20px;
+            padding: 12px 25px;
+            font-size: 20px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #00e676, #00c853);
+            border: none;
+            color: white;
+            border-radius: 25px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,230,118,0.3);
+        }
+
+        #restartBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,230,118,0.5);
+        }
+
+        /* 遮罩层样式 */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* 规则弹窗样式 */
+        #rulesModal {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        #rulesModal h2 {
+            margin-bottom: 20px;
+        }
+
+        #rulesModal label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        #rulesModal button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #00e676;
+            border: none;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 遮罩层和规则弹窗 -->
+    <div id="overlay">
+        <div id="rulesModal">
+            <h2>游戏规则</h2>
+            <p>点击气泡使其分裂，分裂后的小气泡会继续漂浮下降。</p>
+            <p>气泡触底失去一条生命；戳破最小的气泡加两条生命。</p>
+            <p>初始10条生命，当生命耗尽时，游戏结束。</p>
+            <label>
+                <input type="checkbox" id="dontShowAgain"> 不再显示
+            </label>
+            <button id="startGameBtn">确定</button>
+        </div>
+    </div>
+
+    <div class="info">
+        <div>得分: <span id="score">0</span></div>
+        <div>生命: <span id="lives">10</span></div>
+        <div>最佳: <span id="best">0</span></div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <button id="restartBtn">重新挑战</button>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const bestElement = document.getElementById('best');
+        const restartBtn = document.getElementById('restartBtn');
+        const overlay = document.getElementById('overlay');
+        const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
+        const startGameBtn = document.getElementById('startGameBtn');
+
+        canvas.width = 800;
+        canvas.height = 600;
+
+        let score = 0;
+        let lives = 10;
+        let bubbles = [];
+        let gameActive = false; // 初始状态为 false，等待用户点击“确定”后开始
+        let bestScore = localStorage.getItem('bestBubbleScore') || 0;
+        bestElement.textContent = bestScore;
+
+        // 检查是否已经勾选“不再显示”
+        if (localStorage.getItem('dontShowRules') === 'true') {
+            overlay.style.display = 'none';
+            gameActive = true;
+            gameLoop();
+        }
+
+        // 点击“确定”按钮后开始游戏
+        startGameBtn.addEventListener('click', () => {
+            if (dontShowAgainCheckbox.checked) {
+                localStorage.setItem('dontShowRules', 'true');
+            }
+            overlay.style.display = 'none';
+            gameActive = true;
+            gameLoop();
+        });
+
+        class Bubble {
+            constructor(x, y, size, level) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.level = level;
+                this.color = this.getColor();
+                this.dx = (Math.random() - 0.5) * (5 + level);
+                this.dy = (Math.random() - 0.5) * (5 + level);
+            }
+
+            getColor() {
+                const colors = [
+                    'rgba(255,107,107,0.9)',
+                    'rgba(255,159,67,0.9)',
+                    'rgba(86,217,140,0.9)',
+                    'rgba(46,134,193,0.9)'
+                ];
+                return colors[this.level % colors.length];
+            }
+
+            draw() {
+                const gradient = ctx.createRadialGradient(
+                    this.x - this.size/4, 
+                    this.y - this.size/4, 
+                    this.size/8,
+                    this.x,
+                    this.y,
+                    this.size
+                );
+                gradient.addColorStop(0, 'rgba(255,255,255,0.8)');
+                gradient.addColorStop(1, this.color);
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.shadowColor = 'rgba(255,255,255,0.4)';
+                ctx.shadowBlur = 15;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.ellipse(
+                    this.x - this.size/3, 
+                    this.y - this.size/3, 
+                    this.size/3, 
+                    this.size/6,
+                    Math.PI/4, 
+                    0, 
+                    Math.PI * 2
+                );
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fill();
+            }
+
+            update() {
+                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+                    this.dx *= -0.8;
+                }
+                if (this.y - this.size < 0) {
+                    this.dy *= -0.8;
+                }
+
+                if (this.y + this.size > canvas.height) {
+                    lives--;
+                    livesElement.textContent = lives;
+                    return false;
+                }
+
+                this.dy += 0.15;
+                this.x += this.dx;
+                this.y += this.dy;
+                return true;
+            }
+        }
+
+        function createBubble() {
+            const level = Math.floor(Math.random() * 3);
+            const size = 50 - (level * 10);
+            const x = Math.random() * (canvas.width - size * 2) + size;
+            const y = 50;
+            bubbles.push(new Bubble(x, y, size, level));
+        }
+
+        function splitBubble(bubble, clickX, clickY) {
+            if (bubble.level < 3) {
+                for (let i = 0; i < 2; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const newSize = bubble.size * 0.7;
+                    bubbles.push(new Bubble(
+                        clickX + Math.cos(angle) * newSize,
+                        clickY + Math.sin(angle) * newSize,
+                        newSize,
+                        bubble.level + 1
+                    ));
+                }
+                score += (4 - bubble.level) * 10;
+                scoreElement.textContent = score;
+            } else {
+                lives += 2;
+                livesElement.textContent = lives;
+                score += 10;
+                scoreElement.textContent = score;
+            }
+
+            const bubbleIndex = bubbles.indexOf(bubble);
+            if (bubbleIndex !== -1) {
+                bubbles.splice(bubbleIndex, 1);
+            }
+        }
+
+        function gameOver() {
+            if (score > bestScore) {
+                bestScore = score;
+                localStorage.setItem('bestBubbleScore', bestScore);
+                bestElement.textContent = bestScore;
+            }
+            
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 56px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('游戏结束', canvas.width/2, canvas.height/2 - 40);
+            ctx.font = '36px Arial';
+            ctx.fillText(`最终得分: ${score}`, canvas.width/2, canvas.height/2 + 40);
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.02 + score / 40000) {
+                createBubble();
+            }
+
+            bubbles = bubbles.filter(bubble => {
+                const keep = bubble.update();
+                if (keep) bubble.draw();
+                return keep;
+            });
+
+            if (lives <= 0) {
+                gameActive = false;
+                restartBtn.style.display = 'block';
+                gameOver();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            if (!gameActive) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                const bubble = bubbles[i];
+                const distance = Math.sqrt(
+                    Math.pow(clickX - bubble.x, 2) + 
+                    Math.pow(clickY - bubble.y, 2)
+                );
+
+                if (distance < bubble.size) {
+                    splitBubble(bubble, clickX, clickY);
+                    bubbles.splice(i, 1);
+                    break;
+                }
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            bubbles = [];
+            score = 0;
+            lives = 10;
+            gameActive = true;
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+            restartBtn.style.display = 'none';
+            gameLoop();
+        });
+    </script>
+</body>
+</html>
