@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZY公式 - 夸克博客</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            white-space: pre-line;
+        }
+        .copy-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ZY公式 - 夸克博客</h1>
+        <label for="a">事件a：</label>
+        <input type="text" id="a" placeholder="请输入事件a">
+        <label for="b">形容b：</label>
+        <input type="text" id="b" placeholder="请输入形容b">
+        <label for="c">行为c：</label>
+        <input type="text" id="c" placeholder="请输入行为c">
+        <button onclick="generateText()">生成文本</button>
+
+        <div class="output" id="output">
+            <!-- 生成的文本将显示在这里 -->
+        </div>
+        <button class="copy-btn" onclick="copyText()">一键复制</button>
+    </div>
+
+    <script>
+        function generateText() {
+            const a = document.getElementById('a').value;
+            const b = document.getElementById('b').value;
+            const c = document.getElementById('c').value;
+
+            const text = `今天${a}之前听到有人讨论我\n我一靠近就吓得不敢说话\n但你们也不能这样吧\n我知道你们是嫉妒我${b}\n希望你们能主动${c}`;
+            document.getElementById('output').textContent = text;
+        }
+
+        function copyText() {
+            const output = document.getElementById('output');
+            const text = output.textContent;
+
+            navigator.clipboard.writeText(text)
+                .then(() => alert('文本已复制到剪贴板！'))
+                .catch(() => alert('复制失败，请手动复制。'));
+        }
+    </script>
+</body>
+</html>
