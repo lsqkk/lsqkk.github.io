@@ -24,13 +24,15 @@
         "name": "合成大西瓜（测试版）",
         "image": "2.png",
         "link": "https://lsqkk.github.io/games/pd.html?game=xigua"
-    },    {
+    },    
+    {
         "name": "钢琴",
         "image": "3.png",
         "link": "https://lsqkk.github.io/games/pd.html?game=piano"
-    }  ,    {
+    },   
+    {
         "name": "ZY公式",
-        "image": "8.png",
+        "image": "3.png",
         "link": "https://lsqkk.github.io/games/zy.html"
     }
 ]
