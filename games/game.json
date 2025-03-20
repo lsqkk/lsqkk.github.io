@@ -9,7 +9,7 @@
         "name": "躲避陨石",
         "image": "1.png",
         "link": "https://lsqkk.github.io/games/pd.html?game=AvoidStar"
-    },
+    },{
     {
         "name": "戳气泡",
         "image": "5.png",
@@ -28,5 +28,9 @@
         "name": "钢琴",
         "image": "3.png",
         "link": "https://lsqkk.github.io/games/pd.html?game=piano"
+    }  ,    {
+        "name": "ZY公式",
+        "image": "8.png",
+        "link": "https://lsqkk.github.io/games/zy.html"
     }
 ]
