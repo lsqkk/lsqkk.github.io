@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技伦理立场光谱测试 - 夸克博客</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f7fa;
+            --text-color: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            min-height: 300px;
+        }
+
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+.options label {
+    display: block;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+        .options label:hover {
+            border-color: var(--primary-color);
+            background: #f0f4ff;
+        }
+
+.options input[type="radio"]:checked + label {
+    border-color: var(--primary-color);
+    background: #ebf4ff;
+}
+.options input[type="radio"]:checked + label::after {
+    content: "✓";
+    position: absolute;
+    right: 15px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.options input[type="radio"] {
+    display: none;
+}
+
+        .navigation {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .result-container {
+            text-align: center;
+        }
+
+        .dimension-bar {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.8s ease;
+        }
+
+.dimension-descriptions {
+    margin-top: 40px;
+    text-align: left;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.dimension-group {
+    margin-bottom: 25px;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.dimension-group h4 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 8px;
+}
+
+.dimension-group p {
+    margin: 8px 0;
+}
+
+.retry-btn {
+    display: block;
+    width: 100%;
+    margin-top: 30px;
+    padding: 12px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 科技伦理立场光谱测试</h1>
+        <div class="progress-bar">
+            <div class="progress" style="width: 0%"></div>
+        </div>
+        <div class="question-container"></div>
+        <div class="navigation">
+            <button onclick="prevQuestion()" disabled id="prevBtn">上一题</button>
+            <button onclick="nextQuestion()" disabled id="nextBtn">下一题</button>
+        </div>
+    </div>
+
+    <script>
+        // 题目数据
+let questions = [];
+
+        // 初始化状态
+        let currentQuestion = 0;
+        let answers = {};
+        const dimensions = {
+            "乐观": 0, "保守": 0,
+            "自由": 0, "责任": 0,
+            "中立": 0, "干预": 0,
+            "本土": 0, "全球": 0
+        };
+
+        // 初始化加载题目
+        function init() {
+            fetch('questions.json')
+                .then(response => response.json())
+                .then(data => {
+                    questions = data;
+                    showQuestion(currentQuestion);
+                });
+        }
+
+        // 显示题目
+        function showQuestion(index) {
+            const container = document.querySelector('.question-container');
+            const question = questions[index];
+            
+            let optionsHTML = '';
+            question.options.forEach((option, i) => {
+                optionsHTML += `
+                    <div class="option">
+                        <input type="radio" name="answer" 
+                               id="option${i}" 
+                               value="${i}" 
+                               ${answers[index] === i ? 'checked' : ''}
+                               onchange="selectAnswer(${index}, ${i})">
+                        <label for="option${i}">${option.text}</label>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="question">${index + 1}. ${question.question}</div>
+                <div class="options">${optionsHTML}</div>
+            `;
+
+            updateProgress();
+            updateNavigation();
+        }
+
+        // 更新进度条
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.querySelector('.progress').style.width = `${progress}%`;
+        }
+
+        // 更新导航按钮状态
+function updateNavigation() {
+    document.getElementById('prevBtn').disabled = currentQuestion === 0;
+    
+    // 修改判断逻辑
+    const isLastQuestion = currentQuestion === questions.length - 1;
+    document.getElementById('nextBtn').disabled = !answers.hasOwnProperty(currentQuestion);
+    
+    // 如果是最后一题，修改按钮文本
+    if (isLastQuestion) {
+        document.getElementById('nextBtn').textContent = '查看结果';
+    } else {
+        document.getElementById('nextBtn').textContent = '下一题';
+    }
+}
+
+        // 选择答案
+        function selectAnswer(questionIndex, optionIndex) {
+            answers[questionIndex] = optionIndex;
+            updateNavigation();
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        // 下一题
+function nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+    } else {
+        // 确保最后一道题的回答被记录
+        if (!answers.hasOwnProperty(currentQuestion)) {
+            alert('请先回答当前问题！');
+            return;
+        }
+        calculateResults();
+        showResults();
+    }
+}
+
+        // 计算结果
+        function calculateResults() {
+            Object.values(answers).forEach((answerIndex, questionIndex) => {
+                const scores = questions[questionIndex].options[answerIndex].scores;
+                Object.entries(scores).forEach(([dimension, value]) => {
+                    dimensions[dimension] += value;
+                });
+            });
+        }
+
+        // 显示结果
+        function showResults() {
+            const container = document.querySelector('.container');
+            let resultsHTML = '<div class="result-container"><h2>测试结果</h2>';
+            
+            // 计算配对维度
+            const pairedDimensions = [
+                { name: '科技立场', left: '乐观', right: '保守' },
+                { name: '价值取向', left: '自由', right: '责任' },
+                { name: '技术伦理', left: '中立', right: '干预' },
+                { name: '发展视角', left: '本土', right: '全球' }
+            ];
+
+            pairedDimensions.forEach(pair => {
+                const total = dimensions[pair.left] + dimensions[pair.right] || 1;
+                const leftPercent = Math.round((dimensions[pair.left] / total) * 100);
+                const rightPercent = 100 - leftPercent;
+
+                resultsHTML += `
+                    <div class="dimension-bar">
+                        <div class="bar-label">
+                            <span>${pair.left} ${leftPercent}%</span>
+                            <span>${pair.name}</span>
+                            <span>${pair.right} ${rightPercent}%</span>
+                        </div>
+                        <div class="bar">
+                            <div class="bar-fill" style="width: ${leftPercent}%"></div>
+                        </div>
+                     
+                    </div>
+                `;
+            });
+
+    // 2. 新增维度说明部分
+    resultsHTML += `
+        <div class="dimension-descriptions">
+            <h3>维度说明</h3>
+            
+            <div class="dimension-group">
+                <h4>科技乐观主义 vs 科技保守主义</h4>
+                <p><strong>乐观主义</strong>：倾向于相信科技发展会带来更多积极影响，支持快速推进新兴技术。</p>
+                <p><strong>保守主义</strong>：对科技发展持谨慎态度，认为需要更多监管和伦理约束。</p>
+            </div>
+            
+            <div class="dimension-group">
+                <h4>个人自由 vs 集体责任</h4>
+                <p><strong>个人自由</strong>：支持科技应优先保障个人选择和隐私权。</p>
+                <p><strong>集体责任</strong>：认为科技发展应以社会整体利益为重，必要时可限制个人自由。</p>
+            </div>
+            
+            <div class="dimension-group">
+                <h4>技术中立 vs 技术伦理干预</h4>
+                <p><strong>技术中立</strong>：认为技术本身无善恶之分，关键在于如何使用。</p>
+                <p><strong>技术伦理干预</strong>：认为技术设计和使用应主动嵌入伦理考量。</p>
+            </div>
+            
+            <div class="dimension-group">
+                <h4>全球化协作 vs 本土化保护</h4>
+                <p><strong>全球化协作</strong>：支持跨国科技合作，认为技术应无国界共享。</p>
+                <p><strong>本土化保护</strong>：认为科技发展应优先服务本国利益，保护本土文化和资源。</p>
+            </div>
+        </div>
+
+        <button onclick="window.location.reload()" class="retry-btn">重新测试</button>
+    `;
+
+            resultsHTML += '</div>';
+            container.innerHTML = resultsHTML;
+        }
+
+        // 启动测试
+        init();
+    </script>
+</body>
+</html>
