@@ -50,7 +50,7 @@
         async function loadPosts() {
             const posts = await fetch('posts.json').then(r => r.json());
             const list = posts.map(post => `
-                <div class="post-item">
+                <div class="moren">
                     <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
                     <div class="post-date">${post.date}</div>
                 </div>
