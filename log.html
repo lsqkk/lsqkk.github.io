@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克博客 - 更新日志</title>
+    <style>
+        :root {
+            --primary-color: rgba(99, 102, 241, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6, #d946ef);
+background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .update-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .update-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+        }
+
+        h1.title {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .update-card h2 {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .update-card h2::before {
+            content: '✨';
+            position: absolute;
+            left: -0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .update-card img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .update-card p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .update-card ul, 
+        .update-card ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        .update-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        .update-card strong {
+            color: white;
+            font-weight: 600;
+        }
+
+        .update-card em {
+            font-style: italic;
+        }
+
+        .update-card code {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .update-card pre {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .update-card blockquote {
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading {
+            color: white;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .update-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="changelog-container"></div>
+    </div>
+
+    <!-- 引入marked.js库用于Markdown解析 -->
+<script src="https://unpkg.com/marked/marked.min.js"></script>
+    <script>
+        // 配置marked.js
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            highlight: function(code) {
+                return code;
+            }
+        });
+
+        // 自动读取并解析readme.md
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('changelog-container');
+            container.innerHTML = '<div class="loading">正在加载更新日志...</div>';
+
+            fetch('readme.md')
+                .then(response => {
+                    if (!response.ok) throw new Error('文件加载失败');
+                    return response.text();
+                })
+                .then(text => {
+                    // 按一级标题分割内容
+                    const sections = text.split(/(?=^# )/m);
+                    let html = '';
+
+                    sections.forEach(section => {
+                        if (section.trim()) {
+                            // 提取标题
+                            const titleMatch = section.match(/^# (.*)$/m);
+                            if (titleMatch) {
+                                const title = titleMatch[1];
+                                const content = section.replace(/^# .*$/m, '').trim();
+                                
+                                html += `
+                                    <div class="update-card">
+                                        <h2>${title}</h2>
+                                        <div class="content">${marked.parse(content)}</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    });
+
+                    container.innerHTML = html || '<div class="loading">暂无更新内容</div>';
+                })
+                .catch(error => {
+                    container.innerHTML = `<div class="loading">${error.message || '无法加载更新日志'}</div>`;
+                    console.error('加载错误:', error);
+                });
+        });
+
+        // 卡片点击效果
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.update-card')) {
+                e.target.closest('.update-card').classList.toggle('active');
+            }
+        });
+    </script>
+</body>
+</html>
