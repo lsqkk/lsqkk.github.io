@@ -6,7 +6,7 @@
 1. 优化 - 减少使用postimage.cc图床
 2. 新增 - 建设[夸克图床](https://lsqkk.github.io/estest)功能
 3. 新增 - 录音转文字功能[工具]
-   [![录音转文字](cdn.jsdelivr.net/gh/lsqkk/image@main/20250328202102461.png)](https://lsqkk.github.io/tool/tool-audio2txt.html)
+  [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250328202102461.png)](https://lsqkk.github.io/tool/tool-audio2txt.html)
 
 # 25.3.27
 1. BingWeb搜索引擎上线
