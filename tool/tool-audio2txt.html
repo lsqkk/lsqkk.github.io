@@ -120,6 +120,19 @@
         .show {
             opacity: 1;
         }
+    #browserBtn {
+        background: #9f7aea;
+        color: white;
+    }
+
+    /* 移动端提示样式 */
+    .mobile-tip {
+        text-align: center;
+        margin: 1rem 0;
+        color: #718096;
+        font-size: 0.9em;
+    }
+
     </style>
 </head>
 <body>
@@ -134,6 +147,10 @@
             </button>
             <button id="copyBtn" onclick="copyToClipboard()">
                 <span>一键复制</span>
+    <button id="browserBtn" onclick="openInBrowser()" style="background: #9f7aea;">
+        <span>浏览器打开</span>
+    </button>
+
             </button>
         </div>
         <textarea 
@@ -247,6 +264,71 @@
 
         // 文本框内容变化时保存
         document.getElementById('transcript').addEventListener('input', autoSave);
+
+
+
+
+    function openInBrowser() {
+        const currentUrl = window.location.href;
+        
+        // 尝试直接打开链接
+        try {
+            // 通用打开方式
+            const newWindow = window.open(currentUrl, '_system');
+            
+            // 如果打开失败（返回null）
+            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                showFallbackTip(currentUrl);
+            }
+        } catch (e) {
+            showFallbackTip(currentUrl);
+        }
+    }
+
+    // 显示备用方案提示
+    function showFallbackTip(url) {
+        const tip = document.createElement('div');
+        tip.className = 'mobile-tip';
+        tip.innerHTML = `
+            请手动操作：<br>
+            1. 长按下方链接选择复制<br>
+            2. 打开浏览器粘贴访问<br>
+            <a href="javascript:void(0)" onclick="copyUrl('${url}')" 
+               style="color: #4299e1; word-break: break-all;">
+                ${url}
+            </a>
+        `;
+        
+        const container = document.querySelector('.container');
+        container.insertBefore(tip, document.getElementById('transcript'));
+        
+        // 自动滚动到提示位置
+        tip.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 复制链接功能
+    function copyUrl(url) {
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = url;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        showCopySuccess();
+    }
+
+    // 显示复制成功提示（复用已有提示样式）
+    function showCopySuccess() {
+        const copySuccess = document.getElementById('copySuccess');
+        copySuccess.textContent = '链接已复制！';
+        copySuccess.classList.add('show');
+        setTimeout(() => {
+            copySuccess.classList.remove('show');
+        }, 2000);
+    }
+
+
     </script>
 </body>
 </html>
