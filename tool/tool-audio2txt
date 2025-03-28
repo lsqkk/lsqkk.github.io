@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>实时语音转文字 - 夸克博客</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #startBtn {
+            background: #48bb78;
+            color: white;
+        }
+
+        #stopBtn {
+            background: #f56565;
+            color: white;
+            display: none;
+        }
+
+        #copyBtn {
+            background: #4299e1;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #transcript {
+            width: 96%;
+            height: 300px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        #transcript:focus {
+            outline: none;
+            border-color: #48bb78;
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+        }
+
+        .status {
+            text-align: center;
+            color: #718096;
+            margin-top: 1rem;
+        }
+
+        .copy-success {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 实时语音转文字 - 夸克博客</h1>
+        <div class="controls">
+            <button id="startBtn" onclick="startRecognition()">
+                <span>开始录音</span>
+            </button>
+            <button id="stopBtn" onclick="stopRecognition()">
+                <span>停止录音</span>
+            </button>
+            <button id="copyBtn" onclick="copyToClipboard()">
+                <span>一键复制</span>
+            </button>
+        </div>
+        <textarea 
+            id="transcript" 
+            placeholder="录音内容将显示在这里..."
+            spellcheck="false"
+        ></textarea>
+        <div class="status" id="status">准备就绪</div>
+    </div>
+
+    <div class="copy-success" id="copySuccess">已复制到剪贴板！</div>
+
+    <script>
+        let recognition = null;
+        let isRecording = false;
+        let finalTranscript = '';
+
+        // 初始化语音识别
+        function initializeRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert("当前浏览器不支持语音识别功能，请使用最新版Chrome浏览器");
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'zh-CN';
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                document.getElementById('transcript').value = finalTranscript + interimTranscript;
+                autoSave();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('识别错误:', event.error);
+                updateStatus(`错误: ${event.error}`);
+            };
+
+            recognition.onend = () => {
+                if (isRecording) {
+                    recognition.start(); // 自动重新开始
+                }
+            };
+        }
+
+        function startRecognition() {
+            if (!recognition) initializeRecognition();
+            
+            recognition.start();
+            isRecording = true;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'flex';
+            updateStatus("录音中...");
+            loadSavedText();
+        }
+
+        function stopRecognition() {
+            recognition.stop();
+            isRecording = false;
+            document.getElementById('startBtn').style.display = 'flex';
+            document.getElementById('stopBtn').style.display = 'none';
+            updateStatus("已停止");
+        }
+
+        function updateStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+
+        // 自动保存到localStorage
+        function autoSave() {
+            localStorage.setItem('voiceTranscript', document.getElementById('transcript').value);
+        }
+
+        // 加载保存的内容
+        function loadSavedText() {
+            const saved = localStorage.getItem('voiceTranscript');
+            if (saved) {
+                document.getElementById('transcript').value = saved;
+                finalTranscript = saved;
+            }
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard() {
+            const transcript = document.getElementById('transcript');
+            transcript.select();
+            document.execCommand('copy');
+            
+            // 显示复制成功提示
+            const copySuccess = document.getElementById('copySuccess');
+            copySuccess.classList.add('show');
+            setTimeout(() => {
+                copySuccess.classList.remove('show');
+            }, 2000);
+        }
+
+        // 初始化加载保存内容
+        window.onload = loadSavedText;
+
+        // 文本框内容变化时保存
+        document.getElementById('transcript').addEventListener('input', autoSave);
+    </script>
+</body>
+</html>
