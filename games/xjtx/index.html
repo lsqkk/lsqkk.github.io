@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交大图寻</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        #game-container {
+            text-align: center;
+        }
+
+        #satellite-map {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            cursor: crosshair;
+        }
+
+        .map-overlay {
+            position: relative;
+        }
+
+        .marker {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #correct-marker {
+            background: green;
+        }
+
+        #user-marker {
+            background: blue;
+        }
+
+        #connection-line {
+            position: absolute;
+            background-color: yellow;
+            transform-origin: 0 50%;
+            height: 2px;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        #map-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>交大图寻</h1>
+        <div id="question-image"></div>
+        <button onclick="showMap()">选择位置</button>
+        <div class="stats">
+            <h3>今日统计</h3>
+            <p>答题数: <span id="total-questions">0</span></p>
+            <p>最高分: <span id="high-score">0</span></p>
+            <p>最低分: <span id="low-score">0</span></p>
+            <p>平均分: <span id="average-score">0</span></p>
+        </div>
+    </div>
+
+    <div id="satellite-map">
+        <div class="map-overlay">
+            <img src="/images/1.png" id="map-image" alt="交大卫星图">
+            <div id="correct-marker" class="marker"></div>
+            <div id="user-marker" class="marker"></div>
+            <div id="connection-line"></div>
+        </div>
+        <div id="map-result"></div>
+        <button id="submit-btn" onclick="submitAnswer()">确定</button>
+    </div>
+
+    <script>
+        let currentQuestion = null;
+        let userCoords = null;
+        let stats = {
+            total: 0,
+            scores: [],
+            lastUpdate: null
+        };
+
+        async function loadQuestion() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+            currentQuestion = data[Math.floor(Math.random() * data.length)];
+            
+            document.getElementById('question-image').innerHTML = `
+                <img src="/images/${currentQuestion.image}" alt="题目图片" style="max-width: 100%; max-height: 60vh;">
+            `;
+        }
+
+        function showMap() {
+            document.getElementById('satellite-map').style.display = 'block';
+            document.body.insertAdjacentHTML('beforeend', '<div class="overlay"></div>');
+            
+            const mapImg = document.getElementById('map-image');
+            mapImg.onclick = function(e) {
+                const rect = mapImg.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width * 50;
+                const y = (e.clientY - rect.top) / rect.height * 70;
+                userCoords = {x: Math.round(x), y: Math.round(y)};
+                
+                const marker = document.getElementById('user-marker');
+                marker.style.left = `${e.clientX - rect.left}px`;
+                marker.style.top = `${e.clientY - rect.top}px`;
+                marker.style.display = 'block';
+            };
+        }
+
+        function submitAnswer() {
+            const dx = currentQuestion.x - userCoords.x;
+            const dy = currentQuestion.y - userCoords.y;
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            const actualDistance = distance * 15.7;
+            let score = 0;
+
+            if (distance <= 5) {
+                score = 5000;
+            } else if (distance >= 70) {
+                score = 0;
+            } else {
+                score = Math.round(5000 * (1 - distance/70));
+            }
+
+            const mapImg = document.getElementById('map-image');
+            const rect = mapImg.getBoundingClientRect();
+            
+            // 更新正确标记
+            const correctMarker = document.getElementById('correct-marker');
+            correctMarker.style.left = `${(currentQuestion.x/50 * rect.width)}px`;
+            correctMarker.style.top = `${(currentQuestion.y/70 * rect.height)}px`;
+            correctMarker.style.display = 'block';
+
+            // 绘制连接线
+            const userX = parseFloat(document.getElementById('user-marker').style.left);
+            const userY = parseFloat(document.getElementById('user-marker').style.top);
+            const correctX = parseFloat(correctMarker.style.left);
+            const correctY = parseFloat(correctMarker.style.top);
+            
+            const line = document.getElementById('connection-line');
+            const length = Math.sqrt(Math.pow(correctX - userX, 2) + Math.pow(correctY - userY, 2));
+            const angle = Math.atan2(correctY - userY, correctX - userX);
+            
+            line.style.width = `${length}px`;
+            line.style.left = `${userX}px`;
+            line.style.top = `${userY}px`;
+            line.style.transform = `rotate(${angle}rad)`;
+            line.style.display = 'block';
+
+            // 更新结果展示
+            document.getElementById('map-result').innerHTML = `
+                <p>实际距离：${actualDistance.toFixed(1)}米</p>
+                <p>得分：${score}</p>
+            `;
+
+            // 切换按钮功能
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.textContent = '下一题';
+            submitBtn.onclick = nextQuestion;
+
+            updateStats(score);
+        }
+
+        function nextQuestion() {
+            // 重置地图元素
+            document.getElementById('satellite-map').style.display = 'none';
+            document.querySelector('.overlay')?.remove();
+            
+            // 清除标记和连线
+            document.getElementById('correct-marker').style.display = 'none';
+            document.getElementById('user-marker').style.display = 'none';
+            document.getElementById('connection-line').style.display = 'none';
+            document.getElementById('map-result').innerHTML = '';
+            
+            // 重置按钮功能
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.textContent = '确定';
+            submitBtn.onclick = submitAnswer;
+            
+            loadQuestion();
+        }
+
+        function updateStats(score) {
+            const today = new Date().toDateString();
+            if (stats.lastUpdate !== today) {
+                stats = { total: 0, scores: [], lastUpdate: today };
+            }
+
+            stats.total++;
+            stats.scores.push(score);
+            
+            localStorage.setItem('gameStats', JSON.stringify(stats));
+            
+            document.getElementById('total-questions').textContent = stats.total;
+            document.getElementById('high-score').textContent = Math.max(...stats.scores);
+            document.getElementById('low-score').textContent = Math.min(...stats.scores);
+            document.getElementById('average-score').textContent = 
+                (stats.scores.reduce((a,b) => a+b, 0)/stats.scores.length).toFixed(1);
+        }
+
+        window.onload = function() {
+            const savedStats = localStorage.getItem('gameStats');
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+                if (new Date().toDateString() !== stats.lastUpdate) {
+                    stats = { total: 0, scores: [], lastUpdate: new Date().toDateString() };
+                }
+            }
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>
