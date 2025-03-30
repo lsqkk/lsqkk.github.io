@@ -2,9 +2,16 @@
 欢迎来到我的博客。
 以下是更新日志。
 
+# 25.3.30
+1. 优化 - 更新**交大图寻**数据库
+
+# 25.3.29
+1. 新增 - **交大图寻**功能[游戏]
+     [![1](https://lsqkk.github.io/games/8.png)](https://lsqkk.github.io/games/xjtx)
+   
 # 25.3.28
 1. 优化 - 减少使用postimage.cc图床
-2. 新增 - 建设[夸克图床](https://lsqkk.github.io/estest)功能
+2. 新增 - 建设**夸克图床**功能
 3. 新增 - 录音转文字功能[工具]
   [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250328202102461.png)](https://lsqkk.github.io/tool/tool-audio2txt.html)
 
