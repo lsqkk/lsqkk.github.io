@@ -3,18 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>交大图寻</title>
+    <title>交大图寻 | 夸克博客</title>
     <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #ff7e5f;
+            --text-color: #333;
+            --light-bg: rgba(255, 255, 255, 0.8);
+            --glass-effect: blur(10px) saturate(180%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-color);
+            line-height: 1.6;
         }
 
         #game-container {
             text-align: center;
+            background: var(--light-bg);
+            backdrop-filter: var(--glass-effect);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        #question-image {
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: rgba(255,255,255,0.7);
+        }
+
+        #question-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 10px;
         }
 
         #satellite-map {
@@ -23,59 +77,96 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            background: var(--light-bg);
+            backdrop-filter: var(--glass-effect);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             z-index: 1000;
             cursor: crosshair;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .map-overlay {
             position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .marker {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             transform: translate(-50%, -50%);
+            z-index: 1001;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
         #correct-marker {
-            background: green;
+            background: #4CAF50;
+            border: 2px solid white;
         }
 
         #user-marker {
-            background: blue;
+            background: #2196F3;
+            border: 2px solid white;
         }
 
         #connection-line {
             position: absolute;
-            background-color: yellow;
+            background-color: var(--accent-color);
             transform-origin: 0 50%;
-            height: 2px;
+            height: 3px;
+            z-index: 1000;
+            opacity: 0.8;
         }
 
         .stats {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 5px;
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--light-bg);
+            backdrop-filter: var(--glass-effect);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stats p {
+            margin: 8px 0;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stats span {
+            font-weight: 600;
+            color: var(--primary-color);
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #4CAF50;
+            padding: 12px 25px;
+            margin: 8px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 50px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         button:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .overlay {
@@ -85,20 +176,59 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
             z-index: 999;
         }
 
         #map-result {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #f8f8f8;
-            border-radius: 4px;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--light-bg);
+            backdrop-filter: var(--glass-effect);
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #map-result p {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            padding: 15px;
+            background: var(--light-bg);
+            backdrop-filter: var(--glass-effect);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+
+        .game-link {
+            display: inline-block;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>交大图寻</h1>
+        <h1>交大图寻 | 夸克博客</h1>
         <div id="question-image"></div>
         <button onclick="showMap()">选择位置</button>
         <div class="stats">
@@ -108,8 +238,16 @@
             <p>最低分: <span id="low-score">0</span></p>
             <p>平均分: <span id="average-score">0</span></p>
         </div>
+        <div class="game-link">
+                <button onclick="window.location.href='https://lsqkk.github.io/games'">更多游戏</button>
+            </div>
+        
     </div>
-
+<div class="footer">
+            
+            <p>© 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights reserved.</p>
+            
+        </div>
     <div id="satellite-map">
         <div class="map-overlay">
             <img src="https://lsqkk.github.io/games/xjtx/images/1.png" id="map-image" alt="交大卫星图">
@@ -136,7 +274,7 @@
             currentQuestion = data[Math.floor(Math.random() * data.length)];
             
             document.getElementById('question-image').innerHTML = `
-                <img src="https://lsqkk.github.io/games/xjtx/images/${currentQuestion.image}" alt="题目图片" style="max-width: 100%; max-height: 60vh;">
+                <img src="https://lsqkk.github.io/games/xjtx/images/${currentQuestion.image}" alt="题目图片">
             `;
         }
 
@@ -200,8 +338,8 @@
 
             // 更新结果展示
             document.getElementById('map-result').innerHTML = `
-                <p>实际距离：${actualDistance.toFixed(1)}米</p>
-                <p>得分：${score}</p>
+                <p>实际距离：<span>${actualDistance.toFixed(1)}米</span></p>
+                <p>得分：<span>${score}</span></p>
             `;
 
             // 切换按钮功能
