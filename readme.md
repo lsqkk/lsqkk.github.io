@@ -8,6 +8,8 @@
 1. 新增 - 文章列表**Tag**功能
    ![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250401164653138.png)
 2. 优化 - 升级**工具箱**UI界面
+3. 新增 - **AIGC检测**功能
+  [![1](cdn.jsdelivr.net/gh/lsqkk/image@main/IMG_20250401_221432.jpg)](https://lsqkk.github.io/tool/aigc.html)
 # 25.3.31
 1. 优化 - 美化**交大图寻**UI界面，更新**交大图寻**数据库
 
