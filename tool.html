@@ -3,17 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的工具箱 - 蓝色奇夸克 - 个人博客</title>
+    <title>我的工具箱 | 夸克博客</title>
     <base href="https://lsqkk.github.io/">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="image/logo_blue.png" type="image/png">
+    <style>
+        .tech-background {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .tech-card {
+            background: rgba(15, 32, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px;
+            border: 1px solid rgba(93, 208, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #5dd0ff, #00ffcc, #5dd0ff);
+            z-index: -1;
+            border-radius: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .tech-card:hover::before {
+            opacity: 0.3;
+        }
+        
+        .tech-title {
+            color: #5dd0ff;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(93, 208, 255, 0.3);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tech-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #5dd0ff, transparent);
+        }
+        
+        .tech-subtitle {
+            color: #00ffcc;
+            font-size: 1.3em;
+            margin: 20px 0 15px;
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+        }
+        
+        .tech-link {
+            display: block;
+            color: #fff;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(93, 208, 255, 0.1);
+            border: 1px solid rgba(93, 208, 255, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(93, 208, 255, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .tech-link:hover {
+            background: rgba(93, 208, 255, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(93, 208, 255, 0.2);
+        }
+        
+        .tech-link:hover::before {
+            left: 100%;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .tech-intro {
+            color: #a0e4ff;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .tech-highlight {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+        
+        .tech-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(93, 208, 255, 0.5), transparent);
+            margin: 30px 0;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-card {
+                padding: 20px;
+            }
+        }
+        
+        /* 粒子背景效果 */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .content-container {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
 </head>
-<body>
+<body class="tech-background">
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+    
     <div class="header-placeholder"></div>
     <div class="header">
-        <h1>蓝色奇夸克 - 个人博客</h1>
+        <h2 class="tech-title">夸克工具箱</h2>
     </div>
-    <div class="nav">
+    <div class="nav" style="    background-color: rgba(93, 208, 255, 0.6);">
         <ul>
             <li><a href="index.html" class="active">返回</a></li>
             <li><a href="post.html?file=about.md">关于我</a></li>
@@ -23,23 +187,172 @@
             <li><a href="qtv" target="blank">新版博客</a></li>
         </ul>
     </div>
-    <div class="content" style=" background: url('https://i.postimg.cc/t7GsFDdN/image.png') no-repeat center center; background-size: cover; position: relative;"> 
-        <div class="moren" > <h2>我的工具箱</h2> <p>oi这都让你找到了</p> </div>
-	<div class="moren" > <h3>时间工具</h3></div>
-	<div class="moren" > <a href="tool/tool-time.html" style="text-decoration: none;color: #000;" target="blank">经典时钟</a></div>
-	<div class="moren" > <a href="tool/tool-25min.html" style="text-decoration: none;color: #000;" target="blank">25min番茄钟</a></div>
-	<div class="moren" > <h3>天气查询</h3></div>
-	<div class="moren" > <a href="tool/tool-weather1.html" style="text-decoration: none;color: #000;" target="blank">当前天气</a></div>
-	<div class="moren" > <a href="tool/tool-weather2.html" style="text-decoration: none;color: #000;" target="blank">天气查询</a></div>
-	<div class="moren" > <h3>杂七杂八</h3></div>
-	<div class="moren" > <a href="tool/tool-md.html" style="text-decoration: none;color: #000;" target="blank">Markdown-富文本</a></div>
-	<div class="moren" > <h3>编辑博客（站主专用）</h3></div>
-	<div class="moren" > <a href="https://github.com/lsqkk/lsqkk.github.io/tree/main" style="text-decoration: none;color: #000;" target="blank">博客管理</a></div>
-	<div class="moren" > <a href="https://github.com/lsqkk/lsqkk.github.io/new/main" style="text-decoration: none;color: #000;" target="blank">新建文件</a></div>
-	<div class="moren" > <a href="https://github.com/lsqkk/lsqkk.github.io/upload/main" style="text-decoration: none;color: #000;" target="blank">上传文件</a></div>
+    
+    <div class="content-container">
+            <div class="tech-card">
+                <h2 class="tech-title">欢迎欢迎，热烈欢迎 </h2>
+                <span class="tech-highlight"> "oi这都让你找到了"</span>
+                <p class="tech-intro">欢迎来到夸克博客<span class="tech-highlight">工具箱</span>！这里汇集了我精心编写的各种实用工具，希望能为您提供便利。</p>
+                <p class="tech-intro"><span class="tech-highlight">"工具有点少"</span> - 在写新的工具了，我会更新的！</p>
+                <p class="tech-intro"><span class="tech-highlight">"有新想法？"</span> - 欢迎上方留言板留言！</p>
+            </div>
+            
+            <div class="tech-grid">
+                <!-- 时间工具 -->
+                <div class="tech-card">
+                    <h3 class="tech-subtitle">⏱️ 时间工具</h3>
+                    <a href="tool/tool-time.html" class="tech-link" target="blank">🕒 经典时钟</a>
+                    <a href="tool/tool-25min.html" class="tech-link" target="blank">🍅 25min番茄钟</a>
+                </div>
+                
+                <!-- 天气查询 -->
+                <div class="tech-card">
+                    <h3 class="tech-subtitle">🌤️ 天气查询</h3>
+                    <a href="tool/tool-weather1.html" class="tech-link" target="blank">☀️ 当前天气</a>
+                    <a href="tool/tool-weather2.html" class="tech-link" target="blank">🌦️ 天气查询</a>
+                </div>
+                
+                <!-- 文本工具 -->
+                <div class="tech-card">
+                    <h3 class="tech-subtitle">✍️文本工具</h3>
+                    <a href="tool/tool-md.html" class="tech-link" target="blank">📝 Markdown-富文本转换</a>
+                    <a href="tool/aigc.html" class="tech-link" target="blank">📝 AIGC 检查</a>
+                    <a href="ds" class="tech-link" target="blank">📝 DeepSeek（需密钥）</a>
+                </div>
+
+                <!-- 其他 -->
+                <div class="tech-card">
+                    <h3 class="tech-subtitle">其他</h3>
+                    <a href="estest" class="tech-link" target="blank">📝 科技伦理立场测试</a>
+                    <a href="games" class="tech-link" target="blank">🎮 点此玩游戏</a>
+		    <a href="https://www.jianfast.com" class="tech-link" target="blank">🔍 便捷搜索</a>
+                </div>
+                
+                <!-- 编辑博客 -->
+                <div class="tech-card">
+                    <h3 class="tech-subtitle">🔐 编辑博客（站主专用）</h3>
+                    <a href="https://github.com/lsqkk/lsqkk.github.io/tree/main" class="tech-link" target="blank">📂 博客管理</a>
+                    <a href="https://github.com/lsqkk/lsqkk.github.io/new/main" class="tech-link" target="blank">🆕 新建文件</a>
+                    <a href="https://github.com/lsqkk/lsqkk.github.io/upload/main" class="tech-link" target="blank">⬆️ 上传文件</a>
+                </div>
+            </div>
     </div>
-    <div class="footer">
-        <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2025 蓝色奇夸克 - 个人博客</a>
+    
+    <div style="    color: #fff;text-align: center;  padding: 20px 20px;">
+        <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights reserved.</a>
     </div>
+    
+    <!-- 粒子JS库 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // 初始化粒子效果
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#5dd0ff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#5dd0ff",
+                        "opacity": 0.4,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        });
+    </script>
 </body>
 </html>
