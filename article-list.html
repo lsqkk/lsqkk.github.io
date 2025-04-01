@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <base href="https://lsqkk.github.io/">
+    
     <title>博客文章列表</title>
     <style>
         .post-item { 
@@ -37,98 +37,106 @@
             </li>
         </ul>
     </div>
-
+<div id="tagFilter" class="tag-filter"></div>
     <div class="content" style=" background: url('https://lsqkk.github.io/image/light.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;"> 
         <div class="search-results">
             <div id="searchResults"></div>
         </div>
-        <div id="tagFilter" class="tag-filter"></div>
+        
         <div id="posts"></div>
     </div>
     
     <script>
-        // 所有标签
-        const allTags = ['全部', '技术', '杂谈', '社科'];
-        let currentTag = '全部';
+    // 所有标签
+    const allTags = ['全部', '技术', '杂谈', '社科'];
+    let currentTag = '全部';
+    
+    // 加载文章列表
+    async function loadPosts() {
+        const posts = await fetch('posts.json').then(r => r.json());
+        // 确保所有文章都有tags数组
+        posts.forEach(post => {
+            if (!post.tags) post.tags = ['未分类'];
+        });
+        renderTagFilter();
+        renderPosts(posts);
+    }
+
+    // 渲染标签筛选器
+    function renderTagFilter() {
+        const tagFilter = document.getElementById('tagFilter');
+        tagFilter.innerHTML = allTags.map(tag => `
+            <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
+                    onclick="filterByTag('${tag}')">
+                ${tag}
+            </button>
+        `).join('');
+    }
+
+    // 按标签筛选
+    function filterByTag(tag) {
+        currentTag = tag;
+        renderTagFilter();
+        loadPosts(); // 重新加载以应用筛选
+    }
+
+    // 渲染文章列表
+    function renderPosts(posts) {
+        const filteredPosts = currentTag === '全部' 
+            ? posts 
+            : posts.filter(post => post.tags && post.tags.includes(currentTag));
         
-        // 加载文章列表
-        async function loadPosts() {
-            const posts = await fetch('posts.json').then(r => r.json());
-            renderTagFilter();
-            renderPosts(posts);
-        }
-
-        // 渲染标签筛选器
-        function renderTagFilter() {
-            const tagFilter = document.getElementById('tagFilter');
-            tagFilter.innerHTML = allTags.map(tag => `
-                <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
-                        onclick="filterByTag('${tag}')">
-                    ${tag}
-                </button>
-            `).join('');
-        }
-
-        // 按标签筛选
-        function filterByTag(tag) {
-            currentTag = tag;
-            renderTagFilter();
-            loadPosts(); // 重新加载以应用筛选
-        }
-
-        // 渲染文章列表
-        function renderPosts(posts) {
-            const filteredPosts = currentTag === '全部' 
-                ? posts 
-                : posts.filter(post => post.tags.includes(currentTag));
-            
-            const list = filteredPosts.map(post => `
-                <div class="moren">
-                    <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
-                    <div class="post-date">${post.date}</div>
-                    <div class="post-tags">
-                        ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-                    </div>
+        const list = filteredPosts.map(post => `
+            <div class="moren">
+                <a class="post-title" href="post.html?file=${post.file}" >${post.title}</a>
+                
+                
+                <div class="post-date">${post.date}</div>
+               <div class="post-tags">
+                    ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
                 </div>
-            `).join('');
-            
-            document.getElementById('posts').innerHTML = list;
+            </div>
+        `).join('');
+        
+        document.getElementById('posts').innerHTML = list;
+    }
+
+    // 搜索博客功能
+    async function searchBlog() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const posts = await fetch('posts.json').then(r => r.json());
+        // 确保所有文章都有tags数组
+        posts.forEach(post => {
+            if (!post.tags) post.tags = ['未分类'];
+        });
+        const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+
+        const searchResultsContainer = document.getElementById('searchResults');
+        searchResultsContainer.innerHTML = '';
+
+        if (filteredPosts.length > 0) {
+            filteredPosts.forEach(post => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'search-result-item';
+                resultItem.innerHTML = `
+                    <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
+                        ${post.title}
+                    </a>
+                    <div style="color: #666; font-size: 0.9em;">${post.date}</div>
+                    <div class="post-tags">
+                        ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                    </div>
+                `;
+                searchResultsContainer.appendChild(resultItem);
+            });
+        } else {
+            searchResultsContainer.innerHTML = '<div style="color: #666;">未找到相关博客</div>';
         }
+    }
 
-        // 搜索博客功能
-        async function searchBlog() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const posts = await fetch('posts.json').then(r => r.json());
-            const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
-
-            const searchResultsContainer = document.getElementById('searchResults');
-            searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
-
-            if (filteredPosts.length > 0) {
-                // 如果有匹配的博客，展示结果
-                filteredPosts.forEach(post => {
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'search-result-item';
-                    resultItem.innerHTML = `
-                        <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
-                            ${post.title}
-                        </a>
-                        <div style="color: #666; font-size: 0.9em;">${post.date}</div>
-                        <div class="post-tags">
-                            ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-                        </div>
-                    `;
-                    searchResultsContainer.appendChild(resultItem);
-                });
-            } else {
-                // 如果没有匹配的博客，显示提示信息
-                searchResultsContainer.innerHTML = '<div style="color: #666;">未找到相关博客</div>';
-            }
-        }
-
-        // 初始化加载
-        document.addEventListener('DOMContentLoaded', loadPosts);
-    </script>
+    // 初始化加载
+    document.addEventListener('DOMContentLoaded', loadPosts);
+</script>
     
     <div class="footer">
         <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2025 蓝色奇夸克 - 个人博客</a>
