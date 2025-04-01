@@ -41,7 +41,7 @@ body {
 }
 
 .nav ul li a:hover {
-    background-color: rgba(153, 221, 243, 0.3);
+    background-color: rgb(153, 221, 243);
     padding: 5px 0px;
     border-radius: 5px;
 }
