@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>实时语音转文字 - 夸克博客</title>
+    <title>实时语音转文字 | 夸克博客</title>
     <style>
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -17,12 +17,63 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 2rem;
+            position: relative;
         }
 
         h1 {
             color: #2d3748;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+.feature-scroller {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #4a5568;
+    font-size: 0.95em;
+    height: 60px;
+    position: relative;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.feature-line {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    padding: 0 1rem;
+}
+
+.feature-line.active {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.05);
+}
+@keyframes featureCycle {
+    0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+    10% { opacity: 1; transform: translateY(0) scale(1.05); }
+    20% { opacity: 1; transform: translateY(0) scale(1.05); }
+    30% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+    100% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+}
+        .feature-text {
+            animation: scrollFeatures 18s infinite;
+            position: relative;
+        }
+
+        @keyframes scrollFeatures {
+            0%, 15% { transform: translateY(0); opacity: 1; }
+            20%, 35% { transform: translateY(-100%); opacity: 1; }
+            40%, 55% { transform: translateY(-200%); opacity: 1; }
+            60%, 75% { transform: translateY(-300%); opacity: 1; }
+            80%, 95% { transform: translateY(-400%); opacity: 1; }
+            100% { transform: translateY(-500%); opacity: 1; }
         }
 
         .controls {
@@ -43,6 +94,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         #startBtn {
@@ -61,9 +113,15 @@
             color: white;
         }
 
+        #urlBtn {
+            background: #9f7aea;
+            color: white;
+        }
+
         button:hover {
             transform: translateY(-1px);
             opacity: 0.9;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         button:active {
@@ -80,11 +138,13 @@
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 1rem;
+            transition: border-color 0.2s;
         }
 
         #transcript:focus {
             outline: none;
             border-color: #48bb78;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
         }
 
         .pulse {
@@ -101,6 +161,7 @@
             text-align: center;
             color: #718096;
             margin-top: 1rem;
+            font-size: 0.9em;
         }
 
         .copy-success {
@@ -120,24 +181,48 @@
         .show {
             opacity: 1;
         }
-    #browserBtn {
-        background: #9f7aea;
-        color: white;
-    }
 
-    /* 移动端提示样式 */
-    .mobile-tip {
-        text-align: center;
-        margin: 1rem 0;
-        color: #718096;
-        font-size: 0.9em;
-    }
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            color: #718096;
+            font-size: 0.85em;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
 
+        /* 移动端提示样式 */
+        .mobile-tip {
+            text-align: center;
+            margin: 1rem 0;
+            color: #718096;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .mobile-tip a {
+            color: #4299e1;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .mobile-tip a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎤 实时语音转文字 - 夸克博客</h1>
+        
+<div class="feature-scroller">
+    <div class="feature-line active">🎙️ 点击"开始录音"即可将语音实时转为文字</div>
+    <div class="feature-line">📋 转换内容自动保存，关闭页面不会丢失</div>
+    <div class="feature-line">📱 支持移动端使用，兼容主流浏览器</div>
+    <div class="feature-line">📤 一键复制转换结果，方便分享和使用</div>
+    <div class="feature-line">🚫 APP内无法录音？试试复制链接到浏览器</div>
+</div>
+
         <div class="controls">
             <button id="startBtn" onclick="startRecognition()">
                 <span>开始录音</span>
@@ -147,10 +232,9 @@
             </button>
             <button id="copyBtn" onclick="copyToClipboard()">
                 <span>一键复制</span>
-    <button id="browserBtn" onclick="openInBrowser()" style="background: #9f7aea;">
-        <span>浏览器打开</span>
-    </button>
-
+            </button>
+            <button id="urlBtn" onclick="copyCurrentUrl()">
+                <span>复制链接</span>
             </button>
         </div>
         <textarea 
@@ -159,6 +243,10 @@
             spellcheck="false"
         ></textarea>
         <div class="status" id="status">准备就绪</div>
+        
+        <div class="copyright">
+            © 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights reserved.
+        </div>
     </div>
 
     <div class="copy-success" id="copySuccess">已复制到剪贴板！</div>
@@ -253,6 +341,25 @@
             
             // 显示复制成功提示
             const copySuccess = document.getElementById('copySuccess');
+            copySuccess.textContent = '内容已复制！';
+            copySuccess.classList.add('show');
+            setTimeout(() => {
+                copySuccess.classList.remove('show');
+            }, 2000);
+        }
+
+        // 复制当前页面URL
+        function copyCurrentUrl() {
+            const url = window.location.href;
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = url;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            
+            const copySuccess = document.getElementById('copySuccess');
+            copySuccess.textContent = '链接已复制！';
             copySuccess.classList.add('show');
             setTimeout(() => {
                 copySuccess.classList.remove('show');
@@ -264,71 +371,27 @@
 
         // 文本框内容变化时保存
         document.getElementById('transcript').addEventListener('input', autoSave);
-
-
-
-
-    function openInBrowser() {
-        const currentUrl = window.location.href;
+document.addEventListener('DOMContentLoaded', function() {
+    const features = document.querySelectorAll('.feature-line');
+    let current = 0;
+    
+    function cycleFeatures() {
+        // 移除所有active类
+        features.forEach(f => f.classList.remove('active'));
         
-        // 尝试直接打开链接
-        try {
-            // 通用打开方式
-            const newWindow = window.open(currentUrl, '_system');
-            
-            // 如果打开失败（返回null）
-            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-                showFallbackTip(currentUrl);
-            }
-        } catch (e) {
-            showFallbackTip(currentUrl);
-        }
-    }
-
-    // 显示备用方案提示
-    function showFallbackTip(url) {
-        const tip = document.createElement('div');
-        tip.className = 'mobile-tip';
-        tip.innerHTML = `
-            请手动操作：<br>
-            1. 长按下方链接选择复制<br>
-            2. 打开浏览器粘贴访问<br>
-            <a href="javascript:void(0)" onclick="copyUrl('${url}')" 
-               style="color: #4299e1; word-break: break-all;">
-                ${url}
-            </a>
-        `;
+        // 添加当前active类
+        features[current].classList.add('active');
         
-        const container = document.querySelector('.container');
-        container.insertBefore(tip, document.getElementById('transcript'));
-        
-        // 自动滚动到提示位置
-        tip.scrollIntoView({ behavior: 'smooth' });
+        // 更新索引
+        current = (current + 1) % features.length;
     }
-
-    // 复制链接功能
-    function copyUrl(url) {
-        const tempInput = document.createElement('input');
-        document.body.appendChild(tempInput);
-        tempInput.value = url;
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        
-        showCopySuccess();
-    }
-
-    // 显示复制成功提示（复用已有提示样式）
-    function showCopySuccess() {
-        const copySuccess = document.getElementById('copySuccess');
-        copySuccess.textContent = '链接已复制！';
-        copySuccess.classList.add('show');
-        setTimeout(() => {
-            copySuccess.classList.remove('show');
-        }, 2000);
-    }
-
-
+    
+    // 初始显示第一个
+    cycleFeatures();
+    
+    // 每3秒切换一次
+    setInterval(cycleFeatures, 3000);
+});
     </script>
 </body>
 </html>
