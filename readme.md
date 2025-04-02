@@ -6,7 +6,9 @@
 # 25.4.2
 1. 优化 - **Markdown-富文本转换器**全面升级为**夸克 Markdown 编辑器**，升级UI并支持实时渲染、TeX和mermaid语法。
    [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250402113721166.png)](https://lsqkk.github.io/tool/tool-md.html)
-
+2. 优化 - 更新**番茄钟**UI界面，增加50min选项，增加夜间模式
+   [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250402145833893.png)](https://lsqkk.github.io/tool/pomodoro.html)
+   
 # 25.4.1
 1. 新增 - 文章列表**Tag**功能
    ![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250401164653138.png)
