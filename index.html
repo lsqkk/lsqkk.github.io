@@ -11,15 +11,6 @@
 </head>
 
 <body>
-    <!-- 广告页 -->
-    <div class="ad-container" style="background: url('image/ad.png') no-repeat center center; background-size: cover;">
-        <a href="estest" style="position: absolute;top: 20%; left: 0;width: 100%; height: 80%; z-index: 1; cursor: pointer;" target="_blank"></a>
-        <div class="skip-btn" onclick="skipAd()">
-            <span class="countdown">4</span> 跳过
-        </div>
-    </div>
-
-    <!-- 主页内容 -->
     <div class="main-content">
         <div class="header-placeholder"></div>
         <div class="header">
@@ -121,75 +112,10 @@
 
 
     <script>
-    let countdown = 4;
-    const countdownElement = document.querySelector('.countdown');
-    const adContainer = document.querySelector('.ad-container');
-    const mainContent = document.querySelector('.main-content');
-    let timer;
-
-    function startCountdown() {
-        timer = setInterval(() => {
-            countdown -= 1;
-            countdownElement.textContent = countdown;
-
-            if (countdown <= 0) {
-                skipAd();
-            }
-        }, 1000);
-    }
-
-    function skipAd() {
-        clearInterval(timer);
-        recordAdTime();
-        // 只保留广告页的渐隐效果
-        adContainer.classList.add('fade-out');
-        // 主页内容直接显示，不加动画
-        mainContent.style.display = 'block';
-        mainContent.style.opacity = '1';
-        // 广告页完全隐藏后移除
-        setTimeout(() => {
-            adContainer.style.display = 'none';
-        }, 500);
-    }
-
-    // 广告显示间隔时间（单位：毫秒）
-    const AD_INTERVAL = 30 * 60 * 1000; // 30分钟
-
-    // 检查是否需要显示广告
-    function shouldShowAd() {
-        const lastAdTime = localStorage.getItem('lastAdTime');
-        if (!lastAdTime) {
-            return true;
-        }
-        const currentTime = new Date().getTime();
-        return (currentTime - lastAdTime) > AD_INTERVAL;
-    }
-
-    // 记录广告显示时间
-    function recordAdTime() {
-        localStorage.setItem('lastAdTime', new Date().getTime());
-    }
-
-    // 初始化广告逻辑
-    function initAd() {
-        if (shouldShowAd()) {
-            // 显示广告页
-            startCountdown();
-            document.querySelector('.skip-btn').addEventListener('click', skipAd);
-            // 确保主页内容初始隐藏
-            mainContent.style.display = 'none';
-        } else {
-            // 不显示广告页，直接显示主页内容
-            adContainer.style.display = 'none';
-            mainContent.style.display = 'block';
-            mainContent.style.opacity = '1'; // 确保完全不透明
-        }
-    }
-
         
         // 初始化加载
         document.addEventListener('DOMContentLoaded', () => {
-            initAd(); // 初始化广告逻辑
+            document.querySelector('.main-content').style.opacity = '1';
             loadRecentPosts(); // 加载文章
             
             // 为社交图标添加悬停效果
