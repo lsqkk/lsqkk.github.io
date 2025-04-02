@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克博客 | 蓝色奇夸克のBlog</title>
+    <title>蓝色奇夸克のBlog</title>
     <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="image/logo_blue.png" type="image/png">
     <base href="https://lsqkk.github.io/">
 </head>
 
-    
 <body>
     <!-- 广告页 -->
     <div class="ad-container" style="background: url('image/ad.png') no-repeat center center; background-size: cover;">
@@ -24,7 +23,7 @@
     <div class="main-content">
         <div class="header-placeholder"></div>
         <div class="header">
-            <h1>蓝色奇夸克 - 个人博客</h1>
+            <h1>夸克博客</h1>
         </div>
         <div class="nav">
             <ul>
@@ -40,69 +39,86 @@
                 </li>
             </ul>
         </div>
-        <div class="content" style=" background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;" >
+        <div class="content" style="background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
         
             <div class="search-results">
                 <div id="searchResults"></div>
             </div>
-            <div style="width: 100%; text-align: center;">
-                  <div style="width: 80%; margin: 0 auto; ">
-                    <p style="color: rgba(255,255,255, 0.7);line-height: 15px; font-size: 10px;"><span id="meirishici-sentence">正在加载每日诗词....</span><script src="https://sdk.meirishici.top/v2/browser/meirishici.js" charset="utf-8"></script></p>
-                  </div>
+            
+            <div class="poetry-container" style="width: 100%; text-align: center; margin: 10px 0;">
+                <div style="width: 80%; margin: 0 auto; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 10px; padding: 8px;">
+                    <p style="color: rgba(255,255,255,0.9); line-height: 1.5; font-size: 12px; margin: 0;"><span id="meirishici-sentence">正在加载每日诗词....</span><script src="https://sdk.meirishici.top/v2/browser/meirishici.js" charset="utf-8"></script></p>
+                </div>
             </div>
                 
-            <div class="moren" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.5);">
-                <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); overflow: hidden; position: absolute; top:70px; left: 50%; transform: translate(-50%, -50%)"></a>
+            <div class="moren" style="box-shadow: 0 0 15px rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:70px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
                 <br><br><br><br><br><br>
-                <h1 style="text-align:center; color: rgb(255,255,255);text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5); ">蓝色奇夸克 </h1>
-                <div class="centered-div"> 
-                    <a href="https://github.com/lsqkk" target="blank" style="text-decoration: none;"><img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block;"> </a>
-                    <a href="https://space.bilibili.com/2105459088" target="blank" style="text-decoration: none;"><img src="https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png"  style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block;"> </a>
-                    <a href="https://www.acfun.cn/u/76355091" target="blank" style="text-decoration: none;"><img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block;"> </a>
-                    <a href="https://tuxun.fun/user/852269" target="blank" style="text-decoration: none;"><img src="https://b68res.daai.fun/tuxun/images/app/logo.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block;"> </a>
+                <h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;">蓝色奇夸克</h1>
+                <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"> 
+                    <a href="https://github.com/lsqkk" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                        <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                    </a>
+                    <a href="https://space.bilibili.com/2105459088" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                        <img src="https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                    </a>
+                    <a href="https://www.acfun.cn/u/76355091" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                    </a>
+                    <a href="https://tuxun.fun/user/852269" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                        <img src="https://b68res.daai.fun/tuxun/images/app/logo.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                    </a>
                 </div>
-                <br>
-                <h2>欢迎来到我<a href="games" style="text-decoration: none;color: #000;">的</a>博客</h2>
-                <p>这里记录了我的学习历程、生活感悟和<a href="tool.html" style="text-decoration: none;color: #000;">技术</a>分享。</p>
+                <h2 style="color: #333; text-align: center; margin-bottom: 20px;">欢迎来到我的博客</h2>
+                <p style="text-align: center; color: #555; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;">这里记录了我的学习历程、生活感悟和技术分享。</p>
                 <div class="centered-div">  
                     <img src="image/INTJ.gif" alt="intj">  
                 </div>
-                <div class="recent-posts">
-                        <h2 class="recent-header">📚 最新文章</h2>
-                        <div id="recent-posts"></div>
-                        <a href="article-list.html"><h3 class="recent-header" style="text-decoration: none;">更多文章</h3></a>
+                <div class="recent-posts" style="margin-top: 30px;">
+                    <h2 class="recent-header">📚 最新文章</h2>
+                    <div id="recent-posts"></div>
+                    <a href="article-list.html" style="text-decoration: none;">
+                        <h3 class="recent-header" style="color: #0366d6; text-align: right; margin-top: 10px;">更多文章 →</h3>
+                    </a>
+                </div>
+                <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0;">
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="games/dati" style="text-decoration: none;color: #000; display: block;">每日答题</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="games" style="text-decoration: none;color: #000; display: block;">夸克游戏</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="tool.html" style="text-decoration: none;color: #000; display: block;">工具箱</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="chat" style="text-decoration: none;color: #000; display: block;">聊天室</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="ds" style="text-decoration: none;color: #000; display: block;">DeepSeek</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="estest" style="text-decoration: none;color: #000; display: block;">科技光谱</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" style="text-decoration: none;color: #000; display: block;">留言板</a></div>
+                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="https://bsquark.github.io" style="text-decoration: none;color: #000; display: block;">新版博客</a></div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.5); padding: 15px; border-radius: 10px; text-align: center; margin: 20px 0;">
+                    <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>欢迎<a href="app.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
+                </div>
+                
+                <div style="text-align: center; margin: 15px 0;">
+                    <a href="log.html" style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a>
+                </div>
+                
+                <h3 style="text-align: center; color: #333; margin-bottom: 15px;">站主的航拍视频👇</h3>
+                <div style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; aspect-ratio: 2 / 1;"></iframe>
                 </div>
                 <br>
-<div style="   display: flex; justify-content: center;  flex-wrap: wrap;">
-<div class="zhuyebox"><a href="games/dati" style="text-decoration: none;color: #000;">每日答题</a></div>
-<div class="zhuyebox"><a href="games" style="text-decoration: none;color: #000;">夸克游戏</a></div>
-<div class="zhuyebox"><a href="tool.html" style="text-decoration: none;color: #000;">工具箱</a></div>
-<div class="zhuyebox"><a href="chat" style="text-decoration: none;color: #000;">聊天室</a></div>
-<div class="zhuyebox"><a href="ds" style="text-decoration: none;color: #000;">DeepSeek</a></div>
-<div class="zhuyebox"><a href="estest" style="text-decoration: none;color: #000;">科技光谱</a></div>
-<div class="zhuyebox"><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" style="text-decoration: none;color: #000;">留言板</a></div>
-<div class="zhuyebox"><a href="https://bsquark.github.io" style="text-decoration: none;color: #000;">新版博客</a></div>
-</div>
-                <br>
+                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, rgba(0,123,255,0.5), transparent); margin: 20px 0;">
+                
+                <div style="text-align: center; color: #666; font-size: 0.9em; padding: 10px;">
+                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                    一共<span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold;"></span>位小伙伴来过<span id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold;"></span>次
 
-                <p>想要更方便的阅读博文、移动端获得更好的阅读体验？欢迎<a href="app.apk" style="color: #000;">下载『夸克博客』APP</a>！</p>
-                <br>
-                <a href="log.html" style="text-decoration: none;color: #000;">更新日志</a>
-                <br>
-                <h3>站主的航拍视频👇</h3>
-                <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1"  scrolling="no"  border="0"  frameborder="no"  framespacing="0"  allowfullscreen="true"   style="width:100%; aspect-ratio: 2 / 1;"> </iframe>
-                <br>
-                <hr>
-                
-            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-                
-            一共<span id="busuanzi_value_site_uv"></span>位小伙伴来过<span id="busuanzi_value_site_pv"></span>次
-         </div>
-            
-        <div class="footer">
-            <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2025 蓝色奇夸克 - 个人博客</a>
-        </div>
+<p>© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights reserved.</p>
+                </div>
+            </div>
+
     </div>
+  </div>
+
+
 
     <script>
         // 广告页逻辑
@@ -137,43 +153,65 @@
 
 
         // 广告显示间隔时间（单位：毫秒）
-const AD_INTERVAL = 30 * 60 * 1000; // 30分钟
+        const AD_INTERVAL = 30 * 60 * 1000; // 30分钟
 
-// 检查是否需要显示广告
-function shouldShowAd() {
-    const lastAdTime = localStorage.getItem('lastAdTime');
-    if (!lastAdTime) {
-        return true; // 如果从未显示过广告，则显示
-    }
-    const currentTime = new Date().getTime();
-    return (currentTime - lastAdTime) > AD_INTERVAL; // 判断是否超过30分钟
-}
+        // 检查是否需要显示广告
+        function shouldShowAd() {
+            const lastAdTime = localStorage.getItem('lastAdTime');
+            if (!lastAdTime) {
+                return true; // 如果从未显示过广告，则显示
+            }
+            const currentTime = new Date().getTime();
+            return (currentTime - lastAdTime) > AD_INTERVAL; // 判断是否超过30分钟
+        }
 
-// 记录广告显示时间
-function recordAdTime() {
-    localStorage.setItem('lastAdTime', new Date().getTime());
-}
+        // 记录广告显示时间
+        function recordAdTime() {
+            localStorage.setItem('lastAdTime', new Date().getTime());
+        }
 
-// 初始化广告逻辑
-function initAd() {
-    if (shouldShowAd()) {
-        // 显示广告页
-        startCountdown();
-        document.querySelector('.skip-btn').addEventListener('click', skipAd);
-        recordAdTime(); // 记录广告显示时间
-    } else {
-        // 不显示广告页，直接隐藏广告容器
-        adContainer.style.display = 'none';
-        mainContent.classList.add('fade-in');
-    }
-}
+        // 初始化广告逻辑
+        function initAd() {
+            if (shouldShowAd()) {
+                // 显示广告页
+                startCountdown();
+                document.querySelector('.skip-btn').addEventListener('click', skipAd);
+                recordAdTime(); // 记录广告显示时间
+            } else {
+                // 不显示广告页，直接隐藏广告容器
+                adContainer.style.display = 'none';
+                mainContent.classList.add('fade-in');
+            }
+        }
 
         
-// 初始化加载
-document.addEventListener('DOMContentLoaded', () => {
-    initAd(); // 初始化广告逻辑
-    loadRecentPosts(); // 加载文章
-});
+        // 初始化加载
+        document.addEventListener('DOMContentLoaded', () => {
+            initAd(); // 初始化广告逻辑
+            loadRecentPosts(); // 加载文章
+            
+            // 为社交图标添加悬停效果
+            document.querySelectorAll('.social-icons a').forEach(icon => {
+                icon.addEventListener('mouseover', () => {
+                    icon.style.transform = 'translateY(-3px)';
+                });
+                icon.addEventListener('mouseout', () => {
+                    icon.style.transform = 'none';
+                });
+            });
+            
+            // 为导航盒子添加悬停效果
+            document.querySelectorAll('.zhuyebox').forEach(box => {
+                box.addEventListener('mouseover', () => {
+                    box.style.transform = 'translateY(-3px)';
+                    box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
+                });
+                box.addEventListener('mouseout', () => {
+                    box.style.transform = 'none';
+                    box.style.boxShadow = '0 0 15px rgba(255,255,255,0.5)';
+                });
+            });
+        });
 
         // 加载最近三篇文章
         async function loadRecentPosts() {
@@ -181,48 +219,68 @@ document.addEventListener('DOMContentLoaded', () => {
             const recentPosts = posts.slice(0, 3);  // 取前三条
             
             const list = recentPosts.map(post => `
-                <div class="post-item">
-                    <a class="post-title" href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
+                <div class="post-item" style="transition: all 0.3s ease;">
+                    <a class="post-title" href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
                         ${post.title}
                     </a>
-                    <div class="post-date" style="color: #666; font-size: 0.9em;">${post.date}</div>
+                    <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
                 </div>
             `).join('');
             
             document.getElementById('recent-posts').innerHTML = list;
+            
+            // 为文章项添加悬停效果
+            document.querySelectorAll('.post-item').forEach(item => {
+                item.addEventListener('mouseover', () => {
+                    item.style.transform = 'translateX(5px)';
+                    item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+                });
+                item.addEventListener('mouseout', () => {
+                    item.style.transform = 'none';
+                    item.style.boxShadow = 'none';
+                });
+            });
         }
 
 
-// 搜索博客功能
-async function searchBlog() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const posts = await fetch('posts.json').then(r => r.json());
-    const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+        // 搜索博客功能
+        async function searchBlog() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const posts = await fetch('posts.json').then(r => r.json());
+            const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
 
-    const searchResultsContainer = document.getElementById('searchResults');
-    searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
+            const searchResultsContainer = document.getElementById('searchResults');
+            searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
 
-    if (filteredPosts.length > 0) {
-        // 如果有匹配的博客，展示结果
-        filteredPosts.forEach(post => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'search-result-item';
-            resultItem.innerHTML = `
-                <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
-                    ${post.title}
-                </a>
-                <div style="color: #666; font-size: 0.9em;">${post.date}</div>
-            `;
-            searchResultsContainer.appendChild(resultItem);
-        });
-    } else {
-        // 如果没有匹配的博客，显示提示信息
-        searchResultsContainer.innerHTML = '<div style="color: #666;">未找到相关博客</div>';
-    }
-}
-
-        // 加载文章
-        loadRecentPosts();
+            if (filteredPosts.length > 0) {
+                // 如果有匹配的博客，展示结果
+                filteredPosts.forEach(post => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.style.transition = 'all 0.3s ease';
+                    resultItem.innerHTML = `
+                        <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
+                            ${post.title}
+                        </a>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
+                    `;
+                    searchResultsContainer.appendChild(resultItem);
+                    
+                    // 为搜索结果项添加悬停效果
+                    resultItem.addEventListener('mouseover', () => {
+                        resultItem.style.transform = 'translateX(5px)';
+                        resultItem.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+                    });
+                    resultItem.addEventListener('mouseout', () => {
+                        resultItem.style.transform = 'none';
+                        resultItem.style.boxShadow = 'none';
+                    });
+                });
+            } else {
+                // 如果没有匹配的博客，显示提示信息
+                searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
+            }
+        }
     </script>
 </body>
 </html>
