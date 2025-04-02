@@ -3,8 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Md-富文本转换器 - 蓝色奇夸克 - 个人博客</title>
-    <style>
+    <title>Markdown编辑器 | 夸克博客</title>
+    
+    <!-- 简化后的MathJax配置 -->
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            processEscapes: true
+        },
+        startup: {
+            pageReady: () => {
+                return MathJax.startup.defaultPageReady().then(() => {
+                    console.log('MathJax初始化完成');
+                    if (window.markdownReady) renderAll();
+                });
+            }
+        }
+    };
+    </script>
+
+    <!-- 使用可靠的CDN源，添加备用源 -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" 
+            onerror="loadMermaidFallback()"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <script>
+    // Mermaid备用加载方案
+    function loadMermaidFallback() {
+        const fallback = document.createElement('script');
+        fallback.src = 'https://unpkg.com/mermaid@10/dist/mermaid.min.js';
+        fallback.onload = function() {
+            initMermaid();
+            console.log('Mermaid备用源加载成功');
+        };
+        document.head.appendChild(fallback);
+    }
+
+    // 初始化Mermaid
+    function initMermaid() {
+        window.mermaid = window.mermaid || {};
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: { 
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    }
+
+    // 初始化Mermaid（主加载方案）
+    if (window.mermaid) {
+        initMermaid();
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #f9fafb;
+            --text-color: #374151;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --code-bg: #f3f4f6;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -12,29 +79,64 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             line-height: 1.6;
-            padding: 2rem;
-            background-color: #f5f5f5;
+            color: var(--text-color);
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 1400px;
+            margin: 2rem auto;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             padding: 2rem;
+            flex: 1;
+            width: calc(100% - 2rem);
         }
 
         .header {
             margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .title i {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #4338ca;
+            transform: translateY(-1px);
         }
 
         .grid {
@@ -43,77 +145,131 @@
             gap: 2rem;
         }
 
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .label {
-            display: block;
             font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .word-count {
+            font-size: 0.75rem;
+            color: #6b7280;
         }
 
         .textarea {
             width: 100%;
             height: 500px;
             padding: 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-family: monospace;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
             resize: vertical;
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            height: 100%;
         }
 
         .preview {
             width: 100%;
             height: 500px;
             padding: 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             overflow-y: auto;
             background-color: white;
+            font-size: 0.9375rem;
+            line-height: 1.7;
         }
 
-        .button-container {
+        .toolbar {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 0.5rem;
+            gap: 0.75rem;
         }
 
-        .copy-button {
+        .btn {
             display: inline-flex;
             align-items: center;
+            gap: 0.5rem;
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
             font-weight: 500;
-            color: #374151;
-            background-color: white;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .copy-button:hover {
-            background-color: #f3f4f6;
+        .btn:hover {
+            background-color: #4338ca;
+            transform: translateY(-1px);
         }
 
-        .copy-button svg {
-            width: 1rem;
-            height: 1rem;
-            margin-right: 0.5rem;
+        .btn i {
+            font-size: 0.875rem;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
         }
 
         /* Preview Styles */
         .preview h1 {
             font-size: 2em;
             margin: 0.67em 0;
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .preview h2 {
             font-size: 1.5em;
             margin: 0.83em 0;
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .preview h3 {
-            font-size: 1.17em;
+            font-size: 1.25em;
             margin: 1em 0;
         }
 
@@ -126,18 +282,27 @@
             margin: 1em 0;
         }
 
+        .preview blockquote {
+            margin: 1em 0;
+            padding: 0 1em;
+            color: #6b7280;
+            border-left: 4px solid var(--border-color);
+        }
+
         .preview code {
-            background-color: #f3f4f6;
+            background-color: var(--code-bg);
             padding: 0.2em 0.4em;
-            border-radius: 3px;
-            font-family: monospace;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.9em;
         }
 
         .preview pre {
-            background-color: #f3f4f6;
+            background-color: var(--code-bg);
             padding: 1em;
             border-radius: 6px;
             overflow-x: auto;
+            margin: 1em 0;
         }
 
         .preview pre code {
@@ -146,140 +311,381 @@
         }
 
         .preview a {
-            color: #2563eb;
+            color: var(--primary-color);
             text-decoration: none;
+            font-weight: 500;
         }
 
         .preview a:hover {
             text-decoration: underline;
         }
+
+        .preview table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+        }
+
+        .preview th, .preview td {
+            border: 1px solid var(--border-color);
+            padding: 0.5em 1em;
+        }
+
+        .preview th {
+            background-color: var(--secondary-color);
+        }
+
+        .preview img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
+
+        .preview hr {
+            border: none;
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 1.5em 0;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 100;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.875rem;
+           text-decoration: none;
+        }
+
+/* 添加或更新这些样式 */
+.math-block {
+    margin: 1em 0;
+    padding: 1em;
+    overflow-x: auto;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.math-inline {
+    background-color: #f8f9fa;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+/* MathJax生成的公式样式 */
+.mjx-chtml {
+    outline: none;
+}
+/* 图片样式 */
+.md-image {
+    max-width: 100%;
+    border-radius: 4px;
+    margin: 0.5em 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 链接样式 */
+.md-link {
+    color: #4f46e5;
+    text-decoration: none;
+    border-bottom: 1px solid #c7d2fe;
+    transition: all 0.3s;
+}
+
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="title">Md-富文本转换器</h1>
+            <h1 class="title">
+                夸克 Markdown 编辑器
+            </h1>
+            <a href="tool.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回工具箱
+            </a>
         </div>
         
-        <li><a href="tool.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff;">返回工具箱</a></li>
-        
         <div class="grid">
-            <div>
-                <label class="label">Markdown 输入</label>
+            <div class="panel">
+                <div class="panel-header">
+                    <label class="label">Markdown 输入</label>
+                    <span id="word-count" class="word-count">0 字</span>
+                </div>
                 <textarea
                     id="markdown-input"
                     class="textarea"
                     placeholder="在这里输入 Markdown 文本..."
+                    spellcheck="false"
                 ></textarea>
-            </div>
-            <div>
-                <div class="button-container">
-                    <button id="copy-button" class="copy-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                        </svg>
-                        复制富文本
+                <div class="toolbar">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <i class="fas fa-trash-alt"></i>
+                        清空
+                    </button>
+                    <button id="sample-btn" class="btn btn-secondary">
+                        <i class="fas fa-lightbulb"></i>
+                        示例
                     </button>
                 </div>
-                <div id="preview" class="preview"></div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <label class="label">实时预览</label>
+                </div>
+                <div class="preview-container">
+                    <div id="preview" class="preview"></div>
+                    <div class="toolbar">
+                        <button id="copy-html-btn" class="btn">
+                            <i class="fas fa-code"></i>
+                            复制HTML
+                        </button>
+                        <button id="copy-text-btn" class="btn">
+                            <i class="fas fa-text"></i>
+                            复制纯文本
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // 获取DOM元素
-        const markdownInput = document.getElementById('markdown-input');
-        const preview = document.getElementById('preview');
-        const copyButton = document.getElementById('copy-button');
+        <a href="https://lsqkk.github.io/post.html?file=copyright.md" class="footer">© 2025 蓝色奇夸克 / 夸克博客 All rights reserved. </a>
 
-        // Markdown转换函数
-        function convertToHTML(md) {
-            let html = md;
-            
-            // Headers
-            html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-            html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-            html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-            
-            // Bold
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
-            
-            // Italic
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            html = html.replace(/_(.*?)_/g, '<em>$1</em>');
-            
-            // Lists
-            html = html.replace(/^\s*\d+\.\s+(.*)$/gm, '<ol><li>$1</li></ol>');
-            html = html.replace(/^\s*[\-\*]\s+(.*)$/gm, '<ul><li>$1</li></ul>');
-            
-            // Links
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-            
-            // Code blocks
-            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-            
-            // Inline code
-            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-            
-            // Paragraphs
-            html = html.replace(/\n\n([^<].*)/g, '<p>$1</p>');
-            
-            return html;
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">操作成功</span>
+    </div>
+
+<script>
+    // DOM 元素
+    const markdownInput = document.getElementById('markdown-input');
+    const preview = document.getElementById('preview');
+    const wordCount = document.getElementById('word-count');
+    const clearBtn = document.getElementById('clear-btn');
+    const sampleBtn = document.getElementById('sample-btn');
+    const copyHtmlBtn = document.getElementById('copy-html-btn');
+    const copyTextBtn = document.getElementById('copy-text-btn');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+
+    // 示例 Markdown 内容
+    const sampleMarkdown = `# Markdown 与 TeX 公式示例
+
+除支持markdown全部常见语法外，本编辑器还支持$TeX$ 和 $mermaid$语法，喜欢的话请收藏本工具~
+
+[这是示例链接](https://lsqkk.github.io)
+
+## 行内公式
+这是行内公式 $E=mc^2$ 和 $\\frac{d}{dx}f(x)=\\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}$ 的例子。
+
+## 块级公式
+$$
+\\int_a^b f(x)dx = F(b) - F(a)
+$$
+
+## 代码块中的公式不会被转换：
+\`\`\`  $这不是公式$
+\`\`\`
+`;
+
+    // 显示 Toast 通知
+    function showToast(message, isError = false) {
+        toastMessage.textContent = message;
+        toast.className = isError ? 'toast error show' : 'toast show';
+        setTimeout(() => {
+            toast.className = 'toast';
+        }, 3000);
+    }
+
+    // 更新字数统计
+    function updateWordCount() {
+        const text = markdownInput.value;
+        const count = text.trim() === '' ? 0 : text.length;
+        wordCount.textContent = `${count} 字`;
+    }
+
+    // 手动触发 MathJax 渲染
+function renderAll() {
+    try {
+        // 渲染MathJax
+        if (window.MathJax?.typeset) {
+            MathJax.typeset();
         }
-
-        // 实时预览
-        markdownInput.addEventListener('input', function() {
-            preview.innerHTML = convertToHTML(this.value);
-        });
-
-        // 复制富文本
-        copyButton.addEventListener('click', function() {
-            const htmlContent = preview.innerHTML;
-            
-            // 创建一个临时容器来保存HTML内容
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = htmlContent;
-            
-            // 使用Clipboard API复制富文本
+        
+        // 渲染Mermaid
+        if (window.mermaid?.init) {
             try {
-                const clipboardData = new DataTransfer();
-                clipboardData.setData('text/html', htmlContent);
-                clipboardData.setData('text/plain', tempDiv.textContent);
-                
-                navigator.clipboard.write([
-                    new ClipboardItem({
-                        'text/html': new Blob([htmlContent], { type: 'text/html' }),
-                        'text/plain': new Blob([tempDiv.textContent], { type: 'text/plain' })
-                    })
-                ]).then(() => {
-                    alert('富文本已复制到剪贴板！');
-                }).catch(err => {
-                    console.error('复制失败:', err);
-                    fallbackCopy(tempDiv.textContent);
-                });
-            } catch (err) {
-                console.error('复制失败:', err);
-                fallbackCopy(tempDiv.textContent);
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            } catch (mermaidErr) {
+                console.error('Mermaid渲染错误:', mermaidErr);
             }
-        });
-
-        // 降级复制方案
-        function fallbackCopy(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                alert('内容已复制到剪贴板（纯文本格式）');
-            } catch (err) {
-                console.error('复制失败:', err);
-                alert('复制失败，请手动复制');
-            }
-            document.body.removeChild(textarea);
+        } else {
+            console.warn('Mermaid未加载完成');
         }
-    </script>
-    <div style="background-color: #007bff; color: #fff; text-align: center; padding: 10px 20px; position: fixed; bottom: 0; width: 100%;">© 2025 蓝色奇夸克 - 个人博客 </div>
+    } catch (err) {
+        console.error('渲染错误:', err);
+    }
+}
+
+
+    // Markdown 转 HTML 函数
+function convertToHTML(md) {
+
+    // 1. 首先保护Mermaid代码块
+    const mermaidBlocks = [];
+    let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
+        mermaidBlocks.push(code.trim());
+        return `<div class="mermaid">${code.trim()}</div>`;
+    });
+
+    // 2. 保护普通代码块（修改原有代码块保护）
+    const codeBlocks = [];
+    html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+        codeBlocks.push(code);
+        return `\x1BCODE${codeBlocks.length-1}\x1B`;
+    });
+
+    // 2. 保护行内代码（反引号包裹的内容）
+    const inlineCodes = [];
+    html = html.replace(/`([^`]+)`/g, (match, code) => {
+        inlineCodes.push(code);
+        return `\x1BINLINE${inlineCodes.length-1}\x1B`;
+    });
+
+    // 3. 转换图片语法 ![alt](src)
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
+        return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
+    });
+
+    // 4. 转换链接语法 [text](url)
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+        return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
+    });
+
+    // 3. 转换块级公式（$$...$$）
+    html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
+        const cleaned = formula.trim();
+        return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
+    });
+
+    // 4. 转换行内公式（$...$）
+    html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
+        return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
+    });
+
+    // 5. 标准Markdown转换
+    html = html
+        // 标题
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        // 粗体和斜体
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // 列表
+        .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
+        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
+        // 恢复列表结构
+        .replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>')
+        .replace(/(<li>.*<\/li>)+/g, (m) => 
+            m.match(/^\d/) ? `<ol>${m}</ol>` : m
+        )
+        // 链接和图片
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+
+    // 6. 恢复被保护的内容（代码块和行内代码）
+    html = html.replace(/\x1BCODE(\d+)\x1B/g, (_, n) => 
+        `<pre><code>${codeBlocks[n]}</code></pre>`
+    );
+    html = html.replace(/\x1BINLINE(\d+)\x1B/g, (_, n) => 
+        `<code>${inlineCodes[n]}</code>`
+    );
+
+    // 7. 处理段落和换行
+html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
+
+    return html;
+}
+    // 实时预览
+    markdownInput.addEventListener('input', function() {
+        preview.innerHTML = convertToHTML(this.value);
+        updateWordCount();
+ renderAll();
+    });
+
+    // 其他事件监听保持不变...
+    clearBtn.addEventListener('click', function() {
+        markdownInput.value = '';
+        preview.innerHTML = '';
+        updateWordCount();
+        showToast('已清空输入');
+    });
+
+    sampleBtn.addEventListener('click', function() {
+        markdownInput.value = sampleMarkdown;
+        preview.innerHTML = convertToHTML(sampleMarkdown);
+        updateWordCount();
+        renderAll();
+        showToast('已加载示例内容');
+    });
+
+    copyHtmlBtn.addEventListener('click', function() {
+        const htmlContent = preview.innerHTML;
+        navigator.clipboard.writeText(htmlContent).then(() => {
+            showToast('HTML已复制到剪贴板');
+        }).catch(err => {
+            console.error('复制失败:', err);
+            showToast('复制失败，请重试', true);
+        });
+    });
+
+    copyTextBtn.addEventListener('click', function() {
+        const textContent = preview.textContent;
+        navigator.clipboard.writeText(textContent).then(() => {
+            showToast('纯文本已复制到剪贴板');
+        }).catch(err => {
+            console.error('复制失败:', err);
+            showToast('复制失败，请重试', true);
+        });
+    });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        updateWordCount();
+        // 初始加载示例
+        sampleBtn.click();
+    });
+</script>
+
 </body>
 </html>
