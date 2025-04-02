@@ -121,68 +121,67 @@
 
 
     <script>
-        // 广告页逻辑
-        let countdown = 4;
-        const countdownElement = document.querySelector('.countdown');
-        const adContainer = document.querySelector('.ad-container');
-        const mainContent = document.querySelector('.main-content');
-        let timer;
+    let countdown = 4;
+    const countdownElement = document.querySelector('.countdown');
+    const adContainer = document.querySelector('.ad-container');
+    const mainContent = document.querySelector('.main-content');
+    let timer;
 
-        function startCountdown() {
-            timer = setInterval(() => {
-                countdown -= 1;
-                countdownElement.textContent = countdown;
+    function startCountdown() {
+        timer = setInterval(() => {
+            countdown -= 1;
+            countdownElement.textContent = countdown;
 
-                if (countdown <= 0) {
-                    skipAd();
-                }
-            }, 1000);
-        }
-
-        function skipAd() {
-            clearInterval(timer);
-            // 广告页渐隐
-            adContainer.classList.add('fade-out');
-            // 主页内容渐显
-            mainContent.classList.add('fade-in');
-            // 广告页完全隐藏后移除
-            setTimeout(() => {
-                adContainer.style.display = 'none';
-            }, 500); // 500ms 是渐隐动画的持续时间
-        }
-
-
-        // 广告显示间隔时间（单位：毫秒）
-        const AD_INTERVAL = 30 * 60 * 1000; // 30分钟
-
-        // 检查是否需要显示广告
-        function shouldShowAd() {
-            const lastAdTime = localStorage.getItem('lastAdTime');
-            if (!lastAdTime) {
-                return true; // 如果从未显示过广告，则显示
+            if (countdown <= 0) {
+                skipAd();
             }
-            const currentTime = new Date().getTime();
-            return (currentTime - lastAdTime) > AD_INTERVAL; // 判断是否超过30分钟
-        }
+        }, 1000);
+    }
 
+    function skipAd() {
+        clearInterval(timer);
         // 记录广告显示时间
-        function recordAdTime() {
-            localStorage.setItem('lastAdTime', new Date().getTime());
-        }
+        recordAdTime();
+        // 广告页渐隐
+        adContainer.classList.add('fade-out');
+        // 主页内容渐显
+        mainContent.classList.add('fade-in');
+        // 广告页完全隐藏后移除
+        setTimeout(() => {
+            adContainer.style.display = 'none';
+        }, 500); // 500ms 是渐隐动画的持续时间
+    }
 
-        // 初始化广告逻辑
-        function initAd() {
-            if (shouldShowAd()) {
-                // 显示广告页
-                startCountdown();
-                document.querySelector('.skip-btn').addEventListener('click', skipAd);
-                recordAdTime(); // 记录广告显示时间
-            } else {
-                // 不显示广告页，直接隐藏广告容器
-                adContainer.style.display = 'none';
-                mainContent.classList.add('fade-in');
-            }
+    // 广告显示间隔时间（单位：毫秒）
+    const AD_INTERVAL = 30 * 60 * 1000; // 30分钟
+
+    // 检查是否需要显示广告
+    function shouldShowAd() {
+        const lastAdTime = localStorage.getItem('lastAdTime');
+        if (!lastAdTime) {
+            return true; // 如果从未显示过广告，则显示
         }
+        const currentTime = new Date().getTime();
+        return (currentTime - lastAdTime) > AD_INTERVAL; // 判断是否超过30分钟
+    }
+
+    // 记录广告显示时间
+    function recordAdTime() {
+        localStorage.setItem('lastAdTime', new Date().getTime());
+    }
+
+    // 初始化广告逻辑
+    function initAd() {
+        if (shouldShowAd()) {
+            // 显示广告页
+            startCountdown();
+            document.querySelector('.skip-btn').addEventListener('click', skipAd);
+        } else {
+            // 不显示广告页，直接隐藏广告容器（不显示渐隐效果）
+            adContainer.style.display = 'none';
+            mainContent.style.opacity = '1'; // 直接显示内容，不加动画
+        }
+    }
 
         
         // 初始化加载
