@@ -3,6 +3,9 @@
 欢迎来到蓝色奇夸克的个人博客，分享技术、生活与思考。
 
 以下是更新日志。
+# 25.4.2
+1. 优化 - **Markdown-富文本转换器**全面升级为**夸克 Markdown 编辑器**，升级UI并支持实时渲染、TeX和mermaid语法。
+   [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250402113721166.png)](https://lsqkk.github.io/tool/tool-md.html)
 
 # 25.4.1
 1. 新增 - 文章列表**Tag**功能
