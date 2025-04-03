@@ -210,22 +210,28 @@
                 searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
             }
         }
-        // 统计功能
-function updateStatistics() {
+// 新增PV/UV存储功能
+function storeStatistics() {
+    const pv = document.getElementById('busuanzi_value_site_pv').innerText;
+    const uv = document.getElementById('busuanzi_value_site_uv').innerText;
     const today = new Date().toISOString().split('T')[0];
-    const stats = {
-        visitors: parseInt(document.getElementById('busuanzi_value_site_uv').innerText) || 0,
-        visits: parseInt(document.getElementById('busuanzi_value_site_pv').innerText) || 0
-    };
     
-    let history = JSON.parse(localStorage.getItem('visitStats') || '{}');
-    history[today] = stats;
-    localStorage.setItem('visitStats', JSON.stringify(history));
+    localStorage.setItem(today, JSON.stringify({
+        pv: parseInt(pv),
+        uv: parseInt(uv),
+        timestamp: new Date().getTime()
+    }));
 }
 
-// 在DOM加载完成后调用
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(updateStatistics, 2000); // 等待不蒜子加载
+// 监听不蒜子数据变化
+new MutationObserver(() => {
+    if(document.getElementById('busuanzi_value_site_pv').innerText && 
+       document.getElementById('busuanzi_value_site_uv').innerText) {
+        storeStatistics();
+    }
+}).observe(document.getElementById('busuanzi_value_site_pv'), {
+    childList: true,
+    subtree: true
 });
     </script>
 
