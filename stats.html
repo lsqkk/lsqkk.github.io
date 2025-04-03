@@ -96,6 +96,13 @@ function loadData() {
     data.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
+// 计算合适的刻度步长
+function calculateStep(maxValue) {
+    const niceSteps = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+    const roughStep = maxValue / 5;
+    return niceSteps.find(step => step >= roughStep) || niceSteps[niceSteps.length - 1];
+}
+
 // 生成图表数据
 function prepareData(days = 30) {
     const cutoffDate = new Date();
@@ -104,31 +111,53 @@ function prepareData(days = 30) {
     const filtered = data.filter(d => new Date(d.date) >= cutoffDate);
     const labels = filtered.map(d => d.date);
     
+    // 计算PV和UV的最大值
+    const maxPV = Math.max(...filtered.map(d => d.pv), 0);
+    const maxUV = Math.max(...filtered.map(d => d.uv), 0);
+    
+    // 计算合适的刻度
+    const pvStep = calculateStep(maxPV);
+    const uvStep = calculateStep(maxUV);
+    
+    // 计算缩放比例，使UV高度是PV的8倍
+    const scaleRatio = (maxPV / maxUV) * 8;
+    
     return {
         labels,
         datasets: [{
             label: '访问量 (PV)',
             data: filtered.map(d => d.pv),
             borderColor: '#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
             tension: 0.3,
-            yAxisID: 'y'
+            yAxisID: 'y',
+            borderWidth: 2,
+            pointRadius: 4
         }, {
             label: '访客数 (UV)',
-            data: filtered.map(d => d.uv * 8), // UV缩放8倍
+            data: filtered.map(d => d.uv * scaleRatio),
             borderColor: '#3498db',
+            backgroundColor: 'rgba(52, 152, 219, 0.1)',
             tension: 0.3,
-            yAxisID: 'y1'
-        }]
+            yAxisID: 'y1',
+            borderWidth: 2,
+            pointRadius: 4
+        }],
+        scaleRatio
     };
 }
 
 // 初始化图表
 function initChart() {
     const ctx = document.getElementById('statsChart').getContext('2d');
+    const chartData = prepareData(30);
     
     chart = new Chart(ctx, {
         type: 'line',
-        data: prepareData(30),
+        data: {
+            labels: chartData.labels,
+            datasets: chartData.datasets
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -137,7 +166,10 @@ function initChart() {
                     type: 'linear',
                     display: true,
                     position: 'left',
-                    title: {text: '访问量 (PV)', display: true}
+                    title: {text: '访问量 (PV)', display: true},
+                    ticks: {
+                        stepSize: calculateStep(Math.max(...chartData.datasets[0].data))
+                    }
                 },
                 y1: {
                     type: 'linear',
@@ -147,8 +179,10 @@ function initChart() {
                     grid: {drawOnChartArea: false},
                     ticks: {
                         callback: function(value) {
-                            return value / 8; // 还原实际UV值
-                        }
+                            // 还原实际UV值
+                            return Math.round(value / chartData.scaleRatio);
+                        },
+                        stepSize: calculateStep(Math.max(...chartData.datasets[1].data) / chartData.scaleRatio)
                     }
                 }
             },
@@ -159,14 +193,26 @@ function initChart() {
                             let label = context.dataset.label || '';
                             if (label) label += ': ';
                             if (context.datasetIndex === 1) {
-                                label += (context.raw / 8).toLocaleString();
+                                // 还原UV实际值
+                                label += Math.round(context.raw / chartData.scaleRatio).toLocaleString();
                             } else {
                                 label += context.raw.toLocaleString();
                             }
                             return label;
                         }
                     }
+                },
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
                 }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false
             }
         }
     });
@@ -174,8 +220,28 @@ function initChart() {
 
 // 更新图表
 function updateChart(days) {
-    chart.data = prepareData(days);
+    const chartData = prepareData(days);
+    chart.data.labels = chartData.labels;
+    chart.data.datasets[0].data = chartData.datasets[0].data;
+    chart.data.datasets[1].data = chartData.datasets[1].data;
+    
+    // 更新Y轴刻度
+    chart.options.scales.y.ticks.stepSize = calculateStep(Math.max(...chartData.datasets[0].data));
+    chart.options.scales.y1.ticks.stepSize = calculateStep(Math.max(...chartData.datasets[1].data) / chartData.scaleRatio);
+    
+    // 更新缩放比例
+    chart.options.scales.y1.ticks.callback = function(value) {
+        return Math.round(value / chartData.scaleRatio);
+    };
+    
     chart.update();
+    
+    // 更新日期范围显示
+    const endDate = new Date(data[data.length-1]?.date);
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - days);
+    document.getElementById('dateRange').textContent = 
+        `日期范围: ${startDate.toISOString().split('T')[0]} 至 ${endDate.toISOString().split('T')[0]}`;
 }
 
 // 初始化页面
@@ -185,19 +251,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const dayRange = document.getElementById('dayRange');
     const dayCount = document.getElementById('dayCount');
-    const dateRange = document.getElementById('dateRange');
 
     dayRange.addEventListener('input', (e) => {
         const days = parseInt(e.target.value);
         dayCount.textContent = `${days} 天`;
         updateChart(days);
-        
-        const endDate = new Date(data[data.length-1]?.date);
-        const startDate = new Date(endDate);
-        startDate.setDate(startDate.getDate() - days);
-        
-        dateRange.textContent = `日期范围: ${startDate.toISOString().split('T')[0]} 至 ${endDate.toISOString().split('T')[0]}`;
     });
+    
+    // 初始日期范围显示
+    const endDate = new Date(data[data.length-1]?.date);
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - 30);
+    document.getElementById('dateRange').textContent = 
+        `日期范围: ${startDate.toISOString().split('T')[0]} 至 ${endDate.toISOString().split('T')[0]}`;
 });
 </script>
 </body>
