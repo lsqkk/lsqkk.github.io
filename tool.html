@@ -197,47 +197,6 @@
                 <p class="tech-intro"><span class="tech-highlight">"有新想法？"</span> - 欢迎上方留言板留言！</p>
             </div>
             
-            <div class="tech-grid">
-                <!-- 时间工具 -->
-                <div class="tech-card">
-                    <h3 class="tech-subtitle">⏱️ 时间工具</h3>
-                    <a href="tool/tool-time.html" class="tech-link" target="blank">🕒 经典时钟</a>
-                    <a href="tool/pomodoro.html" class="tech-link" target="blank">🍅 智能番茄钟</a>
-                </div>
-                
-                <!-- 天气查询 -->
-                <div class="tech-card">
-                    <h3 class="tech-subtitle">🌤️ 天气查询</h3>
-                    <a href="tool/tool-weather1.html" class="tech-link" target="blank">☀️ 当前天气</a>
-                    <a href="tool/tool-weather2.html" class="tech-link" target="blank">🌦️ 天气查询</a>
-                </div>
-                
-                <!-- 文本工具 -->
-                <div class="tech-card">
-                    <h3 class="tech-subtitle">✍️文本工具</h3>
-                    <a href="tool/tool-md.html" class="tech-link" target="blank">📝 Markdown 编辑器</a>
-                    <a href="tool/aigc.html" class="tech-link" target="blank">📝 AIGC 检查</a>
-                    <a href="ds" class="tech-link" target="blank">📝 DeepSeek（需密钥）</a>
-		    <a href="tool/tool-audio2txt.html" class="tech-link" target="blank">📻 语音识别</a>
-                </div>
-
-                <!-- 其他 -->
-                <div class="tech-card">
-                    <h3 class="tech-subtitle">其他</h3>
-                    <a href="estest" class="tech-link" target="blank">📝 科技伦理立场测试</a>
-                    <a href="games" class="tech-link" target="blank">🎮 点此玩游戏</a>
-		    <a href="https://cn.bing.com/" class="tech-link" target="blank">🔍 便捷搜索</a>
-                </div>
-                
-                <!-- 编辑博客 -->
-                <div class="tech-card">
-                    <h3 class="tech-subtitle">🔐 博客管理（站主专用）</h3>
-                    <a href="https://github.com/lsqkk/lsqkk.github.io/tree/main" class="tech-link" target="blank">📂 博客管理</a>
-                    <a href="https://github.com/lsqkk/lsqkk.github.io/new/main" class="tech-link" target="blank">🆕 新建文件</a>
-                    <a href="https://github.com/lsqkk/lsqkk.github.io/upload/main" class="tech-link" target="blank">⬆️ 上传文件</a>
-		    <a href="https://lsqkk.github.io/tool/stats.html" class="tech-link" target="blank">访问量</a>
-                </div>
-            </div>
     </div>
     
     <div style="    color: #fff;text-align: center;  padding: 20px 20px;">
@@ -356,5 +315,43 @@
             });
         });
     </script>
+<script>
+// 加载工具数据并渲染
+async function loadTools() {
+    try {
+        const response = await fetch('tool.json');
+        const data = await response.json();
+        const container = document.getElementById('tools-container');
+        
+        data.categories.forEach(category => {
+            const card = document.createElement('div');
+            card.className = 'tech-card';
+            
+            const title = document.createElement('h3');
+            title.className = 'tech-subtitle';
+            title.textContent = category.name;
+            card.appendChild(title);
+            
+            category.tools.forEach(tool => {
+                const link = document.createElement('a');
+                link.className = 'tech-link';
+                link.href = tool.url;
+                link.textContent = tool.name;
+                link.target = tool.target || '_self';
+                card.appendChild(link);
+            });
+            
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('加载工具数据失败:', error);
+    }
+}
+
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', () => {
+    loadTools();
+});
+</script>
 </body>
 </html>
