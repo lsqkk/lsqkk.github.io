@@ -112,30 +112,6 @@
 
 
     <script>
-            function storeVisitData() {
-        const today = new Date().toISOString().split('T')[0]; // 获取当前日期 YYYY-MM-DD
-        const uv = document.getElementById('busuanzi_value_site_uv').textContent;
-        const pv = document.getElementById('busuanzi_value_site_pv').textContent;
-        
-        // 获取现有数据或初始化
-        let visitData = JSON.parse(localStorage.getItem('visitData') || {};
-        
-        // 更新当天数据
-        visitData[today] = {
-            uv: parseInt(uv) || 0,
-            pv: parseInt(pv) || 0,
-            timestamp: new Date().getTime()
-        };
-        
-        // 存储回 localStorage
-        localStorage.setItem('visitData', JSON.stringify(visitData));
-    }
-
-    // 在 DOM 加载完成后调用
-    document.addEventListener('DOMContentLoaded', () => {
-        // 等待不蒜子统计加载完成
-        setTimeout(storeVisitData, 2000); // 2秒后执行，确保统计已加载
-    });
         
         // 初始化加载
         document.addEventListener('DOMContentLoaded', () => {
@@ -233,6 +209,30 @@
                 searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
             }
         }
+                    function storeVisitData() {
+        const today = new Date().toISOString().split('T')[0]; // 获取当前日期 YYYY-MM-DD
+        const uv = document.getElementById('busuanzi_value_site_uv').textContent;
+        const pv = document.getElementById('busuanzi_value_site_pv').textContent;
+        
+        // 获取现有数据或初始化
+        let visitData = JSON.parse(localStorage.getItem('visitData') || {};
+        
+        // 更新当天数据
+        visitData[today] = {
+            uv: parseInt(uv) || 0,
+            pv: parseInt(pv) || 0,
+            timestamp: new Date().getTime()
+        };
+        
+        // 存储回 localStorage
+        localStorage.setItem('visitData', JSON.stringify(visitData));
+    }
+
+    // 在 DOM 加载完成后调用
+    document.addEventListener('DOMContentLoaded', () => {
+        // 等待不蒜子统计加载完成
+        setTimeout(storeVisitData, 2000); // 2秒后执行，确保统计已加载
+    });
     </script>
 </body>
 </html>
