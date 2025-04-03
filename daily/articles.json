@@ -1,7 +1,7 @@
 {
-    "articles": [
+    "2025-04-01": [
         {
-            "id": "1",
+            "id": "20250401-1",
             "title": "如何系统地学习机器学习？",
             "author": "李沐",
             "url": "https://zhuanlan.zhihu.com/p/25005808",
@@ -9,7 +9,7 @@
             "tags": ["机器学习", "学习路径"]
         },
         {
-            "id": "2",
+            "id": "20250401-2",
             "title": "有哪些值得推荐的数据可视化工具？",
             "author": "数据科学",
             "url": "https://zhuanlan.zhihu.com/p/12345678",
@@ -17,15 +17,17 @@
             "tags": ["数据可视化", "工具"]
         },
         {
-            "id": "3",
+            "id": "20250401-3",
             "title": "前端工程师的自我修养",
             "author": "前端开发",
             "url": "https://zhuanlan.zhihu.com/p/23456789",
             "readTime": 12,
             "tags": ["前端", "职业发展"]
-        },
+        }
+    ],
+    "2025-04-02": [
         {
-            "id": "4",
+            "id": "20250402-1",
             "title": "Python 3.10 新特性详解",
             "author": "Python之禅",
             "url": "https://zhuanlan.zhihu.com/p/34567890",
@@ -33,7 +35,7 @@
             "tags": ["Python", "编程"]
         },
         {
-            "id": "5",
+            "id": "20250402-2",
             "title": "如何高效地进行代码审查？",
             "author": "工程效能",
             "url": "https://zhuanlan.zhihu.com/p/45678901",
@@ -41,15 +43,17 @@
             "tags": ["代码审查", "最佳实践"]
         },
         {
-            "id": "6",
+            "id": "20250402-3",
             "title": "分布式系统设计模式",
             "author": "系统架构",
             "url": "https://zhuanlan.zhihu.com/p/56789012",
             "readTime": 20,
             "tags": ["分布式", "架构"]
-        },
+        }
+    ],
+    "2025-04-03": [
         {
-            "id": "7",
+            "id": "20250403-1",
             "title": "用户体验设计的七大原则",
             "author": "UX设计",
             "url": "https://zhuanlan.zhihu.com/p/67890123",
@@ -57,12 +61,28 @@
             "tags": ["用户体验", "设计"]
         },
         {
-            "id": "8",
+            "id": "20250403-2",
             "title": "深入理解React Hooks",
             "author": "前端进阶",
             "url": "https://zhuanlan.zhihu.com/p/78901234",
             "readTime": 14,
             "tags": ["React", "前端"]
+        },
+        {
+            "id": "20250403-3",
+            "title": "人工智能在医疗领域的应用现状",
+            "author": "AI医疗",
+            "url": "https://zhuanlan.zhihu.com/p/89012345",
+            "readTime": 18,
+            "tags": ["人工智能", "医疗"]
+        },
+        {
+            "id": "20250403-4",
+            "title": "2025年前端技术趋势预测",
+            "author": "技术前瞻",
+            "url": "https://zhuanlan.zhihu.com/p/90123456",
+            "readTime": 12,
+            "tags": ["前端", "趋势"]
         }
     ]
 }
