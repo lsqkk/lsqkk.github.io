@@ -2,387 +2,147 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>访问统计 | 夸克博客</title>
+    <title>访问统计 - 夸克博客</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            color: #333;
+        :root {
+            --primary: #2196F3;
+            --bg: #f5f7fa;
         }
-        
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
         }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px 0;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
+
         .controls {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
-        
-        .control-group {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        select, input {
+
+        select {
             padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 500px;
-            width: 100%;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        
-        .summary {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .summary-card {
-            background: white;
-            padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            flex: 1;
-            min-width: 200px;
-            text-align: center;
-        }
-        
-        .summary-card h3 {
-            color: #3498db;
-            margin-top: 0;
-        }
-        
-        .summary-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 10px 0;
-        }
-        
-        .summary-label {
-            color: #7f8c8d;
+            border: 1px solid #ddd;
+            background: white;
             font-size: 14px;
         }
-        
-        .no-data {
-            text-align: center;
-            padding: 50px;
-            color: #7f8c8d;
-            font-size: 18px;
-        }
-        
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .control-group {
-                width: 90%;
-            }
-            
-            .chart-container {
-                height: 400px;
-            }
+
+        #chartContainer {
+            position: relative;
+            height: 500px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>博客访问统计</h1>
-            <p>可视化您的博客访问数据</p>
-        </header>
-        
+        <h1>访问统计</h1>
         <div class="controls">
-            <div class="control-group">
-                <label for="timeRange">时间范围</label>
-                <select id="timeRange">
-                    <option value="7">最近7天</option>
-                    <option value="14">最近14天</option>
-                    <option value="30" selected>最近30天</option>
-                    <option value="60">最近60天</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label for="chartType">图表类型</label>
-                <select id="chartType">
-                    <option value="line" selected>折线图</option>
-                    <option value="bar">柱状图</option>
-                </select>
-            </div>
+            <select id="rangeSelect" onchange="updateChart()">
+                <option value="7">最近7天</option>
+                <option value="30">最近30天</option>
+                <option value="60">最近60天</option>
+            </select>
         </div>
-        
-        <div class="summary">
-            <div class="summary-card">
-                <h3>总访客数</h3>
-                <div class="summary-value" id="totalUv">0</div>
-                <div class="summary-label">Unique Visitors</div>
-            </div>
-            <div class="summary-card">
-                <h3>总访问量</h3>
-                <div class="summary-value" id="totalPv">0</div>
-                <div class="summary-label">Page Views</div>
-            </div>
-            <div class="summary-card">
-                <h3>平均每日访客</h3>
-                <div class="summary-value" id="avgUv">0</div>
-                <div class="summary-label">Avg. Visitors/Day</div>
-            </div>
-            <div class="summary-card">
-                <h3>平均每日访问</h3>
-                <div class="summary-value" id="avgPv">0</div>
-                <div class="summary-label">Avg. Views/Day</div>
-            </div>
-        </div>
-        
-        <div class="chart-container">
-            <canvas id="visitChart"></canvas>
-        </div>
-        
-        <div id="noDataMessage" class="no-data" style="display: none;">
-            <p>暂无访问数据可显示</p>
-            <p>请访问博客首页以收集数据</p>
+        <div id="chartContainer">
+            <canvas id="statsChart"></canvas>
         </div>
     </div>
 
     <script>
-        // 获取存储的访问数据
-        function getVisitData() {
-            const data = localStorage.getItem('visitData');
-            return data ? JSON.parse(data) : {};
+        let myChart;
+
+        function processData(days) {
+            const rawData = JSON.parse(localStorage.getItem('visitStats') || '{}');
+            const dates = Object.keys(rawData).sort().slice(-days);
+            
+            return {
+                labels: dates,
+                visitors: dates.map(d => rawData[d]?.visitors || null),
+                visits: dates.map(d => rawData[d]?.visits || null)
+            };
         }
-        
-        // 按日期排序并过滤有效数据
-        function processData(rawData, days) {
-            // 转换为数组并排序
-            const dataArray = Object.entries(rawData)
-                .map(([date, values]) => ({
-                    date,
-                    uv: values.uv,
-                    pv: values.pv,
-                    timestamp: values.timestamp
-                }))
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        function createChart(data) {
+            const ctx = document.getElementById('statsChart').getContext('2d');
             
-            // 获取最近N天的数据
-            const now = new Date().getTime();
-            const cutoff = now - (days * 24 * 60 * 60 * 1000);
-            const recentData = dataArray.filter(item => item.timestamp >= cutoff);
-            
-            return recentData;
-        }
-        
-        // 初始化图表
-        let visitChart;
-        
-        function initChart(data, chartType = 'line') {
-            const ctx = document.getElementById('visitChart').getContext('2d');
-            
-            // 如果有现有图表，先销毁
-            if (visitChart) {
-                visitChart.destroy();
-            }
-            
-            // 如果没有数据，显示提示信息
-            if (data.length === 0) {
-                document.getElementById('noDataMessage').style.display = 'block';
-                document.getElementById('visitChart').style.display = 'none';
-                return;
-            } else {
-                document.getElementById('noDataMessage').style.display = 'none';
-                document.getElementById('visitChart').style.display = 'block';
-            }
-            
-            // 准备图表数据
-            const labels = data.map(item => item.date);
-            const uvData = data.map(item => item.uv);
-            const pvData = data.map(item => item.pv);
-            
-            // 计算统计信息
-            const totalUv = uvData.reduce((sum, val) => sum + val, 0);
-            const totalPv = pvData.reduce((sum, val) => sum + val, 0);
-            const avgUv = Math.round(totalUv / data.length);
-            const avgPv = Math.round(totalPv / data.length);
-            
-            // 更新统计卡片
-            document.getElementById('totalUv').textContent = totalUv.toLocaleString();
-            document.getElementById('totalPv').textContent = totalPv.toLocaleString();
-            document.getElementById('avgUv').textContent = avgUv.toLocaleString();
-            document.getElementById('avgPv').textContent = avgPv.toLocaleString();
-            
-            // 创建新图表
-            visitChart = new Chart(ctx, {
-                type: chartType,
+            if(myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: '访客人数 (UV)',
-                            data: uvData,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: '访问次数 (PV)',
-                            data: pvData,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            yAxisID: 'y1'
-                        }
-                    ]
+                    labels: data.labels,
+                    datasets: [{
+                        label: '访客数',
+                        data: data.visitors,
+                        borderColor: '#2196F3',
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },{
+                        label: '访问次数',
+                        data: data.visits,
+                        borderColor: '#4CAF50',
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                maxRotation: 45,
-                                minRotation: 45
-                            }
-                        },
                         y: {
                             type: 'linear',
-                            display: true,
                             position: 'left',
-                            title: {
-                                display: true,
-                                text: '访客人数 (UV)'
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
+                            title: { text: '访客数', display: true },
+                            suggestedMax: Math.max(...data.visitors.filter(v => v)) * 1.2
                         },
                         y1: {
                             type: 'linear',
-                            display: true,
                             position: 'right',
-                            title: {
-                                display: true,
-                                text: '访问次数 (PV)'
-                            },
-                            // 设置PV轴的比例尺为UV轴的1/8
-                            suggestedMin: 0,
-                            suggestedMax: Math.max(...pvData, 10),
-                            ticks: {
-                                callback: function(value) {
-                                    return value;
-                                }
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
+                            title: { text: '访问次数', display: true },
+                            suggestedMax: Math.max(...data.visits.filter(v => v)) * 1.2,
+                            grid: { drawOnChartArea: false }
                         }
                     },
                     plugins: {
                         tooltip: {
                             mode: 'index',
-                            intersect: false,
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += context.parsed.y.toLocaleString();
-                                    return label;
-                                }
-                            }
-                        },
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20
-                            }
+                            intersect: false
                         }
                     },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
+                    elements: {
+                        point: {
+                            radius: 4,
+                            hoverRadius: 6
+                        }
                     }
                 }
             });
         }
-        
-        // 加载数据并更新图表
+
         function updateChart() {
-            const days = parseInt(document.getElementById('timeRange').value);
-            const chartType = document.getElementById('chartType').value;
-            const rawData = getVisitData();
-            const processedData = processData(rawData, days);
-            
-            initChart(processedData, chartType);
+            const days = parseInt(document.getElementById('rangeSelect').value);
+            const data = processData(days);
+            createChart(data);
         }
-        
-        // 初始化页面
-        document.addEventListener('DOMContentLoaded', () => {
-            // 设置事件监听器
-            document.getElementById('timeRange').addEventListener('change', updateChart);
-            document.getElementById('chartType').addEventListener('change', updateChart);
-            
-            // 初始加载图表
+
+        // 初始化图表
+        window.onload = () => {
             updateChart();
-        });
+            document.getElementById('rangeSelect').value = '7';
+        }
     </script>
 </body>
 </html>
