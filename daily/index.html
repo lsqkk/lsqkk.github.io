@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克日报 - 每日知乎好文</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --text-color: #333;
+            --light-text: #666;
+            --bg-color: #f5f5f5;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border-radius: 16px;
+            --blur-amount: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            background-image: url('https://source.unsplash.com/random/1920x1080/?tech');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            backdrop-filter: blur(var(--blur-amount));
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            color: var(--light-text);
+            font-size: 1rem;
+        }
+
+        .articles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .article-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(var(--blur-amount));
+            position: relative;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .article-card.read {
+            opacity: 0.7;
+        }
+
+        .article-card.read::after {
+            content: '已读';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .article-content {
+            padding: 20px;
+        }
+
+        .article-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--light-text);
+        }
+
+        .read-time {
+            display: flex;
+            align-items: center;
+        }
+
+        .read-time svg {
+            margin-right: 5px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            backdrop-filter: blur(var(--blur-amount));
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: var(--border-radius);
+        }
+
+        @media (max-width: 768px) {
+            .articles-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>夸克日报</h1>
+            <div class="date" id="current-date">2023年11月15日</div>
+            <p>每日精选知乎优质文章</p>
+        </header>
+
+        <div class="articles-container" id="articles-container">
+            <!-- 文章卡片将通过JavaScript动态生成 -->
+        </div>
+
+        <div class="footer">
+            <p>© 2025 夸克博客 All rights reserved. </p>
+        </div>
+    </div>
+
+    <script>
+        // 获取当前日期并显示
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+        }
+
+        // 从JSON加载文章数据
+        async function loadArticles() {
+            try {
+                const response = await fetch('articles.json');
+                const data = await response.json();
+                displayArticles(data.articles);
+            } catch (error) {
+                console.error('加载文章失败:', error);
+                // 如果加载失败，显示示例数据
+                displayArticles(getSampleArticles());
+            }
+        }
+
+        // 显示文章卡片
+        function displayArticles(articles) {
+            const container = document.getElementById('articles-container');
+            container.innerHTML = '';
+
+            // 获取已读文章列表
+            const readArticles = JSON.parse(localStorage.getItem('readArticles') || '[]');
+
+            articles.forEach(article => {
+                const isRead = readArticles.includes(article.id);
+                
+                const card = document.createElement('div');
+                card.className = `article-card ${isRead ? 'read' : ''}`;
+                card.dataset.id = article.id;
+                
+                card.innerHTML = `
+                    <div class="article-content">
+                        <div class="tags">
+                            ${article.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <h3 class="article-title">${article.title}</h3>
+                        <div class="article-meta">
+                            <span>${article.author}</span>
+                            <span class="read-time">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                ${article.readTime}分钟
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    // 标记为已读
+                    if (!isRead) {
+                        readArticles.push(article.id);
+                        localStorage.setItem('readArticles', JSON.stringify(readArticles));
+                        card.classList.add('read');
+                    }
+                    // 打开文章链接
+                    window.open(article.url, '_blank');
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        // 示例数据（当JSON加载失败时使用）
+        function getSampleArticles() {
+            return [
+                {
+                    id: '1',
+                    title: '如何系统地学习机器学习？',
+                    author: '李沐',
+                    url: 'https://zhuanlan.zhihu.com/p/25005808',
+                    readTime: 15,
+                    tags: ['机器学习', '学习路径']
+                },
+                {
+                    id: '2',
+                    title: '有哪些值得推荐的数据可视化工具？',
+                    author: '数据科学',
+                    url: 'https://zhuanlan.zhihu.com/p/12345678',
+                    readTime: 8,
+                    tags: ['数据可视化', '工具']
+                },
+                {
+                    id: '3',
+                    title: '前端工程师的自我修养',
+                    author: '前端开发',
+                    url: 'https://zhuanlan.zhihu.com/p/23456789',
+                    readTime: 12,
+                    tags: ['前端', '职业发展']
+                },
+                {
+                    id: '4',
+                    title: 'Python 3.10 新特性详解',
+                    author: 'Python之禅',
+                    url: 'https://zhuanlan.zhihu.com/p/34567890',
+                    readTime: 10,
+                    tags: ['Python', '编程']
+                },
+                {
+                    id: '5',
+                    title: '如何高效地进行代码审查？',
+                    author: '工程效能',
+                    url: 'https://zhuanlan.zhihu.com/p/45678901',
+                    readTime: 7,
+                    tags: ['代码审查', '最佳实践']
+                },
+                {
+                    id: '6',
+                    title: '分布式系统设计模式',
+                    author: '系统架构',
+                    url: 'https://zhuanlan.zhihu.com/p/56789012',
+                    readTime: 20,
+                    tags: ['分布式', '架构']
+                }
+            ];
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCurrentDate();
+            loadArticles();
+        });
+    </script>
+</body>
+</html>
