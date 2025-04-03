@@ -214,13 +214,15 @@
 function storeStatistics() {
     const pv = document.getElementById('busuanzi_value_site_pv').innerText;
     const uv = document.getElementById('busuanzi_value_site_uv').innerText;
-    const today = new Date().toISOString().split('T')[0];
-    
-    localStorage.setItem(today, JSON.stringify({
-        pv: parseInt(pv),
-        uv: parseInt(uv),
-        timestamp: new Date().getTime()
-    }));
+    const today = new Date();
+         // 格式化为 YYYY-MM-DD（本地时区）
+         const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+         
+         localStorage.setItem(dateKey, JSON.stringify({
+             pv: parseInt(document.getElementById('busuanzi_value_site_pv').innerText),
+             uv: parseInt(document.getElementById('busuanzi_value_site_uv').innerText),
+             timestamp: today.getTime()
+         }));
 }
 
 // 监听不蒜子数据变化
