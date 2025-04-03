@@ -210,33 +210,24 @@
                 searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
             }
         }
-    </script>
-    <script>
-    // 存储访问量数据到 localStorage
-    function storeVisitData() {
-        const today = new Date().toISOString().split('T')[0]; // 获取当前日期 YYYY-MM-DD
-        const uv = document.getElementById('busuanzi_value_site_uv').textContent;
-        const pv = document.getElementById('busuanzi_value_site_pv').textContent;
-        
-        // 获取现有数据或初始化
-        let visitData = JSON.parse(localStorage.getItem('visitData') || {};
-        
-        // 更新当天数据
-        visitData[today] = {
-            uv: parseInt(uv) || 0,
-            pv: parseInt(pv) || 0,
-            timestamp: new Date().getTime()
-        };
-        
-        // 存储回 localStorage
-        localStorage.setItem('visitData', JSON.stringify(visitData));
-    }
+        // 统计功能
+function updateStatistics() {
+    const today = new Date().toISOString().split('T')[0];
+    const stats = {
+        visitors: parseInt(document.getElementById('busuanzi_value_site_uv').innerText) || 0,
+        visits: parseInt(document.getElementById('busuanzi_value_site_pv').innerText) || 0
+    };
+    
+    let history = JSON.parse(localStorage.getItem('visitStats') || '{}');
+    history[today] = stats;
+    localStorage.setItem('visitStats', JSON.stringify(history));
+}
 
-    // 在 DOM 加载完成后调用
-    document.addEventListener('DOMContentLoaded', () => {
-        // 等待不蒜子统计加载完成
-        setTimeout(storeVisitData, 2000); // 2秒后执行，确保统计已加载
-    });
-</script>
+// 在DOM加载完成后调用
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(updateStatistics, 2000); // 等待不蒜子加载
+});
+    </script>
+
 </body>
 </html>
