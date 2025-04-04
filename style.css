@@ -20,55 +20,53 @@ body {
     margin: 0;
     padding: 0;
 }
+/* Header 相关样式 */
 .header {
     background: linear-gradient(to bottom, rgba(122,189,154,1), rgba(122,189,154,0));
     color: #fff;
-    padding: 10px 20px;
-    text-align: left;
     width: 100%;
-    position: fixed;       /* 固定位置 */
-    top: 0;                /* 距离顶部为0 */
-    left: 0;               /* 距离左侧为0 */
-    z-index: 1000;         /* 确保它位于其他内容之上 */
-}
-.nav {
-    background-color: rgba(93, 208, 255, 0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 10px 20px;
+    box-sizing: border-box;
 }
-.nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
 
+.header h1 {
+    margin: 0;
+    font-size: 1.5em;
+    white-space: nowrap;
 }
-.nav ul li {
-    display: inline;
-    margin-right: 20px;
-    line-height: 30px;
+
+.header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
 }
-.nav ul li a {
-    color: #007bff;
-    text-decoration: none;
+
+.header-nav-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: center;
 }
-.nav ul li a:hover {
-    background-color: rgba(153, 221, 243, 0.3);
-    padding: 5px 0px;
-    border-radius: 5px;
-}
-.nav ul li a.active {
-    background-color: #99ddf3;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
+
 .header-nav {
     display: flex;
     list-style-type: none;
     margin: 0;
     padding: 0;
+    align-items: center;
 }
 
 .header-nav li {
-    margin: 0 10px;
+    margin: 0 8px;
+    white-space: nowrap;
 }
 
 .header-nav li a {
@@ -77,7 +75,9 @@ body {
     padding: 5px 10px;
     border-radius: 5px;
     transition: background-color 0.3s;
+    font-size: 0.9em;
 }
+
 .header-nav li a:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
@@ -85,38 +85,58 @@ body {
 .header-search {
     display: flex;
     align-items: center;
+    margin-left: 15px;
 }
 
 .header-search input {
     width: 150px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-.header-search button {
     padding: 5px 10px;
-    margin-left: 5px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.header-search input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.header-search button {
+    padding: 5px 12px;
+    margin-left: 8px;
     background-color: rgba(255,255,255,0.3);
     color: white;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(255,255,255,0.3);
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.header-search button:hover {
+    background-color: rgba(255,255,255,0.4);
 }
 
 /* 移动端样式 */
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         padding: 10px;
     }
-        .header-nav {
+    
+    .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .header-nav-container {
         display: none;
     }
     
     .header-search {
         width: 100%;
-        margin-top: 10px;
+        margin: 10px 0 0 0;
     }
     
     .header-search input {
@@ -126,13 +146,14 @@ body {
     
     .nav {
         display: block;
+        background-color: rgba(93, 208, 255, 0.3);
+        padding: 10px;
     }
     
     .mobile-nav {
         display: flex;
         flex-wrap: wrap;
-
-                list-style-type: none;
+        list-style-type: none;
         margin: 0;
         padding: 0;
     }
@@ -144,25 +165,31 @@ body {
     .mobile-nav li a {
         color: #007bff;
         text-decoration: none;
-        padding: 5px;
+        padding: 5px 8px;
+        font-size: 0.9em;
+    }
+    
+    .mobile-nav li a:hover {
+        background-color: rgba(153, 221, 243, 0.3);
+        border-radius: 5px;
     }
 }
 
-/* PC端样式 */
+/* PC端样式 - 隐藏移动导航 */
 @media (min-width: 769px) {
     .nav {
         display: none;
     }
-        .mobile-nav {
+    
+    .mobile-nav {
         display: none;
     }
 }
 
-
+/* Header占位符保持原有样式 */
 .header-placeholder {
-    height: 100px; /* 根据你的.header元素高度进行调整 */
+    height: 60px; /* 根据调整后的header高度减小 */
 }
-
 .content {
     margin-top: 100px;
     border-radius: 30px;
