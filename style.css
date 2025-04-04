@@ -134,17 +134,25 @@ body {
         display: none;
     }
     
+@media (max-width: 768px) {
     .header-search {
-        width: calc(100% - 20px);
+        display: flex;
+        width: auto; /* 关键修改：取消100%宽度 */
         margin: 10px 0 0 0;
-        max-width: 250px; /* 添加最大宽度限制 */
     }
     
     .header-search input {
-        width: 180px; /* 设置固定宽度 */
-        flex-grow: 0; /* 防止拉伸 */
+        width: 150px; /* 适当减小输入框宽度 */
+        flex-grow: 0;
     }
     
+    .header-search button {
+        white-space: nowrap; /* 防止按钮文字换行 */
+        flex-shrink: 0; /* 禁止按钮缩小 */
+    }
+}
+    
+
     .nav {
         display: block;
         background-color: #A0DFFF;
