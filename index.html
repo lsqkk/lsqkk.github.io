@@ -260,7 +260,11 @@ if (isLoggedIn) {
   // 未登录时隐藏用户信息
   document.getElementById('user-info').style.display = 'none';
 }
-
+document.getElementById('logout-button').addEventListener('click', () => {
+  localStorage.removeItem('github_code');
+  localStorage.removeItem('github_user');
+  window.location.reload(); // 刷新页面恢复初始状态
+});
         
     </script>
 
