@@ -475,6 +475,17 @@ button {
     margin-top: 8px;
 }
 
+
+.gamecontent {
+    margin-top: 100px;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background-color: transparent; /* 修改为透明背景 */
+    padding-bottom: 60px;
+    min-height: calc(100vh - 150px);
+}
 .post-tag {
     padding: 2px 8px;
     border-radius: 10px;
