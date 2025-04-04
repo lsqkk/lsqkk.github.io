@@ -135,13 +135,14 @@ body {
     }
     
     .header-search {
-        width: 100%;
+        width: auto; /* 从 width: 100% 改为 auto */
         margin: 10px 0 0 0;
+        max-width: 250px; /* 添加最大宽度限制 */
     }
     
     .header-search input {
-        flex-grow: 1;
-        width: auto;
+        width: 180px; /* 设置固定宽度 */
+        flex-grow: 0; /* 防止拉伸 */
     }
     
     .nav {
