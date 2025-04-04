@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>登录回调</title>
+  <script>
+    // 从 URL 获取 code
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code) {
+      // 使用 GitHub API 获取 access_token（需前端模拟，但 GitHub 不允许直接暴露 Client Secret）
+      // 替代方案：使用 serverless 函数（如 Cloudflare Workers/Vercel Edge Functions）
+      // 这里仅演示前端存储 code（不推荐生产环境）
+      localStorage.setItem('github_code', code);
+      
+      // 跳回首页
+      window.location.href = '/';
+    }
+  </script>
+</head>
+<body>
+  <p>登录中...</p>
+</body>
+</html>
