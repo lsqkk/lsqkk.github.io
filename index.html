@@ -27,11 +27,6 @@
                 <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
                 <div id="login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">
   登录</a></div>
-                <div id="user-info" style="display: none;">
-  <img id="user-avatar" width="30" />
-  <span id="username"></span>
-  <button id="logout-button">退出</button>
-</div>
                 <li>
                     <input type="text" id="searchInput" placeholder="搜索博客..." style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
                     <button onclick="searchBlog()" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;">搜索</button>
@@ -260,11 +255,6 @@ if (isLoggedIn) {
   // 未登录时隐藏用户信息
   document.getElementById('user-info').style.display = 'none';
 }
-document.getElementById('logout-button').addEventListener('click', () => {
-  localStorage.removeItem('github_code');
-  localStorage.removeItem('github_user');
-  window.location.reload(); // 刷新页面恢复初始状态
-});
         
     </script>
 
