@@ -187,9 +187,8 @@ body {
     }
 }
 
-/* Header占位符保持原有样式 */
 .header-placeholder {
-    height: 60px; /* 根据调整后的header高度减小 */
+    height: 100px;
 }
 .content {
     margin-top: 100px;
