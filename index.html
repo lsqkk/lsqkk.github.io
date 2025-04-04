@@ -13,25 +13,36 @@
 <body>
     <div class="main-content">
         <div class="header-placeholder"></div>
-        <div class="header">
-            <a style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
-        </div>
-        <div class="nav">
-            <ul>
-                <li><a href="article-list.html">文章</a></li>
-                <li><a href="tool.html">工具</a></li>
-                <li><a href="games">游戏</a></li>
-                <li><a href="daily">日报</a></li>
-                <li><a href="qtv">视频</a></li>
-                <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-                <div id="login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">
-  登录</a></div>
-                <li>
-                    <input type="text" id="searchInput" placeholder="搜索博客..." style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
-                    <button onclick="searchBlog()" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;">搜索</button>
-                </li>
-            </ul>
-        </div>
+        
+<div class="header">
+    <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
+    <ul class="header-nav">
+        <li><a href="article-list.html">文章</a></li>
+        <li><a href="tool.html">工具</a></li>
+        <li><a href="games">游戏</a></li>
+        <li><a href="daily">日报</a></li>
+        <li><a href="qtv">视频</a></li>
+        <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+        <li id="login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
+    </ul>
+    <div class="header-search">
+        <input type="text" id="searchInput" placeholder="搜索博客...">
+        <button onclick="searchBlog()">搜索</button>
+    </div>
+</div>
+<div class="nav">
+    <ul class="mobile-nav">
+        <!-- 移动端导航项将由CSS控制显示 -->
+        <li><a href="article-list.html">文章</a></li>
+        <li><a href="tool.html">工具</a></li>
+        <li><a href="games">游戏</a></li>
+        <li><a href="daily">日报</a></li>
+        <li><a href="qtv">视频</a></li>
+        <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+        <li id="mobile-login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
+    </ul>
+</div>
+        
         <div class="content" style="background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
         
             <div class="search-results">
