@@ -482,3 +482,56 @@ button {
     color: #007bff;
     font-size: 0.8em;
 }
+
+
+.game-box {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    flex: 1 1 calc(25% - 20px); /* 默认每行4个 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);  /* 添加文字阴影 */
+    position: relative;  /* 设置为相对定位 */
+    overflow: hidden;  /* 防止内容溢出 */
+}
+
+.game-box::before {
+    content: "";
+    display: block;
+    width: 100%;  /* 宽度占满父容器 */
+    padding-top: 56.25%;  /* 16:9 的宽高比，计算公式为 (9/16)*100% */
+}
+
+.game-box > a {
+    position: absolute;  /* 绝对定位 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-decoration: none;
+}
+/* 媒体查询：根据屏幕宽度调整每行显示数量 */
+@media (max-width: 1200px) {
+    .game-box {
+        flex: 1 1 calc(33.333% - 20px); /* 屏幕较窄时每行3个 */
+    }
+}
+
+@media (max-width: 900px) {
+    .game-box {
+        flex: 1 1 calc(50% - 20px); /* 屏幕更窄时每行2个 */
+    }
+}
+
+@media (max-width: 600px) {
+    .game-box {
+        flex: 1 1 100%; /* 屏幕最窄时每行1个 */
+    }
+}
