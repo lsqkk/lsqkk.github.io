@@ -25,8 +25,13 @@
                 <li><a href="daily">日报</a></li>
                 <li><a href="qtv">视频</a></li>
                 <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-                <li><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">
-  登录</a></li>
+                <div id="login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">
+  登录</a></div>
+                <div id="user-info" style="display: none;">
+  <img id="user-avatar" width="30" />
+  <span id="username"></span>
+  <button id="logout-button">退出</button>
+</div>
                 <li>
                     <input type="text" id="searchInput" placeholder="搜索博客..." style="width: 100px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
                     <button onclick="searchBlog()" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;">搜索</button>
@@ -238,6 +243,25 @@ new MutationObserver(() => {
     childList: true,
     subtree: true
 });
+
+// 检查是否已登录（示例用 localStorage，实际需结合 OAuth 逻辑）
+const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+
+if (isLoggedIn) {
+  // 隐藏登录按钮，显示用户信息
+  document.getElementById('login-button').style.display = 'none';
+  document.getElementById('user-info').style.display = 'block';
+
+  // 填充用户数据（需根据实际获取的用户信息调整）
+  const user = JSON.parse(localStorage.getItem('github_user'));
+  document.getElementById('user-avatar').src = user.avatar_url;
+  document.getElementById('username').textContent = user.login;
+} else {
+  // 未登录时隐藏用户信息
+  document.getElementById('user-info').style.display = 'none';
+}
+
+        
     </script>
 
 </body>
