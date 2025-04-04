@@ -135,7 +135,7 @@ body {
     }
     
     .header-search {
-        width: auto; /* 从 width: 100% 改为 auto */
+        width: 60%; /* 从 width: 100% 改为 auto */
         margin: 10px 0 0 0;
         max-width: 250px; /* 添加最大宽度限制 */
     }
