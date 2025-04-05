@@ -410,13 +410,13 @@ button {
 
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .sidebar-toggle { display: block; }
     .sidebar { left: -300px; }
     .sidebar.active { left: 10px; }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 901px) {
     .sidebar {
         left: 20px;
         top: 100px;
