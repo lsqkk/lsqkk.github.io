@@ -6,37 +6,208 @@
     <title>夸克游戏 | 夸克博客</title>
     <link rel="stylesheet" href="https://lsqkk.github.io/style.css">
     <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
-    <style>
-        aaa {
-  margin: 0;
-  background: radial-gradient(circle at center, #1a1a3a, #0a0a1a);
-  height: 100vh;
-  overflow: hidden;
-}
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    position: relative;
+  }
 
-aaa::before {
-  content: "";
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  right: -50%;
-  bottom: -50%;
-  background: 
-    linear-gradient(45deg, rgba(255,0,0,0.05) 0%, rgba(255,0,0,0) 50%),
-    linear-gradient(135deg, rgba(0,255,0,0.05) 0%, rgba(0,255,0,0) 50%),
-    linear-gradient(225deg, rgba(0,0,255,0.05) 0%, rgba(0,0,255,0) 50%),
-    linear-gradient(315deg, rgba(255,255,0,0.05) 0%, rgba(255,255,0,0) 50%);
-  animation: rotate 20s linear infinite;
-  z-index: -1;
-}
+  /* 星空粒子效果 */
+  .stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+  }
 
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-    </style>
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--duration) infinite ease-in-out;
+    opacity: 0;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--opacity); transform: scale(1); }
+  }
+
+  /* 流动光带效果 - 增强版 */
+  .light-band {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--band-color) 50%, rgba(0,0,0,0) 100%);
+    filter: blur(var(--blur));
+    animation: flow var(--speed) linear infinite;
+    transform-origin: left center;
+    z-index: 1;
+    opacity: 0.7;
+  }
+
+  @keyframes flow {
+    0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; }
+    50% { transform: translateX(0) scaleX(1); opacity: 1; }
+    100% { transform: translateX(100%) scaleX(0.5); opacity: 0; }
+  }
+
+  /* 中心能量球效果 - 增强版 */
+  .energy-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+      rgba(0, 200, 255, 0.2) 0%, 
+      rgba(0, 100, 255, 0.1) 50%, 
+      transparent 70%);
+    filter: blur(15px);
+    animation: pulse 8s infinite alternate ease-in-out;
+    z-index: 0;
+  }
+
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+  }
+
+  /* 彩色光点 - 增强版 */
+  .color-dots {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .dot {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(5px);
+    animation: float-dot var(--time) infinite linear;
+    opacity: 0;
+  }
+
+  @keyframes float-dot {
+    0% { transform: translate(0, 0) scale(1); opacity: 0; }
+    20% { opacity: var(--opacity); }
+    80% { opacity: var(--opacity); }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0.5); opacity: 0; }
+  }
+
+  /* 新增：快速移动的粒子流 */
+  .particle-stream {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .particle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    filter: blur(1px);
+    animation: stream var(--speed) linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes stream {
+    0% { transform: translateX(-100px) translateY(var(--y)) scale(0.3); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { transform: translateX(calc(100vw + 100px)) translateY(calc(var(--y) + var(--dy))) scale(0.6); opacity: 0; }
+  }
+</style>
+
+<div class="stars" id="stars"></div>
+<div class="energy-core"></div>
+<div class="color-dots" id="dots"></div>
+<div class="particle-stream" id="stream"></div>
+
+<!-- 预设的基础元素 -->
+<div class="light-band" style="--speed: 20s; --band-color: rgba(100, 200, 255, 0.8); --blur: 1px; top: 30%; transform: rotate(-10deg); width: 150%;"></div>
+<div class="light-band" style="--speed: 25s; --band-color: rgba(150, 100, 255, 0.6); --blur: 2px; top: 70%; transform: rotate(5deg); width: 120%;"></div>
+
+<script>
+  // 生成星星
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 150; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+    star.style.width = `${Math.random() * 3 + 1}px`;
+    star.style.height = star.style.width;
+    star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+    star.style.setProperty('--opacity', Math.random() * 0.7 + 0.3);
+    star.style.animationDelay = `${Math.random() * 5}s`;
+    starsContainer.appendChild(star);
+  }
+
+  // 生成彩色光点
+  const dotsContainer = document.getElementById('dots');
+  const colors = [
+    'rgba(0, 200, 255, 0.4)',
+    'rgba(255, 100, 255, 0.3)',
+    'rgba(100, 255, 200, 0.3)',
+    'rgba(255, 200, 100, 0.3)',
+    'rgba(150, 100, 255, 0.3)'
+  ];
+  
+  for (let i = 0; i < 20; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.style.left = `${Math.random() * 100}%`;
+    dot.style.top = `${Math.random() * 100}%`;
+    dot.style.width = `${Math.random() * 50 + 30}px`;
+    dot.style.height = dot.style.width;
+    dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+    dot.style.setProperty('--time', `${Math.random() * 30 + 20}s`);
+    dot.style.setProperty('--tx', `${(Math.random() - 0.5) * 300}px`);
+    dot.style.setProperty('--ty', `${(Math.random() - 0.5) * 300}px`);
+    dot.style.setProperty('--opacity', Math.random() * 0.5 + 0.3);
+    dot.style.animationDelay = `${Math.random() * 5}s`;
+    dotsContainer.appendChild(dot);
+  }
+
+  // 生成粒子流
+  const streamContainer = document.getElementById('stream');
+  for (let i = 0; i < 10; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.setProperty('--y', `${Math.random() * 100}vh`);
+    particle.style.setProperty('--dy', `${(Math.random() - 0.5) * 200}px`);
+    particle.style.setProperty('--speed', `${Math.random() * 5 + 3}s`);
+    particle.style.width = `${Math.random() * 4 + 2}px`;
+    particle.style.height = particle.style.width;
+    particle.style.animationDelay = `${Math.random() * 5}s`;
+    streamContainer.appendChild(particle);
+  }
+
+  // 随机生成更多光带
+  for (let i = 0; i < 3; i++) {
+    const band = document.createElement('div');
+    band.className = 'light-band';
+    band.style.setProperty('--speed', `${Math.random() * 10 + 15}s`);
+    band.style.setProperty('--band-color', `rgba(${Math.floor(Math.random() * 100 + 100)}, ${Math.floor(Math.random() * 100 + 100)}, 255, ${Math.random() * 0.4 + 0.4})`);
+    band.style.setProperty('--blur', `${Math.random() * 3 + 1}px`);
+    band.style.top = `${Math.random() * 100}%`;
+    band.style.transform = `rotate(${(Math.random() - 0.5) * 30}deg)`;
+    band.style.width = `${Math.random() * 100 + 100}%`;
+    document.body.appendChild(band);
+  }
+</script>
+
 </head>
-<body style="aaa">
+<body>
     <div class="header-placeholder"></div>
 
     <div class="header">
