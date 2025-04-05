@@ -373,7 +373,7 @@ button {
 .sidebar {
     position: fixed;
     left: -300px;
-    top: 200px;
+    top: 160px;
     width: 280px;
     transition: 0.3s;
     z-index: 999;
@@ -399,7 +399,7 @@ button {
     display: none;
     position: fixed;
     left: 10px;
-    top: 200px;
+    top: 140px;
     z-index: 1000;
     cursor: pointer;
     background: rgba(255,255,255,0.7);
@@ -410,16 +410,16 @@ button {
 
 }
 
-@media (max-width: 999px) {
+@media (max-width: 1200px) {
     .sidebar-toggle { display: block; }
     .sidebar { left: -300px; }
     .sidebar.active { left: 10px; }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1201px) {
     .sidebar {
         left: 20px;
-        top: 200px;
+        top: 160px;
        width: 200px;
     }
     .morenpost {
