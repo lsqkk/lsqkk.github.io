@@ -546,3 +546,24 @@ button {
         flex: 1 1 100%; /* 屏幕最窄时每行1个 */
     }
 }
+/* 封装的版权链接样式 */
+.cr {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-family: Arial, sans-serif; /* 字体可以根据需要调整 */
+  font-size: 14px; /* 字体大小可以根据需要调整 */
+  color: white; /* 默认颜色为白色 */
+  transition: color 0.3s ease; /* 颜色过渡效果 */
+}
+
+/* 使用伪元素添加文字内容 */
+.cr::before {
+  content: "© 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights reserved";
+  display: inline-block;
+}
+
+/* 鼠标悬停时的样式 */
+.cr:hover {
+  color: #ccc; /* 悬停时颜色变浅 */
+}
