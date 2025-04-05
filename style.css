@@ -373,7 +373,7 @@ button {
 .sidebar {
     position: fixed;
     left: -300px;
-    top: 120px;
+    top: 150px;
     width: 280px;
     transition: 0.3s;
     z-index: 999;
@@ -399,7 +399,7 @@ button {
     display: none;
     position: fixed;
     left: 10px;
-    top: 70px;
+    top: 100px;
     z-index: 1000;
     cursor: pointer;
     background: rgba(255,255,255,0.7);
