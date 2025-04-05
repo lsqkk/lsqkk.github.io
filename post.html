@@ -8,7 +8,7 @@
     <link rel="icon" href="image/logo_blue.png" type="image/png">
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <style>
-        body { max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { max-width: 800px; margin: 0 auto; }
         .post-content { 
             line-height: 1.6;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -42,8 +42,6 @@
 
 <div class="sidebar">
   <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-
-
   <div class="sidebar-content" id="sidebarContent"><div id="toc-loading" style="display: none;">目录加载中...</div></div>
   <br>
    <div class="sidebar-content">
@@ -54,48 +52,38 @@
    </div>
 </div>
 
-        <div class="header-placeholder"></div>
-
-    <div class="header">
+<div class="header-placeholder"></div>
+<div class="header">
     <div class="header-content">
         <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
-        
         <div class="header-nav-container">
             <ul class="header-nav">
-		<li><a href="/">主页</a></li>
                 <li><a href="article-list.html">文章</a></li>
                 <li><a href="tool.html">工具</a></li>
                 <li><a href="games">游戏</a></li>
                 <li><a href="daily">日报</a></li>
                 <li><a href="qtv">视频</a></li>
                 <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-		<li><span class="mode-toggle" onclick="toggleMode()">🌙</span></li>
             </ul>
-        </div>
-        
-        <div class="header-search">
-            <input type="text" id="searchInput" placeholder="搜索博客...">
-            <button onclick="searchBlog()">搜索</button>
-        </div>
+        </div> 
+        <span class="mode-toggle" onclick="toggleMode()">🌙</span>
     </div>
 </div>
 
 <div class="nav">
     <ul class="mobile-nav">
-	<li><a href="/">主页</a></li>
         <li><a href="article-list.html">文章</a></li>
         <li><a href="tool.html">工具</a></li>
         <li><a href="games">游戏</a></li>
         <li><a href="daily">日报</a></li>
         <li><a href="qtv">视频</a></li>
         <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-	<li><span class="mode-toggle" onclick="toggleMode()">🌙</span></li>
   </ul>
 </div>
         
 
     
-    <div class="morenpost" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
+    <div class="morenpost" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3); margin:20px;">
         <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "></a>
        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">文 / 蓝色奇夸克 /</div>
         <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
@@ -117,11 +105,11 @@
     </div>
 
 <!-- 评论区域 -->
-<div class="morenpost" style="margin-top: 30px;">
+<div class="morenpost" style="margin:0px 20px 20px 20px;">
   <div class="giscus"></div>
 </div>
 
-    <div class="morenpost"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black; ">© 2025 蓝色奇夸克 - 个人博客</a></div>
+    <div class="morenpost" style="margin:0px 20px 10px 20px;"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black; ">© 2025 夸克博客 All rights reserved.</a></div>
 
 
 <script src="https://giscus.app/client.js"
