@@ -6,8 +6,37 @@
     <title>夸克游戏 | 夸克博客</title>
     <link rel="stylesheet" href="https://lsqkk.github.io/style.css">
     <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
+    <style>
+        body {
+  margin: 0;
+  background: radial-gradient(circle at center, #1a1a3a, #0a0a1a);
+  height: 100vh;
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: 
+    linear-gradient(45deg, rgba(255,0,0,0.05) 0%, rgba(255,0,0,0) 50%),
+    linear-gradient(135deg, rgba(0,255,0,0.05) 0%, rgba(0,255,0,0) 50%),
+    linear-gradient(225deg, rgba(0,0,255,0.05) 0%, rgba(0,0,255,0) 50%),
+    linear-gradient(315deg, rgba(255,255,0,0.05) 0%, rgba(255,255,0,0) 50%);
+  animation: rotate 20s linear infinite;
+  z-index: -1;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+    </style>
 </head>
-<body style="background: url('https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250404223019865.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+<body>
     <div class="header-placeholder"></div>
 
     <div class="header">
