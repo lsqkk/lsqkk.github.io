@@ -370,17 +370,17 @@ button {
     background-color: #f9f9f9;
 }
 
-/* 侧栏样式 */
 .sidebar {
     position: fixed;
     left: -300px;
-    top: 140px; /* 上移一些给下方空间 */
-    bottom: 20px; /* 添加底部边界 */
+    top: 140px;
+    bottom: 20px;
     width: 280px;
     transition: 0.3s;
     z-index: 999;
     display: flex;
     flex-direction: column;
+    overflow-y: auto; /* 添加整体滚动 */
 }
 
 .sidebar-content {
@@ -388,19 +388,9 @@ button {
     backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 15px;
-    overflow-y: auto;
-    flex-grow: 1; /* 填充剩余空间 */
-    margin-bottom: 10px; /* 与下方内容间隔 */
-}
-
-/* 新增：为下方内容添加样式 */
-.sidebar-footer {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px);
-    padding: 15px;
-    border-radius: 15px;
-    overflow-y: auto;
-    max-height: 30vh; /* 限制高度 */
+    margin-bottom: 10px;
+    width: 100%; /* 确保宽度填满 */
+    box-sizing: border-box; /* 包含padding在宽度内 */
 }
 
 .sidebar-toggle {
@@ -415,7 +405,11 @@ button {
     border-radius: 50%;
     padding: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
+/* 移除br标签的间隔，改用CSS控制 */
+.sidebar br {
+    display: none;
 }
 
 @media (max-width: 1200px) {
@@ -428,11 +422,17 @@ button {
     .sidebar {
         left: 20px;
         top: 160px;
-        bottom: auto; /* 桌面端恢复自动高度 */
+        bottom: 20px; /* 保持底部限制 */
         width: 200px;
+        overflow-y: auto; /* 确保电脑端也可滚动 */
     }
     .morenpost {
         margin-left: 100px;
+    }
+    
+    /* 电脑端调整内容间距 */
+    .sidebar-content {
+        margin-bottom: 15px;
     }
 }
 .nav-arrow {
