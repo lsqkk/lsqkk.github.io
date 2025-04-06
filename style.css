@@ -1,8 +1,12 @@
 /* style.css */
-        .typewriter-container {
-            text-align: center;
-            font-family: 'Courier New', monospace;
-        }
+.typewriter-container {
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    height: 100px; /* 设置一个固定高度 */
+    display: flex;
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中 */
+}
         
         .typewriter {
             display: inline-block;
