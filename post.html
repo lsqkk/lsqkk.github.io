@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>蓝色奇夸克の博客</title>
+    <title>夸克博客</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="image/logo_blue.png" type="image/png">
@@ -41,14 +41,17 @@
 
 <div class="sidebar">
   <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-  <div class="sidebar-content" id="sidebarContent"><div id="toc-loading" style="display: none;">目录加载中...</div></div>
-  <br>
-   <div class="sidebar-content">
-        <a href="index.html" style="text-decoration: none; ">博客主页</a>
-        <a href="article-list.html" style="text-decoration: none; ">文章列表</a>
-        <a href="games" style="text-decoration: none; ">夸克游戏</a>
-        <a href="ds" style="text-decoration: none; ">DeepSeek满血版</a>
-   </div>
+  <div class="sidebar-content" id="sidebarContent">
+    <div id="toc-loading" style="display: none;">目录加载中...</div>
+    <div class="sidebar-main-content"></div>
+    <div class="sidebar-footer">
+      <a href="index.html" style="text-decoration: none;">博客主页</a>
+      <a href="article-list.html" style="text-decoration: none;">文章</a>
+      <a href="games" style="text-decoration: none;">夸克游戏</a>
+      <a href="ds" style="text-decoration: none;">DeepSeek满血版</a>
+      <a href="tool.html" style="text-decoration: none;">更多工具</a>
+    </div>
+  </div>
 </div>
 
 <div class="header-placeholder"></div>
@@ -158,7 +161,7 @@
                 }
             } catch (error) {
                 console.error('加载 JSON 数据失败:', error);
-                document.title = `加载失败 - 夸克博客`;
+                document.title = `夸克博客`;
             }
         }
 
@@ -253,7 +256,7 @@ addPostNavigation(filename);
 // 生成目录
 function generateTOC() {
     const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3');
-    const toc = document.getElementById('sidebarContent');
+    const tocContainer = document.querySelector('.sidebar-main-content');
     let html = '<h4>目录</h4>';
     
     headings.forEach((heading, index) => {
@@ -262,24 +265,20 @@ function generateTOC() {
         heading.id = id;
         
         html += `
-            <div class="toc-item ${level}" style="margin-left: ${parseInt(level[1])*10}px">
+            <div class="toc-item ${level}">
                 <a href="#${id}">${heading.textContent}</a>
             </div>
         `;
     });
     
-
-   html += `
+    html += `
         <div style="margin-top: 20px;">
             <a id="prevPost" class="nav-arrow" style="cursor:pointer;margin-right:15px;">← 前一篇</a>
             <a id="nextPost" class="nav-arrow" style="cursor:pointer;">后一篇 →</a>
         </div>
     `;
 
-    toc.innerHTML = html;
-
-    setTimeout(() => toc.style.opacity = 1, 10);
-
+    tocContainer.innerHTML = html;
 }
 
 // 切换侧栏
