@@ -369,18 +369,14 @@ button {
 .search-result-item:hover {
     background-color: #f9f9f9;
 }
-
+/* 侧栏样式 */
 .sidebar {
     position: fixed;
     left: -300px;
-    top: 140px;
-    bottom: 20px;
+    top: 160px;
     width: 280px;
     transition: 0.3s;
     z-index: 999;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; /* 添加整体滚动 */
 }
 
 .sidebar-content {
@@ -388,9 +384,15 @@ button {
     backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 15px;
-    margin-bottom: 10px;
-    width: 100%; /* 确保宽度填满 */
-    box-sizing: border-box; /* 包含padding在宽度内 */
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.sidebar-content a {
+    text-decoration: none !important;
+    color: #333 !important;
+    display: block;
+    padding: 4px 0;
 }
 
 .sidebar-toggle {
@@ -405,11 +407,7 @@ button {
     border-radius: 50%;
     padding: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
 
-/* 移除br标签的间隔，改用CSS控制 */
-.sidebar br {
-    display: none;
 }
 
 @media (max-width: 1200px) {
@@ -422,20 +420,13 @@ button {
     .sidebar {
         left: 20px;
         top: 160px;
-        bottom: 20px; /* 保持底部限制 */
-        width: 200px;
-        overflow-y: auto; /* 确保电脑端也可滚动 */
+       width: 200px;
     }
     .morenpost {
         margin-left: 100px;
     }
-    
-    /* 电脑端调整内容间距 */
-    .sidebar-content {
-        margin-bottom: 15px;
-    }
 }
-.nav-arrow {
+    .nav-arrow {
         color: #007bff;
         text-decoration: none;
         font-size: 0.9em;
