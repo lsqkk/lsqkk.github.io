@@ -369,12 +369,9 @@ button {
 .search-result-item:hover {
     background-color: #f9f9f9;
 }
+
 /* 侧栏样式 */
 .sidebar {
-    /*position: fixed;
-    left: -300px;
-    top: 160px;
-    width: 280px;*/
     transition: 0.3s;
     z-index: 999;
 }
@@ -384,49 +381,51 @@ button {
     backdrop-filter: blur(10px);
     padding: 20px;
     border-radius: 15px;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-height: 80vh; /* 限制最大高度为视口的80% */
+    overflow-y: auto; /* 允许垂直滚动 */
+    box-sizing: border-box; /* 确保padding不增加额外高度 */
 }
 
-.sidebar-content a {
-    text-decoration: none !important;
-    color: #333 !important;
-    display: block;
-    padding: 4px 0;
-}
-
-.sidebar-toggle {
-    display: none;
-    position: fixed;
-    left: 10px;
-    top: 140px;
-    z-index: 1000;
-    cursor: pointer;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(5px);
-    border-radius: 50%;
-    padding: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-
-}
-
+/* 移动端样式 */
 @media (max-width: 1200px) {
     .sidebar-toggle { display: block; }
-    .sidebar { left: -300px; }
-    .sidebar.active { left: 10px; }
+    .sidebar { 
+        position: fixed;
+        left: -300px;
+        top: 140px;
+        width: 280px;
+    }
+    .sidebar.active { 
+        left: 10px;
+        /* 添加底部空间以便滚动查看全部内容 */
+        bottom: 20px;
+        height: auto;
+    }
+    .sidebar-content {
+        /* 在移动设备上减少高度以便留出空间 */
+        max-height: 70vh;
+    }
 }
 
+/* 桌面端样式 */
 @media (min-width: 1201px) {
     .sidebar {
+        position: fixed;
         left: 20px;
         top: 160px;
-       width: 200px;
+        width: 200px;
+        /* 添加底部空间以便滚动 */
+        bottom: 20px;
+    }
+    .sidebar-content {
+        /* 桌面端也可以滚动，但高度自适应 */
+        height: calc(100vh - 200px); /* 视口高度减去顶部位置和底部留白 */
     }
     .morenpost {
         margin-left: 100px;
     }
 }
-    .nav-arrow {
+.nav-arrow {
         color: #007bff;
         text-decoration: none;
         font-size: 0.9em;
