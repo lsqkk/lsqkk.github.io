@@ -2,7 +2,8 @@
         .typewriter-container {
             text-align: center;
             font-family: 'Courier New', monospace;
-           margin: 50px 120px 50px 120px;
+            max-width:80%;
+            height:150px;
 
         }
         
