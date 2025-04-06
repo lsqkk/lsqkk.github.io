@@ -81,9 +81,9 @@
                 </div>
                 <h2 style="color: #333; text-align: center; margin-bottom: 20px;">欢迎来到我的博客</h2>
                 <p style="text-align: center; color: #555; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;">这里记录了我的学习历程、生活感悟和技术分享。</p>
-                <div class="centered-div">  
-                    <img src="image/INTJ.gif" alt="intj">  
-                </div>
+    <div class="typewriter-container">
+        <div id="typewriter" class="typewriter"></div>
+    </div>
                 <div class="recent-posts" style="margin-top: 30px;">
                     <h2 class="recent-header">📚 最新文章</h2>
                     <div id="recent-posts"></div>
@@ -257,6 +257,89 @@ if (isLoggedIn) {
     document.getElementById('mobile-login-button').style.display = 'block';
 }
         
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typewriterElement = document.getElementById('typewriter');
+            const phrases = [
+"无穷的远方，无数的人们，都和我有关。",
+
+"Idealists Need Timeless Journeys",
+
+"比金钱更珍贵是知识，比知识更珍贵的是无休止的好奇心，而比好奇心更珍贵的，是我们头上的星空。",
+
+"哲学家们只是用不同的方式解释世界，而问题在于改变世界。",
+
+"人民，只有人民，才是创造世界历史的动力。",
+
+"在黑暗里点灯的人，终将照亮整个时代。",
+
+"如果风只吹向一个方向，那就改变风的轨迹。",
+
+"理想不会老去，它只会等待新的战士。",
+
+"你要成为改变世界的火焰，而非被世界熄灭的火星。",
+
+"黑暗不能驱除黑暗，只有光明可以；仇恨不能驱除仇恨，只有爱可以。",
+
+"理想不是终点，而是让现实变得更好的方向。",
+
+"真正的乌托邦不在远方，而在我们此刻的选择里。",
+
+"不要害怕理想太高，要害怕自己蹲得太低。",
+
+"当一个人开始为他人点亮蜡烛，黑夜便有了裂缝。",
+
+"理想主义者的力量，在于他们拒绝接受'不可能'的判决。",
+
+"文明的进步，始于有人坚持'本该如此'。",
+
+"即使翅膀被现实打湿，也要记得天空的存在。"
+            ];
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let isWaiting = false;
+            
+            function typeWriter() {
+                const currentPhrase = phrases[phraseIndex];
+                
+                if (isDeleting) {
+                    // 删除字符
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                    
+                    if (charIndex === 0) {
+                        isDeleting = false;
+                        phraseIndex = (phraseIndex + 1) % phrases.length;
+                        setTimeout(typeWriter, 500); // 删除完成后稍等片刻再开始下一句
+                    } else {
+                        setTimeout(typeWriter, 70); // 删除速度
+                    }
+                } else if (isWaiting) {
+                    // 等待状态（显示完整句子）
+                    setTimeout(() => {
+                        isWaiting = false;
+                        isDeleting = true;
+                        typeWriter();
+                    }, 3000); // 完整显示2秒后开始删除
+                } else {
+                    // 添加字符
+                    typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                    
+                    if (charIndex === currentPhrase.length) {
+                        isWaiting = true; // 输入完成后进入等待状态
+                        setTimeout(typeWriter, 3000); // 完整显示3秒
+                    } else {
+                        setTimeout(typeWriter, 200); // 打字速度
+                    }
+                }
+            }
+            
+            // 延迟1秒后开始打字效果
+            setTimeout(typeWriter, 1000);
+        });
     </script>
 
 </body>
