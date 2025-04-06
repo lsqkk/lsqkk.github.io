@@ -371,10 +371,10 @@ button {
 }
 /* 侧栏样式 */
 .sidebar {
-    position: fixed;
+    /*position: fixed;
     left: -300px;
     top: 160px;
-    width: 280px;
+    width: 280px;*/
     transition: 0.3s;
     z-index: 999;
 }
