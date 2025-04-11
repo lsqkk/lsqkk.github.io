@@ -122,6 +122,8 @@
     display: flex;
     align-items: center; /* 垂直居中 */
     justify-content: center; /* 水平居中 */
+    width: 100%; /* 确保宽度固定 */
+    overflow: hidden; /* 隐藏溢出内容 */
 }
         
         .typewriter {
