@@ -14,93 +14,90 @@
     <div class="main-content">
         <div class="header-placeholder"></div>
 
-<div class="header">
-    <div class="header-content">
-        <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
-        
-        <div class="header-nav-container">
-            <ul class="header-nav">
+        <div class="header">
+            <div class="header-content">
+                <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
+                
+                <div class="header-nav-container">
+                    <ul class="header-nav">
+                        <li><a href="article-list.html">文章</a></li>
+                        <li><a href="tool.html">工具</a></li>
+                        <li><a href="games">游戏</a></li>
+                        <li><a href="daily">日报</a></li>
+                        <li><a href="qtv">视频</a></li>
+                        <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+                        <li id="login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
+                    </ul>
+                </div>
+                
+                <div class="header-search">
+                    <input type="text" id="searchInput" placeholder="搜索博客...">
+                    <button onclick="searchBlog()">搜索</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <ul class="mobile-nav">
                 <li><a href="article-list.html">文章</a></li>
                 <li><a href="tool.html">工具</a></li>
                 <li><a href="games">游戏</a></li>
                 <li><a href="daily">日报</a></li>
                 <li><a href="qtv">视频</a></li>
                 <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-                <li id="login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
+                <li id="mobile-login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
             </ul>
         </div>
-        
-        <div class="header-search">
-            <input type="text" id="searchInput" placeholder="搜索博客...">
-            <button onclick="searchBlog()">搜索</button>
-        </div>
-    </div>
-</div>
-
-<div class="nav">
-    <ul class="mobile-nav">
-        <li><a href="article-list.html">文章</a></li>
-        <li><a href="tool.html">工具</a></li>
-        <li><a href="games">游戏</a></li>
-        <li><a href="daily">日报</a></li>
-        <li><a href="qtv">视频</a></li>
-        <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-        <li id="mobile-login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
-    </ul>
-</div>
-
-        
-        <div class="index-main-layout">
-            <!-- 左侧栏 -->
-            <div class="index-sidebar">
-                <div class="index-sidebar-content">
-                    <div class="index-sidebar-main-content">
-                        <!-- 最新功能 -->
-                        <div class="index-sidebar-section">
-                            <h3>最新功能</h3>
-                            <div class="index-sidebar-box-container">
-                                <div class="index-sidebar-box"><a href="games/dati">每日答题</a></div>
-                                <div class="index-sidebar-box"><a href="tool/tool-md.html">Markdown编辑器</a></div>
-                                <div class="index-sidebar-box"><a href="estest">科技光谱</a></div>
-                                <div class="index-sidebar-box"><a href="daily">夸克日报</a></div>
-                                <div style="text-align: center; margin: 15px 0;"> 
-                                    <a href="log.html" style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- 站长公告 -->
-                        <div class="index-sidebar-section">
-                            <h3>站长公告</h3>
-                            <div class="index-sidebar-box" style="text-align: center;">
-                                <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>欢迎<a href="app.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
-                            </div>
-                        </div>
-                        
-                        <!-- 航拍视频 -->
-                        <div class="index-sidebar-section">
-                            <h3>站主的航拍视频👇</h3>
-                            <div class="index-sidebar-box" style="padding: 0; overflow: hidden;">
-                                <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; aspect-ratio: 2 / 1;"></iframe>
-                            </div>
-                        </div>
-                    </div>
+                
+        <div class="content" style="background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+            <div class="search-results">
+                <div id="searchResults"></div>
+            </div>
+            
+            <div class="poetry-container" style="width: 100%; text-align: center; margin: 10px 0;">
+                <div style="width: 80%; margin: 0 auto; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 10px; padding: 8px;">
+                    <p style="color: rgba(255,255,255,0.9); line-height: 1.5; font-size: 12px; margin: 0;"><span id="meirishici-sentence">正在加载每日诗词....</span><script src="https://sdk.meirishici.top/v2/browser/meirishici.js" charset="utf-8"></script></p>
                 </div>
             </div>
             
-            <!-- 右侧主内容区 -->
-            <div class="index-main-content">
-                <div class="content" style="background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-                    <div class="search-results">
-                        <div id="searchResults"></div>
+            <div class="index-container">
+                <!-- 左侧边栏 -->
+                <div class="index-left-sidebar">
+                    <!-- 最新功能 -->
+                    <div class="index-sidebar-section">
+                        <h3>最新功能</h3>
+                        <div class="index-feature-boxes">
+                            <div class="index-feature-box"><a href="games/dati" style="text-decoration: none;color: #000; display: block;">每日答题</a></div>
+                            <div class="index-feature-box"><a href="tool/tool-md.html" style="text-decoration: none;color: #000; display: block;">Markdown编辑器</a></div>
+                            <div class="index-feature-box"><a href="estest" style="text-decoration: none;color: #000; display: block;">科技光谱</a></div>
+                            <div class="index-feature-box"><a href="daily" style="text-decoration: none;color: #000; display: block;">夸克日报</a></div>
+                        </div>
+                        <div style="text-align: center; margin: 15px 0;"> <a href="log.html" style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a></div>
                     </div>
                     
-                    <div class="poetry-container" style="width: 100%; text-align: center; margin: 10px 0;">
-                        <div style="width: 80%; margin: 0 auto; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 10px; padding: 8px;">
-                            <p style="color: rgba(255,255,255,0.9); line-height: 1.5; font-size: 12px; margin: 0;"><span id="meirishici-sentence">正在加载每日诗词....</span><script src="https://sdk.meirishici.top/v2/browser/meirishici.js" charset="utf-8"></script></p>
+                    <div class="index-divider"></div>
+                    
+                    <!-- 站长公告 -->
+                    <div class="index-sidebar-section">
+                        <h3>站长公告</h3>
+                        <div class="index-announcement">
+                            <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>欢迎<a href="app.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
                         </div>
                     </div>
-                        
+                    
+                    <div class="index-divider"></div>
+                    
+                    <!-- 航拍视频 -->
+                    <div class="index-sidebar-section">
+                        <h3>站主的航拍视频👇</h3>
+                        <div style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                            <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; aspect-ratio: 2 / 1;"></iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧主内容 -->
+                <div class="index-main-content">
                     <div class="moren" style="box-shadow: 0 0 15px rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
                         <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:70px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
                         <br><br><br><br><br><br>
@@ -142,8 +139,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- 保留原有的脚本部分 -->
     <script>
-        
         // 初始化加载
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.main-content').style.opacity = '1';
@@ -160,7 +158,7 @@
             });
             
             // 为导航盒子添加悬停效果
-            document.querySelectorAll('.zhuyebox').forEach(box => {
+            document.querySelectorAll('.index-feature-box').forEach(box => {
                 box.addEventListener('mouseover', () => {
                     box.style.transform = 'translateY(-3px)';
                     box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
@@ -201,7 +199,6 @@
             });
         }
 
-
         // 搜索博客功能
         async function searchBlog() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -240,83 +237,67 @@
                 searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
             }
         }
-// 新增PV/UV存储功能
-function storeStatistics() {
-    const pv = document.getElementById('busuanzi_value_site_pv').innerText;
-    const uv = document.getElementById('busuanzi_value_site_uv').innerText;
-    const today = new Date();
-         // 格式化为 YYYY-MM-DD（本地时区）
-         const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-         
-         localStorage.setItem(dateKey, JSON.stringify({
-             pv: parseInt(document.getElementById('busuanzi_value_site_pv').innerText),
-             uv: parseInt(document.getElementById('busuanzi_value_site_uv').innerText),
-             timestamp: today.getTime()
-         }));
-}
 
-// 监听不蒜子数据变化
-new MutationObserver(() => {
-    if(document.getElementById('busuanzi_value_site_pv').innerText && 
-       document.getElementById('busuanzi_value_site_uv').innerText) {
-        storeStatistics();
-    }
-}).observe(document.getElementById('busuanzi_value_site_pv'), {
-    childList: true,
-    subtree: true
-});
+        // 新增PV/UV存储功能
+        function storeStatistics() {
+            const pv = document.getElementById('busuanzi_value_site_pv').innerText;
+            const uv = document.getElementById('busuanzi_value_site_uv').innerText;
+            const today = new Date();
+            // 格式化为 YYYY-MM-DD（本地时区）
+            const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            localStorage.setItem(dateKey, JSON.stringify({
+                pv: parseInt(document.getElementById('busuanzi_value_site_pv').innerText),
+                uv: parseInt(document.getElementById('busuanzi_value_site_uv').innerText),
+                timestamp: today.getTime()
+            }));
+        }
 
-// 检查是否已登录
-const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+        // 监听不蒜子数据变化
+        new MutationObserver(() => {
+            if(document.getElementById('busuanzi_value_site_pv').innerText && 
+               document.getElementById('busuanzi_value_site_uv').innerText) {
+                storeStatistics();
+            }
+        }).observe(document.getElementById('busuanzi_value_site_pv'), {
+            childList: true,
+            subtree: true
+        });
 
-if (isLoggedIn) {
-    // 隐藏电脑端和移动端的登录按钮
-    document.getElementById('login-button').style.display = 'none';
-    document.getElementById('mobile-login-button').style.display = 'none';
-} else {
-    // 确保登录按钮显示（可能在之前被隐藏了）
-    document.getElementById('login-button').style.display = 'block';
-    document.getElementById('mobile-login-button').style.display = 'block';
-}
-        
+        // 检查是否已登录
+        const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+
+        if (isLoggedIn) {
+            // 隐藏电脑端和移动端的登录按钮
+            document.getElementById('login-button').style.display = 'none';
+            document.getElementById('mobile-login-button').style.display = 'none';
+        } else {
+            // 确保登录按钮显示（可能在之前被隐藏了）
+            document.getElementById('login-button').style.display = 'block';
+            document.getElementById('mobile-login-button').style.display = 'block';
+        }
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const typewriterElement = document.getElementById('typewriter');
             const phrases = [
-"无穷的远方，无数的人们，都和我有关。",
-
-"Idealists Need Timeless Journeys",
-
-"比金钱更珍贵是知识，比知识更珍贵的是无休止的好奇心，而比好奇心更珍贵的，是我们头上的星空。",
-
-"哲学家们只是用不同的方式解释世界，而问题在于改变世界。",
-
-"人民，只有人民，才是创造世界历史的动力。",
-
-"在黑暗里点灯的人，终将照亮整个时代。",
-
-"如果风只吹向一个方向，那就改变风的轨迹。",
-
-"理想不会老去，它只会等待新的战士。",
-
-"你要成为改变世界的火焰，而非被世界熄灭的火星。",
-
-"黑暗不能驱除黑暗，只有光明可以；仇恨不能驱除仇恨，只有爱可以。",
-
-"理想不是终点，而是让现实变得更好的方向。",
-
-"真正的乌托邦不在远方，而在我们此刻的选择里。",
-
-"不要害怕理想太高，要害怕自己蹲得太低。",
-
-"当一个人开始为他人点亮蜡烛，黑夜便有了裂缝。",
-
-"理想主义者的力量，在于他们拒绝接受'不可能'的判决。",
-
-"文明的进步，始于有人坚持'本该如此'。",
-
-"即使翅膀被现实打湿，也要记得天空的存在。"
+                "无穷的远方，无数的人们，都和我有关。",
+                "Idealists Need Timeless Journeys",
+                "比金钱更珍贵是知识，比知识更珍贵的是无休止的好奇心，而比好奇心更珍贵的，是我们头上的星空。",
+                "哲学家们只是用不同的方式解释世界，而问题在于改变世界。",
+                "人民，只有人民，才是创造世界历史的动力。",
+                "在黑暗里点灯的人，终将照亮整个时代。",
+                "如果风只吹向一个方向，那就改变风的轨迹。",
+                "理想不会老去，它只会等待新的战士。",
+                "你要成为改变世界的火焰，而非被世界熄灭的火星。",
+                "黑暗不能驱除黑暗，只有光明可以；仇恨不能驱除仇恨，只有爱可以。",
+                "理想不是终点，而是让现实变得更好的方向。",
+                "真正的乌托邦不在远方，而在我们此刻的选择里。",
+                "不要害怕理想太高，要害怕自己蹲得太低。",
+                "当一个人开始为他人点亮蜡烛，黑夜便有了裂缝。",
+                "理想主义者的力量，在于他们拒绝接受'不可能'的判决。",
+                "文明的进步，始于有人坚持'本该如此'。",
+                "即使翅膀被现实打湿，也要记得天空的存在。"
             ];
             let phraseIndex = 0;
             let charIndex = 0;
@@ -363,6 +344,5 @@ if (isLoggedIn) {
             setTimeout(typeWriter, 1000);
         });
     </script>
-
 </body>
 </html>
