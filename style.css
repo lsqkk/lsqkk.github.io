@@ -1,13 +1,19 @@
 /* style.css */
 /* 新增的index-前缀样式 */
+::-webkit-scrollbar {
+    display: none;
+}
 .index-container {
     display: flex;
     flex-direction: row;
     margin-top: 20px;
     gap: 20px; /* 使用gap替代margin-right */
     align-items: flex-start; /* 顶部对齐 */
+    -ms-overflow-style: none;
 }
-
+.index-container::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari和Opera */
+}
 .index-left-sidebar {
     flex: 0 0 300px;
     padding: 15px;
@@ -20,10 +26,12 @@
     top: 20px; /* 距离顶部20px */
     overflow-y: auto; /* 允许独立滚动 */
     max-height: calc(100vh - 40px); /* 设置最大高度 */
+    overflow: hidden;
 }
 
 .index-main-content {
     flex: 1;
+    min-width: 0;
     background: rgba(255,255,255,0.5);
     backdrop-filter: blur(10px);
     border-radius: 15px;
