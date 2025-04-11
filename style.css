@@ -1,35 +1,28 @@
 /* style.css */
-/* 主布局结构 */
-.index-main-layout {
+/* 新增的index-前缀样式 */
+.index-container {
     display: flex;
     flex-direction: row;
-    min-height: 100vh;
+    margin-top: 20px;
 }
 
-/* 侧栏样式 */
-.index-sidebar {
-    width: 300px;
+.index-left-sidebar {
+    flex: 0 0 300px;
+    margin-right: 20px;
     padding: 15px;
-    flex-shrink: 0;
-}
-
-.index-sidebar-content {
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
     border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 0 15px rgba(255,255,255,0.7);
-    height: 100%;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    height: fit-content;
 }
 
-.index-sidebar-main-content {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+.index-main-content {
+    flex: 1;
 }
 
 .index-sidebar-section {
-    margin-bottom: 0;
+    margin-bottom: 25px;
 }
 
 .index-sidebar-section h3 {
@@ -38,18 +31,20 @@
     margin-bottom: 15px;
 }
 
-.index-sidebar-box-container {
+.index-feature-boxes {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
-    justify-content: center;
+    margin: 20px 0;
 }
 
-.index-sidebar-box {
+.index-feature-box {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     padding: 12px;
+    margin: 0;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
     width: 80px;
     height: 30px;
@@ -60,45 +55,40 @@
     transition: all 0.3s ease;
 }
 
-.index-sidebar-box a {
-    text-decoration: none;
-    color: #000;
-    display: block;
-    width: 100%;
-}
-
-.index-sidebar-box:hover {
+.index-feature-box:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 15px rgba(255,255,255,0.7);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
 }
 
-/* 主内容区调整 */
-.index-main-content {
-    flex-grow: 1;
+.index-announcement {
+    background: rgba(255, 255, 255, 0.5);
     padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 20px 0;
 }
 
-/* 移动端适配 */
+.index-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(0, 123, 255, 0.5), transparent);
+    margin: 20px 0;
+}
+
+/* 响应式设计 */
 @media (max-width: 768px) {
-    .index-main-layout {
+    .index-container {
         flex-direction: column;
     }
     
-    .index-sidebar {
-        width: 100%;
-        padding: 15px;
-        order: 2;
-    }
-    
-    .index-main-content {
-        order: 1;
-        padding: 0;
-    }
-    
-    .index-sidebar-content {
-        border-radius: 0;
+    .index-left-sidebar {
+        flex: 1;
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: calc(100% - 30px);
     }
 }
+
 .typewriter-container {
     text-align: center;
     font-family: 'Courier New', monospace;
