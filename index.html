@@ -14,7 +14,7 @@
     <div class="main-content">
         <div class="header-placeholder"></div>
 
-    <div class="header">
+<div class="header">
     <div class="header-content">
         <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
         
@@ -48,78 +48,100 @@
         <li id="mobile-login-button"><a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a></li>
     </ul>
 </div>
+
         
-        <div class="content" style="background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-        
-            <div class="search-results">
-                <div id="searchResults"></div>
+        <div class="index-main-layout">
+            <!-- 左侧栏 -->
+            <div class="index-sidebar">
+                <div class="index-sidebar-content">
+                    <div class="index-sidebar-main-content">
+                        <!-- 最新功能 -->
+                        <div class="index-sidebar-section">
+                            <h3>最新功能</h3>
+                            <div class="index-sidebar-box-container">
+                                <div class="index-sidebar-box"><a href="games/dati">每日答题</a></div>
+                                <div class="index-sidebar-box"><a href="tool/tool-md.html">Markdown编辑器</a></div>
+                                <div class="index-sidebar-box"><a href="estest">科技光谱</a></div>
+                                <div class="index-sidebar-box"><a href="daily">夸克日报</a></div>
+                                <div style="text-align: center; margin: 15px 0;"> 
+                                    <a href="log.html" style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 站长公告 -->
+                        <div class="index-sidebar-section">
+                            <h3>站长公告</h3>
+                            <div class="index-sidebar-box" style="text-align: center;">
+                                <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>欢迎<a href="app.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 航拍视频 -->
+                        <div class="index-sidebar-section">
+                            <h3>站主的航拍视频👇</h3>
+                            <div class="index-sidebar-box" style="padding: 0; overflow: hidden;">
+                                <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; aspect-ratio: 2 / 1;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="poetry-container" style="width: 100%; text-align: center; margin: 10px 0;">
-                <div style="width: 80%; margin: 0 auto; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 10px; padding: 8px;">
-                    <p style="color: rgba(255,255,255,0.9); line-height: 1.5; font-size: 12px; margin: 0;"><span id="meirishici-sentence">正在加载每日诗词....</span><script src="https://sdk.meirishici.top/v2/browser/meirishici.js" charset="utf-8"></script></p>
+            <!-- 右侧主内容区 -->
+            <div class="index-main-content">
+                <div class="content" style="background: url('image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+                    <div class="search-results">
+                        <div id="searchResults"></div>
+                    </div>
+                    
+                    <div class="poetry-container" style="width: 100%; text-align: center; margin: 10px 0;">
+                        <div style="width: 80%; margin: 0 auto; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 10px; padding: 8px;">
+                            <p style="color: rgba(255,255,255,0.9); line-height: 1.5; font-size: 12px; margin: 0;"><span id="meirishici-sentence">正在加载每日诗词....</span><script src="https://sdk.meirishici.top/v2/browser/meirishici.js" charset="utf-8"></script></p>
+                        </div>
+                    </div>
+                        
+                    <div class="moren" style="box-shadow: 0 0 15px rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                        <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:70px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
+                        <br><br><br><br><br><br>
+                        <h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;">蓝色奇夸克</h1>
+                        <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"> 
+                            <a href="https://github.com/lsqkk" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                                <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                            </a>
+                            <a href="https://space.bilibili.com/2105459088" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                                <img src="https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                            </a>
+                            <a href="https://www.acfun.cn/u/76355091" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                                <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                            </a>
+                            <a href="https://tuxun.fun/user/852269" target="blank" style="text-decoration: none; transition: transform 0.3s;">
+                                <img src="https://b68res.daai.fun/tuxun/images/app/logo.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
+                            </a>
+                        </div>
+                        <h2 style="color: #333; text-align: center; margin-bottom: 20px;">欢迎来到我的博客</h2>
+                        <p style="text-align: center; color: #555; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;">这里记录了我的学习历程、生活感悟和技术分享。</p>
+                        <div class="typewriter-container">
+                            <div id="typewriter" class="typewriter"></div>
+                        </div>
+                        <div class="recent-posts" style="margin-top: 30px;">
+                            <h2 class="recent-header">📚 最新文章</h2>
+                            <div id="recent-posts"></div>
+                            <a href="article-list.html" style="text-decoration: none;">
+                                <h3 class="recent-header" style="color: #0366d6; text-align: right; margin-top: 10px;">更多文章 →</h3>
+                            </a>
+                        </div>
+                        <br>
+                        <div style="text-align: center; color: #666; font-size: 0.9em; padding-top: 10px;">
+                            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                            一共<span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold;"></span>位小伙伴来过<span id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold;"></span>次
+                            <p>© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights reserved.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-                
-            <div class="moren" style="box-shadow: 0 0 15px rgba(255,255,255,0.7); background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
-                <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像" style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:70px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
-                <br><br><br><br><br><br>
-                <h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;">蓝色奇夸克</h1>
-                <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"> 
-                    <a href="https://github.com/lsqkk" target="blank" style="text-decoration: none; transition: transform 0.3s;">
-                        <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
-                    </a>
-                    <a href="https://space.bilibili.com/2105459088" target="blank" style="text-decoration: none; transition: transform 0.3s;">
-                        <img src="https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
-                    </a>
-                    <a href="https://www.acfun.cn/u/76355091" target="blank" style="text-decoration: none; transition: transform 0.3s;">
-                        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
-                    </a>
-                    <a href="https://tuxun.fun/user/852269" target="blank" style="text-decoration: none; transition: transform 0.3s;">
-                        <img src="https://b68res.daai.fun/tuxun/images/app/logo.png" style="height:30px; width:30px; border-radius: 50%; overflow: hidden; display: inline-block; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"> 
-                    </a>
-                </div>
-                <h2 style="color: #333; text-align: center; margin-bottom: 20px;">欢迎来到我的博客</h2>
-                <p style="text-align: center; color: #555; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;">这里记录了我的学习历程、生活感悟和技术分享。</p>
-    <div class="typewriter-container">
-        <div id="typewriter" class="typewriter"></div>
+        </div>
     </div>
-                <div class="recent-posts" style="margin-top: 30px;">
-                    <h2 class="recent-header">📚 最新文章</h2>
-                    <div id="recent-posts"></div>
-                    <a href="article-list.html" style="text-decoration: none;">
-                        <h3 class="recent-header" style="color: #0366d6; text-align: right; margin-top: 10px;">更多文章 →</h3>
-                    </a>
-                </div>
-                <br>
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, rgba(0,123,255,0.5), transparent); margin: 20px 0;">
-                <h3 style="text-align: center; color: #333; margin-bottom: 15px;">最新功能</h3>
-                <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0;">
-                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="games/dati" style="text-decoration: none;color: #000; display: block;">每日答题</a></div>
-                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="tool/tool-md.html" style="text-decoration: none;color: #000; display: block;">Markdown编辑器</a></div>
-                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="estest" style="text-decoration: none;color: #000; display: block;">科技光谱</a></div>
-                    <div class="zhuyebox" style="transition: all 0.3s ease;"><a href="daily" style="text-decoration: none;color: #000; display: block;">夸克日报</a></div>
-                    <div style="text-align: center; margin: 15px 0;"> <a href="log.html" style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a></div>
-                </div>
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, rgba(0,123,255,0.5), transparent); margin: 20px 0;">
-                <h3 style="text-align: center; color: #333; margin-bottom: 15px;">站长公告</h3>
-                <div style="background: rgba(255,255,255,0.5); padding: 15px; border-radius: 10px; text-align: center; margin: 20px 0;">
-                    <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>欢迎<a href="app.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
-                </div>
-                <h3 style="text-align: center; color: #333; margin-bottom: 15px;">站主的航拍视频👇</h3>
-                <div style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%; aspect-ratio: 2 / 1;"></iframe>
-                </div>
-                <br>
-                <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, rgba(0,123,255,0.5), transparent); margin: 20px 0;">
-                <div style="text-align: center; color: #666; font-size: 0.9em; padding-top: 10px;">
-                    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-                    一共<span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold;"></span>位小伙伴来过<span id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold;"></span>次
-                    <p>© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights reserved.</p>
-                </div>
-            </div>
-    </div>
-  </div>
     <script>
         
         // 初始化加载
