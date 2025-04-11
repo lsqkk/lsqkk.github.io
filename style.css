@@ -26,7 +26,7 @@
     top: 20px; /* 距离顶部20px */
     overflow-y: auto; /* 允许独立滚动 */
     max-height: calc(100vh - 40px); /* 设置最大高度 */
-    overflow: hidden;
+    overflow: auto;
 }
 
 .index-main-content {
@@ -112,6 +112,11 @@
     .index-main-content {
         max-height: none; /* 取消最大高度限制 */
         order: 1; /* 显示在上方 */
+    }
+        html, body {
+        width: 100%;
+        overflow-x: hidden;
+        position: relative;
     }
 }
 
