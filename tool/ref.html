@@ -374,13 +374,7 @@
         </div>
         
         <div class="card">
-            <div class="toggle-option">
-                <label for="unordered-mode">无序号模式（如您需要在Word中统一设置序号请点这里👉）</label>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="unordered-mode">
-                    <span class="slider"></span>
-                </label>
-            </div>
+
             
             <div id="monograph-form" class="active">
                 <div class="form-group">
@@ -654,9 +648,16 @@
                 <button class="generate-btn">生成参考文献</button>
             </div>
         </div>
-        
+
         <div id="result-container" class="card" style="display: none;">
             <div class="result-area">
+                    <div class="toggle-option">
+                <label for="unordered-mode">无序号模式（即如您需要在Word中统一设置序号请点这里👉）</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="unordered-mode">
+                    <span class="slider"></span>
+                </label>
+            </div>
                 <div class="result-title">生成的参考文献:（点击自动复制）</div>
                 <div id="reference-output" class="reference-output"></div>
                 <div class="action-btns">
