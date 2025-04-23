@@ -8,11 +8,11 @@
 
 ## 版权信息
 
-本网站由站主[蓝色奇夸克](https://space.bilibili.com/2105459088)搭建，直接托管于<a href="pages.github.com">Github pages</a>（没钱买域名是这样的）。
+本网站由站主[蓝色奇夸克](https://space.bilibili.com/2105459088)搭建，托管于<a href="pages.github.com">Github pages</a>。
 
-“我的工具箱”中，“当前天气”和“天气查询”使用了[OpenWeatherAPI](https://openweathermap.org/api)。
+“夸克工具箱”中的天气工具使用了[OpenWeatherAPI](https://openweathermap.org/api)。
 
-`.md`博客的$\TeX$渲染使用 [$\KaTeX$](https://katex.org/) 服务。新版博客为做对照，使用了 [MathJax](https://github.com/mathjax/MathJax) 引擎。
+`.md`博客的$\TeX$渲染使用 [$\KaTeX$](https://katex.org/) 。
 
 主页背景图为[云のむこう、约束の场所](https://www.bilibili.com/bangumi/play/ss2545)的海报。
 
@@ -20,13 +20,8 @@
 
 部分工具箱项目、博客显示页背景图采用了[Bing壁纸开放API](https://bing.img.run/api.html)。
 
->本页也为`.md`显示页，如背景图无法加载，请点击上述API链接选择允许访问即可。
 
->您现在看到的本站UI是站主手搓的，请勿责怪页面简陋（抱拳）
-
->为获得更好的显示效果，本站于2025年2月使用 [Hugo](https://gohugo.io) + [Blowfish](https://blowfish.page/zh-cn/) 升级维护，点此访问[新版博客](https://bsquark.github.io)。为保留老版博客除文章外的其他内容，新版博客启用了新网址，两个网址将保持内容同步更新。
-
->新版博客同样适用以下免责声明、使用条款等内容。（绝对不是懒得给新站再写一个版权页
+>为获得更好的显示效果，本站于2025年2月使用 [Hugo](https://gohugo.io) + [Blowfish](https://blowfish.page/zh-cn/) 升级维护，点此访问[新版博客](https://bsquark.github.io)。为保留老版博客除文章外的其他内容，新版博客启用了新网址。其$\TeX$渲染使用了 [MathJax](https://github.com/mathjax/MathJax) 。新版博客同样适用以下免责声明、使用条款等内容。
 
 博客文章内容由[蓝色奇夸克](https://space.bilibili.com/2105459088)撰写，Copyright © 2024 - 2025 蓝色奇夸克 All Rights Reserved.
 
@@ -81,3 +76,14 @@
 ## 版权投诉
 
 本站尊重知识产权，如果版权拥有者发现自己作品被侵权，请及时向本站提出权利通知，将身份证明、权属证明、具体链接（URL）及详细侵权情况证明发往[jsxzznz@163.com](mailto:jsxzznz@163.com "向 jsxzznz@163.com 发送邮件")。在收到上述法律文件后，在5个工作日内移除相关涉嫌侵权的内容。
+
+## 网站相关资质
+
+**夸克博客APP软件著作权**
+
+![软著](https://lsqkk.github.io/image/copyright.png)
+
+**ICP备案**
+
+本网站为个人非商业性质的博客，托管于GitHub Pages。根据相关规定，GitHub Pages的服务器位于境外，且本博客不涉及商业活动或盈利目的，因此无需进行ICP备案。
+
