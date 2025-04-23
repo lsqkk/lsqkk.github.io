@@ -169,7 +169,43 @@ body {
     background-color: #f0f8ff;
     margin: 0;
     padding: 0;
-    cursor: url('/image/cursor.png'), auto;
+    cursor: none;
+}
+
+/* 自定义光标 */
+.custom-cursor {
+  width: 32px;
+  height: 32px;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url('https://lsqkk.github.io/image/cursor.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* 光粒样式 */
+.cursor-particle {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  animation: particle-flow 0.6s ease-out forwards;
+}
+
+@keyframes particle-flow {
+  0% {
+    transform: scale(1) translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.2) translate(var(--tx), var(--ty));
+    opacity: 0;
+    filter: blur(2px);
+  }
 }
 /* Header 相关样式 */
 .header {
