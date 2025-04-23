@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
   // 创建自定义光标
   const cursor = document.createElement('div');
   cursor.className = 'custom-cursor';
@@ -63,4 +64,5 @@ document.addEventListener('DOMContentLoaded', function() {
     cursor.style.top = (e.clientY - 5) + 'px';
     document.removeEventListener('mousemove', init);
   });
+ }
 });
