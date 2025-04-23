@@ -3,6 +3,15 @@
 欢迎来到蓝色奇夸克的个人博客，分享技术、生活与思考。
 
 以下是更新日志。
+
+# 25.4.23
+1. 新增 - 更新版权页软件著作权资质
+   [![计算器](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250423223555415.png)](https://lsqkk.github.io/post.html?file=copyright.md)
+2. 优化 - 微调主页显示逻辑
+3. 新增 - 工具箱**参考文献格式生成器**
+   [![计算器](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250423223438315.png)](https://lsqkk.github.io/tool/ref.html)
+4. 新增 - 光标显示和粒子效果
+   
 # 25.4.5
 1. 优化 - 文章显示页侧栏UI
 2. 优化 - 404页面UI
