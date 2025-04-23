@@ -33,7 +33,7 @@
       ]
     },
     {
-      "name": "文本工具",
+      "name": "学术工具",
       "icon": "✍️",
       "tools": [
         {
@@ -55,20 +55,20 @@
           "name": "📻 语音识别",
           "url": "tool/tool-audio2txt.html",
           "target": "_blank"
-        }
-      ]
-    },
-    {
-      "name": "数学工具",
-      "icon": "♾️",
-      "tools": [
+        },
         {
           "name": "🧮 高级科学计算器",
           "url": "tool/calculator.html",
           "target": "_blank"
+        },
+        {
+          "name": "📒 论文参考文献生成",
+          "url": "tool/ref.html",
+          "target": "_blank"
         }
       ]
     },
+    
     {
       "name": "其他",
       "icon": "✨",
