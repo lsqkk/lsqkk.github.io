@@ -169,6 +169,7 @@ body {
     background-color: #f0f8ff;
     margin: 0;
     padding: 0;
+    cursor: url('/image/cursor.png'), auto;
 }
 /* Header 相关样式 */
 .header {
