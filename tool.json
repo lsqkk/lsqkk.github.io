@@ -1,7 +1,7 @@
 {
   "categories": [
     {
-      "name": "时间工具",
+      "name": "生活工具",
       "icon": "⏱️",
       "tools": [
         {
@@ -13,25 +13,15 @@
           "name": "🍅 智能番茄钟",
           "url": "tool/pomodoro.html",
           "target": "_blank"
-        }
-      ]
-    },
-    {
-      "name": "天气查询",
-      "icon": "🌤️",
-      "tools": [
-        {
-          "name": "☀️ 当前天气",
-          "url": "tool/tool-weather1.html",
-          "target": "_blank"
         },
         {
-          "name": "🌦️ 天气查询",
-          "url": "tool/tool-weather2.html",
+          "name": "⛅ 夸克天气",
+          "url": "tool/weather.html",
           "target": "_blank"
         }
       ]
     },
+    
     {
       "name": "学术工具",
       "icon": "✍️",
