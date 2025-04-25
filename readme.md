@@ -4,6 +4,19 @@
 
 以下是更新日志。
 
+# 25.4.25
+1. 新增 - **智能OCR**
+   [![ocr](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250425234201528.png)](https://lsqkk.github.io/tool/ocr.html)
+2. 优化 - 微调主页UI
+3. 新增 - 加入**萌国ICP备案**
+
+   ![ocr](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250425234319953.png)
+   
+# 25.4.24
+1. 优化 - 将天气功能整合为**夸克天气**
+   [![天气](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250425233958281.png)](https://lsqkk.github.io/tool/weather.html)
+2. 新增 - 更新了一批**夸克日报**文章
+   
 # 25.4.23
 1. 新增 - 更新版权页软件著作权资质
    [![计算器](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250423223555415.png)](https://lsqkk.github.io/post.html?file=copyright.md)
