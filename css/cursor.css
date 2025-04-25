@@ -1,11 +1,14 @@
 /* 仅对非触摸设备应用自定义光标 */
 @media (hover: hover) and (pointer: fine) {
-  /* 隐藏系统光标 */
-  body,
-  a, button, input, [role="button"], [onclick], 
-  a:hover, button:hover, input:hover, 
-  a:active, button:active, input:active,
-  a:focus, button:focus, input:focus {
+  /* 隐藏系统光标 - 扩展选择器确保覆盖所有情况 */
+  html *,
+  body *,
+  a, button, input, textarea, select, 
+  [role="button"], [onclick], [tabindex],
+  a:hover, button:hover, input:hover, textarea:hover, select:hover,
+  a:active, button:active, input:active, textarea:active, select:active,
+  a:focus, button:focus, input:focus, textarea:focus, select:focus,
+  a:visited, button:visited, input:visited {
     cursor: none !important;
   }
 
@@ -19,7 +22,17 @@
     background-image: url('https://lsqkk.github.io/image/cursor.png');
     background-size: contain;
     background-repeat: no-repeat;
-    display: block; /* 确保显示 */
+    display: block;
+  }
+
+  /* 当鼠标离开视窗时隐藏自定义光标 */
+  body:hover .custom-cursor {
+    opacity: 1;
+    transition: opacity 0.1s;
+  }
+  body:not(:hover) .custom-cursor {
+    opacity: 0;
+    transition: opacity 0.1s;
   }
 
   /* 光粒样式 */
