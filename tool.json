@@ -85,6 +85,11 @@
           "target": "_blank"
         },
         {
+          "name": "💬 夸克聊天室",
+          "url": "chat",
+          "target": "_blank"
+        },
+        {
           "name": "🔍 便捷搜索",
           "url": "https://cn.bing.com/",
           "target": "_blank"
