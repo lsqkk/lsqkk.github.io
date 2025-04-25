@@ -41,11 +41,7 @@
           "url": "ds",
           "target": "_blank"
         },
-        {
-          "name": "📻 语音识别",
-          "url": "tool/tool-audio2txt.html",
-          "target": "_blank"
-        },
+
         {
           "name": "🧮 高级科学计算器",
           "url": "tool/calculator.html",
@@ -58,7 +54,22 @@
         }
       ]
     },
-    
+    {
+      "name": "📻 识别工具",
+      "icon": "✨",
+      "tools": [
+        {
+          "name": "📻 语音识别",
+          "url": "tool/tool-audio2txt.html",
+          "target": "_blank"
+        },
+        {
+          "name": "📷 文字识别",
+          "url": "tool/ocr.html",
+          "target": "_blank"
+        }
+      ]
+    },
     {
       "name": "其他",
       "icon": "✨",
