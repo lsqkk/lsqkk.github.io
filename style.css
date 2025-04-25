@@ -163,8 +163,10 @@
     justify-content: center;
     text-align: center;
 }
+@import url("https://cdnjs.cloudflare.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreenr.css");
+
 body {
-    font-family: "微软雅黑", "Times New Roman", serif;
+    font-family: "LXGW WenKai Screen R", "微软雅黑", "Times New Roman", serif;
     background-color: #f0f8ff;
     margin: 0;
     padding: 0;
