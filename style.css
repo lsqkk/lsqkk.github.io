@@ -6,7 +6,6 @@
 .index-container {
     display: flex;
     flex-direction: row;
-    margin-top: 20px;
     gap: 20px; /* 使用gap替代margin-right */
     align-items: flex-start; /* 顶部对齐 */
     -ms-overflow-style: none;
@@ -23,7 +22,7 @@
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
     height: fit-content;
     position: sticky; /* 添加粘性定位 */
-    top: 20px; /* 距离顶部20px */
+
     overflow-y: auto; /* 允许独立滚动 */
     max-height: calc(100vh - 40px); /* 设置最大高度 */
     overflow: auto;
@@ -350,13 +349,14 @@ body {
     height: 60px;
 }
 .content {
-    margin-top: 100px;
+    margin-top: 80px;
     border-radius: 30px;
     margin: 12px;
     padding: 12px;
     background-color: #fff;
     padding-bottom: 60px; /* 给footer留出固定高度的空间 */
     min-height: calc(100vh - 150px);
+    backdrop-filter: blur(10px);
 }   
 .recent-posts { 
             background: rgba(255, 255, 255, 0.7);
