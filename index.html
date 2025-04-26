@@ -12,6 +12,46 @@
     
     <link rel="icon" href="image/logo_blue.png" type="image/png">
     <base href="https://lsqkk.github.io/">
+    <style>
+        .welcome-box {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .time {
+            font-size: 24px;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .date {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .info {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+        .tip {
+            font-style: italic;
+            color: #6c757d;
+            border-left: 3px solid #6c757d;
+            padding-left: 10px;
+        }
+        .highlight {
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
@@ -103,6 +143,13 @@
                     </div>
                 </div>
                 <div class="index-left-sidebar">
+
+                    <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span> </div>
+                    <div class="date" id="date">2023年1月1日星期一</div>
+                    <div class="info" id="welcome-info"> 无穷的远方，无数的人们，都和我有关 </div>
+                    <div class="greeting" id="greeting">您好</div>
+                    <div class="tip" id="tip">欢迎访问夸克博客</div>
+
                     <!-- 最新功能 -->
                     <div class="index-sidebar-section">
                         <h3>最新功能</h3>
@@ -352,6 +399,153 @@
             
             // 延迟1秒后开始打字效果
             setTimeout(typeWriter, 1000);
+        });
+                // 更新时间
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('hours').textContent = now.getHours().toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+        }
+
+        // 更新问候语
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = '';
+            
+            if (hour < 6) greeting = '凌晨好';
+            else if (hour < 9) greeting = '早上好';
+            else if (hour < 12) greeting = '上午好';
+            else if (hour < 14) greeting = '中午好';
+            else if (hour < 18) greeting = '下午好';
+            else greeting = '晚上好';
+            
+            document.getElementById('greeting').textContent = greeting;
+            document.getElementById('tip').textContent = getRandomTip();
+        }
+
+        // 随机提示语
+        function getRandomTip() {
+            const tips = [
+'欢迎来到这片绿洲。愿这里的文字能像星光一样，为你照亮未知的路径',
+'在这里，我们谈论星辰、泥土，以及如何用双手构建乌托邦',
+'愿你始终保有追问的勇气，像一棵树那样生长——向下扎根，向上触摸天空',
+'世界或许不够完美，但改变始于每一个不肯沉默的灵魂。很高兴遇见你',
+'这里没有答案，只有真诚的提问与探索。欢迎加入这场思想的冒险',
+'如果语言是种子，愿这些文字能在你心里开出一朵小小的、倔强的花',
+'理想主义者是现实的建筑师——我们承认阴影，但永远面向光',
+'欢迎来到这个角落。让我们一起保持‘天真’的力量：相信改变，相信微小事物的伟大',
+'这里记录着对自由的注解、对爱的实验，以及永不熄灭的好奇心',
+'你并非独自在深夜思考人类与宇宙。看，我们留下了这些灯火'
+
+            ];
+            return tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        // 计算距离
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // 地球半径(km)
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return Math.round(R * c);
+        }
+
+// 根据省份返回俏皮话
+function getProvinceBanter(province) {
+    const banterMap = {
+        '北京市': '来碗豆汁儿配焦圈？',
+        '上海市': '侬好呀！要尝尝小笼包伐？',
+        '广东省': '饮茶先啦！',
+        '四川省': '火锅整起？微辣还是中辣？',
+        '重庆市': '重庆火锅，巴适得板！',
+        '陕西省': '来碗羊肉泡馍？',
+        '山西省': '老陈醋管够！',
+        '内蒙古': '草原骑马去不？',
+        '新疆': '羊肉串来十串？',
+        '西藏': '布达拉宫约起？',
+        '云南省': '过桥米线整一碗？',
+        '贵州省': '茅台还是老干妈？',
+        '广西': '桂林山水甲天下！',
+        '海南省': '椰子管饱！',
+        '福建省': '喝茶话仙啦！',
+        '浙江省': '龙井茶来一杯？',
+        '江苏省': '盐水鸭来一份？',
+        '山东省': '煎饼卷大葱整起？',
+        '河南省': '烩面来一碗？',
+        '河北省': '驴肉火烧走起？',
+        '天津省': '煎饼果子来一套？',
+        '辽宁省': '整点锅包肉？',
+        '吉林省': '东北酸菜管够！',
+        '黑龙江省': '冰雪大世界走起？',
+        '江西省': '瓦罐汤来一盅？',
+        '安徽省': '黄山烧饼来几个？',
+        '湖北省': '热干面过早？',
+        '湖南省': '辣椒炒肉走起？',
+        '甘肃省': '兰州拉面来一碗？',
+        '宁夏': '枸杞泡起来？',
+        '青海省': '青海湖约起？',
+        '台湾': '珍珠奶茶来一杯？',
+        '香港': '饮茶食点心啦！',
+        '澳门': '葡式蛋挞来一打？'
+    };
+    
+    return banterMap[province] || '欢迎来玩！'; // 如果没有匹配的省份，返回默认欢迎语
+}
+
+        // 获取访客信息
+        async function getVisitorInfo() {
+            try {
+                const response = await fetch('https://api.b52m.cn/api/IP/?key=60606913cdba7c');
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    const ipInfo = data.data;
+                    const ip = data.ip;
+                    
+                    // 站主位置
+                    const bloggerLat = 34.252705;
+                    const bloggerLon = 108.990221;
+                    
+                    const distance = getDistance(
+                        bloggerLat, bloggerLon,
+                        ipInfo.latitude_3, ipInfo.longitude_3
+                    );
+
+// 获取省份俏皮话
+                    const provinceBanter = getProvinceBanter(ipInfo.province_name_3);
+
+                    // 显示欢迎信息
+                    document.getElementById('welcome-info').innerHTML = `
+                        欢迎来自 <span class="highlight">${ipInfo.province_name_3} ${ipInfo.city_name_3} ${ipInfo.district_name_3}</span> 的朋友<br>
+                        <span class="highlight">${provinceBanter}</span><br>
+                        您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
+                        您的IP地址为: <span class="highlight">${ip}</span>
+                    `;
+                } else {
+                    throw new Error('API返回错误');
+                }
+            } catch (error) {
+                console.error('获取IP信息失败:', error);
+                document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            updateGreeting();
+            getVisitorInfo();
+            
+            setInterval(updateTime, 1000);
+            setInterval(updateGreeting, 60000);
         });
     </script>
 </body>
