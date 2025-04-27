@@ -12,20 +12,29 @@
     cursor: none !important;
   }
 
-/* 自定义光标 - 灰色半透明小圆圈 */
-.custom-cursor {
-  width: 16px;
-  height: 16px;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  background: rgba(128, 128, 128, 0.5); /* 灰色半透明 */
-  border-radius: 50%; /* 圆形 */
-  border: 1px solid rgba(255, 255, 255, 0.8); /* 白色边框增加可见性 */
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* 微弱的发光效果 */
-  display: block;
-  transform: translate(-50%, -50%); /* 使光标中心对准鼠标位置 */
-}
+  /* 自定义光标 - 基础样式 */
+  .custom-cursor {
+    width: 16px;
+    height: 16px;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    background: rgba(128, 128, 128, 0.5);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    display: block;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s ease-out;
+  }
+
+  /* 可点击元素上的光标样式 */
+  .custom-cursor.clickable {
+    width: 24px;
+    height: 24px;
+    background: rgba(180, 180, 180, 0.7);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  }
 
   /* 当鼠标离开视窗时隐藏自定义光标 */
   body:hover .custom-cursor {
