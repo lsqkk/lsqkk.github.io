@@ -12,18 +12,20 @@
     cursor: none !important;
   }
 
-  /* 自定义光标 */
-  .custom-cursor {
-    width: 32px;
-    height: 32px;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    background-image: url('https://lsqkk.github.io/image/cursor.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    display: block;
-  }
+/* 自定义光标 - 灰色半透明小圆圈 */
+.custom-cursor {
+  width: 16px;
+  height: 16px;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  background: rgba(128, 128, 128, 0.5); /* 灰色半透明 */
+  border-radius: 50%; /* 圆形 */
+  border: 1px solid rgba(255, 255, 255, 0.8); /* 白色边框增加可见性 */
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* 微弱的发光效果 */
+  display: block;
+  transform: translate(-50%, -50%); /* 使光标中心对准鼠标位置 */
+}
 
   /* 当鼠标离开视窗时隐藏自定义光标 */
   body:hover .custom-cursor {
