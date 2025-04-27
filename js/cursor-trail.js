@@ -21,10 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 鼠标移动监听
   document.addEventListener('mousemove', function(e) {
-    // 更新光标位置
-    cursor.style.left = (e.clientX - 5) + 'px';
-    cursor.style.top = (e.clientY - 5) + 'px';
-    
+// 更新光标位置
+cursor.style.left = e.clientX + 'px';  // 移除了-5的偏移
+cursor.style.top = e.clientY + 'px';   // 移除了-5的偏移
     // 创建新粒子
     createParticle(e.clientX, e.clientY);
   });
@@ -60,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 确保光标在页面加载时就有位置
   document.addEventListener('mousemove', function init(e) {
-    cursor.style.left = (e.clientX - 5) + 'px';
-    cursor.style.top = (e.clientY - 5) + 'px';
+  cursor.style.left = e.clientX + 'px';  // 移除了-5的偏移
+  cursor.style.top = e.clientY + 'px';   // 移除了-5的偏移
     document.removeEventListener('mousemove', init);
   });
  }
