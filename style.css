@@ -164,11 +164,16 @@
 }
 @import url("https://cdnjs.cloudflare.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreenr.css");
 
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('fonts/cejk.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 body {
-    font-family: "LXGW WenKai Screen R", "微软雅黑", "Times New Roman", serif;
-    background-color: #f0f8ff;
-    margin: 0;
-    padding: 0;
+    font-family: 'MyCustomFont', serif;
 }
 /* Header 相关样式 */
 .header {
