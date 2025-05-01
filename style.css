@@ -186,14 +186,15 @@ height: 100px;
     justify-content: center;
     text-align: center;
 }
-@import url("https://cdnjs.cloudflare.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreenr.css");
-
 @font-face {
-    font-family: 'MyCustomFont';
-    src: url('fonts/cejk.ttf') format('truetype');
-    font-weight: normal;
+    font-family: "仓耳今楷01-W03";
+    src: url("/sites/files/zitis/anli/仓耳今楷01-W03.eot"); /* IE9 */
+    src: url("/sites/files/zitis/anli/仓耳今楷01-W03.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("/sites/files/zitis/anli/仓耳今楷01-W03.woff") format("woff"), /* chrome, firefox */
+    url("/sites/files/zitis/anli/仓耳今楷01-W03.ttf") format("truetype"), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+    url("/sites/files/zitis/anli/仓耳今楷01-W03.svg#TsangerJinKai01 W03") format("svg"); /* iOS 4.1- */
     font-style: normal;
-    font-display: swap;
+    font-weight: normal;
 }
 
 body, html {
@@ -209,7 +210,7 @@ body, html {
     padding: 0;
 }
 body {
-    font-family: 'MyCustomFont', serif;
+    font-family: '仓耳今楷01-W03', serif;
 }
 /* Header 相关样式 */
 .header {
