@@ -12,37 +12,23 @@
     <base href="https://lsqkk.github.io/">
 <style>
 body {
-    background: url('https://lsqkk.github.io/image/bg.png') no-repeat center center fixed;
-    background-size: cover;
-    height: 100vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('https://lsqkk.github.io/image/bg.png') no-repeat center center;
-    background-size: cover;
-    will-change: transform;
-    z-index: -1;
+    background: url('image/bg.png') no-repeat center center / cover;
+    background-attachment: fixed;
+    background-position-y: 0;
     animation: parallaxBackground linear;
     animation-timeline: scroll();
 }
 
 @keyframes parallaxBackground {
     from {
-        transform: translateY(0);
+        background-position-y: 0;
     }
     to {
-        transform: translateY(30%);
+        background-position-y: 70%; /* 控制滚动速度 */
     }
 }
 </style>
+
     </head>
 
 <body>
