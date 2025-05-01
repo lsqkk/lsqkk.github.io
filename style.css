@@ -186,16 +186,8 @@ height: 100px;
     justify-content: center;
     text-align: center;
 }
-@font-face {
-    font-family: "仓耳今楷01-W03";
-    src: url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.eot"); /* IE9 */
-    src: url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.woff") format("woff"), /* chrome, firefox */
-    url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.ttf") format("truetype"), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-    url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.svg#TsangerJinKai01 W03") format("svg"); /* iOS 4.1- */
-    font-style: normal;
-    font-weight: normal;
-}
+@import url("https://cdnjs.cloudflare.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreenr.css");
+
 
 body, html {
     margin: 0;
@@ -210,7 +202,7 @@ body, html {
     padding: 0;
 }
 body {
-    font-family: '仓耳今楷01-W03', serif;
+    font-family: "LXGW WenKai Screen R", sans-serif;
 }
 /* Header 相关样式 */
 .header {
