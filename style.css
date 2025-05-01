@@ -6,13 +6,13 @@
 .index-container {
     display: flex;
     flex-direction: row;
-    gap: 20px; /* 使用gap替代margin-right */
+    gap: 20px;
     align-items: flex-start; /* 顶部对齐 */
-    -ms-overflow-style: none;
 }
 .index-container::-webkit-scrollbar {
     display: none;  /* Chrome, Safari和Opera */
 }
+
 .index-left-sidebar {
     flex: 0 0 300px;
     padding: 15px;
@@ -20,12 +20,7 @@
     backdrop-filter: blur(10px);
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-    height: fit-content;
-    position: sticky; /* 添加粘性定位 */
-
-    overflow-y: auto; /* 允许独立滚动 */
-    max-height: calc(100vh - 40px); /* 设置最大高度 */
-    overflow: auto;
+    height: auto; /* 高度自适应 */
 }
 
 .index-main-content {
@@ -36,8 +31,12 @@
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(255,255,255,0.7);
     padding: 15px;
-    overflow-y: auto; /* 允许独立滚动 */
-    max-height: calc(100vh - 40px); /* 设置最大高度 */
+    height: auto; /* 高度自适应 */
+}
+.index-left-sidebar, 
+.index-main-content {
+    max-height: none; /* 移除固定高度 */
+    height: auto; /* 高度自适应内容 */
 }
 .index-sidebar-section {
     margin-bottom: 25px;
@@ -49,33 +48,59 @@
     margin-bottom: 15px;
 }
 
+/* 替换原有的.index-feature-boxes相关样式 */
 .index-feature-boxes {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 两栏布局 */
+    gap: 12px;
     margin: 20px 0;
 }
 
 .index-feature-box {
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
-    padding: 12px;
-    margin: 0;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-    width: 80px;
-    height: 30px;
-    line-height: 30px;
+    padding: 15px 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; /* 自动填充网格宽度 */
+    height: auto;
+    min-height: 60px; /* 统一最小高度 */
     display: flex;
+    align-items: center;
     justify-content: center;
-    text-align: center;
     transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.2);
+
+}
+
+.index-feature-box a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .index-feature-box:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    .index-feature-box {
+        padding: 12px 8px;
+        min-height: 50px;
+    }
+    .index-feature-box a {
+        font-size: 0.85rem;
+    }
 }
 
 .index-announcement {
@@ -97,15 +122,9 @@
 @media (max-width: 768px) {
     .index-container {
         flex-direction: column;
-        gap: 20px;
     }
-    
     .index-left-sidebar {
-        flex: 1;
-        width: calc(100% - 30px);
-        position: static; /* 取消粘性定位 */
-        max-height: none; /* 取消最大高度限制 */
-        order: 2; /* 显示在下方 */
+        width: 100%;
     }
     
     .index-main-content {
@@ -120,34 +139,39 @@
 }
 
 .typewriter-container {
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    height: 100px; /* 设置一个固定高度 */
+    /* 确保容器足够容纳内容 */
+    min-height: 100px;
     display: flex;
-    align-items: center; /* 垂直居中 */
-    justify-content: center; /* 水平居中 */
-    width: 100%; /* 确保宽度固定 */
-    overflow: hidden; /* 隐藏溢出内容 */
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+height: 100px;
 }
-        
-        .typewriter {
-            display: inline-block;
-            position: relative;
-            font-size: 1.3rem;
-            color: #333;
-        }
-        
-        .typewriter::after {
-            content: "|";
-            position: absolute;
-            right: -10px;
-            animation: blink 0.7s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+
+.typewriter {
+    display: inline-block;
+    position: relative;
+    font-size: 1.3rem;
+    color: #333;
+    text-align: center; /* 确保文字居中 */
+    padding-right: 0.3em; /* 为光标留出空间 */
+}
+
+/* 修改光标定位方式 */
+.typewriter::after {
+    content: "|";
+    position: absolute;
+    right: 0; /* 固定在文字右侧 */
+    animation: blink 0.7s infinite;
+    /* 移除原来的right:-0.2em */
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 .zhuyebox {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.1);
@@ -839,4 +863,114 @@ button {
 /* 鼠标悬停时的样式 */
 .cr:hover {
   color: #ccc; /* 悬停时颜色变浅 */
+}
+/* 背景样式 */
+.main-background {
+    background: url('image/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    padding-top: 10px;
+    padding-bottom: 60px;
+}
+.main-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.main-content {
+    flex: 1;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+}
+.sidebar-index {
+    flex: 0 0 300px;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    /* 新增以下属性 */
+    align-self: flex-start; /* 顶部对齐 */
+    height: auto !important; /* 强制高度自适应 */
+}
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column;
+    }
+    .sidebar-index {
+        flex: 1;
+        width: 100%;
+    }
+}
+        .welcome-box {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .time {
+            font-size: 24px;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .date {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .info {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+        .tip {
+            font-style: italic;
+            color: #6c757d;
+            border-left: 3px solid #6c757d;
+            padding-left: 10px;
+        }
+        .highlight {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+/* 底部容器样式 */
+.footer-container {
+    max-width: 1200px; /* 与.main-layout同宽 */
+    margin: 0 auto; /* 居中 */
+    padding: 0 20px; /* 与主内容区相同的左右内边距 */
+}
+
+.footer-content {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* 确保在移动端也能正确显示 */
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 0 15px; /* 移动端稍小的内边距 */
+    }
+    .footer-content {
+        margin: 15px;
+        padding: 15px;
+    }
 }
