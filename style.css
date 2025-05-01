@@ -188,11 +188,11 @@ height: 100px;
 }
 @font-face {
     font-family: "仓耳今楷01-W03";
-    src: url("/sites/files/zitis/anli/仓耳今楷01-W03.eot"); /* IE9 */
-    src: url("/sites/files/zitis/anli/仓耳今楷01-W03.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("/sites/files/zitis/anli/仓耳今楷01-W03.woff") format("woff"), /* chrome, firefox */
-    url("/sites/files/zitis/anli/仓耳今楷01-W03.ttf") format("truetype"), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-    url("/sites/files/zitis/anli/仓耳今楷01-W03.svg#TsangerJinKai01 W03") format("svg"); /* iOS 4.1- */
+    src: url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.eot"); /* IE9 */
+    src: url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+    url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.woff") format("woff"), /* chrome, firefox */
+    url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.ttf") format("truetype"), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+    url("https://www.tsanger.cn/sites/files/zitis/anli/仓耳今楷01-W03.svg#TsangerJinKai01 W03") format("svg"); /* iOS 4.1- */
     font-style: normal;
     font-weight: normal;
 }
