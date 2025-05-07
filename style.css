@@ -186,8 +186,7 @@ height: 100px;
     justify-content: center;
     text-align: center;
 }
-@import url("https://cdnjs.cloudflare.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreenr.css");
-
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
 
 body, html {
     margin: 0;
@@ -195,14 +194,13 @@ body, html {
     width: 100%;
 }
 
-/* 重置常用元素的默认样式 */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 body {
-    font-family: "LXGW WenKai Screen R", sans-serif;
+    font-family: 'Noto Serif SC', sans-serif;
 }
 /* Header 相关样式 */
 .header {
