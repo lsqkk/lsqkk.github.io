@@ -198,7 +198,7 @@ body, html {
     padding: 0;
 }
 body {
-  font-family: "楷体", "Kaiti", serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 /* Header 相关样式 */
 .header {
