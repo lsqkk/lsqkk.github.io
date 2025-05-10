@@ -186,8 +186,6 @@ height: 100px;
     justify-content: center;
     text-align: center;
 }
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
-
 body, html {
     margin: 0;
     padding: 0;
@@ -200,7 +198,7 @@ body, html {
     padding: 0;
 }
 body {
-    font-family: 'Noto Serif SC', sans-serif;
+  font-family: "楷体", "Kaiti", serif;
 }
 /* Header 相关样式 */
 .header {
