@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepSeek - 夸克博客</title>
+  <style>
+    /* 基础样式 */
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#1e1e2f,#2a2a40);margin:0;color:#fff;overflow-x:hidden}
+
+    #main-container{display:flex;max-width:1200px;margin:0 auto;height:100vh}
+
+    /* 左侧栏样式 */
+    #sidebar{
+      width:250px;
+      background:rgba(0,0,0,0.3);
+      border-right:1px solid rgba(255,255,255,0.1);
+      padding:20px;
+      transition:transform 0.3s ease;
+      overflow-y:auto;
+      display:flex;flex-direction:column}
+    #sidebar.collapsed{transform:translateX(-100%);width:60px}
+    #sidebar-toggle{position:absolute;right:-30px;top:20px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;z-index:100;display:block}
+    #sidebar-header{margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+    #history-list{flex:1;overflow-y:auto;max-height:calc(100vh - 200px)}
+    .history-item{padding:10px;border-radius:8px;margin-bottom:10px;background:rgba(255,255,255,0.1);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .history-item:hover{background:rgba(255,255,255,0.2)}
+    #new-chat-btn{margin-top:15px;padding:10px;width:100%;background:linear-gradient(135deg,#007bff,#0056b3);color:#fff;border:none;border-radius:8px;cursor:pointer}
+    @media(max-width:768px){#sidebar:not(.collapsed){transform:translateX(0);position:absolute;top:0;left:0;bottom:0;z-index:1000}}
+
+    /* 右侧主内容区样式 */
+    #chat-container{flex:1;margin:20px;padding:20px;background:rgba(255,255,255,0.1);border-radius:16px;backdrop-filter:blur(10px);box-shadow:0 4px 30px rgba(0,0,0,0.1);display:flex;flex-direction:column;height:100%}
+    h1{margin-bottom:20px;font-size:24px;color:#fff}
+    #chat-history{flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-bottom:15px;background:rgba(255,255,255,0.05);max-height:calc(100vh - 200px)}
+    .user-msg,.bot-msg{margin:10px 0;padding:12px;border-radius:12px;position:relative}
+    .user-msg{background:rgba(0,123,255,0.1);color:#007bff;margin-left:25%;text-align:right}
+    .bot-msg{background:rgba(255,255,255,0.1);color:#fff;margin-right:25%}
+    .think-content{margin-top:10px;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;border-left:3px solid #007bff;color:#aaa;font-size:0.9em;margin-left:10px;margin-right:10px}
+    .copy-btn{position:absolute;right:10px;bottom:10px;background:rgba(255,255,255,0.1);border:none;color:#fff;padding:4px 8px;border-radius:4px;cursor:pointer}
+    .copy-btn:hover{background:rgba(255,255,255,0.2)}
+    .input-container{display:flex;gap:10px;margin-top:auto}
+    #model-selector{padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;background:rgba(255,255,255,0.05);color:#fff}
+    #user-input{flex:1;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;background:rgba(255,255,255,0.05);color:#fff}
+    #send-btn{padding:10px 20px;background:linear-gradient(135deg,#007bff,#0056b3);color:#fff;border:none;border-radius:8px;cursor:pointer}
+    #send-btn:hover{background:linear-gradient(135deg,#0056b3,#003d80)}
+    .loading{color:#666;font-style:italic}
+    .error{color:#ff0000;font-weight:bold}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+  <div id="main-container">
+    <!-- 左侧栏 -->
+    <div id="sidebar">
+      <button id="sidebar-toggle">></button>
+      <div id="sidebar-header">
+        <h2>会话管理</h2>
+      </div>
+      <div id="history-list"></div>
+      <button id="new-chat-btn">新建会话</button>
+    </div>
+
+    <!-- 右侧主内容区 -->
+    <div id="chat-container">
+      <h1>DeepSeek-R1 (夸克博客满血版)</h1>
+      <div id="chat-history">
+        <div class="bot-msg">你好！我是 DeepSeek，请问有什么可以帮您？</div>
+      </div>
+      <div class="input-container">
+        <select id="model-selector">
+          <option value="deepseek-reasoner">R1 模型</option>
+          <option value="deepseek-v3">V3 模型</option>
+        </select>
+        <input type="text" id="user-input" placeholder="输入你的问题...">
+        <button id="send-btn" onclick="sendMessage()">发送</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 配置
+    const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
+    const CORRECT_PASSWORD_HASH = "fc5e038d38a57032085441e7fe7010b0"; // "helloworld" 的 MD5 哈希值
+
+    // 页面加载时验证密码
+    window.onload = function () {
+      const password = prompt("请输入密码：");
+      if (!password) {
+        alert("密码不能为空！");
+        disablePage();
+        return;
+      }
+
+      const hashedPassword = CryptoJS.MD5(password).toString();
+      if (hashedPassword !== CORRECT_PASSWORD_HASH) {
+        alert("密码错误！");
+        disablePage();
+      } else {
+        loadHistoryList();
+      }
+    };
+
+    // 禁用页面功能
+    function disablePage() {
+      const input = document.getElementById('user-input');
+      const sendBtn = document.getElementById('send-btn');
+      input.disabled = true;
+      sendBtn.disabled = true;
+      document.getElementById('chat-container').innerHTML += '<div class="error">密码错误，无法使用该页面。</div>';
+    }
+
+    // 创建新会话
+    document.getElementById('new-chat-btn').addEventListener('click', function() {
+      if (confirm('确定要创建新会话吗？当前会话将会保存。')) {
+        createNewChat();
+      }
+    });
+
+    // 加载历史会话列表
+    function loadHistoryList() {
+      const historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+      const savedChats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+      if (savedChats.length === 0) {
+        historyList.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa">暂无历史会话</div>';
+        return;
+      }
+      savedChats.forEach((chat, index) => {
+        const firstSixChars = chat.messages.length > 0 ? chat.messages[0].content.substring(0, 6) : '新会话';
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.textContent = firstSixChars;
+        historyItem.onclick = function() {
+          loadChat(index);
+        };
+        historyList.appendChild(historyItem);
+      });
+    }
+
+    // 创建新会话
+    function createNewChat() {
+      saveCurrentChat();
+      const chatHistory = document.getElementById('chat-history');
+      chatHistory.innerHTML = '<div class="bot-msg">你好！我是 DeepSeek，请问有什么可以帮您？</div>';
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    // 保存当前会话
+    function saveCurrentChat() {
+      const chatHistory = document.getElementById('chat-history');
+      const messages = [];
+      const allMessages = chatHistory.querySelectorAll('.user-msg, .bot-msg');
+      Array.from(allMessages).forEach(msg => {
+        if (msg.classList.contains('error') || msg.classList.contains('loading')) return;
+        messages.push({
+          role: msg.classList.contains('user-msg') ? 'user' : 'assistant',
+          content: msg.textContent.trim()
+        });
+      });
+      if (messages.length > 0) {
+        const savedChats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+        savedChats.push({ messages: messages });
+        localStorage.setItem('deepseekChats', JSON.stringify(savedChats));
+        loadHistoryList();
+      }
+    }
+
+    // 加载历史会话
+    function loadChat(index) {
+      const savedChats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+      if (index >= 0 && index < savedChats.length) {
+        const chatHistory = document.getElementById('chat-history');
+        chatHistory.innerHTML = '';
+        const chat = savedChats[index];
+        chat.messages.forEach(msg => {
+          const div = document.createElement('div');
+          div.className = msg.role === 'user' ? 'user-msg' : 'bot-msg';
+          div.innerHTML = `<div class="markdown-content"></div>`;
+          const markdownDiv = div.querySelector('.markdown-content');
+          markdownDiv.innerHTML = marked.parse(msg.content);
+          chatHistory.appendChild(div);
+        });
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      }
+    }
+
+    // 发送消息
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const historyDiv = document.getElementById('chat-history');
+      const sendBtn = document.getElementById('send-btn');
+      const modelSelector = document.getElementById('model-selector');
+
+      // 禁用按钮，防止重复提交
+      sendBtn.disabled = true;
+
+      // 添加用户消息
+      const userMessage = input.value.trim();
+      if (!userMessage) return; // 空消息不处理
+      const userMsgDiv = document.createElement('div');
+      userMsgDiv.className = 'user-msg';
+      userMsgDiv.textContent = userMessage;
+      historyDiv.appendChild(userMsgDiv);
+
+      // 创建思考中消息
+      const thinkingDiv = document.createElement('div');
+      thinkingDiv.className = 'loading';
+      thinkingDiv.textContent = '思考中...';
+      historyDiv.appendChild(thinkingDiv);
+      historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+
+      try {
+        // 构造请求体
+        const payload = {
+          model: modelSelector.value, // 根据选择的模型发送请求
+          messages: [{
+            role: "user",
+            content: userMessage
+          }],
+          stream: true // 启用流式输出
+        };
+
+        // 发送请求
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+
+
+        // 流式读取响应
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let botMessage = '';
+        let thinkingContent = '';
+
+        // 创建思考内容区域
+        const thinkingContentDiv = document.createElement('div');
+        thinkingContentDiv.className = 'think-content';
+        historyDiv.appendChild(thinkingContentDiv);
+
+        // 创建机器人消息区域
+        const botMsgDiv = document.createElement('div');
+        botMsgDiv.className = 'bot-msg';
+        botMsgDiv.innerHTML = '<div class="markdown-content"></div>';
+        const markdownDiv = botMsgDiv.querySelector('.markdown-content');
+        historyDiv.appendChild(botMsgDiv);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          // 解析流式数据
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.trim() === 'data: [DONE]') {
+              continue; // 忽略 [DONE] 消息
+            }
+            if (line.startsWith('data:')) {
+              try {
+                const data = JSON.parse(line.slice(5));
+                if (data.choices[0].delta.content) {
+                  botMessage += data.choices[0].delta.content;
+                  markdownDiv.innerHTML = marked.parse(botMessage); // 渲染 Markdown
+                  historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+                }
+                if (data.choices[0].delta.thinking) {
+                  thinkingContent += data.choices[0].delta.thinking;
+                  thinkingContentDiv.textContent = thinkingContent;
+                  historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+                }
+              } catch (err) {
+                console.error('JSON 解析错误:', err);
+              }
+            }
+          }
+        }
+
+        // 添加复制按钮
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-btn';
+        copyButton.innerText = '复制';
+        copyButton.onclick = () => {
+          navigator.clipboard.writeText(botMessage);
+          copyButton.innerText = '已复制';
+          setTimeout(() => copyButton.innerText = '复制', 2000);
+        };
+        botMsgDiv.appendChild(copyButton);
+      } catch (err) {
+        // 删除思考中消息
+        const loadingDiv = document.querySelector('.loading');
+        if (loadingDiv) loadingDiv.remove();
+        
+        // 显示错误信息
+        const errDiv = document.createElement('div');
+        errDiv.className = 'error';
+        errDiv.textContent = `错误：${err.message}`;
+        historyDiv.appendChild(errDiv);
+      } finally {
+        // 清空输入框并启用按钮
+        input.value = '';
+        sendBtn.disabled = false;
+        historyDiv.scrollTop = historyDiv.scrollHeight; // 滚动到底部
+
+        // 自动保存会话
+        saveCurrentChat();
+      }
+    }
+
+    // 侧边栏切换
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('collapsed');
+      if (sidebar.classList.contains('collapsed')) {
+        this.textContent = '<';
+      } else {
+        this.textContent = '>';
+      }
+    });
+
+    // 在移动设备上默认折叠侧边栏
+    window.addEventListener('resize', function() {
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.add('collapsed');
+        document.getElementById('sidebar-toggle').textContent = '<';
+      }
+    });
+    // 初始检查
+    if (window.innerWidth <= 768) {
+      document.getElementById('sidebar').classList.add('collapsed');
+      document.getElementById('sidebar-toggle').textContent = '<';
+    }
+  </script>
+</body>
+</html>
