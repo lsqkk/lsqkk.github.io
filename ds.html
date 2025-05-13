@@ -86,17 +86,14 @@
     </div>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script>
   // 配置
   const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
-  const CORRECT_PASSWORD_HASH = "fc5e038d38a57032085441e7fe7010b0"; // "helloworld" 的 MD5 哈希值
+  const CORRECT_PASSWORD_HASH = "fc5e038d38a57032085441e7fe7010b0";
   let currentChatId = null;
-  const md = new MarkdownIt(); // 创建MarkdownIt实例
+  let buffer = ""; // 新增缓冲区用于处理数据分片
 
-  // 页面加载时验证密码
+  // 密码验证部分保持不变
   window.onload = function () {
     const password = prompt("请输入密码：");
     if (!password) {
@@ -114,7 +111,7 @@
     }
   };
 
-  // 禁用页面功能
+  // 禁用页面功能（保持不变）
   function disablePage() {
     const input = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
@@ -123,14 +120,14 @@
     document.getElementById('chat-container').innerHTML += '<div class="error">密码错误，无法使用该页面。</div>';
   }
 
-  // 创建新会话
+  // 会话管理部分保持不变
   document.getElementById('new-chat-btn').addEventListener('click', function() {
     if (confirm('确定要创建新会话吗？当前会话将会保存。')) {
       createNewChat();
     }
   });
 
-  // 加载历史会话列表
+  // 历史记录加载（保持不变）
   function loadHistoryList() {
     const historyList = document.getElementById('history-list');
     historyList.innerHTML = '';
@@ -143,7 +140,6 @@
     }
 
     savedChats.forEach((chat, index) => {
-      // 查找第一个用户消息作为标题
       const userMessage = chat.messages.find(m => m.role === 'user');
       const title = userMessage ? userMessage.content.substring(0, 6) : '新会话';
       
@@ -154,11 +150,10 @@
       historyList.appendChild(historyItem);
     });
 
-    // 设置当前会话为最后一个（如果存在）
     currentChatId = savedChats.length - 1;
   }
 
-  // 创建新会话
+  // 新会话创建（保持不变）
   function createNewChat() {
     saveCurrentChat();
     currentChatId = null;
@@ -167,7 +162,7 @@
     chatHistory.scrollTop = chatHistory.scrollHeight;
   }
 
-  // 保存当前会话
+  // 保存会话（保持不变）
   function saveCurrentChat() {
     const chatHistory = document.getElementById('chat-history');
     const messages = [];
@@ -185,10 +180,8 @@
       const savedChats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
       
       if (currentChatId !== null && savedChats[currentChatId]) {
-        // 更新现有会话
         savedChats[currentChatId].messages = messages;
       } else {
-        // 创建新会话
         savedChats.push({ messages });
         currentChatId = savedChats.length - 1;
       }
@@ -198,7 +191,7 @@
     }
   }
 
-  // 加载历史会话
+  // 加载会话（增加Markdown解析）
   function loadChat(index) {
     const savedChats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
     if (index >= 0 && index < savedChats.length) {
@@ -209,163 +202,160 @@
       chat.messages.forEach(msg => {
         const div = document.createElement('div');
         div.className = msg.role === 'user' ? 'user-msg' : 'bot-msg';
-        div.innerHTML = `<div class="markdown-content"></div>`;
-        const markdownDiv = div.querySelector('.markdown-content');
-        markdownDiv.innerHTML = marked.parse(msg.content);
+        div.innerHTML = `<div class="markdown-content">${marked.parse(msg.content)}</div>`; // 增加Markdown解析
         chatHistory.appendChild(div);
       });
       chatHistory.scrollTop = chatHistory.scrollHeight;
     }
   }
 
-  // 发送消息
+  // 核心修改部分：消息发送处理
   async function sendMessage() {
     const input = document.getElementById('user-input');
     const historyDiv = document.getElementById('chat-history');
     const sendBtn = document.getElementById('send-btn');
     const modelSelector = document.getElementById('model-selector');
 
-    // 禁用按钮，防止重复提交
     sendBtn.disabled = true;
-
-    // 添加用户消息
     const userMessage = input.value.trim();
     if (!userMessage) {
       sendBtn.disabled = false;
       return;
     }
     
+    // 添加用户消息
     const userMsgDiv = document.createElement('div');
     userMsgDiv.className = 'user-msg';
     userMsgDiv.textContent = userMessage;
     historyDiv.appendChild(userMsgDiv);
 
-    // 创建思考中消息
-    const thinkingDiv = document.createElement('div');
-    thinkingDiv.className = 'loading';
-    thinkingDiv.textContent = '思考中...';
-    historyDiv.appendChild(thinkingDiv);
+    // 创建双容器结构
+    const thinkingContainer = document.createElement('div');
+    thinkingContainer.className = 'thinking-container';
+    const botMsgDiv = document.createElement('div');
+    botMsgDiv.className = 'bot-msg';
+    
+    // 思考过程容器
+    const thinkingHeader = document.createElement('h4');
+    thinkingHeader.textContent = 'DeepSeek-R1 深度思考中...';
+    const thinkingContent = document.createElement('div');
+    thinkingContent.style.color = '#aaa';
+    thinkingContainer.appendChild(thinkingHeader);
+    thinkingContainer.appendChild(thinkingContent);
+    
+    // 正式回答容器
+    const answerContent = document.createElement('div');
+    answerContent.className = 'markdown-content';
+    botMsgDiv.appendChild(answerContent);
+    
+    historyDiv.appendChild(thinkingContainer);
+    historyDiv.appendChild(botMsgDiv);
     historyDiv.scrollTop = historyDiv.scrollHeight;
 
     try {
-      // 构造请求体
       const payload = {
         model: modelSelector.value,
-        messages: [{
-          role: "user",
-          content: userMessage
-        }],
+        messages: [{ role: "user", content: userMessage }],
         stream: true
       };
 
-      // 发送请求
       const response = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      // 流式读取响应
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let botMessage = '';
-      let thinkingContent = '';
-
-      // 创建思考内容容器
-      const thinkingContainer = document.createElement('div');
-      thinkingContainer.className = 'thinking-container';
-      historyDiv.appendChild(thinkingContainer);
-
-      // 创建机器人消息区域
-      const botMsgDiv = document.createElement('div');
-      botMsgDiv.className = 'bot-msg';
-      botMsgDiv.innerHTML = '<div class="markdown-content"></div>';
-      const markdownDiv = botMsgDiv.querySelector('.markdown-content');
-      historyDiv.appendChild(botMsgDiv);
+      buffer = ""; // 重置缓冲区
+      let isThinkingRendered = false;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || "";
+
         for (const line of lines) {
-          if (line.trim() === 'data: [DONE]') continue;
-          
-          if (line.startsWith('data:')) {
-            try {
-              const data = JSON.parse(line.slice(5));
-              
-              // 统一处理不同模型的响应格式
-              const content = data.choices[0].delta.content || '';
-              const thinking = data.choices[0].delta.thinking || '';
+          if (!line.startsWith('data:')) continue;
+          const jsonStr = line.slice(5).trim();
+          if (jsonStr === '[DONE]') continue;
 
-              if (content) {
-                botMessage += content;
-                markdownDiv.innerHTML = md.render(botMessage); // 使用MarkdownIt渲染Markdown
-                historyDiv.scrollTop = historyDiv.scrollHeight;
+          try {
+            const data = JSON.parse(jsonStr);
+            const content = data.choices[0]?.delta?.content || "";
+
+            if (content) {
+              // 处理可能的分片标记
+              if (content.includes('</think>')) {
+                const [thinkPart, answerPart] = content.split('</think>');
+                thinkingContent.innerHTML += marked.parse(thinkPart);
+                answerContent.innerHTML += marked.parse(answerPart);
+                isThinkingRendered = true;
+              } else if (isThinkingRendered) {
+                answerContent.innerHTML += marked.parse(content);
+              } else {
+                thinkingContent.innerHTML += marked.parse(content);
               }
 
-              if (thinking) {
-                thinkingContent += thinking;
-                thinkingContainer.innerHTML = `<h4>师爷模型深度思考中...</h4><div style="color: gray;">${thinkingContent}</div>`;
-                historyDiv.scrollTop = historyDiv.scrollHeight;
-              }
-            } catch (err) {
-              console.error('JSON解析错误:', err);
+              // 自动滚动
+              historyDiv.scrollTop = historyDiv.scrollHeight;
             }
+          } catch (err) {
+            console.error('JSON解析错误:', err);
           }
         }
       }
 
-      // 移除思考中消息和容器
-      thinkingDiv.remove();
-      thinkingContainer.remove();
+      // 处理剩余缓冲区内容
+      if (buffer) {
+        if (buffer.includes('</sy_think>')) {
+          const [thinkPart, answerPart] = buffer.split('</sy_think>');
+          thinkingContent.innerHTML += marked.parse(thinkPart);
+          answerContent.innerHTML += marked.parse(answerPart);
+        } else if (isThinkingRendered) {
+          answerContent.innerHTML += marked.parse(buffer);
+        } else {
+          thinkingContent.innerHTML += marked.parse(buffer);
+        }
+      }
 
       // 添加复制按钮
       const copyButton = document.createElement('button');
       copyButton.className = 'copy-btn';
       copyButton.innerText = '复制';
       copyButton.onclick = () => {
-        navigator.clipboard.writeText(botMessage);
+        navigator.clipboard.writeText(answerContent.textContent);
         copyButton.innerText = '已复制';
         setTimeout(() => copyButton.innerText = '复制', 2000);
       };
       botMsgDiv.appendChild(copyButton);
+
     } catch (err) {
-      // 删除思考中消息
-      const loadingDiv = document.querySelector('.loading');
-      if (loadingDiv) loadingDiv.remove();
-      
-      // 显示错误信息
       const errDiv = document.createElement('div');
       errDiv.className = 'error';
       errDiv.textContent = `错误：${err.message}`;
       historyDiv.appendChild(errDiv);
     } finally {
-      // 清空输入框并启用按钮
       input.value = '';
       sendBtn.disabled = false;
       historyDiv.scrollTop = historyDiv.scrollHeight;
-
-      // 自动保存会话
       saveCurrentChat();
+      // 移除思考容器（保留正式回答）
+      thinkingContainer.remove();
     }
   }
 
-  // 侧边栏切换
+  // 侧边栏切换（保持不变）
   document.getElementById('sidebar-toggle').addEventListener('click', function() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('collapsed');
-    if (sidebar.classList.contains('collapsed')) {
-      this.textContent = '<';
-    } else {
-      this.textContent = '>';
-    }
+    this.textContent = sidebar.classList.contains('collapsed') ? '<' : '>';
   });
 
-  // 在移动设备上默认折叠侧边栏
+  // 响应式处理（保持不变）
   window.addEventListener('resize', function() {
     if (window.innerWidth <= 768) {
       document.getElementById('sidebar').classList.add('collapsed');
@@ -373,11 +363,9 @@
     }
   });
   
-  // 初始检查
   if (window.innerWidth <= 768) {
     document.getElementById('sidebar').classList.add('collapsed');
     document.getElementById('sidebar-toggle').textContent = '<';
   }
 </script>
-</body>
 </html>
