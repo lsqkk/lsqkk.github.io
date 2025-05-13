@@ -86,11 +86,15 @@
     </div>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script>
   // 配置
   const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
   const CORRECT_PASSWORD_HASH = "fc5e038d38a57032085441e7fe7010b0"; // "helloworld" 的 MD5 哈希值
   let currentChatId = null;
+  const md = new MarkdownIt(); // 创建MarkdownIt实例
 
   // 页面加载时验证密码
   window.onload = function () {
@@ -299,13 +303,13 @@
 
               if (content) {
                 botMessage += content;
-                markdownDiv.innerHTML = marked.parse(botMessage);
+                markdownDiv.innerHTML = md.render(botMessage); // 使用MarkdownIt渲染Markdown
                 historyDiv.scrollTop = historyDiv.scrollHeight;
               }
 
               if (thinking) {
                 thinkingContent += thinking;
-                thinkingContainer.textContent = thinkingContent;
+                thinkingContainer.innerHTML = `<h4>师爷模型深度思考中...</h4><div style="color: gray;">${thinkingContent}</div>`;
                 historyDiv.scrollTop = historyDiv.scrollHeight;
               }
             } catch (err) {
