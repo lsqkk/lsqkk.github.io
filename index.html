@@ -9,23 +9,60 @@
     <link rel="icon" href="image/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
     <script src="https://lsqkk.github.io/js/cursor-trail.js"></script>
+<script src="https://unpkg.com/marked/marked.min.js"></script>
     <base href="https://lsqkk.github.io/">
 <style>
 body {
     background: url('image/bg.png') no-repeat center center / cover;
-    background-attachment: fixed;
-    background-position-y: 0;
-    animation: parallaxBackground linear;
-    animation-timeline: scroll();
+    /* 移除以下冲突属性 */
+    /* background-attachment: fixed; */
+    /* animation相关属性全部移除 */
+}
+.dynamic-feed {
+    margin: 30px auto;
+    max-width: 800px;
 }
 
-@keyframes parallaxBackground {
-    from {
-        background-position-y: 0;
-    }
-    to {
-        background-position-y: 70%; /* 控制滚动速度 */
-    }
+.dynamic-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.dynamic-card:hover {
+    transform: translateY(-3px);
+}
+
+.dynamic-title {
+    color: #2c3e50;
+    font-size: 1.2em;
+    margin-bottom: 8px;
+}
+
+.dynamic-date {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    margin-bottom: 12px;
+}
+
+.dynamic-content {
+    color: #34495e;
+    line-height: 1.6;
+    overflow: hidden;
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+}
+
+.more-link {
+    display: block;
+    text-align: right;
+    margin-top: 15px;
+    color: #3498db;
+    text-decoration: none;
 }
 </style>
 
@@ -83,16 +120,24 @@ body {
                 <div class="typewriter-container">
                     <div id="typewriter" class="typewriter" style="width: 100%; overflow: hidden;"></div>
                 </div>
+<h2 class="recent-header">📚 最新文章</h2>
                 <div class="recent-posts" style="margin-top: 30px;">
-                    <h2 class="recent-header">📚 最新文章</h2>
+                    
                     <div id="recent-posts"></div>
                     <a href="article-list.html" style="text-decoration: none;"><h3 class="recent-header" style="color: #0366d6; text-align: right; margin-top: 10px; ">更多文章 →</h3></a>
                 </div>
+
+<div class="dynamic-feed">
+    <h2 class="recent-header">🚀 最新动态</h2>
+    <div id="dynamic-entries"></div>
+    <a href="dt/index.html" class="more-link">查看全部动态 →</a>
+</div>
+
             </div>
 
             <div class="sidebar-index">
                 <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span> </div>
-                <div class="date" id="date">2023年1月1日星期一</div>
+                <div class="date" id="date">2025年5月14日星期三</div>
                 <div class="info" id="welcome-info"> 无穷的远方，无数的人们，都和我有关 </div>
                 <div class="greeting" id="greeting">您好</div>
                 <div class="tip" id="tip">欢迎访问夸克博客</div>
@@ -511,5 +556,96 @@ function getProvinceBanter(province) {
             setInterval(updateGreeting, 60000);
         });
     </script>
+
+<script>
+async function loadDynamicFeed() {
+    try {
+        const response = await fetch('dt/dt.md');
+        const mdContent = await response.text();
+        const entries = parseMdEntries(mdContent);
+        renderDynamicEntries(entries.slice(0, 5));
+    } catch (error) {
+        console.error('加载动态失败:', error);
+        document.getElementById('dynamic-entries').innerHTML = 
+            '<div class="dynamic-card">动态加载中...</div>';
+    }
+}
+
+function parseMdEntries(content) {
+    const entries = [];
+    const lines = content.split('\n');
+    let currentEntry = null;
+    
+    lines.forEach(line => {
+        if (line.startsWith('# ')) {
+            if (currentEntry) entries.push(currentEntry);
+            currentEntry = {
+                title: line.replace('# ', '').trim(),
+                content: [],
+                date: ''
+            };
+        } else if (currentEntry) {
+            if (line.startsWith('## 日期：')) {
+                currentEntry.date = line.replace('## 日期：', '').trim();
+            } else if (!line.startsWith('#') && line.trim()) {
+                currentEntry.content.push(line.trim());
+            }
+        }
+    });
+    
+    if (currentEntry) entries.push(currentEntry);
+    return entries.reverse(); // 最新在前
+}
+
+function renderDynamicEntries(entries) {
+    const container = document.getElementById('dynamic-entries');
+    container.innerHTML = entries.map(entry => `
+        <div class="dynamic-card">
+            <div class="dynamic-title">${entry.title}</div>
+            ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
+            <div class="dynamic-content">${marked.parse(entry.content.join('\n'))}</div>
+        </div>
+    `).join('');
+}
+
+
+
+// 修正后的视差滚动效果（正确方向）
+document.addEventListener('DOMContentLoaded', function() {
+   loadDynamicFeed();
+    const body = document.body;
+    const parallaxSpeed = 0.3; // 推荐速度值(0.3-0.6)
+    let lastKnownScroll = 0;
+
+    function updateParallax() {
+        const currentScroll = window.pageYOffset;
+        const scrollDelta = currentScroll - lastKnownScroll;
+        
+        // 关键修改点：使用加法并移除background-attachment: fixed
+        const currentBgPos = parseFloat(body.style.backgroundPositionY || 0);
+        let newBgPos = currentBgPos + (scrollDelta * parallaxSpeed);
+        
+        // 限制移动范围(0到背景图片高度的50%)
+        const maxMovement = body.scrollHeight * 2;
+        newBgPos = Math.max(0, Math.min(newBgPos, maxMovement));
+        
+        body.style.backgroundPositionY = `${newBgPos}px`;
+        lastKnownScroll = currentScroll;
+        requestAnimationFrame(updateParallax);
+    }
+
+    // 优化后的滚动监听
+    let animationFrame;
+    window.addEventListener('scroll', () => {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(updateParallax);
+    });
+
+    // 初始化设置
+    body.style.backgroundAttachment = "scroll"; // 必须移除fixed
+    body.style.backgroundPositionY = "0px";
+});
+</script>
+
 </body>
 </html>
