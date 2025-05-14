@@ -55,48 +55,43 @@
     /* 左侧栏样式 */
     #sidebar {
       width: 280px;
-      min-width: 280px;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--border-color);
       padding: 20px;
-      transition: transform 0.3s ease;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       position: relative;
       z-index: 100;
+      transition: transform 0.3s ease;
     }
 
     #sidebar.collapsed {
       transform: translateX(-100%);
-      position: absolute;
-      height: 100%;
     }
 
     #sidebar-toggle {
       position: absolute;
-      right: -40px;
+      left: 20px;
       top: 20px;
       background: var(--primary-color);
-      border: none;
       color: #fff;
       width: 32px;
       height: 32px;
-      border-radius: 0 4px 4px 0;
+      border-radius: 4px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 101;
+      border: none;
     }
 
     #sidebar-header {
       margin-bottom: 20px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding-left: 40px;
     }
 
     #theme-toggle {
@@ -105,6 +100,9 @@
       color: var(--text-color);
       cursor: pointer;
       font-size: 20px;
+      position: absolute;
+      right: 20px;
+      top: 20px;
     }
 
     #history-list {
@@ -211,6 +209,17 @@
       border-bottom: 1px solid var(--border-color);
     }
 
+    #chat-title {
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      max-width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     #model-controls {
       display: flex;
       gap: 10px;
@@ -223,7 +232,7 @@
       padding: 10px 0;
     }
 
-    /* 隐藏滚动条但保持滚动功能 */
+    /* 滚动条样式 */
     #chat-history::-webkit-scrollbar,
     #history-list::-webkit-scrollbar {
       width: 6px;
@@ -296,12 +305,7 @@
       gap: 10px;
     }
 
-    #file-buttons {
-      display: flex;
-      gap: 5px;
-    }
-
-    .file-btn {
+    #file-btn {
       padding: 8px 12px;
       background: var(--msg-bg);
       border: none;
@@ -314,9 +318,13 @@
       gap: 5px;
     }
 
-    .file-btn:hover {
+    #file-btn:hover {
       background: var(--primary-color);
       color: #fff;
+    }
+
+    #file-input {
+      display: none;
     }
 
     #user-input {
@@ -366,46 +374,6 @@
       padding: 10px;
     }
 
-    /* 推理部分样式 */
-    .reasoning-container {
-      background: var(--msg-bg);
-      border-radius: 8px;
-      padding: 12px;
-      margin: 10px 0;
-      border-left: 3px solid var(--primary-color);
-    }
-
-    .reasoning-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .reasoning-title {
-      color: var(--primary-color);
-      font-weight: 500;
-      font-size: 0.95em;
-    }
-
-    .reasoning-toggle {
-      color: var(--text-color);
-      font-size: 12px;
-      cursor: pointer;
-      user-select: none;
-      opacity: 0.7;
-    }
-
-    .reasoning-toggle:hover {
-      opacity: 1;
-    }
-
-    .reasoning-content {
-      color: var(--text-color);
-      font-size: 0.9em;
-      line-height: 1.6;
-    }
-
     /* 模型切换按钮 */
     .model-toggle {
       display: flex;
@@ -430,6 +398,27 @@
       opacity: 0.7;
     }
 
+    /* 拖放区域样式 */
+    .drop-area {
+      border: 2px dashed var(--primary-color);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: none;
+    }
+
+    .drop-area.active {
+      display: block;
+    }
+
+    .drop-area.highlight {
+      border-color: var(--accent-color);
+      background: rgba(255, 0, 110, 0.1);
+    }
+
     /* 移动端适配 */
     @media (max-width: 768px) {
       #sidebar {
@@ -439,15 +428,11 @@
         bottom: 0;
         z-index: 1000;
         width: 80%;
-        min-width: 0;
-      }
-
-      #sidebar.collapsed {
-        transform: translateX(-100%);
       }
 
       #sidebar-toggle {
-        right: -40px;
+        left: 10px;
+        top: 10px;
       }
 
       .user-msg, .bot-msg {
@@ -457,6 +442,7 @@
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div id="main-container">
@@ -474,7 +460,7 @@
     <!-- 右侧主内容区 -->
     <div id="chat-container">
       <div id="chat-header">
-        <h1>DeepSeek Chat</h1>
+        <div id="chat-title">新会话</div>
         <div id="model-controls">
           <button class="model-toggle" id="model-toggle">
             <span>深度思考</span>
@@ -487,11 +473,13 @@
       </div>
       
       <div id="input-area">
+        <div class="drop-area" id="drop-area">
+          <p>拖放文件到这里或点击下方按钮选择</p>
+          <p>支持图片(png/jpg)、文本(txt/md)文件</p>
+        </div>
         <div id="input-controls">
-          <div id="file-buttons">
-            <button class="file-btn">📷 图片</button>
-            <button class="file-btn">📎 附件</button>
-          </div>
+          <button id="file-btn">📎 附件</button>
+          <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.txt,.md" multiple>
           <textarea id="user-input" placeholder="输入你的问题..." rows="1"></textarea>
           <button id="send-btn" onclick="sendMessage()">发送</button>
         </div>
@@ -505,6 +493,7 @@ const CORRECT_PASSWORD_HASH = "fc5e038d38a57032085441e7fe7010b0";
 let currentChatId = null;
 let currentModel = "deepseek-reasoner";
 let isDarkMode = false;
+let currentAttachments = [];
 
 // 初始化函数
 window.onload = function() {
@@ -529,9 +518,22 @@ function initApp() {
   document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
   document.getElementById('user-input').addEventListener('keydown', handleKeyDown);
+  document.getElementById('file-btn').addEventListener('click', () => {
+    document.getElementById('file-input').click();
+  });
+  document.getElementById('file-input').addEventListener('change', handleFileSelect);
+  document.getElementById('chat-title').addEventListener('click', renameCurrentChat);
+  
+  // 初始化拖放功能
+  initDragAndDrop();
   
   // 加载历史记录
   loadHistoryList();
+  
+  // 检查保存的主题偏好
+  if (localStorage.getItem('darkMode') === 'true') {
+    toggleTheme();
+  }
   
   // 初始化侧边栏状态
   if (window.innerWidth <= 768) {
@@ -567,6 +569,166 @@ function handleKeyDown(e) {
     e.preventDefault();
     sendMessage();
   }
+}
+
+function initDragAndDrop() {
+  const dropArea = document.getElementById('drop-area');
+  const inputArea = document.getElementById('input-area');
+  
+  // 显示/隐藏拖放区域
+  document.getElementById('user-input').addEventListener('focus', () => {
+    dropArea.classList.add('active');
+  });
+  
+  document.getElementById('user-input').addEventListener('blur', () => {
+    dropArea.classList.remove('active');
+  });
+  
+  // 拖放事件处理
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    inputArea.addEventListener(eventName, preventDefaults, false);
+    dropArea.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false);
+  });
+  
+  function highlight() {
+    dropArea.classList.add('highlight');
+  }
+  
+  function unhighlight() {
+    dropArea.classList.remove('highlight');
+  }
+  
+  dropArea.addEventListener('drop', handleDrop, false);
+  
+  function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleFiles(files);
+  }
+}
+
+function handleFileSelect(e) {
+  const files = e.target.files;
+  if (files.length > 0) {
+    handleFiles(files);
+  }
+}
+
+async function handleFiles(files) {
+  const validFiles = Array.from(files).filter(file => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    return ['png', 'jpg', 'jpeg', 'txt', 'md'].includes(ext);
+  });
+  
+  if (validFiles.length === 0) {
+    alert('请选择支持的文件类型(png/jpg/txt/md)');
+    return;
+  }
+  
+  for (const file of validFiles) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    let contentPreview = '';
+    
+    if (['png', 'jpg', 'jpeg'].includes(ext)) {
+      // 图片文件，使用OCR识别
+      try {
+        const { data: { text } } = await Tesseract.recognize(
+          file,
+          'chi_sim',
+          {
+            logger: m => console.log(m)
+          }
+        );
+        
+        // 处理OCR结果
+        contentPreview = processOCRText(text);
+      } catch (err) {
+        console.error('OCR识别失败:', err);
+        contentPreview = '[图片识别失败]';
+      }
+    } else if (['txt', 'md'].includes(ext)) {
+      // 文本文件，直接读取内容
+      try {
+        const text = await readFileAsText(file);
+        contentPreview = text.substring(0, 500);
+      } catch (err) {
+        console.error('读取文件失败:', err);
+        contentPreview = '[读取文件失败]';
+      }
+    }
+    
+    currentAttachments.push({
+      name: file.name,
+      type: ext,
+      content: contentPreview
+    });
+  }
+  
+  // 显示提示
+  const dropArea = document.getElementById('drop-area');
+  dropArea.innerHTML = `<p>已添加 ${validFiles.length} 个附件</p>`;
+  setTimeout(() => {
+    dropArea.classList.remove('active');
+  }, 2000);
+}
+
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = e => reject(e);
+    reader.readAsText(file);
+  });
+}
+
+function processOCRText(text) {
+  // 中文标点Unicode范围
+  const chinesePunctuation = '\\u3000-\\u303F\\uFF00-\\uFFEF\\u2000-\\u206F';
+  
+  // 第一步：保护换行符
+  let processedText = text.replace(/\n/g, '{保护换行符}');
+  
+  // 第二步：处理汉字和标点间的空格
+  processedText = processedText.replace(
+    new RegExp(`([\\u4e00-\\u9fa5${chinesePunctuation}])\\s+(?=[\\u4e00-\\u9fa5${chinesePunctuation}])`, 'g'),
+    '$1'
+  );
+  
+  // 第三步：恢复换行符
+  processedText = processedText.replace(/{保护换行符}/g, '\n');
+  
+  // 第四步：合并多余空行（保留1-2个换行作为段落分隔）
+  processedText = processedText.replace(/\n{3,}/g, '\n\n');
+  
+  // 第五步：确保标点前无空格
+  processedText = processedText.replace(
+    new RegExp(`\\s+([${chinesePunctuation}])`, 'g'),
+    '$1'
+  );
+
+  // 替换错误的中英文符号
+  processedText = processedText.replace(/\s*,\s*/g, '，');
+  processedText = processedText.replace(/\s*;\s*/g, '；');
+  processedText = processedText.replace(/\s*:\s*/g, '：');
+  processedText = processedText.replace(/\s*\?\s*/g, '？');
+  processedText = processedText.replace(/\s*!\s*/g, '！');
+  processedText = processedText.replace(/\s*"\s*/g, '“');
+  processedText = processedText.replace(/"\s*/g, '”');
+  
+  return processedText.substring(0, 500); // 只返回前500个字符
 }
 
 function formatTime(timestamp) {
@@ -650,22 +812,14 @@ function loadHistoryList() {
       
       section.chats.forEach((chat, index) => {
         const globalIndex = chats.findIndex(c => c.timestamp === chat.timestamp);
-        const firstUserMessage = chat.messages.find(m => m.role === "user");
-        let chatName = firstUserMessage ? 
-          (firstUserMessage.content.length > 6 ? firstUserMessage.content.substring(0, 6) + "..." : firstUserMessage.content) : 
-          "新会话";
-        
-        // 如果有自定义名称则使用
-        if (chat.name) {
-          chatName = chat.name.length > 10 ? chat.name.substring(0, 10) + "..." : chat.name;
-        }
+        const chatName = chat.name || "新会话";
         
         const itemDiv = document.createElement('div');
         itemDiv.className = 'history-item';
         if (globalIndex === currentChatId) {
           itemDiv.classList.add("active");
         }
-        itemDiv.textContent = chatName;
+        itemDiv.textContent = chatName.length > 15 ? chatName.substring(0, 15) + "..." : chatName;
         itemDiv.onclick = () => loadChat(globalIndex);
         
         const actionsDiv = document.createElement('div');
@@ -714,14 +868,29 @@ function loadHistoryList() {
 function renameChat(index) {
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
   if (index >= 0 && index < chats.length) {
-    const currentName = chats[index].name || 
-      (chats[index].messages.find(m => m.role === "user")?.content.substring(0, 10) + "...") || 
-      "新会话";
+    const currentName = chats[index].name || "新会话";
     const newName = prompt("请输入新的会话名称：", currentName);
     if (newName !== null && newName.trim() !== "") {
       chats[index].name = newName.trim();
       localStorage.setItem('deepseekChats', JSON.stringify(chats));
       loadHistoryList();
+      
+      // 如果是当前会话，更新标题
+      if (index === currentChatId) {
+        document.getElementById('chat-title').textContent = newName.trim();
+      }
+    }
+  }
+}
+
+function renameCurrentChat() {
+  if (currentChatId !== null) {
+    renameChat(currentChatId);
+  } else {
+    const newName = prompt("请输入会话名称：", "新会话");
+    if (newName !== null && newName.trim() !== "") {
+      document.getElementById('chat-title').textContent = newName.trim();
+      saveCurrentChat(); // 保存时会自动创建新会话
     }
   }
 }
@@ -736,6 +905,7 @@ function deleteChat(index) {
       if (currentChatId === index) {
         currentChatId = null;
         document.getElementById('chat-history').innerHTML = '<div class="bot-msg">你好！我是 DeepSeek，请问有什么可以帮您？</div>';
+        document.getElementById('chat-title').textContent = "新会话";
       } else if (currentChatId > index) {
         currentChatId--;
       }
@@ -747,8 +917,11 @@ function deleteChat(index) {
 function createNewChat() {
   saveCurrentChat();
   currentChatId = null;
+  currentAttachments = [];
   const chatHistory = document.getElementById('chat-history');
   chatHistory.innerHTML = '<div class="bot-msg">你好！我是 DeepSeek，请问有什么可以帮您？</div>';
+  document.getElementById('chat-title').textContent = "新会话";
+  document.getElementById('drop-area').innerHTML = '<p>拖放文件到这里或点击下方按钮选择</p><p>支持图片(png/jpg)、文本(txt/md)文件</p>';
   chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
@@ -756,7 +929,7 @@ function saveCurrentChat() {
   const chatHistory = document.getElementById('chat-history');
   const messages = [];
   
-  chatHistory.querySelectorAll('.user-msg, .bot-msg, .reasoning-container').forEach(msg => {
+  chatHistory.querySelectorAll('.user-msg, .bot-msg').forEach(msg => {
     if (msg.classList.contains("error") || msg.classList.contains("loading")) return;
     
     const timestamp = Date.now();
@@ -778,14 +951,17 @@ function saveCurrentChat() {
   
   if (messages.length > 0) {
     let chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    const chatName = document.getElementById('chat-title').textContent;
     
     if (currentChatId !== null && chats[currentChatId]) {
       chats[currentChatId].messages = messages;
       chats[currentChatId].timestamp = messages[0].timestamp;
+      chats[currentChatId].name = chatName;
     } else {
       chats.push({
         messages,
-        timestamp: messages[0].timestamp
+        timestamp: messages[0].timestamp,
+        name: chatName
       });
       currentChatId = chats.length - 1;
     }
@@ -799,9 +975,13 @@ function loadChat(index) {
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
   if (index >= 0 && index < chats.length) {
     currentChatId = index;
+    currentAttachments = [];
     const chatHistory = document.getElementById('chat-history');
     chatHistory.innerHTML = "";
     const messages = chats[index].messages;
+    
+    // 更新标题
+    document.getElementById('chat-title').textContent = chats[index].name || "新会话";
     
     messages.forEach(msg => {
       if (msg.role === "user") {
@@ -830,6 +1010,7 @@ function loadChat(index) {
     });
     
     chatHistory.scrollTop = chatHistory.scrollHeight;
+    document.getElementById('drop-area').innerHTML = '<p>拖放文件到这里或点击下方按钮选择</p><p>支持图片(png/jpg)、文本(txt/md)文件</p>';
   }
 }
 
@@ -841,11 +1022,21 @@ async function sendMessage() {
   if (sendBtn.disabled) return;
   sendBtn.disabled = true;
   
-  if (userInput.value.trim()) {
-    const message = userInput.value.trim();
+  if (userInput.value.trim() || currentAttachments.length > 0) {
+    let message = userInput.value.trim();
+    
+    // 添加附件信息
+    if (currentAttachments.length > 0) {
+      const attachmentsText = currentAttachments.map(att => {
+        return `【附件】${att.name} 内容为: ${att.content}`;
+      }).join('\n\n');
+      
+      message = message ? `${message} - ${attachmentsText}` : attachmentsText;
+    }
+    
     const userMsgDiv = document.createElement("div");
     userMsgDiv.className = "user-msg";
-    userMsgDiv.textContent = message;
+    userMsgDiv.textContent = userInput.value.trim() || "[发送了附件]";
     chatHistory.appendChild(userMsgDiv);
     
     const loadingDiv = document.createElement("div");
@@ -874,41 +1065,6 @@ async function sendMessage() {
       const reader = await response.body.getReader();
       const decoder = new TextDecoder();
       let botResponse = "";
-      let reasoningContent = "";
-      
-      // 创建消息容器
-      const reasoningContainer = document.createElement("div");
-      reasoningContainer.className = "reasoning-container";
-      
-      const reasoningHeader = document.createElement("div");
-      reasoningHeader.className = "reasoning-header";
-      
-      const reasoningTitle = document.createElement("div");
-      reasoningTitle.className = "reasoning-title";
-      reasoningTitle.textContent = "🤔 模型思考过程";
-      
-      const reasoningToggle = document.createElement("div");
-      reasoningToggle.className = "reasoning-toggle";
-      reasoningToggle.textContent = "收起";
-      reasoningToggle.onclick = () => {
-        const content = reasoningContainer.querySelector('.reasoning-content');
-        content.style.display = content.style.display === 'none' ? 'block' : 'none';
-        reasoningToggle.textContent = content.style.display === 'none' ? '展开' : '收起';
-      };
-      
-      const reasoningContentDiv = document.createElement("div");
-      reasoningContentDiv.className = "reasoning-content";
-      reasoningContentDiv.innerHTML = '<div class="markdown-content"></div>';
-      
-      reasoningHeader.appendChild(reasoningTitle);
-      reasoningHeader.appendChild(reasoningToggle);
-      reasoningContainer.appendChild(reasoningHeader);
-      reasoningContainer.appendChild(reasoningContentDiv);
-      
-      // 如果是R1模型，显示推理过程在消息上方
-      if (currentModel === "deepseek-reasoner") {
-        chatHistory.appendChild(reasoningContainer);
-      }
       
       const botMsgDiv = document.createElement("div");
       botMsgDiv.className = "bot-msg";
@@ -929,17 +1085,11 @@ async function sendMessage() {
             try {
               const data = JSON.parse(line.slice(5));
               const content = data.choices[0].delta.content || "";
-              const reasoning = data.choices[0].delta.reasoning_content || "";
               
               if (content) {
                 botResponse += content;
                 botMsgDiv.querySelector('.markdown-content').innerHTML = marked.parse(botResponse);
                 chatHistory.scrollTop = chatHistory.scrollHeight;
-              }
-              
-              if (reasoning && currentModel === "deepseek-reasoner") {
-                reasoningContent += reasoning;
-                reasoningContentDiv.querySelector('.markdown-content').innerHTML = marked.parse(reasoningContent);
               }
             } catch (e) {
               console.error("JSON解析错误:", e);
@@ -949,11 +1099,6 @@ async function sendMessage() {
       }
       
       loadingDiv.remove();
-      
-      // 如果没有推理内容或不是R1模型，移除推理容器
-      if (!reasoningContent || currentModel !== "deepseek-reasoner") {
-        reasoningContainer.remove();
-      }
       
       const copyBtn = document.createElement("button");
       copyBtn.className = "copy-btn";
@@ -974,6 +1119,8 @@ async function sendMessage() {
       userInput.value = "";
       sendBtn.disabled = false;
       chatHistory.scrollTop = chatHistory.scrollHeight;
+      currentAttachments = [];
+      document.getElementById('drop-area').innerHTML = '<p>拖放文件到这里或点击下方按钮选择</p><p>支持图片(png/jpg)、文本(txt/md)文件</p>';
       saveCurrentChat();
     }
   } else {
@@ -987,7 +1134,6 @@ window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
     
     if (window.innerWidth <= 768) {
       if (!sidebar.classList.contains("collapsed")) {
