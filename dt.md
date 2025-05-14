@@ -17,3 +17,5 @@
 # 网站升级通知
 ## 日期：2024-03-10
 本次升级优化了移动端显示效果，修复了...
+   [![计算器](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250423223438315.png)](https://lsqkk.github.io/tool/ref.html)
+   上面是一张测试图片。。。
