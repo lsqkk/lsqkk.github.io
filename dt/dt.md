@@ -10,7 +10,7 @@ emm就挺莫名其妙的
 ## 日期：2025-05-15
 上午曹教授来你交有个讲座，有幸参加并和教授合影了！！
 追星从未如此简单~
-![合影](https://raw.githubusercontent.com/lsqkk/image/main/IMG_20250515_124542.jpg)
+![合影](https://cdn.jsdelivr.net/gh/lsqkk/image@main/IMG_20250515_124542.jpg)
 
 # 复习一晚上有机
 ## 日期：2025-05-15
