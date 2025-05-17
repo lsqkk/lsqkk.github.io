@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-item {
+            margin: 0 15px;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .nav-item:hover {
+            background: rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #333;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-item:hover::after {
+            width: 70%;
+        }
+        .nav-title {
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <a href="https://lsqkk.github.io/" class="nav-item nav-title">夸克博客</a>
+        <a href="https://lsqkk.github.io/" class="nav-item">🏠 主页</a>
+        <a href="https://lsqkk.github.io/notes" class="nav-item">📝 笔记</a>
+        <a href="https://lsqkk.github.io/article-list.html" class="nav-item">📚 文章</a>
+        <a href="#" class="nav-item">🧰 工具箱</a>
+        <a href="https://lsqkk.github.io/games" class="nav-item">🎮 游戏</a>
+    </div>
+</body>
+</html>
