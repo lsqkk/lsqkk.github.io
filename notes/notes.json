@@ -1,0 +1,29 @@
+{"categories": [
+        {
+            "name": "预科一",
+            "subjects": [
+                { "name": "无机化学",
+                    "notes": [
+                      "基础概念.html", 
+                      "化学反应原理.html", 
+                      "元素周期表详解.html"]
+                }
+            ]
+        },
+        {
+            "name": "预科二",
+            "subjects": [
+                {"name": "有机化学",
+                    "notes": [
+                      8卤代烃.html", 
+                      "10芳香烃.html"]
+                },
+                {
+                    "name": "近代物理导论",
+                    "notes": [
+                      "光的本性.html", 
+                      "狭义相对论.html"]
+                }
+            ]
+        }
+]}
