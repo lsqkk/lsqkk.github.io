@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习笔记目录 - 夸克博客</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f8f9fa;
+            --hover-color: #e9ecef;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #f1f3f5;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: var(--secondary-color);
+            padding: 1.5rem;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .category {
+            margin-bottom: 1.5rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-header:hover {
+            background: #357abd;
+        }
+
+        .subject {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .subject-header {
+            font-weight: 600;
+            color: #495057;
+            padding: 0.5rem;
+            border-left: 3px solid var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .note-list {
+            list-style: none;
+        }
+
+        .note-item {
+            padding: 0.5rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .note-item:hover {
+            background: var(--hover-color);
+        }
+
+        .note-link {
+            color: #212529;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .note-link::before {
+            content: "📘";
+            font-size: 0.9em;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                display: grid;
+                grid-template-columns: 300px 1fr;
+                min-height: 80vh;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .collapsed .subject-list {
+            display: none;
+        }
+
+        .search-box {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜索笔记...">
+    </div>
+    
+    <div class="container">
+        <div class="sidebar" id="categoryList"></div>
+        <div class="main-content" id="subjectContent"></div>
+    </div>
+<script>
+// 动态加载JSON数据
+function loadData() {
+    fetch('notes.json')
+        .then(response => {
+            if (!response.ok) throw new Error('网络响应异常');
+            return response.json();
+        })
+        .then(data => {
+            renderDirectory(data);
+            initSearch();
+        })
+        .catch(error => {
+            console.error('数据加载失败:', error);
+            document.getElementById('subjectContent').innerHTML = 
+                `<div class="loading">⚠️ 数据加载失败，请刷新重试</div>`;
+        });
+}
+
+// 渲染目录结构
+function renderDirectory(notesData) {
+    const categoryList = document.getElementById('categoryList');
+    const subjectContent = document.getElementById('subjectContent');
+    
+    // 清空现有内容
+    categoryList.innerHTML = '';
+    subjectContent.innerHTML = '<div class="loading">📚 数据加载中...</div>';
+
+    // 生成侧边栏分类
+    notesData.categories.forEach(category => {
+        const categoryElement = document.createElement('div');
+        categoryElement.className = 'category';
+        categoryElement.innerHTML = `
+            <div class="category-header">
+                ${category.name}
+            </div>
+        `;
+        categoryElement.querySelector('.category-header').addEventListener('click', () => {
+            subjectContent.innerHTML = renderSubjects(category.subjects);
+        });
+        categoryList.appendChild(categoryElement);
+    });
+
+    // 默认显示第一个分类
+    if (notesData.categories.length > 0) {
+        subjectContent.innerHTML = renderSubjects(notesData.categories[0].subjects);
+    }
+}
+
+// 渲染科目内容
+function renderSubjects(subjects) {
+    if (subjects.length === 0) return '<div class="loading">暂无学习资料</div>';
+    
+    return subjects.map(subject => `
+        <div class="subject">
+            <div class="subject-header">${subject.name}</div>
+            <ul class="note-list">
+                ${subject.notes.map(note => `
+                    <li class="note-item">
+                        <a href="notes/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
+                           class="note-link">
+                            ${note.replace('.html', '')}
+                        </a>
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    `).join('');
+}
+
+// 初始化搜索功能
+function initSearch() {
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const allNotes = document.querySelectorAll('.note-link');
+        
+        allNotes.forEach(note => {
+            const text = note.textContent.toLowerCase();
+            const parentLi = note.closest('.note-item');
+            parentLi.style.display = text.includes(searchTerm) ? 'block' : 'none';
+        });
+    });
+}
+
+// 页面加载完成后启动
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>
