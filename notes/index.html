@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习笔记目录 - 夸克博客</title>
+    <title>笔记 - 夸克博客</title>
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -206,7 +206,7 @@ function renderSubjects(subjects) {
             <ul class="note-list">
                 ${subject.notes.map(note => `
                     <li class="note-item">
-                        <a href="notes/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
+                        <a href="notes/${encodeURIComponent(subject.name)}/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
                            class="note-link">
                             ${note.replace('.html', '')}
                         </a>
