@@ -185,19 +185,19 @@ function renderDirectory(notesData) {
             </div>
         `;
         categoryElement.querySelector('.category-header').addEventListener('click', () => {
-            subjectContent.innerHTML = renderSubjects(category.subjects);
+            subjectContent.innerHTML = renderSubjects(category.subjects, category.name);
         });
         categoryList.appendChild(categoryElement);
     });
 
     // 默认显示第一个分类
     if (notesData.categories.length > 0) {
-        subjectContent.innerHTML = renderSubjects(notesData.categories[0].subjects);
+        subjectContent.innerHTML = renderSubjects(notesData.categories[0].subjects, notesData.categories[0].name);
     }
 }
 
 // 渲染科目内容
-function renderSubjects(subjects) {
+function renderSubjects(subjects, gradeName) {
     if (subjects.length === 0) return '<div class="loading">暂无学习资料</div>';
     
     return subjects.map(subject => `
@@ -206,7 +206,7 @@ function renderSubjects(subjects) {
             <ul class="note-list">
                 ${subject.notes.map(note => `
                     <li class="note-item">
-                        <a href="notes/${encodeURIComponent(categories.name)}/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
+                        <a href="notes/${encodeURIComponent(gradeName)}/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
                            class="note-link">
                             ${note.replace('.html', '')}
                         </a>
