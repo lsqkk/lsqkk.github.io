@@ -206,7 +206,7 @@ function renderSubjects(subjects, gradeName) {
             <ul class="note-list">
                 ${subject.notes.map(note => `
                     <li class="note-item">
-                        <a href="notes/${encodeURIComponent(gradeName)}/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
+                        <a href="{encodeURIComponent(gradeName)}/${encodeURIComponent(subject.name)}/${encodeURIComponent(note)}" 
                            class="note-link">
                             ${note.replace('.html', '')}
                         </a>
