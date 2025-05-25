@@ -13,10 +13,10 @@
     <base href="https://lsqkk.github.io/">
 <style>
 body {
-    background: url('image/bg.png') no-repeat center center / cover;
-    /* 移除以下冲突属性 */
-    /* background-attachment: fixed; */
-    /* animation相关属性全部移除 */
+    background: url('image/bg.png') no-repeat center center fixed; /* 添加fixed */
+    background-size: cover;
+    position: relative;
+    overflow-x: hidden; /* 防止横向滚动条 */
 }
 .dynamic-feed {
     margin: 30px auto;
@@ -63,6 +63,28 @@ body {
     margin-top: 15px;
     color: #3498db;
     text-decoration: none;
+}
+/* 新增流星雨样式 */
+.meteor {
+    position: fixed;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(173,216,230,0.8));
+    transform: rotate(-45deg);
+    filter: drop-shadow(0 0 10px rgba(135,206,250,0.8));
+    animation: meteorFall 1.5s linear infinite;
+    z-index: -1;
+}
+
+@keyframes meteorFall {
+    0% {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(-200px);
+    }
+    100% {
+        opacity: 0;
+        transform: rotate(-45deg) translateX(1000px);
+    }
 }
 </style>
 
@@ -610,41 +632,24 @@ function renderDynamicEntries(entries) {
 
 
 
-// 修正后的视差滚动效果（正确方向）
+// 新增流星雨生成器
 document.addEventListener('DOMContentLoaded', function() {
-   loadDynamicFeed();
-    const body = document.body;
-    const parallaxSpeed = 0.3; // 推荐速度值(0.3-0.6)
-    let lastKnownScroll = 0;
+    function createMeteor() {
+        const meteor = document.createElement('div');
+        meteor.className = 'meteor';
+        meteor.style.top = Math.random() * 100 + 'vh';
+        meteor.style.left = Math.random() * 100 + 'vw';
+        meteor.style.animationDuration = (Math.random() * 0.8 + 0.5) + 's';
+        document.body.appendChild(meteor);
 
-    function updateParallax() {
-        const currentScroll = window.pageYOffset;
-        const scrollDelta = currentScroll - lastKnownScroll;
-        
-        // 关键修改点：使用加法并移除background-attachment: fixed
-        const currentBgPos = parseFloat(body.style.backgroundPositionY || 0);
-        let newBgPos = currentBgPos + (scrollDelta * parallaxSpeed);
-        
-        // 限制移动范围(0到背景图片高度的50%)
-        const maxMovement = body.scrollHeight * 2;
-        newBgPos = Math.max(0, Math.min(newBgPos, maxMovement));
-        
-        body.style.backgroundPositionY = `${newBgPos}px`;
-        lastKnownScroll = currentScroll;
-        requestAnimationFrame(updateParallax);
+        meteor.addEventListener('animationend', () => {
+            meteor.remove();
+        });
     }
 
-    // 优化后的滚动监听
-    let animationFrame;
-    window.addEventListener('scroll', () => {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = requestAnimationFrame(updateParallax);
-    });
-
-    // 初始化设置
-    body.style.backgroundAttachment = "scroll"; // 必须移除fixed
-    body.style.backgroundPositionY = "0px";
+    setInterval(createMeteor, 800);
 });
+    
 </script>
 
 </body>
