@@ -13,10 +13,8 @@
     <base href="https://lsqkk.github.io/">
 <style>
 body {
-    background: url('image/bg.png') no-repeat center center fixed; /* 添加fixed */
+    background: url('image/bg.png') no-repeat center center fixed;
     background-size: cover;
-    position: relative;
-    overflow-x: hidden; /* 防止横向滚动条 */
 }
 .dynamic-feed {
     margin: 30px auto;
@@ -63,28 +61,6 @@ body {
     margin-top: 15px;
     color: #3498db;
     text-decoration: none;
-}
-/* 新增流星雨样式 */
-.meteor {
-    position: fixed;
-    width: 120px;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(173,216,230,0.8));
-    transform: rotate(-45deg);
-    filter: drop-shadow(0 0 10px rgba(135,206,250,0.8));
-    animation: meteorFall 1.5s linear infinite;
-    z-index: -1;
-}
-
-@keyframes meteorFall {
-    0% {
-        opacity: 1;
-        transform: rotate(-45deg) translateX(-200px);
-    }
-    100% {
-        opacity: 0;
-        transform: rotate(-45deg) translateX(1000px);
-    }
 }
 </style>
 
@@ -632,24 +608,10 @@ function renderDynamicEntries(entries) {
 
 
 
-// 新增流星雨生成器
 document.addEventListener('DOMContentLoaded', function() {
-    function createMeteor() {
-        const meteor = document.createElement('div');
-        meteor.className = 'meteor';
-        meteor.style.top = Math.random() * 100 + 'vh';
-        meteor.style.left = Math.random() * 100 + 'vw';
-        meteor.style.animationDuration = (Math.random() * 0.8 + 0.5) + 's';
-        document.body.appendChild(meteor);
-
-        meteor.addEventListener('animationend', () => {
-            meteor.remove();
-        });
-    }
-
-    setInterval(createMeteor, 800);
+   loadDynamicFeed();
 });
-    
+
 </script>
 
 </body>
