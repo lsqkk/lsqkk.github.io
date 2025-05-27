@@ -6,28 +6,28 @@
     <title>Markdown编辑器 | 夸克博客</title>
     
     <!-- 简化后的MathJax配置 -->
-<script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            processEscapes: true
-        },
-        startup: {
-            pageReady: () => {
-                return MathJax.startup.defaultPageReady().then(() => {
-                    console.log('MathJax初始化完成');
-                    if (window.markdownReady) renderAll();
-                });
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        console.log('MathJax初始化完成');
+                        if (window.markdownReady) renderAll();
+                    });
+                }
             }
-        }
-    };
+        };
     </script>
 
     <!-- 使用可靠的CDN源，添加备用源 -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" 
-            onerror="loadMermaidFallback()"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" onerror="loadMermaidFallback()"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
 
     <script>
     // Mermaid备用加载方案
@@ -61,368 +61,34 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-        :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #f9fafb;
-            --text-color: #374151;
-            --border-color: #e5e7eb;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --code-bg: #f3f4f6;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            flex: 1;
-            width: calc(100% - 2rem);
-        }
-
-        .header {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .title i {
-            font-size: 1.5rem;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background-color: #4338ca;
-            transform: translateY(-1px);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .word-count {
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-
-        .textarea {
-            width: 100%;
-            height: 500px;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            resize: vertical;
-            font-size: 0.9375rem;
-            line-height: 1.7;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .preview-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            height: 100%;
-        }
-
-        .preview {
-            width: 100%;
-            height: 500px;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow-y: auto;
-            background-color: white;
-            font-size: 0.9375rem;
-            line-height: 1.7;
-        }
-
-        .toolbar {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: white;
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #4338ca;
-            transform: translateY(-1px);
-        }
-
-        .btn i {
-            font-size: 0.875rem;
-        }
-
-        .btn-secondary {
-            background-color: white;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-1px);
-        }
-
-        /* Preview Styles */
-        .preview h1 {
-            font-size: 2em;
-            margin: 0.67em 0;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .preview h2 {
-            font-size: 1.5em;
-            margin: 0.83em 0;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .preview h3 {
-            font-size: 1.25em;
-            margin: 1em 0;
-        }
-
-        .preview ul, .preview ol {
-            padding-left: 2em;
-            margin: 1em 0;
-        }
-
-        .preview p {
-            margin: 1em 0;
-        }
-
-        .preview blockquote {
-            margin: 1em 0;
-            padding: 0 1em;
-            color: #6b7280;
-            border-left: 4px solid var(--border-color);
-        }
-
-        .preview code {
-            background-color: var(--code-bg);
-            padding: 0.2em 0.4em;
-            border-radius: 4px;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.9em;
-        }
-
-        .preview pre {
-            background-color: var(--code-bg);
-            padding: 1em;
-            border-radius: 6px;
-            overflow-x: auto;
-            margin: 1em 0;
-        }
-
-        .preview pre code {
-            background-color: transparent;
-            padding: 0;
-        }
-
-        .preview a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .preview a:hover {
-            text-decoration: underline;
-        }
-
-        .preview table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 1em 0;
-        }
-
-        .preview th, .preview td {
-            border: 1px solid var(--border-color);
-            padding: 0.5em 1em;
-        }
-
-        .preview th {
-            background-color: var(--secondary-color);
-        }
-
-        .preview img {
-            max-width: 100%;
-            border-radius: 6px;
-        }
-
-        .preview hr {
-            border: none;
-            height: 1px;
-            background-color: var(--border-color);
-            margin: 1.5em 0;
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--success-color);
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            z-index: 100;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .toast.error {
-            background-color: var(--error-color);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 0.875rem;
-           text-decoration: none;
-        }
-
-/* 添加或更新这些样式 */
-.math-block {
-    margin: 1em 0;
-    padding: 1em;
-    overflow-x: auto;
-    text-align: center;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-}
-
-.math-inline {
-    background-color: #f8f9fa;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-}
-
-/* MathJax生成的公式样式 */
-.mjx-chtml {
-    outline: none;
-}
-/* 图片样式 */
-.md-image {
-    max-width: 100%;
-    border-radius: 4px;
-    margin: 0.5em 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* 链接样式 */
-.md-link {
-    color: #4f46e5;
-    text-decoration: none;
-    border-bottom: 1px solid #c7d2fe;
-    transition: all 0.3s;
-}
-
-    </style>
+    <link rel="stylesheet" href="https://lsqkk.github.io/css/md.css">
+    
 </head>
 <body>
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">我的笔记</h3>
+            <div class="sidebar-actions">
+                <button class="sidebar-btn" id="refreshNotes">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        
+        <ul class="notes-list" id="notesList"></ul>
+        
+        <div class="add-note-form">
+            <input type="text" class="add-note-input" id="newNoteName" placeholder="新笔记名称">
+            <button class="add-note-btn" id="addNoteBtn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1 class="title">
@@ -464,13 +130,18 @@
                 <div class="preview-container">
                     <div id="preview" class="preview"></div>
                     <div class="toolbar">
-                        <button id="copy-html-btn" class="btn">
-                            <i class="fas fa-code"></i>
-                            复制HTML
+                        <button id="download-html-btn" class="btn">
+                            <i class="fas fa-file-code"></i>
+                            下载HTML
                         </button>
-                        <button id="copy-text-btn" class="btn">
-                            <i class="fas fa-text"></i>
-                            复制纯文本
+                        <button id="download-md-btn" class="btn">
+                            <i class="fas fa-file-alt"></i>
+                            下载MD
+                        </button>
+                        <button id="download-word-btn" class="btn">
+                            <i class="fas fa-file-word"></i>
+                            下载Word
+                            <span class="loader"></span>
                         </button>
                     </div>
                 </div>
@@ -478,7 +149,7 @@
         </div>
     </div>
 
-        <a href="https://lsqkk.github.io/post.html?file=copyright.md" class="footer">© 2025 蓝色奇夸克 / 夸克博客 All rights reserved. </a>
+    <a href="https://lsqkk.github.io/post.html?file=copyright.md" class="footer">© 2025 蓝色奇夸克 / 夸克博客 All rights reserved. </a>
 
     <div id="toast" class="toast">
         <i class="fas fa-check-circle"></i>
@@ -492,10 +163,17 @@
     const wordCount = document.getElementById('word-count');
     const clearBtn = document.getElementById('clear-btn');
     const sampleBtn = document.getElementById('sample-btn');
-    const copyHtmlBtn = document.getElementById('copy-html-btn');
-    const copyTextBtn = document.getElementById('copy-text-btn');
+    const downloadHtmlBtn = document.getElementById('download-html-btn');
+    const downloadMdBtn = document.getElementById('download-md-btn');
+    const downloadWordBtn = document.getElementById('download-word-btn');
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const notesList = document.getElementById('notesList');
+    const newNoteName = document.getElementById('newNoteName');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const refreshNotes = document.getElementById('refreshNotes');
 
     // 示例 Markdown 内容
     const sampleMarkdown = `# Markdown 与 TeX 公式示例
@@ -517,6 +195,10 @@ $$
 \`\`\`
 `;
 
+    // 笔记管理
+    let notes = JSON.parse(localStorage.getItem('markdown-notes')) || [];
+    let currentNoteId = null;
+
     // 显示 Toast 通知
     function showToast(message, isError = false) {
         toastMessage.textContent = message;
@@ -534,116 +216,570 @@ $$
     }
 
     // 手动触发 MathJax 渲染
-function renderAll() {
-    try {
-        // 渲染MathJax
-        if (window.MathJax?.typeset) {
-            MathJax.typeset();
-        }
-        
-        // 渲染Mermaid
-        if (window.mermaid?.init) {
-            try {
-                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-            } catch (mermaidErr) {
-                console.error('Mermaid渲染错误:', mermaidErr);
+    function renderAll() {
+        try {
+            if (window.MathJax?.typeset) {
+                MathJax.typeset();
             }
-        } else {
-            console.warn('Mermaid未加载完成');
+            
+            if (window.mermaid?.init) {
+                try {
+                    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                } catch (mermaidErr) {
+                    console.error('Mermaid渲染错误:', mermaidErr);
+                }
+            } else {
+                console.warn('Mermaid未加载完成');
+            }
+        } catch (err) {
+            console.error('渲染错误:', err);
         }
-    } catch (err) {
-        console.error('渲染错误:', err);
     }
-}
-
 
     // Markdown 转 HTML 函数
-function convertToHTML(md) {
+    function convertToHTML(md) {
+        const mermaidBlocks = [];
+        let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
+            mermaidBlocks.push(code.trim());
+            return `<div class="mermaid">${code.trim()}</div>`;
+        });
 
-    // 1. 首先保护Mermaid代码块
-    const mermaidBlocks = [];
-    let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
-        mermaidBlocks.push(code.trim());
-        return `<div class="mermaid">${code.trim()}</div>`;
-    });
+        const codeBlocks = [];
+        html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+            codeBlocks.push(code);
+            return `\x1BCODE${codeBlocks.length-1}\x1B`;
+        });
 
-    // 2. 保护普通代码块（修改原有代码块保护）
-    const codeBlocks = [];
-    html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
-        codeBlocks.push(code);
-        return `\x1BCODE${codeBlocks.length-1}\x1B`;
-    });
+        const inlineCodes = [];
+        html = html.replace(/`([^`]+)`/g, (match, code) => {
+            inlineCodes.push(code);
+            return `\x1BINLINE${inlineCodes.length-1}\x1B`;
+        });
 
-    // 2. 保护行内代码（反引号包裹的内容）
-    const inlineCodes = [];
-    html = html.replace(/`([^`]+)`/g, (match, code) => {
-        inlineCodes.push(code);
-        return `\x1BINLINE${inlineCodes.length-1}\x1B`;
-    });
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
+            return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
+        });
 
-    // 3. 转换图片语法 ![alt](src)
-    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
-        return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
-    });
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+            return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
+        });
 
-    // 4. 转换链接语法 [text](url)
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-        return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
-    });
+        html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
+            const cleaned = formula.trim();
+            return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
+        });
 
-    // 3. 转换块级公式（$$...$$）
-    html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
-        const cleaned = formula.trim();
-        return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
-    });
+        html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
+            return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
+        });
 
-    // 4. 转换行内公式（$...$）
-    html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
-        return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
-    });
+        html = html
+            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
+            .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>')
+            .replace(/(<li>.*<\/li>)+/g, (m) => 
+                m.match(/^\d/) ? `<ol>${m}</ol>` : m
+            )
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
 
-    // 5. 标准Markdown转换
-    html = html
-        // 标题
-        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        // 粗体和斜体
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        // 列表
-        .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-        // 恢复列表结构
-        .replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>')
-        .replace(/(<li>.*<\/li>)+/g, (m) => 
-            m.match(/^\d/) ? `<ol>${m}</ol>` : m
-        )
-        // 链接和图片
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+        html = html.replace(/\x1BCODE(\d+)\x1B/g, (_, n) => 
+            `<pre><code>${codeBlocks[n]}</code></pre>`
+        );
+        html = html.replace(/\x1BINLINE(\d+)\x1B/g, (_, n) => 
+            `<code>${inlineCodes[n]}</code>`
+        );
 
-    // 6. 恢复被保护的内容（代码块和行内代码）
-    html = html.replace(/\x1BCODE(\d+)\x1B/g, (_, n) => 
-        `<pre><code>${codeBlocks[n]}</code></pre>`
-    );
-    html = html.replace(/\x1BINLINE(\d+)\x1B/g, (_, n) => 
-        `<code>${inlineCodes[n]}</code>`
-    );
+        html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
 
-    // 7. 处理段落和换行
-html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
+        return html;
+    }
 
-    return html;
-}
-    // 实时预览
+    // 渲染笔记列表
+    function renderNotesList() {
+        notesList.innerHTML = '';
+        notes.forEach(note => {
+            const li = document.createElement('li');
+            li.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
+            li.dataset.id = note.id;
+            
+            li.innerHTML = `
+                <span class="note-name">${note.name}</span>
+                <div class="note-actions">
+                    <button class="note-action-btn edit-note" title="重命名">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="note-action-btn delete-note" title="删除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            li.addEventListener('click', (e) => {
+                if (!e.target.closest('.note-action-btn')) {
+                    loadNote(note.id);
+                }
+            });
+            
+            notesList.appendChild(li);
+        });
+        
+        // 添加事件监听器
+        document.querySelectorAll('.edit-note').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const noteId = btn.closest('.note-item').dataset.id;
+                editNote(noteId);
+            });
+        });
+        
+        document.querySelectorAll('.delete-note').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const noteId = btn.closest('.note-item').dataset.id;
+                deleteNote(noteId);
+            });
+        });
+    }
+
+    // 加载笔记
+    function loadNote(noteId) {
+        const note = notes.find(n => n.id === noteId);
+        if (note) {
+            currentNoteId = noteId;
+            markdownInput.value = note.content;
+            preview.innerHTML = convertToHTML(note.content);
+            updateWordCount();
+            renderAll();
+            renderNotesList();
+            showToast(`已加载笔记: ${note.name}`);
+        }
+    }
+
+    // 添加新笔记
+    function addNote() {
+        const name = newNoteName.value.trim();
+        if (!name) {
+            showToast('请输入笔记名称', true);
+            return;
+        }
+        
+        const newNote = {
+            id: Date.now().toString(),
+            name: name,
+            content: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        notes.push(newNote);
+        saveNotes();
+        newNoteName.value = '';
+        loadNote(newNote.id);
+        showToast(`已创建笔记: ${name}`);
+    }
+
+    // 编辑笔记名称
+    function editNote(noteId) {
+        const note = notes.find(n => n.id === noteId);
+        if (!note) return;
+        
+        const newName = prompt('输入新的笔记名称', note.name);
+        if (newName && newName.trim() !== note.name) {
+            note.name = newName.trim();
+            note.updatedAt = new Date().toISOString();
+            saveNotes();
+            renderNotesList();
+            showToast('笔记名称已更新');
+        }
+    }
+
+    // 删除笔记
+    function deleteNote(noteId) {
+        if (!confirm('确定要删除此笔记吗？')) return;
+        
+        notes = notes.filter(n => n.id !== noteId);
+        saveNotes();
+        
+        if (currentNoteId === noteId) {
+            currentNoteId = null;
+            markdownInput.value = '';
+            preview.innerHTML = '';
+            updateWordCount();
+        }
+        
+        renderNotesList();
+        showToast('笔记已删除');
+    }
+
+    // 保存笔记到localStorage
+    function saveNotes() {
+        localStorage.setItem('markdown-notes', JSON.stringify(notes));
+    }
+
+    // 保存当前笔记内容
+    function saveCurrentNote() {
+        if (!currentNoteId) return;
+        
+        const note = notes.find(n => n.id === currentNoteId);
+        if (note) {
+            note.content = markdownInput.value;
+            note.updatedAt = new Date().toISOString();
+            saveNotes();
+        }
+    }
+
+    // 下载HTML文件
+    function downloadHtml() {
+        const htmlContent = preview.innerHTML;
+        const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = currentNoteId ? `note-${currentNoteId}.html` : 'markdown-export.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('HTML文件已下载');
+    }
+
+    // 下载Markdown文件
+    function downloadMd() {
+        const mdContent = markdownInput.value;
+        const blob = new Blob([mdContent], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = currentNoteId ? `note-${currentNoteId}.md` : 'markdown-export.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Markdown文件已下载');
+    }
+
+    // 下载Word文件
+    async function downloadWord() {
+        const markdownText = markdownInput.value.trim();
+        if (!markdownText) {
+            showToast('没有内容可导出', true);
+            return;
+        }
+
+        try {
+            downloadWordBtn.classList.add('processing');
+            showToast('正在生成Word文档...');
+
+            const html = convertToHTML(markdownText);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, 
+                    Table, TableRow, TableCell, WidthType, convertInchesToTwip,
+                    ExternalHyperlink, UnderlineType } = docx;
+
+            const children = [];
+
+            for (let i = 0; i < tempDiv.childNodes.length; i++) {
+                const node = tempDiv.childNodes[i];
+                
+                if (node.nodeName === 'P') {
+                    const paragraph = new Paragraph({
+                        children: parseInlineNodes(node),
+                        spacing: { after: 200 }
+                    });
+                    children.push(paragraph);
+                }
+                else if (node.nodeName.match(/^H[1-6]$/)) {
+                    const level = parseInt(node.nodeName[1]);
+                    const headingLevel = [
+                        HeadingLevel.HEADING_1,
+                        HeadingLevel.HEADING_2,
+                        HeadingLevel.HEADING_3,
+                        HeadingLevel.HEADING_4,
+                        HeadingLevel.HEADING_5,
+                        HeadingLevel.HEADING_6
+                    ][level - 1];
+                    
+                    const paragraph = new Paragraph({
+                        text: node.textContent,
+                        heading: headingLevel,
+                        spacing: { before: 200, after: 100 }
+                    });
+                    children.push(paragraph);
+                }
+                else if (node.nodeName === 'UL') {
+                    const listItems = node.querySelectorAll('li');
+                    listItems.forEach(item => {
+                        const paragraph = new Paragraph({
+                            text: item.textContent,
+                            bullet: { level: 0 },
+                            spacing: { after: 100 }
+                        });
+                        children.push(paragraph);
+                    });
+                }
+                else if (node.nodeName === 'OL') {
+                    const listItems = node.querySelectorAll('li');
+                    listItems.forEach((item, index) => {
+                        const paragraph = new Paragraph({
+                            text: item.textContent,
+                            numbering: { level: 0, reference: 'ordered-list', style: 'default' },
+                            spacing: { after: 100 }
+                        });
+                        children.push(paragraph);
+                    });
+                }
+                else if (node.nodeName === 'PRE') {
+                    const code = node.textContent;
+                    const paragraph = new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: code,
+                                font: 'Consolas',
+                                size: 20,
+                                color: '333333',
+                                break: 1
+                            })
+                        ],
+                        indent: { left: convertInchesToTwip(0.5) },
+                        spacing: { line: 240, after: 100 },
+                        border: {
+                            bottom: { color: 'DDDDDD', size: 6, style: 'single' },
+                            left: { color: 'DDDDDD', size: 6, style: 'single' },
+                            right: { color: 'DDDDDD', size: 6, style: 'single' },
+                            top: { color: 'DDDDDD', size: 6, style: 'single' }
+                        },
+                        shading: { fill: 'F5F5F5' }
+                    });
+                    children.push(paragraph);
+                }
+                else if (node.nodeName === 'TABLE') {
+                    const rows = node.querySelectorAll('tr');
+                    const tableRows = [];
+                    
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td, th');
+                        const tableCells = [];
+                        
+                        cells.forEach(cell => {
+                            const isHeader = cell.nodeName === 'TH';
+                            const tableCell = new TableCell({
+                                children: [
+                                    new Paragraph({
+                                        children: parseInlineNodes(cell),
+                                        alignment: AlignmentType.CENTER
+                                    })
+                                ],
+                                shading: isHeader ? { fill: 'F0F0F0' } : undefined
+                            });
+                            tableCells.push(tableCell);
+                        });
+                        
+                        tableRows.push(new TableRow({ children: tableCells }));
+                    });
+                    
+                    const table = new Table({
+                        rows: tableRows,
+                        width: { size: 100, type: WidthType.PERCENTAGE }
+                    });
+                    
+                    children.push(table);
+                }
+                else if (node.nodeName === 'BLOCKQUOTE') {
+                    const paragraph = new Paragraph({
+                        children: parseInlineNodes(node),
+                        indent: { left: convertInchesToTwip(0.5) },
+                        border: { left: { color: '4A6FA5', size: 6, style: 'single' } },
+                        spacing: { after: 100 }
+                    });
+                    children.push(paragraph);
+                }
+                else if (node.nodeName === 'HR') {
+                    children.push(
+                        new Paragraph({
+                            border: { bottom: { color: '999999', size: 6, style: 'single' } },
+                            spacing: { after: 200, before: 200 }
+                        })
+                    );
+                }
+            }
+
+            const doc = new Document({
+                styles: {
+                    paragraphStyles: [
+                        {
+                            id: 'Normal',
+                            name: 'Normal',
+                            run: {
+                                font: '微软雅黑',
+                                size: 24,
+                                color: '333333'
+                            },
+                            paragraph: {
+                                spacing: { line: 276, after: 100 }
+                            }
+                        },
+                        {
+                            id: 'Heading1',
+                            name: 'Heading 1',
+                            basedOn: 'Normal',
+                            next: 'Normal',
+                            run: {
+                                font: '微软雅黑',
+                                size: 32,
+                                bold: true,
+                                color: '4A6FA5'
+                            },
+                            paragraph: {
+                                spacing: { before: 240, after: 120 }
+                            }
+                        },
+                        {
+                            id: 'Heading2',
+                            name: 'Heading 2',
+                            basedOn: 'Normal',
+                            next: 'Normal',
+                            run: {
+                                font: '微软雅黑',
+                                size: 28,
+                                bold: true,
+                                color: '4A6FA5'
+                            },
+                            paragraph: {
+                                spacing: { before: 200, after: 100 }
+                            }
+                        }
+                    ]
+                },
+                numbering: {
+                    config: [
+                        {
+                            reference: 'ordered-list',
+                            levels: [
+                                {
+                                    level: 0,
+                                    format: 'decimal',
+                                    text: '%1.',
+                                    alignment: AlignmentType.START
+                                }
+                            ]
+                        }
+                    ]
+                },
+                sections: [{
+                    properties: {},
+                    children: children
+                }]
+            });
+
+            const blob = await docx.Packer.toBlob(doc);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentNoteId ? `note-${currentNoteId}.docx` : 'markdown-export.docx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('Word文档生成成功！');
+        } catch (error) {
+            console.error('转换失败:', error);
+            showToast('转换失败: ' + error.message, true);
+        } finally {
+            downloadWordBtn.classList.remove('processing');
+        }
+    }
+
+    // 解析内联节点
+    function parseInlineNodes(parentNode) {
+        const children = [];
+        
+        for (let node of parentNode.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                if (node.textContent.trim()) {
+                    children.push(new docx.TextRun({
+                        text: node.textContent,
+                        font: '微软雅黑',
+                        size: 24
+                    }));
+                }
+            }
+            else if (node.nodeName === 'STRONG' || node.nodeName === 'B') {
+                children.push(new docx.TextRun({
+                    text: node.textContent,
+                    bold: true,
+                    font: '微软雅黑',
+                    size: 24
+                }));
+            }
+            else if (node.nodeName === 'EM' || node.nodeName === 'I') {
+                children.push(new docx.TextRun({
+                    text: node.textContent,
+                    italics: true,
+                    font: '微软雅黑',
+                    size: 24
+                }));
+            }
+            else if (node.nodeName === 'CODE') {
+                children.push(new docx.TextRun({
+                    text: node.textContent,
+                    font: 'Consolas',
+                    size: 20,
+                    color: '333333'
+                }));
+            }
+            else if (node.nodeName === 'A') {
+                children.push(
+                    new docx.ExternalHyperlink({
+                        children: [
+                            new docx.TextRun({
+                                text: node.textContent,
+                                font: '微软雅黑',
+                                size: 24,
+                                color: '0563C1',
+                                underline: {
+                                    type: UnderlineType.SINGLE,
+                                    color: '0563C1'
+                                }
+                            })
+                        ],
+                        link: node.href
+                    })
+                );
+            }
+            else if (node.nodeName === 'IMG') {
+                children.push(new docx.TextRun({
+                    text: `[图片: ${node.alt || '无描述'}]`,
+                    font: '微软雅黑',
+                    size: 24,
+                    color: '666666'
+                }));
+            }
+            else if (node.nodeType === Node.ELEMENT_NODE) {
+                const inlineChildren = parseInlineNodes(node);
+                children.push(...inlineChildren);
+            }
+        }
+        
+        return children;
+    }
+
+    // 事件监听器
     markdownInput.addEventListener('input', function() {
         preview.innerHTML = convertToHTML(this.value);
         updateWordCount();
- renderAll();
+        renderAll();
+        saveCurrentNote();
     });
 
-    // 其他事件监听保持不变...
     clearBtn.addEventListener('click', function() {
         markdownInput.value = '';
         preview.innerHTML = '';
@@ -659,33 +795,47 @@ html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
         showToast('已加载示例内容');
     });
 
-    copyHtmlBtn.addEventListener('click', function() {
-        const htmlContent = preview.innerHTML;
-        navigator.clipboard.writeText(htmlContent).then(() => {
-            showToast('HTML已复制到剪贴板');
-        }).catch(err => {
-            console.error('复制失败:', err);
-            showToast('复制失败，请重试', true);
-        });
+    downloadHtmlBtn.addEventListener('click', downloadHtml);
+    downloadMdBtn.addEventListener('click', downloadMd);
+    downloadWordBtn.addEventListener('click', downloadWord);
+
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
     });
 
-    copyTextBtn.addEventListener('click', function() {
-        const textContent = preview.textContent;
-        navigator.clipboard.writeText(textContent).then(() => {
-            showToast('纯文本已复制到剪贴板');
-        }).catch(err => {
-            console.error('复制失败:', err);
-            showToast('复制失败，请重试', true);
-        });
+    addNoteBtn.addEventListener('click', addNote);
+    newNoteName.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addNote();
+    });
+
+    refreshNotes.addEventListener('click', function() {
+        notes = JSON.parse(localStorage.getItem('markdown-notes')) || [];
+        renderNotesList();
+        showToast('笔记列表已刷新');
     });
 
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
         updateWordCount();
+        renderNotesList();
+        
+        // 检查窗口大小
+        function checkWindowSize() {
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.remove('active');
+                sidebarToggle.style.display = 'block';
+            } else {
+                sidebar.classList.add('active');
+                sidebarToggle.style.display = 'none';
+            }
+        }
+        
+        window.addEventListener('resize', checkWindowSize);
+        checkWindowSize();
+        
         // 初始加载示例
         sampleBtn.click();
     });
 </script>
-
 </body>
 </html>
