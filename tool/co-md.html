@@ -232,6 +232,104 @@
                 align-items: flex-start;
             }
         }
+        /* 覆盖原容器样式，移除左侧边栏的空白 */
+.container {
+    margin-left: 2rem !important; /* 移除原sidebar-width的偏移 */
+    width: calc(100% - 4rem) !important; /* 调整宽度 */
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 1rem !important;
+        margin-right: 1rem !important;
+        width: calc(100% - 2rem) !important;
+        padding: 1rem !important;
+    }
+}
+
+        /* 工具栏整体调整 */
+.header .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* 按钮样式调整 */
+.btn, .btn-secondary {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap;
+}
+
+/* 移动端工具栏优化 */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header .title {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.5rem;
+    }
+    
+    .header .toolbar {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* 隐藏部分按钮文字只显示图标 */
+    .btn span, .btn-secondary span {
+        display: none;
+    }
+    
+    .btn i, .btn-secondary i {
+        margin-right: 0 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* 文档信息区域调整 */
+    .document-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .user-list {
+        margin-top: 0.5rem;
+    }
+}
+
+        /* 网格布局调整 */
+.grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+/* 预览区域高度调整 */
+.textarea, .preview {
+    height: 400px !important;
+}
+
+/* 移动端输入区域优化 */
+@media (max-width: 480px) {
+    .textarea, .preview {
+        height: 300px !important;
+    }
+    
+    .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .word-count {
+        margin-top: 0.25rem;
+    }
+}
     </style>
 </head>
 <body>
