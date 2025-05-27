@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聊天室 - 夸克博客</title>
-        <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
+    <title>夸克聊天室</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
     <script src="https://lsqkk.github.io/js/cursor-trail.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -12,73 +13,226 @@
         :root {
             --primary-color: rgba(64, 224, 208, 0.9);
             --background: rgba(25, 25, 35, 0.95);
+            --sidebar-bg: rgba(20, 20, 30, 0.9);
+            --message-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #fff;
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --timestamp-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .dark-mode {
+            --primary-color: rgba(64, 224, 208, 0.9);
+            --background: rgba(25, 25, 35, 0.95);
+            --sidebar-bg: rgba(20, 20, 30, 0.9);
+            --message-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #fff;
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --timestamp-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .light-mode {
+            --primary-color: #40E0D0;
+            --background: rgba(255, 255, 255, 0.95);
+            --sidebar-bg: rgba(240, 240, 245, 0.9);
+            --message-bg: rgba(0, 0, 0, 0.03);
+            --text-color: #333;
+            --input-bg: rgba(0, 0, 0, 0.05);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --timestamp-color: rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            color: #fff;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-color);
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            display: flex;
+            background: url('https://lsqkk.github.io/image/star.gif') no-repeat center center fixed;
+            background-size: cover;
+            transition: background-color 0.3s ease;
         }
 
-        .container {
-            max-width: 800px;
-            height: 90%;
-            margin: 0 auto;
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
             backdrop-filter: blur(10px);
-            background: var(--background);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
         }
 
-        input, button {
-            padding: 12px 20px;
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            background: none;
             border: none;
-            border-radius: 12px;
-            margin: 5px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
             transition: all 0.3s ease;
         }
 
-        input {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            width: 200px;
+        .theme-toggle:hover {
+            background: var(--input-bg);
         }
 
-        button {
+        .room-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .room-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .room-item:hover {
+            background: var(--input-bg);
+        }
+
+        .room-item.active {
             background: var(--primary-color);
-            color: #fff;
+            color: white;
+        }
+
+        .room-icon {
+            font-size: 0.9rem;
+        }
+
+        .join-room-container {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .join-room-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .join-room-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .join-room-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* 主内容区样式 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .chat-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
             cursor: pointer;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(64, 224, 208, 0.4);
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--background);
+            backdrop-filter: blur(10px);
         }
 
-        #chatArea {
-            margin-top: 2rem;
-        }
-
-        #messagesList {
+        .messages-list {
             list-style: none;
             padding: 0;
-            max-height: 60vh;
-            overflow-y: auto;
         }
 
         .message-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 15px;
+            background: var(--message-bg);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 12px;
             backdrop-filter: blur(5px);
             display: flex;
-            align-items: start;
-            gap: 1rem;
+            align-items: flex-start;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .avatar {
@@ -90,6 +244,8 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
         }
 
         .message-content {
@@ -99,31 +255,77 @@
         .message-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
         }
 
         .username {
-            font-weight: bold;
+            font-weight: 600;
             color: var(--primary-color);
         }
 
         .timestamp {
-            font-size: 0.8em;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+            color: var(--timestamp-color);
         }
 
+        /* 输入区域 */
+        .input-area {
+            padding: 15px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            resize: none;
+            max-height: 120px;
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* 个人资料设置 */
         .profile-setup {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-top: 1rem;
+            background: var(--message-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .profile-title {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
         }
 
         .color-picker {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            margin: 1rem 0;
+            margin: 15px 0;
         }
 
         .color-option {
@@ -132,54 +334,171 @@
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .color-option.selected {
-            border-color: #fff;
+            border-color: var(--text-color);
             transform: scale(1.1);
+        }
+
+        .profile-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .profile-save-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-save-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .room-item {
+                padding: 10px 15px;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(64, 224, 208, 0.7);
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--timestamp-color);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
     </style>
 </head>
-<body style=" background: url('https://lsqkk.github.io/image/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-    <div class="container">
-        <h2>🚀夸克聊天室</h2>
-        
-        <div>
-            <input type="text" id="roomInput" placeholder="房间号">
-            <button onclick="joinRoom()">加入房间</button>
-        </div>
-
-        <div class="profile-setup" id="profileSetup" style="display: none;">
-            <div class="color-picker" id="colorPicker">
-                <div class="color-option" style="background: #40E0D0" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #FF6B6B" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #7B68EE" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #FFD700" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #C7EDCC" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #FAF9DE" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #FFF2E2" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #2b4490" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #faa755" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #f391a9" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #843900" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #a3cf62" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #b22c46" onclick="selectColor(this)"></div>
-                <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
+<body class="dark-mode">
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">聊天室</div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
-            <input type="text" id="nicknameInput" placeholder="Your nickname">
-            <button onclick="saveProfile()">Save Profile</button>
+            
+            <div class="room-list" id="roomList">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <p>暂无聊天室</p>
+                </div>
+            </div>
+            
+            <div class="join-room-container">
+                <input type="text" class="join-room-input" id="roomInput" placeholder="输入房间号">
+                <button class="join-room-btn" onclick="joinRoom()">加入房间</button>
+            </div>
         </div>
 
-        <div id="chatArea" style="display: none; height: 100%;">
-            <ul id="messagesList"></ul>
-            <input type="text" id="messageInput" placeholder="输入消息...">
-            <button onclick="sendMessage()">发送</button>
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="chat-header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-title" id="currentRoomTitle">请选择一个聊天室</div>
+                <div style="width: 40px;"></div> <!-- 占位保持对称 -->
+            </div>
+            
+            <div class="messages-container" id="messagesContainer">
+                <ul class="messages-list" id="messagesList"></ul>
+                
+                <div class="profile-setup" id="profileSetup" style="display: none;">
+                    <div class="profile-title">设置您的个人资料</div>
+                    <input type="text" class="profile-input" id="nicknameInput" placeholder="您的昵称">
+                    <div class="color-picker" id="colorPicker">
+                        <div class="color-option" style="background: #40E0D0" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FF6B6B" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #7B68EE" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FFD700" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #C7EDCC" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FAF9DE" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FFF2E2" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #2b4490" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #faa755" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #f391a9" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #843900" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #a3cf62" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #b22c46" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
+                    </div>
+                    <button class="profile-save-btn" onclick="saveProfile()">保存资料</button>
+                </div>
+            </div>
+            
+            <div class="input-area" id="inputArea" style="display: none;">
+                <input type="text" class="message-input" id="messageInput" placeholder="输入消息..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">发送</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Firebase configuration and initialization
+        // Firebase 配置
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
             authDomain: "quark-b7305.firebaseapp.com",
@@ -189,162 +508,303 @@
             appId: "1:843016834358:web:9438c729be28c4d492f797",
             measurementId: "G-5BVT26KRT6"
         };
+        
+        // 初始化 Firebase
         firebase.initializeApp(firebaseConfig);
-
-        let roomName;
-        let messagesRef;
+        
+        // 全局变量
+        let roomName = '';
+        let messagesRef = null;
         let userColor = localStorage.getItem('userColor') || '#40E0D0';
         let nickname = localStorage.getItem('nickname') || '';
-
+        let roomJoinTime = null;
+        let isAtBottom = true;
+        let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]');
+        
+        // DOM 加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化主题
+            initTheme();
+            
+            // 初始化移动端菜单按钮
+            document.getElementById('mobileMenuBtn').addEventListener('click', toggleSidebar);
+            
+            // 初始化主题切换按钮
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // 初始化最近聊天室列表
+            updateRecentRoomsList();
+            
+            // 请求通知权限
+            requestNotificationPermission();
+            
+            // 监听消息容器滚动
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.addEventListener('scroll', function() {
+                const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
+                isAtBottom = scrollHeight - scrollTop === clientHeight;
+            });
+            
+            // 如果已有昵称，隐藏个人资料设置
+            if (nickname) {
+                document.getElementById('profileSetup').style.display = 'none';
+            }
+        });
+        
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.className = savedTheme + '-mode';
+            updateThemeIcon(savedTheme);
+        }
+        
+        // 切换主题
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('dark-mode');
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            document.body.classList.remove(isDark ? 'dark-mode' : 'light-mode');
+            document.body.classList.add(newTheme + '-mode');
+            localStorage.setItem('theme', newTheme);
+            
+            updateThemeIcon(newTheme);
+        }
+        
+        // 更新主题图标
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeToggle').querySelector('i');
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+        
+        // 切换侧边栏（移动端）
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
+        // 更新最近聊天室列表
+        function updateRecentRoomsList() {
+            const roomList = document.getElementById('roomList');
+            
+            if (recentRooms.length === 0) {
+                roomList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <p>暂无聊天室</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            roomList.innerHTML = '';
+            recentRooms.forEach(room => {
+                const roomItem = document.createElement('div');
+                roomItem.className = 'room-item';
+                roomItem.innerHTML = `
+                    <i class="fas fa-hashtag room-icon"></i>
+                    <span>${room}</span>
+                `;
+                roomItem.addEventListener('click', () => {
+                    document.getElementById('roomInput').value = room;
+                    joinRoom();
+                });
+                roomList.appendChild(roomItem);
+            });
+        }
+        
+        // 添加最近聊天室
+        function addRecentRoom(room) {
+            if (!recentRooms.includes(room)) {
+                recentRooms.unshift(room);
+                if (recentRooms.length > 5) {
+                    recentRooms = recentRooms.slice(0, 5);
+                }
+                localStorage.setItem('recentRooms', JSON.stringify(recentRooms));
+                updateRecentRoomsList();
+            }
+        }
+        
+        // 加入房间
         function joinRoom() {
-            roomName = document.getElementById('roomInput').value;
+            roomName = document.getElementById('roomInput').value.trim();
             if (!roomName) return;
-
-            if (!nickname) {
+            
+            // 添加到最近聊天室
+            addRecentRoom(roomName);
+            
+            // 更新当前房间标题
+            document.getElementById('currentRoomTitle').textContent = `房间: ${roomName}`;
+            
+            // 记录加入时间
+            roomJoinTime = Date.now();
+            
+            // 如果已有昵称，直接初始化聊天
+            if (nickname) {
+                initializeChat();
+            } else {
+                // 否则显示个人资料设置
                 document.getElementById('profileSetup').style.display = 'block';
                 document.getElementById('nicknameInput').value = nickname;
+                
+                // 标记当前选中的颜色
                 document.querySelectorAll('.color-option').forEach(opt => {
                     opt.classList.toggle('selected', opt.style.background === userColor);
                 });
-            } else {
-                initializeChat();
+                
+                // 滚动到个人资料设置
+                document.getElementById('messagesContainer').scrollTo(0, document.getElementById('messagesContainer').scrollHeight);
             }
+            
+            // 关闭移动端侧边栏
+            document.getElementById('sidebar').classList.remove('open');
         }
-
+        
+        // 选择颜色
         function selectColor(element) {
-            document.querySelectorAll('.color-option').forEach(opt => 
-                opt.classList.remove('selected'));
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
             element.classList.add('selected');
             userColor = element.style.backgroundColor;
         }
-
+        
+        // 保存个人资料
         function saveProfile() {
-            nickname = document.getElementById('nicknameInput').value;
+            nickname = document.getElementById('nicknameInput').value.trim();
             if (!nickname) return;
-
+            
             localStorage.setItem('nickname', nickname);
             localStorage.setItem('userColor', userColor);
+            
             initializeChat();
         }
-
+        
+        // 初始化聊天
         function initializeChat() {
+            // 隐藏个人资料设置
             document.getElementById('profileSetup').style.display = 'none';
-            document.getElementById('chatArea').style.display = 'block';
             
+            // 显示输入区域
+            document.getElementById('inputArea').style.display = 'flex';
+            
+            // 清空消息列表
+            document.getElementById('messagesList').innerHTML = '';
+            
+            // 初始化 Firebase 引用
             messagesRef = firebase.database().ref(`chatrooms/${roomName}/messages`);
+            
+            // 监听消息
             messagesRef.on('child_added', snapshot => {
                 const { text, nickname, color, timestamp } = snapshot.val();
-                const li = document.createElement('li');
-                li.className = 'message-item';
-                li.innerHTML = `
-                    <div class="avatar" style="background: ${color}">${nickname[0]}</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="username">${nickname}</span>
-                            <span class="timestamp">${new Date(timestamp).toLocaleTimeString()}</span>
-                        </div>
-                        <div>${text}</div>
-                    </div>
-                `;
-                document.getElementById('messagesList').appendChild(li);
-                window.scrollTo(0, document.body.scrollHeight);
+                addMessageToChat(text, nickname, color, timestamp);
+                
+                // 如果用户在看最新消息，自动滚动到底部
+                if (isAtBottom) {
+                    scrollToBottom();
+                }
+                
+                // 如果是15秒后收到的新消息且不是自己发送的，显示通知
+                if (roomJoinTime && timestamp > roomJoinTime + 15000) {
+                    if (nickname !== localStorage.getItem('nickname')) {
+                        showNotification(`新消息来自 ${nickname}`, text);
+                    }
+                }
             });
+            
+            // 滚动到底部
+            scrollToBottom();
         }
-
+        
+        // 添加消息到聊天界面
+        function addMessageToChat(text, nickname, color, timestamp) {
+            const li = document.createElement('li');
+            li.className = 'message-item';
+            
+            const date = new Date(timestamp);
+            const dateStr = date.toLocaleDateString();
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            li.innerHTML = `
+                <div class="avatar" style="background: ${color}">${nickname[0].toUpperCase()}</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="username">${nickname}</span>
+                        <span class="timestamp">${dateStr} ${timeStr}</span>
+                    </div>
+                    <div>${text}</div>
+                </div>
+            `;
+            
+            document.getElementById('messagesList').appendChild(li);
+        }
+        
+        // 发送消息
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            
+            if (!messageText || !roomName || !nickname) return;
+            
             const message = {
-                text: messageInput.value,
-                nickname,
+                text: messageText,
+                nickname: nickname,
                 color: userColor,
                 timestamp: Date.now()
             };
+            
             messagesRef.push(message);
             messageInput.value = '';
+            
+            // 滚动到底部
+            scrollToBottom();
         }
-
-
-// 请求通知权限
-function requestNotificationPermission() {
-    if (!('Notification' in window)) {
-        console.log('当前浏览器不支持通知功能');
-        return;
-    }
-
-    if (Notification.permission === 'granted') {
-        console.log('通知权限已授予');
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
+        
+        // 处理键盘事件（按Enter发送消息）
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // 滚动到底部
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
+            isAtBottom = true;
+        }
+        
+        // 请求通知权限
+        function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                console.log('当前浏览器不支持通知功能');
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
                 console.log('通知权限已授予');
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('通知权限已授予');
+                    } else {
+                        console.log('通知权限被拒绝');
+                    }
+                });
             } else {
-                console.log('通知权限被拒绝');
-            }
-        });
-    } else {
-        console.log('通知权限被拒绝，需手动启用');
-    }
-}
-
-// 显示通知
-function showNotification(title, body) {
-    if (Notification.permission === 'granted') {
-        console.log('正在显示通知:', title, body); // 调试日志
-        new Notification(title, {
-            body: body,
-            icon: 'https://lsqkk.github.io/image/logo_blue.png'
-        });
-    } else {
-        console.log('通知权限未授予');
-    }
-}
-
-// 页面加载时请求权限
-window.onload = function() {
-    requestNotificationPermission();
-};
-
-// 监听新消息
-function listenForMessages() {
-    messagesRef.on('child_added', snapshot => {
-
-        // 显示消息
-        const { text, nickname, color, timestamp } = snapshot.val(); // 确保解构出 color
-        const li = document.createElement('li');
-        li.className = 'message-item';
-        li.innerHTML = `
-            <div class="avatar" style="background: ${color}">${nickname[0]}</div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="username">${nickname}</span>
-                    <span class="timestamp">${new Date(timestamp).toLocaleTimeString()}</span>
-                </div>
-                <div>${text}</div>
-            </div>
-        `;
-        document.getElementById('messagesList').appendChild(li);
-        window.scrollTo(0, document.body.scrollHeight);
-
-        if (roomJoinTime && timestamp > roomJoinTime + 15000) {
-            if (nickname !== localStorage.getItem('nickname')) {
-                showNotification(`新消息来自 ${nickname}`, text);
+                console.log('通知权限被拒绝，需手动启用');
             }
         }
-    });
-}
-
-        let roomJoinTime = null; 
-// 加入房间后开始监听消息
-function joinRoom() {
-    
-    roomName = document.getElementById('roomInput').value;
-    if (roomName) {
-        roomJoinTime = Date.now(); // 记录当前时间
-        document.getElementById('chatArea').style.display = 'block';
-        messagesRef = firebase.database().ref('chatrooms/' + roomName + '/messages');
-        listenForMessages(); // 开始监听消息
-    }
-}
+        
+        // 显示通知
+        function showNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'https://lsqkk.github.io/image/logo_blue.png'
+                });
+            }
+        }
     </script>
 </body>
 </html>
