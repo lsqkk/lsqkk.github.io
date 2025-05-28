@@ -6,7 +6,6 @@
     <title>夸克自控 - 时间管理</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/time-management.css">
-    <!-- 引入图表库 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -27,17 +26,19 @@
     <main class="container">
         <h1>时间管理</h1>
         
-        <div class="time-management">
-            <!-- 待办事项部分 -->
-            <section class="section">
+        <!-- 待办事项部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
                 <h2 class="section-title">待办事项</h2>
                 <div class="form-toggle">
-                    <button class="active" onclick="toggleForm('todo-form')">添加任务</button>
-                    <button onclick="toggleForm('todo-list')">我的任务</button>
+                    <button class="active" onclick="toggleForm('todo-form', this)">添加任务</button>
+                    <button onclick="toggleForm('todo-list', this)">我的任务</button>
                 </div>
-                
-                <div id="todo-form" class="form-content active">
-                    <form id="add-task-form">
+            </div>
+            
+            <div id="todo-form" class="form-content active">
+                <form id="add-task-form" class="full-width-form">
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="task-name">事项名称</label>
                             <input type="text" id="task-name" required>
@@ -54,54 +55,39 @@
                                 <option value="low">低</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
                             <label for="task-notes">备注</label>
                             <textarea id="task-notes"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">添加任务</button>
-                    </form>
-                </div>
-                
-                <div id="todo-list" class="form-content">
+                    </div>
+                    <button type="submit" class="btn btn-primary">添加任务</button>
+                </form>
+            </div>
+            
+            <div id="todo-list" class="form-content">
+                <div class="full-width-list">
                     <ul class="task-list" id="task-list">
-                        <!-- 示例任务 -->
-                        <li class="task-item priority-high">
-                            <div class="task-info">
-                                <span class="task-name">完成项目提案</span>
-                                <span class="task-due">截止: 2023-12-15 18:00</span>
-                                <span class="task-notes">需要包含预算和时间线</span>
-                            </div>
-                            <div class="task-actions">
-                                <button class="btn btn-small btn-primary">完成</button>
-                                <button class="btn btn-small">编辑</button>
-                                <button class="btn btn-small">删除</button>
-                            </div>
-                        </li>
-                        <li class="task-item priority-medium">
-                            <div class="task-info">
-                                <span class="task-name">购买生日礼物</span>
-                                <span class="task-due">截止: 2023-12-10</span>
-                            </div>
-                            <div class="task-actions">
-                                <button class="btn btn-small btn-primary">完成</button>
-                                <button class="btn btn-small">编辑</button>
-                                <button class="btn btn-small">删除</button>
-                            </div>
-                        </li>
+                        <!-- 任务将通过JavaScript动态加载 -->
                     </ul>
                 </div>
-            </section>
-            
-            <!-- 时间追踪部分 -->
-            <section class="section">
+            </div>
+        </section>
+        
+        <!-- 时间追踪部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
                 <h2 class="section-title">时间追踪</h2>
                 <div class="form-toggle">
-                    <button class="active" onclick="toggleForm('time-log-form')">记录时间</button>
-                    <button onclick="toggleForm('time-log-stats')">时间统计</button>
+                    <button class="active" onclick="toggleForm('time-log-form', this)">记录时间</button>
+                    <button onclick="toggleForm('time-log-stats', this)">时间统计</button>
                 </div>
-                
-                <div id="time-log-form" class="form-content active">
-                    <form id="add-time-log-form">
+            </div>
+            
+            <div id="time-log-form" class="form-content active">
+                <form id="add-time-log-form" class="full-width-form">
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="time-log-activity">活动名称</label>
                             <input type="text" id="time-log-activity" required>
@@ -114,6 +100,8 @@
                             <label for="time-log-duration">花费时间(分钟)</label>
                             <input type="number" id="time-log-duration" required>
                         </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="time-log-participants">参与者</label>
                             <input type="text" id="time-log-participants" placeholder="可选">
@@ -122,40 +110,47 @@
                             <label for="time-log-location">地点</label>
                             <input type="text" id="time-log-location" placeholder="可选">
                         </div>
-                        <button type="submit" class="btn btn-primary">记录时间</button>
-                    </form>
-                </div>
-                
-                <div id="time-log-stats" class="form-content">
-                    <div class="chart-container">
-                        <canvas id="time-chart"></canvas>
+                        <div class="form-group">
+                            <label for="time-log-category">分类</label>
+                            <select id="time-log-category">
+                                <option value="work">工作</option>
+                                <option value="study">学习</option>
+                                <option value="entertainment">娱乐</option>
+                                <option value="sport">运动</option>
+                                <option value="social">社交</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
                     </div>
+                    <button type="submit" class="btn btn-primary">记录时间</button>
+                </form>
+            </div>
+            
+            <div id="time-log-stats" class="form-content">
+                <div class="chart-container">
+                    <canvas id="time-chart"></canvas>
+                </div>
+                <div class="full-width-list">
                     <ul class="time-log-list" id="time-log-list">
-                        <li class="time-log-item">
-                            <div class="time-log-info">
-                                <span class="time-log-activity">项目会议</span>
-                                <span class="time-log-duration">2023-12-01 · 120分钟</span>
-                                <span class="time-log-participants">与: 张三, 李四</span>
-                            </div>
-                            <div class="time-log-actions">
-                                <button class="btn btn-small">编辑</button>
-                                <button class="btn btn-small">删除</button>
-                            </div>
-                        </li>
+                        <!-- 时间记录将通过JavaScript动态加载 -->
                     </ul>
                 </div>
-            </section>
-            
-            <!-- FLAG部分 -->
-            <section class="section">
+            </div>
+        </section>
+        
+        <!-- FLAG部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
                 <h2 class="section-title">FLAG</h2>
                 <div class="form-toggle">
-                    <button class="active" onclick="toggleForm('flag-form')">新建FLAG</button>
-                    <button onclick="toggleForm('flag-list')">我的FLAG</button>
+                    <button class="active" onclick="toggleForm('flag-form', this)">新建FLAG</button>
+                    <button onclick="toggleForm('flag-list', this)">我的FLAG</button>
                 </div>
-                
-                <div id="flag-form" class="form-content active">
-                    <form id="add-flag-form">
+            </div>
+            
+            <div id="flag-form" class="form-content active">
+                <form id="add-flag-form" class="full-width-form">
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="flag-name">FLAG内容</label>
                             <input type="text" id="flag-name" required>
@@ -168,6 +163,8 @@
                             <label for="flag-end">完成时间</label>
                             <input type="date" id="flag-end" required>
                         </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="flag-reward">完成奖励</label>
                             <input type="text" id="flag-reward" placeholder="可选">
@@ -180,38 +177,41 @@
                                 <option value="low">低</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">立下FLAG</button>
-                    </form>
-                </div>
-                
-                <div id="flag-list" class="form-content">
+                        <div class="form-group">
+                            <label for="flag-status">状态</label>
+                            <select id="flag-status">
+                                <option value="ongoing">进行中</option>
+                                <option value="completed">已完成</option>
+                                <option value="failed">已放弃</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">立下FLAG</button>
+                </form>
+            </div>
+            
+            <div id="flag-list" class="form-content">
+                <div class="full-width-list">
                     <ul class="flag-list" id="flag-list">
-                        <li class="flag-item">
-                            <div class="flag-info">
-                                <span class="flag-name">完成马拉松</span>
-                                <span class="flag-period">2023-12-01 至 2024-05-01</span>
-                                <span class="flag-reward">奖励: 新跑鞋</span>
-                            </div>
-                            <div class="flag-actions">
-                                <button class="btn btn-small btn-secondary">完成</button>
-                                <button class="btn btn-small">编辑</button>
-                                <button class="btn btn-small">删除</button>
-                            </div>
-                        </li>
+                        <!-- FLAG将通过JavaScript动态加载 -->
                     </ul>
                 </div>
-            </section>
-            
-            <!-- 定时器部分 -->
-            <section class="section">
+            </div>
+        </section>
+        
+        <!-- 定时器部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
                 <h2 class="section-title">定时提醒</h2>
                 <div class="form-toggle">
-                    <button class="active" onclick="toggleForm('timer-form')">新建提醒</button>
-                    <button onclick="toggleForm('timer-list')">我的提醒</button>
+                    <button class="active" onclick="toggleForm('timer-form', this)">新建提醒</button>
+                    <button onclick="toggleForm('timer-list', this)">我的提醒</button>
                 </div>
-                
-                <div id="timer-form" class="form-content active">
-                    <form id="add-timer-form">
+            </div>
+            
+            <div id="timer-form" class="form-content active">
+                <form id="add-timer-form" class="full-width-form">
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="timer-name">提醒事项</label>
                             <input type="text" id="timer-name" required>
@@ -228,6 +228,8 @@
                             <label for="timer-time">提醒时间</label>
                             <input type="datetime-local" id="timer-time" required>
                         </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="timer-repeat">重复周期</label>
                             <select id="timer-repeat">
@@ -238,52 +240,73 @@
                                 <option value="yearly">每年</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">设置提醒</button>
-                    </form>
-                </div>
-                
-                <div id="timer-list" class="form-content">
+                        <div class="form-group">
+                            <label for="timer-description">提醒描述</label>
+                            <input type="text" id="timer-description" placeholder="可选">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">设置提醒</button>
+                </form>
+            </div>
+            
+            <div id="timer-list" class="form-content">
+                <div class="full-width-list">
                     <ul class="timer-list" id="timer-list">
-                        <li class="timer-item">
-                            <div class="timer-info">
-                                <span class="timer-name">团队周会</span>
-                                <span class="timer-time">每周一 10:00 (系统通知)</span>
-                            </div>
-                            <div class="timer-actions">
-                                <button class="btn btn-small">编辑</button>
-                                <button class="btn btn-small">删除</button>
-                            </div>
-                        </li>
+                        <!-- 定时器将通过JavaScript动态加载 -->
                     </ul>
                 </div>
-            </section>
-            
-            <!-- 其他时间工具 -->
-            <section class="section">
-                <h2 class="section-title">其他时间工具</h2>
-                <div class="other-time-tools">
-                    <a href="#">倒计时</a>
-                    <a href="#">秒表</a>
-                    <a href="#">放假安排</a>
-                    <a href="#">保质期</a>
-                    <a href="#">闰年计算</a>
-                    <a href="#">时间转换</a>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
+        
+        <!-- 其他时间工具 -->
+        <section class="full-width-section">
+            <h2 class="section-title">其他时间工具</h2>
+            <div class="other-time-tools">
+                <a href="#">倒计时</a>
+                <a href="#">秒表</a>
+                <a href="#">放假安排</a>
+                <a href="#">保质期</a>
+                <a href="#">闰年计算</a>
+                <a href="https://lsqkk.github.io/tool" target="_blank">更多工具</a>
+            </div>
+        </section>
     </main>
 
     <footer>
         <div class="container">
-            <p>© 2023 夸克自控 - 个人管理与自控力成长平台</p>
+            <p>© 2025 夸克自控 - 个人管理与自控力成长平台</p>
         </div>
     </footer>
 
     <script>
+        // 数据存储键名
+        const STORAGE_KEYS = {
+            TASKS: 'quark_tasks',
+            TIME_LOGS: 'quark_time_logs',
+            FLAGS: 'quark_flags',
+            TIMERS: 'quark_timers'
+        };
+
+        // 初始化数据
+        function initData() {
+            if (!localStorage.getItem(STORAGE_KEYS.TASKS)) {
+                localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(STORAGE_KEYS.TIME_LOGS)) {
+                localStorage.setItem(STORAGE_KEYS.TIME_LOGS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(STORAGE_KEYS.FLAGS)) {
+                localStorage.setItem(STORAGE_KEYS.FLAGS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(STORAGE_KEYS.TIMERS)) {
+                localStorage.setItem(STORAGE_KEYS.TIMERS, JSON.stringify([]));
+            }
+        }
+
         // 切换表单显示
-        function toggleForm(formId) {
+        function toggleForm(formId, button) {
             // 获取当前section中的所有form-content
-            const section = event.target.closest('.section');
+            const section = button.closest('.full-width-section');
             const forms = section.querySelectorAll('.form-content');
             
             // 隐藏所有表单
@@ -296,40 +319,63 @@
             
             // 更新切换按钮状态
             const buttons = section.querySelectorAll('.form-toggle button');
-            buttons.forEach(button => {
-                button.classList.remove('active');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            button.classList.add('active');
             
             // 如果是图表视图，重新渲染图表
             if(formId === 'time-log-stats') {
                 renderTimeChart();
             }
+            
+            // 如果是列表视图，重新加载数据
+            if(formId === 'todo-list') {
+                loadTasks();
+            } else if(formId === 'time-log-list') {
+                loadTimeLogs();
+            } else if(formId === 'flag-list') {
+                loadFlags();
+            } else if(formId === 'timer-list') {
+                loadTimers();
+            }
         }
         
         // 渲染时间统计图表
         function renderTimeChart() {
+            const timeLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIME_LOGS));
+            const categories = ['work', 'study', 'entertainment', 'sport', 'social', 'other'];
+            const categoryLabels = ['工作', '学习', '娱乐', '运动', '社交', '其他'];
+            
+            // 计算每个分类的总时间
+            const categoryData = categories.map(category => {
+                return timeLogs
+                    .filter(log => log.category === category)
+                    .reduce((sum, log) => sum + parseInt(log.duration), 0) / 60; // 转换为小时
+            });
+            
             const ctx = document.getElementById('time-chart').getContext('2d');
             
-            // 示例数据 - 实际应用中应从后端获取
             const data = {
-                labels: ['工作', '学习', '娱乐', '运动', '社交'],
+                labels: categoryLabels,
                 datasets: [{
-                    label: '本周时间分配(小时)',
-                    data: [35, 15, 20, 5, 10],
+                    label: '时间分配(小时)',
+                    data: categoryData,
                     backgroundColor: [
                         'rgba(66, 133, 244, 0.7)',
                         'rgba(52, 168, 83, 0.7)',
                         'rgba(251, 188, 5, 0.7)',
                         'rgba(234, 67, 53, 0.7)',
-                        'rgba(155, 81, 224, 0.7)'
+                        'rgba(155, 81, 224, 0.7)',
+                        'rgba(101, 115, 126, 0.7)'
                     ],
                     borderColor: [
                         'rgba(66, 133, 244, 1)',
                         'rgba(52, 168, 83, 1)',
                         'rgba(251, 188, 5, 1)',
                         'rgba(234, 67, 53, 1)',
-                        'rgba(155, 81, 224, 1)'
+                        'rgba(155, 81, 224, 1)',
+                        'rgba(101, 115, 126, 1)'
                     ],
                     borderWidth: 1
                 }]
@@ -349,44 +395,418 @@
                 }
             };
             
-            new Chart(ctx, config);
+            // 销毁旧图表实例（如果存在）
+            if (window.timeChart) {
+                window.timeChart.destroy();
+            }
+            
+            window.timeChart = new Chart(ctx, config);
         }
         
-        // 表单提交处理
-        document.getElementById('add-task-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // 这里添加处理表单提交的代码
-            alert('任务已添加!');
-            this.reset();
-        });
-        
-        document.getElementById('add-time-log-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // 这里添加处理表单提交的代码
-            alert('时间记录已添加!');
-            this.reset();
-        });
-        
-        document.getElementById('add-flag-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // 这里添加处理表单提交的代码
-            alert('FLAG已立下!');
-            this.reset();
-        });
-        
-        document.getElementById('add-timer-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // 这里添加处理表单提交的代码
-            alert('提醒已设置!');
-            this.reset();
-        });
-        
-        // 页面加载时初始化图表
-        window.addEventListener('DOMContentLoaded', () => {
-            // 检查是否在时间统计页面
-            if(document.getElementById('time-chart')) {
-                renderTimeChart();
+        // 任务相关功能
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS));
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<li class="empty-message">暂无待办任务</li>';
+                return;
             }
+            
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.className = `task-item priority-${task.priority}`;
+                
+                const dueDate = new Date(task.due);
+                const formattedDue = `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')} ${String(dueDate.getHours()).padStart(2, '0')}:${String(dueDate.getMinutes()).padStart(2, '0')}`;
+                
+                taskItem.innerHTML = `
+                    <div class="task-info">
+                        <span class="task-name">${task.name}</span>
+                        <span class="task-due">截止: ${formattedDue}</span>
+                        ${task.notes ? `<span class="task-notes">${task.notes}</span>` : ''}
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-small btn-primary" onclick="completeTask(${index})">完成</button>
+                        <button class="btn btn-small" onclick="editTask(${index})">编辑</button>
+                        <button class="btn btn-small" onclick="deleteTask(${index})">删除</button>
+                    </div>
+                `;
+                
+                taskList.appendChild(taskItem);
+            });
+        }
+        
+        function addTask(event) {
+            event.preventDefault();
+            
+            const task = {
+                name: document.getElementById('task-name').value,
+                due: document.getElementById('task-due').value,
+                priority: document.getElementById('task-priority').value,
+                notes: document.getElementById('task-notes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS));
+            tasks.push(task);
+            localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+            
+            alert('任务已添加!');
+            document.getElementById('add-task-form').reset();
+            loadTasks();
+        }
+        
+        function completeTask(index) {
+            const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS));
+            tasks.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+            loadTasks();
+        }
+        
+        function editTask(index) {
+            const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS));
+            const task = tasks[index];
+            
+            document.getElementById('task-name').value = task.name;
+            document.getElementById('task-due').value = task.due;
+            document.getElementById('task-priority').value = task.priority;
+            document.getElementById('task-notes').value = task.notes || '';
+            
+            tasks.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+            
+            // 切换到添加表单
+            const section = document.querySelector('.full-width-section');
+            const addButton = section.querySelector('.form-toggle button:first-child');
+            toggleForm('todo-form', addButton);
+        }
+        
+        function deleteTask(index) {
+            if (confirm('确定要删除这个任务吗？')) {
+                const tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS));
+                tasks.splice(index, 1);
+                localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+                loadTasks();
+            }
+        }
+        
+        // 时间记录相关功能
+        function loadTimeLogs() {
+            const timeLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIME_LOGS));
+            const timeLogList = document.getElementById('time-log-list');
+            timeLogList.innerHTML = '';
+            
+            if (timeLogs.length === 0) {
+                timeLogList.innerHTML = '<li class="empty-message">暂无时间记录</li>';
+                return;
+            }
+            
+            timeLogs.forEach((log, index) => {
+                const timeLogItem = document.createElement('li');
+                timeLogItem.className = 'time-log-item';
+                
+                const categoryMap = {
+                    work: '工作',
+                    study: '学习',
+                    entertainment: '娱乐',
+                    sport: '运动',
+                    social: '社交',
+                    other: '其他'
+                };
+                
+                timeLogItem.innerHTML = `
+                    <div class="time-log-info">
+                        <span class="time-log-activity">${log.activity} <small>(${categoryMap[log.category]})</small></span>
+                        <span class="time-log-duration">${log.date} · ${log.duration}分钟</span>
+                        ${log.participants ? `<span class="time-log-participants">与: ${log.participants}</span>` : ''}
+                        ${log.location ? `<span class="time-log-location">地点: ${log.location}</span>` : ''}
+                    </div>
+                    <div class="time-log-actions">
+                        <button class="btn btn-small" onclick="editTimeLog(${index})">编辑</button>
+                        <button class="btn btn-small" onclick="deleteTimeLog(${index})">删除</button>
+                    </div>
+                `;
+                
+                timeLogList.appendChild(timeLogItem);
+            });
+        }
+        
+        function addTimeLog(event) {
+            event.preventDefault();
+            
+            const timeLog = {
+                activity: document.getElementById('time-log-activity').value,
+                date: document.getElementById('time-log-date').value,
+                duration: document.getElementById('time-log-duration').value,
+                participants: document.getElementById('time-log-participants').value || null,
+                location: document.getElementById('time-log-location').value || null,
+                category: document.getElementById('time-log-category').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            const timeLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIME_LOGS));
+            timeLogs.push(timeLog);
+            localStorage.setItem(STORAGE_KEYS.TIME_LOGS, JSON.stringify(timeLogs));
+            
+            alert('时间记录已添加!');
+            document.getElementById('add-time-log-form').reset();
+            loadTimeLogs();
+        }
+        
+        function editTimeLog(index) {
+            const timeLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIME_LOGS));
+            const log = timeLogs[index];
+            
+            document.getElementById('time-log-activity').value = log.activity;
+            document.getElementById('time-log-date').value = log.date;
+            document.getElementById('time-log-duration').value = log.duration;
+            document.getElementById('time-log-participants').value = log.participants || '';
+            document.getElementById('time-log-location').value = log.location || '';
+            document.getElementById('time-log-category').value = log.category;
+            
+            timeLogs.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.TIME_LOGS, JSON.stringify(timeLogs));
+            
+            // 切换到添加表单
+            const section = document.querySelector('.full-width-section:nth-child(2)');
+            const addButton = section.querySelector('.form-toggle button:first-child');
+            toggleForm('time-log-form', addButton);
+        }
+        
+        function deleteTimeLog(index) {
+            if (confirm('确定要删除这个时间记录吗？')) {
+                const timeLogs = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIME_LOGS));
+                timeLogs.splice(index, 1);
+                localStorage.setItem(STORAGE_KEYS.TIME_LOGS, JSON.stringify(timeLogs));
+                loadTimeLogs();
+            }
+        }
+        
+        // FLAG相关功能
+        function loadFlags() {
+            const flags = JSON.parse(localStorage.getItem(STORAGE_KEYS.FLAGS));
+            const flagList = document.getElementById('flag-list');
+            flagList.innerHTML = '';
+            
+            if (flags.length === 0) {
+                flagList.innerHTML = '<li class="empty-message">暂无FLAG</li>';
+                return;
+            }
+            
+            flags.forEach((flag, index) => {
+                const flagItem = document.createElement('li');
+                flagItem.className = `flag-item status-${flag.status}`;
+                
+                flagItem.innerHTML = `
+                    <div class="flag-info">
+                        <span class="flag-name">${flag.name}</span>
+                        <span class="flag-period">${flag.start} 至 ${flag.end}</span>
+                        ${flag.reward ? `<span class="flag-reward">奖励: ${flag.reward}</span>` : ''}
+                        <span class="flag-status">状态: ${getStatusText(flag.status)}</span>
+                    </div>
+                    <div class="flag-actions">
+                        <button class="btn btn-small btn-secondary" onclick="completeFlag(${index})">完成</button>
+                        <button class="btn btn-small" onclick="editFlag(${index})">编辑</button>
+                        <button class="btn btn-small" onclick="deleteFlag(${index})">删除</button>
+                    </div>
+                `;
+                
+                flagList.appendChild(flagItem);
+            });
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                ongoing: '进行中',
+                completed: '已完成',
+                failed: '已放弃'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function addFlag(event) {
+            event.preventDefault();
+            
+            const flag = {
+                name: document.getElementById('flag-name').value,
+                start: document.getElementById('flag-start').value,
+                end: document.getElementById('flag-end').value,
+                reward: document.getElementById('flag-reward').value || null,
+                priority: document.getElementById('flag-priority').value,
+                status: document.getElementById('flag-status').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            const flags = JSON.parse(localStorage.getItem(STORAGE_KEYS.FLAGS));
+            flags.push(flag);
+            localStorage.setItem(STORAGE_KEYS.FLAGS, JSON.stringify(flags));
+            
+            alert('FLAG已立下!');
+            document.getElementById('add-flag-form').reset();
+            loadFlags();
+        }
+        
+        function completeFlag(index) {
+            const flags = JSON.parse(localStorage.getItem(STORAGE_KEYS.FLAGS));
+            flags[index].status = 'completed';
+            localStorage.setItem(STORAGE_KEYS.FLAGS, JSON.stringify(flags));
+            loadFlags();
+        }
+        
+        function editFlag(index) {
+            const flags = JSON.parse(localStorage.getItem(STORAGE_KEYS.FLAGS));
+            const flag = flags[index];
+            
+            document.getElementById('flag-name').value = flag.name;
+            document.getElementById('flag-start').value = flag.start;
+            document.getElementById('flag-end').value = flag.end;
+            document.getElementById('flag-reward').value = flag.reward || '';
+            document.getElementById('flag-priority').value = flag.priority;
+            document.getElementById('flag-status').value = flag.status;
+            
+            flags.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.FLAGS, JSON.stringify(flags));
+            
+            // 切换到添加表单
+            const section = document.querySelector('.full-width-section:nth-child(3)');
+            const addButton = section.querySelector('.form-toggle button:first-child');
+            toggleForm('flag-form', addButton);
+        }
+        
+        function deleteFlag(index) {
+            if (confirm('确定要删除这个FLAG吗？')) {
+                const flags = JSON.parse(localStorage.getItem(STORAGE_KEYS.FLAGS));
+                flags.splice(index, 1);
+                localStorage.setItem(STORAGE_KEYS.FLAGS, JSON.stringify(flags));
+                loadFlags();
+            }
+        }
+        
+        // 定时器相关功能
+        function loadTimers() {
+            const timers = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMERS));
+            const timerList = document.getElementById('timer-list');
+            timerList.innerHTML = '';
+            
+            if (timers.length === 0) {
+                timerList.innerHTML = '<li class="empty-message">暂无定时提醒</li>';
+                return;
+            }
+            
+            timers.forEach((timer, index) => {
+                const timerItem = document.createElement('li');
+                timerItem.className = 'timer-item';
+                
+                const repeatMap = {
+                    none: '不重复',
+                    daily: '每天',
+                    weekly: '每周',
+                    monthly: '每月',
+                    yearly: '每年'
+                };
+                
+                const typeMap = {
+                    notification: '系统通知',
+                    email: '电子邮件',
+                    both: '系统通知和电子邮件'
+                };
+                
+                const time = new Date(timer.time);
+                const formattedTime = `${time.getFullYear()}-${String(time.getMonth() + 1).padStart(2, '0')}-${String(time.getDate()).padStart(2, '0')} ${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`;
+                
+                timerItem.innerHTML = `
+                    <div class="timer-info">
+                        <span class="timer-name">${timer.name}</span>
+                        <span class="timer-time">${formattedTime} (${typeMap[timer.type]})</span>
+                        <span class="timer-repeat">${repeatMap[timer.repeat]}</span>
+                        ${timer.description ? `<span class="timer-description">${timer.description}</span>` : ''}
+                    </div>
+                    <div class="timer-actions">
+                        <button class="btn btn-small" onclick="editTimer(${index})">编辑</button>
+                        <button class="btn btn-small" onclick="deleteTimer(${index})">删除</button>
+                    </div>
+                `;
+                
+                timerList.appendChild(timerItem);
+            });
+        }
+        
+        function addTimer(event) {
+            event.preventDefault();
+            
+            const timer = {
+                name: document.getElementById('timer-name').value,
+                type: document.getElementById('timer-type').value,
+                time: document.getElementById('timer-time').value,
+                repeat: document.getElementById('timer-repeat').value,
+                description: document.getElementById('timer-description').value || null,
+                createdAt: new Date().toISOString()
+            };
+            
+            const timers = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMERS));
+            timers.push(timer);
+            localStorage.setItem(STORAGE_KEYS.TIMERS, JSON.stringify(timers));
+            
+            alert('提醒已设置!');
+            document.getElementById('add-timer-form').reset();
+            loadTimers();
+        }
+        
+        function editTimer(index) {
+            const timers = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMERS));
+            const timer = timers[index];
+            
+            document.getElementById('timer-name').value = timer.name;
+            document.getElementById('timer-type').value = timer.type;
+            document.getElementById('timer-time').value = timer.time;
+            document.getElementById('timer-repeat').value = timer.repeat;
+            document.getElementById('timer-description').value = timer.description || '';
+            
+            timers.splice(index, 1);
+            localStorage.setItem(STORAGE_KEYS.TIMERS, JSON.stringify(timers));
+            
+            // 切换到添加表单
+            const section = document.querySelector('.full-width-section:nth-child(4)');
+            const addButton = section.querySelector('.form-toggle button:first-child');
+            toggleForm('timer-form', addButton);
+        }
+        
+        function deleteTimer(index) {
+            if (confirm('确定要删除这个提醒吗？')) {
+                const timers = JSON.parse(localStorage.getItem(STORAGE_KEYS.TIMERS));
+                timers.splice(index, 1);
+                localStorage.setItem(STORAGE_KEYS.TIMERS, JSON.stringify(timers));
+                loadTimers();
+            }
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            initData();
+            
+            // 设置表单提交事件
+            document.getElementById('add-task-form').addEventListener('submit', addTask);
+            document.getElementById('add-time-log-form').addEventListener('submit', addTimeLog);
+            document.getElementById('add-flag-form').addEventListener('submit', addFlag);
+            document.getElementById('add-timer-form').addEventListener('submit', addTimer);
+            
+            // 设置默认日期时间
+            const now = new Date();
+            const timeString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('task-due').value = timeString;
+            document.getElementById('timer-time').value = timeString;
+            
+            const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            document.getElementById('time-log-date').value = dateString;
+            document.getElementById('flag-start').value = dateString;
+            
+            // 加载初始数据
+            loadTasks();
+            loadTimeLogs();
+            loadFlags();
+            loadTimers();
         });
     </script>
 </body>
