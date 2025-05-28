@@ -3,73 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知识对战</title>
+    <title>每日知识挑战 - 夸克博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lsqkk.github.io/css/room.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root{--primary-color:rgba(64,224,208,0.9);--background:rgba(25,25,35,0.95);--sidebar-bg:rgba(20,20,30,0.9);--message-bg:rgba(255,255,255,0.05);--text-color:#fff;--input-bg:rgba(255,255,255,0.1);--border-color:rgba(255,255,255,0.1);--shadow-color:rgba(0,0,0,0.3);--timestamp-color:rgba(255,255,255,0.7);}
-        .dark-mode{--primary-color:rgba(64,224,208,0.9);--background:rgba(25,25,35,0.95);--sidebar-bg:rgba(20,20,30,0.9);--message-bg:rgba(255,255,255,0.05);--text-color:#fff;--input-bg:rgba(255,255,255,0.1);--border-color:rgba(255,255,255,0.1);--shadow-color:rgba(0,0,0,0.3);--timestamp-color:rgba(255,255,255,0.7);}
-        .light-mode{--primary-color:#40E0D0;--background:rgba(255,255,255,0.95);--sidebar-bg:rgba(240,240,245,0.9);--message-bg:rgba(0,0,0,0.03);--text-color:#333;--input-bg:rgba(0,0,0,0.05);--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.1);--timestamp-color:rgba(0,0,0,0.6);}
-        *{box-sizing:border-box;margin:0;padding:0;}
-        body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text-color);min-height:100vh;margin:0;display:flex;background:var(--background);transition:background-color 0.3s ease;}
-        .app-container{display:flex;width:100%;height:100vh;position:relative;}
-        .sidebar{width:280px;background:var(--sidebar-bg);backdrop-filter:blur(10px);border-right:1px solid var(--border-color);height:100vh;overflow-y:auto;transition:transform 0.3s ease;z-index:10;display:flex;flex-direction:column;}
-        .sidebar-header{padding:20px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;}
-        .sidebar-title{font-size:1.2rem;font-weight:600;}
-        .theme-toggle{background:none;border:none;color:var(--text-color);font-size:1.2rem;cursor:pointer;padding:5px;border-radius:50%;transition:all 0.3s ease;}
-        .theme-toggle:hover{background:var(--input-bg);}
-        .room-list{flex:1;overflow-y:auto;padding:10px 0;}
-        .room-item{padding:12px 20px;cursor:pointer;transition:background-color 0.2s ease;display:flex;align-items:center;gap:10px;}
-        .room-item:hover{background:var(--input-bg);}
-        .room-item.active{background:var(--primary-color);color:white;}
-        .room-icon{font-size:0.9rem;}
-        .join-room-container{padding:20px;border-top:1px solid var(--border-color);}
-        .join-room-input{width:100%;padding:12px 15px;border:none;border-radius:8px;background:var(--input-bg);color:var(--text-color);margin-bottom:10px;}
-        .join-room-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer;transition:all 0.3s ease;}
-        .join-room-btn:hover{opacity:0.9;transform:translateY(-2px);}
-        .main-content{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-        .game-header{padding:15px 20px;background:var(--sidebar-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;z-index:5;}
-        .game-title{font-size:1.2rem;font-weight:600;}
-        .mobile-menu-btn{display:none;background:none;border:none;color:var(--text-color);font-size:1.2rem;cursor:pointer;}
-        .game-container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--background);backdrop-filter:blur(10px);padding:20px;}
-        .players-info{display:flex;justify-content:space-between;width:100%;max-width:800px;margin-bottom:20px;}
-        .player{display:flex;align-items:center;padding:10px 15px;border-radius:8px;background:var(--message-bg);flex:1;max-width:48%;}
-        .player.active{border:2px solid var(--primary-color);}
-        .player-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:bold;color:white;font-size:1.2rem;margin-right:10px;}
-        .player-name{font-weight:600;}
-        .player-role{margin-top:5px;font-size:0.8rem;opacity:0.8;}
-        .player-score{font-size:1.2rem;font-weight:bold;margin-top:5px;}
-        .score-bar{height:10px;background:var(--input-bg);border-radius:5px;margin-top:5px;overflow:hidden;}
-        .score-progress{height:100%;background:var(--primary-color);transition:width 0.3s ease;}
-        .game-status{margin-top:15px;font-size:1.1rem;text-align:center;min-height:24px;}
-        .question-card{background:var(--message-bg);padding:20px;border-radius:12px;margin-bottom:20px;width:100%;max-width:800px;}
-        .question-text{font-size:1.1rem;margin-bottom:15px;}
-        .options-container{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px;}
-        .option-btn{padding:12px;border:none;border-radius:8px;background:var(--input-bg);color:var(--text-color);cursor:pointer;transition:all 0.3s ease;text-align:left;}
-        .option-btn:hover{opacity:0.9;}
-        .option-btn.selected{background:var(--primary-color);color:white;}
-        .result-message{margin-top:15px;font-weight:bold;}
-        .success{color:#28a745;}
-        .error{color:#dc3545;}
-        .profile-setup{background:var(--message-bg);padding:20px;border-radius:12px;margin:20px;animation:fadeIn 0.3s ease;max-width:500px;margin:20px auto;}
-        .profile-title{margin-bottom:15px;font-size:1.1rem;}
-        .color-picker{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0;}
-        .color-option{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.2s ease;}
-        .color-option.selected{border-color:var(--text-color);transform:scale(1.1);}
-        .profile-input{width:100%;padding:12px 15px;border:none;border-radius:8px;background:var(--input-bg);color:var(--text-color);margin-bottom:15px;}
-        .profile-save-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer;transition:all 0.3s ease;}
-        .profile-save-btn:hover{opacity:0.9;}
-        @media (max-width:768px){.sidebar{position:fixed;left:0;top:0;height:100vh;transform:translateX(-100%);box-shadow:2px 0 10px rgba(0,0,0,0.2);}.sidebar.open{transform:translateX(0);}.mobile-menu-btn{display:block;}.room-item{padding:10px 15px;}.options-container{grid-template-columns:1fr;}}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        ::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--primary-color);border-radius:4px;}::-webkit-scrollbar-thumb:hover{background:rgba(64,224,208,0.7);}
-        .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--timestamp-color);text-align:center;padding:20px;}
-        .empty-icon{font-size:3rem;margin-bottom:15px;opacity:0.5;}
-        .winner-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:100;}
-        .winner-box{background:var(--sidebar-bg);padding:30px;border-radius:10px;text-align:center;max-width:80%;}
-        .winner-text{font-size:1.5rem;margin-bottom:20px;}
-        .winner-name{color:var(--primary-color);font-weight:bold;}
-        .solo-stats{background:var(--message-bg);padding:15px;border-radius:8px;margin-top:20px;font-size:0.9rem;}
+        .card {background:var(--message-bg);padding:20px;border-radius:10px;margin-bottom:20px;}
+        .options {margin:15px 0;}
+        .option-btn {display:block;width:100%;padding:10px;margin:5px 0;background:var(--input-bg);border:1px solid var(--border-color);border-radius:5px;cursor:pointer;transition:all 0.3s;color:var(--text-color);text-align:left;}
+        .option-btn:hover {background:var(--primary-color);opacity:0.8;}
+        .selected {background:var(--primary-color);border-color:var(--primary-color);}
+        #stats {background:var(--input-bg);padding:15px;border-radius:5px;margin-top:20px;}
+        #submitBtn {background:var(--primary-color);color:white;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;display:inline-block;}
+        #resultMessage {display:inline-block;margin-left:10px;font-weight:bold;font-size:16px;}
+        .success {color:#28a745;}
+        .error {color:#dc3545;}
+        .progress-container {width:100%;max-width:500px;margin:20px auto;display:flex;justify-content:space-between;align-items:center;}
+        .progress-bar {flex:1;height:10px;background:var(--input-bg);border-radius:5px;margin:0 10px;overflow:hidden;}
+        .progress-fill {height:100%;background:var(--primary-color);width:0%;transition:width 0.3s;}
+        .score {font-weight:bold;min-width:30px;text-align:center;}
+        .question-container {width:100%;max-width:500px;margin:0 auto;padding:15px;background:var(--message-bg);border-radius:10px;}
+        .timer {font-size:1.2rem;text-align:center;margin:10px 0;color:var(--primary-color);}
     </style>
 </head>
 <body class="dark-mode">
@@ -77,17 +32,13 @@
         <!-- 侧边栏 -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-title">知识对战房间</div>
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
+                <div class="sidebar-title">答题房间</div>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
             </div>
             
             <div class="room-list" id="roomList">
                 <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
+                    <div class="empty-icon"><i class="fas fa-question-circle"></i></div>
                     <p>暂无房间记录</p>
                 </div>
             </div>
@@ -101,14 +52,13 @@
         <!-- 主内容区 -->
         <div class="main-content">
             <div class="game-header">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="game-title" id="currentRoomTitle">知识挑战</div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+                <div class="game-title" id="currentRoomTitle">每日知识挑战</div>
                 <div style="width: 40px;"></div>
             </div>
             
             <div class="game-container" id="gameContainer">
+                <!-- 个人答题模式 -->
                 <div class="profile-setup" id="profileSetup">
                     <div class="profile-title">设置您的个人资料</div>
                     <input type="text" class="profile-input" id="nicknameInput" placeholder="您的昵称">
@@ -120,31 +70,35 @@
                         <div class="color-option" style="background: #C7EDCC" onclick="selectColor(this)"></div>
                         <div class="color-option" style="background: #FAF9DE" onclick="selectColor(this)"></div>
                         <div class="color-option" style="background: #FFF2E2" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #2b4490" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #faa755" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #f391a9" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #843900" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #a3cf62" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #b22c46" onclick="selectColor(this)"></div>
-                        <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
                     </div>
                     <div class="role-selection">
-                        <button class="role-btn" onclick="selectRole('player1')"><i class="fas fa-user"></i> 玩家1</button>
-                        <button class="role-btn" onclick="selectRole('player2')"><i class="fas fa-user"></i> 玩家2</button>
-                        <button class="role-btn" onclick="selectRole('spectator')"><i class="fas fa-eye"></i> 观众</button>
+                        <button class="role-btn selected" onclick="selectMode('solo')"><i class="fas fa-user"></i> 个人模式</button>
+                        <button class="role-btn" onclick="selectMode('player1')"><i class="fas fa-gamepad"></i> 玩家1</button>
+                        <button class="role-btn" onclick="selectMode('player2')"><i class="fas fa-gamepad"></i> 玩家2</button>
+                        <button class="role-btn" onclick="selectMode('spectator')"><i class="fas fa-eye"></i> 观众</button>
                     </div>
                     <button class="profile-save-btn" onclick="saveProfile()">保存并开始</button>
                 </div>
                 
-                <div id="gameContent" style="display: none;">
+                <!-- 个人答题内容 -->
+                <div id="soloContent" style="display:none;">
+                    <div class="question-container">
+                        <div id="question"></div>
+                        <div class="options" id="options"></div>
+                        <button onclick="submitAnswer()" id="submitBtn" disabled>提交答案</button>
+                        <div id="resultMessage" class="result-message"></div>
+                        <div id="stats"></div>
+                    </div>
+                </div>
+                
+                <!-- 对战模式内容 -->
+                <div id="battleContent" style="display:none;">
                     <div class="players-info">
                         <div class="player" id="player1">
                             <div class="player-avatar">P1</div>
                             <div>
                                 <div class="player-name">等待玩家1...</div>
                                 <div class="player-role">玩家1</div>
-                                <div class="player-score" id="player1Score">0分</div>
-                                <div class="score-bar"><div class="score-progress" id="player1Progress" style="width:0%"></div></div>
                             </div>
                         </div>
                         <div class="player" id="player2">
@@ -152,33 +106,35 @@
                             <div>
                                 <div class="player-name">等待玩家2...</div>
                                 <div class="player-role">玩家2</div>
-                                <div class="player-score" id="player2Score">0分</div>
-                                <div class="score-bar"><div class="score-progress" id="player2Progress" style="width:0%"></div></div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="question-card" id="questionCard">
-                        <div class="question-text" id="questionText">正在加载题目...</div>
-                        <div class="options-container" id="optionsContainer"></div>
-                        <div class="result-message" id="resultMessage"></div>
+                    <div class="progress-container">
+                        <div class="score" id="score1">0</div>
+                        <div class="progress-bar"><div class="progress-fill" id="progress1"></div></div>
+                        <div>VS</div>
+                        <div class="progress-bar"><div class="progress-fill" id="progress2"></div></div>
+                        <div class="score" id="score2">0</div>
                     </div>
                     
-                    <div class="game-status" id="gameStatus"></div>
-                    
-                    <div class="solo-stats" id="soloStats" style="display: none;">
-                        <div>今日答题统计：</div>
-                        <div>答题数：<span id="totalQuestions">0</span>次 | 正确率：<span id="correctRate">0</span>% | 正确数：<span id="correctCount">0</span></div>
+                    <div class="question-container">
+                        <div class="timer" id="timer">10</div>
+                        <div id="battleQuestion"></div>
+                        <div class="options" id="battleOptions"></div>
+                        <div class="game-status" id="battleStatus"></div>
                     </div>
+                    
+                    <button class="restart-btn" id="restartBtn" style="display:none;" onclick="requestRestart()">重新开始</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="winnerOverlay" class="winner-overlay" style="display: none;">
+    <div id="winnerOverlay" class="winner-overlay" style="display:none;">
         <div class="winner-box">
             <div class="winner-text">胜利者: <span class="winner-name" id="winnerName"></span></div>
-            <button class="restart-btn" onclick="location.reload()">返回</button>
+            <button class="restart-btn" onclick="requestRestart()">再来一局</button>
         </div>
     </div>
 
@@ -188,7 +144,7 @@
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
             authDomain: "quark-b7305.firebaseapp.com",
             projectId: "quark-b7305",
-            storageBucket: "quark-b7305.appspot.com",
+            storageBucket: "quark-b7305.firebasestorage.app",
             messagingSenderId: "843016834358",
             appId: "1:843016834358:web:9438c729be28c4d492f797",
             measurementId: "G-5BVT26KRT6"
@@ -198,30 +154,31 @@
         firebase.initializeApp(firebaseConfig);
         
         // 全局变量
+        const TIME_LIMIT = 10;
         const WIN_SCORE = 100;
-        const CORRECT_SCORE = 10;
-        const WRONG_PENALTY = 5;
         
         let roomName = '';
         let gameRef = null;
         let playersRef = null;
-        let gameStateRef = null;
-        let questionsRef = null;
+        let questionRef = null;
         let userColor = localStorage.getItem('userColor') || '#40E0D0';
         let nickname = localStorage.getItem('nickname') || '';
-        let myRole = '';
-        let currentQuestion = null;
+        let gameMode = 'solo';
+        let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]');
         let currentAnswer = '';
         let selectedOption = null;
         let selectedAnswer = '';
-        let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]');
+        let timer = null;
+        let timeLeft = TIME_LIMIT;
         let player1 = null;
         let player2 = null;
+        let score1 = 0;
+        let score2 = 0;
         let gameActive = false;
-        let currentQuestionIndex = 0;
-        let questions = [];
+        let currentQuestion = null;
+        let answeredPlayers = [];
         
-        // 个人模式统计
+        // 统计信息
         let stats = {
             total: 0,
             correct: 0,
@@ -230,30 +187,23 @@
         
         // DOM 加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化主题
             initTheme();
-            
-            // 初始化移动端菜单按钮
             document.getElementById('mobileMenuBtn').addEventListener('click', toggleSidebar);
-            
-            // 初始化主题切换按钮
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-            
-            // 初始化最近房间列表
             updateRecentRoomsList();
             
-            // 如果已有昵称，填充个人资料
             if (nickname) {
                 document.getElementById('nicknameInput').value = nickname;
             }
             
-            // 标记当前选中的颜色
             document.querySelectorAll('.color-option').forEach(opt => {
                 opt.classList.toggle('selected', opt.style.background === userColor);
             });
             
-            // 加载个人统计
             loadStats();
+            if (gameMode === 'solo') {
+                getQuestion();
+            }
         });
         
         // 初始化主题
@@ -267,11 +217,9 @@
         function toggleTheme() {
             const isDark = document.body.classList.contains('dark-mode');
             const newTheme = isDark ? 'light' : 'dark';
-            
             document.body.classList.remove(isDark ? 'dark-mode' : 'light-mode');
             document.body.classList.add(newTheme + '-mode');
             localStorage.setItem('theme', newTheme);
-            
             updateThemeIcon(newTheme);
         }
         
@@ -293,9 +241,7 @@
             if (recentRooms.length === 0) {
                 roomList.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
+                        <div class="empty-icon"><i class="fas fa-question-circle"></i></div>
                         <p>暂无房间记录</p>
                     </div>
                 `;
@@ -306,10 +252,7 @@
             recentRooms.forEach(room => {
                 const roomItem = document.createElement('div');
                 roomItem.className = 'room-item';
-                roomItem.innerHTML = `
-                    <i class="fas fa-brain room-icon"></i>
-                    <span>${room}</span>
-                `;
+                roomItem.innerHTML = `<i class="fas fa-door-open room-icon"></i><span>${room}</span>`;
                 roomItem.addEventListener('click', () => {
                     document.getElementById('roomInput').value = room;
                     joinRoom();
@@ -330,13 +273,13 @@
             }
         }
         
-        // 选择角色
-        function selectRole(role) {
+        // 选择模式
+        function selectMode(mode) {
             document.querySelectorAll('.role-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
             event.target.classList.add('selected');
-            myRole = role;
+            gameMode = mode;
         }
         
         // 加入房间
@@ -344,17 +287,11 @@
             roomName = document.getElementById('roomInput').value.trim();
             if (!roomName) return;
             
-            // 添加到最近房间
             addRecentRoom(roomName);
-            
-            // 更新当前房间标题
             document.getElementById('currentRoomTitle').textContent = `房间: ${roomName}`;
-            
-            // 关闭移动端侧边栏
             document.getElementById('sidebar').classList.remove('open');
             
-            // 如果已有昵称，直接初始化游戏
-            if (nickname && myRole) {
+            if (nickname && gameMode) {
                 initializeGame();
             }
         }
@@ -371,127 +308,75 @@
         // 保存个人资料
         function saveProfile() {
             nickname = document.getElementById('nicknameInput').value.trim();
-            if (!nickname || !myRole) {
-                alert('请填写昵称并选择角色');
+            if (!nickname) {
+                alert('请填写昵称');
                 return;
             }
             
             localStorage.setItem('nickname', nickname);
             localStorage.setItem('userColor', userColor);
             
-            if (roomName) {
-                initializeGame();
-            } else {
+            if (gameMode === 'solo') {
                 startSoloMode();
+            } else {
+                initializeGame();
             }
         }
         
         // 开始单人模式
         function startSoloMode() {
-            // 隐藏个人资料设置
             document.getElementById('profileSetup').style.display = 'none';
-            
-            // 显示游戏内容
-            document.getElementById('gameContent').style.display = 'block';
-            
-            // 隐藏对战玩家信息
-            document.getElementById('players-info').style.display = 'none';
-            
-            // 显示单人统计
-            document.getElementById('soloStats').style.display = 'block';
-            
-            // 更新游戏状态
-            document.getElementById('gameStatus').textContent = '单人知识挑战模式';
-            
-            // 获取第一题
-            getQuestionForSolo();
+            document.getElementById('soloContent').style.display = 'block';
+            document.getElementById('currentRoomTitle').textContent = '每日知识挑战';
+            getQuestion();
         }
         
         // 初始化游戏
         function initializeGame() {
-            // 隐藏个人资料设置
             document.getElementById('profileSetup').style.display = 'none';
+            document.getElementById('battleContent').style.display = 'block';
             
-            // 显示游戏内容
-            document.getElementById('gameContent').style.display = 'block';
-            
-            // 显示对战玩家信息
-            document.getElementById('players-info').style.display = 'flex';
-            
-            // 隐藏单人统计
-            document.getElementById('soloStats').style.display = 'none';
-            
-            // 初始化 Firebase 引用
-            gameRef = firebase.database().ref(`quiz/${roomName}`);
+            gameRef = firebase.database().ref(`quiz_battle/${roomName}`);
             playersRef = gameRef.child('players');
-            gameStateRef = gameRef.child('gameState');
-            questionsRef = gameRef.child('questions');
+            questionRef = gameRef.child('question');
             
-            // 设置当前玩家信息
             const myPlayerInfo = {
                 nickname: nickname,
                 color: userColor,
-                role: myRole,
-                score: 0,
+                role: gameMode,
                 timestamp: Date.now()
             };
             
             // 加入游戏
-            playersRef.child(myRole).set(myPlayerInfo);
+            playersRef.child(gameMode).set(myPlayerInfo);
             
             // 监听玩家变化
             playersRef.on('value', snapshot => {
                 const players = snapshot.val() || {};
-                
                 player1 = players.player1 || null;
                 player2 = players.player2 || null;
                 
                 updatePlayerInfo();
-                
-                // 检查游戏是否可以开始
                 checkGameStart();
             });
             
-            // 监听游戏状态变化
-            gameStateRef.on('value', snapshot => {
-                const gameState = snapshot.val() || {};
+            // 监听问题变化
+            questionRef.on('value', snapshot => {
+                const questionData = snapshot.val() || {};
                 
-                if (gameState.winner) {
-                    showWinner(gameState.winner);
-                }
-                
-                // 更新玩家分数
-                if (player1) {
-                    document.getElementById('player1Score').textContent = `${player1.score}分`;
-                    document.getElementById('player1Progress').style.width = `${(player1.score / WIN_SCORE) * 100}%`;
-                }
-                
-                if (player2) {
-                    document.getElementById('player2Score').textContent = `${player2.score}分`;
-                    document.getElementById('player2Progress').style.width = `${(player2.score / WIN_SCORE) * 100}%`;
+                if (questionData.question) {
+                    currentQuestion = questionData;
+                    displayBattleQuestion(questionData);
+                    
+                    if (questionData.winner) {
+                        showWinner(questionData.winner);
+                    }
                 }
             });
             
-            // 监听题目变化
-            questionsRef.on('value', snapshot => {
-                const questionsData = snapshot.val() || [];
-                questions = questionsData;
-                
-                // 如果有新题目且游戏已开始，显示当前题目
-                if (questions.length > 0 && gameActive) {
-                    showCurrentQuestion();
-                }
-            });
-            
-            // 如果是房主（player1），初始化游戏状态
-            if (myRole === 'player1') {
-                gameStateRef.set({
-                    currentQuestionIndex: 0,
-                    winner: null
-                });
-                
-                // 获取第一题
-                getQuestionForGame();
+            // 初始化对战状态
+            if (gameMode === 'player1' || gameMode === 'player2') {
+                document.getElementById('battleOptions').addEventListener('click', handleBattleAnswer);
             }
         }
         
@@ -504,9 +389,7 @@
                     <div class="player-avatar" style="background: ${player1.color}">${player1.nickname[0].toUpperCase()}</div>
                     <div>
                         <div class="player-name">${player1.nickname}</div>
-                        <div class="player-role">玩家1 ${myRole === 'player1' ? '(你)' : ''}</div>
-                        <div class="player-score" id="player1Score">${player1.score}分</div>
-                        <div class="score-bar"><div class="score-progress" id="player1Progress" style="width:${(player1.score / WIN_SCORE) * 100}%"></div></div>
+                        <div class="player-role">玩家1 ${gameMode === 'player1' ? '(你)' : ''}</div>
                     </div>
                 `;
             } else {
@@ -515,8 +398,6 @@
                     <div>
                         <div class="player-name">等待玩家1...</div>
                         <div class="player-role">玩家1</div>
-                        <div class="player-score" id="player1Score">0分</div>
-                        <div class="score-bar"><div class="score-progress" id="player1Progress" style="width:0%"></div></div>
                     </div>
                 `;
             }
@@ -528,9 +409,7 @@
                     <div class="player-avatar" style="background: ${player2.color}">${player2.nickname[0].toUpperCase()}</div>
                     <div>
                         <div class="player-name">${player2.nickname}</div>
-                        <div class="player-role">玩家2 ${myRole === 'player2' ? '(你)' : ''}</div>
-                        <div class="player-score" id="player2Score">${player2.score}分</div>
-                        <div class="score-bar"><div class="score-progress" id="player2Progress" style="width:${(player2.score / WIN_SCORE) * 100}%"></div></div>
+                        <div class="player-role">玩家2 ${gameMode === 'player2' ? '(你)' : ''}</div>
                     </div>
                 `;
             } else {
@@ -539,8 +418,6 @@
                     <div>
                         <div class="player-name">等待玩家2...</div>
                         <div class="player-role">玩家2</div>
-                        <div class="player-score" id="player2Score">0分</div>
-                        <div class="score-bar"><div class="score-progress" id="player2Progress" style="width:0%"></div></div>
                     </div>
                 `;
             }
@@ -550,174 +427,258 @@
         function checkGameStart() {
             if (player1 && player2 && !gameActive) {
                 gameActive = true;
-                updateGameStatus();
+                score1 = 0;
+                score2 = 0;
+                updateScores();
                 
-                // 如果是观众，只显示题目
-                if (myRole === 'spectator') {
-                    showCurrentQuestion();
+                if (gameMode === 'player1' || gameMode === 'player2') {
+                    document.getElementById('restartBtn').style.display = 'block';
+                } else {
+                    document.getElementById('restartBtn').style.display = 'none';
                 }
+                
+                startNewQuestion();
             }
         }
         
-        // 获取题目（对战模式）
-        async function getQuestionForGame() {
+        // 开始新问题
+        function startNewQuestion() {
+            answeredPlayers = [];
+            timeLeft = TIME_LIMIT;
+            updateTimer();
+            
+            if (timer) clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endQuestion();
+                }
+            }, 1000);
+            
+            getBattleQuestion();
+        }
+        
+        // 更新计时器显示
+        function updateTimer() {
+            document.getElementById('timer').textContent = timeLeft;
+        }
+        
+        // 获取对战问题
+        async function getBattleQuestion() {
             try {
                 const response = await fetch('https://xiaoapi.cn/API/game_dati.php?id=1828222534&msg=开始游戏');
                 const data = await response.json();
                 
                 if (data.code === 200) {
-                    // 保存题目到Firebase，确保所有玩家看到相同的题目
-                    const newQuestion = {
-                        question: data.data.msg,
-                        options: data.data.option.split('\n'),
-                        answer: data.data.answer
-                    };
-                    
-                    questionsRef.transaction(currentQuestions => {
-                        const updatedQuestions = currentQuestions || [];
-                        updatedQuestions.push(newQuestion);
-                        return updatedQuestions;
-                    });
-                    
-                    // 更新当前题目索引
-                    gameStateRef.child('currentQuestionIndex').transaction(currentIndex => {
-                        return (currentIndex || 0) + 1;
+                    questionRef.set({
+                        question: data.data,
+                        answers: {},
+                        winner: null
                     });
                 } else {
                     throw new Error('API返回错误');
                 }
             } catch (error) {
                 console.error('获取题目失败:', error);
-                showMessage('获取题目失败，请重试', 'error');
-                // 5秒后重试
-                setTimeout(getQuestionForGame, 5000);
+                setTimeout(getBattleQuestion, 2000);
             }
         }
         
-        // 获取题目（单人模式）
-        async function getQuestionForSolo() {
-            try {
-                const response = await fetch('https://xiaoapi.cn/API/game_dati.php?id=1828222534&msg=开始游戏');
-                const data = await response.json();
-                
-                if (data.code === 200) {
-                    currentQuestion = {
-                        question: data.data.msg,
-                        options: data.data.option.split('\n'),
-                        answer: data.data.answer
-                    };
-                    
-                    displayQuestion(currentQuestion);
-                } else {
-                    throw new Error('API返回错误');
-                }
-            } catch (error) {
-                console.error('获取题目失败:', error);
-                showMessage('获取题目失败，请重试', 'error');
-                // 5秒后重试
-                setTimeout(getQuestionForSolo, 5000);
-            }
-        }
-        
-        // 显示当前题目（对战模式）
-        function showCurrentQuestion() {
-            if (questions.length > 0 && currentQuestionIndex < questions.length) {
-                const question = questions[currentQuestionIndex];
-                displayQuestion(question);
-            }
-        }
-        
-        // 显示题目
-        function displayQuestion(question) {
-            document.getElementById('questionText').innerHTML = question.question.replace(/\n/g, '<br>');
+        // 显示对战问题
+        function displayBattleQuestion(data) {
+            const questionData = data.question;
+            currentAnswer = questionData.answer;
             
-            const optionsContainer = document.getElementById('optionsContainer');
-            optionsContainer.innerHTML = '';
+            document.getElementById('battleQuestion').innerHTML = `<p>${questionData.msg.replace(/\n/g, '<br>')}</p>`;
             
-            question.options.forEach(option => {
-                if (!option.trim()) return;
-                
-                const optionBtn = document.createElement('button');
-                optionBtn.className = 'option-btn';
-                optionBtn.textContent = option;
-                optionBtn.addEventListener('click', () => selectOption(optionBtn, option[0]));
-                optionsContainer.appendChild(optionBtn);
+            const optionsContainer = document.getElementById('battleOptions');
+            optionsContainer.innerHTML = questionData.option.split('\n').map(opt => `
+                <button class="option-btn" data-answer="${opt[0]}">${opt}</button>
+            `).join('');
+            
+            // 更新状态显示
+            document.getElementById('battleStatus').textContent = gameMode === 'spectator' ? 
+                '观战中...' : `你有 ${timeLeft} 秒时间答题`;
+        }
+        
+        // 处理对战答题
+        function handleBattleAnswer(event) {
+            if (!gameActive || answeredPlayers.includes(gameMode)) return;
+            
+            const target = event.target.closest('.option-btn');
+            if (!target) return;
+            
+            const answer = target.getAttribute('data-answer');
+            const isCorrect = answer === currentAnswer;
+            
+            // 记录答案
+            questionRef.child('answers').child(gameMode).set({
+                answer: answer,
+                correct: isCorrect,
+                timestamp: Date.now()
             });
             
-            currentAnswer = question.answer;
-            selectedOption = null;
-            selectedAnswer = '';
+            // 添加到已答玩家列表
+            answeredPlayers.push(gameMode);
             
-            // 如果是观众，禁用选项
-            if (myRole === 'spectator') {
-                document.querySelectorAll('.option-btn').forEach(btn => {
-                    btn.disabled = true;
+            // 检查是否双方都已答
+            questionRef.child('answers').once('value', snapshot => {
+                const answers = snapshot.val() || {};
+                if (Object.keys(answers).length === 2) {
+                    endQuestion();
+                }
+            });
+        }
+        
+        // 结束当前问题
+        function endQuestion() {
+            clearInterval(timer);
+            
+            questionRef.child('answers').once('value', snapshot => {
+                const answers = snapshot.val() || {};
+                const players = Object.keys(answers);
+                
+                // 计算得分
+                const correctPlayers = players.filter(p => answers[p].correct);
+                const sortedPlayers = players.sort((a, b) => 
+                    answers[a].timestamp - answers[b].timestamp);
+                
+                // 给第一个答对的玩家10分，第二个5分
+                correctPlayers.forEach((player, index) => {
+                    if (player === 'player1') {
+                        score1 += index === 0 ? 10 : 5;
+                    } else {
+                        score2 += index === 0 ? 10 : 5;
+                    }
                 });
+                
+                // 给答错的玩家扣5分
+                players.filter(p => !answers[p].correct).forEach(player => {
+                    if (player === 'player1') {
+                        score1 = Math.max(0, score1 - 5);
+                    } else {
+                        score2 = Math.max(0, score2 - 5);
+                    }
+                });
+                
+                updateScores();
+                
+                // 检查是否有玩家达到胜利分数
+                let winner = null;
+                if (score1 >= WIN_SCORE) {
+                    winner = 'player1';
+                } else if (score2 >= WIN_SCORE) {
+                    winner = 'player2';
+                }
+                
+                if (winner) {
+                    questionRef.update({ winner: winner });
+                } else {
+                    // 3秒后进入下一题
+                    setTimeout(startNewQuestion, 3000);
+                }
+            });
+        }
+        
+        // 更新分数显示
+        function updateScores() {
+            document.getElementById('score1').textContent = score1;
+            document.getElementById('score2').textContent = score2;
+            document.getElementById('progress1').style.width = `${(score1 / WIN_SCORE) * 100}%`;
+            document.getElementById('progress2').style.width = `${(score2 / WIN_SCORE) * 100}%`;
+        }
+        
+        // 显示胜利者
+        function showWinner(winner) {
+            gameActive = false;
+            clearInterval(timer);
+            
+            const winnerName = winner === 'player1' ? 
+                (player1 ? player1.nickname : '玩家1') : 
+                (player2 ? player2.nickname : '玩家2');
+            
+            document.getElementById('winnerName').textContent = winnerName;
+            document.getElementById('winnerOverlay').style.display = 'flex';
+        }
+        
+        // 请求重新开始游戏
+        function requestRestart() {
+            if (confirm('确定要重新开始游戏吗?')) {
+                score1 = 0;
+                score2 = 0;
+                updateScores();
+                questionRef.set({});
+                document.getElementById('winnerOverlay').style.display = 'none';
+                startNewQuestion();
             }
         }
         
-        // 选择选项
+        // 从localStorage加载统计信息
+        function loadStats() {
+            const saved = localStorage.getItem('quizStats');
+            if (saved) {
+                const savedStats = JSON.parse(saved);
+                if (savedStats.date === new Date().toLocaleDateString()) {
+                    stats = savedStats;
+                }
+            }
+        }
+        
+        // 保存统计信息
+        function saveStats() {
+            stats.date = new Date().toLocaleDateString();
+            localStorage.setItem('quizStats', JSON.stringify(stats));
+            if (stats.correct >= 10) {
+                localStorage.setItem('dailyAchievement', new Date().toLocaleDateString());
+            }
+        }
+        
+        // 获取问题（单人模式）
+        async function getQuestion() {
+            try {
+                const response = await fetch('https://xiaoapi.cn/API/game_dati.php?id=1828222534&msg=开始游戏');
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    currentAnswer = data.data.answer;
+                    displayQuestion(data.data);
+                } else {
+                    throw new Error('API返回错误');
+                }
+            } catch (error) {
+                console.error('获取题目失败:', error);
+                showMessage('获取题目失败，请重试', 'error');
+                setTimeout(getQuestion, 5000);
+            }
+        }
+        
+        // 显示问题（单人模式）
+        function displayQuestion(data) {
+            document.getElementById('question').innerHTML = `<p>${data.msg.replace(/\n/g, '<br>')}</p>`;
+            document.getElementById('options').innerHTML = data.option.split('\n').map(opt => `
+                <button class="option-btn" onclick="selectOption(this, '${opt[0]}')" data-answer="${opt[0]}">${opt}</button>
+            `).join('');
+            updateStatsDisplay();
+        }
+        
+        // 选择选项（单人模式）
         function selectOption(btn, value) {
             if (selectedOption) selectedOption.classList.remove('selected');
             selectedOption = btn;
             selectedAnswer = value;
             selectedOption.classList.add('selected');
-        }
-        
-        // 提交答案（对战模式）
-        async function submitAnswer() {
-            if (!selectedOption || !gameActive) return;
-            
-            const isCorrect = selectedAnswer === currentAnswer;
-            let message = '';
-            
-            if (isCorrect) {
-                message = '🎉 回答正确！';
-                playSound('correct');
-                
-                // 更新玩家分数
-                playersRef.child(myRole).child('score').transaction(score => {
-                    const newScore = (score || 0) + CORRECT_SCORE;
-                    
-                    // 检查是否获胜
-                    if (newScore >= WIN_SCORE) {
-                        gameStateRef.child('winner').set(myRole);
-                    }
-                    
-                    return newScore;
-                });
-            } else {
-                message = '❌ 回答错误';
-                playSound('wrong');
-                
-                // 扣分（不低于0分）
-                playersRef.child(myRole).child('score').transaction(score => {
-                    return Math.max((score || 0) - WRONG_PENALTY, 0);
-                });
-            }
-            
-            showMessage(message, isCorrect ? 'success' : 'error');
-            
-            // 如果是房主，获取下一题
-            if (myRole === 'player1' && isCorrect) {
-                getQuestionForGame();
-            }
-            
-            // 清除选择
-            if (selectedOption) {
-                selectedOption.classList.remove('selected');
-            }
-            selectedOption = null;
-            selectedAnswer = '';
+            document.getElementById('submitBtn').disabled = false;
         }
         
         // 提交答案（单人模式）
-        async function submitAnswerForSolo() {
+        async function submitAnswer() {
             if (!selectedOption) return;
             
             const isCorrect = selectedAnswer === currentAnswer;
             stats.total++;
-            
             if (isCorrect) {
                 stats.correct++;
                 playSound('correct');
@@ -729,31 +690,36 @@
             }
             
             saveStats();
-            updateStatsDisplay();
             
-            // 获取下一题
-            setTimeout(getQuestionForSolo, 1500);
-            
-            // 清除选择
             if (selectedOption) {
                 selectedOption.classList.remove('selected');
             }
             selectedOption = null;
             selectedAnswer = '';
+            document.getElementById('submitBtn').disabled = true;
+            
+            await getQuestion();
         }
         
-        // 显示正确答案
+        // 显示正确答案及其内容
         function displayCorrectAnswer(correctAnswer) {
-            const options = document.querySelectorAll('.option-btn');
-            options.forEach(option => {
-                if (option.textContent.trim()[0] === correctAnswer) {
-                    option.classList.add('selected');
-                }
-            });
-            
-            const msgDiv = document.getElementById('resultMessage');
-            msgDiv.textContent += ` 正确答案: ${correctAnswer}`;
-            setTimeout(() => msgDiv.textContent = '', 3000);
+            const optionsContainer = document.getElementById('options');
+            const correctOption = optionsContainer.querySelector(`button[data-answer="${correctAnswer}"]`);
+            if (correctOption) {
+                const correctText = correctOption.textContent.trim();
+                const msgDiv = document.getElementById('resultMessage');
+                msgDiv.innerHTML += ` 正确答案是：${correctAnswer} - ${correctText}`;
+            }
+        }
+        
+        // 更新统计显示
+        function updateStatsDisplay() {
+            document.getElementById('stats').innerHTML = `
+                今日答题统计：
+                答题数：${stats.total}次 | 
+                正确率：${stats.total ? ((stats.correct/stats.total)*100).toFixed(1) : 0}% |
+                正确数：${stats.correct}
+            `;
         }
         
         // 显示提示信息
@@ -764,85 +730,11 @@
             setTimeout(() => msgDiv.textContent = '', 2000);
         }
         
-        // 更新游戏状态显示
-        function updateGameStatus() {
-            const gameStatusEl = document.getElementById('gameStatus');
-            
-            if (!gameActive) {
-                if (!player1 || !player2) {
-                    gameStatusEl.textContent = '等待另一位玩家加入...';
-                } else {
-                    gameStatusEl.textContent = '游戏即将开始...';
-                }
-                return;
-            }
-            
-            if (myRole === 'spectator') {
-                gameStatusEl.textContent = '观战中...';
-            } else {
-                gameStatusEl.textContent = '答题中...';
-            }
-        }
-        
-        // 显示胜利者
-        function showWinner(winner) {
-            gameActive = false;
-            
-            const winnerName = winner === 'player1' 
-                ? (player1 ? player1.nickname : '玩家1')
-                : (player2 ? player2.nickname : '玩家2');
-            
-            document.getElementById('winnerName').textContent = winnerName;
-            document.getElementById('winnerOverlay').style.display = 'flex';
-            
-            // 播放胜利音效
-            if (myRole !== 'spectator') {
-                playWinSound();
-            }
-        }
-        
-        // 从localStorage加载统计
-        function loadStats() {
-            const saved = localStorage.getItem('quizStats');
-            if (saved) {
-                const savedStats = JSON.parse(saved);
-                if (savedStats.date === new Date().toLocaleDateString()) {
-                    stats = savedStats;
-                    updateStatsDisplay();
-                }
-            }
-        }
-        
-        // 保存统计信息
-        function saveStats() {
-            stats.date = new Date().toLocaleDateString();
-            localStorage.setItem('quizStats', JSON.stringify(stats));
-        }
-        
-        // 更新统计显示
-        function updateStatsDisplay() {
-            const correctRate = stats.total ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
-            document.getElementById('totalQuestions').textContent = stats.total;
-            document.getElementById('correctRate').textContent = correctRate;
-            document.getElementById('correctCount').textContent = stats.correct;
-        }
-        
         // 播放音效
         function playSound(type) {
             const audio = new Audio();
-            if (type === 'correct') {
-                audio.src = '3.MP3';
-            } else if (type === 'wrong') {
-                audio.src = '2.MP3';
-            } else if (type === 'win') {
-                audio.src = 'win.mp3';
-            }
+            audio.src = type === 'correct' ? '3.MP3' : '2.MP3';
             audio.play();
-        }
-        
-        // 播放胜利音效
-        function playWinSound() {
-            playSound('win');
         }
     </script>
 </body>
