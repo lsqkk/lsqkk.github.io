@@ -12,392 +12,99 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
     <style>
-        :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #f9fafb;
-            --text-color: #374151;
-            --border-color: #e5e7eb;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --code-bg: #f3f4f6;
-            --sidebar-width: 280px;
-            --sidebar-bg: #f8fafc;
-            --cursor-size: 2px;
-        }
-
-        .sidebar-toggle {
-            position: fixed;
-            left: 0;
-            top: 1rem;
-            z-index: 100;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0 6px 6px 0;
-            padding: 0.75rem;
-            cursor: pointer;
-            display: none;
-            transition: all 0.3s;
-        }
-
-        .sidebar-toggle:hover { background-color: #4338ca; }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 1.5rem 1rem;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 90;
-        }
-
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .sidebar-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .sidebar-actions { display: flex; gap: 0.5rem; }
-
-        .sidebar-btn {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 0.25rem;
-            border-radius: 4px;
-        }
-
-        .sidebar-btn:hover { background-color: rgba(79, 70, 229, 0.1); }
-
-        .documents-list {
-            list-style: none;
-            margin-top: 1rem;
-        }
-
-        .document-item {
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .document-item:hover { background-color: rgba(79, 70, 229, 0.05); }
-        .document-item.active { background-color: rgba(79, 70, 229, 0.1); font-weight: 500; }
-
-        .document-name {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .document-code {
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-left: 0.5rem;
-        }
-
-        .document-actions { display: none; }
-
-        .document-item:hover .document-actions {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .document-action-btn {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            font-size: 0.75rem;
-            padding: 0.25rem;
-            border-radius: 4px;
-        }
-
-        .document-action-btn:hover { background-color: rgba(0, 0, 0, 0.05); }
-
-        .cursor {
-            position: absolute;
-            width: var(--cursor-size);
-            height: 1.2em;
-            background-color: var(--cursor-color);
-            z-index: 100;
-            opacity: 0.7;
-        }
-
-        .cursor-label {
-            position: absolute;
-            top: -1.5em;
-            left: 0;
-            background-color: var(--cursor-color);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 100;
-        }
-
-        .version-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-        }
-
-        .version-item {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-        }
-
-        .version-item:hover { background-color: var(--secondary-color); }
-        .version-item:last-child { border-bottom: none; }
-
-        .version-time {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .version-content {
-            font-size: 0.875rem;
-            color: var(--text-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .color-option.selected { border-color: var(--text-color); }
-
-        .profile-form { margin-top: 1.5rem; }
-
-        .profile-input {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-        }
-
-        .profile-btn {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .document-info {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            align-items: center;
-        }
-
-        .document-code-display {
-            font-family: monospace;
-            background-color: var(--code-bg);
-            padding: 0.5rem;
-            border-radius: 4px;
-        }
-
-        .copy-btn {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        .user-list {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--secondary-color);
-            border-radius: 4px;
-            font-size: 0.875rem;
-        }
-
-        .user-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .loader {
-            display: inline-block;
-            border: 2px solid rgba(79, 70, 229, 0.2);
-            border-top: 2px solid var(--primary-color);
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-            margin-left: 8px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .processing .loader { display: inline-block; }
-
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto 2rem calc(var(--sidebar-width) + 2rem);
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            flex: 1;
-            width: calc(100% - var(--sidebar-width) - 4rem);
-            transition: margin 0.3s ease;
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .container {
-                margin-left: 2rem;
-                width: calc(100% - 2rem);
-            }
-            .sidebar-toggle {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .document-info {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
+        :root{--primary-color:#4f46e5;--secondary-color:#f9fafb;--text-color:#374151;--border-color:#e5e7eb;--success-color:#10b981;--error-color:#ef4444;--code-bg:#f3f4f6;--sidebar-width:280px;--sidebar-bg:#f8fafc;--cursor-size:2px}
+        .cursor{position:absolute;width:var(--cursor-size);height:1.2em;background-color:var(--cursor-color);z-index:100;opacity:0.7}
+        .cursor-label{position:absolute;top:-1.5em;left:0;background-color:var(--cursor-color);color:white;padding:2px 6px;border-radius:4px;font-size:0.75rem;white-space:nowrap;z-index:100}
+        .version-list{max-height:300px;overflow-y:auto;margin-top:1rem;border:1px solid var(--border-color);border-radius:8px}
+        .version-item{padding:0.75rem;border-bottom:1px solid var(--border-color);cursor:pointer}
+        .version-item:hover{background-color:var(--secondary-color)}
+        .version-item:last-child{border-bottom:none}
+        .version-time{font-weight:600;color:var(--primary-color)}
+        .version-content{font-size:0.875rem;color:var(--text-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center}
+        .modal-content{background-color:white;padding:2rem;border-radius:12px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+        .modal-title{font-size:1.25rem;font-weight:600;color:var(--primary-color)}
+        .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-color)}
+        .color-option{width:30px;height:30px;border-radius:50%;display:inline-block;margin-right:8px;cursor:pointer;border:2px solid transparent}
+        .color-option.selected{border-color:var(--text-color)}
+        .profile-form{margin-top:1.5rem}
+        .profile-input{width:100%;padding:0.75rem;margin-bottom:1rem;border:1px solid var(--border-color);border-radius:6px}
+        .profile-btn{padding:0.75rem 1.5rem;background-color:var(--primary-color);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:500}
+        .document-info{display:flex;gap:1rem;margin-bottom:1rem;align-items:center}
+        .document-code{font-family:monospace;background-color:var(--code-bg);padding:0.5rem;border-radius:4px}
+        .copy-btn{background:none;border:none;color:var(--primary-color);cursor:pointer}
+        .user-list{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap}
+        .user-badge{display:flex;align-items:center;gap:0.5rem;padding:0.25rem 0.5rem;background-color:var(--secondary-color);border-radius:4px;font-size:0.875rem}
+        .user-color{width:12px;height:12px;border-radius:50%}
+        .loader{display:inline-block;border:2px solid rgba(79,70,229,0.2);border-top:2px solid var(--primary-color);border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;margin-left:8px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .processing .loader{display:inline-block}
+        @media (max-width:768px){.document-info{flex-direction:column;align-items:flex-start}}
+        .sidebar-toggle{position:fixed;left:0;top:1rem;z-index:100;background-color:var(--primary-color);color:white;border:none;border-radius:0 6px 6px 0;padding:0.75rem;cursor:pointer;display:none;transition:all 0.3s}
+        .sidebar-toggle:hover{background-color:#4338ca}
+        .sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);border-right:1px solid var(--border-color);height:100vh;position:fixed;left:0;top:0;padding:1.5rem 1rem;overflow-y:auto;transition:transform 0.3s ease;z-index:90}
+        .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+        .sidebar-title{font-size:1.25rem;font-weight:600;color:var(--primary-color)}
+        .sidebar-actions{display:flex;gap:0.5rem}
+        .sidebar-btn{background:none;border:none;color:var(--primary-color);cursor:pointer;font-size:1rem;padding:0.25rem;border-radius:4px}
+        .sidebar-btn:hover{background-color:rgba(79,70,229,0.1)}
+        .doc-list{list-style:none}
+        .doc-item{padding:0.75rem;border-radius:6px;margin-bottom:0.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+        .doc-item:hover{background-color:rgba(79,70,229,0.05)}
+        .doc-item.active{background-color:rgba(79,70,229,0.1);font-weight:500}
+        .doc-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .doc-code{font-family:monospace;font-size:0.75rem;color:#6b7280}
+        .doc-actions{display:none}
+        .doc-item:hover .doc-actions{display:flex;gap:0.25rem}
+        .doc-action-btn{background:none;border:none;color:var(--text-color);cursor:pointer;font-size:0.75rem;padding:0.25rem;border-radius:4px}
+        .doc-action-btn:hover{background-color:rgba(0,0,0,0.05)}
+        .sidebar-section{margin-top:1.5rem}
+        .sidebar-section-title{font-size:0.875rem;font-weight:600;color:var(--text-color);margin-bottom:0.75rem}
+        .sidebar-btn-full{width:100%;text-align:left;padding:0.75rem;margin-bottom:0.5rem;border-radius:6px;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:0.75rem;color:var(--text-color)}
+        .sidebar-btn-full:hover{background-color:rgba(79,70,229,0.05)}
+        .sidebar-btn-full i{width:20px;text-align:center}
+        @media (max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.active{transform:translateX(0)}.container{margin-left:2rem;width:calc(100% - 2rem)}.sidebar-toggle{display:block}}
     </style>
 </head>
 <body>
-    <button class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-bars"></i>
-    </button>
+    <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h3 class="sidebar-title">我的文档</h3>
             <div class="sidebar-actions">
-                <button class="sidebar-btn" id="refreshDocs">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
+                <button class="sidebar-btn" id="refreshDocs"><i class="fas fa-sync-alt"></i></button>
             </div>
         </div>
         
-        <ul class="documents-list" id="documentsList"></ul>
+        <ul class="doc-list" id="docList">
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-file-alt"></i></div>
+                <p>暂无最近文档</p>
+            </div>
+        </ul>
         
-        <div class="sidebar-actions" style="margin-top: 1rem;">
-            <button id="new-doc-sidebar-btn" class="btn" style="width: 100%;">
-                <i class="fas fa-file-alt"></i>
-                新建文档
-            </button>
-            <button id="join-doc-sidebar-btn" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                <i class="fas fa-sign-in-alt"></i>
-                加入文档
-            </button>
-            <button id="save-version-sidebar-btn" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                <i class="fas fa-history"></i>
-                暂存版本
-            </button>
-            <button id="view-versions-sidebar-btn" class="btn" style="width: 100%; margin-top: 0.5rem;">
-                <i class="fas fa-clock"></i>
-                查看历史
-            </button>
-            <a href="tool.html" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">
-                <i class="fas fa-arrow-left"></i>
-                返回工具箱
-            </a>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">文档操作</div>
+            <button class="sidebar-btn-full" id="new-doc-sidebar-btn"><i class="fas fa-file-alt"></i>新建文档</button>
+            <button class="sidebar-btn-full" id="join-doc-sidebar-btn"><i class="fas fa-sign-in-alt"></i>加入文档</button>
+            <button class="sidebar-btn-full" id="save-version-sidebar-btn"><i class="fas fa-history"></i>暂存版本</button>
+            <button class="sidebar-btn-full" id="view-versions-sidebar-btn"><i class="fas fa-clock"></i>查看历史</button>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">导出操作</div>
+            <button class="sidebar-btn-full" id="download-html-sidebar-btn"><i class="fas fa-file-code"></i>下载HTML</button>
+            <button class="sidebar-btn-full" id="download-md-sidebar-btn"><i class="fas fa-file-alt"></i>下载MD</button>
+            <button class="sidebar-btn-full" id="download-word-sidebar-btn"><i class="fas fa-file-word"></i>下载Word</button>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">其他操作</div>
+            <button class="sidebar-btn-full" id="clear-sidebar-btn"><i class="fas fa-trash-alt"></i>清空内容</button>
+            <button class="sidebar-btn-full" id="sample-sidebar-btn"><i class="fas fa-lightbulb"></i>加载示例</button>
+            <a href="tool.html" class="sidebar-btn-full"><i class="fas fa-arrow-left"></i>返回工具箱</a>
         </div>
     </div>
 
@@ -413,10 +120,8 @@
             <div class="document-info">
                 <div>
                     <span>文档代码: </span>
-                    <span id="document-code" class="document-code-display"></span>
-                    <button id="copy-code-btn" class="copy-btn" title="复制代码">
-                        <i class="fas fa-copy"></i>
-                    </button>
+                    <span id="document-code" class="document-code"></span>
+                    <button id="copy-code-btn" class="copy-btn" title="复制代码"><i class="fas fa-copy"></i></button>
                 </div>
                 <div id="user-list" class="user-list"></div>
             </div>
@@ -428,22 +133,7 @@
                     <label class="label">Markdown 输入</label>
                     <span id="word-count" class="word-count">0 字</span>
                 </div>
-                <textarea
-                    id="markdown-input"
-                    class="textarea"
-                    placeholder="在这里输入 Markdown 文本..."
-                    spellcheck="false"
-                ></textarea>
-                <div class="toolbar">
-                    <button id="clear-btn" class="btn btn-secondary">
-                        <i class="fas fa-trash-alt"></i>
-                        清空
-                    </button>
-                    <button id="sample-btn" class="btn btn-secondary">
-                        <i class="fas fa-lightbulb"></i>
-                        示例
-                    </button>
-                </div>
+                <textarea id="markdown-input" class="textarea" placeholder="在这里输入 Markdown 文本..." spellcheck="false"></textarea>
             </div>
             <div class="panel">
                 <div class="panel-header">
@@ -451,21 +141,6 @@
                 </div>
                 <div class="preview-container">
                     <div id="preview" class="preview"></div>
-                    <div class="toolbar">
-                        <button id="download-html-btn" class="btn">
-                            <i class="fas fa-file-code"></i>
-                            下载HTML
-                        </button>
-                        <button id="download-md-btn" class="btn">
-                            <i class="fas fa-file-alt"></i>
-                            下载MD
-                        </button>
-                        <button id="download-word-btn" class="btn">
-                            <i class="fas fa-file-word"></i>
-                            下载Word
-                            <span class="loader"></span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -478,7 +153,6 @@
         <span id="toast-message">操作成功</span>
     </div>
 
-    <!-- 新建/加入文档模态框 -->
     <div id="doc-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -511,736 +185,374 @@
                         <label for="doc-code-input">文档代码:</label>
                         <input type="text" id="doc-code-input" class="profile-input" placeholder="输入6位文档代码">
                     </div>
+                    <div id="doc-name-container" style="display: none;">
+                        <label for="doc-name-input">文档名称:</label>
+                        <input type="text" id="doc-name-input" class="profile-input" placeholder="输入文档名称">
+                    </div>
                     <button id="modal-confirm-btn" class="profile-btn">确认</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 版本历史模态框 -->
     <div id="versions-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">文档历史版本</h3>
                 <button class="modal-close">&times;</button>
             </div>
-            <div id="versions-list" class="version-list">
-                <!-- 版本列表将在这里动态生成 -->
-            </div>
+            <div id="versions-list" class="version-list"></div>
         </div>
     </div>
 
 <script>
-    // Firebase 配置
-    const firebaseConfig = {
-        apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
-        authDomain: "quark-b7305.firebaseapp.com",
-        projectId: "quark-b7305",
-        storageBucket: "quark-b7305.appspot.com",
-        messagingSenderId: "843016834358",
-        appId: "1:843016834358:web:9438c729be28c4d492f797",
-        measurementId: "G-5BVT26KRT6"
-    };
-
-    // 初始化 Firebase
+    const firebaseConfig={apiKey:"AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",authDomain:"quark-b7305.firebaseapp.com",projectId:"quark-b7305",storageBucket:"quark-b7305.appspot.com",messagingSenderId:"843016834358",appId:"1:843016834358:web:9438c729be28c4d492f797",measurementId:"G-5BVT26KRT6"};
     firebase.initializeApp(firebaseConfig);
+    const db=firebase.database();
+    let docRef=null,presenceRef=null,versionsRef=null,currentDocId=null,userId=null,userColor='#40E0D0',nickname='',cursors={},isTyping=false,lastTypedTime=0,recentDocs=JSON.parse(localStorage.getItem('md-recentDocs')||[];
+    const markdownInput=document.getElementById('markdown-input'),preview=document.getElementById('preview'),wordCount=document.getElementById('word-count'),toast=document.getElementById('toast'),toastMessage=document.getElementById('toast-message'),docModal=document.getElementById('doc-modal'),modalTitle=document.getElementById('modal-title'),modalClose=document.getElementById('modal-close'),modalConfirmBtn=document.getElementById('modal-confirm-btn'),nicknameInput=document.getElementById('nickname-input'),docCodeInput=document.getElementById('doc-code-input'),docCodeContainer=document.getElementById('doc-code-container'),docNameInput=document.getElementById('doc-name-input'),docNameContainer=document.getElementById('doc-name-container'),documentInfoContainer=document.getElementById('document-info-container'),documentCodeSpan=document.getElementById('document-code'),copyCodeBtn=document.getElementById('copy-code-btn'),userList=document.getElementById('user-list'),versionsModal=document.getElementById('versions-modal'),versionsList=document.getElementById('versions-list'),sidebarToggle=document.getElementById('sidebarToggle'),sidebar=document.getElementById('sidebar'),docList=document.getElementById('docList'),refreshDocs=document.getElementById('refreshDocs');
+    const sampleMarkdown=`# Markdown 与 TeX 公式示例\n\n除支持markdown全部常见语法外，本编辑器还支持$TeX$ 和 $mermaid$语法，喜欢的话请收藏本工具~\n\n[这是示例链接](https://lsqkk.github.io)\n\n## 行内公式\n这是行内公式 $E=mc^2$ 和 $\\frac{d}{dx}f(x)=\\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}$ 的例子。\n\n## 块级公式\n$$\n\\int_a^b f(x)dx = F(b) - F(a)\n$$\n\n## 代码块中的公式不会被转换：\n\`\`\`  $这不是公式$\n\`\`\``;
 
-    // 全局变量
-    const db = firebase.database();
-    let docRef = null;
-    let presenceRef = null;
-    let versionsRef = null;
-    let currentDocId = null;
-    let userId = null;
-    let userColor = '#40E0D0';
-    let nickname = '';
-    let cursors = {};
-    let isTyping = false;
-    let lastTypedTime = 0;
-    let recentDocuments = JSON.parse(localStorage.getItem('recentDocuments') || []);
-
-    // DOM 元素
-    const markdownInput = document.getElementById('markdown-input');
-    const preview = document.getElementById('preview');
-    const wordCount = document.getElementById('word-count');
-    const clearBtn = document.getElementById('clear-btn');
-    const sampleBtn = document.getElementById('sample-btn');
-    const downloadHtmlBtn = document.getElementById('download-html-btn');
-    const downloadMdBtn = document.getElementById('download-md-btn');
-    const downloadWordBtn = document.getElementById('download-word-btn');
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toast-message');
-    const newDocBtn = document.getElementById('new-doc-sidebar-btn');
-    const joinDocBtn = document.getElementById('join-doc-sidebar-btn');
-    const saveVersionBtn = document.getElementById('save-version-sidebar-btn');
-    const viewVersionsBtn = document.getElementById('view-versions-sidebar-btn');
-    const docModal = document.getElementById('doc-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalBody = document.getElementById('modal-body');
-    const modalClose = document.getElementById('modal-close');
-    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
-    const nicknameInput = document.getElementById('nickname-input');
-    const docCodeInput = document.getElementById('doc-code-input');
-    const docCodeContainer = document.getElementById('doc-code-container');
-    const documentInfoContainer = document.getElementById('document-info-container');
-    const documentCodeSpan = document.getElementById('document-code');
-    const copyCodeBtn = document.getElementById('copy-code-btn');
-    const userList = document.getElementById('user-list');
-    const versionsModal = document.getElementById('versions-modal');
-    const versionsList = document.getElementById('versions-list');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const refreshDocs = document.getElementById('refreshDocs');
-    const documentsList = document.getElementById('documentsList');
-
-    // 示例 Markdown 内容
-    const sampleMarkdown = `# Markdown 与 TeX 公式示例
-
-除支持markdown全部常见语法外，本编辑器还支持$TeX$ 和 $mermaid$语法，喜欢的话请收藏本工具~
-
-[这是示例链接](https://lsqkk.github.io)
-
-## 行内公式
-这是行内公式 $E=mc^2$ 和 $\\frac{d}{dx}f(x)=\\lim_{h\\to 0}\\frac{f(x+h)-f(x)}{h}$ 的例子。
-
-## 块级公式
-$$
-\\int_a^b f(x)dx = F(b) - F(a)
-$$
-
-## 代码块中的公式不会被转换：
-\`\`\`  $这不是公式$
-\`\`\`
-`;
-
-    // 初始化
-    document.addEventListener('DOMContentLoaded', function() {
-        // 生成用户ID
-        userId = generateId();
-        
-        // 加载本地存储的用户信息
+    document.addEventListener('DOMContentLoaded',function(){
+        userId=generateId();
         loadUserInfo();
-        
-        // 设置事件监听器
         setupEventListeners();
-        
-        // 渲染最近文档列表
-        renderRecentDocuments();
-        
-        // 初始加载示例
-        sampleBtn.click();
-        
-        // 检查窗口大小
-        function checkWindowSize() {
-            if (window.innerWidth <= 1024) {
-                sidebar.classList.remove('active');
-                sidebarToggle.style.display = 'block';
-            } else {
-                sidebar.classList.add('active');
-                sidebarToggle.style.display = 'none';
-            }
-        }
-        
-        window.addEventListener('resize', checkWindowSize);
+        renderRecentDocs();
         checkWindowSize();
+        window.addEventListener('resize',checkWindowSize);
+        sampleBtn.click();
     });
 
-    // 生成随机ID
-    function generateId(length = 6) {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+    function generateId(length=6){
+        const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result='';
+        for(let i=0;i<length;i++){result+=chars.charAt(Math.floor(Math.random()*chars.length))}
         return result;
     }
 
-    // 加载用户信息
-    function loadUserInfo() {
-        nickname = localStorage.getItem('md-nickname') || '';
-        userColor = localStorage.getItem('md-userColor') || '#40E0D0';
+    function loadUserInfo(){
+        nickname=localStorage.getItem('md-nickname')||'';
+        userColor=localStorage.getItem('md-userColor')||'#40E0D0';
     }
 
-    // 保存用户信息
-    function saveUserInfo() {
-        localStorage.setItem('md-nickname', nickname);
-        localStorage.setItem('md-userColor', userColor);
+    function saveUserInfo(){
+        localStorage.setItem('md-nickname',nickname);
+        localStorage.setItem('md-userColor',userColor);
     }
 
-    // 设置事件监听器
-    function setupEventListeners() {
-        // Markdown输入事件
-        markdownInput.addEventListener('input', function() {
-            preview.innerHTML = convertToHTML(this.value);
+    function setupEventListeners(){
+        markdownInput.addEventListener('input',function(){
+            preview.innerHTML=convertToHTML(this.value);
             updateWordCount();
             renderAll();
-            
-            // 同步到Firebase
-            if (docRef && !isTyping) {
-                isTyping = true;
-                docRef.update({
-                    content: this.value,
-                    lastEdited: Date.now(),
-                    lastEditedBy: nickname
-                });
-                
-                // 设置定时器检测是否停止输入
-                lastTypedTime = Date.now();
-                const checkTyping = setInterval(() => {
-                    if (Date.now() - lastTypedTime > 1000) {
-                        isTyping = false;
-                        clearInterval(checkTyping);
-                    }
-                }, 500);
-            } else if (docRef && isTyping) {
-                lastTypedTime = Date.now();
-            }
+            if(docRef&&!isTyping){
+                isTyping=true;
+                docRef.update({content:this.value,lastEdited:Date.now(),lastEditedBy:nickname});
+                lastTypedTime=Date.now();
+                const checkTyping=setInterval(()=>{
+                    if(Date.now()-lastTypedTime>1000){isTyping=false;clearInterval(checkTyping)}
+                },500);
+            }else if(docRef&&isTyping){lastTypedTime=Date.now()}
         });
-
-        // 光标位置变化事件
-        markdownInput.addEventListener('click', updateCursorPosition);
-        markdownInput.addEventListener('keyup', updateCursorPosition);
-        
-        // 工具栏按钮事件
-        clearBtn.addEventListener('click', clearEditor);
-        sampleBtn.addEventListener('click', loadSample);
-        downloadHtmlBtn.addEventListener('click', downloadHtml);
-        downloadMdBtn.addEventListener('click', downloadMd);
-        downloadWordBtn.addEventListener('click', downloadWord);
-        
-        // 文档操作按钮事件
-        newDocBtn.addEventListener('click', () => showModal('new'));
-        joinDocBtn.addEventListener('click', () => showModal('join'));
-        saveVersionBtn.addEventListener('click', saveVersion);
-        viewVersionsBtn.addEventListener('click', showVersions);
-        copyCodeBtn.addEventListener('click', copyDocCode);
-        
-        // 模态框事件
-        modalClose.addEventListener('click', closeModal);
-        modalConfirmBtn.addEventListener('click', confirmModal);
-        
-        // 侧边栏事件
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        refreshDocs.addEventListener('click', refreshRecentDocuments);
-        
-        // 点击模态框外部关闭
-        window.addEventListener('click', function(event) {
-            if (event.target === docModal) {
-                closeModal();
-            }
-            if (event.target === versionsModal) {
-                versionsModal.style.display = 'none';
-            }
+        markdownInput.addEventListener('click',updateCursorPosition);
+        markdownInput.addEventListener('keyup',updateCursorPosition);
+        modalClose.addEventListener('click',closeModal);
+        modalConfirmBtn.addEventListener('click',confirmModal);
+        copyCodeBtn.addEventListener('click',copyDocCode);
+        sidebarToggle.addEventListener('click',toggleSidebar);
+        refreshDocs.addEventListener('click',renderRecentDocs);
+        document.getElementById('new-doc-sidebar-btn').addEventListener('click',()=>showModal('new'));
+        document.getElementById('join-doc-sidebar-btn').addEventListener('click',()=>showModal('join'));
+        document.getElementById('save-version-sidebar-btn').addEventListener('click',saveVersion);
+        document.getElementById('view-versions-sidebar-btn').addEventListener('click',showVersions);
+        document.getElementById('download-html-sidebar-btn').addEventListener('click',downloadHtml);
+        document.getElementById('download-md-sidebar-btn').addEventListener('click',downloadMd);
+        document.getElementById('download-word-sidebar-btn').addEventListener('click',downloadWord);
+        document.getElementById('clear-sidebar-btn').addEventListener('click',clearEditor);
+        document.getElementById('sample-sidebar-btn').addEventListener('click',loadSample);
+        window.addEventListener('click',function(event){
+            if(event.target===docModal){closeModal()}
+            if(event.target===versionsModal){versionsModal.style.display='none'}
         });
     }
 
-    // 渲染最近文档列表
-    function renderRecentDocuments() {
-        documentsList.innerHTML = '';
-        
-        if (recentDocuments.length === 0) {
-            documentsList.innerHTML = '<div style="padding: 1rem; color: #6b7280; text-align: center;">暂无最近文档</div>';
-            return;
+    function showModal(type){
+        if(type==='new'){
+            modalTitle.textContent='新建文档';
+            docCodeContainer.style.display='none';
+            docNameContainer.style.display='block';
+            nicknameInput.value=nickname;
+            selectModalColor(document.querySelector('.color-option[style*="'+userColor+'"]')||document.querySelector('.color-option'));
+        }else{
+            modalTitle.textContent='加入文档';
+            docCodeContainer.style.display='block';
+            docNameContainer.style.display='none';
+            docCodeInput.value='';
+            nicknameInput.value=nickname;
+            selectModalColor(document.querySelector('.color-option[style*="'+userColor+'"]')||document.querySelector('.color-option'));
         }
-        
-        recentDocuments.forEach(doc => {
-            const docItem = document.createElement('li');
-            docItem.className = `document-item ${doc.id === currentDocId ? 'active' : ''}`;
-            docItem.dataset.id = doc.id;
-            
-            docItem.innerHTML = `
-                <span class="document-name">${doc.name || '未命名文档'}</span>
-                <span class="document-code">${doc.id}</span>
-                <div class="document-actions">
-                    <button class="document-action-btn edit-doc" title="重命名">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="document-action-btn remove-doc" title="移除">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            
-            docItem.addEventListener('click', (e) => {
-                if (!e.target.closest('.document-action-btn')) {
-                    joinDocument(doc.id);
-                }
-            });
-            
-            documentsList.appendChild(docItem);
-        });
-        
-        // 添加事件监听器
-        document.querySelectorAll('.edit-doc').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const docId = btn.closest('.document-item').dataset.id;
-                editDocumentName(docId);
-            });
-        });
-        
-        document.querySelectorAll('.remove-doc').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const docId = btn.closest('.document-item').dataset.id;
-                removeRecentDocument(docId);
-            });
-        });
+        docModal.style.display='flex';
     }
 
-    // 添加最近文档
-    function addRecentDocument(docId, docName = '') {
-        // 先移除已存在的相同ID文档
-        recentDocuments = recentDocuments.filter(doc => doc.id !== docId);
-        
-        // 添加到开头
-        recentDocuments.unshift({
-            id: docId,
-            name: docName,
-            lastAccessed: Date.now()
-        });
-        
-        // 限制数量
-        if (recentDocuments.length > 10) {
-            recentDocuments = recentDocuments.slice(0, 10);
-        }
-        
-        saveRecentDocuments();
-        renderRecentDocuments();
-    }
+    function closeModal(){docModal.style.display='none'}
 
-    // 编辑文档名称
-    function editDocumentName(docId) {
-        const doc = recentDocuments.find(d => d.id === docId);
-        if (!doc) return;
-        
-        const newName = prompt('输入文档名称', doc.name || '');
-        if (newName !== null) {
-            doc.name = newName || '';
-            saveRecentDocuments();
-            renderRecentDocuments();
-        }
-    }
-
-    // 移除最近文档
-    function removeRecentDocument(docId) {
-        if (!confirm('确定要从最近文档中移除此文档吗？')) return;
-        
-        recentDocuments = recentDocuments.filter(doc => doc.id !== docId);
-        saveRecentDocuments();
-        renderRecentDocuments();
-    }
-
-    // 刷新最近文档
-    function refreshRecentDocuments() {
-        recentDocuments = JSON.parse(localStorage.getItem('recentDocuments') || [];
-        renderRecentDocuments();
-        showToast('最近文档列表已刷新');
-    }
-
-    // 保存最近文档列表
-    function saveRecentDocuments() {
-        localStorage.setItem('recentDocuments', JSON.stringify(recentDocuments));
-    }
-
-    // 切换侧边栏
-    function toggleSidebar() {
-        sidebar.classList.toggle('active');
-    }
-
-    // 显示模态框
-    function showModal(type) {
-        if (type === 'new') {
-            modalTitle.textContent = '新建文档';
-            docCodeContainer.style.display = 'none';
-            nicknameInput.value = nickname;
-            selectModalColor(document.querySelector('.color-option[style*="' + userColor + '"]') || 
-                              document.querySelector('.color-option'));
-        } else {
-            modalTitle.textContent = '加入文档';
-            docCodeContainer.style.display = 'block';
-            docCodeInput.value = '';
-            nicknameInput.value = nickname;
-            selectModalColor(document.querySelector('.color-option[style*="' + userColor + '"]') || 
-                              document.querySelector('.color-option'));
-        }
-        
-        docModal.style.display = 'flex';
-    }
-
-    // 关闭模态框
-    function closeModal() {
-        docModal.style.display = 'none';
-    }
-
-    // 选择颜色
-    function selectModalColor(element) {
-        document.querySelectorAll('.color-option').forEach(opt => {
-            opt.classList.remove('selected');
-        });
+    function selectModalColor(element){
+        document.querySelectorAll('.color-option').forEach(opt=>{opt.classList.remove('selected')});
         element.classList.add('selected');
     }
 
-    // 确认模态框操作
-    function confirmModal() {
-        const newNickname = nicknameInput.value.trim();
-        const selectedColor = document.querySelector('.color-option.selected').style.backgroundColor;
-        
-        if (!newNickname) {
-            showToast('请输入昵称', true);
-            return;
-        }
-        
-        // 更新用户信息
-        nickname = newNickname;
-        userColor = selectedColor;
+    function confirmModal(){
+        const newNickname=nicknameInput.value.trim();
+        const selectedColor=document.querySelector('.color-option.selected').style.backgroundColor;
+        if(!newNickname){showToast('请输入昵称',true);return}
+        nickname=newNickname;
+        userColor=selectedColor;
         saveUserInfo();
-        
-        if (modalTitle.textContent === '新建文档') {
-            createNewDocument();
-        } else {
-            const docCode = docCodeInput.value.trim();
-            if (!docCode || docCode.length !== 6) {
-                showToast('请输入6位文档代码', true);
-                return;
-            }
+        if(modalTitle.textContent==='新建文档'){
+            const docName=docNameInput.value.trim()||'未命名文档';
+            createNewDocument(docName);
+        }else{
+            const docCode=docCodeInput.value.trim();
+            if(!docCode||docCode.length!==6){showToast('请输入6位文档代码',true);return}
             joinDocument(docCode);
         }
-        
         closeModal();
     }
 
-    // 创建新文档
-    function createNewDocument() {
-        currentDocId = generateId(6);
-        documentCodeSpan.textContent = currentDocId;
-        documentInfoContainer.style.display = 'block';
-        
-        // 初始化Firebase引用
-        docRef = db.ref(`markdown-docs/${currentDocId}`);
-        presenceRef = db.ref(`presence/${currentDocId}/${userId}`);
-        versionsRef = db.ref(`markdown-versions/${currentDocId}`);
-        
-        // 设置初始文档内容
+    function createNewDocument(docName){
+        currentDocId=generateId(6);
+        documentCodeSpan.textContent=currentDocId;
+        documentInfoContainer.style.display='block';
+        docRef=db.ref(`markdown-docs/${currentDocId}`);
+        presenceRef=db.ref(`presence/${currentDocId}/${userId}`);
+        versionsRef=db.ref(`markdown-versions/${currentDocId}`);
         docRef.set({
-            content: markdownInput.value || '',
-            createdAt: Date.now(),
-            createdBy: nickname,
-            lastEdited: Date.now(),
-            lastEditedBy: nickname
+            content:markdownInput.value||'',
+            createdAt:Date.now(),
+            createdBy:nickname,
+            lastEdited:Date.now(),
+            lastEditedBy:nickname,
+            name:docName
         });
-        
-        // 监听文档变化
-        docRef.on('value', snapshot => {
-            const data = snapshot.val();
-            if (data && data.content !== markdownInput.value) {
-                markdownInput.value = data.content;
-                preview.innerHTML = convertToHTML(data.content);
+        docRef.on('value',snapshot=>{
+            const data=snapshot.val();
+            if(data&&data.content!==markdownInput.value){
+                markdownInput.value=data.content;
+                preview.innerHTML=convertToHTML(data.content);
                 updateWordCount();
                 renderAll();
             }
         });
-        
-        // 添加到最近文档
-        addRecentDocument(currentDocId, '新文档');
-        
-        // 设置用户在线状态
         setupPresence();
-        
+        addRecentDoc(currentDocId,docName);
         showToast('文档创建成功！分享代码给其他人一起编辑吧！');
     }
 
-    // 加入文档
-    function joinDocument(docCode) {
-        currentDocId = docCode;
-        documentCodeSpan.textContent = currentDocId;
-        documentInfoContainer.style.display = 'block';
-        
-        // 初始化Firebase引用
-        docRef = db.ref(`markdown-docs/${currentDocId}`);
-        presenceRef = db.ref(`presence/${currentDocId}/${userId}`);
-        versionsRef = db.ref(`markdown-versions/${currentDocId}`);
-        
-        // 检查文档是否存在
-        docRef.once('value').then(snapshot => {
-            if (!snapshot.exists()) {
-                showToast('文档不存在，请检查代码', true);
-                documentInfoContainer.style.display = 'none';
-                docRef = null;
-                return;
-            }
-            
-            // 监听文档变化
-            docRef.on('value', snapshot => {
-                const data = snapshot.val();
-                if (data && data.content !== markdownInput.value) {
-                    markdownInput.value = data.content;
-                    preview.innerHTML = convertToHTML(data.content);
+    function joinDocument(docCode){
+        currentDocId=docCode;
+        documentCodeSpan.textContent=currentDocId;
+        documentInfoContainer.style.display='block';
+        docRef=db.ref(`markdown-docs/${currentDocId}`);
+        presenceRef=db.ref(`presence/${currentDocId}/${userId}`);
+        versionsRef=db.ref(`markdown-versions/${currentDocId}`);
+        docRef.once('value').then(snapshot=>{
+            if(!snapshot.exists()){showToast('文档不存在，请检查代码',true);documentInfoContainer.style.display='none';docRef=null;return}
+            const docData=snapshot.val();
+            docRef.on('value',snapshot=>{
+                const data=snapshot.val();
+                if(data&&data.content!==markdownInput.value){
+                    markdownInput.value=data.content;
+                    preview.innerHTML=convertToHTML(data.content);
                     updateWordCount();
                     renderAll();
                 }
             });
-            
-            // 添加到最近文档
-            addRecentDocument(currentDocId, snapshot.val().name || '');
-            
-            // 设置用户在线状态
             setupPresence();
-            
+            addRecentDoc(currentDocId,docData.name||'未命名文档');
             showToast('成功加入文档！');
         });
     }
 
-    // 设置用户在线状态
-    function setupPresence() {
-        // 更新用户列表
-        const usersRef = db.ref(`presence/${currentDocId}`);
-        
-        usersRef.on('value', snapshot => {
-            userList.innerHTML = '';
-            const users = snapshot.val() || {};
-            
-            Object.keys(users).forEach(userId => {
-                const user = users[userId];
-                if (user.online) {
-                    const userBadge = document.createElement('div');
-                    userBadge.className = 'user-badge';
-                    userBadge.innerHTML = `
-                        <div class="user-color" style="background: ${user.color}"></div>
-                        <span>${user.nickname}</span>
-                    `;
+    function setupPresence(){
+        const usersRef=db.ref(`presence/${currentDocId}`);
+        usersRef.on('value',snapshot=>{
+            userList.innerHTML='';
+            const users=snapshot.val()||{};
+            Object.keys(users).forEach(userId=>{
+                const user=users[userId];
+                if(user.online){
+                    const userBadge=document.createElement('div');
+                    userBadge.className='user-badge';
+                    userBadge.innerHTML=`<div class="user-color" style="background:${user.color}"></div><span>${user.nickname}</span>`;
                     userList.appendChild(userBadge);
                 }
             });
         });
-        
-        // 设置当前用户在线状态
         presenceRef.onDisconnect().remove();
-        
         presenceRef.set({
-            online: true,
-            nickname: nickname,
-            color: userColor,
-            lastSeen: Date.now()
+            online:true,
+            nickname:nickname,
+            color:userColor,
+            lastSeen:Date.now()
         });
-        
-        // 更新光标位置
         updateCursorPosition();
     }
 
-    // 更新光标位置
-    function updateCursorPosition() {
-        if (!presenceRef) return;
-        
-        const cursorPos = markdownInput.selectionStart;
-        presenceRef.update({
-            cursorPos: cursorPos,
-            lastUpdated: Date.now()
-        });
-        
-        // 清除旧光标
+    function updateCursorPosition(){
+        if(!presenceRef)return;
+        const cursorPos=markdownInput.selectionStart;
+        presenceRef.update({cursorPos:cursorPos,lastUpdated:Date.now()});
         clearCursors();
-        
-        // 获取其他用户的光标位置
-        db.ref(`presence/${currentDocId}`).once('value').then(snapshot => {
-            const users = snapshot.val() || {};
-            
-            Object.keys(users).forEach(userId => {
-                const user = users[userId];
-                if (user.online && userId !== userId && user.cursorPos !== undefined) {
-                    createCursor(userId, user.nickname, user.color, user.cursorPos);
+        db.ref(`presence/${currentDocId}`).once('value').then(snapshot=>{
+            const users=snapshot.val()||{};
+            Object.keys(users).forEach(userId=>{
+                const user=users[userId];
+                if(user.online&&userId!==userId&&user.cursorPos!==undefined){
+                    createCursor(userId,user.nickname,user.color,user.cursorPos);
                 }
             });
         });
     }
 
-    // 创建光标指示器
-    function createCursor(userId, name, color, position) {
-        // 如果已有该用户的光标，先移除
-        if (cursors[userId]) {
+    function createCursor(userId,name,color,position){
+        if(cursors[userId]){
             document.body.removeChild(cursors[userId].cursor);
             document.body.removeChild(cursors[userId].label);
         }
-        
-        // 计算光标位置
-        const textBeforeCursor = markdownInput.value.substring(0, position);
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.whiteSpace = 'pre-wrap';
-        tempDiv.style.visibility = 'hidden';
-        tempDiv.style.fontFamily = getComputedStyle(markdownInput).fontFamily;
-        tempDiv.style.fontSize = getComputedStyle(markdownInput).fontSize;
-        tempDiv.style.lineHeight = getComputedStyle(markdownInput).lineHeight;
-        tempDiv.style.width = markdownInput.clientWidth + 'px';
-        tempDiv.textContent = textBeforeCursor;
+        const textBeforeCursor=markdownInput.value.substring(0,position);
+        const tempDiv=document.createElement('div');
+        tempDiv.style.position='absolute';
+        tempDiv.style.whiteSpace='pre-wrap';
+        tempDiv.style.visibility='hidden';
+        tempDiv.style.fontFamily=getComputedStyle(markdownInput).fontFamily;
+        tempDiv.style.fontSize=getComputedStyle(markdownInput).fontSize;
+        tempDiv.style.lineHeight=getComputedStyle(markdownInput).lineHeight;
+        tempDiv.style.width=markdownInput.clientWidth+'px';
+        tempDiv.textContent=textBeforeCursor;
         document.body.appendChild(tempDiv);
-        
-        const range = document.createRange();
+        const range=document.createRange();
         range.selectNodeContents(tempDiv);
-        const rects = range.getClientRects();
-        let x = 0, y = 0;
-        
-        if (rects.length > 0) {
-            const lastRect = rects[rects.length - 1];
-            x = lastRect.right;
-            y = lastRect.top;
-        } else {
-            // 如果没有任何文本，使用输入框的起始位置
-            const inputRect = markdownInput.getBoundingClientRect();
-            x = inputRect.left;
-            y = inputRect.top;
+        const rects=range.getClientRects();
+        let x=0,y=0;
+        if(rects.length>0){
+            const lastRect=rects[rects.length-1];
+            x=lastRect.right;
+            y=lastRect.top;
+        }else{
+            const inputRect=markdownInput.getBoundingClientRect();
+            x=inputRect.left;
+            y=inputRect.top;
         }
-        
         document.body.removeChild(tempDiv);
-        
-        // 创建光标元素
-        const cursor = document.createElement('div');
-        cursor.className = 'cursor';
-        cursor.style.left = x + 'px';
-        cursor.style.top = y + 'px';
-        cursor.style.setProperty('--cursor-color', color);
-        cursor.style.height = getComputedStyle(markdownInput).lineHeight;
-        
-        // 创建标签元素
-        const label = document.createElement('div');
-        label.className = 'cursor-label';
-        label.textContent = name;
-        label.style.left = x + 'px';
-        label.style.top = (y - 20) + 'px';
-        label.style.backgroundColor = color;
-        
+        const cursor=document.createElement('div');
+        cursor.className='cursor';
+        cursor.style.left=x+'px';
+        cursor.style.top=y+'px';
+        cursor.style.setProperty('--cursor-color',color);
+        cursor.style.height=getComputedStyle(markdownInput).lineHeight;
+        const label=document.createElement('div');
+        label.className='cursor-label';
+        label.textContent=name;
+        label.style.left=x+'px';
+        label.style.top=(y-20)+'px';
+        label.style.backgroundColor=color;
         document.body.appendChild(cursor);
         document.body.appendChild(label);
-        
-        // 保存光标引用
-        cursors[userId] = { cursor, label };
-        
-        // 设置定时器自动移除过时光标
-        setTimeout(() => {
-            if (cursors[userId]) {
+        cursors[userId]={cursor,label};
+        setTimeout(()=>{
+            if(cursors[userId]){
                 document.body.removeChild(cursors[userId].cursor);
                 document.body.removeChild(cursors[userId].label);
                 delete cursors[userId];
             }
-        }, 3000);
+        },3000);
     }
 
-    // 清除所有光标
-    function clearCursors() {
-        Object.keys(cursors).forEach(userId => {
+    function clearCursors(){
+        Object.keys(cursors).forEach(userId=>{
             document.body.removeChild(cursors[userId].cursor);
             document.body.removeChild(cursors[userId].label);
         });
-        cursors = {};
+        cursors={};
     }
 
-    // 保存版本
-    function saveVersion() {
-        if (!versionsRef || !markdownInput.value.trim()) {
-            showToast('没有内容可保存', true);
-            return;
-        }
-        
-        const timestamp = Date.now();
-        const date = new Date(timestamp);
-        const versionName = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-        
+    function saveVersion(){
+        if(!versionsRef||!markdownInput.value.trim()){showToast('没有内容可保存',true);return}
+        const timestamp=Date.now();
+        const date=new Date(timestamp);
+        const versionName=`${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes().toString().padStart(2,'0')}`;
         versionsRef.push({
-            content: markdownInput.value,
-            createdAt: timestamp,
-            createdBy: nickname,
-            name: versionName
+            content:markdownInput.value,
+            createdAt:timestamp,
+            createdBy:nickname,
+            name:versionName
         });
-        
         showToast('版本保存成功！');
     }
 
-    // 显示版本历史
-    function showVersions() {
-        if (!versionsRef) {
-            showToast('没有可查看的历史版本', true);
-            return;
-        }
-        
-        versionsList.innerHTML = '';
-        versionsRef.once('value').then(snapshot => {
-            const versions = snapshot.val() || {};
-            const versionArray = [];
-            
-            Object.keys(versions).forEach(versionId => {
-                versionArray.push({
-                    id: versionId,
-                    ...versions[versionId]
-                });
+    function showVersions(){
+        if(!versionsRef){showToast('没有可查看的历史版本',true);return}
+        versionsList.innerHTML='';
+        versionsRef.once('value').then(snapshot=>{
+            const versions=snapshot.val()||{};
+            const versionArray=[];
+            Object.keys(versions).forEach(versionId=>{
+                versionArray.push({id:versionId,...versions[versionId]});
             });
-            
-            // 按时间倒序排序
-            versionArray.sort((a, b) => b.createdAt - a.createdAt);
-            
-            if (versionArray.length === 0) {
-                versionsList.innerHTML = '<div class="version-item">暂无历史版本</div>';
+            versionArray.sort((a,b)=>b.createdAt-a.createdAt);
+            if(versionArray.length===0){
+                versionsList.innerHTML='<div class="version-item">暂无历史版本</div>';
                 return;
             }
-            
-            versionArray.forEach(version => {
-                const versionItem = document.createElement('div');
-                versionItem.className = 'version-item';
-                versionItem.innerHTML = `
-                    <div class="version-time">${version.name}</div>
-                    <div class="version-content">${version.createdBy} 保存</div>
-                `;
-                
-                versionItem.addEventListener('click', () => {
-                    markdownInput.value = version.content;
-                    preview.innerHTML = convertToHTML(version.content);
+            versionArray.forEach(version=>{
+                const versionItem=document.createElement('div');
+                versionItem.className='version-item';
+                versionItem.innerHTML=`<div class="version-time">${version.name}</div><div class="version-content">${version.createdBy} 保存</div>`;
+                versionItem.addEventListener('click',()=>{
+                    markdownInput.value=version.content;
+                    preview.innerHTML=convertToHTML(version.content);
                     updateWordCount();
                     renderAll();
-                    versionsModal.style.display = 'none';
+                    versionsModal.style.display='none';
                     showToast(`已恢复到 ${version.name} 的版本`);
                 });
-                
                 versionsList.appendChild(versionItem);
             });
         });
-        
-        versionsModal.style.display = 'flex';
+        versionsModal.style.display='flex';
     }
 
-    // 复制文档代码
-    function copyDocCode() {
-        navigator.clipboard.writeText(currentDocId).then(() => {
+    function copyDocCode(){
+        navigator.clipboard.writeText(currentDocId).then(()=>{
             showToast('文档代码已复制');
-        }).catch(err => {
-            console.error('复制失败:', err);
-            showToast('复制失败，请手动复制', true);
+        }).catch(err=>{
+            console.error('复制失败:',err);
+            showToast('复制失败，请手动复制',true);
         });
     }
 
-    // 清空编辑器
-    function clearEditor() {
-        markdownInput.value = '';
-        preview.innerHTML = '';
+    function clearEditor(){
+        markdownInput.value='';
+        preview.innerHTML='';
         updateWordCount();
         showToast('已清空输入');
     }
 
-    // 加载示例
-    function loadSample() {
-        markdownInput.value = sampleMarkdown;
-        preview.innerHTML = convertToHTML(sampleMarkdown);
+    function loadSample(){
+        markdownInput.value=sampleMarkdown;
+        preview.innerHTML=convertToHTML(sampleMarkdown);
         updateWordCount();
         renderAll();
         showToast('已加载示例内容');
     }
 
-    // 下载HTML
-    function downloadHtml() {
-        const htmlContent = preview.innerHTML;
-        const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="https://lsqkk.github.io/css/md.css"></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = currentDocId ? `doc-${currentDocId}.html` : 'markdown-export.html';
+    function downloadHtml(){
+        const htmlContent=preview.innerHTML;
+        const blob=new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="https://lsqkk.github.io/css/md.css"></head><body>${htmlContent}</body></html>`],{type:'text/html'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download=currentDocId?`doc-${currentDocId}.html`:'markdown-export.html';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1248,14 +560,13 @@ $$
         showToast('HTML文件已下载');
     }
 
-    // 下载Markdown
-    function downloadMd() {
-        const mdContent = markdownInput.value;
-        const blob = new Blob([mdContent], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = currentDocId ? `doc-${currentDocId}.md` : 'markdown-export.md';
+    function downloadMd(){
+        const mdContent=markdownInput.value;
+        const blob=new Blob([mdContent],{type:'text/markdown'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download=currentDocId?`doc-${currentDocId}.md`:'markdown-export.md';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1263,413 +574,233 @@ $$
         showToast('Markdown文件已下载');
     }
 
-    // 下载Word
-    async function downloadWord() {
-        const markdownText = markdownInput.value.trim();
-        if (!markdownText) {
-            showToast('没有内容可导出', true);
-            return;
-        }
-
-        try {
+    async function downloadWord(){
+        const markdownText=markdownInput.value.trim();
+        if(!markdownText){showToast('没有内容可导出',true);return}
+        try{
             downloadWordBtn.classList.add('processing');
             showToast('正在生成Word文档...');
-
-            const html = convertToHTML(markdownText);
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-
-            const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, 
-                    Table, TableRow, TableCell, WidthType, convertInchesToTwip,
-                    ExternalHyperlink, UnderlineType } = docx;
-
-            const children = [];
-
-            for (let i = 0; i < tempDiv.childNodes.length; i++) {
-                const node = tempDiv.childNodes[i];
-                
-                if (node.nodeName === 'P') {
-                    const paragraph = new Paragraph({
-                        children: parseInlineNodes(node),
-                        spacing: { after: 200 }
-                    });
+            const html=convertToHTML(markdownText);
+            const tempDiv=document.createElement('div');
+            tempDiv.innerHTML=html;
+            const{Document,Paragraph,TextRun,HeadingLevel,AlignmentType,Table,TableRow,TableCell,WidthType,convertInchesToTwip,ExternalHyperlink,UnderlineType}=docx;
+            const children=[];
+            for(let i=0;i<tempDiv.childNodes.length;i++){
+                const node=tempDiv.childNodes[i];
+                if(node.nodeName==='P'){
+                    const paragraph=new Paragraph({children:parseInlineNodes(node),spacing:{after:200}});
                     children.push(paragraph);
-                }
-                else if (node.nodeName.match(/^H[1-6]$/)) {
-                    const level = parseInt(node.nodeName[1]);
-                    const headingLevel = [
-                        HeadingLevel.HEADING_1,
-                        HeadingLevel.HEADING_2,
-                        HeadingLevel.HEADING_3,
-                        HeadingLevel.HEADING_4,
-                        HeadingLevel.HEADING_5,
-                        HeadingLevel.HEADING_6
-                    ][level - 1];
-                    
-                    const paragraph = new Paragraph({
-                        text: node.textContent,
-                        heading: headingLevel,
-                        spacing: { before: 200, after: 100 }
-                    });
+                }else if(node.nodeName.match(/^H[1-6]$/)){
+                    const level=parseInt(node.nodeName[1]);
+                    const headingLevel=[HeadingLevel.HEADING_1,HeadingLevel.HEADING_2,HeadingLevel.HEADING_3,HeadingLevel.HEADING_4,HeadingLevel.HEADING_5,HeadingLevel.HEADING_6][level-1];
+                    const paragraph=new Paragraph({text:node.textContent,heading:headingLevel,spacing:{before:200,after:100}});
                     children.push(paragraph);
-                }
-                else if (node.nodeName === 'UL') {
-                    const listItems = node.querySelectorAll('li');
-                    listItems.forEach(item => {
-                        const paragraph = new Paragraph({
-                            text: item.textContent,
-                            bullet: { level: 0 },
-                            spacing: { after: 100 }
-                        });
+                }else if(node.nodeName==='UL'){
+                    const listItems=node.querySelectorAll('li');
+                    listItems.forEach(item=>{
+                        const paragraph=new Paragraph({text:item.textContent,bullet:{level:0},spacing:{after:100}});
                         children.push(paragraph);
                     });
-                }
-                else if (node.nodeName === 'OL') {
-                    const listItems = node.querySelectorAll('li');
-                    listItems.forEach((item, index) => {
-                        const paragraph = new Paragraph({
-                            text: item.textContent,
-                            numbering: { level: 0, reference: 'ordered-list', style: 'default' },
-                            spacing: { after: 100 }
-                        });
+                }else if(node.nodeName==='OL'){
+                    const listItems=node.querySelectorAll('li');
+                    listItems.forEach((item,index)=>{
+                        const paragraph=new Paragraph({text:item.textContent,numbering:{level:0,reference:'ordered-list',style:'default'},spacing:{after:100}});
                         children.push(paragraph);
                     });
-                }
-                else if (node.nodeName === 'PRE') {
-                    const code = node.textContent;
-                    const paragraph = new Paragraph({
-                        children: [
-                            new TextRun({
-                                text: code,
-                                font: 'Consolas',
-                                size: 20,
-                                color: '333333',
-                                break: 1
-                            })
-                        ],
-                        indent: { left: convertInchesToTwip(0.5) },
-                        spacing: { line: 240, after: 100 },
-                        border: {
-                            bottom: { color: 'DDDDDD', size: 6, style: 'single' },
-                            left: { color: 'DDDDDD', size: 6, style: 'single' },
-                            right: { color: 'DDDDDD', size: 6, style: 'single' },
-                            top: { color: 'DDDDDD', size: 6, style: 'single' }
-                        },
-                        shading: { fill: 'F5F5F5' }
+                }else if(node.nodeName==='PRE'){
+                    const code=node.textContent;
+                    const paragraph=new Paragraph({
+                        children:[new TextRun({text:code,font:'Consolas',size:20,color:'333333',break:1})],
+                        indent:{left:convertInchesToTwip(0.5)},
+                        spacing:{line:240,after:100},
+                        border:{bottom:{color:'DDDDDD',size:6,style:'single'},left:{color:'DDDDDD',size:6,style:'single'},right:{color:'DDDDDD',size:6,style:'single'},top:{color:'DDDDDD',size:6,style:'single'}},
+                        shading:{fill:'F5F5F5'}
                     });
                     children.push(paragraph);
-                }
-                else if (node.nodeName === 'TABLE') {
-                    const rows = node.querySelectorAll('tr');
-                    const tableRows = [];
-                    
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll('td, th');
-                        const tableCells = [];
-                        
-                        cells.forEach(cell => {
-                            const isHeader = cell.nodeName === 'TH';
-                            const tableCell = new TableCell({
-                                children: [
-                                    new Paragraph({
-                                        children: parseInlineNodes(cell),
-                                        alignment: AlignmentType.CENTER
-                                    })
-                                ],
-                                shading: isHeader ? { fill: 'F0F0F0' } : undefined
+                }else if(node.nodeName==='TABLE'){
+                    const rows=node.querySelectorAll('tr');
+                    const tableRows=[];
+                    rows.forEach(row=>{
+                        const cells=row.querySelectorAll('td,th');
+                        const tableCells=[];
+                        cells.forEach(cell=>{
+                            const isHeader=cell.nodeName==='TH';
+                            const tableCell=new TableCell({
+                                children:[new Paragraph({children:parseInlineNodes(cell),alignment:AlignmentType.CENTER})],
+                                shading:isHeader?{fill:'F0F0F0'}:undefined
                             });
                             tableCells.push(tableCell);
                         });
-                        
-                        tableRows.push(new TableRow({ children: tableCells }));
+                        tableRows.push(new TableRow({children:tableCells}));
                     });
-                    
-                    const table = new Table({
-                        rows: tableRows,
-                        width: { size: 100, type: WidthType.PERCENTAGE }
-                    });
-                    
+                    const table=new Table({rows:tableRows,width:{size:100,type:WidthType.PERCENTAGE}});
                     children.push(table);
-                }
-                else if (node.nodeName === 'BLOCKQUOTE') {
-                    const paragraph = new Paragraph({
-                        children: parseInlineNodes(node),
-                        indent: { left: convertInchesToTwip(0.5) },
-                        border: { left: { color: '4A6FA5', size: 6, style: 'single' } },
-                        spacing: { after: 100 }
+                }else if(node.nodeName==='BLOCKQUOTE'){
+                    const paragraph=new Paragraph({
+                        children:parseInlineNodes(node),
+                        indent:{left:convertInchesToTwip(0.5)},
+                        border:{left:{color:'4A6FA5',size:6,style:'single'}},
+                        spacing:{after:100}
                     });
                     children.push(paragraph);
-                }
-                else if (node.nodeName === 'HR') {
-                    children.push(
-                        new Paragraph({
-                            border: { bottom: { color: '999999', size: 6, style: 'single' } },
-                            spacing: { after: 200, before: 200 }
-                        })
-                    );
+                }else if(node.nodeName==='HR'){
+                    children.push(new Paragraph({border:{bottom:{color:'999999',size:6,style:'single'}},spacing:{after:200,before:200}}));
                 }
             }
-
-            const doc = new Document({
-                styles: {
-                    paragraphStyles: [
-                        {
-                            id: 'Normal',
-                            name: 'Normal',
-                            run: {
-                                font: '微软雅黑',
-                                size: 24,
-                                color: '333333'
-                            },
-                            paragraph: {
-                                spacing: { line: 276, after: 100 }
-                            }
-                        },
-                        {
-                            id: 'Heading1',
-                            name: 'Heading 1',
-                            basedOn: 'Normal',
-                            next: 'Normal',
-                            run: {
-                                font: '微软雅黑',
-                                size: 32,
-                                bold: true,
-                                color: '4A6FA5'
-                            },
-                            paragraph: {
-                                spacing: { before: 240, after: 120 }
-                            }
-                        },
-                        {
-                            id: 'Heading2',
-                            name: 'Heading 2',
-                            basedOn: 'Normal',
-                            next: 'Normal',
-                            run: {
-                                font: '微软雅黑',
-                                size: 28,
-                                bold: true,
-                                color: '4A6FA5'
-                            },
-                            paragraph: {
-                                spacing: { before: 200, after: 100 }
-                            }
-                        }
+            const doc=new Document({
+                styles:{
+                    paragraphStyles:[
+                        {id:'Normal',name:'Normal',run:{font:'微软雅黑',size:24,color:'333333'},paragraph:{spacing:{line:276,after:100}}},
+                        {id:'Heading1',name:'Heading 1',basedOn:'Normal',next:'Normal',run:{font:'微软雅黑',size:32,bold:true,color:'4A6FA5'},paragraph:{spacing:{before:240,after:120}}},
+                        {id:'Heading2',name:'Heading 2',basedOn:'Normal',next:'Normal',run:{font:'微软雅黑',size:28,bold:true,color:'4A6FA5'},paragraph:{spacing:{before:200,after:100}}}
                     ]
                 },
-                numbering: {
-                    config: [
-                        {
-                            reference: 'ordered-list',
-                            levels: [
-                                {
-                                    level: 0,
-                                    format: 'decimal',
-                                    text: '%1.',
-                                    alignment: AlignmentType.START
-                                }
-                            ]
-                        }
-                    ]
-                },
-                sections: [{
-                    properties: {},
-                    children: children
-                }]
+                numbering:{config:[{reference:'ordered-list',levels:[{level:0,format:'decimal',text:'%1.',alignment:AlignmentType.START}]}]},
+                sections:[{properties:{},children:children}]
             });
-
-            const blob = await docx.Packer.toBlob(doc);
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = currentDocId ? `doc-${currentDocId}.docx` : 'markdown-export.docx';
+            const blob=await docx.Packer.toBlob(doc);
+            const url=URL.createObjectURL(blob);
+            const a=document.createElement('a');
+            a.href=url;
+            a.download=currentDocId?`doc-${currentDocId}.docx`:'markdown-export.docx';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-
             showToast('Word文档生成成功！');
-        } catch (error) {
-            console.error('转换失败:', error);
-            showToast('转换失败: ' + error.message, true);
-        } finally {
+        }catch(error){
+            console.error('转换失败:',error);
+            showToast('转换失败: '+error.message,true);
+        }finally{
             downloadWordBtn.classList.remove('processing');
         }
     }
 
-    // 解析内联节点
-    function parseInlineNodes(parentNode) {
-        const children = [];
-        
-        for (let node of parentNode.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                if (node.textContent.trim()) {
-                    children.push(new docx.TextRun({
-                        text: node.textContent,
-                        font: '微软雅黑',
-                        size: 24
-                    }));
+    function parseInlineNodes(parentNode){
+        const children=[];
+        for(let node of parentNode.childNodes){
+            if(node.nodeType===Node.TEXT_NODE){
+                if(node.textContent.trim()){
+                    children.push(new docx.TextRun({text:node.textContent,font:'微软雅黑',size:24}));
                 }
-            }
-            else if (node.nodeName === 'STRONG' || node.nodeName === 'B') {
-                children.push(new docx.TextRun({
-                    text: node.textContent,
-                    bold: true,
-                    font: '微软雅黑',
-                    size: 24
-                }));
-            }
-            else if (node.nodeName === 'EM' || node.nodeName === 'I') {
-                children.push(new docx.TextRun({
-                    text: node.textContent,
-                    italics: true,
-                    font: '微软雅黑',
-                    size: 24
-                }));
-            }
-            else if (node.nodeName === 'CODE') {
-                children.push(new docx.TextRun({
-                    text: node.textContent,
-                    font: 'Consolas',
-                    size: 20,
-                    color: '333333'
-                }));
-            }
-            else if (node.nodeName === 'A') {
-                children.push(
-                    new docx.ExternalHyperlink({
-                        children: [
-                            new docx.TextRun({
-                                text: node.textContent,
-                                font: '微软雅黑',
-                                size: 24,
-                                color: '0563C1',
-                                underline: {
-                                    type: UnderlineType.SINGLE,
-                                    color: '0563C1'
-                                }
-                            })
-                        ],
-                        link: node.href
-                    })
-                );
-            }
-            else if (node.nodeName === 'IMG') {
-                children.push(new docx.TextRun({
-                    text: `[图片: ${node.alt || '无描述'}]`,
-                    font: '微软雅黑',
-                    size: 24,
-                    color: '666666'
-                }));
-            }
-            else if (node.nodeType === Node.ELEMENT_NODE) {
-                const inlineChildren = parseInlineNodes(node);
+            }else if(node.nodeName==='STRONG'||node.nodeName==='B'){
+                children.push(new docx.TextRun({text:node.textContent,bold:true,font:'微软雅黑',size:24}));
+            }else if(node.nodeName==='EM'||node.nodeName==='I'){
+                children.push(new docx.TextRun({text:node.textContent,italics:true,font:'微软雅黑',size:24}));
+            }else if(node.nodeName==='CODE'){
+                children.push(new docx.TextRun({text:node.textContent,font:'Consolas',size:20,color:'333333'}));
+            }else if(node.nodeName==='A'){
+                children.push(new docx.ExternalHyperlink({
+                    children:[new docx.TextRun({text:node.textContent,font:'微软雅黑',size:24,color:'0563C1',underline:{type:UnderlineType.SINGLE,color:'0563C1'}})],link:node.href}));
+            }else if(node.nodeName==='IMG'){
+                children.push(new docx.TextRun({text:`[图片: ${node.alt||'无描述'}]`,font:'微软雅黑',size:24,color:'666666'}));
+            }else if(node.nodeType===Node.ELEMENT_NODE){
+                const inlineChildren=parseInlineNodes(node);
                 children.push(...inlineChildren);
             }
         }
-        
         return children;
     }
 
-    // 更新字数统计
-    function updateWordCount() {
-        const text = markdownInput.value;
-        const count = text.trim() === '' ? 0 : text.length;
-        wordCount.textContent = `${count} 字`;
+    function updateWordCount(){
+        const text=markdownInput.value;
+        const count=text.trim()===''?0:text.length;
+        wordCount.textContent=`${count} 字`;
     }
 
-    // 手动触发 MathJax 渲染
-    function renderAll() {
-        try {
-            if (window.MathJax?.typeset) {
-                MathJax.typeset();
-            }
-            
-            if (window.mermaid?.init) {
-                try {
-                    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-                } catch (mermaidErr) {
-                    console.error('Mermaid渲染错误:', mermaidErr);
-                }
-            } else {
-                console.warn('Mermaid未加载完成');
-            }
-        } catch (err) {
-            console.error('渲染错误:', err);
-        }
+    function renderAll(){
+        try{
+            if(window.MathJax?.typeset){MathJax.typeset()}
+            if(window.mermaid?.init){
+                try{mermaid.init(undefined,document.querySelectorAll('.mermaid'))}catch(mermaidErr){console.error('Mermaid渲染错误:',mermaidErr)}
+            }else{console.warn('Mermaid未加载完成')}
+        }catch(err){console.error('渲染错误:',err)}
     }
 
-    // Markdown 转 HTML 函数
-    function convertToHTML(md) {
-        const mermaidBlocks = [];
-        let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
-            mermaidBlocks.push(code.trim());
-            return `<div class="mermaid">${code.trim()}</div>`;
-        });
-
-        const codeBlocks = [];
-        html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
-            codeBlocks.push(code);
-            return `\x1BCODE${codeBlocks.length-1}\x1B`;
-        });
-
-        const inlineCodes = [];
-        html = html.replace(/`([^`]+)`/g, (match, code) => {
-            inlineCodes.push(code);
-            return `\x1BINLINE${inlineCodes.length-1}\x1B`;
-        });
-
-        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
-            return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
-        });
-
-        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-            return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
-        });
-
-        html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
-            const cleaned = formula.trim();
-            return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
-        });
-
-        html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
-            return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
-        });
-
-        html = html
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
-            .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-            .replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>')
-            .replace(/(<li>.*<\/li>)+/g, (m) => 
-                m.match(/^\d/) ? `<ol>${m}</ol>` : m
-            )
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
-
-        html = html.replace(/\x1BCODE(\d+)\x1B/g, (_, n) => 
-            `<pre><code>${codeBlocks[n]}</code></pre>`
-        );
-        html = html.replace(/\x1BINLINE(\d+)\x1B/g, (_, n) => 
-            `<code>${inlineCodes[n]}</code>`
-        );
-
-        html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
-
+    function convertToHTML(md){
+        const mermaidBlocks=[];
+        let html=md.replace(/```mermaid([\s\S]*?)```/g,(match,code)=>{mermaidBlocks.push(code.trim());return`<div class="mermaid">${code.trim()}</div>`});
+        const codeBlocks=[];
+        html=html.replace(/```([\s\S]*?)```/g,(match,code)=>{codeBlocks.push(code);return`\x1BCODE${codeBlocks.length-1}\x1B`});
+        const inlineCodes=[];
+        html=html.replace(/`([^`]+)`/g,(match,code)=>{inlineCodes.push(code);return`\x1BINLINE${inlineCodes.length-1}\x1B`});
+        html=html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,(_,alt,src)=>{return`<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`});
+        html=html.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,text,url)=>{return`<a href="${url.trim()}" class="md-link">${text.trim()}</a>`});
+        html=html.replace(/\$\$([\s\S]+?)\$\$/g,(_,formula)=>{const cleaned=formula.trim();return cleaned?`<div class="math-block">\\[ ${cleaned} \\]</div>`:''});
+        html=html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g,(_,prefix,formula,suffix)=>{return`${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`});
+        html=html.replace(/^# (.*$)/gm,'<h1>$1</h1>').replace(/^## (.*$)/gm,'<h2>$1</h2>').replace(/^### (.*$)/gm,'<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/^\s*[\-+*]\s+(.*$)/gm,'<li>$1</li>').replace(/^\s*\d+\.\s+(.*$)/gm,'<li>$1</li>').replace(/(<li>.*<\/li>)+/g,'<ul>$&</ul>').replace(/(<li>.*<\/li>)+/g,(m)=>m.match(/^\d/)?`<ol>${m}</ol>`:m).replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>').replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1">');
+        html=html.replace(/\x1BCODE(\d+)\x1B/g,(_,n)=>`<pre><code>${codeBlocks[n]}</code></pre>`);
+        html=html.replace(/\x1BINLINE(\d+)\x1B/g,(_,n)=>`<code>${inlineCodes[n]}</code>`);
+        html=html.replace(/([^\n]+)(\n\n|$)/g,'<p>$1</p>');
         return html;
     }
 
-    // 显示 Toast 通知
-    function showToast(message, isError = false) {
-        toastMessage.textContent = message;
-        toast.className = isError ? 'toast error show' : 'toast show';
-        setTimeout(() => {
-            toast.className = 'toast';
-        }, 3000);
+    function showToast(message,isError=false){
+        toastMessage.textContent=message;
+        toast.className=isError?'toast error show':'toast show';
+        setTimeout(()=>{toast.className='toast'},3000);
+    }
+
+    function toggleSidebar(){sidebar.classList.toggle('open')}
+
+    function checkWindowSize(){
+        if(window.innerWidth<=1024){
+            sidebar.classList.remove('open');
+            sidebarToggle.style.display='block';
+        }else{
+            sidebar.classList.add('open');
+            sidebarToggle.style.display='none';
+        }
+    }
+
+    function addRecentDoc(docId,docName){
+        const existingIndex=recentDocs.findIndex(doc=>doc.id===docId);
+        if(existingIndex>=0){
+            recentDocs[existingIndex].name=docName;
+            recentDocs[existingIndex].lastAccessed=Date.now();
+        }else{
+            recentDocs.unshift({id:docId,name:docName,lastAccessed:Date.now()});
+            if(recentDocs.length>5){recentDocs=recentDocs.slice(0,5)}
+        }
+        localStorage.setItem('md-recentDocs',JSON.stringify(recentDocs));
+        renderRecentDocs();
+    }
+
+    function renderRecentDocs(){
+        if(recentDocs.length===0){
+            docList.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-file-alt"></i></div><p>暂无最近文档</p></div>';
+            return;
+        }
+        docList.innerHTML='';
+        recentDocs.sort((a,b)=>b.lastAccessed-a.lastAccessed).forEach(doc=>{
+            const docItem=document.createElement('li');
+            docItem.className=`doc-item ${doc.id===currentDocId?'active':''}`;
+            docItem.dataset.id=doc.id;
+            docItem.innerHTML=`
+                <div>
+                    <div class="doc-name">${doc.name}</div>
+                    <div class="doc-code">${doc.id}</div>
+                </div>
+                <div class="doc-actions">
+                    <button class="doc-action-btn edit-doc" title="重命名"><i class="fas fa-edit"></i></button>
+                </div>
+            `;
+            docItem.addEventListener('click',(e)=>{
+                if(!e.target.closest('.doc-action-btn')){
+                    joinDocument(doc.id);
+                }
+            });
+            docItem.querySelector('.edit-doc').addEventListener('click',(e)=>{
+                e.stopPropagation();
+                const newName=prompt('输入新的文档名称',doc.name);
+                if(newName&&newName.trim()!==doc.name){
+                    doc.name=newName.trim();
+                    localStorage.setItem('md-recentDocs',JSON.stringify(recentDocs));
+                    renderRecentDocs();
+                }
+            });
+            docList.appendChild(docItem);
+        });
     }
 </script>
 </body>
