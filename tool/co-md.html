@@ -12,6 +12,73 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
     <style>
+        .docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.doc-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.doc-item:hover {
+    background-color: #3a3a3a;
+}
+
+.doc-item.active {
+    background-color: #4a4a4a;
+}
+
+.doc-name {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 5px;
+    word-break: break-word;
+}
+
+.doc-code {
+    font-size: 12px;
+    color: #999;
+    display: block;
+}
+
+.doc-actions {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: none;
+    gap: 5px;
+}
+
+.doc-item:hover .doc-actions {
+    display: flex;
+}
+
+.doc-action-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #e0e0e0;
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.doc-action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+        
         :root {
             --primary-color: #4f46e5;
             --secondary-color: #f9fafb;
