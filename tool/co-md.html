@@ -235,6 +235,23 @@
     </style>
 </head>
 <body>
+<button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h3 class="sidebar-title">最近文档</h3>
+        <div class="sidebar-actions">
+            <button class="sidebar-btn" id="refreshDocs">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+    
+    <ul class="docs-list" id="docsList"></ul>
+</div>
+    
     <div class="container">
         <div class="header">
             <h1 class="title">
@@ -413,7 +430,7 @@
     let cursors = {};
     let isTyping = false;
     let lastTypedTime = 0;
-
+let recentDocs = JSON.parse(localStorage.getItem('recent-docs')) || [];
     // DOM 元素
     const markdownInput = document.getElementById('markdown-input');
     const preview = document.getElementById('preview');
@@ -477,6 +494,9 @@ $$
         
         // 初始加载示例
         sampleBtn.click();
+
+        loadRecentDocs(); 
+        
     });
 
     // 生成随机ID
@@ -503,6 +523,9 @@ $$
 
     // 设置事件监听器
     function setupEventListeners() {
+        document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
+document.getElementById('refreshDocs').addEventListener('click', loadRecentDocs);
+
         // Markdown输入事件
         markdownInput.addEventListener('input', function() {
             preview.innerHTML = convertToHTML(this.value);
@@ -645,7 +668,7 @@ $$
             lastEdited: Date.now(),
             lastEditedBy: nickname
         });
-        
+        addRecentDoc(currentDocId, '未命名文档');
         // 监听文档变化
         docRef.on('value', snapshot => {
             const data = snapshot.val();
@@ -686,6 +709,7 @@ $$
             // 监听文档变化
             docRef.on('value', snapshot => {
                 const data = snapshot.val();
+                addRecentDoc(docCode, data.name || ''); // 添加这一行
                 if (data && data.content !== markdownInput.value) {
                     markdownInput.value = data.content;
                     preview.innerHTML = convertToHTML(data.content);
@@ -699,6 +723,8 @@ $$
             
             showToast('成功加入文档！');
         });
+
+        
     }
 
     // 设置用户在线状态
@@ -926,6 +952,8 @@ $$
         });
     }
 
+
+    
     // 清空编辑器
     function clearEditor() {
         markdownInput.value = '';
@@ -1381,6 +1409,102 @@ $$
             toast.className = 'toast';
         }, 3000);
     }
+    function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+}
+
+function loadRecentDocs() {
+    const docsList = document.getElementById('docsList');
+    docsList.innerHTML = '';
+    
+    recentDocs.forEach(doc => {
+        const li = document.createElement('li');
+        li.className = `doc-item ${doc.id === currentDocId ? 'active' : ''}`;
+        li.dataset.id = doc.id;
+        
+        li.innerHTML = `
+            <span class="doc-name">${doc.name || '未命名文档'}</span>
+            <div class="doc-actions">
+                <button class="doc-action-btn edit-doc" title="重命名">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="doc-action-btn delete-doc" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <span class="doc-code">${doc.id}</span>
+        `;
+        
+        li.addEventListener('click', (e) => {
+            if (!e.target.closest('.doc-action-btn')) {
+                joinDocument(doc.id);
+            }
+        });
+        
+        docsList.appendChild(li);
+    });
+    
+    // 添加事件监听器
+    document.querySelectorAll('.edit-doc').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const docId = btn.closest('.doc-item').dataset.id;
+            editDocName(docId);
+        });
+    });
+    
+    document.querySelectorAll('.delete-doc').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const docId = btn.closest('.doc-item').dataset.id;
+            deleteRecentDoc(docId);
+        });
+    });
+}
+
+function addRecentDoc(docId, docName = '') {
+    // 避免重复添加
+    if (!recentDocs.some(doc => doc.id === docId)) {
+        recentDocs.unshift({
+            id: docId,
+            name: docName,
+            lastAccessed: Date.now()
+        });
+        
+        // 限制最近文档数量
+        if (recentDocs.length > 10) {
+            recentDocs = recentDocs.slice(0, 10);
+        }
+        
+        saveRecentDocs();
+        loadRecentDocs();
+    }
+}
+
+function editDocName(docId) {
+    const doc = recentDocs.find(d => d.id === docId);
+    if (!doc) return;
+    
+    const newName = prompt('输入新的文档名称', doc.name || '未命名文档');
+    if (newName !== null) {
+        doc.name = newName.trim();
+        doc.lastAccessed = Date.now();
+        saveRecentDocs();
+        loadRecentDocs();
+    }
+}
+
+function deleteRecentDoc(docId) {
+    if (!confirm('确定要从最近文档中移除此文档吗？')) return;
+    
+    recentDocs = recentDocs.filter(doc => doc.id !== docId);
+    saveRecentDocs();
+    loadRecentDocs();
+}
+
+function saveRecentDocs() {
+    localStorage.setItem('recent-docs', JSON.stringify(recentDocs));
+}
 </script>
 </body>
 </html>
