@@ -5,17 +5,17 @@
 以下是更新日志。
 
 # 25.5.28
-很久没更日志了，主要是懒，还有前一阵子考了化学，更新功能之后都没怎么写
+很久没更日志了，主要是懒，还有前一阵子考了化学有机，很多更新功能之后都没怎么写
 更新了很多UI和新的功能：
 - 加了一个主页动态页面，可在[主页](https://lsqkk.github.io)查看
-- 然后更了很多工具，包括[图片混淆](lsqkk.github.io/tool/tphx)等等
-- 把[聊天室](lsqkk.github.io/chat)和[ds](lsqkk.github.io/ds)的UI更了
+- 然后更了很多工具，包括[图片混淆](https://lsqkk.github.io/tool/tphx)等等
+- 把[聊天室](https://lsqkk.github.io/chat)和[ds](https://lsqkk.github.io/ds)的UI更了
 - 利用聊天室的那个firebase写了很多新的东西：
- - 给[夸克markdown编辑器](lsqkk.github.io/tool/tool-md)升级了UI同时加了一个[多人协作功能](lsqkk.github.io/tool/co-md)，应该是国内第一个不限人数的免费md/tex协同平台
- - 把之前没做成的[五子棋对战](lsqkk.github.io/games/5ziqi)搞好了，然后顺手写了一个不需要联机的[五子棋](lsqkk.github.io/games/5ziqi-p)
- - 把[每日答题](lsqkk.github.io/games/dati)也加了联机
- - 下一步也许会把[西交图寻](lsqkk.github.io/games/xjtx)也加上联机，这个再说
-- 还有很多其他功能，这里不一一列举了，问就是想不起来了，可以自行翻提交记录（）
+  - 给[夸克markdown编辑器](https://lsqkk.github.io/tool/tool-md)升级了UI同时加了一个[多人协作功能](https://lsqkk.github.io/tool/co-md)，应该是国内第一个不限人数的免费md/tex协同平台
+  - 把之前没做成的[五子棋对战](https://lsqkk.github.io/games/5ziqi)搞好了，然后顺手写了一个不需要联机的[五子棋](https://lsqkk.github.io/games/5ziqi-p)
+  - 把[每日答题](https://lsqkk.github.io/games/dati)也加了联机
+  - 下一步也许会把[西交图寻](https://lsqkk.github.io/games/xjtx)也加上联机，这个再说
+  - 还有很多其他功能，这里不一一列举了，问就是想不起来了，可以自行翻提交记录（）
 
 # 25.4.25
 1. 新增 - **智能OCR**
