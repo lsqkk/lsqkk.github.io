@@ -21,7 +21,6 @@
         }
       ]
     },
-    
     {
       "name": "学术工具",
       "icon": "✍️",
@@ -36,7 +35,6 @@
           "url": "ds",
           "target": "_blank"
         },
-
         {
           "name": "🧮 高级科学计算器",
           "url": "tool/calculator.html",
@@ -68,28 +66,27 @@
           "url": "tool/tool-md.html",
           "target": "_blank"
         },
-       {
+        {
           "name": "📝 多人协同 Markdown 编辑器",
-          "url": "tool/cp-md.html",
+          "url": "tool/co-md.html",
           "target": "_blank"
-        },
+        }
       ]
     },
     {
       "name": "图片",
       "icon": "✨",
       "tools": [
-         {
+        {
           "name": "🔒 图片混淆加密",
           "url": "tool/tphx.html",
           "target": "_blank"
         },
         {
-          "name": "💛 图片转Emoji",
+          "name": "❤️ 图片转Emoji",
           "url": "tool/image-emoji.html",
           "target": "_blank"
         }
-        
       ]
     },
     {
