@@ -27,11 +27,6 @@
       "icon": "✍️",
       "tools": [
         {
-          "name": "📝 Markdown 编辑器",
-          "url": "tool/tool-md.html",
-          "target": "_blank"
-        },
-        {
           "name": "📝 AIGC 检查",
           "url": "tool/aigc.html",
           "target": "_blank"
@@ -55,7 +50,7 @@
       ]
     },
     {
-      "name": "识别工具",
+      "name": "文本工具",
       "icon": "✨",
       "tools": [
         {
@@ -67,11 +62,21 @@
           "name": "📷 文字识别",
           "url": "tool/ocr.html",
           "target": "_blank"
-        }
+        },
+        {
+          "name": "📝 Markdown 编辑器",
+          "url": "tool/tool-md.html",
+          "target": "_blank"
+        },
+       {
+          "name": "📝 多人协同 Markdown 编辑器",
+          "url": "tool/cp-md.html",
+          "target": "_blank"
+        },
       ]
     },
     {
-      "name": "其他",
+      "name": "图片",
       "icon": "✨",
       "tools": [
          {
@@ -79,6 +84,18 @@
           "url": "tool/tphx.html",
           "target": "_blank"
         },
+        {
+          "name": "💛 图片转Emoji",
+          "url": "tool/image-emoji.html",
+          "target": "_blank"
+        }
+        
+      ]
+    },
+    {
+      "name": "其他",
+      "icon": "✨",
+      "tools": [
         {
           "name": "📝 科技伦理立场测试",
           "url": "estest",
@@ -95,7 +112,7 @@
           "target": "_blank"
         },
         {
-          "name": "🔍 便捷搜索",
+          "name": "🔍 Bing搜索",
           "url": "https://cn.bing.com/",
           "target": "_blank"
         }
