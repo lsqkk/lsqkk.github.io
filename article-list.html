@@ -2,157 +2,474 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-        <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
+    <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
     <script src="https://lsqkk.github.io/js/cursor-trail.js"></script>
     <title>夸克博客 | 文章列表</title>
     <style>
-        .post-item { 
-            border-radius: 15px;
-            background-color: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            padding: 20px; 
-            margin: 5px;
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('image/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .post-title { color: #0366d6; text-decoration: none; font-size: 1.2em; }
-        .post-date { color: #666; font-size: 0.9em; }
+        
+        /* 文章列表容器 */
+        .posts-container {
+            max-width: 900px;
+            margin: 80px auto 30px;
+            padding: 0 20px;
+        }
+        
+        /* 标签筛选器样式 */
+        .tag-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .tag-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(93,208,255,0.3);
+            color: #007bff;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .tag-btn:hover {
+            background: rgba(93,208,255,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+        }
+        
+        .tag-btn.active {
+            background: #007bff;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+        }
+        
+        /* 文章条目样式 */
+        .post-item {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .post-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            background: rgba(255,255,255,0.9);
+        }
+        
+        .post-title {
+            color: #0366d6;
+            text-decoration: none;
+            font-size: 1.25em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            transition: color 0.2s;
+        }
+        
+        .post-title:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        .post-date {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+        
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        
+        .post-tag {
+            padding: 4px 10px;
+            border-radius: 10px;
+            background: rgba(93,208,255,0.2);
+            color: #007bff;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+        
+        /* 分页样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+        }
+        
+        .page-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .page-btn:hover {
+            background: rgba(0,123,255,0.1);
+            color: #007bff;
+        }
+        
+        .page-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 搜索区域样式 */
+        .search-container {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.8);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+        }
+        
+        /* 搜索结果样式 */
+        .search-results {
+            display: none;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .search-result-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* 保留原有header样式不动 */
+        .header { background: linear-gradient(to bottom, rgba(122,189,154,1), rgba(122,189,154,0)); color: #fff; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; box-sizing: border-box; }
+        .header h1 { margin: 0; font-size: 1.5em; white-space: nowrap; }
+        .header-content { display: flex; align-items: center; width: 100%; justify-content: space-between; }
+        .header-nav-container { display: flex; align-items: center; flex-grow: 1; justify-content: center; }
+        .header-nav { display: flex; list-style-type: none; margin: 0; padding: 0; align-items: center; }
+        .header-nav li { margin: 0 8px; white-space: nowrap; }
+        .header-nav li a { color: white; text-decoration: none; padding: 5px 10px; border-radius: 5px; transition: background-color 0.3s; font-size: 0.9em; }
+        .header-nav li a:hover { background-color: rgba(255,255,255,0.2); }
+        .header-search { display: flex; align-items: center; margin-left: 15px; }
+        .header-search input { width: 150px; padding: 5px 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.3); background-color: rgba(255,255,255,0.2); color: white; }
+        .header-search input::placeholder { color: rgba(255,255,255,0.7); }
+        .header-search button { padding: 5px 12px; margin-left: 8px; background-color: rgba(255,255,255,0.3); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+        .header-search button:hover { background-color: rgba(255,255,255,0.4); }
+        @media (max-width: 768px) {
+            .header { flex-direction: column; align-items: stretch; padding: 10px; }
+            .header-content { flex-direction: row; justify-content: space-between; align-items: center; }
+            .header-nav-container { display: none; }
+            .header-search { display: flex; width: auto; margin: 10px 0 0 0; }
+            .header-search input { width: 150px; flex-grow: 0; }
+            .header-search button { white-space: nowrap; flex-shrink: 0; }
+            .nav { display: block; background-color: #A0DFFF; padding: 10px; }
+            .mobile-nav { display: flex; flex-wrap: wrap; list-style-type: none; margin: 0; padding: 0; }
+            .mobile-nav li { margin: 5px 10px 5px 0; }
+            .mobile-nav li a { color: #007bff; text-decoration: none; padding: 5px 8px; font-size: 0.9em; }
+            .mobile-nav li a:hover { background-color: rgba(153,221,243,0.3); border-radius: 5px; }
+        }
+        @media (min-width: 769px) { .nav, .mobile-nav { display: none; } }
+        .header-placeholder { height: 60px; }
+        
+        /* 版权信息 */
+        .copyright {
+            text-align: center;
+            padding: 15px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85em;
+            margin-top: 30px;
+        }
     </style>
-    <link rel="stylesheet" href="style.css">
     <link rel="icon" href="image/logo_blue.png" type="image/png">
 </head>
 <body>
     <div class="header-placeholder"></div>
     <div class="header">
-    <div class="header-content">
-        <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
-        
-        <div class="header-nav-container">
-            <ul class="header-nav">
-                <li><a href="/">主页</a></li>
-                <li><a href="tool.html">工具</a></li>
-                <li><a href="games">游戏</a></li>
-                <li><a href="daily">日报</a></li>
-                <li><a href="qtv">视频</a></li>
-                <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-        </div>
-        
-        <div class="header-search">
-            <input type="text" id="searchInput" placeholder="搜索博客...">
-            <button onclick="searchBlog()">搜索</button>
+        <div class="header-content">
+            <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
+            
+            <div class="header-nav-container">
+                <ul class="header-nav">
+                    <li><a href="/">主页</a></li>
+                    <li><a href="tool.html">工具</a></li>
+                    <li><a href="games">游戏</a></li>
+                    <li><a href="daily">日报</a></li>
+                    <li><a href="qtv">视频</a></li>
+                    <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+                </ul>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" id="searchInput" placeholder="搜索博客...">
+                <button onclick="searchBlog()">搜索</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="nav">
-    <ul class="mobile-nav">
-        <li><a href="/">主页</a></li>
-        <li><a href="tool.html">工具</a></li>
-        <li><a href="games">游戏</a></li>
-        <li><a href="daily">日报</a></li>
-        <li><a href="qtv">视频</a></li>
-        <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
-    </ul>
-</div>
-<div id="tagFilter" class="tag-filter"></div>
-    <div class="content" style=" background: url('https://lsqkk.github.io/image/light.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;"> 
-        <div class="search-results">
-            <div id="searchResults"></div>
+    <div class="nav">
+        <ul class="mobile-nav">
+            <li><a href="/">主页</a></li>
+            <li><a href="tool.html">工具</a></li>
+            <li><a href="games">游戏</a></li>
+            <li><a href="daily">日报</a></li>
+            <li><a href="qtv">视频</a></li>
+            <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+        </ul>
+    </div>
+
+    <div class="posts-container">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜索文章标题...">
         </div>
         
-    <div id="posts"></div>
-</div>
-
-<a href="https://lsqkk.github.io/post.html?file=copyright.md" class="cr"></a>  
-
-<script>
-    // 所有标签
-    const allTags = ['全部', '技术', '杂谈', '社科'];
-    let currentTag = '全部';
-    
-    // 加载文章列表
-    async function loadPosts() {
-        const posts = await fetch('posts.json').then(r => r.json());
-        // 确保所有文章都有tags数组
-        posts.forEach(post => {
-            if (!post.tags) post.tags = ['未分类'];
-        });
-        renderTagFilter();
-        renderPosts(posts);
-    }
-
-    // 渲染标签筛选器
-    function renderTagFilter() {
-        const tagFilter = document.getElementById('tagFilter');
-        tagFilter.innerHTML = allTags.map(tag => `
-            <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
-                    onclick="filterByTag('${tag}')">
-                ${tag}
-            </button>
-        `).join('');
-    }
-
-    // 按标签筛选
-    function filterByTag(tag) {
-        currentTag = tag;
-        renderTagFilter();
-        loadPosts(); // 重新加载以应用筛选
-    }
-
-    // 渲染文章列表
-    function renderPosts(posts) {
-        const filteredPosts = currentTag === '全部' 
-            ? posts 
-            : posts.filter(post => post.tags && post.tags.includes(currentTag));
+        <div id="searchResults" class="search-results"></div>
         
-        const list = filteredPosts.map(post => `
-            <div class="moren">
-                <a class="post-title" href="post.html?file=${post.file}" >${post.title}</a>
-                
-                
-                <div class="post-date">${post.date}</div>
-               <div class="post-tags">
-                    ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-                </div>
-            </div>
-        `).join('');
+        <div id="tagFilter" class="tag-filter"></div>
         
-        document.getElementById('posts').innerHTML = list;
-    }
+        <div id="posts"></div>
+        
+        <div class="pagination" id="pagination">
+            <button class="page-btn prev-btn" onclick="prevPage()">上一页</button>
+            <div class="page-numbers" id="pageNumbers"></div>
+            <button class="page-btn next-btn" onclick="nextPage()">下一页</button>
+        </div>
+    </div>
 
-    // 搜索博客功能
-    async function searchBlog() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const posts = await fetch('posts.json').then(r => r.json());
-        // 确保所有文章都有tags数组
-        posts.forEach(post => {
-            if (!post.tags) post.tags = ['未分类'];
-        });
-        const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+    <div class="copyright">
+        © 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights reserved
+    </div>
 
-        const searchResultsContainer = document.getElementById('searchResults');
-        searchResultsContainer.innerHTML = '';
-
-        if (filteredPosts.length > 0) {
-            filteredPosts.forEach(post => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.innerHTML = `
-                    <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none;">
-                        ${post.title}
-                    </a>
-                    <div style="color: #666; font-size: 0.9em;">${post.date}</div>
+    <script>
+        // 所有标签
+        const allTags = ['全部', '技术', '杂谈', '社科'];
+        let currentTag = '全部';
+        let currentPage = 1;
+        const postsPerPage = 10;
+        let allPosts = [];
+        
+        // 加载文章列表
+        async function loadPosts() {
+            allPosts = await fetch('posts.json').then(r => r.json());
+            // 确保所有文章都有tags数组
+            allPosts.forEach(post => {
+                if (!post.tags) post.tags = ['未分类'];
+            });
+            renderTagFilter();
+            renderPosts();
+            renderPagination();
+        }
+        
+        // 获取当前页的文章
+        function getCurrentPagePosts() {
+            const filteredPosts = currentTag === '全部' 
+                ? allPosts 
+                : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
+            
+            const startIndex = (currentPage - 1) * postsPerPage;
+            const endIndex = startIndex + postsPerPage;
+            return filteredPosts.slice(startIndex, endIndex);
+        }
+        
+        // 渲染标签筛选器
+        function renderTagFilter() {
+            const tagFilter = document.getElementById('tagFilter');
+            tagFilter.innerHTML = allTags.map(tag => `
+                <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
+                        onclick="filterByTag('${tag}')">
+                    ${tag}
+                </button>
+            `).join('');
+        }
+        
+        // 按标签筛选
+        function filterByTag(tag) {
+            currentTag = tag;
+            currentPage = 1;
+            renderTagFilter();
+            renderPosts();
+            renderPagination();
+        }
+        
+        // 渲染文章列表
+        function renderPosts() {
+            const postsToShow = getCurrentPagePosts();
+            
+            const list = postsToShow.map(post => `
+                <div class="post-item">
+                    <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
+                    <div class="post-date">${post.date}</div>
                     <div class="post-tags">
                         ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
                     </div>
-                `;
-                searchResultsContainer.appendChild(resultItem);
-            });
-        } else {
-            searchResultsContainer.innerHTML = '<div style="color: #666;">未找到相关博客</div>';
+                </div>
+            `).join('');
+            
+            document.getElementById('posts').innerHTML = list;
         }
-    }
-
-    // 初始化加载
-    document.addEventListener('DOMContentLoaded', loadPosts);
-</script>
+        
+        // 渲染分页
+        function renderPagination() {
+            const filteredPosts = currentTag === '全部' 
+                ? allPosts 
+                : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
+            
+            const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            
+            // 显示页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(pageBtn);
+            }
+            
+            // 更新上一页/下一页按钮状态
+            document.querySelector('.prev-btn').disabled = currentPage === 1;
+            document.querySelector('.next-btn').disabled = currentPage === totalPages;
+            
+            // 如果只有一页，隐藏分页
+            document.getElementById('pagination').style.display = totalPages <= 1 ? 'none' : 'flex';
+        }
+        
+        // 跳转到指定页
+        function goToPage(page) {
+            currentPage = page;
+            renderPosts();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // 上一页
+        function prevPage() {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        }
+        
+        // 下一页
+        function nextPage() {
+            const filteredPosts = currentTag === '全部' 
+                ? allPosts 
+                : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
+            const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+            
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+        
+        // 搜索博客功能
+        async function searchBlog() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm.trim() === '') {
+                document.getElementById('searchResults').style.display = 'none';
+                document.getElementById('tagFilter').style.display = 'flex';
+                document.getElementById('posts').style.display = 'block';
+                document.getElementById('pagination').style.display = 'flex';
+                return;
+            }
+            
+            const searchResults = allPosts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) ||
+                (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
+            );
+            
+            const searchResultsContainer = document.getElementById('searchResults');
+            searchResultsContainer.innerHTML = '';
+            
+            if (searchResults.length > 0) {
+                searchResults.forEach(post => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.innerHTML = `
+                        <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
+                        <div class="post-date">${post.date}</div>
+                        <div class="post-tags">
+                            ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                        </div>
+                    `;
+                    searchResultsContainer.appendChild(resultItem);
+                });
+            } else {
+                searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center;">未找到相关文章</div>';
+            }
+            
+            document.getElementById('searchResults').style.display = 'block';
+            document.getElementById('tagFilter').style.display = 'none';
+            document.getElementById('posts').style.display = 'none';
+            document.getElementById('pagination').style.display = 'none';
+        }
+        
+        // 初始化加载
+        document.addEventListener('DOMContentLoaded', loadPosts);
+        
+        // 监听搜索输入框的Enter键
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchBlog();
+            }
+        });
+    </script>
 </body>
 </html>
