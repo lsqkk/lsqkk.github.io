@@ -53,6 +53,11 @@
             "name": "合成大西瓜",
             "image": "https://lsqkk.github.io/games/2.png",
             "link": "https://lsqkk.github.io/games/xigua"
+        },
+        {
+            "name": "2048",
+            "image": "https://lsqkk.github.io/games/2.png",
+            "link": "https://lsqkk.github.io/games/2048"
         }
     ]
 }
