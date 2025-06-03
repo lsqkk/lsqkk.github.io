@@ -1,70 +1,370 @@
-<!DOCTYPE>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Q-tv | 遇见热爱</title>
-  <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="logo_white.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克TV | 遇见热爱</title>
+    <meta name="description" content="夸克TV，夸克博客">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../image/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
+    <script src="https://lsqkk.github.io/js/cursor-trail.js"></script>
+    <script src="https://unpkg.com/marked/marked.min.js"></script>
+    <base href="https://lsqkk.github.io/">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-light: #777777;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .header-placeholder {
+            height: 80px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .header-nav-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-nav {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-nav li {
+            margin-left: 25px;
+        }
+
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .header-nav a:hover {
+            color: #e0e0e0;
+        }
+
+        .nav {
+            display: none;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .video-info {
+            padding: 15px;
+        }
+
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 44px;
+        }
+
+        .video-author {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .author-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .video-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 18px;
+            color: var(--text-light);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header-nav {
+                display: none;
+            }
+
+            .nav {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: var(--primary-color);
+                z-index: 1000;
+                padding: 10px 0;
+            }
+
+            .mobile-nav {
+                display: flex;
+                justify-content: space-around;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .mobile-nav a {
+                color: white;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .main-container {
+                margin-bottom: 80px;
+            }
+
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body style=" background: url('https://img01.sogoucdn.com/app/a/200765/e30b66f92044439d0eed7d97ee0bf971') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-  <header>
-    <div class="logo">Q-tv | 遇见热爱</div>
-    <nav>
-      <a href="https://lsqkk.github.io">我的博客</a>
-      <a href="https://space.bilibili.com/2105459088"  target="blank">我的B站</a>
-    </nav>
-  </header>
+<body>
+    <div class="header-placeholder"></div>
+    <div class="header">
+        <div class="header-content">
+            <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克TV</h1></a>
+            <div class="header-nav-container">
+                <ul class="header-nav">
+                    <li><a href="../index.html">主页</a></li>
+                    <li><a href="../article-list.html">文章</a></li>
+                    <li><a href="../tool.html">工具</a></li>
+                    <li><a href="../games">游戏</a></li>
+                    <li><a href="../daily">日报</a></li>
+                    <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-  <div class="header-placeholder"></div>
+    <div class="nav">
+        <ul class="mobile-nav">
+            <li><a href="../index.html">主页</a></li>
+            <li><a href="../article-list.html">文章</a></li>
+            <li><a href="../tool.html">工具</a></li>
+            <li><a href="../games">游戏</a></li>
+            <li><a href="../daily">日报</a></li>
+            <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+        </ul>
+    </div>
 
-  <main>
-    <section class="video-list" id="videoList">
-      <!-- 视频卡片将通过JavaScript动态生成 -->
-    </section>
-  </main>
+    <div class="main-container">
+        <h1 class="page-title">精选视频</h1>
+        <div id="video-container" class="video-grid">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
 
-  <br><br><br><br><br>
-  <div style="  background: rgba(255, 255, 255, 0.7); text-align: center; padding: 10px; width: 100%; box-shadow: 0 0 10px 10px rgba(255,255,255,0.3);">
-    © 2024 - 2025 Q-tv All rights reserved.
-  </div>
-
-  <br>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const videoList = document.getElementById("videoList");
-
-      // 从JSON文件加载视频信息
-      fetch("videos.json")
-        .then(response => response.json())
-        .then(data => {
-          data.videos.forEach(video => {
-            const videoCard = document.createElement("div");
-            videoCard.className = "video-card";
-
-            // 创建视频卡片内容
-            videoCard.innerHTML = `
-              <img src="${video.thumbnail}" alt="${video.title}" class="video-thumbnail">
-              <div class="video-card-info">
-                <h3>${video.title}</h3>
-                <p>${video.description}</p>
-              </div>
-            `;
-
-            // 点击卡片直接跳转到B站视频页面
-            videoCard.onclick = () => {
-              window.location.href = video.url; // 使用B站视频的完整URL
-            };
-
-            videoList.appendChild(videoCard);
-          });
-        })
-        .catch(error => {
-          console.error("加载视频信息失败:", error);
-          videoList.innerHTML = "<p>加载视频列表失败，请检查网络连接。</p>";
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取视频列表
+            fetchVideoList();
         });
-    });
-  </script>
+
+        async function fetchVideoList() {
+            const videoContainer = document.getElementById('video-container');
+            
+            try {
+                // 从videos.json获取BV号列表
+                const response = await fetch('videos.json');
+                if (!response.ok) {
+                    throw new Error('无法加载视频列表');
+                }
+                
+                const data = await response.json();
+                const bvList = data.bvList;
+                
+                if (!bvList || bvList.length === 0) {
+                    throw new Error('没有可用的视频');
+                }
+                
+                // 清空加载提示
+                videoContainer.innerHTML = '';
+                
+                // 为每个BV号获取视频信息
+                for (const bvid of bvList) {
+                    await fetchVideoInfo(bvid);
+                }
+            } catch (error) {
+                videoContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                console.error('加载视频时出错:', error);
+            }
+        }
+
+        async function fetchVideoInfo(bvid) {
+            try {
+                const response = await fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`);
+                if (!response.ok) {
+                    console.error(`无法获取视频 ${bvid} 的信息`);
+                    return;
+                }
+                
+                const data = await response.json();
+                if (data.code !== 0 || !data.data) {
+                    console.error(`视频 ${bvid} 信息获取失败: ${data.message}`);
+                    return;
+                }
+                
+                const videoData = data.data;
+                renderVideoCard(videoData);
+            } catch (error) {
+                console.error(`获取视频 ${bvid} 信息时出错:`, error);
+            }
+        }
+
+        function renderVideoCard(videoData) {
+            const videoContainer = document.getElementById('video-container');
+            
+            const videoCard = document.createElement('div');
+            videoCard.className = 'video-card';
+            
+            // 构建视频卡片HTML
+            videoCard.innerHTML = `
+                <a href="https://www.bilibili.com/video/${videoData.bvid}" target="_blank">
+                    <div class="video-thumbnail">
+                        <img src="${videoData.pic}" alt="${videoData.title}">
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${videoData.title}</h3>
+                        <div class="video-author">
+                            <img class="author-avatar" src="${videoData.owner.face}" alt="${videoData.owner.name}">
+                            <span class="author-name">${videoData.owner.name}</span>
+                        </div>
+                        <p class="video-desc">${videoData.desc.split('\n')[0]}</p>
+                    </div>
+                </a>
+            `;
+            
+            videoContainer.appendChild(videoCard);
+        }
+    </script>
 </body>
 </html>
