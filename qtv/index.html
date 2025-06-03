@@ -294,7 +294,7 @@
             
             try {
                 // 从videos.json获取BV号列表
-                const response = await fetch('videos.json');
+                const response = await fetch('https://lsqkk.github.io/qtv/videos.json');
                 if (!response.ok) {
                     throw new Error('无法加载视频列表');
                 }
