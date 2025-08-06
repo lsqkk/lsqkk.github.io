@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL短链生成器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #2575fc, #6a11cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title i {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        .card-title h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 25px;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .input-container {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        input {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            background: #fff;
+            box-shadow: inset 0 0 0 2px #2575fc;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 0 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result-container {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .copy-btn {
+            background: #2ecc71;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .result-content {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            overflow: auto;
+        }
+        
+        .result-content i {
+            color: #2575fc;
+            margin-right: 10px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 25px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 8px;
+            color: #0d47a1;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            text-align: center;
+            margin: 10px;
+            background: rgba(37, 117, 252, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+            background: rgba(37, 117, 252, 0.15);
+        }
+        
+        .step i {
+            font-size: 2.5rem;
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        
+        .step h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .step p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        
+        .footer a {
+            color: #2575fc;
+            text-decoration: none;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 1rem;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            input {
+                padding: 14px;
+            }
+            
+            button {
+                padding: 14px;
+                margin-top: 10px;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #2575fc;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>URL短链生成器</h1>
+            <p>将长网址转换为易于分享的短链接，支持自定义编码和安全跳转</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-link"></i>
+                <h2>生成短链接</h2>
+            </div>
+            
+            <div class="input-group">
+                <label for="long-url">输入长网址（必须以http://或https://开头）</label>
+                <div class="input-container">
+                    <input type="url" id="long-url" placeholder="https://www.example.com" autocomplete="off">
+                    <button id="generate-btn"><i class="fas fa-magic"></i> 生成短链</button>
+                </div>
+                <div class="error-message" id="url-error">请输入有效的网址（以http://或https://开头）</div>
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <div class="result-header">
+                    <div class="result-title">生成的短链接</div>
+                    <button class="copy-btn" id="copy-btn"><i class="fas fa-copy"></i> 复制链接</button>
+                </div>
+                <div class="result-content">
+                    <i class="fas fa-link"></i>
+                    <span id="short-url">https://lsqkk.github.io/a/a.html?a=</span>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h3>实现原理</h3>
+                <p>系统将您的网址转换为二进制数据，然后使用特殊编码：0 → 英文字母"a"，1 → 西里尔字母"а"。生成的编码作为参数附加到基础URL上，访问时自动解码并重定向到原始网址。</p>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在处理您的请求...</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step">
+                <i class="fas fa-pen"></i>
+                <h3>输入网址</h3>
+                <p>输入以http://或https://开头的长网址</p>
+            </div>
+            
+            <div class="step">
+                <i class="fas fa-cogs"></i>
+                <h3>安全编码</h3>
+                <p>系统对网址进行二进制编码和转换</p>
+            </div>
+            
+            <div class="step">
+                <i class="fas fa-share-alt"></i>
+                <h3>分享使用</h3>
+                <p>复制生成的短链接分享给他人</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 URL短链服务 | 安全可靠 | 高效便捷</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const longUrlInput = document.getElementById('long-url');
+            const generateBtn = document.getElementById('generate-btn');
+            const resultContainer = document.getElementById('result-container');
+            const shortUrlElement = document.getElementById('short-url');
+            const copyBtn = document.getElementById('copy-btn');
+            const urlError = document.getElementById('url-error');
+            const loading = document.getElementById('loading');
+            
+            // 检查URL参数，如果有编码参数则进行跳转
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedParam = urlParams.get('a');
+            
+            if (encodedParam) {
+                // 隐藏生成界面，显示加载动画
+                document.querySelector('.card').style.display = 'none';
+                document.querySelector('.steps').style.display = 'none';
+                loading.style.display = 'block';
+                
+                // 解码并跳转
+                setTimeout(() => {
+                    try {
+                        const decodedUrl = decodeUrl(encodedParam);
+                        if (decodedUrl.startsWith('http://') || decodedUrl.startsWith('https://')) {
+                            window.location.href = decodedUrl;
+                        } else {
+                            throw new Error('解码后的URL无效');
+                        }
+                    } catch (e) {
+                        document.body.innerHTML = `
+                            <div class="container" style="text-align:center; padding:50px;">
+                                <h1 style="color:#e74c3c; margin-bottom:20px;">跳转失败</h1>
+                                <p style="font-size:1.2rem; margin-bottom:30px;">${e.message || '无效的短链接编码'}</p>
+                                <button onclick="window.location.href=''" style="background:#3498db; color:white; border:none; padding:12px 30px; border-radius:8px; font-size:1.1rem; cursor:pointer;">
+                                    <i class="fas fa-home"></i> 返回首页
+                                </button>
+                            </div>
+                        `;
+                    }
+                }, 1500);
+                return;
+            }
+            
+            // 生成短链接
+            generateBtn.addEventListener('click', function() {
+                const longUrl = longUrlInput.value.trim();
+                
+                // 验证URL
+                if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
+                    urlError.style.display = 'block';
+                    return;
+                }
+                
+                urlError.style.display = 'none';
+                
+                // 显示加载动画
+                loading.style.display = 'block';
+                
+                // 模拟处理延迟
+                setTimeout(() => {
+                    try {
+                        // 编码URL
+                        const encoded = encodeUrl(longUrl);
+                        
+                        // 生成短链接
+                        const baseUrl = window.location.href.split('?')[0];
+                        const shortUrl = `${baseUrl}?a=${encoded}`;
+                        
+                        shortUrlElement.textContent = shortUrl;
+                        resultContainer.style.display = 'block';
+                        
+                        // 滚动到结果
+                        resultContainer.scrollIntoView({ behavior: 'smooth' });
+                    } catch (e) {
+                        alert(`生成短链接时出错: ${e.message}`);
+                    } finally {
+                        loading.style.display = 'none';
+                    }
+                }, 800);
+            });
+            
+            // 复制功能
+            copyBtn.addEventListener('click', function() {
+                const textArea = document.createElement('textarea');
+                textArea.value = shortUrlElement.textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // 显示复制成功反馈
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                copyBtn.style.background = '#2ecc71';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            });
+            
+            // URL编码函数
+            function encodeUrl(url) {
+                // 将字符串转换为二进制表示
+                let binary = '';
+                for (let i = 0; i < url.length; i++) {
+                    const charCode = url.charCodeAt(i).toString(2);
+                    // 确保每个字符是8位
+                    binary += '0'.repeat(8 - charCode.length) + charCode;
+                }
+                
+                // 应用特殊编码：0→'a'(拉丁字母), 1→'а'(西里尔字母)
+                let encoded = '';
+                for (let i = 0; i < binary.length; i++) {
+                    if (binary[i] === '0') {
+                        encoded += 'a'; // 英文字母a
+                    } else {
+                        encoded += '\u0430'; // 西里尔字母а
+                    }
+                }
+                
+                return encodeURIComponent(encoded);
+            }
+            
+            // URL解码函数
+            function decodeUrl(encoded) {
+                // URI解码
+                const decodedParam = decodeURIComponent(encoded);
+                let binary = '';
+                
+                // 将特殊编码转换回二进制
+                for (let i = 0; i < decodedParam.length; i++) {
+                    const char = decodedParam[i];
+                    if (char === 'a') { // 英文字母a
+                        binary += '0';
+                    } else if (char === '\u0430') { // 西里尔字母а
+                        binary += '1';
+                    } else {
+                        throw new Error('无效的编码字符');
+                    }
+                }
+                
+                // 将二进制转换为字符串
+                let result = '';
+                for (let i = 0; i < binary.length; i += 8) {
+                    const byte = binary.substr(i, 8);
+                    if (byte.length < 8) break; // 忽略不完整的字节
+                    result += String.fromCharCode(parseInt(byte, 2));
+                }
+                
+                return result;
+            }
+        });
+    </script>
+</body>
+</html>
