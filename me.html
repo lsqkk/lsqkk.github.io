@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>朱恩泽 - 个人简介</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #3498db;
@@ -11,13 +12,14 @@
             --accent-color: #e74c3c;
             --light-color: #ecf0f1;
             --dark-color: #2c3e50;
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--accent-color));
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         html {
@@ -28,6 +30,7 @@
             line-height: 1.6;
             color: #333;
             background-color: #f9f9f9;
+            overflow-x: hidden;
         }
         
         .container {
@@ -43,7 +46,8 @@
             top: 0;
             width: 100%;
             background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             transition: all 0.3s ease;
         }
@@ -60,9 +64,19 @@
         }
         
         .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 8px;
             font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
         }
         
         .nav-links {
@@ -72,6 +86,7 @@
         
         .nav-links li {
             margin-left: 30px;
+            position: relative;
         }
         
         .nav-links a {
@@ -79,6 +94,23 @@
             color: var(--dark-color);
             font-weight: 500;
             transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
         }
         
         .nav-links a:hover {
@@ -88,6 +120,7 @@
         /* 各部分通用样式 */
         section {
             padding: 100px 0;
+            position: relative;
         }
         
         .section-title {
@@ -97,20 +130,23 @@
         }
         
         .section-title h2 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             color: var(--secondary-color);
             margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
         }
         
-        .section-title::after {
+        .section-title h2::after {
             content: '';
             position: absolute;
             bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
             width: 80px;
-            height: 4px;
-            background-color: var(--primary-color);
+            height: 5px;
+            background: var(--gradient);
+            border-radius: 5px;
         }
         
         /* 英雄区域 */
@@ -118,42 +154,86 @@
             height: 100vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(44, 62, 80, 0.9)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%233498db" opacity="0.2"/><path d="M0 0L100 100" stroke="white" stroke-width="0.5" opacity="0.2"/><path d="M100 0L0 100" stroke="white" stroke-width="0.5" opacity="0.2"/></svg>');
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://lsqkk.github.io/image/bg.png');
             background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .hero-content h1 {
-            font-size: 3.5rem;
+            font-size: 4rem;
             margin-bottom: 20px;
             animation: fadeInUp 1s ease;
+            font-weight: 800;
+            letter-spacing: 1px;
         }
         
         .hero-content p {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin-bottom: 30px;
             animation: fadeInUp 1s ease 0.2s;
             animation-fill-mode: both;
+            font-weight: 300;
         }
         
         .btn {
             display: inline-block;
-            padding: 12px 30px;
-            background-color: var(--accent-color);
+            padding: 15px 40px;
+            background: var(--gradient);
             color: white;
             text-decoration: none;
-            border-radius: 30px;
+            border-radius: 50px;
             font-weight: 600;
             transition: all 0.3s ease;
             animation: fadeInUp 1s ease 0.4s;
             animation-fill-mode: both;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+        
+        .btn:hover::before {
+            width: 100%;
         }
         
         .btn:hover {
-            background-color: #c0392b;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
         }
         
         /* 关于我 */
@@ -161,6 +241,11 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            padding: 40px;
         }
         
         .about-text {
@@ -173,26 +258,49 @@
             font-size: 1.8rem;
             margin-bottom: 20px;
             color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .about-text h3 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .highlight {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
         }
         
         .about-image {
             flex: 1;
             min-width: 300px;
             text-align: center;
+            position: relative;
         }
         
         .profile-img {
-            width: 300px;
-            height: 300px;
+            width: 350px;
+            height: 350px;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid var(--primary-color);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border: 5px solid white;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s ease;
         }
         
-        /* 技能部分 */
-        .skills {
+        .profile-img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 能力与成就部分 */
+        .skills-achievements {
             background-color: var(--light-color);
+            position: relative;
         }
         
         .skills-container {
@@ -204,60 +312,109 @@
         .skill-card {
             background: white;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-top: 5px solid var(--primary-color);
+        }
+        
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: var(--gradient);
+            opacity: 0.05;
+            transition: all 0.5s ease;
+            z-index: 0;
+        }
+        
+        .skill-card:hover::before {
+            height: 100%;
         }
         
         .skill-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
         }
         
         .skill-icon {
             font-size: 2.5rem;
             color: var(--primary-color);
             margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
         
         .skill-card h3 {
             margin-bottom: 15px;
             color: var(--secondary-color);
+            position: relative;
+            z-index: 1;
         }
         
-        /* 成就部分 */
-        .achievements-container {
+        .skill-card p {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .achievement-showcase {
+            margin-top: 80px;
+        }
+        
+        .achievement-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
         
-        .achievement-card {
+        .achievement-item {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-            position: relative;
+            border-radius: 15px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
         }
         
-        .achievement-card:hover {
+        .achievement-item:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
         }
         
-        .achievement-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background-color: var(--primary-color);
+        .achievement-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .achievement-item:hover .achievement-img {
+            transform: scale(1.05);
+        }
+        
+        .achievement-content {
+            padding: 20px;
+        }
+        
+        .achievement-content h3 {
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .achievement-content h3 i {
+            margin-right: 10px;
+            color: var(--primary-color);
         }
         
         /* 作品集 */
         .portfolio {
-            background-color: var(--light-color);
+            position: relative;
         }
         
         .portfolio-container {
@@ -268,10 +425,16 @@
         
         .portfolio-item {
             position: relative;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            height: 250px;
+            height: 300px;
+            transition: all 0.3s ease;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
         
         .portfolio-img {
@@ -287,16 +450,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(52, 152, 219, 0.9);
+            background: linear-gradient(transparent, rgba(52, 152, 219, 0.9));
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 25px;
+            color: white;
             opacity: 0;
             transition: opacity 0.5s ease;
-            padding: 20px;
-            text-align: center;
-            color: white;
         }
         
         .portfolio-item:hover .portfolio-overlay {
@@ -309,41 +471,78 @@
         
         .portfolio-overlay h3 {
             margin-bottom: 10px;
+            font-size: 1.5rem;
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
         }
         
-        /* 联系方式 */
-        .contact-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+        .portfolio-overlay p {
+            transform: translateY(20px);
+            transition: transform 0.5s ease 0.1s;
         }
         
-        .contact-info {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        .portfolio-item:hover .portfolio-overlay h3,
+        .portfolio-item:hover .portfolio-overlay p {
+            transform: translateY(0);
         }
         
-        .contact-info h3 {
-            margin-bottom: 20px;
+        /* 结尾部分 */
+        .conclusion {
+            text-align: center;
+            padding: 100px 0;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(231, 76, 60, 0.05));
+            position: relative;
+        }
+        
+        .conclusion-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .conclusion h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
             color: var(--secondary-color);
         }
         
-        .contact-details {
-            list-style: none;
+        .quote {
+            font-size: 1.8rem;
+            font-style: italic;
+            margin: 40px 0;
+            padding: 30px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
         }
         
-        .contact-details li {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .contact-icon {
-            margin-right: 15px;
+        .quote::before,
+        .quote::after {
+            content: '"';
+            font-size: 4rem;
             color: var(--primary-color);
+            opacity: 0.2;
+            position: absolute;
+        }
+        
+        .quote::before {
+            top: 10px;
+            left: 20px;
+        }
+        
+        .quote::after {
+            bottom: -20px;
+            right: 20px;
+        }
+        
+        .aspiration {
             font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
         
         /* 页脚 */
@@ -360,31 +559,26 @@
             align-items: center;
         }
         
-        .social-links {
-            display: flex;
-            list-style: none;
-            margin: 20px 0;
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
-        .social-links li {
-            margin: 0 15px;
-        }
-        
-        .social-links a {
-            color: white;
-            font-size: 1.5rem;
-            transition: color 0.3s ease;
-        }
-        
-        .social-links a:hover {
-            color: var(--primary-color);
+        .copyright {
+            margin-top: 20px;
+            opacity: 0.8;
         }
         
         /* 动画 */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -392,7 +586,33 @@
             }
         }
         
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        .floating {
+            animation: float 5s ease-in-out infinite;
+        }
+        
         /* 响应式设计 */
+        @media (max-width: 992px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-content p {
+                font-size: 1.5rem;
+            }
+        }
+        
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -400,10 +620,12 @@
             
             .nav-links {
                 margin-top: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             .nav-links li {
-                margin: 0 10px;
+                margin: 10px 15px;
             }
             
             .hero-content h1 {
@@ -416,6 +638,7 @@
             
             .about-content {
                 flex-direction: column;
+                padding: 25px;
             }
             
             .about-text {
@@ -424,7 +647,12 @@
             }
             
             .section-title h2 {
-                font-size: 2rem;
+                font-size: 2.2rem;
+            }
+            
+            .quote {
+                font-size: 1.4rem;
+                padding: 20px;
             }
         }
     </style>
@@ -433,13 +661,12 @@
     <!-- 导航栏 -->
     <nav id="navbar">
         <div class="container nav-container">
-            <div class="logo">蓝色奇夸克</div>
+            <div class="logo"><i class="fas fa-atom"></i>蓝色奇夸克</div>
             <ul class="nav-links">
                 <li><a href="#about">关于我</a></li>
-                <li><a href="#skills">我的技能</a></li>
-                <li><a href="#achievements">成就</a></li>
+                <li><a href="#skills">能力与成就</a></li>
                 <li><a href="#portfolio">作品集</a></li>
-                <li><a href="#contact">联系方式</a></li>
+                <li><a href="#conclusion">加入原因</a></li>
             </ul>
         </div>
     </nav>
@@ -448,8 +675,8 @@
     <section class="hero">
         <div class="container hero-content">
             <h1>朱恩泽 | 蓝色奇夸克</h1>
-            <p>无穷的远方，无数的人们，都和我有关</p>
-            <a href="#about" class="btn">了解更多</a>
+            <p>新媒体创作者 & 自动化专业学生</p>
+            <a href="#about" class="btn">探索更多 <i class="fas fa-arrow-down"></i></a>
         </div>
     </section>
 
@@ -461,75 +688,91 @@
             </div>
             <div class="about-content">
                 <div class="about-text">
-                    <h3>西交少年班23级 → 25级自动化</h3>
-                    <p>大家好，我是朱恩泽，网名"蓝色奇夸克"。我的个签"无穷的远方，无数的人们，都和我有关"不仅是我的人生信条，也是我投身新媒体领域的初心。</p>
-                    <p>我热衷于通过技术和创意连接人与人，传递有价值的信息。在新媒体领域，我有丰富的实践经验，包括视频制作剪辑、自媒体账号运营、公众号推送制作以及个人网站搭建等。</p>
-                    <p>我期待加入仲英书院学生会新媒体部，用我的技能服务书院同学，打造更有影响力的书院媒体平台，同时也在实践中不断提升自己。</p>
+                    <h3><i class="fas fa-graduation-cap"></i>23级少年班 → 25级自动化</h3>
+                    <p>大家好，我是朱恩泽，网名<span class="highlight">"蓝色奇夸克"</span>。</p>
+                    <p>我的个签<span class="highlight">"无穷的远方，无数的人们，都和我有关"</span>不仅是我的人生信条，也是我投身新媒体领域的初心。</p>
+                    <p>我热衷于通过技术和创意连接人与人，传递有价值的信息。</p>
+                    <p>期待加入仲英书院学生会新媒体部，用我的技能服务书院同学，打造更有影响力的书院媒体平台。</p>
                 </div>
                 <div class="about-image">
-                    <img src="https://lsqkk.github.io/image/touxiang.png" alt="头像" style="width: 400px;
-            height: 400px; /* 设置图片的高度 */
-            border-radius: 50%; /* 设置为圆形 */
-            overflow: hidden; /* 隐藏超出部分 */">
-                    
+                    <img src="https://lsqkk.github.io/image/touxiang.png" alt="头像" class="profile-img floating">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 技能部分 -->
-    <section id="skills" class="skills">
+    <!-- 能力与成就 -->
+    <section id="skills" class="skills-achievements">
         <div class="container">
             <div class="section-title">
-                <h2>我的技能</h2>
+                <h2>能力与成就</h2>
             </div>
+            
             <div class="skills-container">
                 <div class="skill-card">
-                    <div class="skill-icon">🎬</div>
+                    <div class="skill-icon"><i class="fas fa-video"></i></div>
                     <h3>视频制作与剪辑</h3>
-                    <p>熟练使用Premiere、Final Cut Pro等专业视频编辑软件，能够完成从拍摄到后期制作的全流程工作。</p>
+                    <p>熟练使用Premiere、Final Cut Pro等专业软件，能够完成从拍摄到后期制作的全流程工作。</p>
                 </div>
+                
                 <div class="skill-card">
-                    <div class="skill-icon">📱</div>
+                    <div class="skill-icon"><i class="fas fa-mobile-alt"></i></div>
                     <h3>自媒体账号运营</h3>
                     <p>拥有多个平台账号运营经验，了解各平台算法机制和内容策略，能够制定有效的增长计划。</p>
                 </div>
+                
                 <div class="skill-card">
-                    <div class="skill-icon">✍️</div>
+                    <div class="skill-icon"><i class="fas fa-edit"></i></div>
                     <h3>公众号推送制作</h3>
                     <p>熟练使用公众号助手、秀米等工具，能够制作美观且具有吸引力的图文内容。</p>
                 </div>
+                
                 <div class="skill-card">
-                    <div class="skill-icon">🌐</div>
+                    <div class="skill-icon"><i class="fas fa-laptop-code"></i></div>
                     <h3>网站开发与设计</h3>
                     <p>掌握HTML、CSS和JavaScript等前端技术，能够独立完成网站的设计与开发。</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- 成就部分 -->
-    <section id="achievements">
-        <div class="container">
-            <div class="section-title">
-                <h2>我的成就</h2>
-            </div>
-            <div class="achievements-container">
-                <div class="achievement-card">
-                    <h3>少年班苏中预科官方账号</h3>
-                    <p>创办并运营少年班苏中预科官方账号，创作了多个播放量破千破万的热门视频。</p>
+            
+            <div class="achievement-showcase">
+                <div class="section-title">
+                    <h2>代表性成果</h2>
                 </div>
-                <div class="achievement-card">
-                    <h3>物理实验竞赛西北赛区第一名</h3>
-                    <p>负责剪辑的物理实验竞赛视频"光的夫琅禾费衍射"获得西北赛区第一名。</p>
-                </div>
-                <div class="achievement-card">
-                    <h3>个人公众号"奇夸客"</h3>
-                    <p>独立运营个人公众号，发布原创内容，积累了稳定的读者群体。</p>
-                </div>
-                <div class="achievement-card">
-                    <h3>个人网站"夸克博客"</h3>
-                    <p>搭建个人网站"夸克博客"，分享技术心得和生活感悟，访问量即将破万。</p>
+                
+                <div class="achievement-grid">
+                    <div class="achievement-item">
+                        <img src="https://lsqkk.github.io/image/szskb.png" alt="少年班苏中预科官方账号" class="achievement-img">
+                        <div class="achievement-content">
+                            <h3><i class="fas fa-trophy"></i>少年班苏中预科官方账号</h3>
+                            <p>创办并运营官方账号，创作了多个播放量破千破万的热门视频。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="achievement-item">
+                        <img src="https://lsqkk.github.io/image/flhf.jpg" alt="物理实验竞赛" class="achievement-img">
+                        <div class="achievement-content">
+                            <h3><i class="fas-award"></i>物理实验竞赛西北赛区第一名</h3>
+                            <p>负责剪辑的物理实验竞赛视频"光的夫琅禾费衍射"获得西北赛区第一名。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="achievement-item">
+                        <img src="https://lsqkk.github.io/image/gzh.png" alt="个人公众号" class="achievement-img">
+                        <div class="achievement-content">
+                            <h3><i class="fas fa-feather"></i>个人公众号"奇夸客"</h3>
+                            <p>独立运营个人公众号，发布原创内容，积累了稳定的读者群体。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="achievement-item">
+                        <div style="background: linear-gradient(135deg, #3498db, #e74c3c); height: 200px; display: flex; justify-content: center; align-items: center;">
+                            <i class="fas fa-globe" style="font-size: 4rem; color: white;"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h3><i class="fas fa-globe"></i>个人网站"夸克博客"</h3>
+                            <p>搭建个人网站，分享技术心得和生活感悟，访问量即将破万。</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -543,63 +786,46 @@
             </div>
             <div class="portfolio-container">
                 <div class="portfolio-item">
-                    <!-- 此处预留作品图片位置 -->
-                    <div class="portfolio-img" style="background-color: #2c3e50;"></div>
+                    <img src="https://lsqkk.github.io/image/flhf.jpg" alt="光的夫琅禾费衍射实验视频" class="portfolio-img">
                     <div class="portfolio-overlay">
                         <h3>光的夫琅禾费衍射实验视频</h3>
                         <p>西北赛区一等奖作品</p>
-                        <a href="#" style="color: white; margin-top: 15px; display: inline-block;">查看详情</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <div class="portfolio-img" style="background-color: #3498db;"></div>
+                    <img src="https://lsqkk.github.io/image/szskb.png" alt="少年班苏中预科官方账号" class="portfolio-img">
                     <div class="portfolio-overlay">
                         <h3>少年班苏中预科官方账号</h3>
                         <p>热门视频作品集</p>
-                        <a href="#" style="color: white; margin-top: 15px; display: inline-block;">查看详情</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <div class="portfolio-img" style="background-color: #e74c3c;"></div>
+                    <img src="https://lsqkk.github.io/image/gzh.png" alt="个人公众号奇夸客" class="portfolio-img">
                     <div class="portfolio-overlay">
                         <h3>个人公众号"奇夸客"</h3>
                         <p>精选推送作品</p>
-                        <a href="#" style="color: white; margin-top: 15px; display: inline-block;">查看详情</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 联系方式 -->
-    <section id="contact">
+    <!-- 结尾部分 -->
+    <section id="conclusion" class="conclusion">
         <div class="container">
-            <div class="section-title">
-                <h2>联系方式</h2>
-            </div>
-            <div class="contact-container">
-                <div class="contact-info">
-                    <h3>与我联系</h3>
-                    <ul class="contact-details">
-                        <li>
-                            <span class="contact-icon">📧</span>
-                            <span>邮箱：<a href="#" style="color: #333;">jsxzznz@163.com</a></span>
-                        </li>
-                        <li>
-                            <span class="contact-icon">🎬</span>
-                            <span>B站：<a href="#" style="color: #333;">蓝色奇夸克</a></span>
-                        </li>
-                        <li>
-                            <span class="contact-icon">🌐</span>
-                            <span>个人网站：<a href="#" style="color: #333;">夸克博客</a></span>
-                        </li>
-                    </ul>
+            <div class="conclusion-content">
+                <h2>加入仲英书院学生会新媒体部</h2>
+                
+                <div class="aspiration">
+                    <p>我希望加入仲英书院学生会新媒体部，不仅是为了施展我的技能，更是希望用这些能力服务书院同学，打造更有影响力的书院媒体平台。</p>
+                    <p>我相信，我的技能和经验能够为新媒体部带来价值，同时也期待在这里向优秀的学长学姐学习，与志同道合的伙伴一起成长，让"无穷的远方，无数的人们"通过我们的作品产生更多连接。</p>
                 </div>
-                <div class="contact-info">
-                    <h3>申请意向</h3>
-                    <p>我真诚希望加入仲英书院学生会新媒体部，期待能为书院的新媒体工作贡献自己的力量，与团队一起创作出优质的内容，服务书院同学。</p>
-                    <p>我相信，我的技能和经验能够为新媒体部带来价值，同时也期待在这里学习和成长。</p>
+                
+                <div class="quote">
+                    无穷的远方，无数的人们，都和我有关
                 </div>
+                
+                <a href="#" class="btn">联系我 <i class="fas fa-paper-plane"></i></a>
             </div>
         </div>
     </section>
@@ -607,14 +833,8 @@
     <!-- 页脚 -->
     <footer>
         <div class="container footer-content">
-            <div class="logo" style="color: white;">蓝色奇夸克</div>
-            <ul class="social-links">
-                <li><a href="#">📱</a></li>
-                <li><a href="#">🎬</a></li>
-                <li><a href="#">📧</a></li>
-                <li><a href="#">🌐</a></li>
-            </ul>
-            <p>© 2025 夸克博客 | All rights reserved.</p>
+            <div class="footer-logo">蓝色奇夸克</div>
+            <p class="copyright">© 2025 夸克博客 | All rights reserved.</p>
         </div>
     </footer>
 
@@ -645,6 +865,28 @@
                     });
                 }
             });
+        });
+        
+        // 添加滚动动画效果
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 1s ease forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // 观察需要动画的元素
+        document.querySelectorAll('.skill-card, .achievement-item, .portfolio-item').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
         });
     </script>
 </body>
