@@ -2,613 +2,453 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>全天轨迹记录器</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地理探索助手 - 基于天地图</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #3498db, #2c3e50);
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        h1 i {
-            margin-right: 10px;
-        }
-        
-        .subtitle {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        .main-content {
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
         #mapContainer {
-            flex: 3;
+            height: 600px;
             width: 100%;
-            min-height: 300px;
-            border-bottom: 2px solid #ddd;
         }
-        
-        .info-panel {
-            flex: 2;
-            padding: 15px;
+        .sidebar {
+            height: 600px;
             overflow-y: auto;
-            background: white;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 10px;
+            background-color: #f8f9fa;
             padding: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            border-left: 4px solid #3498db;
         }
-        
-        .stat-card.primary {
-            border-left-color: #e74c3c;
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 5px 0;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .stat-label i {
-            margin-right: 5px;
-        }
-        
-        .control-panel {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        
-        button i {
-            margin-right: 5px;
-        }
-        
-        .btn-start {
-            background: #2ecc71;
-            color: white;
-        }
-        
-        .btn-start:hover {
-            background: #27ae60;
-        }
-        
-        .btn-pause {
-            background: #f39c12;
-            color: white;
-        }
-        
-        .btn-pause:hover {
-            background: #d35400;
-        }
-        
-        .btn-clear {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .btn-clear:hover {
-            background: #c0392b;
-        }
-        
-        .history {
-            margin-top: 20px;
-        }
-        
-        .history h3 {
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #eee;
-            color: #2c3e50;
-        }
-        
-        .history-item {
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .history-date {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .history-stats {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 15px;
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            background: #ecf0f1;
-        }
-        
-        .status-bar {
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            background: #34495e;
-            color: white;
-            font-size: 0.9rem;
-        }
-        
-        .status-indicator {
-            width: 12px;
-            height: 12px;
+        .custom-marker {
+            background-color: #ff4444;
             border-radius: 50%;
-            background: #2ecc71;
-            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
-        
-        .status-indicator.inactive {
-            background: #e74c3c;
+        .saved-place {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #0d6efd;
+            background-color: white;
+            border-radius: 4px;
         }
-        
-        @media (min-width: 768px) {
-            .main-content {
-                flex-direction: row;
-            }
-            
-            #mapContainer {
-                flex: 2;
-                border-right: 2px solid #ddd;
-                border-bottom: none;
-            }
-            
-            .info-panel {
-                flex: 1;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
+        .game-marker {
+            background-color: purple;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="bi bi-geo-alt-fill"></i>全天轨迹记录器</h1>
-            <div class="subtitle">基于天地图的位置轨迹记录应用</div>
-        </header>
-        
-        <div class="status-bar">
-            <div class="status-indicator inactive" id="statusIndicator"></div>
-            <span id="statusText">等待开始记录</span>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">地理探索助手</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">关于</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        
-        <div class="main-content">
-            <div id="mapContainer"></div>
-            
-            <div class="info-panel">
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-label"><i class="bi bi-calendar-event"></i> 记录日期</div>
-                        <div class="stat-value" id="currentDate">--</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label"><i class="bi bi-clock"></i> 开始时间</div>
-                        <div class="stat-value" id="startTime">--:--</div>
-                    </div>
-                    <div class="stat-card primary">
-                        <div class="stat-label"><i class="bi bi-stopwatch"></i> 记录时长</div>
-                        <div class="stat-value" id="duration">00:00:00</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label"><i class="bi bi-signpost-split"></i> 里程(公里)</div>
-                        <div class="stat-value" id="distance">0.00</div>
-                    </div>
-                </div>
-                
-                <div class="control-panel">
-                    <div class="btn-group">
-                        <button class="btn-start" id="btnStart"><i class="bi bi-play-fill"></i> 开始记录</button>
-                        <button class="btn-pause" id="btnPause"><i class="bi bi-pause-fill"></i> 暂停记录</button>
-                        <button class="btn-clear" id="btnClear"><i class="bi bi-trash-fill"></i> 清除记录</button>
-                    </div>
-                </div>
-                
-                <div class="history">
-                    <h3><i class="bi bi-clock-history"></i> 历史记录</h3>
-                    <div id="historyList">
-                        <div class="history-item">
-                            <div class="history-date">暂无记录</div>
-                            <div class="history-stats">--</div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-9">
+                <div id="mapContainer"></div>
+            </div>
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="places-tab" data-bs-toggle="tab" data-bs-target="#places">我的地点</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="game-tab" data-bs-toggle="tab" data-bs-target="#game">地理游戏</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings">地图设置</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3" id="myTabContent">
+                        <div class="tab-pane fade show active" id="places">
+                            <button class="btn btn-primary btn-sm mb-2" id="addPlaceBtn">添加当前位置</button>
+                            <div id="savedPlacesList"></div>
+                        </div>
+                        <div class="tab-pane fade" id="game">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success" id="startGameBtn">开始位置记忆游戏</button>
+                                <div id="gameInfo" class="mt-2"></div>
+                                <div id="gameControls" class="mt-2 d-none">
+                                    <button class="btn btn-warning" id="submitGuessBtn">提交猜测</button>
+                                    <button class="btn btn-secondary" id="cancelGameBtn">取消游戏</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="settings">
+                            <div class="mb-3">
+                                <label class="form-label">地图样式</label>
+                                <select class="form-select" id="mapStyleSelect">
+                                    <option value="vec">矢量地图</option>
+                                    <option value="img">影像地图</option>
+                                    <option value="ter">地形地图</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">标记颜色</label>
+                                <input type="color" class="form-control form-control-color" id="markerColor" value="#ff4444">
+                            </div>
+                            <button class="btn btn-danger" id="clearDataBtn">清除所有数据</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <footer>
-            <p>© 2023 全天轨迹记录器 | 使用天地图API | 位置数据仅存储在本地</p>
-        </footer>
     </div>
 
+    <!-- 添加地点模态框 -->
+    <div class="modal fade" id="addPlaceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加地点</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">地点名称</label>
+                        <input type="text" class="form-control" id="placeName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-control" id="placeNotes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="savePlaceBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关于模态框 -->
+    <div class="modal fade" id="aboutModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">关于地理探索助手</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>这是一个基于天地图API开发的网页地图应用，使用纯前端技术实现。</p>
+                    <p>功能特点：</p>
+                    <ul>
+                        <li>地点标记与收藏</li>
+                        <li>个性化地图样式定制</li>
+                        <li>地理位置记忆游戏</li>
+                        <li>本地数据存储</li>
+                    </ul>
+                    <p>所有数据存储在您的浏览器本地，保护您的隐私。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- 天地图API -->
-    <script type="text/javascript" src="https://api.tianditu.gov.cn/api?v=4.0&tk=	6e5b0e71ae628b8c2ab60c9144a7848e"></script>
+    <script type="text/javascript" src="https://api.tianditu.gov.cn/api?v=4.0&tk=6e5b0e71ae628b8c2ab60c9144a7848e"></script>
     <script>
-        // 注意：使用前请替换为您的天地图密钥
-        // 申请地址: https://console.tianditu.gov.cn/api/
-        
-        // 全局变量
-        let map, trackPoints = [], isRecording = false;
-        let startTime = null, timerInterval = null, durationInterval = null;
-        let totalDistance = 0;
-        let currentPolyline = null;
-        
+        // 初始化变量
+        let map, currentMarker, savedPlaces = [];
+        let gameActive = false;
+        let targetLocation, playerMarker;
+
         // 初始化地图
         function initMap() {
-            // 设置地图中心点（默认北京）
             map = new T.Map('mapContainer');
-            map.centerAndZoom(new T.LngLat(116.3974, 39.9093), 12);
+            map.centerAndZoom(new T.LngLat(116.397428, 39.90923), 12);
             
             // 添加控件
             map.addControl(new T.Control.Zoom());
+            map.addControl(new T.Control.OverViewMap());
             map.addControl(new T.Control.Scale());
+            
+            // 加载保存的地点
+            loadSavedPlaces();
+            
+            // 加载用户设置
+            loadUserSettings();
+            
+            // 绑定事件
+            bindEvents();
         }
-        
-        // 计算两点间距离（Haversine公式）
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // 地球半径（公里）
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-        
-        // 更新统计信息
-        function updateStats() {
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-            
-            if (startTime) {
-                const now = new Date();
-                const diff = now - startTime;
-                const hours = Math.floor(diff / 3600000).toString().padStart(2, '0');
-                const minutes = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
-                const seconds = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                document.getElementById('duration').textContent = `${hours}:${minutes}:${seconds}`;
-            }
-            
-            document.getElementById('distance').textContent = totalDistance.toFixed(2);
-        }
-        
-        // 获取当前位置
-        function getCurrentPosition() {
-            if (!navigator.geolocation) {
-                alert("您的浏览器不支持地理定位功能");
-                return;
-            }
-            
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const accuracy = position.coords.accuracy;
-                    
-                    // 添加到轨迹点数组
-                    const newPoint = { lat, lng, time: new Date() };
-                    
-                    // 计算距离（如果有上一个点）
-                    if (trackPoints.length > 0) {
-                        const lastPoint = trackPoints[trackPoints.length - 1];
-                        const segmentDistance = calculateDistance(
-                            lastPoint.lat, lastPoint.lng, lat, lng
-                        );
-                        totalDistance += segmentDistance;
-                    }
-                    
-                    trackPoints.push(newPoint);
-                    
-                    // 更新地图上的轨迹
-                    updateTrackOnMap();
-                    
-                    // 更新统计信息
-                    updateStats();
-                    
-                    // 保存到本地存储
-                    saveToLocalStorage();
-                },
-                function(error) {
-                    console.error("获取位置失败:", error);
-                    updateStatus("位置获取失败: " + error.message, false);
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 30000
-                }
-            );
-        }
-        
-        // 在地图上更新轨迹
-        function updateTrackOnMap() {
-            if (trackPoints.length < 2) return;
-            
-            // 清除旧轨迹
-            if (currentPolyline) {
-                map.removeOverLay(currentPolyline);
-            }
-            
-            // 创建新轨迹
-            const points = trackPoints.map(point => new T.LngLat(point.lng, point.lat));
-            currentPolyline = new T.Polyline(points, {
-                color: "#3498db",
-                weight: 4,
-                opacity: 0.8
-            });
-            
-            map.addOverLay(currentPolyline);
-            
-            // 调整地图视野以适应轨迹
-            const bounds = new T.LngLatBounds();
-            points.forEach(point => bounds.extend(point));
-            map.fitBounds(bounds, {padding: 50});
-        }
-        
-        // 更新状态指示器
-        function updateStatus(text, isActive) {
-            const indicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('statusText');
-            
-            statusText.textContent = text;
-            if (isActive) {
-                indicator.classList.remove('inactive');
-            } else {
-                indicator.classList.add('inactive');
+
+        // 加载保存的地点
+        function loadSavedPlaces() {
+            const saved = localStorage.getItem('savedPlaces');
+            if (saved) {
+                savedPlaces = JSON.parse(saved);
+                renderSavedPlaces();
             }
         }
-        
-        // 保存到本地存储
-        function saveToLocalStorage() {
-            const trackData = {
-                points: trackPoints,
-                startTime: startTime,
-                totalDistance: totalDistance
-            };
+
+        // 渲染保存的地点列表
+        function renderSavedPlaces() {
+            const container = document.getElementById('savedPlacesList');
+            container.innerHTML = '';
             
-            localStorage.setItem('lastTrack', JSON.stringify(trackData));
-            
-            // 同时保存到历史记录
-            saveToHistory();
-        }
-        
-        // 保存到历史记录
-        function saveToHistory() {
-            if (trackPoints.length === 0) return;
-            
-            const history = JSON.parse(localStorage.getItem('trackHistory') || '[]');
-            
-            // 检查是否已有今天记录
-            const today = new Date().toLocaleDateString();
-            const existingIndex = history.findIndex(item => item.date === today);
-            
-            const trackInfo = {
-                date: today,
-                startTime: startTime.toLocaleTimeString(),
-                duration: document.getElementById('duration').textContent,
-                distance: totalDistance.toFixed(2),
-                points: trackPoints
-            };
-            
-            if (existingIndex >= 0) {
-                history[existingIndex] = trackInfo;
-            } else {
-                history.push(trackInfo);
-            }
-            
-            localStorage.setItem('trackHistory', JSON.stringify(history));
-            loadHistory();
-        }
-        
-        // 加载历史记录
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('trackHistory') || '[]');
-            const historyList = document.getElementById('historyList');
-            
-            if (history.length === 0) {
-                historyList.innerHTML = `
-                    <div class="history-item">
-                        <div class="history-date">暂无记录</div>
-                        <div class="history-stats">--</div>
+            savedPlaces.forEach((place, index) => {
+                const div = document.createElement('div');
+                div.className = 'saved-place';
+                div.innerHTML = `
+                    <h6>${place.name}</h6>
+                    <p class="mb-1">${place.notes || '无备注'}</p>
+                    <small>${new Date(place.date).toLocaleDateString()}</small>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-primary view-place" data-index="${index}">查看</button>
+                        <button class="btn btn-sm btn-outline-danger delete-place" data-index="${index}">删除</button>
                     </div>
                 `;
+                container.appendChild(div);
+            });
+            
+            // 添加事件监听
+            document.querySelectorAll('.view-place').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const place = savedPlaces[index];
+                    map.centerAndZoom(new T.LngLat(place.lng, place.lat), 15);
+                    
+                    if (currentMarker) {
+                        map.removeOverLay(currentMarker);
+                    }
+                    
+                    currentMarker = new T.Marker(new T.LngLat(place.lng, place.lat));
+                    map.addOverLay(currentMarker);
+                });
+            });
+            
+            document.querySelectorAll('.delete-place').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    if (confirm('确定要删除这个地点吗？')) {
+                        savedPlaces.splice(index, 1);
+                        localStorage.setItem('savedPlaces', JSON.stringify(savedPlaces));
+                        renderSavedPlaces();
+                    }
+                });
+            });
+        }
+
+        // 加载用户设置
+        function loadUserSettings() {
+            const style = localStorage.getItem('mapStyle') || 'vec';
+            document.getElementById('mapStyleSelect').value = style;
+            changeMapStyle(style);
+            
+            const color = localStorage.getItem('markerColor') || '#ff4444';
+            document.getElementById('markerColor').value = color;
+        }
+
+        // 更改地图样式
+        function changeMapStyle(style) {
+            let layer;
+            switch(style) {
+                case 'img':
+                    layer = new T.ImageMapLayer();
+                    break;
+                case 'ter':
+                    layer = new T.TerrainMapLayer();
+                    break;
+                default:
+                    layer = new T.NormalMapLayer();
+            }
+            map.setLayers([layer]);
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 添加地点按钮
+            document.getElementById('addPlaceBtn').addEventListener('click', function() {
+                const center = map.getCenter();
+                const modal = new bootstrap.Modal(document.getElementById('addPlaceModal'));
+                modal.show();
+                
+                document.getElementById('savePlaceBtn').onclick = function() {
+                    const name = document.getElementById('placeName').value || '未命名地点';
+                    const notes = document.getElementById('placeNotes').value;
+                    
+                    savedPlaces.push({
+                        name: name,
+                        notes: notes,
+                        lng: center.getLng(),
+                        lat: center.getLat(),
+                        date: new Date().toISOString()
+                    });
+                    
+                    localStorage.setItem('savedPlaces', JSON.stringify(savedPlaces));
+                    renderSavedPlaces();
+                    
+                    // 清除表单并关闭模态框
+                    document.getElementById('placeName').value = '';
+                    document.getElementById('placeNotes').value = '';
+                    modal.hide();
+                };
+            });
+            
+            // 地图样式选择
+            document.getElementById('mapStyleSelect').addEventListener('change', function() {
+                const style = this.value;
+                changeMapStyle(style);
+                localStorage.setItem('mapStyle', style);
+            });
+            
+            // 标记颜色选择
+            document.getElementById('markerColor').addEventListener('change', function() {
+                const color = this.value;
+                localStorage.setItem('markerColor', color);
+            });
+            
+            // 清除数据按钮
+            document.getElementById('clearDataBtn').addEventListener('click', function() {
+                if (confirm('确定要清除所有保存的数据吗？此操作不可撤销。')) {
+                    localStorage.removeItem('savedPlaces');
+                    localStorage.removeItem('mapStyle');
+                    localStorage.removeItem('markerColor');
+                    savedPlaces = [];
+                    renderSavedPlaces();
+                    loadUserSettings();
+                }
+            });
+            
+            // 开始游戏按钮
+            document.getElementById('startGameBtn').addEventListener('click', startGame);
+            
+            // 提交猜测按钮
+            document.getElementById('submitGuessBtn').addEventListener('click', submitGuess);
+            
+            // 取消游戏按钮
+            document.getElementById('cancelGameBtn').addEventListener('click', cancelGame);
+            
+            // 地图点击事件（游戏模式下）
+            map.addEventListener('click', function(e) {
+                if (gameActive) {
+                    if (playerMarker) {
+                        map.removeOverLay(playerMarker);
+                    }
+                    
+                    playerMarker = new T.Marker(e.lnglat);
+                    map.addOverLay(playerMarker);
+                }
+            });
+        }
+
+        // 开始地理位置记忆游戏
+        function startGame() {
+            gameActive = true;
+            
+            // 随机选择一个地点（如果有保存的地点）
+            if (savedPlaces.length > 0) {
+                const randomIndex = Math.floor(Math.random() * savedPlaces.length);
+                const place = savedPlaces[randomIndex];
+                targetLocation = {lng: place.lng, lat: place.lat};
+                
+                document.getElementById('gameInfo').textContent = `记住这个位置：${place.name}`;
+                document.getElementById('gameControls').classList.remove('d-none');
+                
+                // 显示目标位置3秒钟
+                const targetMarker = new T.Marker(new T.LngLat(targetLocation.lng, targetLocation.lat), {
+                    icon: new T.Icon({
+                        src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9InB1cnBsZSIvPgo8L3N2Zz4K',
+                        size: new T.Point(24, 24),
+                        anchor: new T.Point(12, 12)
+                    })
+                });
+                map.addOverLay(targetMarker);
+                
+                // 3秒后移除标记
+                setTimeout(() => {
+                    map.removeOverLay(targetMarker);
+                    document.getElementById('gameInfo').textContent = '现在请点击地图标记您认为的位置';
+                }, 3000);
+            } else {
+                alert('请先添加一些地点再开始游戏');
+                gameActive = false;
+            }
+        }
+
+        // 提交猜测
+        function submitGuess() {
+            if (!playerMarker) {
+                alert('请先在地图上标记您猜测的位置');
                 return;
             }
             
-            // 按日期降序排列
-            history.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const playerLnglat = playerMarker.getLngLat();
+            const distance = calculateDistance(
+                targetLocation.lat, targetLocation.lng,
+                playerLnglat.lat, playerLnglat.lng
+            );
             
-            historyList.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <div class="history-date">${item.date}</div>
-                    <div class="history-stats">${item.duration} | ${item.distance}公里</div>
-                </div>
-            `).join('');
-        }
-        
-        // 从本地存储加载
-        function loadFromLocalStorage() {
-            const savedData = JSON.parse(localStorage.getItem('lastTrack') || 'null');
-            
-            if (savedData) {
-                trackPoints = savedData.points || [];
-                startTime = new Date(savedData.startTime);
-                totalDistance = savedData.totalDistance || 0;
-                
-                // 更新UI
-                document.getElementById('startTime').textContent = startTime.toLocaleTimeString();
-                updateStats();
-                updateTrackOnMap();
-                
-                if (trackPoints.length > 0) {
-                    updateStatus("已加载上次记录", false);
-                }
+            let message = `距离目标点还有 ${distance.toFixed(2)} 公里`;
+            if (distance < 1) {
+                message += "，非常接近！";
+            } else if (distance < 5) {
+                message += "，还不错！";
+            } else {
+                message += "，再接再厉！";
             }
             
-            loadHistory();
+            document.getElementById('gameInfo').textContent = message;
+            
+            // 显示目标位置
+            const targetMarker = new T.Marker(new T.LngLat(targetLocation.lng, targetLocation.lat));
+            map.addOverLay(targetMarker);
+            
+            gameActive = false;
+            document.getElementById('gameControls').classList.add('d-none');
         }
-        
-        // 开始记录
-        function startRecording() {
-            if (isRecording) return;
-            
-            isRecording = true;
-            updateStatus("记录中...", true);
-            
-            // 设置开始时间（如果尚未设置）
-            if (!startTime) {
-                startTime = new Date();
-                document.getElementById('startTime').textContent = startTime.toLocaleTimeString();
+
+        // 取消游戏
+        function cancelGame() {
+            gameActive = false;
+            if (playerMarker) {
+                map.removeOverLay(playerMarker);
+                playerMarker = null;
             }
-            
-            // 立即获取一次位置
-            getCurrentPosition();
-            
-            // 设置定时器每30秒获取一次位置
-            timerInterval = setInterval(getCurrentPosition, 30000);
-            
-            // 设置定时器每秒更新持续时间
-            durationInterval = setInterval(updateStats, 1000);
+            document.getElementById('gameInfo').textContent = '';
+            document.getElementById('gameControls').classList.add('d-none');
         }
-        
-        // 暂停记录
-        function pauseRecording() {
-            if (!isRecording) return;
-            
-            isRecording = false;
-            updateStatus("已暂停", false);
-            
-            clearInterval(timerInterval);
-            clearInterval(durationInterval);
+
+        // 计算两点间距离（公里）
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371; // 地球半径（公里）
+            const dLat = deg2rad(lat2 - lat1);
+            const dLng = deg2rad(lng2 - lng1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            return R * c;
         }
-        
-        // 清除记录
-        function clearRecording() {
-            pauseRecording();
-            
-            if (!confirm("确定要清除当前记录吗？此操作不可撤销。")) return;
-            
-            trackPoints = [];
-            startTime = null;
-            totalDistance = 0;
-            
-            if (currentPolyline) {
-                map.removeOverLay(currentPolyline);
-                currentPolyline = null;
-            }
-            
-            document.getElementById('startTime').textContent = '--:--';
-            document.getElementById('duration').textContent = '00:00:00';
-            document.getElementById('distance').textContent = '0.00';
-            
-            localStorage.removeItem('lastTrack');
-            updateStatus("记录已清除", false);
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
         }
-        
-        // 初始化应用
-        function initApp() {
-            initMap();
-            loadFromLocalStorage();
-            
-            // 设置事件监听器
-            document.getElementById('btnStart').addEventListener('click', startRecording);
-            document.getElementById('btnPause').addEventListener('click', pauseRecording);
-            document.getElementById('btnClear').addEventListener('click', clearRecording);
-            
-            // 显示当前日期
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-        }
-        
-        // 页面加载完成后初始化
-        window.onload = initApp;
+
+        // 初始化
+        window.onload = initMap;
     </script>
 </body>
 </html>
