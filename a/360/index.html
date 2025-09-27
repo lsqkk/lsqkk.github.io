@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <meta charset="utf-8">
+    <title>交大360°全景平台</title>
+    <link id="pannellumCss" rel="stylesheet" href="https://www.ccsjhn.com/widgets/cc-panoviewer/pannellum.css" />
+    <script id="pannellumJS" src="https://www.ccsjhn.com/widgets/cc-panoviewer/pannellum.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-bg: rgba(255, 255, 255, 0.9);
+            --dark-bg: rgba(44, 62, 80, 0.9);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+        }
+        
+        #panorama {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 控制面板样式 */
+        .control-panel {
+            position: fixed;
+            z-index: 100;
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+        
+        .control-panel.collapsed {
+            opacity: 0.7;
+        }
+        
+        #leftPanel {
+            left: 20px;
+            top: 20px;
+            width: 300px;
+            max-height: calc(100% - 40px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        #rightPanel {
+            right: 20px;
+            top: 20px;
+            width: 320px;
+            max-height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        
+        #bottomPanel {
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            width: auto;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--dark-bg);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .panel-content {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        /* 搜索框样式 */
+        .search-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        /* 图片列表样式 */
+        .scene-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .scene-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #eee;
+        }
+        
+        .scene-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .scene-item.active {
+            border-color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .scene-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            margin-right: 12px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+        }
+        
+        .scene-info {
+            flex: 1;
+        }
+        
+        .scene-name {
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+        }
+        
+        .scene-contributor {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        /* 上传区域样式 */
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(240, 240, 240, 0.5);
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        /* 水印样式 */
+        .watermark {
+            position: fixed;
+            z-index: 50;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            pointer-events: none;
+            text-align: center;
+            width: 100%;
+            bottom: 80px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+        }
+        
+        /* 密码解锁对话框 */
+        .password-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .password-box {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .password-title {
+            margin-top: 0;
+            color: var(--secondary-color);
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-size: 1rem;
+        }
+        
+        .password-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 0 5px;
+        }
+        
+        .password-btn:hover {
+            background: #2980b9;
+        }
+        
+        .password-btn.cancel {
+            background: #95a5a6;
+        }
+        
+        .password-btn.cancel:hover {
+            background: #7f8c8d;
+        }
+        
+        /* 隐藏/显示按钮 */
+        .hide-show-btn {
+            position: fixed;
+            z-index: 99;
+            background: var(--dark-bg);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .hide-show-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        #toggleLeft {
+            left: 10px;
+            top: 10px;
+        }
+        
+        #toggleRight {
+            right: 10px;
+            top: 10px;
+        }
+        
+        #toggleBottom {
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            #leftPanel, #rightPanel {
+                width: calc(100% - 40px);
+                max-height: 40%;
+            }
+            
+            #leftPanel {
+                top: 20px;
+            }
+            
+            #rightPanel {
+                bottom: 20px;
+                top: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 全景图容器 -->
+    <div id="panorama"></div>
+    
+    <!-- 水印 -->
+    <div class="watermark" id="watermark"></div>
+    
+    <!-- 密码解锁对话框 -->
+    <div class="password-dialog" id="passwordDialog">
+        <div class="password-box">
+            <h3 class="password-title">去除水印</h3>
+            <p>请输入密码以去除水印</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="请输入密码">
+            <div>
+                <button class="password-btn" id="confirmPassword">确认</button>
+                <button class="password-btn cancel" id="cancelPassword">取消</button>
+            </div>
+            <p id="passwordError" style="color: red; margin-top: 10px; display: none;">密码错误，请重试</p>
+        </div>
+    </div>
+    
+    <!-- 隐藏/显示按钮 -->
+    <button class="hide-show-btn" id="toggleLeft"><i class="fas fa-chevron-right"></i></button>
+    <button class="hide-show-btn" id="toggleRight"><i class="fas fa-chevron-left"></i></button>
+    <button class="hide-show-btn" id="toggleBottom"><i class="fas fa-chevron-up"></i></button>
+    
+    <!-- 左侧面板 - 图片列表 -->
+    <div class="control-panel" id="leftPanel">
+        <div class="panel-header">
+            <h3 class="panel-title">交大全景图</h3>
+            <button class="toggle-btn" id="collapseLeft">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+        <div class="panel-content">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索地点或贡献者...">
+            </div>
+            <div class="scene-list" id="sceneList">
+                <!-- 场景列表将通过JS动态生成 -->
+            </div>
+            
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p class="upload-text">点击或拖拽上传您的全景图片</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 右侧面板 - 说明文字 -->
+    <div class="control-panel" id="rightPanel">
+        <div class="panel-header">
+            <h3 class="panel-title">关于交大360°</h3>
+            <button class="toggle-btn" id="collapseRight">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+        <div class="panel-content">
+            <p>欢迎来到交大360°平台，可在这里查看交大（兴庆校区）各处360°全景。</p>
+            <p>您也可以使用它自由地上传并查看您的各种全景图，并右键可以下载包含您的全景图的网页以做收藏。</p>
+            <p>平台为纯前端，因此您的图片只会存在网页本身中不会被上传到任何地方，不用担心隐私问题。</p>
+            <p>欢迎大家为本平台贡献交大更多的全景图片，欢迎<a href="https://docs.qq.com/form/page/DYkh5ekRtUFZicFVS" style="color: var(--primary-color);">点此</a>提交~</p>
+            <p>平台遵循AGPL-3.0-or-later协议，您可以随意分发修改，只需要保持您修改后的作品仍然遵守同样的协议即可。</p>
+            <p style="font-style: italic; margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 6px;">
+                本段可以编辑的，您可以改成喜欢的内容后保存，也可隐藏~
+            </p>
+        </div>
+    </div>
+    
+    <!-- 底部面板 -->
+    <div class="control-panel" id="bottomPanel">
+        <div class="panel-content">
+            <p style="margin: 0;">欢迎访问<a href="https://lsqkk.github.io" style="color: var(--primary-color);">我的小窝</a>，来一起玩~</p>
+        </div>
+    </div>
+
+    <script>
+        // 密码哈希值 (helloworld的SHA-256哈希)
+        const PASSWORD_HASH = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af';
+        
+        // 全局变量
+        let currentViewer = null;
+        let currentScene = null;
+        let scenesData = [];
+        let isUnlocked = localStorage.getItem('watermarkUnlocked') === 'true';
+        
+        // 初始化函数
+        function init() {
+            // 加载场景数据
+            loadScenesData();
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 检查水印状态
+            checkWatermarkStatus();
+            
+            // 默认显示第一个场景
+            if (scenesData.length > 0) {
+                loadScene(scenesData[0]);
+            }
+        }
+        
+        // 加载场景数据
+        function loadScenesData() {
+            // 这里应该从scenes.json文件加载数据
+            // 为了演示，我们使用硬编码的数据
+            scenesData = [
+                {
+                    "name": "交大南门",
+                    "contributor": "张三",
+                    "path": "360files/south_gate.jpg"
+                },
+                {
+                    "name": "图书馆",
+                    "contributor": "李四",
+                    "path": "360files/library.jpg"
+                },
+                {
+                    "name": "教学楼",
+                    "contributor": "王五",
+                    "path": "360files/teaching_building.jpg"
+                },
+                {
+                    "name": "运动场",
+                    "contributor": "赵六",
+                    "path": "360files/stadium.jpg"
+                },
+                {
+                    "name": "学生宿舍",
+                    "contributor": "钱七",
+                    "path": "360files/dormitory.jpg"
+                }
+            ];
+            
+            // 渲染场景列表
+            renderSceneList();
+        }
+        
+        // 渲染场景列表
+        function renderSceneList(filter = '') {
+            const sceneList = document.getElementById('sceneList');
+            sceneList.innerHTML = '';
+            
+            const filteredScenes = scenesData.filter(scene => 
+                scene.name.toLowerCase().includes(filter.toLowerCase()) || 
+                scene.contributor.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filteredScenes.forEach(scene => {
+                const sceneItem = document.createElement('div');
+                sceneItem.className = 'scene-item';
+                if (currentScene && currentScene.name === scene.name) {
+                    sceneItem.classList.add('active');
+                }
+                
+                sceneItem.innerHTML = `
+                    <div class="scene-thumb">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="scene-info">
+                        <h4 class="scene-name">${scene.name}</h4>
+                        <p class="scene-contributor">贡献者: ${scene.contributor}</p>
+                    </div>
+                `;
+                
+                sceneItem.addEventListener('click', () => {
+                    loadScene(scene);
+                });
+                
+                sceneList.appendChild(sceneItem);
+            });
+        }
+        
+        // 加载场景
+        function loadScene(scene) {
+            currentScene = scene;
+            
+            // 更新场景列表中的活动项
+            document.querySelectorAll('.scene-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 查找并激活当前场景项
+            const sceneItems = document.querySelectorAll('.scene-item');
+            for (let i = 0; i < sceneItems.length; i++) {
+                const name = sceneItems[i].querySelector('.scene-name').textContent;
+                if (name === scene.name) {
+                    sceneItems[i].classList.add('active');
+                    break;
+                }
+            }
+            
+            // 创建或更新全景查看器
+            if (currentViewer) {
+                currentViewer.destroy();
+            }
+            
+            currentViewer = pannellum.viewer('panorama', {
+                type: 'equirectangular',
+                panorama: scene.path,
+                autoLoad: true,
+                showControls: true,
+                autoRotate: true,
+                hotSpots: []
+            });
+            
+            // 更新水印
+            updateWatermark(scene);
+            
+            // 添加自定义右键菜单项
+            currentViewer.on('load', function() {
+                addCustomContextMenuItem(currentViewer);
+            });
+        }
+        
+        // 更新水印
+        function updateWatermark(scene) {
+            const watermark = document.getElementById('watermark');
+            
+            if (isUnlocked) {
+                watermark.style.display = 'none';
+                return;
+            }
+            
+            // 只有预置场景显示水印，用户上传的不显示
+            if (scene && scene.contributor) {
+                watermark.textContent = `交大360° | 夸克博客 | ${scene.contributor}`;
+                watermark.style.display = 'block';
+            } else {
+                watermark.style.display = 'none';
+            }
+        }
+        
+        // 检查水印状态
+        function checkWatermarkStatus() {
+            isUnlocked = localStorage.getItem('watermarkUnlocked') === 'true';
+            
+            if (isUnlocked) {
+                document.getElementById('watermark').style.display = 'none';
+            }
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 搜索功能
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                renderSceneList(e.target.value);
+            });
+            
+            // 上传功能
+            document.getElementById('uploadArea').addEventListener('click', function() {
+                document.getElementById('fileInput').click();
+            });
+            
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+            
+            // 拖拽上传
+            document.body.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                document.getElementById('uploadArea').style.borderColor = 'var(--primary-color)';
+                document.getElementById('uploadArea').style.background = 'rgba(52, 152, 219, 0.1)';
+            });
+            
+            document.body.addEventListener('dragleave', function(e) {
+                if (!document.getElementById('uploadArea').contains(e.relatedTarget)) {
+                    document.getElementById('uploadArea').style.borderColor = '#ddd';
+                    document.getElementById('uploadArea').style.background = 'rgba(240, 240, 240, 0.5)';
+                }
+            });
+            
+            document.body.addEventListener('drop', function(e) {
+                e.preventDefault();
+                document.getElementById('uploadArea').style.borderColor = '#ddd';
+                document.getElementById('uploadArea').style.background = 'rgba(240, 240, 240, 0.5)';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // 面板折叠/展开
+            document.getElementById('collapseLeft').addEventListener('click', function() {
+                togglePanel('leftPanel', 'toggleLeft');
+            });
+            
+            document.getElementById('collapseRight').addEventListener('click', function() {
+                togglePanel('rightPanel', 'toggleRight');
+            });
+            
+            document.getElementById('toggleLeft').addEventListener('click', function() {
+                togglePanel('leftPanel', 'toggleLeft');
+            });
+            
+            document.getElementById('toggleRight').addEventListener('click', function() {
+                togglePanel('rightPanel', 'toggleRight');
+            });
+            
+            document.getElementById('toggleBottom').addEventListener('click', function() {
+                togglePanel('bottomPanel', 'toggleBottom');
+            });
+            
+            // 密码对话框
+            document.getElementById('confirmPassword').addEventListener('click', function() {
+                verifyPassword();
+            });
+            
+            document.getElementById('cancelPassword').addEventListener('click', function() {
+                document.getElementById('passwordDialog').style.display = 'none';
+            });
+            
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyPassword();
+                }
+            });
+            
+            // 右键菜单
+            document.body.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                showContextMenu(e.pageX, e.pageY);
+            });
+            
+            document.body.addEventListener('click', function() {
+                hideContextMenu();
+            });
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64data = e.target.result;
+                    
+                    // 创建临时场景对象
+                    const tempScene = {
+                        name: '上传的图片',
+                        contributor: '用户上传',
+                        path: base64data
+                    };
+                    
+                    // 加载场景
+                    loadScene(tempScene);
+                    
+                    // 添加到场景列表顶部
+                    scenesData.unshift(tempScene);
+                    renderSceneList();
+                    
+                    // 用户上传的图片不显示水印
+                    document.getElementById('watermark').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('请上传图片文件');
+            }
+        }
+        
+        // 切换面板显示/隐藏
+        function togglePanel(panelId, toggleBtnId) {
+            const panel = document.getElementById(panelId);
+            const toggleBtn = document.getElementById(toggleBtnId);
+            
+            if (panel.style.display === 'none') {
+                panel.style.display = 'flex';
+                toggleBtn.innerHTML = panelId === 'leftPanel' ? 
+                    '<i class="fas fa-chevron-right"></i>' : 
+                    panelId === 'rightPanel' ? 
+                    '<i class="fas fa-chevron-left"></i>' : 
+                    '<i class="fas fa-chevron-up"></i>';
+            } else {
+                panel.style.display = 'none';
+                toggleBtn.innerHTML = panelId === 'leftPanel' ? 
+                    '<i class="fas fa-chevron-left"></i>' : 
+                    panelId === 'rightPanel' ? 
+                    '<i class="fas fa-chevron-right"></i>' : 
+                    '<i class="fas fa-chevron-down"></i>';
+            }
+        }
+        
+        // 验证密码
+        async function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('passwordError');
+            
+            // 计算SHA-256哈希
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            if (hashHex === PASSWORD_HASH) {
+                // 密码正确
+                isUnlocked = true;
+                localStorage.setItem('watermarkUnlocked', 'true');
+                document.getElementById('watermark').style.display = 'none';
+                document.getElementById('passwordDialog').style.display = 'none';
+                document.getElementById('passwordInput').value = '';
+                errorMsg.style.display = 'none';
+            } else {
+                // 密码错误
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+        
+        // 显示上下文菜单
+        function showContextMenu(x, y) {
+            // 这里可以添加自定义右键菜单项
+            // 暂时使用浏览器默认的右键菜单
+        }
+        
+        // 隐藏上下文菜单
+        function hideContextMenu() {
+            // 隐藏自定义右键菜单
+        }
+        
+        // 添加自定义右键菜单项到全景查看器
+        function addCustomContextMenuItem(viewer) {
+            viewer.on('contextmenu', function(e) {
+                // 这里可以添加自定义菜单项
+                // 由于Pannellum的限制，可能需要更复杂的实现
+            });
+        }
+        
+        // 下载当前页面
+        function downloadPage() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '交大360°全景图.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
