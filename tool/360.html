@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+
+<head>
+    <meta charset="utf-8">
+    <title>全景图浏览器</title>
+    <link id="pannellumCss" rel="stylesheet" href="./pannellum.css" />
+
+    <script id="pannellumJS" src="./pannellum.js"></script>
+    <script>
+        // 动态加载 Pannellum CSS
+        try {
+            fetch('./pannellum.css')
+                .then(response => response.text())
+                .then(css => {
+                    const style = document.createElement('style');
+                    style.textContent = css;
+                    document.head.appendChild(style);
+                });
+            // 动态加载 Pannellum JS
+            fetch('./pannellum.js')
+                .then(response => response.text())
+                .then(js => {
+                    const script = document.getElementById('pannellumJS')
+                    script.removeAttribute('src')
+                    script.textContent = js
+                });
+        } catch (e) {
+
+        }
+    </script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #panorama {
+            width: 100%;
+            height: 100%;
+        }
+
+        #uploadPrompt {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
+
+        #cc-bottom {
+            position: fixed;
+            left: 50%;
+            top: 90%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: transparent;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
+
+        #cc-right {
+            position: fixed;
+            left: 100%;
+            top: 20px;
+            transform: translate(-100%, 0%);
+            padding: 20px;
+            background: rgba(240, 240, 240, 0.705) !important;
+            border: 1px solid #3d3d3db4;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            color: #333;
+            min-width: 20vw;
+            max-width: 20vw;
+            max-height: 80vh;
+
+        }
+
+        #contextMenu {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            background: white;
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #contextMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #contextMenu ul li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        #contextMenu ul li:hover {
+            background-color: #f0f0f0;
+        }
+
+        #files {
+            display: none;
+        }
+
+        #previewContainer {
+            margin-top: 10vh;
+            position: fixed;
+            margin: 2vw;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 90vh;
+            z-index: 100;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 自定义滚动条样式 */
+        #previewContainer::-webkit-scrollbar {
+            width: 8px;
+            /* 设置滚动条的宽度 */
+        }
+
+        #previewContainer::-webkit-scrollbar-track {
+            background: transparent;
+            /* 设置滚动条轨道为透明 */
+        }
+
+        #previewContainer::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 设置滚动条本身的颜色 */
+            border-radius: 4px;
+            /* 设置滚动条的圆角 */
+        }
+
+        #previewContainer::-webkit-scrollbar-button {
+            display: none;
+            /* 隐藏滚动条两端的按钮 */
+        }
+
+        #previewContainer * {
+            padding-top: 5px;
+        }
+
+        #previewContainer img,
+        #previewContainer image {
+            width: 15vw
+        }
+
+        #previewContainer button {
+            width: 15vw;
+            height: 5vw
+        }
+    </style>
+</head>
+
+<body>
+    <div id="uploadPrompt">
+        双击或者拖拽上传文件
+        <input type="file" id="fileInput" accept="image/*">
+
+    </div>
+    <div id="contextMenu">
+        <ul>
+            <li onclick="downloadPage()">下载当前页面</li>
+        </ul>
+    </div>
+    <div id="files">
+        <img src="" id="image1" class="imageFileContent">
+    </div>
+    <div id="dataBase">
+        <script class="images" data-id="image1">
+            // 这里将填充base64数据
+        </script>
+    </div>
+    <div id="cc-right" contenteditable="true">
+        这是一个"自包含"的全景图查看器,简单封装了<a href="https://pannellum.org/">pannellum</a>的接口,你可以使用它自由地查看你的各种全景图,
+        右键可以下载包含你的全景图的网页内容（可能有点大，这个网页不会压缩你的全景图），你的图片只会存在网页本身中不会被上传到任何地方
+        代码本身遵循AGPL-3.0-or-later协议,你可以随意再次分发并修改它,只需要保持修改之后的结果仍然遵守同样的协议即可,这段代码脚注本身也是可以编辑的,
+        你可以改成你自己喜欢的内容。
+    </div>
+    <div id="cc-bottom" contenteditable="false">
+        如果你喜欢这个小工具可以去<a href="https://ifdian.net/a/leolee9086">我们的爱发电</a> 请我们喝一杯咖啡
+        感谢pannellum的作者,推荐使用<a href="https://b3log.org/siyuan/">思源笔记</a>，这个网页本身就是使用思源支持后台服务的。
+
+    </div>
+    <div id="previewContainer">
+        <button id="uploader">添加图片</button>
+    </div>
+    <div id="panorama"></div>
+    <script>
+        document.body.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            var contextMenu = document.getElementById('contextMenu');
+            contextMenu.style.top = `${event.pageY}px`;
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.display = 'block';
+        });
+
+        document.body.addEventListener('click', function () {
+            document.getElementById('contextMenu').style.display = 'none';
+        });
+
+        function downloadPage() {
+            var htmlContent = document.documentElement.outerHTML;
+            var blob = new Blob([htmlContent], { type: 'text/html' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'downloaded_page.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        document.body.addEventListener('dragover', function (event) {
+            event.preventDefault();
+        });
+
+        document.body.addEventListener('drop', function (event) {
+            event.preventDefault();
+            if (event.dataTransfer.files.length) {
+                document.getElementById('uploadPrompt').textContent = "正在打开文件";
+                handleFile(event.dataTransfer.files[0]);
+            }
+        });
+        window.onload = () => {
+            if (window.imageData) {
+                const viewer = pannellum.viewer('panorama', {
+                    "type": "equirectangular",
+                    "panorama": window.imageData,
+                    "autoLoad": true,
+                    "showControls": true,
+                    "autoRotate ": true
+                });
+
+                // 添加自定义右键菜单项
+                viewer.on('load', function () {
+                    addCustomContextMenuItem(viewer);
+
+                });
+
+                document.getElementById('uploadPrompt').style.display = 'none';
+            }
+        }
+        function addCustomContextMenuItem(viewer) {
+            viewer.on('contextmenu', function (e) {
+                const customItem = document.createElement('li');
+                customItem.textContent = '下载当前页面';
+                customItem.onclick = downloadPage;
+                const contextMenu = document.querySelector('.pnlm-context-menu');
+                contextMenu.appendChild(customItem);
+                e.stopPropagation()
+            });
+        }
+        document.getElementById('previewContainer').addEventListener(
+            'click', (e) => {
+                if (e.target.src) {
+                    const viewer = pannellum.viewer('panorama', {
+                        "type": "equirectangular",
+                        "panorama": e.target.src,
+                        "autoLoad": true,
+                        "showControls": true,  // 确保控件可见
+                        "autoRotate ": true,
+                        "hotSpots": []
+                    });
+                } else {
+                    if (e.target === document.getElementById('uploader')) {
+
+                        let input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = 'image/*';
+                        input.onchange = e => {
+                            if (e.target.files.length) {
+                                let file = e.target.files[0];
+                                handleFile(file)
+                            }
+                        };
+                        input.click();
+
+                    }
+                }
+            }
+        )
+        document.getElementById('previewContainer').addEventListener('contextmenu', (e) => {
+            if (e.target.src) {
+                e.target.remove()
+                e.stopPropagation()
+            }
+        })
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+            if (this.files.length) {
+                handleFile(this.files[0]);
+            }
+        });
+        function handleFile(file) {
+            if (file && file.type.startsWith('image/')) {  // 判断文件是否为图片类型
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const base64data = e.target.result;
+                    document.getElementById('previewContainer').innerHTML = `
+                            <img id="previewImage" src="${base64data}" alt="Preview" >
+                            `
+                        + document.getElementById('previewContainer').innerHTML
+                    const viewer = pannellum.viewer('panorama', {
+                        "type": "equirectangular",
+                        "panorama": base64data,
+                        "autoLoad": true,
+                        "showControls": true,  // 确保控件可见
+                        "autoRotate ": true,
+                        "hotSpots": []
+                    });
+                    // 添加自定义右键菜单项
+                    viewer.on('load', function () {
+                        addCustomContextMenuItem(viewer);
+                    });
+                    var scriptElement = document.querySelector('.images');
+                    scriptElement.textContent = 'window.imageData = "' + base64data + '";';
+                    document.getElementById('uploadPrompt').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else if (file && file.type === 'text/html') {  // 判断文件是否为HTML类型
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const htmlContent = e.target.result;
+                    document.getElementById('previewContainer').innerHTML = `
+                            <img id="previewImage" src="${base64data}" alt="Preview" >
+                            `
+                        + document.getElementById('previewContainer').innerHTML
+
+                    // 尝试解析HTML并查找特定的数据标记
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlContent, "text/html");
+                    const imageData = doc.querySelector('.images') ? doc.querySelector('.images').textContent : null;
+                    if (imageData && imageData.startsWith('window.imageData = "')) {
+                        const base64data = imageData.split('"')[1];
+                        const viewer = pannellum.viewer('panorama', {
+                            "type": "equirectangular",
+                            "panorama": base64data,
+                            "sceneFadeDuration": 1000,
+                            "autoLoad": true,
+                            "showControls": true,
+                            "autoRotate ": true,
+                            "hotSpots": [{
+                                "pitch": 14.1,
+                                "yaw": 1.5,
+                                "type": "info",
+                                "text": "Baltimore Museum of Art",
+                                "URL": "https://artbma.org/"
+                            },]
+                        });
+                        // 添加自定义右键菜单项
+                        viewer.on('load', function () {
+                            addCustomContextMenuItem(viewer);
+
+                        });
+                        // 添加视点标记
+                        viewer.addHotSpot();
+                        document.getElementById('uploadPrompt').style.display = 'none';
+                    } else {
+                        document.getElementById('uploadPrompt').textContent = "无法从HTML文件中找到全景图数据";
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                document.getElementById('uploadPrompt').textContent = "请使用图片或HTML文件";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
