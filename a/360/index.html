@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html style="height: 100%;">
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>交大360°全景平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link id="pannellumCss" rel="stylesheet" href="https://www.ccsjhn.com/widgets/cc-panoviewer/pannellum.css" />
     <script id="pannellumJS" src="https://www.ccsjhn.com/widgets/cc-panoviewer/pannellum.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --primary-color: #3498db;
@@ -21,6 +21,8 @@
         
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         
         html, body {
@@ -57,9 +59,9 @@
         
         #leftPanel {
             left: 20px;
-            top: 20px;
+            top: 70px; /* 下移避免挡住操作按钮 */
             width: 300px;
-            max-height: calc(100% - 40px);
+            max-height: calc(100% - 90px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -67,9 +69,9 @@
         
         #rightPanel {
             right: 20px;
-            top: 20px;
+            top: 70px; /* 下移避免挡住操作按钮 */
             width: 320px;
-            max-height: calc(100% - 40px);
+            max-height: calc(100% - 90px);
             overflow-y: auto;
         }
         
@@ -90,6 +92,7 @@
             background: var(--dark-bg);
             color: white;
             border-radius: var(--border-radius) var(--border-radius) 0 0;
+            position: relative;
         }
         
         .panel-title {
@@ -112,6 +115,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 101; /* 确保按钮在文字上方 */
+            position: relative;
         }
         
         .toggle-btn:hover {
@@ -159,6 +164,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 15px; /* 与上传区域保持距离 */
         }
         
         .scene-item {
@@ -216,12 +222,12 @@
         .upload-area {
             border: 2px dashed #ddd;
             border-radius: 10px;
-            padding: 30px 20px;
+            padding: 20px;
             text-align: center;
-            margin-top: 20px;
             cursor: pointer;
             transition: var(--transition);
             background: rgba(240, 240, 240, 0.5);
+            margin-bottom: 15px; /* 与场景列表保持距离 */
         }
         
         .upload-area:hover {
@@ -230,7 +236,7 @@
         }
         
         .upload-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--primary-color);
             margin-bottom: 10px;
         }
@@ -320,7 +326,7 @@
         /* 隐藏/显示按钮 */
         .hide-show-btn {
             position: fixed;
-            z-index: 99;
+            z-index: 110; /* 确保按钮在面板上方 */
             background: var(--dark-bg);
             color: white;
             border: none;
@@ -341,12 +347,12 @@
         
         #toggleLeft {
             left: 10px;
-            top: 10px;
+            top: 60px; /* 下移避免挡住全景图操作按钮 */
         }
         
         #toggleRight {
             right: 10px;
-            top: 10px;
+            top: 60px; /* 下移避免挡住全景图操作按钮 */
         }
         
         #toggleBottom {
@@ -382,13 +388,33 @@
             }
             
             #leftPanel {
-                top: 20px;
+                top: 70px;
             }
             
             #rightPanel {
                 bottom: 20px;
                 top: auto;
             }
+            
+            .hide-show-btn {
+                display: none; /* 在小屏幕上隐藏切换按钮 */
+            }
+        }
+        
+        /* 可编辑内容样式 */
+        .editable-content {
+            outline: none;
+            min-height: 200px;
+        }
+        
+        .editable-content:focus {
+            background-color: rgba(240, 240, 240, 0.5);
+            border-radius: 5px;
+        }
+        
+        /* 全景图操作按钮区域 */
+        .pnlm-controls {
+            top: 20px !important; /* 确保全景图操作按钮在顶部 */
         }
     </style>
 </head>
@@ -428,6 +454,13 @@
             </button>
         </div>
         <div class="panel-content">
+            <!-- 上传区域放在场景列表之前 -->
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p class="upload-text">点击或拖拽上传您的全景图片</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </div>
+            
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" class="search-input" id="searchInput" placeholder="搜索地点或贡献者...">
@@ -435,39 +468,35 @@
             <div class="scene-list" id="sceneList">
                 <!-- 场景列表将通过JS动态生成 -->
             </div>
-            
-            <div class="upload-area" id="uploadArea">
-                <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                <p class="upload-text">点击或拖拽上传您的全景图片</p>
-                <input type="file" id="fileInput" accept="image/*" style="display: none;">
-            </div>
         </div>
     </div>
     
     <!-- 右侧面板 - 说明文字 -->
     <div class="control-panel" id="rightPanel">
         <div class="panel-header">
-            <h3 class="panel-title">关于交大360°</h3>
+            <h3 class="panel-title" style="display: none;"></h3> <!-- 隐藏标题避免错位 -->
             <button class="toggle-btn" id="collapseRight">
                 <i class="fas fa-minus"></i>
             </button>
         </div>
         <div class="panel-content">
-            <p>欢迎来到交大360°平台，可在这里查看交大（兴庆校区）各处360°全景。</p>
-            <p>您也可以使用它自由地上传并查看您的各种全景图，并右键可以下载包含您的全景图的网页以做收藏。</p>
-            <p>平台为纯前端，因此您的图片只会存在网页本身中不会被上传到任何地方，不用担心隐私问题。</p>
-            <p>欢迎大家为本平台贡献交大更多的全景图片，欢迎<a href="https://docs.qq.com/form/page/DYkh5ekRtUFZicFVS" style="color: var(--primary-color);">点此</a>提交~</p>
-            <p>平台遵循AGPL-3.0-or-later协议，您可以随意分发修改，只需要保持您修改后的作品仍然遵守同样的协议即可。</p>
-            <p style="font-style: italic; margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 6px;">
-                本段可以编辑的，您可以改成喜欢的内容后保存，也可隐藏~
-            </p>
+            <div class="editable-content" contenteditable="true">
+                <p>欢迎来到交大360°平台，可在这里查看交大（兴庆校区）各处360°全景。</p>
+                <p>您也可以使用它自由地上传并查看您的各种全景图，并右键可以下载包含您的全景图的网页以做收藏。</p>
+                <p>平台为纯前端，因此您的图片只会存在网页本身中不会被上传到任何地方，不用担心隐私问题。</p>
+                <p>欢迎大家为本平台贡献交大更多的全景图片，欢迎<a href="https://docs.qq.com/form/page/DYkh5ekRtUFZicFVS" style="color: var(--primary-color);">点此</a>提交~</p>
+                <p>平台遵循AGPL-3.0-or-later协议，您可以随意分发修改，只需要保持您修改后的作品仍然遵守同样的协议即可。</p>
+                <p style="font-style: italic; margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 6px;">
+                    本段可以编辑的，您可以改成喜欢的内容后保存，也可隐藏~
+                </p>
+            </div>
         </div>
     </div>
     
     <!-- 底部面板 -->
     <div class="control-panel" id="bottomPanel">
         <div class="panel-content">
-            <p style="margin: 0;">欢迎访问<a href="https://lsqkk.github.io" style="color: var(--primary-color);">我的小窝</a>，来一起玩~</p>
+            <p style="margin: 0;">欢迎访问<a href="https://lsqkk.github.io" style="color: var(--primary-color;">我的小窝</a>，来一起玩~</p>
         </div>
     </div>
 
@@ -491,47 +520,32 @@
             
             // 检查水印状态
             checkWatermarkStatus();
-            
-            // 默认显示第一个场景
-            if (scenesData.length > 0) {
-                loadScene(scenesData[0]);
-            }
         }
         
         // 加载场景数据
         function loadScenesData() {
-            // 这里应该从scenes.json文件加载数据
-            // 为了演示，我们使用硬编码的数据
-            scenesData = [
-                {
-                    "name": "交大南门",
-                    "contributor": "张三",
-                    "path": "360files/south_gate.jpg"
-                },
-                {
-                    "name": "图书馆",
-                    "contributor": "李四",
-                    "path": "360files/library.jpg"
-                },
-                {
-                    "name": "教学楼",
-                    "contributor": "王五",
-                    "path": "360files/teaching_building.jpg"
-                },
-                {
-                    "name": "运动场",
-                    "contributor": "赵六",
-                    "path": "360files/stadium.jpg"
-                },
-                {
-                    "name": "学生宿舍",
-                    "contributor": "钱七",
-                    "path": "360files/dormitory.jpg"
-                }
-            ];
-            
-            // 渲染场景列表
-            renderSceneList();
+            fetch('scenes.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('无法加载场景数据文件');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    scenesData = data;
+                    // 渲染场景列表
+                    renderSceneList();
+                    
+                    // 默认显示第一个场景
+                    if (scenesData.length > 0) {
+                        loadScene(scenesData[0]);
+                    }
+                })
+                .catch(error => {
+                    console.error('加载场景数据失败:', error);
+                    // 如果加载失败，可以显示错误信息或使用备用方案
+                    document.getElementById('sceneList').innerHTML = '<p style="color: red; text-align: center;">加载场景数据失败，请检查scenes.json文件</p>';
+                });
         }
         
         // 渲染场景列表
@@ -543,6 +557,11 @@
                 scene.name.toLowerCase().includes(filter.toLowerCase()) || 
                 scene.contributor.toLowerCase().includes(filter.toLowerCase())
             );
+            
+            if (filteredScenes.length === 0) {
+                sceneList.innerHTML = '<p style="text-align: center; color: #666;">未找到匹配的场景</p>';
+                return;
+            }
             
             filteredScenes.forEach(scene => {
                 const sceneItem = document.createElement('div');
@@ -724,6 +743,13 @@
             
             document.body.addEventListener('click', function() {
                 hideContextMenu();
+            });
+            
+            // 双击去除水印对话框
+            document.getElementById('watermark').addEventListener('dblclick', function() {
+                if (!isUnlocked) {
+                    document.getElementById('passwordDialog').style.display = 'flex';
+                }
             });
         }
         
