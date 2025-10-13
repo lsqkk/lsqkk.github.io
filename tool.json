@@ -104,8 +104,18 @@
           "target": "_blank"
         },
         {
+          "name": "💬 夸克自控",
+          "url": "a/zk",
+          "target": "_blank"
+        },
+                {
           "name": "💬 夸克聊天室",
           "url": "chat",
+          "target": "_blank"
+        },
+        {
+          "name": "🔍 交大360°",
+          "url": "https://lsqkk.github.io/a/360",
           "target": "_blank"
         },
         {
