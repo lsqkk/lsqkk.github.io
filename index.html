@@ -12,6 +12,50 @@
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <base href="https://lsqkk.github.io/">
 <style>
+    .friend-link-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.friend-link-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.9);
+}
+
+.friend-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.friend-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-nickname {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.friend-describe {
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.4;
+}
+    
 body {
     background: url('image/bg.png') no-repeat center center fixed;
     background-size: cover;
@@ -181,6 +225,20 @@ body {
     </div>
     <div style="text-align: center; margin: 15px 0;">
         <a href="https://lsqkk.github.io/a/lyb" style="text-decoration: none; color: #007bff; font-size: 0.9em;">写留言</a>
+    </div>
+</div>
+
+ <div class="index-divider"></div>
+                
+                <div class="index-sidebar-section">
+    <h3>🔗 友链</h3>
+    <div id="friend-links">
+        <div class="index-announcement">
+            <p style="margin: 0;">友链加载中...</p>
+        </div>
+    </div>
+    <div style="text-align: center; margin: 15px 0;">
+        <a href="https://lsqkk.github.io/a/lyb" style="text-decoration: none; color: #007bff; font-size: 0.8em;">添加友链请在留言板留言</a>
     </div>
 </div>
                 
@@ -710,17 +768,55 @@ function displayRecentMessages(messages) {
     container.innerHTML = html;
 }
 
-// 在DOM加载完成后加载留言
-document.addEventListener('DOMContentLoaded', function() {
-    loadRecentMessages();
-});
+    // 加载友链
+async function loadFriendLinks() {
+    try {
+        const response = await fetch('friends.json');
+        const friends = await response.json();
+        displayFriendLinks(friends);
+    } catch (error) {
+        console.error('加载友链失败:', error);
+        document.getElementById('friend-links').innerHTML = 
+            '<div class="index-announcement"><p style="margin: 0;">友链加载失败</p></div>';
+    }
+}
+
+// 显示友链
+function displayFriendLinks(friends) {
+    const container = document.getElementById('friend-links');
+    
+    if (!friends || friends.length === 0) {
+        container.innerHTML = '<div class="index-announcement"><p style="margin: 0;">暂无友链</p></div>';
+        return;
+    }
+
+    let html = '';
+    friends.forEach(friend => {
+        html += `
+            <a href="${friend.url}" target="_blank" class="friend-link-item">
+                <img src="${friend.icon}" alt="${friend.nickname}" class="friend-icon" onerror="this.src='image/logo_blue.png'">
+                <div class="friend-info">
+                    <div class="friend-nickname">${friend.nickname}</div>
+                    <div class="friend-describe">${friend.describe}</div>
+                </div>
+            </a>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
    loadDynamicFeed();
+        loadRecentMessages();
+    loadFriendLinks(); // 加载友链
 });
 
 </script>
 
 </body>
 </html>
+
 
