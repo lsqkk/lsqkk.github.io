@@ -9,7 +9,7 @@
     <link rel="icon" href="image/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
     <script src="https://lsqkk.github.io/js/cursor-trail.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/marked/16.2.1/lib/marked.esm.min.js"></script>
+    <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <base href="https://lsqkk.github.io/">
 <style>
 body {
@@ -214,35 +214,6 @@ body {
             });
         });
 
-        async function renderDynamicEntries(entries) {
-    const container = document.getElementById('dynamic-entries');
-    
-    let markdownParser;
-    try {
-        // 动态导入 marked
-        const markedModule = await import('https://cdn.bootcdn.net/ajax/libs/marked/16.2.1/lib/marked.esm.min.js');
-        markdownParser = markedModule.default || markedModule;
-    } catch (error) {
-        console.warn('Marked 加载失败，使用纯文本显示');
-        markdownParser = null;
-    }
-    
-    container.innerHTML = entries.map(entry => {
-        let content = entry.content.join('<br>');
-        if (markdownParser) {
-            content = markdownParser.parse(entry.content.join('\n'));
-        }
-        
-        return `
-            <div class="dynamic-card">
-                <div class="dynamic-title">${entry.title}</div>
-                ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
-                <div class="dynamic-content">${content}</div>
-            </div>
-        `;
-    }).join('');
-}
-        
         // 加载最近三篇文章
         async function loadRecentPosts() {
             const posts = await fetch('posts.json').then(r => r.json());
@@ -590,11 +561,11 @@ async function loadDynamicFeed() {
         const response = await fetch('dt/dt.md');
         const mdContent = await response.text();
         const entries = parseMdEntries(mdContent);
-        await renderDynamicEntries(entries.slice(0, 5)); // 添加 await
+        renderDynamicEntries(entries.slice(0, 5));
     } catch (error) {
         console.error('加载动态失败:', error);
         document.getElementById('dynamic-entries').innerHTML = 
-            '<div class="dynamic-card">动态加载失败，请稍后重试</div>';
+            '<div class="dynamic-card">动态加载中...</div>';
     }
 }
 
@@ -645,7 +616,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-
-
-
-
