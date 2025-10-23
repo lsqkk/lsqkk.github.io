@@ -36,7 +36,7 @@ let questions = [];
 
         // 初始化加载题目
         function init() {
-            fetch('estest/questions.json')
+            fetch('tool/estest/questions.json')
                 .then(response => response.json())
                 .then(data => {
                     questions = data;
