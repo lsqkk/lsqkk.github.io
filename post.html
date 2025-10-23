@@ -163,7 +163,7 @@
 
             try {
                 // 加载 posts.json 文件
-                const response = await fetch('posts.json');
+                const response = await fetch('json/posts.json');
                 const posts = await response.json();
 
                 // 查找当前文章的标题
@@ -209,7 +209,7 @@
             }
 
             try {
-	const postsData = await fetch('posts.json').then(r => r.json());
+	const postsData = await fetch('jsonposts.json').then(r => r.json());
         const post = postsData.find(p => p.file === filename);
         if (post) {
             // 显示日期
@@ -302,7 +302,7 @@ function toggleSidebar() {
 }
 
 async function addPostNavigation(currentFile) {
-    const posts = await fetch('posts.json').then(r => r.json());
+    const posts = await fetch('json/posts.json').then(r => r.json());
     const currentIndex = posts.findIndex(p => p.file === currentFile);
     
     const prevPost = posts[currentIndex + 1]; // 因为文章是按时间倒序排列

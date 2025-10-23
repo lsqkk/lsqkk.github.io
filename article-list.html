@@ -304,7 +304,7 @@
         
         // 加载文章列表
         async function loadPosts() {
-            allPosts = await fetch('posts.json').then(r => r.json());
+            allPosts = await fetch('json/posts.json').then(r => r.json());
             // 确保所有文章都有tags数组
             allPosts.forEach(post => {
                 if (!post.tags) post.tags = ['未分类'];

@@ -289,7 +289,7 @@ body {
 
         // 加载最近三篇文章
         async function loadRecentPosts() {
-            const posts = await fetch('posts.json').then(r => r.json());
+            const posts = await fetch('json/posts.json').then(r => r.json());
             const recentPosts = posts.slice(0, 3);  // 取前三条
             
             const list = recentPosts.map(post => `
@@ -319,7 +319,7 @@ body {
         // 搜索博客功能
         async function searchBlog() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const posts = await fetch('posts.json').then(r => r.json());
+            const posts = await fetch('json/posts.json').then(r => r.json());
             const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
 
             const searchResultsContainer = document.getElementById('searchResults');
@@ -771,7 +771,7 @@ function displayRecentMessages(messages) {
     // 加载友链
 async function loadFriendLinks() {
     try {
-        const response = await fetch('friends.json');
+        const response = await fetch('json/friends.json');
         const friends = await response.json();
         displayFriendLinks(friends);
     } catch (error) {
