@@ -1,0 +1,178 @@
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #333;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    }
+
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin: 20px 0 15px;
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    textarea {
+        width: 100%;
+        height: 200px;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        resize: vertical;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+    }
+
+    textarea:focus {
+        outline: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    button {
+        background: linear-gradient(to right, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        margin: 10px 0 25px;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        transition: all 0.3s ease;
+        opacity: 0.9;
+    }
+
+    button:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .output-text {
+        border-radius: 12px;
+        padding: 20px;
+        min-height: 200px;
+        background: rgba(249, 249, 249, 0.9);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .high-suspicion {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        border-radius: 0 8px 8px 0;
+        padding: 12px 15px;
+        margin: 10px 0;
+        backdrop-filter: blur(2px);
+    }
+
+    .low-suspicion {
+        background: rgba(243, 156, 18, 0.1);
+        border-left: 4px solid #f39c12;
+        border-radius: 0 8px 8px 0;
+        padding: 12px 15px;
+        margin: 10px 0;
+    }
+
+    .none-suspicion {
+        background: rgba(46, 204, 113, 0.1);
+        border-left: 4px solid #2ecc71;
+        border-radius: 0 8px 8px 0;
+        padding: 12px 15px;
+        margin: 10px 0;
+    }
+
+    .reason {
+        display: block;
+        font-size: 13px;
+        color: #7f8c8d;
+        margin-top: 6px;
+        padding-left: 10px;
+        font-style: italic;
+        opacity: 0.8;
+    }
+
+    .stats {
+        margin: 25px 0;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .confidence-meter {
+        height: 12px;
+        background: rgba(236, 240, 241, 0.8);
+        border-radius: 6px;
+        margin: 15px 0;
+        overflow: hidden;
+    }
+
+    .confidence-level {
+        height: 100%;
+        background: linear-gradient(to left, #2ecc71, #f39c12, #e74c3c);
+        border-radius: 6px;
+        transition: width 0.5s ease;
+    }
+
+    .legend {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 5px 12px;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        border-radius: 50%;
+    }
+
+    h3,
+    h4 {
+        color: #34495e;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    p {
+        margin: 8px 0;
+        color: #4a5568;
+    }
+
+    .link {
+        text-decoration: none;
+        /* 去掉下划线 */
+        color: gray;
+        /* 设置链接文字为灰色 */
+        display: block;
+        /* 将链接设置为块级元素，方便居中 */
+        text-align: center;
+        /* 文字居中 */
+        margin: 0 auto;
+        /* 水平居中（如果链接是块级元素） */
+    }

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>高级科学计算器 - 夸克博客</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/numeric@1.2.6/numeric.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="calculator.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1>高级科学计算器</h1>
+        <div class="subtitle">夸克博客 - 专业数学工具</div>
+        <a href="https://lsqkk.github.io/tool.html">更多工具 →</a>
+    </div>
+
+    <div class="calculator">
+        <select class="mode-select" id="modeSelect">
+            <option value="basic">基本计算</option>
+            <option value="equation">方程求解</option>
+            <option value="integral">积分计算</option>
+            <option value="derivative">导数计算</option>
+            <option value="series">级数求和</option>
+            <option value="matrix">矩阵运算</option>
+        </select>
+
+        <div class="display">
+            <input type="text" id="main-input" placeholder="输入表达式">
+            <div class="cursor-indicator" id="cursorPos">位置: 0</div>
+        </div>
+
+        <!-- 基本计算按钮 -->
+        <div class="button-grid" id="basicButtons">
+            <button onclick="insertAtCursor('7')">7</button>
+            <button onclick="insertAtCursor('8')">8</button>
+            <button onclick="insertAtCursor('9')">9</button>
+            <button onclick="insertAtCursor('(')">(</button>
+            <button onclick="insertAtCursor(')')">)</button>
+
+            <button onclick="insertAtCursor('4')">4</button>
+            <button onclick="insertAtCursor('5')">5</button>
+            <button onclick="insertAtCursor('6')">6</button>
+            <button onclick="insertAtCursor('+')">+</button>
+            <button onclick="insertAtCursor('-')">-</button>
+
+            <button onclick="insertAtCursor('1')">1</button>
+            <button onclick="insertAtCursor('2')">2</button>
+            <button onclick="insertAtCursor('3')">3</button>
+            <button onclick="insertAtCursor('*')">×</button>
+            <button onclick="insertAtCursor('/')">/</button>
+
+            <button onclick="insertAtCursor('0')">0</button>
+            <button onclick="insertAtCursor('.')">.</button>
+            <button onclick="insertAtCursor('^')">^</button>
+            <button onclick="insertAtCursor('pi')">π</button>
+            <button onclick="insertAtCursor('e')">e</button>
+
+            <button class="sci-btn" onclick="insertAtCursor('sqrt()',true)">√</button>
+            <button class="sci-btn" onclick="insertAtCursor('log(10,)',true)">log</button>
+            <button class="sci-btn" onclick="insertAtCursor('log()',true)">ln</button>
+            <button class="sci-btn" onclick="insertAtCursor('sin()',true)">sin</button>
+            <button class="sci-btn" onclick="insertAtCursor('cos()',true)">cos</button>
+
+            <button class="special-btn" onclick="calculate()">=</button>
+            <button onclick="clearInput()">C</button>
+            <button onclick="backspace()">⌫</button>
+            <button class="sci-btn" onclick="insertAtCursor('tan()',true)">tan</button>
+            <button class="sci-btn" onclick="insertAtCursor('abs()',true)">|x|</button>
+
+            <button class="fn-btn" onclick="insertAtCursor('factorial()',true)">n!</button>
+            <button class="fn-btn" onclick="insertAtCursor('exp()',true)">exp</button>
+            <button class="fn-btn" onclick="insertAtCursor('mod()',true)">mod</button>
+            <button class="fn-btn" onclick="insertAtCursor('ceil()',true)">ceil</button>
+            <button class="fn-btn" onclick="insertAtCursor('floor()',true)">floor</button>
+        </div>
+
+        <!-- 方程求解面板 -->
+        <div class="function-panel" id="equationPanel">
+            <div class="input-group">
+                <label for="equationInput">方程表达式</label>
+                <input type="text" id="equationInput" placeholder="例如: x^2 + 2x + 1 = 0, sin(x) = 0.5">
+            </div>
+            <div class="input-group">
+                <label for="equationVar">求解变量</label>
+                <input type="text" id="equationVar" placeholder="例如: x" value="x">
+            </div>
+            <div class="input-group">
+                <label for="equationGuess">初始猜测值 (可选)</label>
+                <input type="text" id="equationGuess" placeholder="例如: 1">
+            </div>
+            <button class="special-btn" onclick="solveEquation()">求解方程</button>
+        </div>
+
+        <!-- 积分计算面板 -->
+        <div class="function-panel" id="integralPanel">
+            <div class="input-group">
+                <label for="integralExpr">被积表达式</label>
+                <input type="text" id="integralExpr" placeholder="例如: x^2, sin(x)*cos(x)">
+            </div>
+            <div class="input-group">
+                <label for="integralVar">积分变量</label>
+                <input type="text" id="integralVar" placeholder="例如: x" value="x">
+            </div>
+            <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label for="lowerLimit">下限 (可选)</label>
+                    <input type="text" id="lowerLimit" placeholder="例如: 0">
+                </div>
+                <div>
+                    <label for="upperLimit">上限 (可选)</label>
+                    <input type="text" id="upperLimit" placeholder="例如: 1">
+                </div>
+            </div>
+            <button class="special-btn" onclick="calculateIntegral()">计算积分</button>
+        </div>
+
+        <!-- 导数计算面板 -->
+        <div class="function-panel" id="derivativePanel">
+            <div class="input-group">
+                <label for="derivativeExpr">函数表达式</label>
+                <input type="text" id="derivativeExpr" placeholder="例如: x^3 + 2x, sin(x^2)">
+            </div>
+            <div class="input-group">
+                <label for="derivativeVar">求导变量</label>
+                <input type="text" id="derivativeVar" placeholder="例如: x" value="x">
+            </div>
+            <div class="input-group">
+                <label for="derivativeOrder">导数阶数</label>
+                <input type="text" id="derivativeOrder" placeholder="例如: 1 (一阶导数)" value="1">
+            </div>
+            <button class="special-btn" onclick="calculateDerivative()">计算导数</button>
+        </div>
+
+        <!-- 级数求和面板 -->
+        <div class="function-panel" id="seriesPanel">
+            <div class="input-group">
+                <label for="seriesExpr">通项表达式</label>
+                <input type="text" id="seriesExpr" placeholder="例如: k^2, 1/k!">
+            </div>
+            <div class="input-group">
+                <label for="seriesVar">求和变量</label>
+                <input type="text" id="seriesVar" placeholder="例如: k" value="k">
+            </div>
+            <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label for="seriesStart">起始值</label>
+                    <input type="text" id="seriesStart" placeholder="例如: 1" value="1">
+                </div>
+                <div>
+                    <label for="seriesEnd">结束值</label>
+                    <input type="text" id="seriesEnd" placeholder="例如: 10" value="10">
+                </div>
+            </div>
+            <button class="special-btn" onclick="calculateSeries()">计算级数</button>
+        </div>
+
+        <!-- 矩阵运算面板 -->
+        <div class="function-panel" id="matrixPanel">
+            <div class="input-group">
+                <label>选择矩阵运算</label>
+                <select class="mode-select" id="matrixOperation">
+                    <option value="det">行列式</option>
+                    <option value="inv">逆矩阵</option>
+                    <option value="transpose">转置</option>
+                    <option value="multiply">矩阵乘法</option>
+                    <option value="add">矩阵加法</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="matrixInputA">矩阵A (例如: [[1,2],[3,4]])</label>
+                <input type="text" id="matrixInputA" placeholder="输入矩阵A">
+            </div>
+            <div class="input-group" id="matrixInputBGroup" style="display: none;">
+                <label for="matrixInputB">矩阵B (例如: [[5,6],[7,8]])</label>
+                <input type="text" id="matrixInputB" placeholder="输入矩阵B">
+            </div>
+            <button class="special-btn" onclick="calculateMatrix()">计算</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <div class="footer">
+        <a href="https://lsqkk.github.io/post.html?file=copyright.md">© 2024 - 2025 夸克博客 All rights reserved.</a>
+    </div>
+
+    <script>
+        // 添加数值积分功能
+        math.integrate = function (f, a, b, n = 1000) {
+            const h = (b - a) / n;
+            let sum = 0;
+            for (let i = 0; i < n; i++) {
+                const x1 = a + i * h;
+                const x2 = a + (i + 1) * h;
+                sum += (f(x1) + f(x2)) * h / 2;
+            }
+            return sum;
+        };
+
+        // 添加方程求解器
+        math.findRoot = function (f, x0, tol = 1e-6, maxIter = 100) {
+            let x = parseFloat(x0);
+            for (let i = 0; i < maxIter; i++) {
+                const fx = f(x);
+                if (Math.abs(fx) < tol) return x;
+
+                // 数值导数
+                const h = 0.0001;
+                const dfx = (f(x + h) - f(x - h)) / (2 * h);
+
+                if (Math.abs(dfx) < 1e-10) break; // 防止除零
+                x = x - fx / dfx;
+            }
+            return x;
+        };
+
+        // 光标位置处理
+        let cursorPosition = 0;
+        const inputField = document.getElementById('main-input');
+
+        inputField.addEventListener('click', updateCursorPosition);
+        inputField.addEventListener('keyup', updateCursorPosition);
+        inputField.addEventListener('input', updateCursorPosition);
+
+        function updateCursorPosition() {
+            cursorPosition = inputField.selectionStart;
+            document.getElementById('cursorPos').textContent = `位置: ${cursorPosition}`;
+        }
+
+        function insertAtCursor(value, isBackspace = false) {
+            const currentValue = inputField.value;
+            const newValue = currentValue.substring(0, cursorPosition) + value + currentValue.substring(cursorPosition);
+            inputField.value = newValue;
+
+            // 更新光标位置
+            if (isBackspace) {
+                cursorPosition += value.length - 1; // 光标回退一格
+            } else {
+                cursorPosition += value.length;
+            }
+
+            inputField.setSelectionRange(cursorPosition, cursorPosition);
+            updateCursorPosition();
+            inputField.focus();
+        }
+
+
+
+        function clearInput() {
+            inputField.value = '';
+            cursorPosition = 0;
+            updateCursorPosition();
+            inputField.focus();
+        }
+
+        function backspace() {
+            if (cursorPosition > 0) {
+                const currentValue = inputField.value;
+                const newValue = currentValue.substring(0, cursorPosition - 1) + currentValue.substring(cursorPosition);
+                inputField.value = newValue;
+
+                cursorPosition--;
+                inputField.setSelectionRange(cursorPosition, cursorPosition);
+                updateCursorPosition();
+            }
+            inputField.focus();
+        }
+
+        function calculate() {
+            try {
+                const input = inputField.value;
+                if (!input) return;
+
+                const result = math.evaluate(input);
+                inputField.value = result.toString();
+                showResult('计算结果: ' + result, false);
+
+                // 将光标移到末尾
+                cursorPosition = inputField.value.length;
+                inputField.setSelectionRange(cursorPosition, cursorPosition);
+                updateCursorPosition();
+            } catch (e) {
+                showResult('错误: ' + e.message, true);
+            }
+            inputField.focus();
+        }
+
+        // 模式切换
+        function toggleMode() {
+            const mode = document.getElementById('modeSelect').value;
+            document.querySelectorAll('.function-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            document.getElementById(mode + 'Panel').style.display = 'block';
+
+            // 特殊处理矩阵运算
+            if (mode === 'matrix') {
+                document.getElementById('matrixOperation').addEventListener('change', function () {
+                    const op = this.value;
+                    document.getElementById('matrixInputBGroup').style.display =
+                        (op === 'multiply' || op === 'add') ? 'block' : 'none';
+                });
+            }
+
+            inputField.focus();
+        }
+
+        // 方程求解 - 支持多种方程
+        function solveEquation() {
+            try {
+                const equation = document.getElementById('equationInput').value;
+                const variable = document.getElementById('equationVar').value;
+                const guess = document.getElementById('equationGuess').value || '0';
+
+                if (!equation || !variable) {
+                    throw new Error('请输入完整的方程和变量');
+                }
+
+                const sides = equation.split('=');
+                if (sides.length !== 2) throw new Error('无效方程格式，请使用"="分隔两边');
+
+                const expr = math.parse(`${sides[0].trim()} - (${sides[1].trim()})`);
+                const simplified = math.simplify(expr);
+
+                // 尝试解析多项式方程
+                try {
+                    const poly = simplified.toString();
+                    const coeffs = getPolynomialCoefficients(poly, variable);
+
+                    if (coeffs.length > 1) {
+                        const roots = findPolynomialRoots(coeffs);
+                        let result = `方程 ${equation} 的解:\n`;
+                        roots.forEach((root, i) => {
+                            result += `${variable}${i + 1} = ${root}\n`;
+                        });
+                        showResult(result, false);
+                        return;
+                    }
+                } catch (e) {
+                    // 不是多项式方程，继续尝试其他方法
+                }
+
+                // 使用数值方法求解
+                const f = math.compile(simplified.toString());
+                const solution = math.findRoot(x => f.evaluate({ [variable]: x }), guess);
+
+                showResult(`方程 ${equation} 的解:\n${variable} ≈ ${solution.toFixed(6)}`, false);
+            } catch (e) {
+                showResult('错误: ' + e.message, true);
+            }
+            inputField.focus();
+        }
+
+        // 获取多项式系数
+        function getPolynomialCoefficients(expr, variable) {
+            const node = math.parse(expr);
+            const degree = getPolynomialDegree(node, variable);
+            const coeffs = new Array(degree + 1).fill(0);
+
+            extractCoefficients(node, variable, coeffs);
+            return coeffs;
+        }
+
+        function getPolynomialDegree(node, variable) {
+            if (node.type === 'OperatorNode' && node.op === '+') {
+                return Math.max(
+                    getPolynomialDegree(node.args[0], variable),
+                    getPolynomialDegree(node.args[1], variable)
+                );
+            }
+
+            if (node.type === 'OperatorNode' && node.op === '-') {
+                return Math.max(
+                    getPolynomialDegree(node.args[0], variable),
+                    getPolynomialDegree(node.args[1], variable)
+                );
+            }
+
+            if (node.type === 'OperatorNode' && node.op === '*') {
+                return getPolynomialDegree(node.args[0], variable) +
+                    getPolynomialDegree(node.args[1], variable);
+            }
+
+            if (node.type === 'OperatorNode' && node.op === '^' &&
+                node.args[0].name === variable && node.args[1].type === 'ConstantNode') {
+                return node.args[1].value;
+            }
+
+            if (node.type === 'SymbolNode' && node.name === variable) {
+                return 1;
+            }
+
+            if (node.type === 'ConstantNode') {
+                return 0;
+            }
+
+            throw new Error('无法解析多项式');
+        }
+
+        function extractCoefficients(node, variable, coeffs, sign = 1) {
+            if (node.type === 'OperatorNode' && node.op === '+') {
+                extractCoefficients(node.args[0], variable, coeffs, sign);
+                extractCoefficients(node.args[1], variable, coeffs, sign);
+                return;
+            }
+
+            if (node.type === 'OperatorNode' && node.op === '-') {
+                extractCoefficients(node.args[0], variable, coeffs, sign);
+                extractCoefficients(node.args[1], variable, coeffs, -sign);
+                return;
+            }
+
+            if (node.type === 'OperatorNode' && node.op === '*') {
+                // 简单处理单项式
+                let coeff = 1;
+                let degree = 0;
+
+                for (const arg of node.args) {
+                    if (arg.type === 'ConstantNode') {
+                        coeff *= arg.value;
+                    } else if (arg.type === 'SymbolNode' && arg.name === variable) {
+                        degree += 1;
+                    } else if (arg.type === 'OperatorNode' && arg.op === '^' &&
+                        arg.args[0].name === variable && arg.args[1].type === 'ConstantNode') {
+                        degree += arg.args[1].value;
+                    }
+                }
+
+                coeffs[degree] += sign * coeff;
+                return;
+            }
+
+            if (node.type === 'OperatorNode' && node.op === '^' &&
+                node.args[0].name === variable && node.args[1].type === 'ConstantNode') {
+                coeffs[node.args[1].value] += sign;
+                return;
+            }
+
+            if (node.type === 'SymbolNode' && node.name === variable) {
+                coeffs[1] += sign;
+                return;
+            }
+
+            if (node.type === 'ConstantNode') {
+                coeffs[0] += sign * node.value;
+                return;
+            }
+
+            throw new Error('无法解析多项式项');
+        }
+
+        // 求多项式方程的根
+        function findPolynomialRoots(coeffs) {
+            // 去除高阶零系数
+            while (coeffs.length > 1 && math.abs(coeffs[coeffs.length - 1]) < 1e-10) {
+                coeffs.pop();
+            }
+
+            const degree = coeffs.length - 1;
+            if (degree === 0) {
+                throw new Error('无效方程');
+            } else if (degree === 1) {
+                // ax + b = 0
+                return [-coeffs[0] / coeffs[1]];
+            } else if (degree === 2) {
+                // ax² + bx + c = 0
+                const [a, b, c] = coeffs.reverse();
+                const discriminant = b * b - 4 * a * c;
+
+                if (discriminant > 0) {
+                    const sqrtD = Math.sqrt(discriminant);
+                    return [(-b + sqrtD) / (2 * a), (-b - sqrtD) / (2 * a)];
+                } else if (discriminant === 0) {
+                    return [-b / (2 * a)];
+                } else {
+                    const real = -b / (2 * a);
+                    const imag = Math.sqrt(-discriminant) / (2 * a);
+                    return [`${real} + ${imag}i`, `${real} - ${imag}i`];
+                }
+            } else {
+                // 高阶多项式使用数值方法
+                const f = x => {
+                    let sum = 0;
+                    for (let i = 0; i < coeffs.length; i++) {
+                        sum += coeffs[i] * Math.pow(x, i);
+                    }
+                    return sum;
+                };
+
+                // 简单实现：在多个初始猜测值上尝试
+                const roots = [];
+                const guesses = [-10, -5, -2, -1, 0, 1, 2, 5, 10];
+
+                for (const guess of guesses) {
+                    try {
+                        const root = math.findRoot(f, guess);
+
+                        // 检查是否已经找到过这个根（近似）
+                        const isNew = roots.every(r => Math.abs(r - root) > 0.01);
+                        if (isNew) {
+                            roots.push(root);
+                        }
+                    } catch (e) {
+                        // 忽略收敛失败
+                    }
+                }
+
+                if (roots.length === 0) {
+                    throw new Error('未能找到实数解，请尝试复数解法');
+                }
+
+                return roots;
+            }
+        }
+
+        // 积分计算
+        function calculateIntegral() {
+            try {
+                const expr = document.getElementById('integralExpr').value;
+                const variable = document.getElementById('integralVar').value;
+                const lower = document.getElementById('lowerLimit').value;
+                const upper = document.getElementById('upperLimit').value;
+
+                if (!expr || !variable) {
+                    throw new Error('请输入完整的表达式和变量');
+                }
+
+                if (lower && upper) {
+                    // 定积分 - 数值积分
+                    const f = math.compile(expr);
+                    const result = math.integrate(x => f.evaluate({ [variable]: x }),
+                        parseFloat(lower),
+                        parseFloat(upper));
+                    showResult(`定积分 ∫[${lower}, ${upper}] ${expr} d${variable} ≈ ${result.toFixed(6)}`, false);
+                } else {
+                    // 不定积分 - 符号积分
+                    const result = math.derivative(expr, variable).toString();
+                    showResult(`不定积分 ∫ ${expr} d${variable} = ${result} + C`, false);
+                }
+            } catch (e) {
+                showResult('错误: ' + e.message, true);
+            }
+            inputField.focus();
+        }
+
+        // 导数计算
+        function calculateDerivative() {
+            try {
+                const expr = document.getElementById('derivativeExpr').value;
+                const variable = document.getElementById('derivativeVar').value;
+                const order = parseInt(document.getElementById('derivativeOrder').value) || 1;
+
+                if (!expr || !variable) {
+                    throw new Error('请输入完整的表达式和变量');
+                }
+
+                let result = expr;
+                for (let i = 0; i < order; i++) {
+                    result = math.derivative(result, variable).toString();
+                }
+
+                const orderText = order === 1 ? '一阶' : (order === 2 ? '二阶' : `${order}阶`);
+                showResult(`${orderText}导数 d^${order}/${variable}^${order} (${expr}) = ${result}`, false);
+            } catch (e) {
+                showResult('错误: ' + e.message, true);
+            }
+            inputField.focus();
+        }
+
+        // 级数求和
+        function calculateSeries() {
+            try {
+                const expr = document.getElementById('seriesExpr').value;
+                const variable = document.getElementById('seriesVar').value;
+                const start = parseInt(document.getElementById('seriesStart').value);
+                const end = parseInt(document.getElementById('seriesEnd').value);
+
+                if (!expr || !variable || isNaN(start) || isNaN(end)) {
+                    throw new Error('请输入完整的表达式和范围');
+                }
+
+                const f = math.compile(expr);
+                let sum = 0;
+
+                for (let i = start; i <= end; i++) {
+                    sum += f.evaluate({ [variable]: i });
+                }
+
+                showResult(`级数求和 ∑(${expr}) from ${variable}=${start} to ${end} = ${sum}`, false);
+            } catch (e) {
+                showResult('错误: ' + e.message, true);
+            }
+            inputField.focus();
+        }
+
+        // 矩阵运算
+        function calculateMatrix() {
+            try {
+                const op = document.getElementById('matrixOperation').value;
+                const matrixA = document.getElementById('matrixInputA').value;
+
+                if (!matrixA) {
+                    throw new Error('请输入矩阵A');
+                }
+
+                const A = math.evaluate(matrixA);
+                let result;
+
+                switch (op) {
+                    case 'det':
+                        result = math.det(A);
+                        showResult(`矩阵A的行列式 = ${result}`, false);
+                        break;
+
+                    case 'inv':
+                        result = math.inv(A);
+                        showResult(`矩阵A的逆矩阵:\n${formatMatrix(result)}`, false);
+                        break;
+
+                    case 'transpose':
+                        result = math.transpose(A);
+                        showResult(`矩阵A的转置矩阵:\n${formatMatrix(result)}`, false);
+                        break;
+
+                    case 'multiply':
+                    case 'add':
+                        const matrixB = document.getElementById('matrixInputB').value;
+                        if (!matrixB) throw new Error('请输入矩阵B');
+
+                        const B = math.evaluate(matrixB);
+
+                        if (op === 'multiply') {
+                            result = math.multiply(A, B);
+                            showResult(`矩阵A × 矩阵B:\n${formatMatrix(result)}`, false);
+                        } else {
+                            result = math.add(A, B);
+                            showResult(`矩阵A + 矩阵B:\n${formatMatrix(result)}`, false);
+                        }
+                        break;
+
+                    default:
+                        throw new Error('未知的矩阵运算');
+                }
+            } catch (e) {
+                showResult('错误: ' + e.message, true);
+            }
+            inputField.focus();
+        }
+
+        function formatMatrix(matrix) {
+            if (math.size(matrix).length === 1) {
+                return '[' + matrix.join(', ') + ']';
+            }
+
+            return matrix.map(row => '[' + row.join(', ') + ']').join('\n');
+        }
+
+        // 显示结果
+        function showResult(text, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = text;
+            resultDiv.className = isError ? 'error' : 'success';
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('modeSelect').addEventListener('change', toggleMode);
+            toggleMode(); // 初始显示基本面板
+            inputField.focus();
+        });
+    </script>
+</body>
+
+</html>

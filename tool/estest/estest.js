@@ -1,0 +1,185 @@
+// 题目数据
+let questions = [];
+
+// 初始化状态
+let currentQuestion = 0;
+let answers = {};
+const dimensions = {
+    "乐观": 0, "保守": 0,
+    "自由": 0, "责任": 0,
+    "中立": 0, "干预": 0,
+    "本土": 0, "全球": 0
+};
+
+// 初始化加载题目
+function init() {
+    fetch('tool/estest/questions.json')
+        .then(response => response.json())
+        .then(data => {
+            questions = data;
+            showQuestion(currentQuestion);
+        });
+}
+
+// 显示题目
+function showQuestion(index) {
+    const container = document.querySelector('.question-container');
+    const question = questions[index];
+
+    let optionsHTML = '';
+    question.options.forEach((option, i) => {
+        optionsHTML += `
+                    <div class="option">
+                        <input type="radio" name="answer" 
+                               id="option${i}" 
+                               value="${i}" 
+                               ${answers[index] === i ? 'checked' : ''}
+                               onchange="selectAnswer(${index}, ${i})">
+                        <label for="option${i}">${option.text}</label>
+                    </div>
+                `;
+    });
+
+    container.innerHTML = `
+                <div class="question">${index + 1}. ${question.question}</div>
+                <div class="options">${optionsHTML}</div>
+            `;
+
+    updateProgress();
+    updateNavigation();
+}
+
+// 更新进度条
+function updateProgress() {
+    const progress = (currentQuestion / questions.length) * 100;
+    document.querySelector('.progress').style.width = `${progress}%`;
+}
+
+// 更新导航按钮状态
+function updateNavigation() {
+    document.getElementById('prevBtn').disabled = currentQuestion === 0;
+
+    // 修改判断逻辑
+    const isLastQuestion = currentQuestion === questions.length - 1;
+    document.getElementById('nextBtn').disabled = !answers.hasOwnProperty(currentQuestion);
+
+    // 如果是最后一题，修改按钮文本
+    if (isLastQuestion) {
+        document.getElementById('nextBtn').textContent = '查看结果';
+    } else {
+        document.getElementById('nextBtn').textContent = '下一题';
+    }
+}
+
+// 选择答案
+function selectAnswer(questionIndex, optionIndex) {
+    answers[questionIndex] = optionIndex;
+    updateNavigation();
+}
+
+// 上一题
+function prevQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+    }
+}
+
+// 下一题
+function nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+    } else {
+        // 确保最后一道题的回答被记录
+        if (!answers.hasOwnProperty(currentQuestion)) {
+            alert('请先回答当前问题！');
+            return;
+        }
+        calculateResults();
+        showResults();
+    }
+}
+
+// 计算结果
+function calculateResults() {
+    Object.values(answers).forEach((answerIndex, questionIndex) => {
+        const scores = questions[questionIndex].options[answerIndex].scores;
+        Object.entries(scores).forEach(([dimension, value]) => {
+            dimensions[dimension] += value;
+        });
+    });
+}
+
+// 显示结果
+function showResults() {
+    const container = document.querySelector('.container');
+    let resultsHTML = '<div class="result-container"><h2>测试结果</h2>';
+
+    // 计算配对维度
+    const pairedDimensions = [
+        { name: '科技立场', left: '乐观', right: '保守' },
+        { name: '价值取向', left: '自由', right: '责任' },
+        { name: '技术伦理', left: '中立', right: '干预' },
+        { name: '发展视角', left: '本土', right: '全球' }
+    ];
+
+    pairedDimensions.forEach(pair => {
+        const total = dimensions[pair.left] + dimensions[pair.right] || 1;
+        const leftPercent = Math.round((dimensions[pair.left] / total) * 100);
+        const rightPercent = 100 - leftPercent;
+
+        resultsHTML += `
+                    <div class="dimension-bar">
+                        <div class="bar-label">
+                            <span>${pair.left} ${leftPercent}%</span>
+                            <span>${pair.name}</span>
+                            <span>${pair.right} ${rightPercent}%</span>
+                        </div>
+                        <div class="bar">
+                            <div class="bar-fill" style="width: ${leftPercent}%"></div>
+                        </div>
+                     
+                    </div>
+                `;
+    });
+
+    // 2. 新增维度说明部分
+    resultsHTML += `
+        <div class="dimension-descriptions">
+            <h3>维度说明</h3>
+            
+            <div class="dimension-group">
+                <h4>科技乐观主义 vs 科技保守主义</h4>
+                <p><strong>乐观主义</strong>：倾向于相信科技发展会带来更多积极影响，支持快速推进新兴技术。</p>
+                <p><strong>保守主义</strong>：对科技发展持谨慎态度，认为需要更多监管和伦理约束。</p>
+            </div>
+            
+            <div class="dimension-group">
+                <h4>个人自由 vs 集体责任</h4>
+                <p><strong>个人自由</strong>：支持科技应优先保障个人选择和隐私权。</p>
+                <p><strong>集体责任</strong>：认为科技发展应以社会整体利益为重，必要时可限制个人自由。</p>
+            </div>
+            
+            <div class="dimension-group">
+                <h4>技术中立 vs 技术伦理干预</h4>
+                <p><strong>技术中立</strong>：认为技术本身无善恶之分，关键在于如何使用。</p>
+                <p><strong>技术伦理干预</strong>：认为技术设计和使用应主动嵌入伦理考量。</p>
+            </div>
+            
+            <div class="dimension-group">
+                <h4>全球化协作 vs 本土化保护</h4>
+                <p><strong>全球化协作</strong>：支持跨国科技合作，认为技术应无国界共享。</p>
+                <p><strong>本土化保护</strong>：认为科技发展应优先服务本国利益，保护本土文化和资源。</p>
+            </div>
+        </div>
+
+        <button onclick="window.location.reload()" class="retry-btn">重新测试</button>
+    `;
+
+    resultsHTML += '</div>';
+    container.innerHTML = resultsHTML;
+}
+
+// 启动测试
+init();
