@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,13 +20,13 @@
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --border-radius: 8px;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             line-height: 1.6;
@@ -35,7 +36,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         header {
             background-color: var(--white);
             box-shadow: var(--shadow);
@@ -44,7 +45,7 @@
             top: 0;
             z-index: 100;
         }
-        
+
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -53,30 +54,30 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
             text-decoration: none;
         }
-        
+
         .nav-links {
             display: flex;
             gap: 1.5rem;
         }
-        
+
         .nav-links a {
             color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
         }
-        
+
         .nav-links a:hover {
             color: var(--primary-color);
         }
-        
+
         main {
             flex: 1;
             max-width: 1200px;
@@ -84,25 +85,25 @@
             padding: 0 20px;
             width: 100%;
         }
-        
+
         .hero {
             text-align: center;
             margin-bottom: 2rem;
         }
-        
+
         .hero h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
             color: var(--text-color);
         }
-        
+
         .hero p {
             font-size: 1.1rem;
             color: var(--dark-gray);
             max-width: 700px;
             margin: 0 auto 1.5rem;
         }
-        
+
         .container {
             background-color: var(--white);
             border-radius: var(--border-radius);
@@ -110,7 +111,7 @@
             box-shadow: var(--shadow);
             margin-bottom: 2rem;
         }
-        
+
         .upload-area {
             border: 2px dashed var(--medium-gray);
             border-radius: var(--border-radius);
@@ -121,57 +122,57 @@
             cursor: pointer;
             position: relative;
         }
-        
+
         .upload-area:hover {
             border-color: var(--primary-color);
             background-color: rgba(67, 97, 238, 0.05);
         }
-        
+
         .upload-area.active {
             border-color: var(--primary-color);
             background-color: rgba(67, 97, 238, 0.1);
         }
-        
+
         .upload-icon {
             font-size: 3rem;
             color: var(--primary-color);
             margin-bottom: 1rem;
         }
-        
+
         .upload-text {
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .upload-hint {
             color: var(--dark-gray);
             font-size: 0.9rem;
         }
-        
+
         .controls {
             display: flex;
             flex-wrap: wrap;
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
-        
+
         .control-group {
             flex: 1;
             min-width: 250px;
         }
-        
+
         .control-label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
-        
+
         .slider-container {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-        
+
         input[type="range"] {
             flex: 1;
             -webkit-appearance: none;
@@ -180,7 +181,7 @@
             border-radius: 4px;
             outline: none;
         }
-        
+
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 20px;
@@ -190,18 +191,18 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.1);
         }
-        
+
         .value-display {
             min-width: 40px;
             text-align: center;
             font-weight: 600;
             color: var(--primary-color);
         }
-        
+
         .preview-container {
             position: relative;
             margin: 2rem 0;
@@ -209,7 +210,7 @@
             justify-content: center;
             min-height: 200px;
         }
-        
+
         #imagePreview {
             max-width: 100%;
             max-height: 500px;
@@ -217,7 +218,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
         }
-        
+
         #gridOverlay {
             position: absolute;
             top: 0;
@@ -226,7 +227,7 @@
             pointer-events: none;
             display: none;
         }
-        
+
         .result-container {
             margin-top: 2rem;
             background-color: var(--light-gray);
@@ -235,7 +236,7 @@
             border: 1px solid var(--medium-gray);
             position: relative;
         }
-        
+
         #emojiResult {
             white-space: pre;
             font-family: monospace;
@@ -248,14 +249,14 @@
             border-radius: calc(var(--border-radius) - 2px);
             border: 1px solid var(--medium-gray);
         }
-        
+
         .button-group {
             display: flex;
             gap: 1rem;
             margin-top: 1.5rem;
             flex-wrap: wrap;
         }
-        
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -269,47 +270,47 @@
             border: none;
             font-size: 1rem;
         }
-        
+
         .btn-primary {
             background-color: var(--primary-color);
             color: var(--white);
         }
-        
+
         .btn-primary:hover {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .btn-secondary {
             background-color: var(--medium-gray);
             color: var(--text-color);
         }
-        
+
         .btn-secondary:hover {
             background-color: #d1d7dc;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .btn-success {
             background-color: var(--success-color);
             color: var(--white);
         }
-        
+
         .btn-success:hover {
             background-color: #3ab8dd;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
         }
-        
+
         .copy-btn {
             position: absolute;
             top: 1rem;
@@ -317,7 +318,7 @@
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
         }
-        
+
         .emoji-palette {
             display: flex;
             flex-wrap: wrap;
@@ -329,12 +330,12 @@
             padding: 1rem;
             border-radius: var(--border-radius);
         }
-        
+
         .emoji-palette span {
             font-size: 1.5rem;
             line-height: 1;
         }
-        
+
         .emoji-palette-title {
             width: 100%;
             text-align: center;
@@ -342,7 +343,7 @@
             font-weight: 500;
             color: var(--dark-gray);
         }
-        
+
         footer {
             background-color: var(--white);
             padding: 1.5rem 0;
@@ -350,13 +351,13 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
             margin-top: auto;
         }
-        
+
         .footer-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         .footer-links {
             display: flex;
             justify-content: center;
@@ -364,26 +365,26 @@
             margin-bottom: 1rem;
             flex-wrap: wrap;
         }
-        
+
         .footer-links a {
             color: var(--dark-gray);
             text-decoration: none;
             transition: color 0.3s;
         }
-        
+
         .footer-links a:hover {
             color: var(--primary-color);
         }
-        
+
         .copyright {
             color: var(--dark-gray);
             font-size: 0.9rem;
         }
-        
+
         .file-input {
             display: none;
         }
-        
+
         .drag-drop-hint {
             position: absolute;
             top: 0;
@@ -400,11 +401,11 @@
             pointer-events: none;
             z-index: 10;
         }
-        
+
         .drag-drop-hint.active {
             opacity: 1;
         }
-        
+
         .drag-drop-text {
             background-color: var(--primary-color);
             color: white;
@@ -412,52 +413,53 @@
             border-radius: var(--border-radius);
             font-weight: 500;
         }
-        
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
             }
-            
+
             .controls {
                 flex-direction: column;
                 gap: 1rem;
             }
-            
+
             .control-group {
                 width: 100%;
             }
-            
+
             .button-group {
                 flex-direction: column;
             }
-            
+
             .btn {
                 width: 100%;
             }
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="header-container">
             <a href="https://lsqkk.github.io" class="logo">夸克博客</a>
             <div class="nav-links">
                 <a href="https://lsqkk.github.io/tool">更多工具</a>
-<a href="https://lsqkk.github.io/article-list.html">文章</a>
-<a href="https://lsqkk.github.io/games">游戏</a>
-<a href="https://lsqkk.github.io/daily">日报</a>
-<a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs">留言板</a>
+                <a href="https://lsqkk.github.io/article-list">文章</a>
+                <a href="https://lsqkk.github.io/games">游戏</a>
+                <a href="https://lsqkk.github.io/daily">日报</a>
+                <a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs">留言板</a>
                 <a href="https://lsqkk.github.io/post.html?file=copyright.md">关于</a>
             </div>
         </div>
     </header>
-    
+
     <main>
         <div class="hero">
             <h1>图片 Emoji 化工具</h1>
             <p>上传您的图片，将其转换为由Emoji组成的艺术矩阵。调整网格大小，创造独特的Emoji艺术作品！</p>
         </div>
-        
+
         <div class="container">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">
@@ -470,7 +472,7 @@
                     <div class="drag-drop-text">释放以上传图片</div>
                 </div>
             </div>
-            
+
             <div class="controls">
                 <div class="control-group">
                     <label for="gridSize" class="control-label">横向分割数量</label>
@@ -480,7 +482,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="emoji-palette">
                 <div class="emoji-palette-title">可用 Emoji 调色板</div>
                 <span>🔵</span><span>🟦</span><span>🟢</span><span>🟩</span><span>🔴</span>
@@ -489,12 +491,12 @@
                 <span>🟫</span><span>⚫</span><span>⬛</span><span>⚪</span><span>⬜</span>
                 <span>📗</span>
             </div>
-            
+
             <div class="preview-container">
                 <img id="imagePreview" alt="预览图片">
                 <canvas id="gridOverlay"></canvas>
             </div>
-            
+
             <div class="button-group">
                 <button id="generateBtn" class="btn btn-primary" disabled>
                     <i class="fas fa-magic"></i> 生成 Emoji 矩阵
@@ -503,7 +505,7 @@
                     <i class="fas fa-tools"></i> 更多工具
                 </button>
             </div>
-            
+
             <div class="result-container">
                 <button id="copyBtn" class="btn btn-success copy-btn" disabled>
                     <i class="far fa-copy"></i> 复制
@@ -512,7 +514,7 @@
             </div>
         </div>
     </main>
-    
+
     <footer>
         <div class="footer-container">
             <div class="footer-links">
@@ -529,7 +531,7 @@
     <script>
         // 设置当前年份
         document.getElementById('currentYear').textContent = new Date().getFullYear();
-        
+
         // DOM元素
         const fileInput = document.getElementById('fileInput');
         const uploadArea = document.getElementById('uploadArea');
@@ -542,7 +544,7 @@
         const copyBtn = document.getElementById('copyBtn');
         const moreToolsBtn = document.getElementById('moreToolsBtn');
         const emojiResult = document.getElementById('emojiResult');
-        
+
         // Emoji配置 - 便于后续添加
         const emojiConfig = [
             { name: '蓝色圆圈', emoji: '🔵', color: [0, 0, 255], shape: 'circle' },
@@ -568,11 +570,11 @@
             { name: '白色方块', emoji: '⬜', color: [255, 255, 255], shape: 'square' },
             { name: '灰色方块', emoji: '◽', color: [200, 200, 200], shape: 'square' }
         ];
-        
+
         // 当前图片和网格设置
         let currentImage = null;
         let gridSize = parseInt(gridSizeSlider.value);
-        
+
         // 事件监听器
         fileInput.addEventListener('change', handleImageUpload);
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -585,7 +587,7 @@
         moreToolsBtn.addEventListener('click', () => {
             window.location.href = 'https://lsqkk.github.io/tool';
         });
-        
+
         // 处理拖拽相关事件
         function handleDragOver(e) {
             e.preventDefault();
@@ -593,36 +595,36 @@
             dragDropHint.classList.add('active');
             uploadArea.classList.add('active');
         }
-        
+
         function handleDragLeave(e) {
             e.preventDefault();
             e.stopPropagation();
             dragDropHint.classList.remove('active');
             uploadArea.classList.remove('active');
         }
-        
+
         function handleDrop(e) {
             e.preventDefault();
             e.stopPropagation();
             dragDropHint.classList.remove('active');
             uploadArea.classList.remove('active');
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0 && files[0].type.startsWith('image/')) {
                 fileInput.files = files;
                 handleImageUpload({ target: fileInput });
             }
         }
-        
+
         // 处理图片上传
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 imagePreview.src = e.target.result;
-                imagePreview.onload = function() {
+                imagePreview.onload = function () {
                     currentImage = imagePreview;
                     imagePreview.style.display = 'block';
                     generateBtn.disabled = false;
@@ -631,7 +633,7 @@
             };
             reader.readAsDataURL(file);
         }
-        
+
         // 更新网格大小
         function updateGridSize() {
             gridSize = parseInt(gridSizeSlider.value);
@@ -640,26 +642,26 @@
                 updateGridOverlay();
             }
         }
-        
+
         // 更新网格覆盖层
         function updateGridOverlay() {
             const canvas = gridOverlay;
             const ctx = canvas.getContext('2d');
-            
+
             // 设置canvas尺寸与图片相同
             canvas.width = currentImage.width;
             canvas.height = currentImage.height;
             canvas.style.display = 'block';
-            
+
             // 计算网格参数
             const cellWidth = canvas.width / gridSize;
             const cellHeight = cellWidth; // 保持正方形
             const rows = Math.floor(canvas.height / cellHeight);
-            
+
             // 绘制网格线
             ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
             ctx.lineWidth = 1;
-            
+
             // 垂直线
             for (let i = 0; i <= gridSize; i++) {
                 const x = i * cellWidth;
@@ -668,7 +670,7 @@
                 ctx.lineTo(x, rows * cellHeight);
                 ctx.stroke();
             }
-            
+
             // 水平线
             for (let j = 0; j <= rows; j++) {
                 const y = j * cellHeight;
@@ -678,63 +680,63 @@
                 ctx.stroke();
             }
         }
-        
+
         // 生成Emoji矩阵
         function generateEmojiMatrix() {
             if (!currentImage) return;
-            
+
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            
+
             // 设置canvas尺寸与图片相同
             canvas.width = currentImage.width;
             canvas.height = currentImage.height;
-            
+
             // 绘制图片到canvas
             ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
-            
+
             // 计算网格参数
             const cellWidth = canvas.width / gridSize;
             const cellHeight = cellWidth; // 保持正方形
             const rows = Math.floor(canvas.height / cellHeight);
-            
+
             let emojiMatrix = '';
-            
+
             // 遍历每个网格单元
             for (let j = 0; j < rows; j++) {
                 let rowEmojis = '';
-                
+
                 for (let i = 0; i < gridSize; i++) {
                     // 获取当前网格单元的图像数据
                     const x = i * cellWidth;
                     const y = j * cellHeight;
                     const imageData = ctx.getImageData(x, y, cellWidth, cellHeight);
-                    
+
                     // 计算平均颜色
                     const avgColor = getAverageColor(imageData);
-                    
+
                     // 找到最接近的Emoji
                     const emoji = findClosestEmoji(avgColor);
-                    
+
                     rowEmojis += emoji;
                 }
-                
+
                 emojiMatrix += rowEmojis + '\n';
             }
-            
+
             // 显示结果
             emojiResult.textContent = emojiMatrix;
             copyBtn.disabled = false;
-            
+
             // 滚动到结果区域
             emojiResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-        
+
         // 计算图像数据的平均颜色
         function getAverageColor(imageData) {
             const data = imageData.data;
             let r = 0, g = 0, b = 0, count = 0;
-            
+
             // 跳过透明像素
             for (let i = 0; i < data.length; i += 4) {
                 if (data[i + 3] > 0) { // 检查alpha通道
@@ -744,21 +746,21 @@
                     count++;
                 }
             }
-            
+
             if (count === 0) return [0, 0, 0]; // 全透明则返回黑色
-            
+
             return [
                 Math.round(r / count),
                 Math.round(g / count),
                 Math.round(b / count)
             ];
         }
-        
+
         // 找到最接近的Emoji
         function findClosestEmoji(rgb) {
             let minDistance = Infinity;
             let closestEmoji = '⬛';
-            
+
             for (const item of emojiConfig) {
                 const distance = colorDistance(rgb, item.color);
                 if (distance < minDistance) {
@@ -766,10 +768,10 @@
                     closestEmoji = item.emoji;
                 }
             }
-            
+
             return closestEmoji;
         }
-        
+
         // 计算颜色距离 (欧几里得距离)
         function colorDistance(rgb1, rgb2) {
             const dr = rgb1[0] - rgb2[0];
@@ -777,7 +779,7 @@
             const db = rgb1[2] - rgb2[2];
             return Math.sqrt(dr * dr + dg * dg + db * db);
         }
-        
+
         // 复制到剪贴板
         function copyToClipboard() {
             const text = emojiResult.textContent;
@@ -793,4 +795,5 @@
         }
     </script>
 </body>
+
 </html>

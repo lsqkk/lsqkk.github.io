@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>天气查询 - 蓝色奇夸克 - 个人博客</title>
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,7 +22,7 @@
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         input {
@@ -45,12 +46,17 @@
         }
     </style>
 </head>
+
 <body background="https://bing.img.run/rand.php" alt="随机获取Bing历史壁纸1080P高清">
-<a href="tool.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff;">返回工具箱</a>
-<a href="tool-weather1.html" style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff;">当前天气</a>
-     
-    <div class="moren">  <h2>天气查询 - 蓝色奇夸克 - 个人博客</h2>    </div>
-    
+    <a href="tool"
+        style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff;">返回工具箱</a>
+    <a href="tool-weather1.html"
+        style="background-color: #99ddf3; padding: 5px 10px; border-radius: 5px; text-decoration: none;color: #007bff;">当前天气</a>
+
+    <div class="moren">
+        <h2>天气查询 - 蓝色奇夸克 - 个人博客</h2>
+    </div>
+
     <input type="text" id="cityInput" placeholder="输入城市名称">
     <button onclick="getWeather()">查询天气</button>
 
@@ -74,7 +80,7 @@
                 const response = await fetch(
                     `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
                 );
-                
+
                 if (!response.ok) {
                     throw new Error('城市未找到');
                 }
@@ -95,7 +101,7 @@
             document.getElementById('weatherDescription').textContent = `天气: ${data.weather[0].description}`;
             document.getElementById('humidity').textContent = `湿度: ${data.main.humidity}%`;
             document.getElementById('windSpeed').textContent = `风速: ${data.wind.speed} m/s`;
-            
+
             // 设置天气图标
             const iconCode = data.weather[0].icon;
             document.getElementById('weatherIcon').src = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
@@ -104,4 +110,5 @@
 
 
 </body>
+
 </html>

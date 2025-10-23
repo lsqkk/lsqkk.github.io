@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,7 @@
             --border-color: #ecf0f1;
             --success-color: #2ecc71;
         }
-        
+
         body {
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
             line-height: 1.6;
@@ -25,45 +26,45 @@
             padding: 20px;
             background-color: var(--light-bg);
         }
-        
+
         header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         h1 {
             color: var(--primary-color);
             margin-bottom: 5px;
         }
-        
+
         .subtitle {
             color: var(--light-text);
             font-size: 0.9em;
         }
-        
+
         .container {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
-        
+
         .card {
             padding: 25px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .card:last-child {
             border-bottom: none;
         }
-        
+
         .reference-type-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
         }
-        
+
         .type-btn {
             background-color: var(--light-bg);
             border: 1px solid var(--border-color);
@@ -77,34 +78,34 @@
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .type-btn:hover {
             background-color: #e9f0f6;
         }
-        
+
         .type-btn.active {
             background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
-        
+
         .type-btn .icon {
             font-size: 1.2em;
             margin-left: 8px;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
             display: flex;
             align-items: baseline;
         }
-        
+
         .form-group label {
             width: 100px;
             font-weight: 500;
             color: var(--dark-text);
         }
-        
+
         .form-group input {
             flex: 1;
             padding: 10px;
@@ -113,12 +114,12 @@
             font-family: inherit;
             font-size: 0.95em;
         }
-        
+
         .form-group .required:after {
             content: " *";
             color: var(--accent-color);
         }
-        
+
         .generate-btn {
             background-color: var(--primary-color);
             color: white;
@@ -130,17 +131,17 @@
             font-size: 0.95em;
             transition: background-color 0.3s;
         }
-        
+
         .generate-btn:hover {
             background-color: #3a7bc8;
         }
-        
+
         .btn-group {
             display: flex;
             gap: 10px;
             margin-top: 20px;
         }
-        
+
         .btn {
             padding: 10px 15px;
             border-radius: 5px;
@@ -150,38 +151,38 @@
             font-size: 0.9em;
             transition: all 0.3s;
         }
-        
+
         .btn-secondary {
             background-color: var(--light-bg);
             color: var(--dark-text);
             border: 1px solid var(--border-color);
         }
-        
+
         .btn-secondary:hover {
             background-color: #e9f0f6;
         }
-        
+
         .btn-success {
             background-color: var(--success-color);
             color: white;
         }
-        
+
         .btn-success:hover {
             background-color: #27ae60;
         }
-        
+
         .result-area {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px dashed var(--border-color);
         }
-        
+
         .result-title {
             font-weight: 500;
             margin-bottom: 10px;
             color: var(--primary-color);
         }
-        
+
         .reference-output {
             background-color: #f8f9fa;
             padding: 15px;
@@ -191,18 +192,18 @@
             margin-bottom: 10px;
             white-space: pre-wrap;
         }
-        
+
         .action-btns {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-        
+
         .more-tools {
             text-align: center;
             margin: 30px 0;
         }
-        
+
         .more-tools-btn {
             background-color: var(--secondary-color);
             color: white;
@@ -216,15 +217,15 @@
             align-items: center;
             transition: background-color 0.3s;
         }
-        
+
         .more-tools-btn:hover {
             background-color: #4a8bc2;
         }
-        
+
         .more-tools-btn .icon {
             margin-left: 8px;
         }
-        
+
         footer {
             text-align: center;
             margin-top: 40px;
@@ -233,40 +234,40 @@
             color: var(--light-text);
             font-size: 0.9em;
         }
-        
+
         footer a {
             color: var(--primary-color);
             text-decoration: none;
         }
-        
+
         footer a:hover {
             text-decoration: underline;
         }
-        
+
         .toggle-option {
             display: flex;
             align-items: center;
             gap: 8px;
             margin-bottom: 15px;
         }
-        
+
         .toggle-option label {
             width: auto;
         }
-        
+
         .toggle-switch {
             position: relative;
             display: inline-block;
             width: 50px;
             height: 24px;
         }
-        
+
         .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-        
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -278,7 +279,7 @@
             transition: .4s;
             border-radius: 24px;
         }
-        
+
         .slider:before {
             position: absolute;
             content: "";
@@ -290,25 +291,25 @@
             transition: .4s;
             border-radius: 50%;
         }
-        
-        input:checked + .slider {
+
+        input:checked+.slider {
             background-color: var(--success-color);
         }
-        
-        input:checked + .slider:before {
+
+        input:checked+.slider:before {
             transform: translateX(26px);
         }
-        
+
         @media (max-width: 768px) {
             .reference-type-selector {
                 grid-template-columns: 1fr;
             }
-            
+
             .form-group {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            
+
             .form-group label {
                 width: 100%;
                 margin-bottom: 5px;
@@ -316,12 +317,13 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>参考文献格式生成器</h1>
         <div class="subtitle">夸克工具箱 - 学术工具</div>
     </header>
-    
+
     <div class="container">
         <div class="card">
             <h2>选择文献类型</h2>
@@ -372,10 +374,10 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="card">
 
-            
+
             <div id="monograph-form" class="active">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -403,7 +405,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="anthology-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -431,7 +433,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="newspaper-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -455,7 +457,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="journal-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -487,7 +489,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="thesis-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -515,7 +517,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="report-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -543,7 +545,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="standard-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">标准编号</label>
@@ -555,7 +557,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="patent-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">专利所有者</label>
@@ -579,7 +581,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="regulation-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">颁布单位</label>
@@ -595,7 +597,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="translation-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">原著作者</label>
@@ -627,7 +629,7 @@
                 </div>
                 <button class="generate-btn">生成参考文献</button>
             </div>
-            
+
             <div id="electronic-form" style="display: none;">
                 <div class="form-group">
                     <label class="required">作者</label>
@@ -651,13 +653,13 @@
 
         <div id="result-container" class="card" style="display: none;">
             <div class="result-area">
-                    <div class="toggle-option">
-                <label for="unordered-mode">无序号模式（即如您需要在Word中统一设置序号请点这里👉）</label>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="unordered-mode">
-                    <span class="slider"></span>
-                </label>
-            </div>
+                <div class="toggle-option">
+                    <label for="unordered-mode">无序号模式（即如您需要在Word中统一设置序号请点这里👉）</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="unordered-mode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <div class="result-title">生成的参考文献:（点击自动复制）</div>
                 <div id="reference-output" class="reference-output"></div>
                 <div class="action-btns">
@@ -667,70 +669,71 @@
             </div>
         </div>
     </div>
-    
+
     <div class="more-tools">
-        <a href="https://lsqkk.github.io/tool.html" target="_blank">
+        <a href="https://lsqkk.github.io/tool" target="_blank">
             <button class="more-tools-btn">
                 更多实用工具
                 <span class="icon">➡️</span>
             </button>
         </a>
     </div>
-    
+
     <footer>
-        <p>© 2024 - <span id="current-year"></span> <a href="https://lsqkk.github.io/post.html?file=copyright.md" target="_blank">夸克博客 / 蓝色奇夸克</a> All rights reserved.</p>
+        <p>© 2024 - <span id="current-year"></span> <a href="https://lsqkk.github.io/post.html?file=copyright.md"
+                target="_blank">夸克博客 / 蓝色奇夸克</a> All rights reserved.</p>
     </footer>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 设置当前年份
             document.getElementById('current-year').textContent = new Date().getFullYear();
-            
+
             // 文献类型切换
             const typeButtons = document.querySelectorAll('.type-btn');
             const forms = document.querySelectorAll('.card div[id$="-form"]');
-            
+
             typeButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const type = this.getAttribute('data-type');
-                    
+
                     // 更新活动按钮
                     typeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-                    
+
                     // 显示对应的表单
                     forms.forEach(form => {
                         form.style.display = 'none';
                     });
-                    
+
                     document.getElementById(`${type}-form`).style.display = 'block';
-                    
+
                     // 隐藏结果区域
                     document.getElementById('result-container').style.display = 'none';
                 });
             });
-            
+
             // 生成参考文献逻辑
             const generateButtons = document.querySelectorAll('.generate-btn');
-            
+
             // 存储生成的文献
             let references = [];
             let isUnorderedMode = document.getElementById('unordered-mode').checked;
-            
+
             generateButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const formId = this.closest('div').id;
                     const referenceType = formId.replace('-form', '');
                     const form = document.getElementById(formId);
                     const inputs = form.querySelectorAll('input');
                     const output = document.getElementById('reference-output');
-                    
+
                     // 必填项验证
                     let isValid = true;
                     form.querySelectorAll('input').forEach(input => {
                         const label = input.previousElementSibling;
                         const hasRequired = label.classList.contains('required');
-                        
+
                         if (hasRequired && !input.value.trim()) {
                             isValid = false;
                             input.style.borderColor = 'var(--accent-color)';
@@ -738,15 +741,15 @@
                             input.style.borderColor = 'var(--border-color)';
                         }
                     });
-                    
+
                     if (!isValid) {
                         alert('请填写所有必填项！');
                         return;
                     }
-                    
+
                     // 生成参考文献
                     let reference = '';
-                    
+
                     switch (referenceType) {
                         case 'monograph':
                             reference = `[1] ${document.getElementById('monograph-author').value}.${document.getElementById('monograph-title').value}[M]. ${document.getElementById('monograph-place').value}：${document.getElementById('monograph-publisher').value}，${document.getElementById('monograph-year').value}${document.getElementById('monograph-pages').value ? `：${document.getElementById('monograph-pages').value}` : ''}.`;
@@ -782,42 +785,42 @@
                             reference = `[1] ${document.getElementById('electronic-author').value}.${document.getElementById('electronic-title').value}[EB/OL].${document.getElementById('electronic-url').value},${document.getElementById('electronic-date').value.replace(/-/g, '-')}.`;
                             break;
                     }
-                    
+
                     // 添加或更新参考文献
                     if (isUnorderedMode) {
                         references.push(reference.replace('[1] ', ''));
                     } else {
                         references.push(reference);
                     }
-                    
+
                     // 显示参考文献
                     output.textContent = references.join('\n\n');
-                    
+
                     // 显示结果区域
                     document.getElementById('result-container').style.display = 'block';
-                    
+
                     // 滚动到结果区域
                     output.scrollIntoView({ behavior: 'smooth' });
                 });
             });
-            
+
             // 继续添加按钮
-            document.getElementById('continue-adding').addEventListener('click', function() {
+            document.getElementById('continue-adding').addEventListener('click', function () {
                 document.getElementById('result-container').style.display = 'none';
                 document.querySelector('.type-btn.active').click();
             });
-            
+
             // 清空按钮
-            document.getElementById('clear-all').addEventListener('click', function() {
+            document.getElementById('clear-all').addEventListener('click', function () {
                 if (confirm('确定要清空所有生成的参考文献吗？')) {
                     references = [];
                     document.getElementById('reference-output').textContent = '';
                     document.getElementById('result-container').style.display = 'none';
                 }
             });
-            
+
             // 无序号模式切换
-            document.getElementById('unordered-mode').addEventListener('change', function() {
+            document.getElementById('unordered-mode').addEventListener('change', function () {
                 isUnorderedMode = this.checked;
                 if (isUnorderedMode) {
                     // 转换为无序号模式
@@ -842,22 +845,23 @@
                         }
                     });
                 }
-                
+
                 if (references.length > 0) {
                     document.getElementById('reference-output').textContent = references.join('\n\n');
                 }
             });
-            
+
             // 复制功能
-            document.getElementById('reference-output').addEventListener('click', function() {
+            document.getElementById('reference-output').addEventListener('click', function () {
                 const textToCopy = this.textContent;
-                navigator.clipboard.writeText(textToCopy).then(function() {
+                navigator.clipboard.writeText(textToCopy).then(function () {
                     alert('已复制到剪贴板！');
-                }, function() {
+                }, function () {
                     alert('复制失败，请手动选择并复制文本！');
                 });
             });
         });
     </script>
 </body>
+
 </html>
