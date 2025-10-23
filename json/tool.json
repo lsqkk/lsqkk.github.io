@@ -6,17 +6,17 @@
       "tools": [
         {
           "name": "🕒 经典时钟",
-          "url": "tool/tool-time.html",
+          "url": "tool/tool-time",
           "target": "_blank"
         },
         {
           "name": "🍅 智能番茄钟",
-          "url": "tool/pomodoro.html",
+          "url": "tool/pomodoro",
           "target": "_blank"
         },
         {
           "name": "⛅ 夸克天气",
-          "url": "tool/weather.html",
+          "url": "tool/weather",
           "target": "_blank"
         }
       ]
@@ -27,7 +27,7 @@
       "tools": [
         {
           "name": "📝 AIGC 检查",
-          "url": "tool/aigc.html",
+          "url": "tool/aigc",
           "target": "_blank"
         },
         {
@@ -37,12 +37,12 @@
         },
         {
           "name": "🧮 高级科学计算器",
-          "url": "tool/calculator.html",
+          "url": "tool/calculator",
           "target": "_blank"
         },
         {
           "name": "📒 论文参考文献生成",
-          "url": "tool/ref.html",
+          "url": "tool/ref",
           "target": "_blank"
         }
       ]
@@ -53,22 +53,22 @@
       "tools": [
         {
           "name": "📻 语音识别",
-          "url": "tool/tool-audio2txt.html",
+          "url": "tool/tool-audio2txt",
           "target": "_blank"
         },
         {
           "name": "📷 文字识别",
-          "url": "tool/ocr.html",
+          "url": "tool/ocr",
           "target": "_blank"
         },
         {
           "name": "📝 Markdown 编辑器",
-          "url": "tool/tool-md.html",
+          "url": "tool/tool-md",
           "target": "_blank"
         },
         {
           "name": "📝 多人协同 Markdown 编辑器",
-          "url": "tool/co-md.html",
+          "url": "tool/co-md",
           "target": "_blank"
         },
         {
@@ -84,12 +84,12 @@
       "tools": [
         {
           "name": "🔒 图片混淆加密",
-          "url": "tool/tphx.html",
+          "url": "tool/tphx",
           "target": "_blank"
         },
         {
           "name": "❤️ 图片转Emoji",
-          "url": "tool/image-emoji.html",
+          "url": "tool/image-emoji",
           "target": "_blank"
         }
       ]
