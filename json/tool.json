@@ -100,7 +100,7 @@
       "tools": [
         {
           "name": "📝 科技伦理立场测试",
-          "url": "estest",
+          "url": "tool/estest",
           "target": "_blank"
         },
         {
