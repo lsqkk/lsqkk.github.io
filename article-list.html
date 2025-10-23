@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/cursor.css">
@@ -8,12 +9,15 @@
     <title>夸克博客 | 文章列表</title>
     <link rel="icon" href="image/logo_blue.png" type="image/png">
 </head>
+
 <body>
     <div class="header-placeholder"></div>
     <div class="header">
         <div class="header-content">
-            <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;"><h1>夸克博客</h1></a>
-            
+            <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;">
+                <h1>夸克博客</h1>
+            </a>
+
             <div class="header-nav-container">
                 <ul class="header-nav">
                     <li><a href="/">主页</a></li>
@@ -24,7 +28,7 @@
                     <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
                 </ul>
             </div>
-            
+
             <div class="header-search">
                 <input type="text" id="searchInput" placeholder="搜索博客...">
                 <button onclick="searchBlog()">搜索</button>
@@ -44,13 +48,13 @@
     </div>
 
     <div class="posts-container">
-        
+
         <div id="searchResults" class="search-results"></div>
-        
+
         <div id="tagFilter" class="tag-filter"></div>
-        
+
         <div id="posts"></div>
-        
+
         <div class="pagination" id="pagination">
             <button class="page-btn prev-btn" onclick="prevPage()">上一页</button>
             <div class="page-numbers" id="pageNumbers"></div>
@@ -69,7 +73,7 @@
         let currentPage = 1;
         const postsPerPage = 10;
         let allPosts = [];
-        
+
         // 加载文章列表
         async function loadPosts() {
             allPosts = await fetch('json/posts.json').then(r => r.json());
@@ -81,18 +85,18 @@
             renderPosts();
             renderPagination();
         }
-        
+
         // 获取当前页的文章
         function getCurrentPagePosts() {
-            const filteredPosts = currentTag === '全部' 
-                ? allPosts 
+            const filteredPosts = currentTag === '全部'
+                ? allPosts
                 : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
-            
+
             const startIndex = (currentPage - 1) * postsPerPage;
             const endIndex = startIndex + postsPerPage;
             return filteredPosts.slice(startIndex, endIndex);
         }
-        
+
         // 渲染标签筛选器
         function renderTagFilter() {
             const tagFilter = document.getElementById('tagFilter');
@@ -103,7 +107,7 @@
                 </button>
             `).join('');
         }
-        
+
         // 按标签筛选
         function filterByTag(tag) {
             currentTag = tag;
@@ -112,11 +116,11 @@
             renderPosts();
             renderPagination();
         }
-        
+
         // 渲染文章列表
         function renderPosts() {
             const postsToShow = getCurrentPagePosts();
-            
+
             const list = postsToShow.map(post => `
                 <div class="post-item">
                     <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
@@ -126,20 +130,20 @@
                     </div>
                 </div>
             `).join('');
-            
+
             document.getElementById('posts').innerHTML = list;
         }
-        
+
         // 渲染分页
         function renderPagination() {
-            const filteredPosts = currentTag === '全部' 
-                ? allPosts 
+            const filteredPosts = currentTag === '全部'
+                ? allPosts
                 : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
-            
+
             const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
             const pageNumbers = document.getElementById('pageNumbers');
             pageNumbers.innerHTML = '';
-            
+
             // 显示页码按钮
             for (let i = 1; i <= totalPages; i++) {
                 const pageBtn = document.createElement('button');
@@ -148,15 +152,15 @@
                 pageBtn.onclick = () => goToPage(i);
                 pageNumbers.appendChild(pageBtn);
             }
-            
+
             // 更新上一页/下一页按钮状态
             document.querySelector('.prev-btn').disabled = currentPage === 1;
             document.querySelector('.next-btn').disabled = currentPage === totalPages;
-            
+
             // 如果只有一页，隐藏分页
             document.getElementById('pagination').style.display = totalPages <= 1 ? 'none' : 'flex';
         }
-        
+
         // 跳转到指定页
         function goToPage(page) {
             currentPage = page;
@@ -164,26 +168,26 @@
             renderPagination();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         // 上一页
         function prevPage() {
             if (currentPage > 1) {
                 goToPage(currentPage - 1);
             }
         }
-        
+
         // 下一页
         function nextPage() {
-            const filteredPosts = currentTag === '全部' 
-                ? allPosts 
+            const filteredPosts = currentTag === '全部'
+                ? allPosts
                 : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
             const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-            
+
             if (currentPage < totalPages) {
                 goToPage(currentPage + 1);
             }
         }
-        
+
         // 搜索博客功能
         async function searchBlog() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -194,15 +198,15 @@
                 document.getElementById('pagination').style.display = 'flex';
                 return;
             }
-            
-            const searchResults = allPosts.filter(post => 
+
+            const searchResults = allPosts.filter(post =>
                 post.title.toLowerCase().includes(searchTerm) ||
                 (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
             );
-            
+
             const searchResultsContainer = document.getElementById('searchResults');
             searchResultsContainer.innerHTML = '';
-            
+
             if (searchResults.length > 0) {
                 searchResults.forEach(post => {
                     const resultItem = document.createElement('div');
@@ -219,22 +223,23 @@
             } else {
                 searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center;">未找到相关文章</div>';
             }
-            
+
             document.getElementById('searchResults').style.display = 'block';
             document.getElementById('tagFilter').style.display = 'none';
             document.getElementById('posts').style.display = 'none';
             document.getElementById('pagination').style.display = 'none';
         }
-        
+
         // 初始化加载
         document.addEventListener('DOMContentLoaded', loadPosts);
-        
+
         // 监听搜索输入框的Enter键
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 searchBlog();
             }
         });
     </script>
 </body>
+
 </html>

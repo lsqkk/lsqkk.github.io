@@ -1,78 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线五子棋</title>
+    <title>在线五子棋 - 夸克博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <style>
-        :root{--primary-color:rgba(64,224,208,0.9);--background:rgba(25,25,35,0.95);--sidebar-bg:rgba(20,20,30,0.9);--message-bg:rgba(255,255,255,0.05);--text-color:#fff;--input-bg:rgba(255,255,255,0.1);--border-color:rgba(255,255,255,0.1);--shadow-color:rgba(0,0,0,0.3);--timestamp-color:rgba(255,255,255,0.7);}
-        .dark-mode{--primary-color:rgba(64,224,208,0.9);--background:rgba(25,25,35,0.95);--sidebar-bg:rgba(20,20,30,0.9);--message-bg:rgba(255,255,255,0.05);--text-color:#fff;--input-bg:rgba(255,255,255,0.1);--border-color:rgba(255,255,255,0.1);--shadow-color:rgba(0,0,0,0.3);--timestamp-color:rgba(255,255,255,0.7);}
-        .light-mode{--primary-color:#40E0D0;--background:rgba(255,255,255,0.95);--sidebar-bg:rgba(240,240,245,0.9);--message-bg:rgba(0,0,0,0.03);--text-color:#333;--input-bg:rgba(0,0,0,0.05);--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.1);--timestamp-color:rgba(0,0,0,0.6);}
-        *{box-sizing:border-box;margin:0;padding:0;}
-        body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text-color);min-height:100vh;margin:0;display:flex;background:var(--background);transition:background-color 0.3s ease;}
-        .app-container{display:flex;width:100%;height:100vh;position:relative;}
-        .sidebar{width:280px;background:var(--sidebar-bg);backdrop-filter:blur(10px);border-right:1px solid var(--border-color);height:100vh;overflow-y:auto;transition:transform 0.3s ease;z-index:10;display:flex;flex-direction:column;}
-        .sidebar-header{padding:20px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;}
-        .sidebar-title{font-size:1.2rem;font-weight:600;}
-        .theme-toggle{background:none;border:none;color:var(--text-color);font-size:1.2rem;cursor:pointer;padding:5px;border-radius:50%;transition:all 0.3s ease;}
-        .theme-toggle:hover{background:var(--input-bg);}
-        .room-list{flex:1;overflow-y:auto;padding:10px 0;}
-        .room-item{padding:12px 20px;cursor:pointer;transition:background-color 0.2s ease;display:flex;align-items:center;gap:10px;}
-        .room-item:hover{background:var(--input-bg);}
-        .room-item.active{background:var(--primary-color);color:white;}
-        .room-icon{font-size:0.9rem;}
-        .join-room-container{padding:20px;border-top:1px solid var(--border-color);}
-        .join-room-input{width:100%;padding:12px 15px;border:none;border-radius:8px;background:var(--input-bg);color:var(--text-color);margin-bottom:10px;}
-        .join-room-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer;transition:all 0.3s ease;}
-        .join-room-btn:hover{opacity:0.9;transform:translateY(-2px);}
-        .main-content{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-        .game-header{padding:15px 20px;background:var(--sidebar-bg);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;z-index:5;}
-        .game-title{font-size:1.2rem;font-weight:600;}
-        .mobile-menu-btn{display:none;background:none;border:none;color:var(--text-color);font-size:1.2rem;cursor:pointer;}
-        .game-container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--background);backdrop-filter:blur(10px);padding:20px;}
-        .board-container{position:relative;margin:20px 0;}
-        .board{background:#dcb35c;position:relative;box-shadow:0 0 10px var(--shadow-color);}
-        .grid-line{position:absolute;background:#000;}
-        .piece{position:absolute;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 5px rgba(0,0,0,0.5);}
-        .piece.black{background:#000;}
-        .piece.white{background:#fff;}
-        .piece.last-move::after{content:'';position:absolute;width:8px;height:8px;background:red;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
-        .players-info{display:flex;justify-content:space-between;width:100%;max-width:500px;margin-bottom:20px;}
-        .player{display:flex;align-items:center;padding:10px 15px;border-radius:8px;background:var(--message-bg);flex:1;max-width:48%;}
-        .player.active{border:2px solid var(--primary-color);}
-        .player-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:bold;color:white;font-size:1.2rem;margin-right:10px;}
-        .player-name{font-weight:600;}
-        .player-role{margin-top:5px;font-size:0.8rem;opacity:0.8;}
-        .game-status{margin-top:15px;font-size:1.1rem;text-align:center;min-height:24px;}
-        .restart-btn{padding:10px 20px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer;transition:all 0.3s ease;margin-top:15px;}
-        .restart-btn:hover{opacity:0.9;transform:translateY(-2px);}
-        .role-selection{display:flex;justify-content:center;gap:15px;margin-top:20px;}
-        .role-btn{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;transition:all 0.3s ease;background:var(--input-bg);color:var(--text-color);}
-        .role-btn:hover{opacity:0.9;}
-        .role-btn.selected{background:var(--primary-color);color:white;}
-        .profile-setup{background:var(--message-bg);padding:20px;border-radius:12px;margin:20px;animation:fadeIn 0.3s ease;max-width:500px;margin:20px auto;}
-        .profile-title{margin-bottom:15px;font-size:1.1rem;}
-        .color-picker{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0;}
-        .color-option{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.2s ease;}
-        .color-option.selected{border-color:var(--text-color);transform:scale(1.1);}
-        .profile-input{width:100%;padding:12px 15px;border:none;border-radius:8px;background:var(--input-bg);color:var(--text-color);margin-bottom:15px;}
-        .profile-save-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer;transition:all 0.3s ease;}
-        .profile-save-btn:hover{opacity:0.9;}
-        @media (max-width:768px){.sidebar{position:fixed;left:0;top:0;height:100vh;transform:translateX(-100%);box-shadow:2px 0 10px rgba(0,0,0,0.2);}.sidebar.open{transform:translateX(0);}.mobile-menu-btn{display:block;}.room-item{padding:10px 15px;}}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        ::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--primary-color);border-radius:4px;}::-webkit-scrollbar-thumb:hover{background:rgba(64,224,208,0.7);}
-        .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--timestamp-color);text-align:center;padding:20px;}
-        .empty-icon{font-size:3rem;margin-bottom:15px;opacity:0.5;}
-        .winner-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:100;}
-        .winner-box{background:var(--sidebar-bg);padding:30px;border-radius:10px;text-align:center;max-width:80%;}
-        .winner-text{font-size:1.5rem;margin-bottom:20px;}
-        .winner-name{color:var(--primary-color);font-weight:bold;}
-    </style>
+    <link rel="stylesheet" href="5ziqi.css">
 </head>
+
 <body class="dark-mode">
     <div class="app-container">
         <!-- 侧边栏 -->
@@ -83,7 +21,7 @@
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
-            
+
             <div class="room-list" id="roomList">
                 <div class="empty-state">
                     <div class="empty-icon">
@@ -92,7 +30,7 @@
                     <p>暂无房间记录</p>
                 </div>
             </div>
-            
+
             <div class="join-room-container">
                 <input type="text" class="join-room-input" id="roomInput" placeholder="输入房间号">
                 <button class="join-room-btn" onclick="joinRoom()">加入房间</button>
@@ -108,7 +46,7 @@
                 <div class="game-title" id="currentRoomTitle">请选择一个房间</div>
                 <div style="width: 40px;"></div>
             </div>
-            
+
             <div class="game-container" id="gameContainer">
                 <div class="profile-setup" id="profileSetup">
                     <div class="profile-title">设置您的个人资料</div>
@@ -130,13 +68,16 @@
                         <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
                     </div>
                     <div class="role-selection">
-                        <button class="role-btn" onclick="selectRole('spectator')"><i class="fas fa-eye"></i> 观众</button>
-                        <button class="role-btn" onclick="selectRole('black')"><i class="fas fa-chess-pawn"></i> 黑方</button>
-                        <button class="role-btn" onclick="selectRole('white')"><i class="fas fa-chess-pawn"></i> 白方</button>
+                        <button class="role-btn" onclick="selectRole('spectator')"><i class="fas fa-eye"></i>
+                            观众</button>
+                        <button class="role-btn" onclick="selectRole('black')"><i class="fas fa-chess-pawn"></i>
+                            黑方</button>
+                        <button class="role-btn" onclick="selectRole('white')"><i class="fas fa-chess-pawn"></i>
+                            白方</button>
                     </div>
                     <button class="profile-save-btn" onclick="saveProfile()">保存并加入</button>
                 </div>
-                
+
                 <div id="gameContent" style="display: none;">
                     <div class="players-info">
                         <div class="player" id="blackPlayer">
@@ -154,14 +95,15 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="board-container">
                         <canvas id="boardCanvas"></canvas>
                     </div>
-                    
+
                     <div class="game-status" id="gameStatus"></div>
-                    
-                    <button class="restart-btn" id="restartBtn" style="display: none;" onclick="requestRestart()">重新开始</button>
+
+                    <button class="restart-btn" id="restartBtn" style="display: none;"
+                        onclick="requestRestart()">重新开始</button>
                 </div>
             </div>
         </div>
@@ -185,15 +127,15 @@
             appId: "1:843016834358:web:9438c729be28c4d492f797",
             measurementId: "G-5BVT26KRT6"
         };
-        
+
         // 初始化 Firebase
         firebase.initializeApp(firebaseConfig);
-        
+
         // 全局变量
         const BOARD_SIZE = 15;
         const CELL_SIZE = 30;
         const PIECE_RADIUS = 13;
-        
+
         let roomName = '';
         let gameRef = null;
         let playersRef = null;
@@ -209,78 +151,78 @@
         let whitePlayer = null;
         let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]');
         let lastMove = null;
-        
+
         // DOM 加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 初始化主题
             initTheme();
-            
+
             // 初始化移动端菜单按钮
             document.getElementById('mobileMenuBtn').addEventListener('click', toggleSidebar);
-            
+
             // 初始化主题切换按钮
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-            
+
             // 初始化最近房间列表
             updateRecentRoomsList();
-            
+
             // 初始化棋盘
             boardCanvas = document.getElementById('boardCanvas');
             boardCtx = boardCanvas.getContext('2d');
             boardCanvas.width = BOARD_SIZE * CELL_SIZE;
             boardCanvas.height = BOARD_SIZE * CELL_SIZE;
-            
+
             // 如果已有昵称，填充个人资料
             if (nickname) {
                 document.getElementById('nicknameInput').value = nickname;
             }
-            
+
             // 标记当前选中的颜色
             document.querySelectorAll('.color-option').forEach(opt => {
                 opt.classList.toggle('selected', opt.style.background === userColor);
             });
         });
-        
+
         // 初始化主题
         function initTheme() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.className = savedTheme + '-mode';
             updateThemeIcon(savedTheme);
         }
-        
+
         // 切换主题
         function toggleTheme() {
             const isDark = document.body.classList.contains('dark-mode');
             const newTheme = isDark ? 'light' : 'dark';
-            
+
             document.body.classList.remove(isDark ? 'dark-mode' : 'light-mode');
             document.body.classList.add(newTheme + '-mode');
             localStorage.setItem('theme', newTheme);
-            
+
             updateThemeIcon(newTheme);
-            
+
             // 重新绘制棋盘
             if (gameActive) {
                 drawBoard();
                 drawPieces();
             }
         }
-        
+
         // 更新主题图标
         function updateThemeIcon(theme) {
             const icon = document.getElementById('themeToggle').querySelector('i');
             icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
         }
-        
+
         // 切换侧边栏（移动端）
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
         }
-        
+
         // 更新最近房间列表
         function updateRecentRoomsList() {
             const roomList = document.getElementById('roomList');
-            
+
             if (recentRooms.length === 0) {
                 roomList.innerHTML = `
                     <div class="empty-state">
@@ -292,7 +234,7 @@
                 `;
                 return;
             }
-            
+
             roomList.innerHTML = '';
             recentRooms.forEach(room => {
                 const roomItem = document.createElement('div');
@@ -308,7 +250,7 @@
                 roomList.appendChild(roomItem);
             });
         }
-        
+
         // 添加最近房间
         function addRecentRoom(room) {
             if (!recentRooms.includes(room)) {
@@ -320,7 +262,7 @@
                 updateRecentRoomsList();
             }
         }
-        
+
         // 选择角色
         function selectRole(role) {
             document.querySelectorAll('.role-btn').forEach(btn => {
@@ -329,27 +271,27 @@
             event.target.classList.add('selected');
             myRole = role;
         }
-        
+
         // 加入房间
         function joinRoom() {
             roomName = document.getElementById('roomInput').value.trim();
             if (!roomName) return;
-            
+
             // 添加到最近房间
             addRecentRoom(roomName);
-            
+
             // 更新当前房间标题
             document.getElementById('currentRoomTitle').textContent = `房间: ${roomName}`;
-            
+
             // 关闭移动端侧边栏
             document.getElementById('sidebar').classList.remove('open');
-            
+
             // 如果已有昵称，直接初始化游戏
             if (nickname && myRole) {
                 initializeGame();
             }
         }
-        
+
         // 选择颜色
         function selectColor(element) {
             document.querySelectorAll('.color-option').forEach(opt => {
@@ -358,7 +300,7 @@
             element.classList.add('selected');
             userColor = element.style.backgroundColor;
         }
-        
+
         // 保存个人资料
         function saveProfile() {
             nickname = document.getElementById('nicknameInput').value.trim();
@@ -366,26 +308,26 @@
                 alert('请填写昵称并选择角色');
                 return;
             }
-            
+
             localStorage.setItem('nickname', nickname);
             localStorage.setItem('userColor', userColor);
-            
+
             initializeGame();
         }
-        
+
         // 初始化游戏
         function initializeGame() {
             // 隐藏个人资料设置
             document.getElementById('profileSetup').style.display = 'none';
-            
+
             // 显示游戏内容
             document.getElementById('gameContent').style.display = 'block';
-            
+
             // 初始化 Firebase 引用
             gameRef = firebase.database().ref(`gomoku/${roomName}`);
             playersRef = gameRef.child('players');
             boardRef = gameRef.child('board');
-            
+
             // 设置当前玩家信息
             const myPlayerInfo = {
                 nickname: nickname,
@@ -393,47 +335,47 @@
                 role: myRole,
                 timestamp: Date.now()
             };
-            
+
             // 加入游戏
             playersRef.child(myRole).set(myPlayerInfo);
-            
+
             // 监听玩家变化
             playersRef.on('value', snapshot => {
                 const players = snapshot.val() || {};
-                
+
                 blackPlayer = players.black || null;
                 whitePlayer = players.white || null;
-                
+
                 updatePlayerInfo();
-                
+
                 // 检查游戏是否可以开始
                 checkGameStart();
             });
-            
+
             // 监听棋盘变化
             boardRef.on('value', snapshot => {
                 const gameData = snapshot.val() || {};
-                
+
                 if (gameData.state) {
                     boardState = gameData.state;
                     currentPlayer = gameData.currentPlayer || 'black';
                     lastMove = gameData.lastMove || null;
-                    
+
                     if (gameData.winner) {
                         showWinner(gameData.winner);
                     } else {
                         updateGameStatus();
                     }
-                    
+
                     drawBoard();
                     drawPieces();
                 }
             });
-            
+
             // 初始化棋盘点击事件
             boardCanvas.addEventListener('click', handleBoardClick);
         }
-        
+
         // 更新玩家信息显示
         function updatePlayerInfo() {
             // 更新黑方信息
@@ -455,7 +397,7 @@
                     </div>
                 `;
             }
-            
+
             // 更新白方信息
             const whitePlayerEl = document.getElementById('whitePlayer');
             if (whitePlayer) {
@@ -475,17 +417,17 @@
                     </div>
                 `;
             }
-            
+
             // 高亮当前玩家
             blackPlayerEl.classList.toggle('active', currentPlayer === 'black' && gameActive);
             whitePlayerEl.classList.toggle('active', currentPlayer === 'white' && gameActive);
         }
-        
+
         // 检查游戏是否可以开始
         function checkGameStart() {
             if (blackPlayer && whitePlayer && !gameActive) {
                 gameActive = true;
-                
+
                 // 初始化棋盘状态
                 if (!boardRef.once('value', snapshot => {
                     if (!snapshot.val()) {
@@ -499,48 +441,48 @@
                         });
                     }
                 }));
-                
+
                 // 显示重新开始按钮给玩家
                 if (myRole === 'black' || myRole === 'white') {
                     document.getElementById('restartBtn').style.display = 'block';
                 } else {
                     document.getElementById('restartBtn').style.display = 'none';
                 }
-                
+
                 updateGameStatus();
                 drawBoard();
             }
         }
-        
+
         // 绘制棋盘
         function drawBoard() {
             // 棋盘背景
             boardCtx.fillStyle = '#dcb35c';
             boardCtx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
-            
+
             // 网格线
             boardCtx.strokeStyle = '#000';
             boardCtx.lineWidth = 1;
-            
+
             for (let i = 0; i < BOARD_SIZE; i++) {
                 // 横线
                 boardCtx.beginPath();
                 boardCtx.moveTo(CELL_SIZE / 2, i * CELL_SIZE + CELL_SIZE / 2);
                 boardCtx.lineTo((BOARD_SIZE - 0.5) * CELL_SIZE, i * CELL_SIZE + CELL_SIZE / 2);
                 boardCtx.stroke();
-                
+
                 // 竖线
                 boardCtx.beginPath();
                 boardCtx.moveTo(i * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2);
                 boardCtx.lineTo(i * CELL_SIZE + CELL_SIZE / 2, (BOARD_SIZE - 0.5) * CELL_SIZE);
                 boardCtx.stroke();
             }
-            
+
             // 五个小点
             const dots = [
                 [3, 3], [3, 11], [7, 7], [11, 3], [11, 11]
             ];
-            
+
             boardCtx.fillStyle = '#000';
             dots.forEach(([x, y]) => {
                 boardCtx.beginPath();
@@ -554,14 +496,14 @@
                 boardCtx.fill();
             });
         }
-        
+
         // 绘制棋子
         function drawPieces() {
             for (let y = 0; y < BOARD_SIZE; y++) {
                 for (let x = 0; x < BOARD_SIZE; x++) {
                     if (boardState[y][x] !== 0) {
                         const pieceColor = boardState[y][x] === 1 ? 'black' : 'white';
-                        
+
                         // 绘制棋子
                         boardCtx.beginPath();
                         boardCtx.arc(
@@ -571,7 +513,7 @@
                             0,
                             Math.PI * 2
                         );
-                        
+
                         // 棋子渐变效果
                         const gradient = boardCtx.createRadialGradient(
                             x * CELL_SIZE + CELL_SIZE / 2 - PIECE_RADIUS / 3,
@@ -581,7 +523,7 @@
                             y * CELL_SIZE + CELL_SIZE / 2,
                             PIECE_RADIUS
                         );
-                        
+
                         if (pieceColor === 'black') {
                             gradient.addColorStop(0, '#666');
                             gradient.addColorStop(1, '#000');
@@ -589,10 +531,10 @@
                             gradient.addColorStop(0, '#fff');
                             gradient.addColorStop(1, '#ddd');
                         }
-                        
+
                         boardCtx.fillStyle = gradient;
                         boardCtx.fill();
-                        
+
                         // 如果是最后一步，标记
                         if (lastMove && lastMove.x === x && lastMove.y === y) {
                             boardCtx.beginPath();
@@ -610,26 +552,26 @@
                 }
             }
         }
-        
+
         // 处理棋盘点击
         function handleBoardClick(event) {
             if (!gameActive || myRole !== currentPlayer || (myRole !== 'black' && myRole !== 'white')) {
                 return;
             }
-            
+
             const rect = boardCanvas.getBoundingClientRect();
             const x = Math.floor((event.clientX - rect.left) / CELL_SIZE);
             const y = Math.floor((event.clientY - rect.top) / CELL_SIZE);
-            
+
             // 检查位置是否有效
             if (x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && boardState[y][x] === 0) {
                 // 更新棋盘状态
                 const newState = JSON.parse(JSON.stringify(boardState));
                 newState[y][x] = myRole === 'black' ? 1 : 2;
-                
+
                 // 检查是否获胜
                 const winner = checkWinner(newState, x, y) ? myRole : null;
-                
+
                 // 更新游戏状态
                 boardRef.set({
                     state: newState,
@@ -637,24 +579,24 @@
                     lastMove: { x, y },
                     winner: winner
                 });
-                
+
                 // 如果是观众，不播放声音
                 if (myRole !== 'spectator') {
                     playPlaceSound();
                 }
             }
         }
-        
+
         // 检查胜利条件
         function checkWinner(board, x, y) {
             const player = board[y][x];
             const directions = [
                 [1, 0], [0, 1], [1, 1], [1, -1] // 水平、垂直、对角线
             ];
-            
+
             for (const [dx, dy] of directions) {
                 let count = 1;
-                
+
                 // 正向检查
                 for (let i = 1; i < 5; i++) {
                     const nx = x + i * dx;
@@ -665,7 +607,7 @@
                         break;
                     }
                 }
-                
+
                 // 反向检查
                 for (let i = 1; i < 5; i++) {
                     const nx = x - i * dx;
@@ -676,85 +618,85 @@
                         break;
                     }
                 }
-                
+
                 if (count >= 5) {
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         // 更新游戏状态显示
         function updateGameStatus() {
             const gameStatusEl = document.getElementById('gameStatus');
-            
+
             if (!gameActive) {
                 gameStatusEl.textContent = '等待另一位玩家加入...';
                 return;
             }
-            
+
             if (currentPlayer === myRole) {
                 gameStatusEl.textContent = '轮到你了!';
             } else {
-                const playerName = currentPlayer === 'black' 
+                const playerName = currentPlayer === 'black'
                     ? (blackPlayer ? blackPlayer.nickname : '黑方')
                     : (whitePlayer ? whitePlayer.nickname : '白方');
                 gameStatusEl.textContent = `等待 ${playerName} 下棋...`;
             }
-            
+
             // 高亮当前玩家
             document.getElementById('blackPlayer').classList.toggle('active', currentPlayer === 'black');
             document.getElementById('whitePlayer').classList.toggle('active', currentPlayer === 'white');
         }
-        
+
         // 显示胜利者
         function showWinner(winner) {
             gameActive = false;
-            
-            const winnerName = winner === 'black' 
+
+            const winnerName = winner === 'black'
                 ? (blackPlayer ? blackPlayer.nickname : '黑方')
                 : (whitePlayer ? whitePlayer.nickname : '白方');
-            
+
             document.getElementById('winnerName').textContent = winnerName;
             document.getElementById('winnerOverlay').style.display = 'flex';
-            
+
             // 播放胜利音效
             if (myRole !== 'spectator') {
                 playWinSound();
             }
         }
-        
+
         // 请求重新开始游戏
         function requestRestart() {
             if (confirm('确定要重新开始游戏吗?')) {
                 // 重置棋盘
                 const initialBoard = Array(BOARD_SIZE).fill().map(() => Array(BOARD_SIZE).fill(0));
                 boardRef.set({
-    state: initialBoard,
-    currentPlayer: 'black',
-    lastMove: null,
-    winner: null
-}).then(() => {
-    // 清除胜利者显示
-    document.getElementById('winnerOverlay').style.display = 'none';
-    // 重新绘制棋盘
-    drawBoard();
-    drawPieces();
-    // 更新游戏状态
-    updateGameStatus();
-}).catch(error => {
-    console.error('Failed to reset game:', error);
-});
+                    state: initialBoard,
+                    currentPlayer: 'black',
+                    lastMove: null,
+                    winner: null
+                }).then(() => {
+                    // 清除胜利者显示
+                    document.getElementById('winnerOverlay').style.display = 'none';
+                    // 重新绘制棋盘
+                    drawBoard();
+                    drawPieces();
+                    // 更新游戏状态
+                    updateGameStatus();
+                }).catch(error => {
+                    console.error('Failed to reset game:', error);
+                });
             }
         }
-        
+
         // 播放落子音效
         function playPlaceSound() {
             const sound = new Audio('place-piece.mp3');
             sound.play();
         }
-        
+
         // 播放胜利音效
         function playWinSound() {
             const sound = new Audio('win.mp3');
@@ -762,4 +704,5 @@
         }
     </script>
 </body>
+
 </html>

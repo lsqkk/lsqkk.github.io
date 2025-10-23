@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/l.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>网址混淆生成器 - 夸克博客</h1>
             <p>将网址混淆为大写i和小写L组成的长链</p>
         </div>
-        
+
         <div class="card">
             <div class="card-title">
                 <i class="fas fa-link"></i>
                 <h2>生成混淆链接</h2>
             </div>
-            
+
             <div class="input-group">
                 <label for="long-url">输入原网址（必须以http://或https://开头）</label>
                 <div class="input-container">
@@ -28,7 +30,7 @@
                 </div>
                 <div class="error-message" id="url-error">请输入有效的网址（以http://或https://开头）</div>
             </div>
-            
+
             <div class="result-container" id="result-container">
                 <div class="result-header">
                     <div class="result-title">生成的混淆链接</div>
@@ -39,41 +41,41 @@
                     <span id="short-url">https://lsqkk.github.io/l?=</span>
                 </div>
             </div>
-            
+
         </div>
-        
+
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>正在处理您的请求...</p>
         </div>
-        
+
         <div class="steps">
             <div class="step">
                 <i class="fas fa-pen"></i>
                 <h3>输入网址</h3>
                 <p>输入以http://或https://开头的长网址</p>
             </div>
-            
+
             <div class="step">
                 <i class="fas fa-cogs"></i>
                 <h3>安全编码</h3>
                 <p>系统对网址进行二进制编码和转换</p>
             </div>
-            
+
             <div class="step">
                 <i class="fas fa-share-alt"></i>
                 <h3>分享使用</h3>
                 <p>复制生成的短链接分享给他人</p>
             </div>
         </div>
-        
+
         <div class="footer">
             <p>© 2023 URL短链服务 | 安全可靠 | 高效便捷</p>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const longUrlInput = document.getElementById('long-url');
             const generateBtn = document.getElementById('generate-btn');
             const resultContainer = document.getElementById('result-container');
@@ -81,21 +83,21 @@
             const copyBtn = document.getElementById('copy-btn');
             const urlError = document.getElementById('url-error');
             const loading = document.getElementById('loading');
-            
+
             // 检查URL参数，如果有编码参数则进行跳转
             const urlParams = new URLSearchParams(window.location.search);
             const encodedParam = urlParams.get('l');
-            
+
             if (encodedParam) {
-    try {
-        const decodedUrl = decodeUrl(encodedParam);
-        if (decodedUrl.startsWith('http://') || decodedUrl.startsWith('https://')) {
-            window.location.href = decodedUrl;
-        } else {
-            throw new Error('解码后的URL无效');
-        }
-    } catch (e) {
-        document.body.innerHTML = `
+                try {
+                    const decodedUrl = decodeUrl(encodedParam);
+                    if (decodedUrl.startsWith('http://') || decodedUrl.startsWith('https://')) {
+                        window.location.href = decodedUrl;
+                    } else {
+                        throw new Error('解码后的URL无效');
+                    }
+                } catch (e) {
+                    document.body.innerHTML = `
             <div class="container" style="text-align:center; padding:50px;">
                 <h1 style="color:#e74c3c; margin-bottom:20px;">跳转失败</h1>
                 <p style="font-size:1.2rem; margin-bottom:30px;">${e.message || '无效的短链接编码'}</p>
@@ -104,38 +106,38 @@
                 </button>
             </div>
         `;
-    }
-    return;
-}
-            
+                }
+                return;
+            }
+
             // 生成短链接
-            generateBtn.addEventListener('click', function() {
+            generateBtn.addEventListener('click', function () {
                 const longUrl = longUrlInput.value.trim();
-                
+
                 // 验证URL
                 if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
                     urlError.style.display = 'block';
                     return;
                 }
-                
+
                 urlError.style.display = 'none';
-                
+
                 // 显示加载动画
                 loading.style.display = 'block';
-                
+
                 // 模拟处理延迟
                 setTimeout(() => {
                     try {
                         // 编码URL
                         const encoded = encodeUrl(longUrl);
-                        
+
                         // 生成短链接
                         const baseUrl = window.location.href.split('?')[0];
                         const shortUrl = `${baseUrl}?l=${encoded}`;
-                        
+
                         shortUrlElement.textContent = shortUrl;
                         resultContainer.style.display = 'block';
-                        
+
                         // 滚动到结果
                         resultContainer.scrollIntoView({ behavior: 'smooth' });
                     } catch (e) {
@@ -145,27 +147,27 @@
                     }
                 }, 800);
             });
-            
+
             // 复制功能
-            copyBtn.addEventListener('click', function() {
+            copyBtn.addEventListener('click', function () {
                 const textArea = document.createElement('textarea');
                 textArea.value = shortUrlElement.textContent;
                 document.body.appendChild(textArea);
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                
+
                 // 显示复制成功反馈
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
                 copyBtn.style.background = '#2ecc71';
-                
+
                 setTimeout(() => {
                     copyBtn.innerHTML = originalText;
                     copyBtn.style.background = '';
                 }, 2000);
             });
-            
+
             // URL编码函数
             function encodeUrl(url) {
                 // 将字符串转换为二进制表示
@@ -175,7 +177,7 @@
                     // 确保每个字符是8位
                     binary += '0'.repeat(8 - charCode.length) + charCode;
                 }
-                
+
                 // 应用特殊编码：0→'a'(拉丁字母), 1→'а'(西里尔字母)
                 let encoded = '';
                 for (let i = 0; i < binary.length; i++) {
@@ -185,16 +187,16 @@
                         encoded += 'I'; // 
                     }
                 }
-                
+
                 return encodeURIComponent(encoded);
             }
-            
+
             // URL解码函数
             function decodeUrl(encoded) {
                 // URI解码
                 const decodedParam = decodeURIComponent(encoded);
                 let binary = '';
-                
+
                 // 将特殊编码转换回二进制
                 for (let i = 0; i < decodedParam.length; i++) {
                     const char = decodedParam[i];
@@ -206,7 +208,7 @@
                         throw new Error('无效的编码字符');
                     }
                 }
-                
+
                 // 将二进制转换为字符串
                 let result = '';
                 for (let i = 0; i < binary.length; i += 8) {
@@ -214,10 +216,11 @@
                     if (byte.length < 8) break; // 忽略不完整的字节
                     result += String.fromCharCode(parseInt(byte, 2));
                 }
-                
+
                 return result;
             }
         });
     </script>
 </body>
+
 </html>

@@ -57,13 +57,15 @@ header {
 h1 {
     color: var(--primary-color);
     font-size: 2.5rem;
-    margin-bottom: 0; /* 移除原来的下边距 */
+    margin-bottom: 0;
+    /* 移除原来的下边距 */
 }
 
 .date {
     color: var(--light-text);
     font-size: 1rem;
-    margin-bottom: 0; /* 确保没有额外边距 */
+    margin-bottom: 0;
+    /* 确保没有额外边距 */
 }
 
 .header-description {
@@ -183,11 +185,11 @@ h1 {
     .articles-container {
         grid-template-columns: 1fr;
     }
-    
+
     h1 {
         font-size: 2rem;
     }
-    
+
     .header-content {
         flex-direction: column;
         align-items: center;

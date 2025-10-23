@@ -1,37 +1,36 @@
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.main-content').style.opacity = '1';
+    loadRecentPosts(); // 加载文章
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelector('.main-content').style.opacity = '1';
-            loadRecentPosts(); // 加载文章
-            
-            // 为社交图标添加悬停效果
-            document.querySelectorAll('.social-icons a').forEach(icon => {
-                icon.addEventListener('mouseover', () => {
-                    icon.style.transform = 'translateY(-3px)';
-                });
-                icon.addEventListener('mouseout', () => {
-                    icon.style.transform = 'none';
-                });
-            });
-            
-            // 为导航盒子添加悬停效果
-            document.querySelectorAll('.index-feature-box').forEach(box => {
-                box.addEventListener('mouseover', () => {
-                    box.style.transform = 'translateY(-3px)';
-                    box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
-                });
-                box.addEventListener('mouseout', () => {
-                    box.style.transform = 'none';
-                    box.style.boxShadow = '0 0 15px rgba(255,255,255,0.5)';
-                });
-            });
+    // 为社交图标添加悬停效果
+    document.querySelectorAll('.social-icons a').forEach(icon => {
+        icon.addEventListener('mouseover', () => {
+            icon.style.transform = 'translateY(-3px)';
         });
+        icon.addEventListener('mouseout', () => {
+            icon.style.transform = 'none';
+        });
+    });
 
-        // 加载最近三篇文章
-        async function loadRecentPosts() {
-            const posts = await fetch('json/posts.json').then(r => r.json());
-            const recentPosts = posts.slice(0, 3);  // 取前三条
-            
-            const list = recentPosts.map(post => `
+    // 为导航盒子添加悬停效果
+    document.querySelectorAll('.index-feature-box').forEach(box => {
+        box.addEventListener('mouseover', () => {
+            box.style.transform = 'translateY(-3px)';
+            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
+        });
+        box.addEventListener('mouseout', () => {
+            box.style.transform = 'none';
+            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.5)';
+        });
+    });
+});
+
+// 加载最近三篇文章
+async function loadRecentPosts() {
+    const posts = await fetch('json/posts.json').then(r => r.json());
+    const recentPosts = posts.slice(0, 3);  // 取前三条
+
+    const list = recentPosts.map(post => `
                 <div class="post-item" style="transition: all 0.3s ease;">
                     <a class="post-title" href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
                         ${post.title}
@@ -39,101 +38,101 @@
                     <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
                 </div>
             `).join('');
-            
-            document.getElementById('recent-posts').innerHTML = list;
-            
-            // 为文章项添加悬停效果
-            document.querySelectorAll('.post-item').forEach(item => {
-                item.addEventListener('mouseover', () => {
-                    item.style.transform = 'translateX(5px)';
-                    item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
-                });
-                item.addEventListener('mouseout', () => {
-                    item.style.transform = 'none';
-                    item.style.boxShadow = 'none';
-                });
-            });
-        }
 
-        // 搜索博客功能
-        async function searchBlog() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const posts = await fetch('json/posts.json').then(r => r.json());
-            const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+    document.getElementById('recent-posts').innerHTML = list;
 
-            const searchResultsContainer = document.getElementById('searchResults');
-            searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
+    // 为文章项添加悬停效果
+    document.querySelectorAll('.post-item').forEach(item => {
+        item.addEventListener('mouseover', () => {
+            item.style.transform = 'translateX(5px)';
+            item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+        });
+        item.addEventListener('mouseout', () => {
+            item.style.transform = 'none';
+            item.style.boxShadow = 'none';
+        });
+    });
+}
 
-            if (filteredPosts.length > 0) {
-                // 如果有匹配的博客，展示结果
-                filteredPosts.forEach(post => {
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'search-result-item';
-                    resultItem.style.transition = 'all 0.3s ease';
-                    resultItem.innerHTML = `
+// 搜索博客功能
+async function searchBlog() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const posts = await fetch('json/posts.json').then(r => r.json());
+    const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
+
+    const searchResultsContainer = document.getElementById('searchResults');
+    searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
+
+    if (filteredPosts.length > 0) {
+        // 如果有匹配的博客，展示结果
+        filteredPosts.forEach(post => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.style.transition = 'all 0.3s ease';
+            resultItem.innerHTML = `
                         <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
                             ${post.title}
                         </a>
                         <div style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
                     `;
-                    searchResultsContainer.appendChild(resultItem);
-                    
-                    // 为搜索结果项添加悬停效果
-                    resultItem.addEventListener('mouseover', () => {
-                        resultItem.style.transform = 'translateX(5px)';
-                        resultItem.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
-                    });
-                    resultItem.addEventListener('mouseout', () => {
-                        resultItem.style.transform = 'none';
-                        resultItem.style.boxShadow = 'none';
-                    });
-                });
-            } else {
-                // 如果没有匹配的博客，显示提示信息
-                searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
-            }
-        }
+            searchResultsContainer.appendChild(resultItem);
 
-        // 新增PV/UV存储功能
-        function storeStatistics() {
-            const pv = document.getElementById('busuanzi_value_site_pv').innerText;
-            const uv = document.getElementById('busuanzi_value_site_uv').innerText;
-            const today = new Date();
-            // 格式化为 YYYY-MM-DD（本地时区）
-            const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            
-            localStorage.setItem(dateKey, JSON.stringify({
-                pv: parseInt(document.getElementById('busuanzi_value_site_pv').innerText),
-                uv: parseInt(document.getElementById('busuanzi_value_site_uv').innerText),
-                timestamp: today.getTime()
-            }));
-        }
-
-        // 监听不蒜子数据变化
-        new MutationObserver(() => {
-            if(document.getElementById('busuanzi_value_site_pv').innerText && 
-               document.getElementById('busuanzi_value_site_uv').innerText) {
-                storeStatistics();
-            }
-        }).observe(document.getElementById('busuanzi_value_site_pv'), {
-            childList: true,
-            subtree: true
+            // 为搜索结果项添加悬停效果
+            resultItem.addEventListener('mouseover', () => {
+                resultItem.style.transform = 'translateX(5px)';
+                resultItem.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+            });
+            resultItem.addEventListener('mouseout', () => {
+                resultItem.style.transform = 'none';
+                resultItem.style.boxShadow = 'none';
+            });
         });
+    } else {
+        // 如果没有匹配的博客，显示提示信息
+        searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
+    }
+}
 
-        // 检查是否已登录
-        const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+// 新增PV/UV存储功能
+function storeStatistics() {
+    const pv = document.getElementById('busuanzi_value_site_pv').innerText;
+    const uv = document.getElementById('busuanzi_value_site_uv').innerText;
+    const today = new Date();
+    // 格式化为 YYYY-MM-DD（本地时区）
+    const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-        if (isLoggedIn) {
-            // 隐藏电脑端和移动端的登录按钮
-            document.getElementById('login-button').style.display = 'none';
-            document.getElementById('mobile-login-button').style.display = 'none';
-        } else {
-            // 确保登录按钮显示（可能在之前被隐藏了）
-            document.getElementById('login-button').style.display = 'block';
-            document.getElementById('mobile-login-button').style.display = 'block';
-        }
+    localStorage.setItem(dateKey, JSON.stringify({
+        pv: parseInt(document.getElementById('busuanzi_value_site_pv').innerText),
+        uv: parseInt(document.getElementById('busuanzi_value_site_uv').innerText),
+        timestamp: today.getTime()
+    }));
+}
 
-document.addEventListener('DOMContentLoaded', function() {
+// 监听不蒜子数据变化
+new MutationObserver(() => {
+    if (document.getElementById('busuanzi_value_site_pv').innerText &&
+        document.getElementById('busuanzi_value_site_uv').innerText) {
+        storeStatistics();
+    }
+}).observe(document.getElementById('busuanzi_value_site_pv'), {
+    childList: true,
+    subtree: true
+});
+
+// 检查是否已登录
+const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+
+if (isLoggedIn) {
+    // 隐藏电脑端和移动端的登录按钮
+    document.getElementById('login-button').style.display = 'none';
+    document.getElementById('mobile-login-button').style.display = 'none';
+} else {
+    // 确保登录按钮显示（可能在之前被隐藏了）
+    document.getElementById('login-button').style.display = 'block';
+    document.getElementById('mobile-login-button').style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
     const typewriterElement = document.getElementById('typewriter');
     const phrases = [
         "无穷的远方，无数的人们，都和我有关。",
@@ -158,18 +157,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let charIndex = 0;
     let isDeleting = false;
     let isWaiting = false;
-    
+
     function typeWriter() {
         const currentPhrase = phrases[phraseIndex];
         let displayText = currentPhrase.substring(0, charIndex);
-        
+
         // 更新显示文本（保留空格防止布局塌陷）
         typewriterElement.innerHTML = displayText || '&nbsp;';
-        
+
         if (isDeleting) {
             // 删除字符
             charIndex--;
-            
+
             if (charIndex <= 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
@@ -192,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // 添加字符
             charIndex++;
-            
+
             if (charIndex >= currentPhrase.length) {
                 isWaiting = true; // 标记为等待状态
                 setTimeout(typeWriter, 100); // 立即继续执行（会进入上面的isWaiting分支）
@@ -214,66 +213,66 @@ document.addEventListener('DOMContentLoaded', function() {
         @keyframes blink { 0%,100% {opacity:1;} 50% {opacity:0;} }
     `;
     document.head.appendChild(style);
-    
+
     setTimeout(typeWriter, 1000);
 });
-                // 更新时间
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('hours').textContent = now.getHours().toString().padStart(2, '0');
-            document.getElementById('minutes').textContent = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('seconds').textContent = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', { 
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-            });
-        }
+// 更新时间
+function updateTime() {
+    const now = new Date();
+    document.getElementById('hours').textContent = now.getHours().toString().padStart(2, '0');
+    document.getElementById('minutes').textContent = now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('seconds').textContent = now.getSeconds().toString().padStart(2, '0');
+    document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+}
 
-        // 更新问候语
-        function updateGreeting() {
-            const hour = new Date().getHours();
-            let greeting = '';
-            
-            if (hour < 6) greeting = '凌晨好';
-            else if (hour < 9) greeting = '早上好';
-            else if (hour < 12) greeting = '上午好';
-            else if (hour < 14) greeting = '中午好';
-            else if (hour < 18) greeting = '下午好';
-            else greeting = '晚上好';
-            
-            document.getElementById('greeting').textContent = greeting;
-            document.getElementById('tip').textContent = getRandomTip();
-        }
+// 更新问候语
+function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = '';
 
-        // 随机提示语
-        function getRandomTip() {
-            const tips = [
-'欢迎来到这片绿洲。愿这里的文字能像星光一样，为你照亮未知的路径',
-'在这里，我们谈论星辰、泥土，以及如何用双手构建乌托邦',
-'愿你始终保有追问的勇气，像一棵树那样生长——向下扎根，向上触摸天空',
-'世界或许不够完美，但改变始于每一个不肯沉默的灵魂。很高兴遇见你',
-'这里没有答案，只有真诚的提问与探索。欢迎加入这场思想的冒险',
-'如果语言是种子，愿这些文字能在你心里开出一朵小小的、倔强的花',
-'理想主义者是现实的建筑师——我们承认阴影，但永远面向光',
-'欢迎来到这个角落。让我们一起保持‘天真’的力量：相信改变，相信微小事物的伟大',
-'这里记录着对自由的注解、对爱的实验，以及永不熄灭的好奇心',
-'你并非独自在深夜思考人类与宇宙。看，我们留下了这些灯火'
+    if (hour < 6) greeting = '凌晨好';
+    else if (hour < 9) greeting = '早上好';
+    else if (hour < 12) greeting = '上午好';
+    else if (hour < 14) greeting = '中午好';
+    else if (hour < 18) greeting = '下午好';
+    else greeting = '晚上好';
 
-            ];
-            return tips[Math.floor(Math.random() * tips.length)];
-        }
+    document.getElementById('greeting').textContent = greeting;
+    document.getElementById('tip').textContent = getRandomTip();
+}
 
-        // 计算距离
-        function getDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // 地球半径(km)
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return Math.round(R * c);
-        }
+// 随机提示语
+function getRandomTip() {
+    const tips = [
+        '欢迎来到这片绿洲。愿这里的文字能像星光一样，为你照亮未知的路径',
+        '在这里，我们谈论星辰、泥土，以及如何用双手构建乌托邦',
+        '愿你始终保有追问的勇气，像一棵树那样生长——向下扎根，向上触摸天空',
+        '世界或许不够完美，但改变始于每一个不肯沉默的灵魂。很高兴遇见你',
+        '这里没有答案，只有真诚的提问与探索。欢迎加入这场思想的冒险',
+        '如果语言是种子，愿这些文字能在你心里开出一朵小小的、倔强的花',
+        '理想主义者是现实的建筑师——我们承认阴影，但永远面向光',
+        '欢迎来到这个角落。让我们一起保持‘天真’的力量：相信改变，相信微小事物的伟大',
+        '这里记录着对自由的注解、对爱的实验，以及永不熄灭的好奇心',
+        '你并非独自在深夜思考人类与宇宙。看，我们留下了这些灯火'
+
+    ];
+    return tips[Math.floor(Math.random() * tips.length)];
+}
+
+// 计算距离
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // 地球半径(km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c);
+}
 
 // 根据省份返回俏皮话
 function getProvinceBanter(province) {
@@ -313,57 +312,57 @@ function getProvinceBanter(province) {
         '香港': '饮茶食点心啦！',
         '澳门': '葡式蛋挞来一打？'
     };
-    
+
     return banterMap[province] || '欢迎来玩！'; // 如果没有匹配的省份，返回默认欢迎语
 }
 
-        // 获取访客信息
-        async function getVisitorInfo() {
-            try {
-                const response = await fetch('https://api.b52m.cn/api/IP/?key=60606913cdba7c');
-                const data = await response.json();
-                
-                if (data.code === 200) {
-                    const ipInfo = data.data;
-                    const ip = data.ip;
-                    
-                    // 站主位置
-                    const bloggerLat = 34.252705;
-                    const bloggerLon = 108.990221;
-                    
-                    const distance = getDistance(
-                        bloggerLat, bloggerLon,
-                        ipInfo.latitude_3, ipInfo.longitude_3
-                    );
+// 获取访客信息
+async function getVisitorInfo() {
+    try {
+        const response = await fetch('https://api.b52m.cn/api/IP/?key=60606913cdba7c');
+        const data = await response.json();
 
-// 获取省份俏皮话
-                    const provinceBanter = getProvinceBanter(ipInfo.province_name_3);
+        if (data.code === 200) {
+            const ipInfo = data.data;
+            const ip = data.ip;
 
-                    // 显示欢迎信息
-                    document.getElementById('welcome-info').innerHTML = `
+            // 站主位置
+            const bloggerLat = 34.252705;
+            const bloggerLon = 108.990221;
+
+            const distance = getDistance(
+                bloggerLat, bloggerLon,
+                ipInfo.latitude_3, ipInfo.longitude_3
+            );
+
+            // 获取省份俏皮话
+            const provinceBanter = getProvinceBanter(ipInfo.province_name_3);
+
+            // 显示欢迎信息
+            document.getElementById('welcome-info').innerHTML = `
                         欢迎来自 <span class="highlight">${ipInfo.province_name_3} ${ipInfo.city_name_3} ${ipInfo.district_name_3}</span> 的朋友<br>
                         <span class="highlight">${provinceBanter}</span><br>
                         您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
                         您的IP地址为: <span class="highlight">${ip}</span>
                     `;
-                } else {
-                    throw new Error('API返回错误');
-                }
-            } catch (error) {
-                console.error('获取IP信息失败:', error);
-                document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
-            }
+        } else {
+            throw new Error('API返回错误');
         }
+    } catch (error) {
+        console.error('获取IP信息失败:', error);
+        document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
+    }
+}
 
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            updateTime();
-            updateGreeting();
-            getVisitorInfo();
-            
-            setInterval(updateTime, 1000);
-            setInterval(updateGreeting, 60000);
-        });
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    updateGreeting();
+    getVisitorInfo();
+
+    setInterval(updateTime, 1000);
+    setInterval(updateGreeting, 60000);
+});
 
 async function loadDynamicFeed() {
     try {
@@ -373,7 +372,7 @@ async function loadDynamicFeed() {
         renderDynamicEntries(entries.slice(0, 5));
     } catch (error) {
         console.error('加载动态失败:', error);
-        document.getElementById('dynamic-entries').innerHTML = 
+        document.getElementById('dynamic-entries').innerHTML =
             '<div class="dynamic-card">动态加载中...</div>';
     }
 }
@@ -382,7 +381,7 @@ function parseMdEntries(content) {
     const entries = [];
     const lines = content.split('\n');
     let currentEntry = null;
-    
+
     lines.forEach(line => {
         if (line.startsWith('# ')) {
             if (currentEntry) entries.push(currentEntry);
@@ -399,7 +398,7 @@ function parseMdEntries(content) {
             }
         }
     });
-    
+
     if (currentEntry) entries.push(currentEntry);
     return entries.reverse(); // 最新在前
 }
@@ -452,26 +451,26 @@ async function loadRecentMessages() {
         }
 
         const messagesRef = firebase.database().ref('chatrooms/lsqkk-lyb/messages');
-        
+
         messagesRef.orderByChild('timestamp').limitToLast(3).once('value').then(snapshot => {
             const messages = [];
             snapshot.forEach(childSnapshot => {
                 const message = childSnapshot.val();
                 messages.push(message);
             });
-            
+
             // 按时间倒序排列
             messages.reverse();
             displayRecentMessages(messages);
         }).catch(error => {
             console.error('加载留言失败:', error);
-            document.getElementById('recent-messages').innerHTML = 
+            document.getElementById('recent-messages').innerHTML =
                 '<div class="index-announcement"><p style="margin: 0;">留言加载失败</p></div>';
         });
 
     } catch (error) {
         console.error('初始化Firebase失败:', error);
-        document.getElementById('recent-messages').innerHTML = 
+        document.getElementById('recent-messages').innerHTML =
             '<div class="index-announcement"><p style="margin: 0;">留言功能暂不可用</p></div>';
     }
 }
@@ -479,7 +478,7 @@ async function loadRecentMessages() {
 // 显示最近留言
 function displayRecentMessages(messages) {
     const container = document.getElementById('recent-messages');
-    
+
     if (messages.length === 0) {
         container.innerHTML = '<div class="index-announcement"><p style="margin: 0;">暂无留言</p></div>';
         return;
@@ -488,10 +487,10 @@ function displayRecentMessages(messages) {
     let html = '';
     messages.forEach(message => {
         const date = new Date(message.timestamp);
-        const dateStr = `${date.getMonth()+1}-${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        const dateStr = `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
         // 截取内容前30个字符
         const content = message.text.length > 30 ? message.text.substring(0, 30) + '...' : message.text;
-        
+
         html += `
             <div class="index-announcement" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.03);">
                 <div style="font-weight: bold; margin-bottom: 5px;">${message.nickname}</div>
@@ -500,11 +499,11 @@ function displayRecentMessages(messages) {
             </div>
         `;
     });
-    
+
     container.innerHTML = html;
 }
 
-    // 加载友链
+// 加载友链
 async function loadFriendLinks() {
     try {
         const response = await fetch('json/friends.json');
@@ -512,7 +511,7 @@ async function loadFriendLinks() {
         displayFriendLinks(friends);
     } catch (error) {
         console.error('加载友链失败:', error);
-        document.getElementById('friend-links').innerHTML = 
+        document.getElementById('friend-links').innerHTML =
             '<div class="index-announcement"><p style="margin: 0;">友链加载失败</p></div>';
     }
 }
@@ -520,7 +519,7 @@ async function loadFriendLinks() {
 // 显示友链
 function displayFriendLinks(friends) {
     const container = document.getElementById('friend-links');
-    
+
     if (!friends || friends.length === 0) {
         container.innerHTML = '<div class="index-announcement"><p style="margin: 0;">暂无友链</p></div>';
         return;
@@ -538,14 +537,14 @@ function displayFriendLinks(friends) {
             </a>
         `;
     });
-    
+
     container.innerHTML = html;
 }
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
-   loadDynamicFeed();
-        loadRecentMessages();
+document.addEventListener('DOMContentLoaded', function () {
+    loadDynamicFeed();
+    loadRecentMessages();
     loadFriendLinks(); // 加载友链
 });

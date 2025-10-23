@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     // 创建自定义光标
     const cursor = document.createElement('div');
@@ -20,14 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 鼠标移动监听
-    document.addEventListener('mousemove', function(e) {
+    document.addEventListener('mousemove', function (e) {
       cursor.style.left = e.clientX + 'px';
       cursor.style.top = e.clientY + 'px';
       createParticle(e.clientX, e.clientY);
     });
 
     // 检测可点击元素
-    document.addEventListener('mouseover', function(e) {
+    document.addEventListener('mouseover', function (e) {
       const target = e.target;
       if (target.closest('a, button, input, textarea, select, [role="button"], [onclick], [tabindex]')) {
         cursor.classList.add('clickable');
@@ -40,12 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function createParticle(x, y) {
       const p = document.createElement('div');
       p.className = 'cursor-particle';
-      
+
       const size = Math.random() * config.sizeVariation + config.baseSize;
       const color = config.colors[Math.floor(Math.random() * config.colors.length)];
       const angle = Math.random() * Math.PI * 2;
       const distance = Math.random() * 30 + 30;
-      
+
       p.style.left = x + 'px';
       p.style.top = y + 'px';
       p.style.width = size + 'px';
@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
       p.style.animationDuration = config.speed + 's';
 
       document.body.appendChild(p);
-      
-      p.addEventListener('animationend', function() {
+
+      p.addEventListener('animationend', function () {
         p.remove();
       });
     }

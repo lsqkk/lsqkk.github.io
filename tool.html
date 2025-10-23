@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,148 +12,152 @@
     <script src="js/cursor-trail.js"></script>
     <link rel="icon" href="image/logo_blue.png" type="image/png">
 </head>
+
 <body class="tech-background">
     <!-- 粒子背景 -->
     <div id="particles-js"></div>
-    
+
     <div class="header-placeholder"></div>
     <div class="header">
-    <div class="header-content">
-        <a href="tool.html" style="color: white; text-decoration: none;"><h1>夸克工具箱</h1></a>
-        
-        <div class="header-nav-container">
-            <ul class="header-nav">
-                <li><a href="/">主页</a></li>
-                <li><a href="article-list.html">文章</a></li>
-                <li><a href="games">游戏</a></li>
-                <li><a href="daily">日报</a></li>
-                <li><a href="qtv">视频</a></li>
-                <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+        <div class="header-content">
+            <a href="tool.html" style="color: white; text-decoration: none;">
+                <h1>夸克工具箱</h1>
+            </a>
+
+            <div class="header-nav-container">
+                <ul class="header-nav">
+                    <li><a href="/">主页</a></li>
+                    <li><a href="article-list.html">文章</a></li>
+                    <li><a href="games">游戏</a></li>
+                    <li><a href="daily">日报</a></li>
+                    <li><a href="qtv">视频</a></li>
+                    <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="nav">
-    <ul class="mobile-nav">
-        <li><a href="/">主页</a></li>
-        <li><a href="article-list.html">文章</a></li>
-        <li><a href="games">游戏</a></li>
-        <li><a href="daily">日报</a></li>
-        <li><a href="qtv">视频</a></li>
-        <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+    <div class="nav">
+        <ul class="mobile-nav">
+            <li><a href="/">主页</a></li>
+            <li><a href="article-list.html">文章</a></li>
+            <li><a href="games">游戏</a></li>
+            <li><a href="daily">日报</a></li>
+            <li><a href="qtv">视频</a></li>
+            <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
         </ul>
-</div>
-    
+    </div>
+
     <div class="content-container">
-            <div class="tech-card">
-                <h2 class="tech-title">欢迎欢迎，热烈欢迎 </h2>
-                <span class="tech-highlight"> "oi这都让你找到了"</span>
-                <p class="tech-intro">欢迎来到夸克博客<span class="tech-highlight">工具箱</span>！这里汇集了我精心编写的各种实用工具，希望能为您提供便利。</p>
-                <p class="tech-intro"><span class="tech-highlight">"工具有点少"</span> - 在写新的工具了，我会更新的！</p>
-                <p class="tech-intro"><span class="tech-highlight">"有新想法？"</span> - 欢迎上方留言板留言！</p>
-            </div>
-            <div class="tech-grid" id="tools-container">
-</div>
+        <div class="tech-card">
+            <h2 class="tech-title">欢迎欢迎，热烈欢迎 </h2>
+            <span class="tech-highlight"> "oi这都让你找到了"</span>
+            <p class="tech-intro">欢迎来到夸克博客<span class="tech-highlight">工具箱</span>！这里汇集了我精心编写的各种实用工具，希望能为您提供便利。</p>
+            <p class="tech-intro"><span class="tech-highlight">"工具有点少"</span> - 在写新的工具了，我会更新的！</p>
+            <p class="tech-intro"><span class="tech-highlight">"有新想法？"</span> - 欢迎上方留言板留言！</p>
+        </div>
+        <div class="tech-grid" id="tools-container">
+        </div>
     </div>
-    
+
     <div style="    color: #fff;text-align: center;  padding: 20px 20px;">
-        <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights reserved.</a>
+        <a href="post.html?file=copyright.md" style="text-decoration: none; color: white;">© 2024 - 2025 蓝色奇夸克 | 夸克博客
+            All rights reserved.</a>
     </div>
-    
+
     <!-- 粒子JS库 -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script>
-// 主工具加载函数
-async function loadTools() {
-    const container = document.getElementById('tools-container');
-    
-    // 1. 检查容器是否存在
-    if (!container) {
-        console.error('错误：找不到工具容器元素 (tools-container)');
-        showErrorUI('系统配置错误，请联系管理员');
-        return;
-    }
+    <script>
+        // 主工具加载函数
+        async function loadTools() {
+            const container = document.getElementById('tools-container');
 
-    // 2. 显示加载状态
-    container.innerHTML = `
+            // 1. 检查容器是否存在
+            if (!container) {
+                console.error('错误：找不到工具容器元素 (tools-container)');
+                showErrorUI('系统配置错误，请联系管理员');
+                return;
+            }
+
+            // 2. 显示加载状态
+            container.innerHTML = `
         <div class="tech-card" style="text-align: center;">
             <div class="loading-spinner"></div>
             <p>工具加载中...</p>
         </div>
     `;
 
-    try {
-        // 3. 获取工具数据
-        const response = await fetch('json/tool.json');
-        
-        // 检查响应状态
-        if (!response.ok) {
-            throw new Error(`数据加载失败 (HTTP ${response.status})`);
-        }
+            try {
+                // 3. 获取工具数据
+                const response = await fetch('json/tool.json');
 
-        const data = await response.json();
-        
-        // 4. 验证数据结构
-        if (!data.categories || !Array.isArray(data.categories)) {
-            throw new Error('无效的工具数据格式');
-        }
+                // 检查响应状态
+                if (!response.ok) {
+                    throw new Error(`数据加载失败 (HTTP ${response.status})`);
+                }
 
-        // 5. 清空容器
-        container.innerHTML = '';
+                const data = await response.json();
 
-        // 6. 渲染工具卡片
-        data.categories.forEach(category => {
-            if (!category.name || !category.tools) return;
+                // 4. 验证数据结构
+                if (!data.categories || !Array.isArray(data.categories)) {
+                    throw new Error('无效的工具数据格式');
+                }
 
-            const card = document.createElement('div');
-            card.className = 'tech-card';
-            
-            // 添加分类标题
-            const title = document.createElement('h3');
-            title.className = 'tech-subtitle';
-            title.innerHTML = category.icon ? `${category.icon} ${category.name}` : category.name;
-            card.appendChild(title);
-            
-            // 添加工具链接
-            category.tools.forEach(tool => {
-                if (!tool.name || !tool.url) return;
-                
-                const link = document.createElement('a');
-                link.className = 'tech-link';
-                link.href = tool.url;
-                link.textContent = tool.name;
-                link.target = tool.target || '_blank';  // 默认新标签页打开
-                
-                // 添加点击动画效果
-                link.addEventListener('click', function(e) {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 200);
+                // 5. 清空容器
+                container.innerHTML = '';
+
+                // 6. 渲染工具卡片
+                data.categories.forEach(category => {
+                    if (!category.name || !category.tools) return;
+
+                    const card = document.createElement('div');
+                    card.className = 'tech-card';
+
+                    // 添加分类标题
+                    const title = document.createElement('h3');
+                    title.className = 'tech-subtitle';
+                    title.innerHTML = category.icon ? `${category.icon} ${category.name}` : category.name;
+                    card.appendChild(title);
+
+                    // 添加工具链接
+                    category.tools.forEach(tool => {
+                        if (!tool.name || !tool.url) return;
+
+                        const link = document.createElement('a');
+                        link.className = 'tech-link';
+                        link.href = tool.url;
+                        link.textContent = tool.name;
+                        link.target = tool.target || '_blank';  // 默认新标签页打开
+
+                        // 添加点击动画效果
+                        link.addEventListener('click', function (e) {
+                            this.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                this.style.transform = '';
+                            }, 200);
+                        });
+
+                        card.appendChild(link);
+                    });
+
+                    container.appendChild(card);
                 });
-                
-                card.appendChild(link);
-            });
-            
-            container.appendChild(card);
-        });
 
-        // 7. 如果没有工具数据
-        if (data.categories.length === 0) {
-            showErrorUI('当前没有可用工具');
+                // 7. 如果没有工具数据
+                if (data.categories.length === 0) {
+                    showErrorUI('当前没有可用工具');
+                }
+
+            } catch (error) {
+                console.error('工具加载失败:', error);
+                showErrorUI(`加载失败: ${error.message}`);
+            }
         }
 
-    } catch (error) {
-        console.error('工具加载失败:', error);
-        showErrorUI(`加载失败: ${error.message}`);
-    }
-}
-
-// 显示错误信息
-function showErrorUI(message) {
-    const container = document.getElementById('tools-container') || document.querySelector('.content-container');
-    if (container) {
-        container.innerHTML = `
+        // 显示错误信息
+        function showErrorUI(message) {
+            const container = document.getElementById('tools-container') || document.querySelector('.content-container');
+            if (container) {
+                container.innerHTML = `
             <div class="tech-card" style="color: #ff6b6b; text-align: center;">
                 <h3>⚠️ 加载错误</h3>
                 <p>${message}</p>
@@ -167,12 +172,12 @@ function showErrorUI(message) {
                 ">重试</button>
             </div>
         `;
-    }
-}
+            }
+        }
 
-// 添加加载动画样式
-const style = document.createElement('style');
-style.textContent = `
+        // 添加加载动画样式
+        const style = document.createElement('style');
+        style.textContent = `
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
@@ -187,122 +192,123 @@ style.textContent = `
         margin: 0 auto 15px;
     }
 `;
-document.head.appendChild(style);
+        document.head.appendChild(style);
 
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', function() {
-    // 先初始化粒子效果
-    if (typeof particlesJS !== 'undefined') {
-            particlesJS('particles-js', {
-                "particles": {
-                    "number": {
-                        "value": 80,
-                        "density": {
-                            "enable": true,
-                            "value_area": 800
-                        }
-                    },
-                    "color": {
-                        "value": "#5dd0ff"
-                    },
-                    "shape": {
-                        "type": "circle",
-                        "stroke": {
-                            "width": 0,
-                            "color": "#000000"
-                        },
-                        "polygon": {
-                            "nb_sides": 5
-                        }
-                    },
-                    "opacity": {
-                        "value": 0.5,
-                        "random": false,
-                        "anim": {
-                            "enable": false,
-                            "speed": 1,
-                            "opacity_min": 0.1,
-                            "sync": false
-                        }
-                    },
-                    "size": {
-                        "value": 3,
-                        "random": true,
-                        "anim": {
-                            "enable": false,
-                            "speed": 40,
-                            "size_min": 0.1,
-                            "sync": false
-                        }
-                    },
-                    "line_linked": {
-                        "enable": true,
-                        "distance": 150,
-                        "color": "#5dd0ff",
-                        "opacity": 0.4,
-                        "width": 1
-                    },
-                    "move": {
-                        "enable": true,
-                        "speed": 2,
-                        "direction": "none",
-                        "random": false,
-                        "straight": false,
-                        "out_mode": "out",
-                        "bounce": false,
-                        "attract": {
-                            "enable": false,
-                            "rotateX": 600,
-                            "rotateY": 1200
-                        }
-                    }
-                },
-                "interactivity": {
-                    "detect_on": "canvas",
-                    "events": {
-                        "onhover": {
-                            "enable": true,
-                            "mode": "grab"
-                        },
-                        "onclick": {
-                            "enable": true,
-                            "mode": "push"
-                        },
-                        "resize": true
-                    },
-                    "modes": {
-                        "grab": {
-                            "distance": 140,
-                            "line_linked": {
-                                "opacity": 1
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 先初始化粒子效果
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    "particles": {
+                        "number": {
+                            "value": 80,
+                            "density": {
+                                "enable": true,
+                                "value_area": 800
                             }
                         },
-                        "bubble": {
-                            "distance": 400,
-                            "size": 40,
-                            "duration": 2,
-                            "opacity": 8,
-                            "speed": 3
+                        "color": {
+                            "value": "#5dd0ff"
                         },
-                        "repulse": {
-                            "distance": 200,
-                            "duration": 0.4
+                        "shape": {
+                            "type": "circle",
+                            "stroke": {
+                                "width": 0,
+                                "color": "#000000"
+                            },
+                            "polygon": {
+                                "nb_sides": 5
+                            }
                         },
-                        "push": {
-                            "particles_nb": 4
+                        "opacity": {
+                            "value": 0.5,
+                            "random": false,
+                            "anim": {
+                                "enable": false,
+                                "speed": 1,
+                                "opacity_min": 0.1,
+                                "sync": false
+                            }
                         },
-                        "remove": {
-                            "particles_nb": 2
+                        "size": {
+                            "value": 3,
+                            "random": true,
+                            "anim": {
+                                "enable": false,
+                                "speed": 40,
+                                "size_min": 0.1,
+                                "sync": false
+                            }
+                        },
+                        "line_linked": {
+                            "enable": true,
+                            "distance": 150,
+                            "color": "#5dd0ff",
+                            "opacity": 0.4,
+                            "width": 1
+                        },
+                        "move": {
+                            "enable": true,
+                            "speed": 2,
+                            "direction": "none",
+                            "random": false,
+                            "straight": false,
+                            "out_mode": "out",
+                            "bounce": false,
+                            "attract": {
+                                "enable": false,
+                                "rotateX": 600,
+                                "rotateY": 1200
+                            }
                         }
-                    }
-                },
-                "retina_detect": true
-            });
-    }
-    
-    // 然后加载工具
-    loadTools();
-});
-</script>
+                    },
+                    "interactivity": {
+                        "detect_on": "canvas",
+                        "events": {
+                            "onhover": {
+                                "enable": true,
+                                "mode": "grab"
+                            },
+                            "onclick": {
+                                "enable": true,
+                                "mode": "push"
+                            },
+                            "resize": true
+                        },
+                        "modes": {
+                            "grab": {
+                                "distance": 140,
+                                "line_linked": {
+                                    "opacity": 1
+                                }
+                            },
+                            "bubble": {
+                                "distance": 400,
+                                "size": 40,
+                                "duration": 2,
+                                "opacity": 8,
+                                "speed": 3
+                            },
+                            "repulse": {
+                                "distance": 200,
+                                "duration": 0.4
+                            },
+                            "push": {
+                                "particles_nb": 4
+                            },
+                            "remove": {
+                                "particles_nb": 2
+                            }
+                        }
+                    },
+                    "retina_detect": true
+                });
+            }
+
+            // 然后加载工具
+            loadTools();
+        });
+    </script>
 </body>
+
 </html>

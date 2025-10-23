@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,19 +12,20 @@
 
     </style>
 </head>
+
 <body>
     <div class="container">
         <div id="changelog-container"></div>
     </div>
 
     <!-- 引入marked.js库用于Markdown解析 -->
-<script src="https://unpkg.com/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/marked/marked.min.js"></script>
     <script>
         // 配置marked.js
         marked.setOptions({
             breaks: true,
             gfm: true,
-            highlight: function(code) {
+            highlight: function (code) {
                 return code;
             }
         });
@@ -50,7 +52,7 @@
                             if (titleMatch) {
                                 const title = titleMatch[1];
                                 const content = section.replace(/^# .*$/m, '').trim();
-                                
+
                                 html += `
                                     <div class="update-card">
                                         <h2>${title}</h2>
@@ -77,4 +79,5 @@
         });
     </script>
 </body>
+
 </html>
