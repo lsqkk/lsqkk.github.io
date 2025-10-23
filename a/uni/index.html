@@ -1,103 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克大学 - 探索微观世界的无限可能</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root{--primary:#4a00e0;--secondary:#8e2de2;--accent:#f12711;--light:#f8f9fa;--dark:#212529;--gray:#6c757d}
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
-        body{background-color:var(--light);color:var(--dark);line-height:1.6;overflow-x:hidden}
-        .navbar{position:fixed;top:0;width:100%;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:1rem 5%;display:flex;justify-content:space-between;align-items:center;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
-        .logo{display:flex;align-items:center;color:white;font-size:1.5rem;font-weight:700;text-decoration:none}
-        .logo img{height:40px;margin-right:10px}
-        .nav-links{display:flex;list-style:none}
-        .nav-links li{margin-left:2rem}
-        .nav-links a{color:white;text-decoration:none;font-weight:500;transition:all 0.3s ease;position:relative}
-        .nav-links a:after{content:'';position:absolute;width:0;height:2px;background:white;bottom:-5px;left:0;transition:width 0.3s}
-        .nav-links a:hover:after{width:100%}
-        .mobile-menu-btn{display:none;background:none;border:none;color:white;font-size:1.5rem;cursor:pointer}
-        .hero{height:100vh;background:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;padding:0 1rem}
-        .hero h1{font-size:3.5rem;margin-bottom:1rem;text-shadow:2px 2px 5px rgba(0,0,0,0.5)}
-        .hero p{font-size:1.2rem;max-width:800px;margin-bottom:2rem}
-        .btn{display:inline-block;background:var(--accent);color:white;padding:0.8rem 1.8rem;border-radius:50px;text-decoration:none;font-weight:600;transition:all 0.3s;border:none;cursor:pointer;box-shadow:0 4px 15px rgba(241,39,17,0.3)}
-        .btn:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(241,39,17,0.4)}
-        .btn-outline{background:transparent;border:2px solid white;margin-left:1rem}
-        .btn-outline:hover{background:white;color:var(--primary)}
-        .stats{display:flex;justify-content:space-around;padding:4rem 5%;background:white;flex-wrap:wrap}
-        .stat-item{text-align:center;padding:1rem;flex:1;min-width:200px}
-        .stat-number{font-size:3rem;font-weight:700;color:var(--primary);margin-bottom:0.5rem;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .about{display:flex;padding:5rem 5%;align-items:center;background:var(--light)}
-        .about-text{flex:1;padding-right:3rem}
-        .about h2{font-size:2.5rem;margin-bottom:1.5rem;color:var(--primary)}
-        .about p{margin-bottom:1.5rem;color:var(--gray)}
-        .about-image{flex:1;position:relative}
-        .about-image img{width:100%;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
-        .about-image:after{content:'';position:absolute;width:100%;height:100%;border:5px solid var(--primary);border-radius:10px;top:-20px;left:-20px;z-index:-1}
-        .programs{padding:5rem 5%;background:white}
-        .section-title{text-align:center;margin-bottom:3rem}
-        .section-title h2{font-size:2.5rem;color:var(--primary)}
-        .section-title p{color:var(--gray);max-width:700px;margin:0 auto}
-        .program-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem}
-        .program-card{background:var(--light);border-radius:10px;overflow:hidden;transition:transform 0.3s,box-shadow 0.3s;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
-        .program-card:hover{transform:translateY(-10px);box-shadow:0 15px 30px rgba(0,0,0,0.2)}
-        .program-img{height:200px;overflow:hidden}
-        .program-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s}
-        .program-card:hover .program-img img{transform:scale(1.1)}
-        .program-content{padding:1.5rem}
-        .program-content h3{font-size:1.3rem;margin-bottom:0.5rem;color:var(--primary)}
-        .program-content p{color:var(--gray);margin-bottom:1rem}
-        .faculty{padding:5rem 5%;background:var(--light)}
-        .faculty-slider{position:relative;overflow:hidden;padding:2rem 0}
-        .faculty-container{display:flex;transition:transform 0.5s ease}
-        .faculty-member{min-width:300px;margin:0 1rem;background:white;border-radius:10px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
-        .faculty-img{height:300px;overflow:hidden}
-        .faculty-img img{width:100%;height:100%;object-fit:cover}
-        .faculty-info{padding:1.5rem;text-align:center}
-        .faculty-info h3{margin-bottom:0.5rem;color:var(--primary)}
-        .faculty-info p{color:var(--gray)}
-        .slider-nav{display:flex;justify-content:center;margin-top:2rem}
-        .slider-dot{width:12px;height:12px;border-radius:50%;background:var(--gray);margin:0 5px;cursor:pointer;opacity:0.5;transition:all 0.3s}
-        .slider-dot.active{background:var(--primary);opacity:1}
-        .news{padding:5rem 5%;background:white}
-        .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:2rem}
-        .news-card{background:var(--light);border-radius:10px;overflow:hidden;transition:all 0.3s}
-        .news-card:hover{box-shadow:0 10px 20px rgba(0,0,0,0.1)}
-        .news-date{background:var(--primary);color:white;padding:0.5rem 1rem;display:inline-block;position:absolute;top:1rem;left:1rem;border-radius:5px}
-        .news-img{height:200px;overflow:hidden;position:relative}
-        .news-img img{width:100%;height:100%;object-fit:cover}
-        .news-content{padding:1.5rem}
-        .news-content h3{margin-bottom:0.5rem;color:var(--primary)}
-        .news-content p{margin-bottom:1rem;color:var(--gray)}
-        .news-link{color:var(--primary);font-weight:600;text-decoration:none;display:flex;align-items:center}
-        .news-link i{margin-left:5px;transition:transform 0.3s}
-        .news-link:hover i{transform:translateX(5px)}
-        .cta{background:linear-gradient(135deg,var(--primary),var(--secondary));padding:5rem 1rem;text-align:center;color:white}
-        .cta h2{font-size:2.5rem;margin-bottom:1.5rem}
-        .cta p{max-width:700px;margin:0 auto 2rem;font-size:1.1rem}
-        .footer{background:var(--dark);color:white;padding:4rem 5% 2rem}
-        .footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin-bottom:3rem}
-        .footer-col h3{font-size:1.2rem;margin-bottom:1.5rem;position:relative;padding-bottom:10px}
-        .footer-col h3:after{content:'';position:absolute;width:50px;height:2px;background:var(--accent);bottom:0;left:0}
-        .footer-links{list-style:none}
-        .footer-links li{margin-bottom:0.8rem}
-        .footer-links a{color:#adb5bd;text-decoration:none;transition:color 0.3s}
-        .footer-links a:hover{color:white}
-        .social-links{display:flex;margin-top:1rem}
-        .social-links a{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.1);margin-right:10px;color:white;transition:all 0.3s}
-        .social-links a:hover{background:var(--accent);transform:translateY(-3px)}
-        .footer-bottom{text-align:center;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1);color:#adb5bd;font-size:0.9rem}
-        .back-to-top{position:fixed;bottom:30px;right:30px;width:50px;height:50px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;opacity:0;visibility:hidden;transition:all 0.3s;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:999}
-        .back-to-top.active{opacity:1;visibility:visible}
-        .back-to-top:hover{transform:translateY(-5px);box-shadow:0 5px 15px rgba(241,39,17,0.4)}
-        @media(max-width:992px){.about{flex-direction:column}.about-text{padding-right:0;margin-bottom:3rem}.about-image:after{display:none}}
-        @media(max-width:768px){.navbar{padding:1rem}.nav-links{position:fixed;top:70px;left:-100%;width:100%;height:calc(100vh - 70px);background:var(--primary);flex-direction:column;align-items:center;justify-content:center;transition:left 0.3s}.nav-links.active{left:0}.nav-links li{margin:1rem 0}.mobile-menu-btn{display:block}.hero h1{font-size:2.5rem}.hero p{font-size:1rem}.stats{flex-direction:column}.stat-item{margin-bottom:2rem}.section-title h2{font-size:2rem}}
-        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
-        .floating{animation:float 3s ease-in-out infinite}
-        .particles{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-    </style>
+    <link rel="stylesheet" href="uni.css">
+
 </head>
+
 <body>
     <!-- 导航栏 -->
     <nav class="navbar">
@@ -159,7 +71,8 @@
             <a href="#" class="btn">了解更多</a>
         </div>
         <div class="about-image">
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" alt="夸克大学校园">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80"
+                alt="夸克大学校园">
         </div>
     </section>
 
@@ -172,7 +85,8 @@
         <div class="program-grid">
             <div class="program-card">
                 <div class="program-img">
-                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="量子物理">
+                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        alt="量子物理">
                 </div>
                 <div class="program-content">
                     <h3>量子物理与工程</h3>
@@ -182,7 +96,8 @@
             </div>
             <div class="program-card">
                 <div class="program-img">
-                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1085&q=80" alt="纳米技术">
+                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1085&q=80"
+                        alt="纳米技术">
                 </div>
                 <div class="program-content">
                     <h3>纳米科学与技术</h3>
@@ -192,7 +107,8 @@
             </div>
             <div class="program-card">
                 <div class="program-img">
-                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1085&q=80" alt="人工智能">
+                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1085&q=80"
+                        alt="人工智能">
                 </div>
                 <div class="program-content">
                     <h3>人工智能与量子计算</h3>
@@ -213,7 +129,8 @@
             <div class="faculty-container" id="facultyContainer">
                 <div class="faculty-member">
                     <div class="faculty-img">
-                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="张教授">
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
+                            alt="张教授">
                     </div>
                     <div class="faculty-info">
                         <h3>张量子 教授</h3>
@@ -223,7 +140,8 @@
                 </div>
                 <div class="faculty-member">
                     <div class="faculty-img">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="李教授">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
+                            alt="李教授">
                     </div>
                     <div class="faculty-info">
                         <h3>李纳米 教授</h3>
@@ -233,7 +151,8 @@
                 </div>
                 <div class="faculty-member">
                     <div class="faculty-img">
-                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="王教授">
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
+                            alt="王教授">
                     </div>
                     <div class="faculty-info">
                         <h3>王智能 教授</h3>
@@ -243,7 +162,8 @@
                 </div>
                 <div class="faculty-member">
                     <div class="faculty-img">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="陈教授">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80"
+                            alt="陈教授">
                     </div>
                     <div class="faculty-info">
                         <h3>陈粒子 教授</h3>
@@ -271,7 +191,8 @@
             <div class="news-card">
                 <div class="news-img">
                     <span class="news-date">2023-06-15</span>
-                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="量子突破">
+                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        alt="量子突破">
                 </div>
                 <div class="news-content">
                     <h3>夸克大学团队实现量子计算重大突破</h3>
@@ -282,7 +203,8 @@
             <div class="news-card">
                 <div class="news-img">
                     <span class="news-date">2023-05-28</span>
-                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="国际合作">
+                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        alt="国际合作">
                 </div>
                 <div class="news-content">
                     <h3>夸克大学与MIT建立联合研究中心</h3>
@@ -293,7 +215,8 @@
             <div class="news-card">
                 <div class="news-img">
                     <span class="news-date">2023-05-10</span>
-                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="纳米材料">
+                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                        alt="纳米材料">
                 </div>
                 <div class="news-content">
                     <h3>新型纳米材料研究成果登上《自然》封面</h3>
@@ -365,114 +288,7 @@
         <i class="fas fa-arrow-up"></i>
     </div>
 
-    <!-- JavaScript -->
-    <script>
-        // 移动菜单切换
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') ? 
-                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-        });
-
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 70,
-                        behavior: 'smooth'
-                    });
-                    
-                    // 关闭移动菜单
-                    if(navLinks.classList.contains('active')) {
-                        navLinks.classList.remove('active');
-                        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                    }
-                }
-            });
-        });
-
-        // 返回顶部按钮
-        const backToTop = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if(window.pageYOffset > 300) {
-                backToTop.classList.add('active');
-            } else {
-                backToTop.classList.remove('active');
-            }
-        });
-        
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // 统计数据动画
-        const statNumbers = document.querySelectorAll('.stat-number');
-        const options = {
-            threshold: 0.5
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    const target = +entry.target.getAttribute('data-count');
-                    const count = +entry.target.innerText;
-                    const increment = target / 50;
-                    
-                    if(count < target) {
-                        entry.target.innerText = Math.ceil(count + increment);
-                        setTimeout(() => {
-                            observer.observe(entry.target);
-                        }, 20);
-                    } else {
-                        entry.target.innerText = target;
-                    }
-                }
-            });
-        }, options);
-        
-        statNumbers.forEach(number => {
-            observer.observe(number);
-        });
-
-        // 师资轮播
-        let currentSlide = 0;
-        const facultyContainer = document.getElementById('facultyContainer');
-        const dots = document.querySelectorAll('.slider-dot');
-        const facultyMembers = document.querySelectorAll('.faculty-member');
-        const facultyWidth = facultyMembers[0].offsetWidth + 32; // width + margin
-        
-        function goToSlide(index) {
-            currentSlide = index;
-            facultyContainer.style.transform = `translateX(-${currentSlide * facultyWidth}px)`;
-            
-            // 更新指示点
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentSlide);
-            });
-        }
-        
-        // 点击指示点切换
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => goToSlide(index));
-        });
-        
-        // 自动轮播
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % facultyMembers.length;
-            goToSlide(currentSlide);
-        }, 5000);
-    </script>
+    <script src="uni.js"></script>
 </body>
+
 </html>

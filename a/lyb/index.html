@@ -1,538 +1,17 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LSQKK 留言板</title>
+    <title>留言板 - 夸克博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="lyb.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #4a6cf7;
-            --primary-light: #6a88f7;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #2d3748;
-            --text-light: #718096;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --radius: 12px;
-            --transition: all 0.3s ease;
-        }
-
-        .dark-mode {
-            --primary-color: #5b7cfa;
-            --primary-light: #7a97fa;
-            --bg-color: #1a202c;
-            --card-bg: #2d3748;
-            --text-color: #f7fafc;
-            --text-light: #cbd5e0;
-            --border-color: #4a5568;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: var(--transition);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .theme-toggle {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-color);
-            box-shadow: var(--shadow);
-        }
-
-        .theme-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .chat-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--primary-color);
-            color: white;
-            padding: 10px 16px;
-            border-radius: var(--radius);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            margin-top: 10px;
-        }
-
-        .chat-link:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        .message-form {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background: var(--bg-color);
-            color: var(--text-color);
-            font-size: 16px;
-            transition: var(--transition);
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
-        }
-
-        .avatar-section {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .avatar-preview {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 1.2rem;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .avatar-options {
-            flex: 1;
-        }
-
-        .avatar-toggle {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .toggle-btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background: var(--bg-color);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 14px;
-        }
-
-        .toggle-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .color-picker {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: var(--transition);
-        }
-
-        .color-option.selected {
-            border-color: var(--text-color);
-            transform: scale(1.1);
-        }
-
-        .markdown-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .markdown-toggle input {
-            width: auto;
-        }
-
-        .submit-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            width: 100%;
-            font-size: 16px;
-        }
-
-        .submit-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        .search-box {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .search-box input {
-            padding-left: 40px;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-
-        .messages-container {
-            margin-bottom: 30px;
-        }
-
-        .message-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .message-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 1rem;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .message-info {
-            flex: 1;
-        }
-
-        .message-author {
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .message-time {
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        .message-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.9rem;
-        }
-
-        .action-btn:hover {
-            color: var(--primary-color);
-        }
-
-        .message-content {
-            margin-bottom: 16px;
-            line-height: 1.6;
-        }
-
-        .message-content p {
-            margin-bottom: 10px;
-        }
-
-        .reply-form {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .reply-form textarea {
-            margin-bottom: 10px;
-            min-height: 80px;
-        }
-
-        .replies {
-            margin-top: 16px;
-            padding-left: 20px;
-            border-left: 2px solid var(--border-color);
-        }
-
-        .reply-card {
-            background: var(--bg-color);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .reply-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .reply-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 0.8rem;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 30px;
-        }
-
-        .page-btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background: var(--card-bg);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .page-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .page-btn:hover:not(.active) {
-            background: var(--bg-color);
-        }
-
-        .admin-panel {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-        }
-
-        .admin-login {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .admin-login input {
-            flex: 1;
-        }
-
-        .admin-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .admin-btn:hover {
-            background: var(--primary-light);
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .delete-btn {
-            background: #e53e3e;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.85rem;
-        }
-
-        .delete-btn:hover {
-            background: #c53030;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 24px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: var(--shadow);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-light);
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 16px;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .message-form, .message-card {
-                padding: 16px;
-            }
-            
-            .avatar-section {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .replies {
-                padding-left: 10px;
-            }
-        }
-    </style>
 </head>
+
 <body class="light-mode">
     <div class="container">
         <header>
@@ -576,7 +55,8 @@
                         <button class="toggle-btn" id="imageToggle">图片URL</button>
                     </div>
                     <div class="color-picker" id="colorPicker">
-                        <div class="color-option selected" style="background: #4a6cf7" onclick="selectColor(this)"></div>
+                        <div class="color-option selected" style="background: #4a6cf7" onclick="selectColor(this)">
+                        </div>
                         <div class="color-option" style="background: #f56565" onclick="selectColor(this)"></div>
                         <div class="color-option" style="background: #48bb78" onclick="selectColor(this)"></div>
                         <div class="color-option" style="background: #ed8936" onclick="selectColor(this)"></div>
@@ -658,27 +138,27 @@
         let replyingTo = null; // 当前回复的留言ID
 
         // DOM加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 初始化主题
             initTheme();
-            
+
             // 初始化头像切换
             initAvatarToggle();
-            
+
             // 初始化Firebase引用
             messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
-            
+
             // 加载留言
             loadMessages();
-            
+
             // 初始化管理员状态
             updateAdminUI();
-            
+
             // 监听搜索框输入
-            document.getElementById('searchInput').addEventListener('input', function() {
+            document.getElementById('searchInput').addEventListener('input', function () {
                 loadMessages();
             });
-            
+
             // 如果已有昵称，填充昵称输入框
             if (nickname) {
                 document.getElementById('nickname').value = nickname;
@@ -690,7 +170,7 @@
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.body.className = savedTheme + '-mode';
             updateThemeIcon(savedTheme);
-            
+
             // 添加主题切换事件
             document.getElementById('themeToggle').addEventListener('click', toggleTheme);
         }
@@ -699,11 +179,11 @@
         function toggleTheme() {
             const isLight = document.body.classList.contains('light-mode');
             const newTheme = isLight ? 'dark' : 'light';
-            
+
             document.body.classList.remove(isLight ? 'light-mode' : 'dark-mode');
             document.body.classList.add(newTheme + '-mode');
             localStorage.setItem('theme', newTheme);
-            
+
             updateThemeIcon(newTheme);
         }
 
@@ -719,8 +199,8 @@
             const imageToggle = document.getElementById('imageToggle');
             const colorPicker = document.getElementById('colorPicker');
             const avatarUrl = document.getElementById('avatarUrl');
-            
-            colorToggle.addEventListener('click', function() {
+
+            colorToggle.addEventListener('click', function () {
                 userAvatarType = 'color';
                 colorToggle.classList.add('active');
                 imageToggle.classList.remove('active');
@@ -728,8 +208,8 @@
                 avatarUrl.style.display = 'none';
                 updateAvatarPreview();
             });
-            
-            imageToggle.addEventListener('click', function() {
+
+            imageToggle.addEventListener('click', function () {
                 userAvatarType = 'image';
                 imageToggle.classList.add('active');
                 colorToggle.classList.remove('active');
@@ -737,7 +217,7 @@
                 avatarUrl.style.display = 'block';
                 updateAvatarPreview();
             });
-            
+
             avatarUrl.addEventListener('input', updateAvatarPreview);
         }
 
@@ -754,7 +234,7 @@
         // 更新头像预览
         function updateAvatarPreview() {
             const avatarPreview = document.getElementById('avatarPreview');
-            
+
             if (userAvatarType === 'color') {
                 avatarPreview.style.background = userColor;
                 avatarPreview.style.backgroundImage = 'none';
@@ -776,26 +256,26 @@
         // 加载留言
         function loadMessages() {
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-            
+
             messagesRef.once('value').then(snapshot => {
                 const messages = [];
                 snapshot.forEach(childSnapshot => {
                     const message = childSnapshot.val();
                     message.id = childSnapshot.key;
-                    
+
                     // 搜索过滤
-                    if (searchTerm && 
-                        !message.text.toLowerCase().includes(searchTerm) && 
+                    if (searchTerm &&
+                        !message.text.toLowerCase().includes(searchTerm) &&
                         !message.nickname.toLowerCase().includes(searchTerm)) {
                         return;
                     }
-                    
+
                     messages.push(message);
                 });
-                
+
                 // 按时间倒序排列（新的在前）
                 messages.sort((a, b) => b.timestamp - a.timestamp);
-                
+
                 totalMessages = messages.length;
                 renderMessages(messages);
                 renderPagination();
@@ -808,9 +288,9 @@
             const startIndex = (currentPage - 1) * PAGE_SIZE;
             const endIndex = Math.min(startIndex + PAGE_SIZE, messages.length);
             const pageMessages = messages.slice(startIndex, endIndex);
-            
+
             container.innerHTML = '';
-            
+
             if (pageMessages.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: var(--text-light);">
@@ -820,7 +300,7 @@
                 `;
                 return;
             }
-            
+
             pageMessages.forEach(message => {
                 const messageElement = createMessageElement(message);
                 container.appendChild(messageElement);
@@ -832,11 +312,11 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message-card';
             messageDiv.id = `message-${message.id}`;
-            
+
             const date = new Date(message.timestamp);
             const dateStr = date.toLocaleDateString();
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+
             // 渲染内容（Markdown或纯文本）
             let content = message.text;
             if (message.isMarkdown) {
@@ -844,13 +324,13 @@
             } else {
                 content = content.replace(/\n/g, '<br>');
             }
-            
+
             // 构建回复HTML
             let repliesHtml = '';
             if (message.replies) {
                 const replyKeys = Object.keys(message.replies);
                 replyKeys.sort((a, b) => message.replies[a].timestamp - message.replies[b].timestamp);
-                
+
                 repliesHtml = '<div class="replies">';
                 replyKeys.forEach(key => {
                     const reply = message.replies[key];
@@ -858,12 +338,12 @@
                 });
                 repliesHtml += '</div>';
             }
-            
+
             messageDiv.innerHTML = `
                 <div class="message-header">
-                    <div class="message-avatar" style="${message.avatarType === 'color' ? 
-                        `background: ${message.avatar}` : 
-                        `background-image: url(${message.avatar})`}">
+                    <div class="message-avatar" style="${message.avatarType === 'color' ?
+                    `background: ${message.avatar}` :
+                    `background-image: url(${message.avatar})`}">
                         ${message.avatarType === 'color' ? message.nickname[0].toUpperCase() : ''}
                     </div>
                     <div class="message-info">
@@ -885,7 +365,7 @@
                 <div class="message-content">${content}</div>
                 ${repliesHtml}
             `;
-            
+
             return messageDiv;
         }
 
@@ -894,7 +374,7 @@
             const date = new Date(reply.timestamp);
             const dateStr = date.toLocaleDateString();
             const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+
             // 渲染内容（Markdown或纯文本）
             let content = reply.text;
             if (reply.isMarkdown) {
@@ -902,13 +382,13 @@
             } else {
                 content = content.replace(/\n/g, '<br>');
             }
-            
+
             return `
                 <div class="reply-card">
                     <div class="reply-header">
-                        <div class="reply-avatar" style="${reply.avatarType === 'color' ? 
-                            `background: ${reply.avatar}` : 
-                            `background-image: url(${reply.avatar})`}">
+                        <div class="reply-avatar" style="${reply.avatarType === 'color' ?
+                    `background: ${reply.avatar}` :
+                    `background-image: url(${reply.avatar})`}">
                             ${reply.avatarType === 'color' ? reply.nickname[0].toUpperCase() : ''}
                         </div>
                         <div class="message-info">
@@ -926,11 +406,11 @@
         function renderPagination() {
             const totalPages = Math.ceil(totalMessages / PAGE_SIZE);
             const pagination = document.getElementById('pagination');
-            
+
             pagination.innerHTML = '';
-            
+
             if (totalPages <= 1) return;
-            
+
             // 上一页按钮
             if (currentPage > 1) {
                 const prevBtn = document.createElement('button');
@@ -942,7 +422,7 @@
                 });
                 pagination.appendChild(prevBtn);
             }
-            
+
             // 页码按钮
             for (let i = 1; i <= totalPages; i++) {
                 const pageBtn = document.createElement('button');
@@ -954,7 +434,7 @@
                 });
                 pagination.appendChild(pageBtn);
             }
-            
+
             // 下一页按钮
             if (currentPage < totalPages) {
                 const nextBtn = document.createElement('button');
@@ -972,19 +452,19 @@
         function submitMessage() {
             const nicknameInput = document.getElementById('nickname');
             const contentInput = document.getElementById('messageContent');
-            
+
             const nickname = nicknameInput.value.trim();
             const content = contentInput.value.trim();
             const useMarkdown = document.getElementById('useMarkdown').checked;
-            
+
             if (!nickname || !content) {
                 alert('请填写昵称和留言内容');
                 return;
             }
-            
+
             // 保存昵称到本地存储
             localStorage.setItem('nickname', nickname);
-            
+
             const message = {
                 text: content,
                 nickname: nickname,
@@ -994,10 +474,10 @@
                 isMarkdown: useMarkdown,
                 likes: 0
             };
-            
+
             messagesRef.push(message);
             contentInput.value = '';
-            
+
             // 重新加载留言
             loadMessages();
         }
@@ -1005,14 +485,14 @@
         // 点赞留言
         function likeMessage(messageId) {
             const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
-            
+
             messageRef.transaction(message => {
                 if (message) {
                     message.likes = (message.likes || 0) + 1;
                 }
                 return message;
             });
-            
+
             // 重新加载留言
             loadMessages();
         }
@@ -1033,16 +513,16 @@
         // 提交回复
         function submitReply() {
             if (!replyingTo) return;
-            
+
             const nickname = document.getElementById('nickname').value.trim();
             const content = document.getElementById('replyContent').value.trim();
             const useMarkdown = document.getElementById('replyUseMarkdown').checked;
-            
+
             if (!nickname || !content) {
                 alert('请填写昵称和回复内容');
                 return;
             }
-            
+
             const reply = {
                 id: Date.now().toString(), // 简单ID生成
                 text: content,
@@ -1052,12 +532,12 @@
                 timestamp: Date.now(),
                 isMarkdown: useMarkdown
             };
-            
+
             const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${replyingTo}/replies/${reply.id}`);
             replyRef.set(reply);
-            
+
             closeReplyModal();
-            
+
             // 重新加载留言
             loadMessages();
         }
@@ -1066,16 +546,16 @@
         function adminLogin() {
             const passwordInput = document.getElementById('adminPassword');
             const password = passwordInput.value.trim();
-            
+
             if (!password) {
                 alert('请输入管理员密码');
                 return;
             }
-            
+
             // 计算SHA256哈希
             const hash = sha256(password);
             const expectedHash = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af'; // helloworld的SHA256
-            
+
             if (hash === expectedHash) {
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
@@ -1098,7 +578,7 @@
         function updateAdminUI() {
             const loginForm = document.getElementById('adminLoginForm');
             const adminActions = document.getElementById('adminActions');
-            
+
             if (isAdmin) {
                 loginForm.style.display = 'none';
                 adminActions.style.display = 'flex';
@@ -1106,7 +586,7 @@
                 loginForm.style.display = 'flex';
                 adminActions.style.display = 'none';
             }
-            
+
             // 重新加载留言以显示/隐藏删除按钮
             loadMessages();
         }
@@ -1117,11 +597,11 @@
                 alert('无权限删除留言');
                 return;
             }
-            
+
             if (confirm('确定要删除这条留言吗？')) {
                 const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
                 messageRef.remove();
-                
+
                 // 重新加载留言
                 loadMessages();
             }
@@ -1133,16 +613,16 @@
                 alert('无权限删除回复');
                 return;
             }
-            
+
             if (!replyingTo) {
                 alert('无法确定回复所属的留言');
                 return;
             }
-            
+
             if (confirm('确定要删除这条回复吗？')) {
                 const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${replyingTo}/replies/${replyId}`);
                 replyRef.remove();
-                
+
                 // 重新加载留言
                 loadMessages();
             }
@@ -1155,7 +635,7 @@
             const crypto = window.crypto || window.msCrypto;
             const encoder = new TextEncoder();
             const data = encoder.encode(message);
-            
+
             return crypto.subtle.digest('SHA-256', data).then(hash => {
                 return Array.from(new Uint8Array(hash))
                     .map(b => b.toString(16).padStart(2, '0'))
@@ -1167,17 +647,17 @@
         async function adminLogin() {
             const passwordInput = document.getElementById('adminPassword');
             const password = passwordInput.value.trim();
-            
+
             if (!password) {
                 alert('请输入管理员密码');
                 return;
             }
-            
+
             try {
                 // 计算SHA256哈希
                 const hash = await sha256(password);
                 const expectedHash = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af'; // 密码的SHA256
-                
+
                 if (hash === expectedHash) {
                     isAdmin = true;
                     localStorage.setItem('isAdmin', 'true');
@@ -1194,4 +674,5 @@
         }
     </script>
 </body>
+
 </html>

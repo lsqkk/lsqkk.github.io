@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克贴吧</title>
+    <title>夸克贴吧(搁置中)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -144,7 +145,8 @@
             }
         }
 
-        .user-panel, .messages-panel {
+        .user-panel,
+        .messages-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -201,7 +203,8 @@
             color: var(--dark);
         }
 
-        .form-group input, .form-group textarea {
+        .form-group input,
+        .form-group textarea {
             padding: 12px 15px;
             border-radius: 12px;
             border: 1px solid var(--glass-border);
@@ -210,7 +213,8 @@
             transition: all 0.3s ease;
         }
 
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
@@ -383,7 +387,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .empty-state {
@@ -430,6 +436,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -460,26 +467,26 @@
                     <div class="avatar" id="userAvatar">Q</div>
                     <h3 id="userName">游客</h3>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="nickname">昵称</label>
                     <input type="text" id="nickname" placeholder="请输入您的昵称">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="avatarUrl">头像URL</label>
                     <input type="text" id="avatarUrl" placeholder="请输入头像图片URL">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="message">留言内容</label>
                     <textarea id="message" rows="4" placeholder="请输入您的留言..."></textarea>
                 </div>
-                
+
                 <button class="btn btn-accent" id="submitMessage">
                     <i class="fas fa-paper-plane"></i> 发布留言
                 </button>
-                
+
                 <div class="admin-controls" id="adminControls">
                     <h3>管理员控制 <span class="admin-badge">已登录</span></h3>
                     <div class="form-group">
@@ -489,7 +496,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="messages-panel" id="messagesPanel">
                 <div class="loading">
                     <div class="spinner"></div>
@@ -616,7 +623,7 @@
 
         function updateUserDisplay() {
             userName.textContent = userData.nickname;
-            
+
             if (userData.avatarUrl) {
                 userAvatar.innerHTML = `<img src="${userData.avatarUrl}" alt="${userData.nickname}" onerror="this.style.display='none'; this.parentElement.textContent='${userData.nickname.charAt(0)}'">`;
             } else {
@@ -654,7 +661,7 @@
         async function loadMessages(boardKey) {
             try {
                 messagesPanel.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-                
+
                 const response = await fetch(`${READ_BASE}${KEY_PREFIX}${boardKey}`);
                 if (response.ok) {
                     const data = await response.text();
@@ -697,16 +704,16 @@
 
             // 按时间倒序排列
             messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
+
             messagesPanel.innerHTML = '';
             messages.forEach((msg, index) => {
                 const messageEl = document.createElement('div');
                 messageEl.className = 'message';
-                
-                const avatarContent = msg.avatarUrl ? 
-                    `<img src="${msg.avatarUrl}" alt="${msg.nickname}" onerror="this.style.display='none'; this.parentElement.textContent='${msg.nickname.charAt(0)}'">` : 
+
+                const avatarContent = msg.avatarUrl ?
+                    `<img src="${msg.avatarUrl}" alt="${msg.nickname}" onerror="this.style.display='none'; this.parentElement.textContent='${msg.nickname.charAt(0)}'">` :
                     msg.nickname.charAt(0);
-                
+
                 messageEl.innerHTML = `
                     <div class="message-header">
                         <div class="message-user">
@@ -716,20 +723,20 @@
                                 <div class="message-time">${formatTime(msg.timestamp)}</div>
                             </div>
                         </div>
-                        ${isAdmin || (userData.nickname === msg.nickname && userData.avatarUrl === msg.avatarUrl) ? 
-                            `<button class="delete-message" data-index="${index}">
+                        ${isAdmin || (userData.nickname === msg.nickname && userData.avatarUrl === msg.avatarUrl) ?
+                        `<button class="delete-message" data-index="${index}">
                                 <i class="fas fa-trash"></i> 删除
                             </button>` : ''}
                     </div>
                     <div class="message-content">${msg.content}</div>
                 `;
-                
+
                 messagesPanel.appendChild(messageEl);
             });
 
             // 添加删除事件监听
             document.querySelectorAll('.delete-message').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const index = parseInt(this.getAttribute('data-index'));
                     showDeleteConfirm(index);
                 });
@@ -743,12 +750,12 @@
             const diffMins = Math.floor(diffMs / 60000);
             const diffHours = Math.floor(diffMs / 3600000);
             const diffDays = Math.floor(diffMs / 86400000);
-            
+
             if (diffMins < 1) return '刚刚';
             if (diffMins < 60) return `${diffMins}分钟前`;
             if (diffHours < 24) return `${diffHours}小时前`;
             if (diffDays < 7) return `${diffDays}天前`;
-            
+
             return date.toLocaleDateString('zh-CN');
         }
 
@@ -775,16 +782,16 @@
 
                 // 添加到消息列表
                 const updatedMessages = [...messages, newMessage];
-                
+
                 // 保存到API
                 const success = await saveToAPI(currentBoard, updatedMessages);
-                
+
                 if (success) {
                     messageInput.value = '';
                     messages = updatedMessages;
                     renderMessages();
                     showToast('留言发布成功', 'success');
-                    
+
                     // 如果是管理员，更新隐藏帖子
                     if (isAdmin) {
                         await updateHiddenBoard();
@@ -803,12 +810,12 @@
                 const formData = new FormData();
                 formData.append('key', KEY_PREFIX + key);
                 formData.append('value', JSON.stringify(data));
-                
+
                 const response = await fetch(API_BASE, {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
                 return result.status === 1;
             } catch (error) {
@@ -821,14 +828,14 @@
             try {
                 const updatedMessages = [...messages];
                 updatedMessages.splice(index, 1);
-                
+
                 const success = await saveToAPI(currentBoard, updatedMessages);
-                
+
                 if (success) {
                     messages = updatedMessages;
                     renderMessages();
                     showToast('留言删除成功', 'success');
-                    
+
                     // 如果是管理员，更新隐藏帖子
                     if (isAdmin) {
                         await updateHiddenBoard();
@@ -862,22 +869,22 @@
             try {
                 // 创建空留言板
                 const success = await saveToAPI(id, []);
-                
+
                 if (success) {
                     // 添加到留言板列表
                     boards.push(id);
-                    
+
                     // 更新隐藏帖子
                     await updateHiddenBoard();
-                    
+
                     // 更新选择器
                     updateBoardSelect();
-                    
+
                     // 切换到新留言板
                     boardSelect.value = id;
                     currentBoard = id;
                     await loadMessages(currentBoard);
-                    
+
                     showToast(`留言板"${name}"创建成功`, 'success');
                     closeModal(newBoardModal);
                 } else {
@@ -892,22 +899,22 @@
         async function deleteCurrentBoard() {
             try {
                 const success = await saveToAPI(currentBoard, '');
-                
+
                 if (success) {
                     // 从留言板列表中移除
                     const index = boards.indexOf(currentBoard);
                     if (index > -1) {
                         boards.splice(index, 1);
                     }
-                    
+
                     // 更新隐藏帖子
                     await updateHiddenBoard();
-                    
+
                     // 切换到默认留言板
                     currentBoard = DEFAULT_BOARD;
                     updateBoardSelect();
                     await loadMessages(currentBoard);
-                    
+
                     showToast('留言板删除成功', 'success');
                 } else {
                     showToast('删除失败，请重试', 'error');
@@ -922,11 +929,11 @@
             // 检查是否需要更新隐藏帖子（每天一次）
             const lastUpdate = localStorage.getItem('hiddenBoardLastUpdate');
             const today = new Date().toDateString();
-            
+
             if (lastUpdate === today && !isAdmin) {
                 return; // 非管理员且今天已经更新过
             }
-            
+
             try {
                 await saveToAPI('hidden', boards);
                 localStorage.setItem('hiddenBoardLastUpdate', today);
@@ -939,23 +946,23 @@
             // 计算SHA-256哈希
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
-            
+
             return crypto.subtle.digest('SHA-256', data).then(hash => {
                 const hashArray = Array.from(new Uint8Array(hash));
                 const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                
+
                 // 密码的SHA-256哈希
                 const correctHash = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af';
-                
+
                 if (hashHex === correctHash) {
                     isAdmin = true;
                     adminControls.style.display = 'block';
                     showToast('管理员登录成功', 'success');
                     closeModal(adminLoginModal);
-                    
+
                     // 更新隐藏帖子（每日首次管理员访问）
                     updateHiddenBoard();
-                    
+
                     return true;
                 } else {
                     showToast('密码错误', 'error');
@@ -966,15 +973,15 @@
 
         function showDeleteConfirm(index) {
             const message = messages[index];
-            document.getElementById('deleteMessage').textContent = 
+            document.getElementById('deleteMessage').textContent =
                 `您确定要删除"${message.nickname}"的留言吗？此操作无法撤销。`;
-            
+
             const confirmBtn = document.getElementById('confirmDeleteBtn');
             confirmBtn.onclick = () => {
                 deleteMessage(index);
                 closeModal(deleteConfirmModal);
             };
-            
+
             openModal(deleteConfirmModal);
         }
 
@@ -989,13 +996,13 @@
         function showToast(message, type = '') {
             toast.textContent = message;
             toast.className = 'toast';
-            
+
             if (type) {
                 toast.classList.add(type);
             }
-            
+
             toast.classList.add('show');
-            
+
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
@@ -1005,52 +1012,52 @@
             // 用户数据保存
             nicknameInput.addEventListener('change', saveUserData);
             avatarUrlInput.addEventListener('change', saveUserData);
-            
+
             // 发布留言
             submitMessageBtn.addEventListener('click', submitMessage);
-            
+
             // 切换留言板
-            boardSelect.addEventListener('change', async function() {
+            boardSelect.addEventListener('change', async function () {
                 currentBoard = this.value;
                 await loadMessages(currentBoard);
-                
+
                 // 如果是管理员，更新隐藏帖子（每日首次访问）
                 if (isAdmin) {
                     await updateHiddenBoard();
                 }
             });
-            
+
             // 新建留言板
             newBoardBtn.addEventListener('click', () => openModal(newBoardModal));
-            
+
             // 管理员登录
             adminLoginBtn.addEventListener('click', () => openModal(adminLoginModal));
-            
+
             // 删除留言板
             deleteBoardBtn.addEventListener('click', () => {
                 if (confirm('确定要删除当前留言板吗？此操作将永久删除所有留言！')) {
                     deleteCurrentBoard();
                 }
             });
-            
+
             // 创建留言板
             document.getElementById('createBoardBtn').addEventListener('click', () => {
                 const name = document.getElementById('boardName').value.trim();
                 const id = document.getElementById('boardId').value.trim();
-                
+
                 if (!name) {
                     showToast('请输入留言板名称', 'error');
                     return;
                 }
-                
+
                 if (!id) {
                     showToast('请输入留言板ID', 'error');
                     return;
                 }
-                
+
                 createNewBoard(name, id);
             });
-            
+
             // 管理员登录
             document.getElementById('loginBtn').addEventListener('click', () => {
                 const password = document.getElementById('adminPassword').value;
@@ -1060,18 +1067,18 @@
                     showToast('请输入密码', 'error');
                 }
             });
-            
+
             // 关闭模态框
             document.querySelectorAll('.close-modal').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     closeModal(this.closest('.modal'));
                 });
             });
-            
+
             document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
                 closeModal(deleteConfirmModal);
             });
-            
+
             // 点击模态框外部关闭
             window.addEventListener('click', (e) => {
                 if (e.target.classList.contains('modal')) {
@@ -1081,4 +1088,5 @@
         }
     </script>
 </body>
+
 </html>

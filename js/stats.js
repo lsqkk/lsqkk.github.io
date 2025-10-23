@@ -1,0 +1,225 @@
+let chart;
+const data = [];
+
+// 从localStorage加载数据
+function loadData() {
+    data.length = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+            const entry = JSON.parse(localStorage.getItem(key));
+            entry.date = key;
+            data.push(entry);
+        }
+    }
+    data.sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+// 计算合适的刻度步长
+function calculateStep(maxValue) {
+    const roughStep = maxValue / 5;
+    const power = Math.floor(Math.log10(roughStep));
+    const stepUnit = Math.pow(10, power);
+    const normalized = roughStep / stepUnit;
+
+    let niceStep = 1;
+    if (normalized > 5) niceStep = 10;
+    else if (normalized > 2) niceStep = 5;
+    else if (normalized > 1) niceStep = 2;
+
+    return niceStep * stepUnit;
+}
+
+// 生成图表数据
+function prepareData(days = 30) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    const filtered = data.filter(d => new Date(d.date) >= cutoffDate);
+    const labels = filtered.map(d => d.date);
+
+    // 计算PV和UV的最大值
+    const maxPV = Math.max(...filtered.map(d => d.pv), 0);
+    const maxUV = Math.max(...filtered.map(d => d.uv), 0);
+
+    // 确保PV和UV轴保持8倍关系
+    const maxAxisValue = Math.max(maxPV, maxUV * 8);
+    const pvStep = calculateStep(maxAxisValue);
+    const uvStep = pvStep / 8;
+
+    return {
+        labels,
+        datasets: [{
+            label: '访问量 (PV)',
+            data: filtered.map(d => d.pv),
+            borderColor: 'var(--pv-color)',
+            backgroundColor: 'rgba(247, 37, 133, 0.05)',
+            tension: 0.3,
+            yAxisID: 'y',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#fff'
+        }, {
+            label: '访客数 (UV)',
+            data: filtered.map(d => d.uv),
+            borderColor: 'var(--uv-color)',
+            backgroundColor: 'rgba(76, 201, 240, 0.05)',
+            tension: 0.3,
+            yAxisID: 'y1',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#fff'
+        }],
+        maxAxisValue,
+        pvStep,
+        uvStep
+    };
+}
+
+// 初始化图表
+function initChart() {
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    const chartData = prepareData(30);
+
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: chartData.datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'var(--text-secondary)'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        text: '访问量 (PV)',
+                        display: true,
+                        color: 'var(--text-color)'
+                    },
+                    min: 0,
+                    max: chartData.maxAxisValue,
+                    ticks: {
+                        stepSize: chartData.pvStep,
+                        color: 'var(--text-secondary)'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        text: '访客数 (UV)',
+                        display: true,
+                        color: 'var(--text-color)'
+                    },
+                    min: 0,
+                    max: chartData.maxAxisValue / 8,
+                    ticks: {
+                        stepSize: chartData.uvStep,
+                        color: 'var(--text-secondary)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(43, 45, 66, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    padding: 12,
+                    usePointStyle: true,
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            label += context.raw.toLocaleString();
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            elements: {
+                line: {
+                    fill: 'start'
+                }
+            }
+        }
+    });
+}
+
+// 更新图表
+function updateChart(days) {
+    const chartData = prepareData(days);
+    chart.data.labels = chartData.labels;
+    chart.data.datasets[0].data = chartData.datasets[0].data;
+    chart.data.datasets[1].data = chartData.datasets[1].data;
+
+    // 更新Y轴范围和刻度
+    chart.options.scales.y.max = chartData.maxAxisValue;
+    chart.options.scales.y.ticks.stepSize = chartData.pvStep;
+    chart.options.scales.y1.max = chartData.maxAxisValue / 8;
+    chart.options.scales.y1.ticks.stepSize = chartData.uvStep;
+
+    chart.update();
+
+    // 更新日期范围显示
+    if (data.length > 0) {
+        const endDate = new Date(data[data.length - 1].date);
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - days);
+        document.getElementById('dateRange').textContent =
+            `日期范围: ${startDate.toISOString().split('T')[0]} 至 ${endDate.toISOString().split('T')[0]}`;
+    }
+}
+
+// 初始化页面
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    initChart();
+
+    const dayRange = document.getElementById('dayRange');
+    const dayCount = document.getElementById('dayCount');
+
+    dayRange.addEventListener('input', (e) => {
+        const days = parseInt(e.target.value);
+        dayCount.textContent = `${days} 天`;
+        updateChart(days);
+    });
+
+    // 初始日期范围显示
+    if (data.length > 0) {
+        const endDate = new Date(data[data.length - 1].date);
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 30);
+        document.getElementById('dateRange').textContent =
+            `日期范围: ${startDate.toISOString().split('T')[0]} 至 ${endDate.toISOString().split('T')[0]}`;
+    }
+});
