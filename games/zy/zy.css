@@ -1,0 +1,367 @@
+        :root {
+            --primary-color: #4a6bdf;
+            --secondary-color: #f8f9fa;
+            --text-color: #333;
+            --border-color: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            box-shadow: 2px 0 10px var(--shadow-color);
+            padding: 20px;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .formula-list {
+            list-style: none;
+        }
+
+        .formula-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .formula-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .formula-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .formula-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .formula-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .formula-btn:hover {
+            opacity: 1;
+        }
+
+        .add-formula-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .add-formula-btn:hover {
+            background-color: #3a5bd9;
+        }
+
+        /* 主内容区样式 */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        /* 公式编辑器样式 */
+        .formula-editor {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 30px;
+        }
+
+        .formula-name {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .formula-preview {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            min-height: 100px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .formula-builder {
+            margin-bottom: 20px;
+        }
+
+        .segment {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .segment-type {
+            padding: 8px 12px;
+            margin-right: 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .segment-type.fixed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .segment-type.variable {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .segment-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        .segment-actions {
+            margin-left: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .segment-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .segment-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .add-segment-btns {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-segment-btn {
+            padding: 8px 15px;
+            background-color: #e9ecef;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .add-segment-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        .save-formula-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .save-formula-btn:hover {
+            background-color: #3a5bd9;
+        }
+
+        .delete-formula-btn {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .delete-formula-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* 公式使用区样式 */
+        .formula-usage {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .variable-inputs {
+            margin-bottom: 20px;
+        }
+
+        .variable-input {
+            margin-bottom: 15px;
+        }
+
+        .variable-input label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .variable-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .result-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            color: #495057;
+        }
+
+        .result-content {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 100px;
+            border: 1px solid var(--border-color);
+        }
+
+        .copy-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .copy-btn:hover {
+            background-color: #218838;
+        }
+
+        /* 移动设备样式 */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 999;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                padding: 20px;
+                margin-top: 60px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+        }

@@ -28,7 +28,7 @@
                     <li><a href="https://lsqkk.github.io/tool">工具</a></li>
                     <li><a href="https://lsqkk.github.io/daily">日报</a></li>
                     <li><a href="https://lsqkk.github.io/qtv">视频</a></li>
-                    <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+                    <li><a href="https://lsqkk.github.io/a/lyb" target="blank">留言</a></li>
                 </ul>
             </div>
         </div>
@@ -41,78 +41,12 @@
             <li><a href="https://lsqkk.github.io/tool">工具</a></li>
             <li><a href="https://lsqkk.github.io/daily">日报</a></li>
             <li><a href="https://lsqkk.github.io/qtv">视频</a></li>
-            <li><a href="https://xoyondo.com/mb/ytz1td6p1e8vfzs" target="blank">留言</a></li>
+            <li><a href="https://lsqkk.github.io/a/lyb" target="blank">留言</a></li>
         </ul>
     </div>
 
-    <div class="game-container" id="game-container">
-        <!-- 游戏列表将通过 JavaScript 动态加载 -->
-    </div>
-
-    <script>
-        async function loadGames() {
-            const response = await fetch('game.json');
-            const data = await response.json();
-            const gameContainer = document.getElementById('game-container');
-
-            // 创建对战专区
-            createGameSection(gameContainer, '对战专区', data.multiplayer);
-
-            // 创建单机游戏
-            createGameSection(gameContainer, '单机游戏', data.singlePlayer);
-
-            // 创建经典复刻
-            createGameSection(gameContainer, '经典复刻', data.classic);
-        }
-
-        function createGameSection(container, title, games) {
-            if (!games || games.length === 0) return;
-
-            const section = document.createElement('div');
-            section.className = 'game-section';
-
-            const titleElement = document.createElement('h2');
-            titleElement.className = 'game-section-title';
-            titleElement.textContent = title;
-            section.appendChild(titleElement);
-
-            const list = document.createElement('div');
-            list.className = 'game-list';
-
-            games.forEach(game => {
-                const card = document.createElement('div');
-                card.className = 'game-card';
-
-                const link = document.createElement('a');
-                link.href = game.link;
-                link.target = '_blank';
-
-                const bg = document.createElement('div');
-                bg.className = 'game-card-bg';
-                bg.style.backgroundImage = `url('${game.image}')`;
-
-                const overlay = document.createElement('div');
-                overlay.className = 'game-card-overlay';
-
-                const name = document.createElement('h3');
-                name.className = 'game-card-name';
-                name.textContent = game.name;
-
-                overlay.appendChild(name);
-                link.appendChild(bg);
-                link.appendChild(overlay);
-                card.appendChild(link);
-                list.appendChild(card);
-            });
-
-            section.appendChild(list);
-            container.appendChild(section);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadGames();
-        });
-    </script>
+    <div class="game-container" id="game-container"></div>
+    <script src="game.js"></script>
 </body>
 
 </html>

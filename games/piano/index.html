@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>钢琴 - 夸克博客</title>
     <link rel="stylesheet" href="styles.css">
-<!-- 修正后的CDN链接 -->
-<script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28"></script>
+    <!-- 修正后的CDN链接 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28"></script>
 
 </head>
-<body style=" background: url('https://lsqkk.github.io/games/piano/1.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;" >
-<!-- 新增轮播字幕容器 -->
+
+<body
+    style=" background: url('https://lsqkk.github.io/games/piano/1.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+    <!-- 新增轮播字幕容器 -->
 
     <div class="marquee-text" id="marqueeText"></div>
 
-   <div class="player-controls">
-       <select id="musicSelect"></select>
-       <button id="playButton">播放</button>
-       <button id="stopButton">停止</button>
- <button id="uploadPlayButton" style="margin-left: 10px;">播放上传的文件</button>
-  </div>
+    <div class="player-controls">
+        <select id="musicSelect"></select>
+        <button id="playButton">播放</button>
+        <button id="stopButton">停止</button>
+        <button id="uploadPlayButton" style="margin-left: 10px;">播放上传的文件</button>
+    </div>
 
     <div class="piano-container">
         <div class="piano-keys" id="pianoKeys" style="text-align: center;"></div>
@@ -28,4 +31,5 @@
     <script src="key_mapping.js"></script>
     <script src="piano.js"></script>
 </body>
+
 </html>

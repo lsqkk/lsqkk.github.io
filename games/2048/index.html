@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 - 夸克博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="2048.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title">2048</h1>
+            <div class="scores-container">
+                <div class="score-box">
+                    <div class="score-title">分数</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-title">最高分</div>
+                    <div class="score-value" id="best-score">0</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="game-intro">
+            <p class="description">
+                合并相同数字的方块，到达<b>2048</b>！<br>
+                使用键盘 <span class="key">←</span> <span class="key">↑</span> <span class="key">→</span> <span
+                    class="key">↓</span> 或方向按钮移动方块
+            </p>
+            <button class="restart-button" id="restart-button">
+                <i class="fas fa-redo"></i> 新游戏
+            </button>
+        </div>
+
+        <div class="game-container">
+            <div class="grid-container">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+
+                <div class="tile-container" id="tile-container"></div>
+            </div>
+
+            <div class="game-message" id="game-message">
+                <p id="message-text"></p>
+                <button class="restart-button" id="keep-playing-button">继续游戏</button>
+                <button class="restart-button" id="retry-button">再试一次</button>
+            </div>
+        </div>
+
+        <div class="mobile-swipe">
+            <i class="fas fa-hand-pointer"></i> 在移动设备上可以滑动操作
+        </div>
+
+        <div class="lower">
+            <div class="controls">
+                <div class="directions">
+                    <button class="dir-btn up" id="up"><i class="fas fa-arrow-up"></i></button>
+                    <button class="dir-btn left" id="left"><i class="fas fa-arrow-left"></i></button>
+                    <button class="dir-btn right" id="right"><i class="fas fa-arrow-right"></i></button>
+                    <button class="dir-btn down" id="down"><i class="fas fa-arrow-down"></i></button>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>游戏规则</h3>
+                <p>1. 使用方向键移动方块</p>
+                <p>2. 相同数字的方块碰撞时会合并成为它们的和</p>
+                <p>3. 每次操作后会在空白处生成一个新的方块</p>
+                <p>4. 当获得2048方块时获胜，无法移动时游戏结束</p>
+            </div>
+        </div>
+
+        <a href="https://lsqkk.github.io/games" class="more-games">
+            <i class="fas fa-gamepad"></i> 更多游戏
+        </a>
+
+        <footer>
+            <p>2048游戏 - 夸克博客 | 使用键盘方向键或方向按钮进行游戏</p>
+        </footer>
+    </div>
+    <script src="2048.js"></script>
+</body>
+
+</html>

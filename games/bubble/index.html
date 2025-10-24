@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <meta charset="UTF-8">
-    <title>戳气泡</title>
+    <title>戳气泡 - 夸克博客(维修中)</title>
     <style>
         body {
             margin: 0;
@@ -15,18 +16,18 @@
         }
 
         #gameCanvas {
-            border: 3px solid rgba(255,255,255,0.1);
+            border: 3px solid rgba(255, 255, 255, 0.1);
             margin-top: 20px;
             border-radius: 15px;
             backdrop-filter: blur(5px);
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .info {
             color: white;
             margin: 15px;
             font-size: 24px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             display: flex;
             gap: 30px;
         }
@@ -42,12 +43,12 @@
             color: white;
             border-radius: 25px;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,230,118,0.3);
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
         }
 
         #restartBtn:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,230,118,0.5);
+            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.5);
         }
 
         /* 遮罩层样式 */
@@ -94,6 +95,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- 遮罩层和规则弹窗 -->
     <div id="overlay">
@@ -178,9 +180,9 @@
 
             draw() {
                 const gradient = ctx.createRadialGradient(
-                    this.x - this.size/4, 
-                    this.y - this.size/4, 
-                    this.size/8,
+                    this.x - this.size / 4,
+                    this.y - this.size / 4,
+                    this.size / 8,
                     this.x,
                     this.y,
                     this.size
@@ -197,12 +199,12 @@
 
                 ctx.beginPath();
                 ctx.ellipse(
-                    this.x - this.size/3, 
-                    this.y - this.size/3, 
-                    this.size/3, 
-                    this.size/6,
-                    Math.PI/4, 
-                    0, 
+                    this.x - this.size / 3,
+                    this.y - this.size / 3,
+                    this.size / 3,
+                    this.size / 6,
+                    Math.PI / 4,
+                    0,
                     Math.PI * 2
                 );
                 ctx.fillStyle = 'rgba(255,255,255,0.3)';
@@ -271,16 +273,16 @@
                 localStorage.setItem('bestBubbleScore', bestScore);
                 bestElement.textContent = bestScore;
             }
-            
+
             ctx.fillStyle = 'rgba(0,0,0,0.8)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             ctx.fillStyle = 'white';
             ctx.font = 'bold 56px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('游戏结束', canvas.width/2, canvas.height/2 - 40);
+            ctx.fillText('游戏结束', canvas.width / 2, canvas.height / 2 - 40);
             ctx.font = '36px Arial';
-            ctx.fillText(`最终得分: ${score}`, canvas.width/2, canvas.height/2 + 40);
+            ctx.fillText(`最终得分: ${score}`, canvas.width / 2, canvas.height / 2 + 40);
         }
 
         function gameLoop() {
@@ -317,7 +319,7 @@
             for (let i = bubbles.length - 1; i >= 0; i--) {
                 const bubble = bubbles[i];
                 const distance = Math.sqrt(
-                    Math.pow(clickX - bubble.x, 2) + 
+                    Math.pow(clickX - bubble.x, 2) +
                     Math.pow(clickY - bubble.y, 2)
                 );
 
@@ -341,4 +343,5 @@
         });
     </script>
 </body>
+
 </html>

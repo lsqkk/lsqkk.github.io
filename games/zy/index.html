@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拼好话公式生成器 - 夸克博客</title>
+    <link rel="stylesheet" href="zy.css">
+</head>
+
+<body>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰ 公式列表</button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">我的公式</div>
+        </div>
+        <ul class="formula-list" id="formulaList">
+            <!-- 公式列表将通过JavaScript动态生成 -->
+        </ul>
+        <button class="add-formula-btn" id="addFormulaBtn">+ 新建公式</button>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>拼好话公式生成器</h1>
+            <p>创建和使用自定义文本模板，轻松生成完美表达</p>
+        </div>
+
+        <div class="formula-editor">
+            <h2>公式编辑器</h2>
+            <input type="text" class="formula-name" id="formulaName" placeholder="输入公式名称">
+
+            <div class="formula-preview" id="formulaPreview">
+                <!-- 预览内容将在这里显示 -->
+            </div>
+
+            <div class="formula-builder" id="formulaBuilder">
+                <!-- 公式段将通过JavaScript动态生成 -->
+            </div>
+
+            <div class="add-segment-btns">
+                <button class="add-segment-btn" id="addFixedSegmentBtn">添加固定文本</button>
+                <button class="add-segment-btn" id="addVariableSegmentBtn">添加变量字段</button>
+            </div>
+
+            <div class="formula-actions">
+                <button class="save-formula-btn" id="saveFormulaBtn">保存公式</button>
+                <button class="delete-formula-btn" id="deleteFormulaBtn">删除公式</button>
+            </div>
+        </div>
+
+        <div class="formula-usage">
+            <h2>使用公式</h2>
+            <div class="variable-inputs" id="variableInputs">
+                <!-- 变量输入字段将通过JavaScript动态生成 -->
+            </div>
+
+            <div class="result">
+                <span class="result-label">生成结果:</span>
+                <div class="result-content" id="resultContent">
+                    <!-- 结果内容将在这里显示 -->
+                </div>
+                <button class="copy-btn" id="copyResultBtn">复制结果</button>
+            </div>
+        </div>
+    </div>
+    <script src="zy.js"></script>
+</body>
+
+</html>

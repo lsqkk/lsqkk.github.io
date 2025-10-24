@@ -2,62 +2,62 @@
     "multiplayer": [
         {
             "name": "五子棋对战",
-            "image": "https://lsqkk.github.io/games/9.png",
-            "link": "https://lsqkk.github.io/games/5ziqi"
+            "image": "image/9.png",
+            "link": "5ziqi"
         },
         {
             "name": "每日答题",
-            "image": "https://lsqkk.github.io/games/4.png",
-            "link": "https://lsqkk.github.io/games/dati"
+            "image": "image/4.png",
+            "link": "dati"
         }
     ],
     "singlePlayer": [
         {
             "name": "单机五子棋",
-            "image": "https://lsqkk.github.io/games/9.png",
-            "link": "https://lsqkk.github.io/games/5ziqi-p"
+            "image": "image/9.png",
+            "link": "5ziqi-p"
         },
         {
             "name": "交大图寻（兴庆）",
-            "image": "https://lsqkk.github.io/games/8.png",
-            "link": "https://lsqkk.github.io/games/xjtx"
+            "image": "image/8.png",
+            "link": "xjtx"
         },
         {
             "name": "躲避陨石",
-            "image": "https://lsqkk.github.io/games/1.png",
-            "link": "https://lsqkk.github.io/games/AvoidStar"
+            "image": "image/1.png",
+            "link": "AvoidStar"
         },
         {
             "name": "戳气泡",
-            "image": "https://lsqkk.github.io/games/5.png",
-            "link": "https://lsqkk.github.io/games/bubble"
+            "image": "image/5.png",
+            "link": "bubble"
         },
         {
             "name": "中午赤什么",
-            "image": "https://lsqkk.github.io/games/7.png",
-            "link": "https://lsqkk.github.io/games/eatwhat"
+            "image": "image/7.png",
+            "link": "eatwhat"
         },
         {
             "name": "钢琴",
-            "image": "https://lsqkk.github.io/games/3.png",
-            "link": "https://lsqkk.github.io/games/piano"
+            "image": "image/3.png",
+            "link": "piano"
         },
         {
             "name": "ZY公式",
-            "image": "https://lsqkk.github.io/games/3.png",
-            "link": "https://lsqkk.github.io/games/zy.html"
+            "image": "image/3.png",
+            "link": "zy"
         }
     ],
     "classic": [
         {
             "name": "合成大西瓜",
-            "image": "https://lsqkk.github.io/games/2.png",
-            "link": "https://lsqkk.github.io/games/xigua"
+            "image": "image/2.png",
+            "link": "xigua"
         },
         {
             "name": "2048",
-            "image": "https://lsqkk.github.io/games/10.png",
-            "link": "https://lsqkk.github.io/games/2048"
+            "image": "image/10.png",
+            "link": "2048"
         }
     ]
 }
