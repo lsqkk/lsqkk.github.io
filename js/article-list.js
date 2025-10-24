@@ -28,28 +28,15 @@ function getCurrentPagePosts() {
     return filteredPosts.slice(startIndex, endIndex);
 }
 
-
 // 渲染标签筛选器
 function renderTagFilter() {
     const tagFilter = document.getElementById('tagFilter');
-
-    tagFilter.innerHTML = allTags.map(tag => {
-        // 计算该标签下的文章数量和阅读时长
-        const tagPosts = tag === '全部'
-            ? allPosts
-            : allPosts.filter(post => post.tags && post.tags.includes(tag));
-
-        const postCount = tagPosts.length;
-        const totalWords = tagPosts.reduce((sum, post) => sum + (post.wordCount || 0), 0);
-        const readTime = Math.ceil(totalWords / 400);
-
-        return `
-            <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
-                    onclick="filterByTag('${tag}')">
-                ${tag} (${postCount}/${readTime}min)
-            </button>
-        `;
-    }).join('');
+    tagFilter.innerHTML = allTags.map(tag => `
+                <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
+                        onclick="filterByTag('${tag}')">
+                    ${tag}
+                </button>
+            `).join('');
 }
 
 // 按标签筛选
@@ -62,18 +49,25 @@ function filterByTag(tag) {
 }
 
 // 渲染文章列表
+
 function renderPosts() {
     const postsToShow = getCurrentPagePosts();
 
-    const list = postsToShow.map(post => `
+    const list = postsToShow.map(post => {
+        // 计算阅读时长
+        const readTime = Math.ceil((post.wordCount || 0) / 400);
+
+        return `
                 <div class="post-item">
                     <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
                     <div class="post-date">${post.date}</div>
                     <div class="post-tags">
+                        <span class="post-tag read-time">${readTime}min</span>
                         ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
                     </div>
                 </div>
-            `).join('');
+            `;
+    }).join('');
 
     document.getElementById('posts').innerHTML = list;
 }

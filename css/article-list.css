@@ -371,3 +371,9 @@
             font-size: 0.85em;
             margin-top: 30px;
         }
+
+        .post-tag.read-time {
+            background: rgba(255, 193, 7, 0.2) !important;
+            color: #ff9800 !important;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
