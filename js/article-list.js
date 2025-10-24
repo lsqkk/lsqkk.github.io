@@ -28,15 +28,28 @@ function getCurrentPagePosts() {
     return filteredPosts.slice(startIndex, endIndex);
 }
 
+
 // 渲染标签筛选器
 function renderTagFilter() {
     const tagFilter = document.getElementById('tagFilter');
-    tagFilter.innerHTML = allTags.map(tag => `
-                <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
-                        onclick="filterByTag('${tag}')">
-                    ${tag}
-                </button>
-            `).join('');
+
+    tagFilter.innerHTML = allTags.map(tag => {
+        // 计算该标签下的文章数量和阅读时长
+        const tagPosts = tag === '全部'
+            ? allPosts
+            : allPosts.filter(post => post.tags && post.tags.includes(tag));
+
+        const postCount = tagPosts.length;
+        const totalWords = tagPosts.reduce((sum, post) => sum + (post.wordCount || 0), 0);
+        const readTime = Math.ceil(totalWords / 400);
+
+        return `
+            <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
+                    onclick="filterByTag('${tag}')">
+                ${tag} (${postCount}/${readTime}min)
+            </button>
+        `;
+    }).join('');
 }
 
 // 按标签筛选

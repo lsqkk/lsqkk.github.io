@@ -1,14 +1,35 @@
 /* 仅对非触摸设备应用自定义光标 */
 @media (hover: hover) and (pointer: fine) {
+
   /* 隐藏系统光标 - 扩展选择器确保覆盖所有情况 */
   html *,
   body *,
-  a, button, input, textarea, select, 
-  [role="button"], [onclick], [tabindex],
-  a:hover, button:hover, input:hover, textarea:hover, select:hover,
-  a:active, button:active, input:active, textarea:active, select:active,
-  a:focus, button:focus, input:focus, textarea:focus, select:focus,
-  a:visited, button:visited, input:visited {
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  [onclick],
+  [tabindex],
+  a:hover,
+  button:hover,
+  input:hover,
+  textarea:hover,
+  select:hover,
+  a:active,
+  button:active,
+  input:active,
+  textarea:active,
+  select:active,
+  a:focus,
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus,
+  a:visited,
+  button:visited,
+  input:visited {
     cursor: none !important;
   }
 
@@ -41,6 +62,7 @@
     opacity: 1;
     transition: opacity 0.1s;
   }
+
   body:not(:hover) .custom-cursor {
     opacity: 0;
     transition: opacity 0.1s;
@@ -63,6 +85,7 @@
       transform: scale(1) translate(0, 0);
       opacity: 1;
     }
+
     100% {
       transform: scale(0.2) translate(var(--tx), var(--ty));
       opacity: 0;
@@ -73,6 +96,7 @@
 
 /* 对触摸设备隐藏自定义光标 */
 @media (hover: none) and (pointer: coarse) {
+
   .custom-cursor,
   .cursor-particle {
     display: none !important;
