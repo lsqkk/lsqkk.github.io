@@ -1,29 +1,44 @@
-        body { max-width: 800px; margin: 0 auto; }
-.post-content {
-    line-height: 1.8; /* 建议调整为 1.6-1.8 */
-}
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-/* 添加段落间距 */
-.post-content p {
-    margin-bottom: 1.2em;
-}
+        .post-content {
+            line-height: 1.8;
+            /* 建议调整为 1.6-1.8 */
+        }
 
-/* 可选：修复标题间距 */
-.post-content h1, 
-.post-content h2, 
-.post-content h3 {
-    margin: 1.5em 0 0.8em 0;
-}
-	    
-        code { background-color: #f6f8fa; padding: 2px 4px; border-radius: 4px; }
-        pre { 
-            background-color: #f6f8fa; 
-            padding: 16px; 
+        /* 添加段落间距 */
+        .post-content p {
+            margin-bottom: 1.2em;
+        }
+
+        /* 可选：修复标题间距 */
+        .post-content h1,
+        .post-content h2,
+        .post-content h3 {
+            margin: 1.5em 0 0.8em 0;
+        }
+
+        code {
+            background-color: #f6f8fa;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background-color: #f6f8fa;
+            padding: 16px;
             overflow: auto;
             border-radius: 6px;
             line-height: 1.45;
         }
-        .back-link { display: inline-block; margin-bottom: 20px; }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
         .share-button {
             background-color: #99ddf3;
             padding: 5px 10px;
@@ -32,8 +47,35 @@
             color: #007bff;
             cursor: pointer;
         }
+
         .mode-toggle {
             cursor: pointer;
             margin-left: 10px;
             font-size: 24px;
+        }
+
+        /* 文章标签容器样式 */
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        /* 单个标签样式 */
+        .post-tag {
+            padding: 4px 10px;
+            border-radius: 10px;
+            background: rgba(93, 208, 255, 0.2);
+            color: #007bff;
+            font-size: 0.75em;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* 阅读时长标签特殊样式 */
+        .post-tag.read-time {
+            background: rgba(255, 193, 7, 0.2) !important;
+            color: #ff9800 !important;
+            border: 1px solid rgba(255, 193, 7, 0.3);
         }
