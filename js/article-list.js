@@ -62,7 +62,7 @@ function renderPosts() {
                     <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
                     <div class="post-date">${post.date}</div>
                     <div class="post-tags">
-                        <span class="post-tag read-time">${readTime}min</span>
+                        <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
                         ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
                     </div>
                 </div>

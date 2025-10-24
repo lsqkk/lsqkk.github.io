@@ -19,7 +19,7 @@ async function fetchPostTitle() {
         if (post) {
             document.title = `${post.title} - 夸克博客`; // 设置页面标题
         } else {
-            document.title = `文章未找到 - 夸克博客`; // 如果未找到文章
+            document.title = `夸克博客`; // 如果未找到文章
         }
     } catch (error) {
         console.error('加载 JSON 数据失败:', error);
@@ -57,10 +57,27 @@ async function loadPost() {
     try {
         const postsData = await fetch('json/posts.json').then(r => r.json());
         const post = postsData.find(p => p.file === filename);
+        // 在 loadPost 函数中找到这部分代码
         if (post) {
             // 显示日期
             const dateElement = document.getElementById('post-date');
             dateElement.textContent = `发表于 ${post.date}`;
+
+            // 新增：显示字数和标签
+            const wordCount = post.wordCount || 0;
+            const readTime = Math.ceil(wordCount / 400);
+
+            // 显示字数信息
+            const wordCountElement = document.getElementById('post-wordcount');
+            wordCountElement.textContent = `${wordCount}字·${readTime}min`;
+
+            // 显示标签
+            const tagsContainer = document.getElementById('post-tags-container');
+            if (post.tags && post.tags.length > 0) {
+                tagsContainer.innerHTML = post.tags.map(tag =>
+                    `<span class="post-tag">${tag}</span>`
+                ).join('');
+            }
         } else {
             console.warn('未找到文章信息');
         }
