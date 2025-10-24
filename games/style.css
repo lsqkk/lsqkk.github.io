@@ -62,10 +62,12 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    background-color: transparent; /* 修改为透明背景 */
+    background-color: transparent;
+    /* 修改为透明背景 */
     padding-bottom: 60px;
     min-height: calc(100vh - 150px);
 }
+
 .game-box {
     background-size: cover;
     background-position: center;
@@ -74,21 +76,28 @@ body {
     backdrop-filter: blur(10px);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
-    flex: 1 1 calc(25% - 20px); /* 默认每行4个 */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);  /* 添加文字阴影 */
-    position: relative;  /* 设置为相对定位 */
-    overflow: hidden;  /* 防止内容溢出 */
+    flex: 1 1 calc(25% - 20px);
+    /* 默认每行4个 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    /* 添加文字阴影 */
+    position: relative;
+    /* 设置为相对定位 */
+    overflow: hidden;
+    /* 防止内容溢出 */
 }
 
 .game-box::before {
     content: "";
     display: block;
-    width: 100%;  /* 宽度占满父容器 */
-    padding-top: 56.25%;  /* 16:9 的宽高比，计算公式为 (9/16)*100% */
+    width: 100%;
+    /* 宽度占满父容器 */
+    padding-top: 56.25%;
+    /* 16:9 的宽高比，计算公式为 (9/16)*100% */
 }
 
-.game-box > a {
-    position: absolute;  /* 绝对定位 */
+.game-box>a {
+    position: absolute;
+    /* 绝对定位 */
     top: 0;
     left: 0;
     width: 100%;
@@ -99,22 +108,26 @@ body {
     color: #fff;
     text-decoration: none;
 }
+
 /* 媒体查询：根据屏幕宽度调整每行显示数量 */
 @media (max-width: 1200px) {
     .game-box {
-        flex: 1 1 calc(33.333% - 20px); /* 屏幕较窄时每行3个 */
+        flex: 1 1 calc(33.333% - 20px);
+        /* 屏幕较窄时每行3个 */
     }
 }
 
 @media (max-width: 900px) {
     .game-box {
-        flex: 1 1 calc(50% - 20px); /* 屏幕更窄时每行2个 */
+        flex: 1 1 calc(50% - 20px);
+        /* 屏幕更窄时每行2个 */
     }
 }
 
 @media (max-width: 600px) {
     .game-box {
-        flex: 1 1 100%; /* 屏幕最窄时每行1个 */
+        flex: 1 1 100%;
+        /* 屏幕最窄时每行1个 */
     }
 }
 
@@ -130,4 +143,123 @@ body {
     width: 100vw;
     margin: 0 !important;
     z-index: 100;
+}
+
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: url('https://lsqkk.github.io/image/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Arial', sans-serif;
+}
+
+/* 游戏内容区域 */
+.game-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 100px;
+}
+
+/* 游戏分类标题 */
+.game-section-title {
+    color: white;
+    font-size: 24px;
+    margin: 30px 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+}
+
+.game-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* 游戏列表 */
+.game-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* 游戏卡片 */
+.game-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    aspect-ratio: 1/1;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.game-card a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: white;
+}
+
+.game-card-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+}
+
+.game-card:hover .game-card-bg {
+    transform: scale(1.1);
+}
+
+.game-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+}
+
+.game-card-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .game-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .game-section-title {
+        font-size: 20px;
+        margin: 20px 0 10px;
+    }
+
+    .game-card-name {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

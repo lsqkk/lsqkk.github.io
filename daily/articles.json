@@ -1,39 +1,299 @@
-{ "dailyArticles": [
-        {"date": "2025-4-14","articles": [
-                {"id": "64", "title": "右派主张小政府，为什么无政府主义是极左？","author": "太湖文师的左花园", "url": "https://www.zhihu.com/question/648815896/answer/1894392981596922453", "readTime": 3, "tags": ["政治"] },
-                {"id": "65", "title": "《哪吒 2》中的六星连珠很厉害吗？","author": "One Two​", "url": "https://www.zhihu.com/question/12754904573/answer/107943124639", "readTime": 3, "tags": ["天文"] }   
-        ] }, { "date": "2025-4-15", "articles": [
-                {"id": "66", "title": "导论：为什么人类需要共产主义？","author": "千高原公社", "url": "https://zhuanlan.zhihu.com/p/1890863865505493645", "readTime": 5, "tags": ["政治"] },
-                {"id": "67", "title": "成吉思汗比希特勒杀的人还多，为什么他成了英雄？","author": "交趾承宣布政使司", "url": "https://www.zhihu.com/question/526482040/answer/16640525506", "readTime": 3, "tags": ["历史"] }
-        ] }, { "date": "2025-4-16", "articles": [
-                {"id": "68", "title": "关于言论自由","author": "青青鹊南", "url": "https://zhuanlan.zhihu.com/p/344970096", "readTime": 3, "tags": ["政治"] },
-                {"id": "69", "title": "有哪些「听君一席话，如听一席话」的话？","author": "jason wang", "url": "https://www.zhihu.com/question/476429482/answer/2098470755", "readTime": 3, "tags": ["抽象"] }
-        ] }, { "date": "2025-4-17", "articles": [
-                {"id": "70", "title": "为啥知乎普遍认为00后过的惨？","author": "夜雨星风", "url": "https://www.zhihu.com/question/663670443/answer/4375151447", "readTime": 3, "tags": ["社会"] },
-                {"id": "71", "title": "八十年代的自由与狭隘的自由","author": "林先生", "url": "https://zhuanlan.zhihu.com/p/9972122030", "readTime": 3, "tags": ["政治"] }
-        ] }, { "date": "2025-4-18", "articles": [
-                {"id": "72", "title": "为什么现在有一群人这么喜欢宏大叙事？","author": "李毅", "url": "https://www.zhihu.com/question/583468219/answer/66142845051", "readTime": 3, "tags": ["政治"] },
-                {"id": "73", "title": "你见过最有趣的数学笑话是什么？","author": "ceshi624", "url": "https://www.zhihu.com/question/521950389/answer/131443129704", "readTime": 3, "tags": ["抽象"] }
-        ] }, { "date": "2025-4-19", "articles": [
-                {"id": "74", "title": "读一本历史书前，你会先考察作者的立场吗？","author": "寻道人", "url": "https://www.zhihu.com/question/1895075035816878270/answer/1895937623740113894", "readTime": 3, "tags": ["历史"] },
-                {"id": "75", "title": "形式逻辑和辩证逻辑之关系是什么？","author": "林之辛", "url": "https://www.zhihu.com/question/270648588/answer/2925501163", "readTime": 3, "tags": ["政治"] }
-        ] }, { "date": "2025-4-20", "articles": [
-                {"id": "76", "title": "左派自己认为，左派目前的问题是什么？","author": "我到不了", "url": "https://www.zhihu.com/question/2229174280/answer/36457493695", "readTime": 3, "tags": ["政治"] },
-                {"id": "77", "title": "为什么感觉民族和阶级叙事都有缺陷？","author": "铁牛", "url": "https://www.zhihu.com/question/620614894/answer/15407374763", "readTime": 3, "tags": ["政治"] }
-        ] }, { "date": "2025-4-22", "articles": [
-                {"id": "78", "title": "如何看待姜武发布宣传汉族的视频？","author": "秋水云龙​", "url": "https://www.zhihu.com/question/6043364512/answer/48657079986", "readTime": 3, "tags": ["政治"] },
-                {"id": "79", "title": "教员的“孤独”丨理想主义永远在路上","author": "春蛙", "url": "https://zhuanlan.zhihu.com/p/6922088084", "readTime": 3, "tags": ["政治"] }
-        ] }, { "date": "2025-4-23", "articles": [
-                {"id": "80", "title": "教皇方济各于2025年4月21日去世，如何评价他的一生？","author": "老造永不死", "url": "https://www.zhihu.com/question/1897685191507547647/answer/1897806676490430012", "readTime": 3, "tags": ["宗教"] },
-                {"id": "81", "title": "马克思怎么看权力剥削人这样的观点？","author": "季立东", "url": "https://zhuanlan.zhihu.com/p/681894908", "readTime": 3, "tags": ["政治"] }
-        ] }, { "date": "2025-4-24", "articles": [
-                {"id": "82", "title": "可以写一句莫名其妙的话吗?","author": "TEfish", "url": "https://www.zhihu.com/question/663883875/answer/3611723071", "readTime": 3, "tags": ["抽象"] },
-                {"id": "83", "title": "马克思主义中国化时代化不能回避一个问题","author": "业余键政", "url": "https://zhuanlan.zhihu.com/p/9249793184", "readTime": 3, "tags": ["政治"] },
-                {"id": "84", "title": "为什么说高考是不公平的——驳「高考公平论」的六大经典误区","author": "Liuuzaki​", "url": "https://zhuanlan.zhihu.com/p/31120034016", "readTime": 3, "tags": ["政策"] }
-        ] }, { "date": "2025-4-25", "articles": [
-                {"id": "85", "title": "教科书里的五胡乱华","author": "交趾承宣布政使司", "url": "https://zhuanlan.zhihu.com/p/701129803", "readTime": 3, "tags": ["政治"] },
-                {"id": "86", "title": "00后是否是中国最保守的一代？","author": "被迫改名", "url": "https://www.zhihu.com/question/587138103/answer/26953491730", "readTime": 3, "tags": ["政治"] },
-                {"id": "87", "title": "中国什么时候才能有自己的zlibrary?","author": "水余风", "url": "https://www.zhihu.com/question/420328125/answer/130546911704", "readTime": 3, "tags": ["政策"] }
-        ] }
-    
-]}
+{
+        "dailyArticles": [
+                {
+                        "date": "2025-4-14",
+                        "articles": [
+                                {
+                                        "id": "64",
+                                        "title": "右派主张小政府，为什么无政府主义是极左？",
+                                        "author": "太湖文师的左花园",
+                                        "url": "https://www.zhihu.com/question/648815896/answer/1894392981596922453",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "65",
+                                        "title": "《哪吒 2》中的六星连珠很厉害吗？",
+                                        "author": "One Two​",
+                                        "url": "https://www.zhihu.com/question/12754904573/answer/107943124639",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "天文"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-15",
+                        "articles": [
+                                {
+                                        "id": "66",
+                                        "title": "导论：为什么人类需要共产主义？",
+                                        "author": "千高原公社",
+                                        "url": "https://zhuanlan.zhihu.com/p/1890863865505493645",
+                                        "readTime": 5,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "67",
+                                        "title": "成吉思汗比希特勒杀的人还多，为什么他成了英雄？",
+                                        "author": "交趾承宣布政使司",
+                                        "url": "https://www.zhihu.com/question/526482040/answer/16640525506",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "历史"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-16",
+                        "articles": [
+                                {
+                                        "id": "68",
+                                        "title": "关于言论自由",
+                                        "author": "青青鹊南",
+                                        "url": "https://zhuanlan.zhihu.com/p/344970096",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "69",
+                                        "title": "有哪些「听君一席话，如听一席话」的话？",
+                                        "author": "jason wang",
+                                        "url": "https://www.zhihu.com/question/476429482/answer/2098470755",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "抽象"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-17",
+                        "articles": [
+                                {
+                                        "id": "70",
+                                        "title": "为啥知乎普遍认为00后过的惨？",
+                                        "author": "夜雨星风",
+                                        "url": "https://www.zhihu.com/question/663670443/answer/4375151447",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "社会"
+                                        ]
+                                },
+                                {
+                                        "id": "71",
+                                        "title": "八十年代的自由与狭隘的自由",
+                                        "author": "林先生",
+                                        "url": "https://zhuanlan.zhihu.com/p/9972122030",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-18",
+                        "articles": [
+                                {
+                                        "id": "72",
+                                        "title": "为什么现在有一群人这么喜欢宏大叙事？",
+                                        "author": "李毅",
+                                        "url": "https://www.zhihu.com/question/583468219/answer/66142845051",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "73",
+                                        "title": "你见过最有趣的数学笑话是什么？",
+                                        "author": "ceshi624",
+                                        "url": "https://www.zhihu.com/question/521950389/answer/131443129704",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "抽象"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-19",
+                        "articles": [
+                                {
+                                        "id": "74",
+                                        "title": "读一本历史书前，你会先考察作者的立场吗？",
+                                        "author": "寻道人",
+                                        "url": "https://www.zhihu.com/question/1895075035816878270/answer/1895937623740113894",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "历史"
+                                        ]
+                                },
+                                {
+                                        "id": "75",
+                                        "title": "形式逻辑和辩证逻辑之关系是什么？",
+                                        "author": "林之辛",
+                                        "url": "https://www.zhihu.com/question/270648588/answer/2925501163",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-20",
+                        "articles": [
+                                {
+                                        "id": "76",
+                                        "title": "左派自己认为，左派目前的问题是什么？",
+                                        "author": "我到不了",
+                                        "url": "https://www.zhihu.com/question/2229174280/answer/36457493695",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "77",
+                                        "title": "为什么感觉民族和阶级叙事都有缺陷？",
+                                        "author": "铁牛",
+                                        "url": "https://www.zhihu.com/question/620614894/answer/15407374763",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-22",
+                        "articles": [
+                                {
+                                        "id": "78",
+                                        "title": "如何看待姜武发布宣传汉族的视频？",
+                                        "author": "秋水云龙​",
+                                        "url": "https://www.zhihu.com/question/6043364512/answer/48657079986",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "79",
+                                        "title": "教员的“孤独”丨理想主义永远在路上",
+                                        "author": "春蛙",
+                                        "url": "https://zhuanlan.zhihu.com/p/6922088084",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-23",
+                        "articles": [
+                                {
+                                        "id": "80",
+                                        "title": "教皇方济各于2025年4月21日去世，如何评价他的一生？",
+                                        "author": "老造永不死",
+                                        "url": "https://www.zhihu.com/question/1897685191507547647/answer/1897806676490430012",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "宗教"
+                                        ]
+                                },
+                                {
+                                        "id": "81",
+                                        "title": "马克思怎么看权力剥削人这样的观点？",
+                                        "author": "季立东",
+                                        "url": "https://zhuanlan.zhihu.com/p/681894908",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-24",
+                        "articles": [
+                                {
+                                        "id": "82",
+                                        "title": "可以写一句莫名其妙的话吗?",
+                                        "author": "TEfish",
+                                        "url": "https://www.zhihu.com/question/663883875/answer/3611723071",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "抽象"
+                                        ]
+                                },
+                                {
+                                        "id": "83",
+                                        "title": "马克思主义中国化时代化不能回避一个问题",
+                                        "author": "业余键政",
+                                        "url": "https://zhuanlan.zhihu.com/p/9249793184",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "84",
+                                        "title": "为什么说高考是不公平的——驳「高考公平论」的六大经典误区",
+                                        "author": "Liuuzaki​",
+                                        "url": "https://zhuanlan.zhihu.com/p/31120034016",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政策"
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "date": "2025-4-25",
+                        "articles": [
+                                {
+                                        "id": "85",
+                                        "title": "教科书里的五胡乱华",
+                                        "author": "交趾承宣布政使司",
+                                        "url": "https://zhuanlan.zhihu.com/p/701129803",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "86",
+                                        "title": "00后是否是中国最保守的一代？",
+                                        "author": "被迫改名",
+                                        "url": "https://www.zhihu.com/question/587138103/answer/26953491730",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政治"
+                                        ]
+                                },
+                                {
+                                        "id": "87",
+                                        "title": "中国什么时候才能有自己的zlibrary?",
+                                        "author": "水余风",
+                                        "url": "https://www.zhihu.com/question/420328125/answer/130546911704",
+                                        "readTime": 3,
+                                        "tags": [
+                                                "政策"
+                                        ]
+                                }
+                        ]
+                }
+        ]
+}

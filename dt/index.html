@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="css/dt.css">
     <script src="js/cursor-trail.js"></script>
 </head>
+
 <body>
     <div class="dynamic-container">
         <div class="dynamic-header">
@@ -20,7 +22,7 @@
     </div>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
-    
+
     <script>
         marked.setOptions({
             breaks: true,
@@ -29,7 +31,7 @@
 
         async function loadDynamic() {
             try {
-                const response = await fetch('dt.md');
+                const response = await fetch('dt/dt.md');
                 const mdContent = await response.text();
                 const entries = parseDynamicEntries(mdContent);
                 renderDynamicEntries(entries);
@@ -43,20 +45,20 @@
             }
         }
 
-function parseDynamicEntries(content) {
-    // 使用正则表达式在#前分割（正向先行断言）
-    return content.split(/\n(?=# )/g).map(entry => {
-        const [header, ...body] = entry.split('\n');
-        const titleMatch = header.match(/^# (.*)/);
-        const dateMatch = body.join('\n').match(/## 日期：(.+)/);
-        
-        return {
-            title: titleMatch ? titleMatch[1].trim() : '未命名动态',
-            date: dateMatch ? dateMatch[1].trim() : '',
-            content: body.join('\n').replace(/## 日期：.+\n?/, '').trim()
-        };
-    }).filter(entry => entry.title).reverse();
-}
+        function parseDynamicEntries(content) {
+            // 使用正则表达式在#前分割（正向先行断言）
+            return content.split(/\n(?=# )/g).map(entry => {
+                const [header, ...body] = entry.split('\n');
+                const titleMatch = header.match(/^# (.*)/);
+                const dateMatch = body.join('\n').match(/## 日期：(.+)/);
+
+                return {
+                    title: titleMatch ? titleMatch[1].trim() : '未命名动态',
+                    date: dateMatch ? dateMatch[1].trim() : '',
+                    content: body.join('\n').replace(/## 日期：.+\n?/, '').trim()
+                };
+            }).filter(entry => entry.title).reverse();
+        }
         function renderDynamicEntries(entries) {
             const container = document.getElementById('dynamic-content');
             container.innerHTML = entries.map(entry => `
@@ -73,4 +75,5 @@ function parseDynamicEntries(content) {
         window.addEventListener('DOMContentLoaded', loadDynamic);
     </script>
 </body>
+
 </html>
