@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics项目 - 光学与波动模拟实验室</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="https://lsqkk.github.io/" class="logo">
+                    <i class="fas fa-atom"></i>
+                    <span>夸克博客</span>
+                </a>
+                <div class="nav-links">
+                    <a href="/">首页</a>
+                    <a href="/article-list">文章</a>
+                    <a href="/games">游戏</a>
+                    <a href="/daily">日报</a>
+                    <a href="/qtv">视频</a>
+                    <a href="/a/lyb">留言板</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main>
+        <div class="container">
+            <!-- 英雄区 -->
+            <section class="hero">
+                <h1>PHYSICS 实验室</h1>
+                <p>探索物理世界的奇妙现象，交互式模拟理解各种物理现象。这里是Physics项目的实验基地。</p>
+                <a href="#projects" class="cta-button">开始探索</a>
+            </section>
+
+            <!-- 光学实验区 -->
+            <section id="optics" class="category-section">
+                <h2 class="section-title">光学实验</h2>
+                <div class="projects-grid" id="optics-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 波动实验区 -->
+            <section id="waves" class="category-section">
+                <h2 class="section-title">波动实验</h2>
+                <div class="projects-grid" id="waves-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Physics 项目</h3>
+                    <p>Physics项目致力于通过交互式模拟展示物理现象，帮助用户直观理解复杂的物理概念和原理。</p>
+                </div>
+                <div class="footer-column">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">首页</a></li>
+                        <li><a href="/article-list">技术文章</a></li>
+                        <li><a href="/games">趣味游戏</a></li>
+                        <li><a href="/tool">实用工具</a></li>
+                        <li><a href="/daily">夸克日报</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>实验室项目</h3>
+                    <ul class="footer-links" id="footer-projects">
+                        <!-- 项目链接将通过JavaScript动态加载 -->
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>联系我们</h3>
+                    <ul class="footer-links">
+                        <li><a href="/a/lyb">留言板</a></li>
+                        <li><a href="mailto:jsxzznz@163.com">邮箱联系</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 夸克博客Physics实验室. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 粒子效果库 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="physics.js"></script>
+</body>
+
+</html>

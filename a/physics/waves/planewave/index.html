@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平面点波源演示 - 夸克 Physics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>平面点波源演示</h1>
+
+    <p class="description"><a href="https://lsqkk.github.io">夸克博客</a> / <a href="https://lsqkk.github.io/a">前端实验室</a> /
+        <a href="https://lsqkk.github.io/a/physics">Physics项目</a> / <a
+            href="https://lsqkk.github.io/a/physics/waves">波</a> / <a href="/">平面点波源演示</a>
+    </p>
+
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="waveCanvas"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>波参数</h3>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>波长</span>
+                        <span id="wavelengthValue">50</span>
+                    </div>
+                    <input type="range" id="wavelength" min="20" max="100" value="50">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>频率</span>
+                        <span id="frequencyValue">0.05</span>
+                    </div>
+                    <input type="range" id="frequency" min="0.01" max="0.1" step="0.01" value="0.05">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>振幅</span>
+                        <span id="amplitudeValue">1.0</span>
+                    </div>
+                    <input type="range" id="amplitude" min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>颜色方案</h3>
+                <div class="color-scheme">
+                    <div class="color-option active" data-scheme="blue">蓝色</div>
+                    <div class="color-option" data-scheme="green">绿色</div>
+                    <div class="color-option" data-scheme="red">红色</div>
+                </div>
+                <div class="legend">
+                    <span>波谷</span>
+                    <span>波峰</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>其他控制</h3>
+                <button id="pauseBtn">暂停</button>
+                <button id="resetBtn">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h3>使用说明</h3>
+        <ul>
+            <li>调整波长、频率和振幅参数来观察波的变化</li>
+            <li>选择不同的颜色方案来改变波的显示效果</li>
+            <li>使用暂停按钮可以停止波的传播</li>
+            <li>重置按钮会将所有参数恢复为默认值</li>
+        </ul>
+    </div>
+    <script src="planewave.js"></script>
+</body>
+
+</html>

@@ -1,38 +1,38 @@
 [
     {
         "name": "360°全景交大",
-        "link": "/360",
-        "description": "沉浸式体验交大校园全景，使用WebGL技术实现360度全景浏览。",
+        "link": "a/360",
+        "description": "沉浸式体验交大校园全景，使用WebGL技术实现360度全景浏览",
         "icon": "fa-globe-americas"
     },
     {
         "name": "夸克地图",
-        "link": "/gps",
-        "description": "基于地理位置的可视化地图应用，支持路径规划和位置标记。",
+        "link": "a/360",
+        "description": "基于地理位置的可视化地图应用，支持路径规划和位置标记(developing)",
         "icon": "fa-map-marked-alt"
     },
     {
         "name": "夸克博客留言板",
-        "link": "/lyb",
-        "description": "用户互动与留言交流平台，支持实时评论和消息通知。",
+        "link": "a/lyb",
+        "description": "用户互动与留言交流平台，支持实时评论和消息通知",
         "icon": "fa-comments"
     },
     {
         "name": "Physics项目",
-        "link": "/physics",
-        "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测。",
+        "link": "a/physics",
+        "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测",
         "icon": "fa-atom"
     },
     {
         "name": "夸克大学",
-        "link": "/uni",
-        "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪。",
+        "link": "a/uni",
+        "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪",
         "icon": "fa-graduation-cap"
     },
     {
         "name": "夸克自控平台",
-        "link": "/zk",
-        "description": "个人成长与自我管理系统。",
+        "link": "a/zk",
+        "description": "个人成长与自我管理系统",
         "icon": "fa-cogs"
     }
 ]
