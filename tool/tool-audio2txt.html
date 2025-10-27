@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <title>实时语音转文字 | 夸克博客</title>
+    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
     <style>
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
@@ -26,54 +28,104 @@
             margin-bottom: 1.5rem;
         }
 
-.feature-scroller {
-    background: #f8fafc;
-    border-radius: 8px;
-    padding: 0.8rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    color: #4a5568;
-    font-size: 0.95em;
-    height: 60px;
-    position: relative;
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-}
+        .feature-scroller {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #4a5568;
+            font-size: 0.95em;
+            height: 60px;
+            position: relative;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
 
-.feature-line {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    padding: 0 1rem;
-}
+        .feature-line {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            padding: 0 1rem;
+        }
 
-.feature-line.active {
-    opacity: 1;
-    transform: translateY(-50%) scale(1.05);
-}
-@keyframes featureCycle {
-    0% { opacity: 0; transform: translateY(20px) scale(0.9); }
-    10% { opacity: 1; transform: translateY(0) scale(1.05); }
-    20% { opacity: 1; transform: translateY(0) scale(1.05); }
-    30% { opacity: 0; transform: translateY(-20px) scale(0.9); }
-    100% { opacity: 0; transform: translateY(-20px) scale(0.9); }
-}
+        .feature-line.active {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        @keyframes featureCycle {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateY(0) scale(1.05);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(0) scale(1.05);
+            }
+
+            30% {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.9);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.9);
+            }
+        }
+
         .feature-text {
             animation: scrollFeatures 18s infinite;
             position: relative;
         }
 
         @keyframes scrollFeatures {
-            0%, 15% { transform: translateY(0); opacity: 1; }
-            20%, 35% { transform: translateY(-100%); opacity: 1; }
-            40%, 55% { transform: translateY(-200%); opacity: 1; }
-            60%, 75% { transform: translateY(-300%); opacity: 1; }
-            80%, 95% { transform: translateY(-400%); opacity: 1; }
-            100% { transform: translateY(-500%); opacity: 1; }
+
+            0%,
+            15% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            20%,
+            35% {
+                transform: translateY(-100%);
+                opacity: 1;
+            }
+
+            40%,
+            55% {
+                transform: translateY(-200%);
+                opacity: 1;
+            }
+
+            60%,
+            75% {
+                transform: translateY(-300%);
+                opacity: 1;
+            }
+
+            80%,
+            95% {
+                transform: translateY(-400%);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-500%);
+                opacity: 1;
+            }
         }
 
         .controls {
@@ -152,9 +204,17 @@
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.5); }
-            70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(72, 187, 120, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(72, 187, 120, 0);
+            }
         }
 
         .status {
@@ -211,17 +271,18 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>🎤 实时语音转文字 - 夸克博客</h1>
-        
-<div class="feature-scroller">
-    <div class="feature-line active">🎙️ 点击"开始录音"即可将语音实时转为文字</div>
-    <div class="feature-line">📋 转换内容自动保存，关闭页面不会丢失</div>
-    <div class="feature-line">📱 支持移动端使用，兼容主流浏览器</div>
-    <div class="feature-line">📤 一键复制转换结果，方便分享和使用</div>
-    <div class="feature-line">🚫 APP内无法录音？试试复制链接到浏览器</div>
-</div>
+
+        <div class="feature-scroller">
+            <div class="feature-line active">🎙️ 点击"开始录音"即可将语音实时转为文字</div>
+            <div class="feature-line">📋 转换内容自动保存，关闭页面不会丢失</div>
+            <div class="feature-line">📱 支持移动端使用，兼容主流浏览器</div>
+            <div class="feature-line">📤 一键复制转换结果，方便分享和使用</div>
+            <div class="feature-line">🚫 APP内无法录音？试试复制链接到浏览器</div>
+        </div>
 
         <div class="controls">
             <button id="startBtn" onclick="startRecognition()">
@@ -237,13 +298,9 @@
                 <span>复制链接</span>
             </button>
         </div>
-        <textarea 
-            id="transcript" 
-            placeholder="录音内容将显示在这里..."
-            spellcheck="false"
-        ></textarea>
+        <textarea id="transcript" placeholder="录音内容将显示在这里..." spellcheck="false"></textarea>
         <div class="status" id="status">准备就绪</div>
-        
+
         <div class="copyright">
             © 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights reserved.
         </div>
@@ -259,7 +316,7 @@
         // 初始化语音识别
         function initializeRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
+
             if (!SpeechRecognition) {
                 alert("当前浏览器不支持语音识别功能，请使用最新版Chrome浏览器");
                 return;
@@ -298,7 +355,7 @@
 
         function startRecognition() {
             if (!recognition) initializeRecognition();
-            
+
             recognition.start();
             isRecording = true;
             document.getElementById('startBtn').style.display = 'none';
@@ -338,7 +395,7 @@
             const transcript = document.getElementById('transcript');
             transcript.select();
             document.execCommand('copy');
-            
+
             // 显示复制成功提示
             const copySuccess = document.getElementById('copySuccess');
             copySuccess.textContent = '内容已复制！';
@@ -357,7 +414,7 @@
             tempInput.select();
             document.execCommand('copy');
             document.body.removeChild(tempInput);
-            
+
             const copySuccess = document.getElementById('copySuccess');
             copySuccess.textContent = '链接已复制！';
             copySuccess.classList.add('show');
@@ -371,27 +428,28 @@
 
         // 文本框内容变化时保存
         document.getElementById('transcript').addEventListener('input', autoSave);
-document.addEventListener('DOMContentLoaded', function() {
-    const features = document.querySelectorAll('.feature-line');
-    let current = 0;
-    
-    function cycleFeatures() {
-        // 移除所有active类
-        features.forEach(f => f.classList.remove('active'));
-        
-        // 添加当前active类
-        features[current].classList.add('active');
-        
-        // 更新索引
-        current = (current + 1) % features.length;
-    }
-    
-    // 初始显示第一个
-    cycleFeatures();
-    
-    // 每3秒切换一次
-    setInterval(cycleFeatures, 3000);
-});
+        document.addEventListener('DOMContentLoaded', function () {
+            const features = document.querySelectorAll('.feature-line');
+            let current = 0;
+
+            function cycleFeatures() {
+                // 移除所有active类
+                features.forEach(f => f.classList.remove('active'));
+
+                // 添加当前active类
+                features[current].classList.add('active');
+
+                // 更新索引
+                current = (current + 1) % features.length;
+            }
+
+            // 初始显示第一个
+            cycleFeatures();
+
+            // 每3秒切换一次
+            setInterval(cycleFeatures, 3000);
+        });
     </script>
 </body>
+
 </html>

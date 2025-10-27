@@ -1,49 +1,58 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hans">
-  <head>
-    <meta charset="UTF-8" />
-    <title>中午吃什么 - 夸克博客</title>
-    <meta name="keywords" content="中午吃什么" />
-    <meta name="description" content="中午吃什么" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="output.css" />
-    <script async src="https://analytics.huangyafei.com/script.js" data-website-id="5a226081-6ff5-432a-9701-14b7a8669e78"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-71978237-1"></script>
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "m13lqp2smp");
-    </script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      
-      gtag('config', 'UA-71978237-1');
-    </script>
-  </head>
 
-  <body>
-    <div id="wrapper">
-      <h1>
-        中午吃什么，吃什么？
-        <br />
-        <br />
-        <b style="color: #ff9733" id="what"></b>
-      </h1>
-      <input type="button" class="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-600 sm:ml-3 sm:w-auto" value="开始" id="start" />
-      <input type="button" class="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-600 sm:ml-3 sm:w-auto" value="开始" id="stop" style="display: none" />
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>中午吃什么 - 夸克博客</title>
+  <meta name="keywords" content="中午吃什么" />
+  <meta name="description" content="中午吃什么" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="stylesheet" href="output.css" />
+  <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
+  <link rel="stylesheet" href="https://lsqkk.github.io/css/cursor.css">
+  <script src="https://lsqkk.github.io/js/cursor-trail.js"></script>
+  <script async src="https://analytics.huangyafei.com/script.js"
+    data-website-id="5a226081-6ff5-432a-9701-14b7a8669e78"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-71978237-1"></script>
+  <script type="text/javascript">
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "m13lqp2smp");
+  </script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-    <textarea rows="9" cols="53" id="list" style="display: none">
+    gtag('config', 'UA-71978237-1');
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <h1>
+      中午吃什么，吃什么？
+      <br />
+      <br />
+      <b style="color: #ff9733" id="what"></b>
+    </h1>
+    <input type="button"
+      class="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-600 sm:ml-3 sm:w-auto"
+      value="开始" id="start" />
+    <input type="button"
+      class="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-600 sm:ml-3 sm:w-auto"
+      value="开始" id="stop" style="display: none" />
+  </div>
+
+  <textarea rows="9" cols="53" id="list" style="display: none">
                 馄饨 拉面 烩面 热干面 刀削面 油泼面 炸酱面 炒面 重庆小面 米线 酸辣粉 土豆粉 螺狮粉 凉皮儿 麻辣烫 肉夹馍 羊肉汤 炒饭 盖浇饭 卤肉饭 烤肉饭 黄焖鸡米饭 驴肉火烧 川菜 麻辣香锅 火锅 酸菜鱼 烤串 披萨 烤鸭 汉堡 炸鸡 寿司 蟹黄包 煎饼果子 生煎 炒年糕
     </textarea>
 
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
-    <script src="random.js"></script>
-    <script src="three_punch_combo.js"></script>
-  </body>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+  <script src="random.js"></script>
+  <script src="three_punch_combo.js"></script>
+</body>
+
 </html>

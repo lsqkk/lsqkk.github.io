@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Nav - 现代网站导航</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
     <style>
         :root {
             --primary-color: #6366f1;
@@ -414,13 +416,13 @@
             .main-content {
                 flex-direction: column;
             }
-            
+
             .folders-sidebar {
                 width: 100%;
                 margin-right: 0;
                 margin-bottom: 20px;
             }
-            
+
             .bookmarks-grid {
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
@@ -431,31 +433,31 @@
                 flex-direction: column;
                 gap: 20px;
             }
-            
+
             .controls {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .bookmarks-grid {
                 grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
                 gap: 15px;
             }
-            
+
             .icon-box {
                 width: 50px;
                 height: 50px;
                 font-size: 18px;
             }
-            
+
             .bookmark-card h3 {
                 font-size: 12px;
             }
-            
+
             .bookmark-card span {
                 font-size: 10px;
             }
-            
+
             .modal-content {
                 padding: 20px;
                 margin: 20px;
@@ -464,8 +466,15 @@
 
         /* 动画效果 */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .fade-in {
@@ -473,6 +482,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -744,18 +754,18 @@
         // 随机颜色生成
         randomColorBtn.addEventListener('click', () => {
             const colors = [
-                '#3B82F6', '#8B5CF6', '#EC4899', '#EF4444', 
+                '#3B82F6', '#8B5CF6', '#EC4899', '#EF4444',
                 '#F59E0B', '#10B981', '#6366F1', '#0EA5E9'
             ];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            
+
             document.querySelector('.color-option.active').classList.remove('active');
-            
+
             // 找到匹配的颜色选项并激活它
-            const colorOption = Array.from(colorOptions).find(option => 
+            const colorOption = Array.from(colorOptions).find(option =>
                 option.getAttribute('data-color') === randomColor
             );
-            
+
             if (colorOption) {
                 colorOption.classList.add('active');
             }
@@ -766,11 +776,11 @@
             // 默认显示网格视图
             bookmarksGrid.style.display = 'grid';
             bookmarksList.style.display = 'none';
-            
+
             // 为书签卡片添加点击效果
             document.querySelectorAll('.bookmark-card, .bookmark-item').forEach(card => {
                 card.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('action-btn') && 
+                    if (!e.target.classList.contains('action-btn') &&
                         !e.target.parentElement.classList.contains('action-btn')) {
                         card.style.transform = 'scale(0.95)';
                         setTimeout(() => {
@@ -782,4 +792,5 @@
         });
     </script>
 </body>
+
 </html>
