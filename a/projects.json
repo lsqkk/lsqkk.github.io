@@ -1,7 +1,7 @@
 [
     {
         "name": "360°全景交大",
-        "link": "a/360",
+        "link": "/360",
         "description": "沉浸式体验交大校园全景，使用WebGL技术实现360度全景浏览",
         "icon": "fa-globe-americas"
     },
