@@ -1,13 +1,13 @@
 [
     {
         "name": "360°全景交大",
-        "link": "/360",
+        "link": "360",
         "description": "沉浸式体验交大校园全景，使用WebGL技术实现360度全景浏览",
         "icon": "fa-globe-americas"
     },
     {
         "name": "夸克地图",
-        "link": "a/360",
+        "link": "gps",
         "description": "基于地理位置的可视化地图应用，支持路径规划和位置标记(developing)",
         "icon": "fa-map-marked-alt"
     },
