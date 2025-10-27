@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>横波的传播 | 夸克博客 Physics</title>
+    <link rel="stylesheet" href="shearwave.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1>横波的传播</h1>
+        <p class="subtitle"><a href="https://lsqkk.github.io">夸克博客</a> / <a href="https://lsqkk.github.io/a">前端实验室</a> /
+            <a href="https://lsqkk.github.io/a/physics">Physics项目</a> / <a
+                href="https://lsqkk.github.io/a/physics/waves">波</a> / <a href="/">横波的传播</a>
+        </p>
+    </div>
+
+    <div class="container">
+        <div class="wave-container">
+            <canvas id="waveCanvas"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>波参数</h3>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>波长</span>
+                        <span id="wavelengthValue">150</span>
+                    </div>
+                    <input type="range" id="wavelength" min="50" max="300" value="150">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>频率</span>
+                        <span id="frequencyValue">0.03</span>
+                    </div>
+                    <input type="range" id="frequency" min="0.01" max="0.1" step="0.01" value="0.03">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>振幅</span>
+                        <span id="amplitudeValue">40</span>
+                    </div>
+                    <input type="range" id="amplitude" min="10" max="80" value="40">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>波类型</h3>
+                <div class="wave-type">
+                    <div class="wave-option active" data-type="sine">正弦波</div>
+                    <div class="wave-option" data-type="triangle">三角波</div>
+                    <div class="wave-option" data-type="square">方波</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>显示选项</h3>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>节点数量</span>
+                        <span id="nodeCountValue">40</span>
+                    </div>
+                    <input type="range" id="nodeCount" min="10" max="80" value="40">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>波速</span>
+                        <span id="speedValue">1.0</span>
+                    </div>
+                    <input type="range" id="speed" min="0.5" max="3.0" step="0.1" value="1.0">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="pauseBtn">暂停</button>
+                <button id="resetBtn">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h3>横波传播原理</h3>
+        <ul>
+            <li>横波是振动方向与传播方向垂直的波</li>
+            <li>每个节点在垂直方向上做简谐振动</li>
+            <li>相邻节点间存在相位延迟，形成波向前传播的效果</li>
+            <li>波峰和波谷交替出现，形成三角函数图样</li>
+            <li>调整参数可以观察不同波长、频率和振幅对波形的影响</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        © 2025 夸克博客 / 蓝色奇夸克 All rights reserved.
+    </div>
+
+    <script src="shearwave.js"></script>
+</body>
+
+</html>
