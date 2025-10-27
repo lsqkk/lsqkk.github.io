@@ -1,6 +1,13 @@
+<p> 
+  <a href="https://github.com/lsqkk?tab=followers"> <img src="https://img.shields.io/github/followers/lsqkk?label=Followers&style=plastic" height="25px" alt="github follow" /> </a>
+  <a href="https://scholar.google.com/citations?user=lsqkk"><img src="https://img.shields.io/badge/scholar-4385FE.svg?&style=plastic&logo=google-scholar&logoColor=white" alt="Google Scholar" height="25px"> </a>
+  <a href="mailto:jsxzznz@gmail.com"> <img src="https://img.shields.io/badge/gmail-%23D14836.svg?&style=plastic&logo=gmail&logoColor=white" height="25px" alt="Email">
+  <a href="https://www.zhihu.com/people/jsxzznz"><img src="https://img.shields.io/badge/知乎-0079FF.svg?style=plastic&logo=zhihu&logoColor=white" height="25px" alt="知乎"></a>
+</p> 
+
 # 夸克博客 ✨
 
-> **无穷的远方，无数的人们，都和我有关**
+# > **无穷的远方，无数的人们，都和我有关**
 
 欢迎来到我的个人博客项目仓库！这里是 **蓝色奇夸克** 在数字世界中的一片自留地，一个由代码、思考与好奇心构筑的空间。
 
