@@ -5,9 +5,9 @@
   <a href="https://www.zhihu.com/people/jsxzznz"><img src="https://img.shields.io/badge/知乎-0079FF.svg?style=plastic&logo=zhihu&logoColor=white" height="25px" alt="知乎"></a>
 </p> 
 
-# 夸克博客 ✨
+# **无穷的远方，无数的人们，都和我有关**
 
-# > **无穷的远方，无数的人们，都和我有关**
+> 夸克博客说明文档
 
 欢迎来到我的个人博客项目仓库！这里是 **蓝色奇夸克** 在数字世界中的一片自留地，一个由代码、思考与好奇心构筑的空间。
 
