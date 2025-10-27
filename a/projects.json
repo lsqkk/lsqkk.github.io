@@ -13,25 +13,25 @@
     },
     {
         "name": "夸克博客留言板",
-        "link": "a/lyb",
+        "link": "lyb",
         "description": "用户互动与留言交流平台，支持实时评论和消息通知",
         "icon": "fa-comments"
     },
     {
         "name": "Physics项目",
-        "link": "a/physics",
+        "link": "physics",
         "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测",
         "icon": "fa-atom"
     },
     {
         "name": "夸克大学",
-        "link": "a/uni",
+        "link": "uni",
         "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪",
         "icon": "fa-graduation-cap"
     },
     {
         "name": "夸克自控平台",
-        "link": "a/zk",
+        "link": "zk",
         "description": "个人成长与自我管理系统",
         "icon": "fa-cogs"
     }

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光的反射 - 夸克 Physics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>光的反射定律演示</h1>
+    <p class="description">通过交互式动画理解光的反射原理：入射角等于反射角</p>
+
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="reflectionCanvas" width="800" height="500"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h2>光源控制</h2>
+                <div class="button-group">
+                    <button id="addLight">添加新光源</button>
+                    <button id="removeLight">移除光源</button>
+                </div>
+                <p>拖动光源改变位置，拖动光线末端改变方向</p>
+            </div>
+
+            <div class="control-group">
+                <h2>反射面控制</h2>
+                <div class="button-group">
+                    <button id="addMirror">添加新反射面</button>
+                    <button id="removeMirror">移除反射面</button>
+                </div>
+                <p>拖动反射面两端调整位置和角度</p>
+            </div>
+
+            <div class="control-group">
+                <h2>动画控制</h2>
+                <div class="button-group">
+                    <button id="toggleAnimation">暂停动画</button>
+                    <button class="reset" id="resetAll">重置所有</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>物理信息</h2>
+            <div class="info-item">
+                <span class="info-label">入射角:</span>
+                <span class="info-value" id="incidentAngle">30°</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">反射角:</span>
+                <span class="info-value" id="reflectionAngle">30°</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">反射定律:</span>
+                <span class="info-value">入射角 = 反射角</span>
+            </div>
+
+            <div class="instructions">
+                <h3>操作说明</h3>
+                <ul>
+                    <li>拖动光源位置可以改变光线起点</li>
+                    <li>拖动光线末端可以改变光线方向</li>
+                    <li>拖动反射面两端可以调整反射面位置和角度</li>
+                    <li>只有反射面正面（蓝色）能反射光线</li>
+                    <li>可以添加多个光源和反射面</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="mirror.js"></script>
+</body>
+
+</html>
