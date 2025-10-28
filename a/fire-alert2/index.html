@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧山火预警系统</title>
+    <link rel="stylesheet" href="fire-alert.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
+</head>
+
+<body class="light-mode">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-fire-flame-curved"></i>
+                <span>智慧山火预警系统</span>
+            </div>
+            <div class="nav-links">
+                <a href="#dashboard" class="nav-link active">预警看板</a>
+                <a href="#satellite" class="nav-link">卫星监测</a>
+                <a href="#report" class="nav-link">灾情上报</a>
+                <a href="admin-panel.html" class="nav-link">管理后台</a>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 预警头部 -->
+        <div class="alert-header" id="alertHeader">
+            <div class="alert-level" id="alertLevel">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>火险等级：加载中...</span>
+            </div>
+            <div class="location-info" id="locationInfo">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>定位中...</span>
+            </div>
+        </div>
+
+        <!-- 仪表盘 -->
+        <div class="dashboard" id="dashboard">
+            <div class="stats-grid">
+                <!-- 火险指数 -->
+                <div class="stat-card danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="fireRiskValue">--</div>
+                        <div class="stat-label">火险指数</div>
+                        <div class="stat-desc" id="fireRiskDesc">计算中...</div>
+                    </div>
+                </div>
+
+                <!-- 温度 -->
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="temperatureValue">--°C</div>
+                        <div class="stat-label">当前温度</div>
+                        <div class="stat-desc" id="temperatureDesc">--</div>
+                    </div>
+                </div>
+
+                <!-- 湿度 -->
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="humidityValue">--%</div>
+                        <div class="stat-label">相对湿度</div>
+                        <div class="stat-desc" id="humidityDesc">--</div>
+                    </div>
+                </div>
+
+                <!-- 风速 -->
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="windSpeedValue">-- m/s</div>
+                        <div class="stat-label">平均风速</div>
+                        <div class="stat-desc" id="windDesc">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地图和预警信息 -->
+            <div class="main-grid">
+                <!-- 地图区域 -->
+                <div class="map-card" id="satellite">
+                    <div class="card-header">
+                        <h3><i class="fas fa-satellite"></i> 卫星遥感监测</h3>
+                        <div class="map-controls">
+                            <button class="control-btn" id="refreshMap">
+                                <i class="fas fa-sync-alt"></i> 刷新
+                            </button>
+                            <button class="control-btn" id="toggleHeatmap">
+                                <i class="fas fa-layer-group"></i> 热力图
+                            </button>
+                        </div>
+                    </div>
+                    <div class="map-container" id="mapContainer">
+                        <div id="tdtMap" class="tdt-map"></div>
+                        <div class="map-overlay">
+                            <div class="map-legend">
+                                <div class="legend-title">火险热力图例</div>
+                                <div class="legend-gradient">
+                                    <span>低</span>
+                                    <div class="gradient-bar"></div>
+                                    <span>高</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 实时预警 -->
+                <div class="alert-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bell"></i> 实时预警信息</h3>
+                        <span class="update-time" id="alertUpdateTime">--</span>
+                    </div>
+                    <div class="alert-list" id="alertList">
+                        <div class="alert-item loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>加载预警信息中...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 灾情上报和决策支持 -->
+            <div class="action-grid" id="report">
+                <!-- 灾情上报 -->
+                <div class="report-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-flag"></i> 山火信息上报</h3>
+                    </div>
+                    <div class="report-form">
+                        <div class="form-group">
+                            <label for="reportLocation">位置描述</label>
+                            <input type="text" id="reportLocation" placeholder="请输入具体位置描述">
+                        </div>
+                        <div class="form-group">
+                            <label for="reportSeverity">严重程度</label>
+                            <select id="reportSeverity">
+                                <option value="low">低 - 疑似烟雾/小火点</option>
+                                <option value="medium">中 - 明显火情</option>
+                                <option value="high">高 - 大规模山火</option>
+                                <option value="critical">危急 - 威胁居民区</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportDescription">详细描述</label>
+                            <textarea id="reportDescription" rows="3" placeholder="请描述火情具体情况..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="reportImage">上传图片（可选）</label>
+                            <input type="file" id="reportImage" accept="image/*">
+                        </div>
+                        <button class="submit-btn" id="submitReport">
+                            <i class="fas fa-paper-plane"></i> 提交上报
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 决策支持 -->
+                <div class="decision-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chess-knight"></i> 智能决策支持</h3>
+                    </div>
+                    <div class="decision-content">
+                        <div class="decision-item">
+                            <div class="decision-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="decision-info">
+                                <div class="decision-title">最佳扑救窗口期</div>
+                                <div class="decision-value" id="rescueWindow">分析中...</div>
+                            </div>
+                        </div>
+                        <div class="decision-item">
+                            <div class="decision-icon">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div class="decision-info">
+                                <div class="decision-title">安全撤离路线</div>
+                                <div class="decision-value" id="evacuationRoute">基于当前风向分析...</div>
+                            </div>
+                        </div>
+                        <div class="decision-item">
+                            <div class="decision-icon">
+                                <i class="fas fa-wind"></i>
+                            </div>
+                            <div class="decision-info">
+                                <div class="decision-title">火势蔓延预测</div>
+                                <div class="decision-value" id="spreadPrediction">计算中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载脚本 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="fire-alert.js"></script>
+</body>
+
+</html>
