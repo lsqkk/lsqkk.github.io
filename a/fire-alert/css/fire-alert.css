@@ -1,0 +1,514 @@
+:root {
+    --primary-blue: #1a365d;
+    --secondary-blue: #2d3748;
+    --accent-blue: #3182ce;
+    --warning-orange: #ed8936;
+    --danger-red: #e53e3e;
+    --success-green: #38a169;
+    --text-light: #e2e8f0;
+    --text-dark: #2d3748;
+    --bg-dark: #0f1419;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --border-light: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--primary-blue), var(--bg-dark));
+    color: var(--text-light);
+    min-height: 100vh;
+}
+
+/* 导航栏 */
+.navbar {
+    background: rgba(26, 54, 93, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-light);
+}
+
+.nav-brand i {
+    color: var(--warning-orange);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* 仪表盘布局 */
+.dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.status-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.status-item {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(10px);
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.status-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* 火险等级颜色 */
+.fire-risk-low {
+    color: var(--success-green);
+}
+
+.fire-risk-medium {
+    color: var(--warning-orange);
+}
+
+.fire-risk-high {
+    color: var(--danger-red);
+}
+
+.fire-risk-extreme {
+    color: #9b2c2c;
+}
+
+/* 面板样式 */
+.panel {
+    background: var(--bg-card);
+    border-radius: 15px;
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.panel-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.panel-content {
+    padding: 1.5rem;
+}
+
+/* 网格布局 */
+.row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.col-6 {
+    grid-column: span 1;
+}
+
+/* 地图容器 */
+.map-panel {
+    height: 500px;
+}
+
+.map-container {
+    position: relative;
+    height: 100%;
+}
+
+.fire-map {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.map-legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    gap: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.risk-low {
+    background: var(--success-green);
+}
+
+.risk-medium {
+    background: var(--warning-orange);
+}
+
+.risk-high {
+    background: var(--danger-red);
+}
+
+.risk-extreme {
+    background: #9b2c2c;
+}
+
+/* 天气信息 */
+.weather-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.weather-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.weather-icon {
+    font-size: 1.5rem;
+    color: var(--accent-blue);
+}
+
+.weather-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.weather-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 风险指示器 */
+.risk-indicator {
+    text-align: center;
+}
+
+.risk-meter {
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(90deg,
+            var(--success-green) 0%,
+            var(--warning-orange) 33%,
+            var(--danger-red) 66%,
+            #9b2c2c 100%);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.risk-level {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 25%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    transition: all 0.5s ease;
+}
+
+.risk-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* 预警列表 */
+.alerts-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    border-left: 4px solid;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.alert-low {
+    border-left-color: var(--success-green);
+}
+
+.alert-medium {
+    border-left-color: var(--warning-orange);
+}
+
+.alert-high {
+    border-left-color: var(--danger-red);
+}
+
+.alert-extreme {
+    border-left-color: #9b2c2c;
+}
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.alert-title {
+    font-weight: bold;
+}
+
+.alert-level {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.alert-low .alert-level {
+    background: var(--success-green);
+}
+
+.alert-medium .alert-level {
+    background: var(--warning-orange);
+}
+
+.alert-high .alert-level {
+    background: var(--danger-red);
+}
+
+.alert-extreme .alert-level {
+    background: #9b2c2c;
+}
+
+.alert-time {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* 决策支持 */
+.decision-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.decision-icon {
+    font-size: 1.5rem;
+    color: var(--accent-blue);
+}
+
+.decision-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.2rem;
+}
+
+.decision-value {
+    font-weight: bold;
+    color: var(--warning-orange);
+}
+
+/* 火情列表 */
+.fires-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.fire-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid var(--danger-red);
+}
+
+.fire-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.fire-location {
+    font-weight: bold;
+}
+
+.fire-status {
+    padding: 0.2rem 0.5rem;
+    background: var(--danger-red);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.fire-details {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* 按钮样式 */
+.btn-primary,
+.btn-secondary {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.btn-secondary {
+    background: var(--secondary-blue);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    background: #2c5aa0;
+}
+
+.btn-secondary:hover {
+    background: #3c4b63;
+}
+
+/* 无数据状态 */
+.no-alerts,
+.no-fires {
+    text-align: center;
+    padding: 2rem;
+    opacity: 0.6;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .dashboard {
+        padding: 1rem;
+    }
+
+    .row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .status-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .weather-info {
+        grid-template-columns: 1fr;
+    }
+
+    .map-legend {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+}
+
+/* 加载动画 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, .3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统管理 - 智慧山火预警系统</title>
+    <link rel="stylesheet" href="css/fire-alert.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-fire-flame-curved"></i>
+            <span>智慧山火预警系统</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-gauge"></i> 仪表盘</a>
+            <a href="satellite.html" class="nav-link"><i class="fas fa-satellite"></i> 卫星监测</a>
+            <a href="report.html" class="nav-link"><i class="fas fa-plus-circle"></i> 火情上报</a>
+            <a href="admin.html" class="nav-link active"><i class="fas fa-cog"></i> 管理</a>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <!-- 管理员登录 -->
+        <div class="panel" id="loginPanel">
+            <div class="panel-header">
+                <h3><i class="fas fa-lock"></i> 管理员登录</h3>
+            </div>
+            <div class="panel-content">
+                <div class="form-group">
+                    <label>管理员密码:</label>
+                    <input type="password" id="adminPassword" class="form-input" placeholder="请输入管理员密码">
+                </div>
+                <button class="btn-primary" onclick="adminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+            </div>
+        </div>
+
+        <!-- 管理面板 -->
+        <div id="adminPanel" style="display: none;">
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-label">登录状态</div>
+                    <div class="status-value" id="adminStatus">管理员模式</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">操作</div>
+                    <button class="btn-secondary" onclick="logoutAdmin()">
+                        <i class="fas fa-sign-out-alt"></i> 退出登录
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-bell"></i> 发布预警信息</h3>
+                        </div>
+                        <div class="panel-content">
+                            <div class="form-group">
+                                <label>预警标题:</label>
+                                <input type="text" id="alertTitle" class="form-input" placeholder="请输入预警标题">
+                            </div>
+                            <div class="form-group">
+                                <label>预警等级:</label>
+                                <select id="alertLevel" class="form-input">
+                                    <option value="low">低风险</option>
+                                    <option value="medium">中风险</option>
+                                    <option value="high">高风险</option>
+                                    <option value="extreme">极高风险</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>预警内容:</label>
+                                <textarea id="alertContent" rows="4" class="form-input"
+                                    placeholder="请输入详细的预警信息..."></textarea>
+                            </div>
+                            <button class="btn-primary" onclick="publishAlert()">
+                                <i class="fas fa-bullhorn"></i> 发布预警
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-fire"></i> 火情管理</h3>
+                        </div>
+                        <div class="panel-content">
+                            <div id="adminFiresList" class="fires-list">
+                                <div class="no-fires">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-cog"></i> 系统设置</h3>
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label>火险计算参数:</label>
+                        <div class="param-group">
+                            <div class="param-item">
+                                <span>温度权重:</span>
+                                <input type="number" id="tempWeight" value="0.3" step="0.1" min="0" max="1"
+                                    class="param-input">
+                            </div>
+                            <div class="param-item">
+                                <span>湿度权重:</span>
+                                <input type="number" id="humidityWeight" value="0.4" step="0.1" min="0" max="1"
+                                    class="param-input">
+                            </div>
+                            <div class="param-item">
+                                <span>风速权重:</span>
+                                <input type="number" id="windWeight" value="0.3" step="0.1" min="0" max="1"
+                                    class="param-input">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> 保存设置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

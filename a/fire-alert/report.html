@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>火情上报 - 智慧山火预警系统</title>
+    <link rel="stylesheet" href="css/fire-alert.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-fire-flame-curved"></i>
+            <span>智慧山火预警系统</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link"><i class="fas fa-gauge"></i> 仪表盘</a>
+            <a href="satellite.html" class="nav-link"><i class="fas fa-satellite"></i> 卫星监测</a>
+            <a href="report.html" class="nav-link active"><i class="fas fa-plus-circle"></i> 火情上报</a>
+            <a href="admin.html" class="nav-link"><i class="fas fa-cog"></i> 管理</a>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="row">
+            <div class="col-6">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-map-marker-alt"></i> 火情位置</h3>
+                    </div>
+                    <div class="panel-content">
+                        <div id="reportMap" class="fire-map" style="height: 400px;"></div>
+                        <div class="form-group">
+                            <button class="btn-secondary" onclick="getCurrentPosition()">
+                                <i class="fas fa-location-arrow"></i> 获取当前位置
+                            </button>
+                            <button class="btn-secondary" onclick="selectOnMap()">
+                                <i class="fas fa-map-pin"></i> 在地图上选择
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label>详细位置描述:</label>
+                            <input type="text" id="locationDesc" placeholder="例如：秦岭北麓某某山区" class="form-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-edit"></i> 火情信息</h3>
+                    </div>
+                    <div class="panel-content">
+                        <div class="form-group">
+                            <label>火情严重程度:</label>
+                            <select id="fireSeverity" class="form-input">
+                                <option value="低风险">低风险 - 小火苗/烟雾</option>
+                                <option value="中风险">中风险 - 明显火焰</option>
+                                <option value="高风险">高风险 - 较大火势</option>
+                                <option value="极高风险">极高风险 - 大火/蔓延迅速</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>火情描述:</label>
+                            <textarea id="fireDescription" rows="4" class="form-input"
+                                placeholder="请详细描述火情情况，包括火焰大小、烟雾颜色、蔓延方向等..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>上传图片 (可选):</label>
+                            <input type="file" id="fireImage" accept="image/*" class="form-input">
+                            <div id="imagePreview" class="image-preview"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>上报人信息:</label>
+                            <input type="text" id="reporterName" placeholder="您的姓名" class="form-input">
+                            <input type="tel" id="reporterPhone" placeholder="联系电话" class="form-input"
+                                style="margin-top: 10px;">
+                        </div>
+
+                        <button class="btn-primary" onclick="submitFireReport()" style="width: 100%;">
+                            <i class="fas fa-paper-plane"></i> 提交火情报告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h3><i class="fas fa-history"></i> 我的上报记录</h3>
+            </div>
+            <div class="panel-content">
+                <div id="reportHistory" class="fires-list">
+                    <div class="no-fires">暂无上报记录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://map.tianditu.gov.cn/api?v=4.0"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="js/report.js"></script>
+</body>
+
+</html>

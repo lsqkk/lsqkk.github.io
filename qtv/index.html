@@ -27,9 +27,11 @@
             --text-color: #333;
             --text-light: #666;
             --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --border-color: #e0e0e0;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-bg-solid: #ffffff;
+            --border-color: rgba(224, 224, 224, 0.6);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --blur-bg: rgba(255, 255, 255, 0.7);
         }
 
         * {
@@ -43,6 +45,8 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            background-image: linear-gradient(120deg, #e0f7fa 0%, #f5f7fa 100%);
+            min-height: 100vh;
         }
 
         header {
@@ -50,7 +54,20 @@
             color: white;
             padding: 2rem 0;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.05)" width="50" height="50"/></svg>');
+            opacity: 0.1;
         }
 
         .container {
@@ -100,6 +117,82 @@
             opacity: 0.8;
         }
 
+        /* 修改用户信息卡片样式 */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--blur-bg);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            flex: 0 1 280px;
+            min-width: 250px;
+            margin: 0;
+            /* 移除之前的margin设置 */
+        }
+
+        .user-info:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-details {
+            text-align: left;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-signature {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .user-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .user-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            /* 可以设置固定宽度或使用 flex 属性 */
+            flex: 0 0 auto;
+            /* 不伸缩，不收缩，自动基础大小 */
+        }
+
+        .user-link:hover {
+            color: var(--primary-light);
+        }
+
         .controls {
             display: flex;
             justify-content: space-between;
@@ -107,6 +200,12 @@
             margin: 2rem 0;
             flex-wrap: wrap;
             gap: 1rem;
+            padding: 1.5rem;
+            background: var(--blur-bg);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
         }
 
         .search-box {
@@ -117,18 +216,26 @@
 
         .search-box input {
             flex: 1;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: 1px solid var(--border-color);
-            border-radius: 4px 0 0 4px;
+            border-radius: 12px 0 0 12px;
             font-size: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
         }
 
         .search-box button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 0 15px;
-            border-radius: 0 4px 4px 0;
+            padding: 0 20px;
+            border-radius: 0 12px 12px 0;
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -145,10 +252,11 @@
         .sort-btn {
             background: none;
             border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px 18px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.7);
         }
 
         .sort-btn.active {
@@ -159,29 +267,33 @@
 
         .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .video-card {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 16px;
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: transform 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
         }
 
         .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
 
         .video-cover {
             position: relative;
             width: 100%;
             padding-top: 56.25%;
-            /* 16:9 aspect ratio */
             overflow: hidden;
         }
 
@@ -205,23 +317,50 @@
             right: 8px;
             background-color: rgba(0, 0, 0, 0.7);
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 8px;
             font-size: 0.8rem;
+            backdrop-filter: blur(5px);
         }
 
         .video-info {
-            padding: 1rem;
+            padding: 1.2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .video-title {
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            height: 2.8rem;
+            height: auto;
+            min-height: 3.2rem;
+            line-height: 1.4;
+        }
+
+        .video-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: auto;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .stat-icon {
+            font-size: 1rem;
         }
 
         .video-meta {
@@ -229,6 +368,7 @@
             justify-content: space-between;
             font-size: 0.85rem;
             color: var(--text-light);
+            margin-top: 0.8rem;
         }
 
         .pagination {
@@ -243,15 +383,17 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px 18px;
+            border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s;
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
         }
 
         .pagination button:disabled {
             background-color: var(--border-color);
             cursor: not-allowed;
+            box-shadow: none;
         }
 
         .pagination button:hover:not(:disabled) {
@@ -260,11 +402,15 @@
 
         .page-info {
             font-size: 0.9rem;
+            padding: 8px 16px;
+            background: var(--blur-bg);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
         }
 
         .loading {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
             font-size: 1.1rem;
             color: var(--text-light);
         }
@@ -273,9 +419,10 @@
             text-align: center;
             padding: 2rem;
             color: #e53935;
-            background-color: #ffebee;
-            border-radius: 8px;
+            background-color: rgba(255, 235, 238, 0.8);
+            border-radius: 16px;
             margin: 2rem 0;
+            backdrop-filter: blur(10px);
         }
 
         footer {
@@ -284,6 +431,8 @@
             color: var(--text-light);
             border-top: 1px solid var(--border-color);
             margin-top: 2rem;
+            background: var(--blur-bg);
+            backdrop-filter: blur(10px);
         }
 
         @media (max-width: 768px) {
@@ -303,6 +452,15 @@
             .sort-options {
                 justify-content: center;
             }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-details {
+                text-align: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -317,6 +475,10 @@
             .stats {
                 flex-direction: column;
                 gap: 1rem;
+            }
+
+            .video-stats {
+                gap: 0.5rem;
             }
         }
     </style>
@@ -344,6 +506,27 @@
     </header>
 
     <main class="container">
+        <div class="user-container">
+            <a href="https://space.bilibili.com/2105459088" target="_blank" class="user-link">
+                <div class="user-info">
+                    <img src="https://lsqkk.github.io/image/touxiang.png" alt="蓝色奇夸克" class="user-avatar">
+                    <div class="user-details">
+                        <div class="user-name">蓝色奇夸克</div>
+                        <div class="user-signature">无穷的远方，无数的人们，都和我有关</div>
+                    </div>
+                </div>
+            </a>
+            <a href="https://space.bilibili.com/3546767368915813" target="_blank" class="user-link">
+                <div class="user-info">
+                    <img src="https://lsqkk.github.io/image/touxiang.png" alt="层林漫" class="user-avatar">
+                    <div class="user-details">
+                        <div class="user-name">层林漫</div>
+                        <div class="user-signature">无穷的远方，无数的人们，都和我有关</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="搜索视频...">
@@ -377,6 +560,7 @@
         const config = {
             uid: '2105459088',
             apiUrl: 'https://uapis.cn/api/v1/social/bilibili/archives',
+            videoInfoApiUrl: 'https://uapis.cn/api/v1/social/bilibili/videoinfo',
             pageSize: 12
         };
 
@@ -387,7 +571,8 @@
             totalVideos: 0,
             orderBy: 'pubdate',
             keywords: '',
-            loading: false
+            loading: false,
+            videoDetails: {} // 存储视频详细信息
         };
 
         // DOM元素
@@ -479,6 +664,8 @@
                 const data = await response.json();
 
                 if (data.videos && Array.isArray(data.videos)) {
+                    // 获取视频详细信息
+                    await loadVideoDetails(data.videos);
                     renderVideos(data);
                     updatePagination(data);
                 } else {
@@ -490,6 +677,28 @@
             } finally {
                 state.loading = false;
             }
+        }
+
+        // 加载视频详细信息
+        async function loadVideoDetails(videos) {
+            // 清空之前的详细信息
+            state.videoDetails = {};
+
+            // 为每个视频获取详细信息
+            const promises = videos.map(async (video) => {
+                try {
+                    const response = await fetch(`${config.videoInfoApiUrl}?bvid=${video.bvid}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        state.videoDetails[video.bvid] = data;
+                    }
+                } catch (error) {
+                    console.error(`Error loading video details for ${video.bvid}:`, error);
+                }
+            });
+
+            // 等待所有详细信息加载完成
+            await Promise.all(promises);
         }
 
         // 渲染视频列表
@@ -530,13 +739,44 @@
             // 格式化发布时间
             const publishTime = formatTime(video.publish_time);
 
+            // 使用图片代理服务解决防盗链问题
+            const proxyCoverUrl = `https://images.weserv.nl/?url=${encodeURIComponent(video.cover)}&w=320&h=180`;
+
+            // 获取视频详细信息
+            const videoDetail = state.videoDetails[video.bvid];
+            const likeCount = videoDetail ? formatCount(videoDetail.stat.like) : '--';
+            const coinCount = videoDetail ? formatCount(videoDetail.stat.coin) : '--';
+            const favoriteCount = videoDetail ? formatCount(videoDetail.stat.favorite) : '--';
+            const shareCount = videoDetail ? formatCount(videoDetail.stat.share) : '--';
+            const danmakuCount = videoDetail ? formatCount(videoDetail.stat.danmaku) : '--';
+            const replyCount = videoDetail ? formatCount(videoDetail.stat.reply) : '--';
+
             card.innerHTML = `
                 <div class="video-cover">
-                    <img src="${video.cover}" alt="${video.title}" onerror="this.src='https://via.placeholder.com/320x180?text=封面加载失败'">
+                    <img src="${proxyCoverUrl}" alt="${video.title}" 
+                         onerror="this.src='https://via.placeholder.com/320x180/1e88e5/ffffff?text=封面加载中'">
                     <div class="video-duration">${duration}</div>
                 </div>
                 <div class="video-info">
                     <h3 class="video-title">${video.title}</h3>
+                    <div class="video-stats">
+                        <div class="stat">
+                            <span class="stat-icon">👍</span>
+                            <span>${likeCount}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">🪙</span>
+                            <span>${coinCount}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">⭐</span>
+                            <span>${favoriteCount}</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">📤</span>
+                            <span>${shareCount}</span>
+                        </div>
+                    </div>
                     <div class="video-meta">
                         <span>播放: ${playCount}</span>
                         <span>${publishTime}</span>
@@ -589,7 +829,14 @@
 
         // 格式化播放量
         function formatPlayCount(count) {
-            if (count >= 10000) {
+            return formatCount(count);
+        }
+
+        // 通用格式化数字
+        function formatCount(count) {
+            if (count >= 100000000) {
+                return (count / 100000000).toFixed(1) + '亿';
+            } else if (count >= 10000) {
                 return (count / 10000).toFixed(1) + '万';
             }
             return count;
