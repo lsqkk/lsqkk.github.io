@@ -11,7 +11,7 @@ document.write(`
                     <li><a href="article-list">文章</a></li>
                     <li><a href="tool">工具</a></li>
                     <li><a href="games">游戏</a></li>
-                    <li><a href="a">实验室</a></li>  <!-- 新增的实验室链接 -->
+                    <li><a href="a">实验室</a></li>
                     <li><a href="daily">日报</a></li>
                     <li><a href="qtv">视频</a></li>
                     <li><a href="a/lyb" target="blank">留言</a></li>
@@ -22,7 +22,7 @@ document.write(`
             </div>
             <div class="header-search">
                 <input type="text" id="searchInput" placeholder="搜索博客...">
-                <button onclick="searchBlog()">搜索</button>
+                <button onclick="handleGlobalSearch()">搜索</button>
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@ document.write(`
             <li><a href="article-list">文章</a></li>
             <li><a href="tool">工具</a></li>
             <li><a href="games">游戏</a></li>
-            <li><a href="a">实验室</a></li>  <!-- 新增的实验室链接 -->
+            <li><a href="a">实验室</a></li>
             <li><a href="daily">日报</a></li>
             <li><a href="qtv">视频</a></li>
             <li><a href="https://lsqkk.github.io/a/lyb" target="blank">留言</a></li>
@@ -42,3 +42,30 @@ document.write(`
         </ul>
     </div>
 `);
+
+// 全局搜索处理函数
+function handleGlobalSearch() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+
+    if (!searchTerm) {
+        return; // 搜索词为空时不执行任何操作
+    }
+
+    // 检查当前页面是否是文章列表页
+    const currentPath = window.location.pathname;
+    const isArticleListPage = currentPath.includes('article-list') ||
+        currentPath === '/article-list' ||
+        currentPath.endsWith('article-list.html');
+
+    if (isArticleListPage) {
+        // 如果在文章列表页，调用该页面的搜索函数
+        if (typeof window.searchBlog === 'function') {
+            window.searchBlog();
+        }
+    } else {
+        // 如果在其他页面，跳转到文章列表页并传递搜索参数
+        const searchParams = new URLSearchParams();
+        searchParams.set('search', searchTerm);
+        window.location.href = `article-list.html?${searchParams.toString()}`;
+    }
+}

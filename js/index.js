@@ -54,45 +54,6 @@ async function loadRecentPosts() {
     });
 }
 
-// 搜索博客功能
-async function searchBlog() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const posts = await fetch('json/posts.json').then(r => r.json());
-    const filteredPosts = posts.filter(post => post.title.toLowerCase().includes(searchTerm));
-
-    const searchResultsContainer = document.getElementById('searchResults');
-    searchResultsContainer.innerHTML = ''; // 清空之前的搜索结果
-
-    if (filteredPosts.length > 0) {
-        // 如果有匹配的博客，展示结果
-        filteredPosts.forEach(post => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'search-result-item';
-            resultItem.style.transition = 'all 0.3s ease';
-            resultItem.innerHTML = `
-                        <a href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
-                            ${post.title}
-                        </a>
-                        <div style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
-                    `;
-            searchResultsContainer.appendChild(resultItem);
-
-            // 为搜索结果项添加悬停效果
-            resultItem.addEventListener('mouseover', () => {
-                resultItem.style.transform = 'translateX(5px)';
-                resultItem.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
-            });
-            resultItem.addEventListener('mouseout', () => {
-                resultItem.style.transform = 'none';
-                resultItem.style.boxShadow = 'none';
-            });
-        });
-    } else {
-        // 如果没有匹配的博客，显示提示信息
-        searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">未找到相关博客</div>';
-    }
-}
-
 // 新增PV/UV存储功能
 function storeStatistics() {
     const pv = document.getElementById('busuanzi_value_site_pv').innerText;

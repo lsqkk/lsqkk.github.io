@@ -5,9 +5,22 @@ let currentPage = 1;
 const postsPerPage = 10;
 let allPosts = [];
 
+// 获取URL参数
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const searchParam = params.get('search');
+    return {
+        search: searchParam
+    };
+}
+
 // 加载文章列表
 async function loadPosts() {
+    console.log('开始加载文章...');
+
     allPosts = await fetch('json/posts.json').then(r => r.json());
+    console.log('获取到文章数量:', allPosts.length);
+
     // 确保所有文章都有tags数组
     allPosts.forEach(post => {
         if (!post.tags) post.tags = ['未分类'];
@@ -15,6 +28,93 @@ async function loadPosts() {
     renderTagFilter();
     renderPosts();
     renderPagination();
+
+    // 检查URL参数，如果有搜索词则自动执行搜索
+    const urlParams = getUrlParams();
+    console.log('URL参数:', urlParams);
+
+    if (urlParams.search) {
+        console.log('检测到搜索参数:', urlParams.search);
+
+        // 等待导航栏加载完成
+        setTimeout(() => {
+            const searchInput = document.getElementById('searchInput');
+            console.log('搜索框元素:', searchInput);
+
+            if (searchInput) {
+                console.log('设置搜索框值为:', urlParams.search);
+                searchInput.value = urlParams.search;
+                // 直接调用搜索函数，不等待用户操作
+                performSearch(urlParams.search);
+            } else {
+                console.error('未找到搜索框元素!');
+            }
+        }, 100);
+    }
+}
+
+// 执行搜索的核心函数
+function performSearch(searchTerm) {
+    const searchTermLower = searchTerm.toLowerCase().trim();
+
+    if (searchTermLower === '') {
+        // 如果搜索词为空，显示正常列表
+        document.getElementById('searchResults').style.display = 'none';
+        document.getElementById('tagFilter').style.display = 'flex';
+        document.getElementById('posts').style.display = 'block';
+        document.getElementById('pagination').style.display = 'flex';
+        return;
+    }
+
+    const searchResults = allPosts.filter(post =>
+        post.title.toLowerCase().includes(searchTermLower) ||
+        (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTermLower)))
+    );
+
+    const searchResultsContainer = document.getElementById('searchResults');
+    searchResultsContainer.innerHTML = '';
+
+    if (searchResults.length > 0) {
+        searchResults.forEach(post => {
+            // 计算阅读时长
+            const readTime = Math.ceil((post.wordCount || 0) / 400);
+
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.innerHTML = `
+                <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
+                <div class="post-date">${post.date}</div>
+                <div class="post-tags">
+                    <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
+                    ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                </div>
+            `;
+            searchResultsContainer.appendChild(resultItem);
+        });
+    } else {
+        searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center;">未找到相关文章</div>';
+    }
+
+    // 显示搜索结果，隐藏正常列表
+    document.getElementById('searchResults').style.display = 'block';
+    document.getElementById('tagFilter').style.display = 'none';
+    document.getElementById('posts').style.display = 'none';
+    document.getElementById('pagination').style.display = 'none';
+
+    // 更新URL参数（不刷新页面）
+    const url = new URL(window.location);
+    if (searchTerm) {
+        url.searchParams.set('search', searchTerm);
+    } else {
+        url.searchParams.delete('search');
+    }
+    window.history.replaceState({}, '', url);
+}
+
+// 搜索博客功能
+async function searchBlog() {
+    const searchTerm = document.getElementById('searchInput').value;
+    performSearch(searchTerm);
 }
 
 // 获取当前页的文章
@@ -46,10 +146,21 @@ function filterByTag(tag) {
     renderTagFilter();
     renderPosts();
     renderPagination();
+
+    // 清除搜索状态
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('tagFilter').style.display = 'flex';
+    document.getElementById('posts').style.display = 'block';
+    document.getElementById('pagination').style.display = 'flex';
+
+    // 清除URL中的搜索参数
+    const url = new URL(window.location);
+    url.searchParams.delete('search');
+    window.history.replaceState({}, '', url);
 }
 
 // 渲染文章列表
-
 function renderPosts() {
     const postsToShow = getCurrentPagePosts();
 
@@ -126,54 +237,17 @@ function nextPage() {
     }
 }
 
-// 搜索博客功能
-async function searchBlog() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    if (searchTerm.trim() === '') {
-        document.getElementById('searchResults').style.display = 'none';
-        document.getElementById('tagFilter').style.display = 'flex';
-        document.getElementById('posts').style.display = 'block';
-        document.getElementById('pagination').style.display = 'flex';
-        return;
-    }
-
-    const searchResults = allPosts.filter(post =>
-        post.title.toLowerCase().includes(searchTerm) ||
-        (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
-    );
-
-    const searchResultsContainer = document.getElementById('searchResults');
-    searchResultsContainer.innerHTML = '';
-
-    if (searchResults.length > 0) {
-        searchResults.forEach(post => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'search-result-item';
-            resultItem.innerHTML = `
-                        <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
-                        <div class="post-date">${post.date}</div>
-                        <div class="post-tags">
-                            ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-                        </div>
-                    `;
-            searchResultsContainer.appendChild(resultItem);
-        });
-    } else {
-        searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center;">未找到相关文章</div>';
-    }
-
-    document.getElementById('searchResults').style.display = 'block';
-    document.getElementById('tagFilter').style.display = 'none';
-    document.getElementById('posts').style.display = 'none';
-    document.getElementById('pagination').style.display = 'none';
-}
-
 // 初始化加载
 document.addEventListener('DOMContentLoaded', loadPosts);
 
 // 监听搜索输入框的Enter键
-document.getElementById('searchInput').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        searchBlog();
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchBlog();
+            }
+        });
     }
 });
