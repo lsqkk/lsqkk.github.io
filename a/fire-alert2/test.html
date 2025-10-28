@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天地图网页应用</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.3.0/ol.css">
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 地图容器样式 */
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* 控制面板样式 */
+        #control-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 按钮样式 */
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* 标题样式 */
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="control-panel">
+        <h1>天地图图层控制</h1>
+        <button id="vector">矢量地图</button>
+        <button id="image">影像地图</button>
+        <button id="terrain">地形地图</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
+    <script>
+        // 天地图API密钥
+        const apiKey = '6e5b0e71ae628b8c2ab60c9144a7848e';
+
+        // 创建地图视图
+        const view = new ol.View({
+            center: ol.proj.fromLonLat([116.3974, 39.9093]), // 北京中心点
+            zoom: 10
+        });
+
+        // 创建地图图层
+        const vectorBaseLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: `http://t0.tianditu.gov.cn/vec_w/wmts?tk=${apiKey}`,
+                projection: 'EPSG:3857'
+            }),
+            title: '矢量底图'
+        });
+
+        const vectorAnnotationLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: `http://t0.tianditu.gov.cn/cva_w/wmts?tk=${apiKey}`,
+                projection: 'EPSG:3857'
+            }),
+            title: '矢量注记'
+        });
+
+        const imageBaseLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: `http://t0.tianditu.gov.cn/img_w/wmts?tk=${apiKey}`,
+                projection: 'EPSG:3857'
+            }),
+            title: '影像底图',
+            visible: false
+        });
+
+        const imageAnnotationLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: `http://t0.tianditu.gov.cn/cia_w/wmts?tk=${apiKey}`,
+                projection: 'EPSG:3857'
+            }),
+            title: '影像注记',
+            visible: false
+        });
+
+        const terrainLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: `http://t0.tianditu.gov.cn/ter_w/wmts?tk=${apiKey}`,
+                projection: 'EPSG:3857'
+            }),
+            title: '地形晕渲',
+            visible: false
+        });
+
+        // 创建地图实例
+        const map = new ol.Map({
+            target: 'map',
+            layers: [
+                vectorBaseLayer,
+                vectorAnnotationLayer,
+                imageBaseLayer,
+                imageAnnotationLayer,
+                terrainLayer
+            ],
+            view: view
+        });
+
+        // 添加图层切换功能
+        document.getElementById('vector').addEventListener('click', function () {
+            vectorBaseLayer.setVisible(true);
+            vectorAnnotationLayer.setVisible(true);
+            imageBaseLayer.setVisible(false);
+            imageAnnotationLayer.setVisible(false);
+            terrainLayer.setVisible(false);
+        });
+
+        document.getElementById('image').addEventListener('click', function () {
+            vectorBaseLayer.setVisible(false);
+            vectorAnnotationLayer.setVisible(false);
+            imageBaseLayer.setVisible(true);
+            imageAnnotationLayer.setVisible(true);
+            terrainLayer.setVisible(false);
+        });
+
+        document.getElementById('terrain').addEventListener('click', function () {
+            vectorBaseLayer.setVisible(false);
+            vectorAnnotationLayer.setVisible(false);
+            imageBaseLayer.setVisible(false);
+            imageAnnotationLayer.setVisible(false);
+            terrainLayer.setVisible(true);
+        });
+    </script>
+</body>
+
+</html>
