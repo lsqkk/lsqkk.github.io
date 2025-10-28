@@ -85,6 +85,9 @@ async function initSystem() {
 }
 
 // 初始化天地图 - 使用正确的方法
+// Firebase配置和其他代码保持不变...
+
+// 初始化天地图 - 使用正确的WMTS服务
 function initMap() {
     return new Promise((resolve, reject) => {
         try {
@@ -97,42 +100,46 @@ function initMap() {
             map.centerAndZoom(center, 10);
             console.log('地图中心设置成功');
 
-            // 使用正确的图层创建方式
-            // 创建矢量地图图层
-            const vecLayer = new T.TileLayer({
-                // 使用正确的URL模板
+            // 使用正确的WMTS服务创建影像底图图层
+            const imgLayer = new T.TileLayer({
+                // 影像底图 - 球面墨卡托投影
                 getTileUrl: function (tileCoord, zoom) {
                     const x = tileCoord.x;
                     const y = tileCoord.y;
                     const z = zoom;
+                    // 使用多个子域负载均衡
                     const subdomain = (x + y) % 8;
-                    return `https://t${subdomain}.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${z}&TILEROW=${y}&TILECOL=${x}&tk=6e5b0e71ae628b8c2ab60c9144a7848e`;
+                    return `http://t${subdomain}.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=image%2Ftiles&TILEMATRIX=${z}&TILEROW=${y}&TILECOL=${x}&tk=6e5b0e71ae628b8c2ab60c9144a7848e`;
                 },
                 minZoom: 3,
                 maxZoom: 18
             });
 
-            // 创建标注图层
-            const cvaLayer = new T.TileLayer({
+            // 创建影像注记图层
+            const ciaLayer = new T.TileLayer({
+                // 影像注记 - 球面墨卡托投影
                 getTileUrl: function (tileCoord, zoom) {
                     const x = tileCoord.x;
                     const y = tileCoord.y;
                     const z = zoom;
                     const subdomain = (x + y) % 8;
-                    return `https://t${subdomain}.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${z}&TILEROW=${y}&TILECOL=${x}&tk=6e5b0e71ae628b8c2ab60c9144a7848e`;
+                    return `http://t${subdomain}.tianditu.gov.cn/cia_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cia&STYLE=default&TILEMATRIXSET=w&FORMAT=image%2Ftiles&TILEMATRIX=${z}&TILEROW=${y}&TILECOL=${x}&tk=6e5b0e71ae628b8c2ab60c9144a7848e`;
                 },
                 minZoom: 3,
                 maxZoom: 18
             });
 
             // 添加图层到地图
-            map.addLayer(vecLayer);
-            map.addLayer(cvaLayer);
+            map.addLayer(imgLayer);
+            map.addLayer(ciaLayer);
             console.log('地图图层添加成功');
 
             // 添加地图控件
             map.addControl(new T.Control.Zoom());
             map.addControl(new T.Control.Scale());
+
+            // 设置地图投影为球面墨卡托
+            map.setProjection('EPSG:3857');
 
             resolve();
         } catch (error) {
@@ -144,21 +151,7 @@ function initMap() {
     });
 }
 
-// 备用地图方案
-function createFallbackMap() {
-    const mapContainer = document.getElementById('fireMap');
-    mapContainer.innerHTML = `
-        <div style="width:100%;height:100%;background:#1a365d;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;">
-            <i class="fas fa-map-marked-alt" style="font-size:3rem;margin-bottom:1rem;"></i>
-            <div>地图加载失败</div>
-            <div style="font-size:0.8rem;margin-top:0.5rem;">请检查网络连接和API密钥</div>
-            <button class="btn-secondary" onclick="retryMap()" style="margin-top:1rem;">
-                <i class="fas fa-redo"></i> 重试加载地图
-            </button>
-        </div>
-    `;
-}
-
+// 其他函数保持不变...
 // 重试地图加载
 function retryMap() {
     initMap().then(() => {
