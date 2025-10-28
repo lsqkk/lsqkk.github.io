@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>天地图网页应用</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.3.0/ol.css">
+    <title>天地图示例</title>
     <style>
         body {
             margin: 0;
@@ -18,193 +17,77 @@
             height: 100vh;
         }
 
-        #control-panel {
+        .info {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-        }
-
-        button {
-            margin: 5px;
-            padding: 8px 16px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        button:hover {
-            background-color: #1976D2;
-        }
-
-        h1 {
-            margin: 0 0 15px 0;
-            font-size: 18px;
-            color: #333;
-            text-align: center;
-        }
-
-        .key-input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.3.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
 </head>
 
 <body>
     <div id="map"></div>
-    <div id="control-panel">
-        <h1>天地图图层控制</h1>
-        <input type="text" id="api-key" class="key-input" placeholder="请输入有效的天地图API密钥" value="">
-        <div>
-            <button id="vector">矢量地图</button>
-            <button id="image">影像地图</button>
-            <button id="terrain">地形地图</button>
-        </div>
-        <div id="status" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
+    <div class="info">
+        <h3>天地图示例</h3>
+        <p>使用影像底图(球面墨卡托投影)</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
     <script>
-        // 地图实例
-        let map;
-        let layers = {};
+        // 替换为你的天地图密钥
+        const tiandituKey = '6e5b0e71ae628b8c2ab60c9144a7848e';
 
-        // 初始化地图
-        function initMap(apiKey) {
-            if (map) {
-                map.setTarget(null);
-            }
+        // 创建影像底图图层
+        const imgLayer = new ol.layer.Tile({
+            source: new ol.source.WMTS({
+                url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+                layer: 'img',
+                style: 'default',
+                matrixSet: 'w',
+                format: 'tiles',
+                projection: 'EPSG:3857',
+                tileGrid: new ol.tilegrid.WMTS({
+                    origin: [-2.003750834E7, 2.003750834E7],
+                    resolutions: [
+                        156543.033928041,
+                        78271.5169640205,
+                        39135.75848201024,
+                        19567.87924100512,
+                        9783.93962050256,
+                        4891.96981025128,
+                        2445.98490512564,
+                        1222.99245256282,
+                        611.49622628141,
+                        305.748113140705,
+                        152.8740565703525,
+                        76.43702828517625,
+                        38.21851414258813,
+                        19.109257071294063,
+                        9.554628535647032,
+                        4.777314267823516,
+                        2.388657133911758,
+                        1.194328566955879,
+                        0.5971642834779395
+                    ],
+                    matrixIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                }),
+                wrapX: true
+            })
+        });
 
-            // 创建地图视图
-            const view = new ol.View({
+        // 创建地图
+        const map = new ol.Map({
+            target: 'map',
+            layers: [imgLayer],
+            view: new ol.View({
                 center: ol.proj.fromLonLat([116.3974, 39.9093]), // 北京中心点
                 zoom: 10
-            });
-
-            // 创建地图图层
-            layers = {
-                vectorBase: new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: `https://t0.tianditu.gov.cn/vec_w/wmts?tk=${apiKey}`,
-                        projection: 'EPSG:3857'
-                    }),
-                    title: '矢量底图'
-                }),
-
-                vectorAnnotation: new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: `https://t0.tianditu.gov.cn/cva_w/wmts?tk=${apiKey}`,
-                        projection: 'EPSG:3857'
-                    }),
-                    title: '矢量注记'
-                }),
-
-                imageBase: new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: `https://t0.tianditu.gov.cn/img_w/wmts?tk=${apiKey}`,
-                        projection: 'EPSG:3857'
-                    }),
-                    title: '影像底图',
-                    visible: false
-                }),
-
-                imageAnnotation: new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${apiKey}`,
-                        projection: 'EPSG:3857'
-                    }),
-                    title: '影像注记',
-                    visible: false
-                }),
-
-                terrain: new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: `https://t0.tianditu.gov.cn/ter_w/wmts?tk=${apiKey}`,
-                        projection: 'EPSG:3857'
-                    }),
-                    title: '地形晕渲',
-                    visible: false
-                })
-            };
-
-            // 创建地图实例
-            map = new ol.Map({
-                target: 'map',
-                layers: Object.values(layers),
-                view: view
-            });
-
-            updateStatus('地图加载成功！', 'green');
-        }
-
-        // 更新状态信息
-        function updateStatus(message, color) {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = message;
-            statusEl.style.color = color || '#666';
-        }
-
-        // 图层切换功能
-        document.getElementById('vector').addEventListener('click', function () {
-            if (!map) return;
-
-            layers.vectorBase.setVisible(true);
-            layers.vectorAnnotation.setVisible(true);
-            layers.imageBase.setVisible(false);
-            layers.imageAnnotation.setVisible(false);
-            layers.terrain.setVisible(false);
-            updateStatus('切换到矢量地图');
-        });
-
-        document.getElementById('image').addEventListener('click', function () {
-            if (!map) return;
-
-            layers.vectorBase.setVisible(false);
-            layers.vectorAnnotation.setVisible(false);
-            layers.imageBase.setVisible(true);
-            layers.imageAnnotation.setVisible(true);
-            layers.terrain.setVisible(false);
-            updateStatus('切换到影像地图');
-        });
-
-        document.getElementById('terrain').addEventListener('click', function () {
-            if (!map) return;
-
-            layers.vectorBase.setVisible(false);
-            layers.vectorAnnotation.setVisible(false);
-            layers.imageBase.setVisible(false);
-            layers.imageAnnotation.setVisible(false);
-            layers.terrain.setVisible(true);
-            updateStatus('切换到地形地图');
-        });
-
-        // API密钥输入处理
-        document.getElementById('api-key').addEventListener('change', function (e) {
-            const key = e.target.value.trim();
-            if (key) {
-                try {
-                    initMap(key);
-                } catch (error) {
-                    updateStatus('地图初始化失败: ' + error.message, 'red');
-                }
-            }
-        });
-
-        // 页面加载时提示用户输入密钥
-        document.addEventListener('DOMContentLoaded', function () {
-            updateStatus('请在输入框中输入有效的天地图API密钥', 'blue');
+            })
         });
     </script>
 </body>
