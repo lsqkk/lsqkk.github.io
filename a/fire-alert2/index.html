@@ -4,222 +4,1011 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧山火预警系统</title>
-    <link rel="stylesheet" href="fire-alert.css">
+    <title>山火预警系统 - 数据与模型双驱动的智慧气象山火防控框架</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.3.0/ol.css">
+    <style>
+        :root {
+            --primary-dark: #0a1929;
+            --primary-blue: #1a3a5f;
+            --accent-orange: #ff6b35;
+            --accent-green: #4CAF50;
+            --warning-red: #e74c3c;
+            --text-light: #e0e0e0;
+            --text-gray: #b0b0b0;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0d1f33 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部样式 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-orange);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .admin-panel {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .admin-login {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="password"] {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            width: 200px;
+        }
+
+        .admin-btn {
+            padding: 10px 20px;
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .admin-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+
+        .admin-actions {
+            display: none;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* 仪表盘网格 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: auto;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-large {
+            grid-column: span 2;
+        }
+
+        .card-full {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-orange);
+        }
+
+        /* 火险等级指示器 */
+        .risk-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .risk-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .risk-low {
+            background: var(--accent-green);
+        }
+
+        .risk-medium {
+            background: #f39c12;
+        }
+
+        .risk-high {
+            background: var(--accent-orange);
+        }
+
+        .risk-extreme {
+            background: var(--warning-red);
+        }
+
+        /* 数据值样式 */
+        .data-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .data-unit {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-left: 5px;
+        }
+
+        /* 地图容器 */
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* 预警列表 */
+        .warning-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .warning-item {
+            padding: 15px;
+            border-left: 4px solid var(--accent-orange);
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 10px;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .warning-time {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        /* 导航卡片 */
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .nav-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-light);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .nav-desc {
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-large {
+                grid-column: span 1;
+            }
+
+            .nav-cards {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .admin-login {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            input[type="password"] {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
-<body class="light-mode">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <i class="fas fa-fire-flame-curved"></i>
-                <span>智慧山火预警系统</span>
-            </div>
-            <div class="nav-links">
-                <a href="#dashboard" class="nav-link active">预警看板</a>
-                <a href="#satellite" class="nav-link">卫星监测</a>
-                <a href="#report" class="nav-link">灾情上报</a>
-                <a href="admin-panel.html" class="nav-link">管理后台</a>
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 主内容区 -->
+<body>
     <div class="container">
-        <!-- 预警头部 -->
-        <div class="alert-header" id="alertHeader">
-            <div class="alert-level" id="alertLevel">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>火险等级：加载中...</span>
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>山火预警防控系统</h1>
+                    <p>数据与模型双驱动的智慧气象山火防控框架</p>
+                </div>
             </div>
-            <div class="location-info" id="locationInfo">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>定位中...</span>
+
+            <div class="admin-panel">
+                <div class="admin-login" id="adminLoginForm">
+                    <input type="password" id="adminPassword" placeholder="管理员密码">
+                    <button class="admin-btn" onclick="adminLogin()">登录</button>
+                </div>
+                <div class="admin-actions" id="adminActions" style="display: none;">
+                    <span>管理员模式</span>
+                    <button class="admin-btn" onclick="logoutAdmin()">退出</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- 火险等级卡片 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        当前火险等级
+                    </div>
+                </div>
+                <div class="data-value" id="fireRiskValue">中风险</div>
+                <div class="risk-level">
+                    <div class="risk-indicator risk-medium"></div>
+                    <span>基于当前位置的火险评估</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 14px; color: var(--text-gray);">
+                    <p>影响因素: 气温偏高，湿度较低</p>
+                    <p>建议: 加强巡查，注意防火</p>
+                </div>
+            </div>
+
+            <!-- 气象数据卡片 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-temperature-high"></i>
+                        </div>
+                        实时气象
+                    </div>
+                    <div id="location" style="font-size: 14px; color: var(--text-gray);">定位中...</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <div style="font-size: 14px; color: var(--text-gray);">温度</div>
+                        <div class="data-value" id="temperature">--<span class="data-unit">°C</span></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: var(--text-gray);">湿度</div>
+                        <div class="data-value" id="humidity">--<span class="data-unit">%</span></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: var(--text-gray);">风速</div>
+                        <div class="data-value" id="windSpeed">--<span class="data-unit">m/s</span></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: var(--text-gray);">降水</div>
+                        <div class="data-value" id="precipitation">--<span class="data-unit">mm</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地图卡片 -->
+            <div class="dashboard-card card-large">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-map"></i>
+                        </div>
+                        火情监测地图
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="admin-btn" style="padding: 8px 15px; font-size: 14px;"
+                            onclick="switchLayer('satellite')">卫星图</button>
+                        <button class="admin-btn" style="padding: 8px 15px; font-size: 14px;"
+                            onclick="switchLayer('terrain')">地形图</button>
+                    </div>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <!-- 预警信息卡片 -->
+            <div class="dashboard-card card-large">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        预警信息
+                    </div>
+                    <button class="admin-btn" id="addWarningBtn"
+                        style="display: none; padding: 8px 15px; font-size: 14px;"
+                        onclick="showAddWarningModal()">发布预警</button>
+                </div>
+                <div class="warning-list" id="warningList">
+                    <div class="warning-item">
+                        <div class="warning-title">
+                            <span>高温橙色预警</span>
+                            <span class="warning-time">2023-10-15 14:30</span>
+                        </div>
+                        <p>预计未来24小时，部分地区最高气温将超过35℃，火险等级高，请注意防范。</p>
+                    </div>
+                    <div class="warning-item">
+                        <div class="warning-title">
+                            <span>大风蓝色预警</span>
+                            <span class="warning-time">2023-10-14 09:15</span>
+                        </div>
+                        <p>受冷空气影响，预计今天夜间到明天白天，部分地区有5-6级偏北风，阵风7级。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 火情上报卡片 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        火情上报
+                    </div>
+                </div>
+                <p style="margin-bottom: 15px; font-size: 14px;">发现火情请立即上报</p>
+                <button class="admin-btn" style="width: 100%;" onclick="location.href='report.html'">上报火情</button>
+                <div style="margin-top: 15px; font-size: 14px; color: var(--text-gray);">
+                    <p>今日上报: <span id="todayReports">2</span> 起</p>
+                    <p>处理中: <span id="pendingReports">1</span> 起</p>
+                </div>
+            </div>
+
+            <!-- 系统状态卡片 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        系统状态
+                    </div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>数据更新</span>
+                        <span style="color: var(--accent-green);">正常</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>卫星连接</span>
+                        <span style="color: var(--accent-green);">正常</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>预警系统</span>
+                        <span style="color: var(--accent-green);">运行中</span>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-gray); text-align: center;">
+                    最后更新: <span id="lastUpdate">2023-10-15 16:45:32</span>
+                </div>
             </div>
         </div>
 
-        <!-- 仪表盘 -->
-        <div class="dashboard" id="dashboard">
-            <div class="stats-grid">
-                <!-- 火险指数 -->
-                <div class="stat-card danger">
-                    <div class="stat-icon">
-                        <i class="fas fa-fire"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="fireRiskValue">--</div>
-                        <div class="stat-label">火险指数</div>
-                        <div class="stat-desc" id="fireRiskDesc">计算中...</div>
-                    </div>
+        <div class="nav-cards">
+            <a href="dashboard.html" class="nav-card">
+                <div class="nav-icon">
+                    <i class="fas fa-tachometer-alt"></i>
                 </div>
+                <div class="nav-title">数据仪表盘</div>
+                <div class="nav-desc">查看详细数据和统计分析</div>
+            </a>
 
-                <!-- 温度 -->
-                <div class="stat-card warning">
-                    <div class="stat-icon">
-                        <i class="fas fa-thermometer-half"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="temperatureValue">--°C</div>
-                        <div class="stat-label">当前温度</div>
-                        <div class="stat-desc" id="temperatureDesc">--</div>
-                    </div>
+            <a href="satellite.html" class="nav-card">
+                <div class="nav-icon">
+                    <i class="fas fa-satellite"></i>
                 </div>
+                <div class="nav-title">卫星监测</div>
+                <div class="nav-desc">实时卫星图像与火点识别</div>
+            </a>
 
-                <!-- 湿度 -->
-                <div class="stat-card info">
-                    <div class="stat-icon">
-                        <i class="fas fa-tint"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="humidityValue">--%</div>
-                        <div class="stat-label">相对湿度</div>
-                        <div class="stat-desc" id="humidityDesc">--</div>
-                    </div>
+            <a href="forecast.html" class="nav-card">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-line"></i>
                 </div>
+                <div class="nav-title">火险预报</div>
+                <div class="nav-desc">火险等级预测与蔓延模拟</div>
+            </a>
 
-                <!-- 风速 -->
-                <div class="stat-card warning">
-                    <div class="stat-icon">
-                        <i class="fas fa-wind"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="windSpeedValue">-- m/s</div>
-                        <div class="stat-label">平均风速</div>
-                        <div class="stat-desc" id="windDesc">--</div>
-                    </div>
+            <a href="report.html" class="nav-card">
+                <div class="nav-icon">
+                    <i class="fas fa-exclamation-circle"></i>
                 </div>
+                <div class="nav-title">灾情上报</div>
+                <div class="nav-desc">上报火情与查看处理进度</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 添加预警模态框 -->
+    <div id="addWarningModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--primary-blue); padding: 30px; border-radius: 12px; width: 500px; max-width: 90%;">
+            <h2 style="margin-bottom: 20px;">发布预警信息</h2>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px;">预警标题</label>
+                <input type="text" id="warningTitle"
+                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text-light);">
             </div>
-
-            <!-- 地图和预警信息 -->
-            <div class="main-grid">
-                <!-- 地图区域 -->
-                <div class="map-card" id="satellite">
-                    <div class="card-header">
-                        <h3><i class="fas fa-satellite"></i> 卫星遥感监测</h3>
-                        <div class="map-controls">
-                            <button class="control-btn" id="refreshMap">
-                                <i class="fas fa-sync-alt"></i> 刷新
-                            </button>
-                            <button class="control-btn" id="toggleHeatmap">
-                                <i class="fas fa-layer-group"></i> 热力图
-                            </button>
-                        </div>
-                    </div>
-                    <div class="map-container" id="mapContainer">
-                        <div id="tdtMap" class="tdt-map"></div>
-                        <div class="map-overlay">
-                            <div class="map-legend">
-                                <div class="legend-title">火险热力图例</div>
-                                <div class="legend-gradient">
-                                    <span>低</span>
-                                    <div class="gradient-bar"></div>
-                                    <span>高</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 实时预警 -->
-                <div class="alert-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-bell"></i> 实时预警信息</h3>
-                        <span class="update-time" id="alertUpdateTime">--</span>
-                    </div>
-                    <div class="alert-list" id="alertList">
-                        <div class="alert-item loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <span>加载预警信息中...</span>
-                        </div>
-                    </div>
-                </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px;">预警级别</label>
+                <select id="warningLevel"
+                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text-light);">
+                    <option value="low">低风险</option>
+                    <option value="medium">中风险</option>
+                    <option value="high">高风险</option>
+                    <option value="extreme">极高风险</option>
+                </select>
             </div>
-
-            <!-- 灾情上报和决策支持 -->
-            <div class="action-grid" id="report">
-                <!-- 灾情上报 -->
-                <div class="report-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-flag"></i> 山火信息上报</h3>
-                    </div>
-                    <div class="report-form">
-                        <div class="form-group">
-                            <label for="reportLocation">位置描述</label>
-                            <input type="text" id="reportLocation" placeholder="请输入具体位置描述">
-                        </div>
-                        <div class="form-group">
-                            <label for="reportSeverity">严重程度</label>
-                            <select id="reportSeverity">
-                                <option value="low">低 - 疑似烟雾/小火点</option>
-                                <option value="medium">中 - 明显火情</option>
-                                <option value="high">高 - 大规模山火</option>
-                                <option value="critical">危急 - 威胁居民区</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="reportDescription">详细描述</label>
-                            <textarea id="reportDescription" rows="3" placeholder="请描述火情具体情况..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="reportImage">上传图片（可选）</label>
-                            <input type="file" id="reportImage" accept="image/*">
-                        </div>
-                        <button class="submit-btn" id="submitReport">
-                            <i class="fas fa-paper-plane"></i> 提交上报
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 决策支持 -->
-                <div class="decision-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chess-knight"></i> 智能决策支持</h3>
-                    </div>
-                    <div class="decision-content">
-                        <div class="decision-item">
-                            <div class="decision-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="decision-info">
-                                <div class="decision-title">最佳扑救窗口期</div>
-                                <div class="decision-value" id="rescueWindow">分析中...</div>
-                            </div>
-                        </div>
-                        <div class="decision-item">
-                            <div class="decision-icon">
-                                <i class="fas fa-route"></i>
-                            </div>
-                            <div class="decision-info">
-                                <div class="decision-title">安全撤离路线</div>
-                                <div class="decision-value" id="evacuationRoute">基于当前风向分析...</div>
-                            </div>
-                        </div>
-                        <div class="decision-item">
-                            <div class="decision-icon">
-                                <i class="fas fa-wind"></i>
-                            </div>
-                            <div class="decision-info">
-                                <div class="decision-title">火势蔓延预测</div>
-                                <div class="decision-value" id="spreadPrediction">计算中...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px;">预警内容</label>
+                <textarea id="warningContent" rows="4"
+                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text-light); resize: vertical;"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="admin-btn" style="background: #666;" onclick="closeAddWarningModal()">取消</button>
+                <button class="admin-btn" onclick="addWarning()">发布</button>
             </div>
         </div>
     </div>
 
-    <!-- 加载脚本 -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="fire-alert.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
+    <script>
+        // 天地图密钥
+        const tiandituKey = '6e5b0e71ae628b8c2ab60c9144a7848e';
+
+        // 管理员状态
+        let isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+        // 初始化地图
+        let map;
+        let currentLayer = 'satellite';
+
+        function initMap() {
+            // 创建影像底图图层
+            const imgLayer = new ol.layer.Tile({
+                source: new ol.source.WMTS({
+                    url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+                    layer: 'img',
+                    style: 'default',
+                    matrixSet: 'w',
+                    format: 'tiles',
+                    projection: 'EPSG:3857',
+                    tileGrid: new ol.tilegrid.WMTS({
+                        origin: [-2.003750834E7, 2.003750834E7],
+                        resolutions: [
+                            156543.033928041,
+                            78271.5169640205,
+                            39135.75848201024,
+                            19567.87924100512,
+                            9783.93962050256,
+                            4891.96981025128,
+                            2445.98490512564,
+                            1222.99245256282,
+                            611.49622628141,
+                            305.748113140705,
+                            152.8740565703525,
+                            76.43702828517625,
+                            38.21851414258813,
+                            19.109257071294063,
+                            9.554628535647032,
+                            4.777314267823516,
+                            2.388657133911758,
+                            1.194328566955879,
+                            0.5971642834779395
+                        ],
+                        matrixIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                    }),
+                    wrapX: true
+                })
+            });
+
+            // 创建地形底图图层
+            const terLayer = new ol.layer.Tile({
+                source: new ol.source.WMTS({
+                    url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + tiandituKey,
+                    layer: 'ter',
+                    style: 'default',
+                    matrixSet: 'w',
+                    format: 'tiles',
+                    projection: 'EPSG:3857',
+                    tileGrid: new ol.tilegrid.WMTS({
+                        origin: [-2.003750834E7, 2.003750834E7],
+                        resolutions: [
+                            156543.033928041,
+                            78271.5169640205,
+                            39135.75848201024,
+                            19567.87924100512,
+                            9783.93962050256,
+                            4891.96981025128,
+                            2445.98490512564,
+                            1222.99245256282,
+                            611.49622628141,
+                            305.748113140705,
+                            152.8740565703525,
+                            76.43702828517625,
+                            38.21851414258813,
+                            19.109257071294063,
+                            9.554628535647032,
+                            4.777314267823516,
+                            2.388657133911758,
+                            1.194328566955879,
+                            0.5971642834779395
+                        ],
+                        matrixIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                    }),
+                    wrapX: true
+                })
+            });
+
+            // 创建矢量图层用于显示火点
+            const vectorSource = new ol.source.Vector();
+            const vectorLayer = new ol.layer.Vector({
+                source: vectorSource,
+                style: new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 7,
+                        fill: new ol.style.Fill({
+                            color: 'rgba(255, 107, 53, 0.8)'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            width: 2
+                        })
+                    })
+                })
+            });
+
+            // 创建地图
+            map = new ol.Map({
+                target: 'map',
+                layers: [imgLayer, vectorLayer],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([116.3974, 39.9093]), // 北京中心点
+                    zoom: 10
+                })
+            });
+
+            // 添加一些模拟火点
+            addMockFirePoints();
+        }
+
+        // 添加模拟火点
+        function addMockFirePoints() {
+            const vectorSource = map.getLayers().item(1).getSource();
+
+            // 添加几个模拟火点
+            const firePoints = [
+                [116.3974, 39.9093],  // 北京
+                [116.2, 39.8],
+                [116.5, 40.0]
+            ];
+
+            firePoints.forEach(point => {
+                const feature = new ol.Feature({
+                    geometry: new ol.geom.Point(ol.proj.fromLonLat(point))
+                });
+                vectorSource.addFeature(feature);
+            });
+        }
+
+        // 切换地图图层
+        function switchLayer(layerType) {
+            currentLayer = layerType;
+            const baseLayer = map.getLayers().item(0);
+
+            if (layerType === 'satellite') {
+                baseLayer.setSource(new ol.source.WMTS({
+                    url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+                    layer: 'img',
+                    style: 'default',
+                    matrixSet: 'w',
+                    format: 'tiles',
+                    projection: 'EPSG:3857',
+                    tileGrid: new ol.tilegrid.WMTS({
+                        origin: [-2.003750834E7, 2.003750834E7],
+                        resolutions: [
+                            156543.033928041,
+                            78271.5169640205,
+                            39135.75848201024,
+                            19567.87924100512,
+                            9783.93962050256,
+                            4891.96981025128,
+                            2445.98490512564,
+                            1222.99245256282,
+                            611.49622628141,
+                            305.748113140705,
+                            152.8740565703525,
+                            76.43702828517625,
+                            38.21851414258813,
+                            19.109257071294063,
+                            9.554628535647032,
+                            4.777314267823516,
+                            2.388657133911758,
+                            1.194328566955879,
+                            0.5971642834779395
+                        ],
+                        matrixIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                    }),
+                    wrapX: true
+                }));
+            } else if (layerType === 'terrain') {
+                baseLayer.setSource(new ol.source.WMTS({
+                    url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + tiandituKey,
+                    layer: 'ter',
+                    style: 'default',
+                    matrixSet: 'w',
+                    format: 'tiles',
+                    projection: 'EPSG:3857',
+                    tileGrid: new ol.tilegrid.WMTS({
+                        origin: [-2.003750834E7, 2.003750834E7],
+                        resolutions: [
+                            156543.033928041,
+                            78271.5169640205,
+                            39135.75848201024,
+                            19567.87924100512,
+                            9783.93962050256,
+                            4891.96981025128,
+                            2445.98490512564,
+                            1222.99245256282,
+                            611.49622628141,
+                            305.748113140705,
+                            152.8740565703525,
+                            76.43702828517625,
+                            38.21851414258813,
+                            19.109257071294063,
+                            9.554628535647032,
+                            4.777314267823516,
+                            2.388657133911758,
+                            1.194328566955879,
+                            0.5971642834779395
+                        ],
+                        matrixIds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                    }),
+                    wrapX: true
+                }));
+            }
+        }
+
+        // 获取天气数据
+        async function getWeatherData() {
+            try {
+                // 模拟天气API调用
+                const mockWeatherData = {
+                    temperature: 28.5,
+                    humidity: 45,
+                    windSpeed: 3.2,
+                    precipitation: 0,
+                    location: "北京市"
+                };
+
+                // 更新UI
+                document.getElementById('temperature').textContent = mockWeatherData.temperature + '°C';
+                document.getElementById('humidity').textContent = mockWeatherData.humidity + '%';
+                document.getElementById('windSpeed').textContent = mockWeatherData.windSpeed + ' m/s';
+                document.getElementById('precipitation').textContent = mockWeatherData.precipitation + ' mm';
+                document.getElementById('location').textContent = mockWeatherData.location;
+
+                // 计算火险等级
+                calculateFireRisk(mockWeatherData);
+
+            } catch (error) {
+                console.error('获取天气数据失败:', error);
+            }
+        }
+
+        // 计算火险等级
+        function calculateFireRisk(weatherData) {
+            const weights = {
+                temperature: 0.25,
+                humidity: 0.20,
+                windSpeed: 0.25,
+                precipitation: 0.15,
+                solarRadiation: 0.10,
+                tempRange: 0.05
+            };
+
+            // 标准化处理
+            const tempScore = Math.min(100, (weatherData.temperature / 40) * 100);
+            const humidityScore = Math.max(0, 100 - (weatherData.humidity / 100) * 100);
+            const windScore = Math.min(100, (weatherData.windSpeed / 10) * 100);
+            const precipScore = Math.max(0, 100 - (weatherData.precipitation / 50) * 100);
+
+            // 模拟其他参数
+            const solarScore = 70; // 假设中等太阳辐射
+            const tempRangeScore = 60; // 假设中等日温差
+
+            // 计算加权得分
+            let score =
+                tempScore * weights.temperature +
+                humidityScore * weights.humidity +
+                windScore * weights.windSpeed +
+                precipScore * weights.precipitation +
+                solarScore * weights.solarRadiation +
+                tempRangeScore * weights.tempRange;
+
+            // 确定火险等级
+            let riskLevel, riskClass;
+            if (score < 30) {
+                riskLevel = "低风险";
+                riskClass = "risk-low";
+            } else if (score < 60) {
+                riskLevel = "中风险";
+                riskClass = "risk-medium";
+            } else if (score < 80) {
+                riskLevel = "高风险";
+                riskClass = "risk-high";
+            } else {
+                riskLevel = "极高风险";
+                riskClass = "risk-extreme";
+            }
+
+            // 更新UI
+            document.getElementById('fireRiskValue').textContent = riskLevel;
+            const riskIndicator = document.querySelector('.risk-indicator');
+            riskIndicator.className = `risk-indicator ${riskClass}`;
+        }
+
+        // 管理员登录
+        async function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+
+            if (!password) {
+                alert('请输入管理员密码');
+                return;
+            }
+
+            try {
+                // 计算SHA256哈希
+                const hash = await sha256(password);
+                const expectedHash = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af'; // helloworld的SHA256
+
+                if (hash === expectedHash) {
+                    isAdmin = true;
+                    localStorage.setItem('isAdmin', 'true');
+                    updateAdminUI();
+                    document.getElementById('adminPassword').value = '';
+                    alert('管理员登录成功');
+                } else {
+                    alert('密码错误');
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                alert('登录过程中出现错误');
+            }
+        }
+
+        // 管理员退出
+        function logoutAdmin() {
+            isAdmin = false;
+            localStorage.setItem('isAdmin', 'false');
+            updateAdminUI();
+        }
+
+        // 更新管理员UI
+        function updateAdminUI() {
+            const loginForm = document.getElementById('adminLoginForm');
+            const adminActions = document.getElementById('adminActions');
+            const addWarningBtn = document.getElementById('addWarningBtn');
+
+            if (isAdmin) {
+                loginForm.style.display = 'none';
+                adminActions.style.display = 'flex';
+                addWarningBtn.style.display = 'block';
+            } else {
+                loginForm.style.display = 'flex';
+                adminActions.style.display = 'none';
+                addWarningBtn.style.display = 'none';
+            }
+        }
+
+        // SHA256哈希函数
+        async function sha256(message) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(message);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        // 显示添加预警模态框
+        function showAddWarningModal() {
+            document.getElementById('addWarningModal').style.display = 'flex';
+        }
+
+        // 关闭添加预警模态框
+        function closeAddWarningModal() {
+            document.getElementById('addWarningModal').style.display = 'none';
+        }
+
+        // 添加预警
+        function addWarning() {
+            const title = document.getElementById('warningTitle').value;
+            const level = document.getElementById('warningLevel').value;
+            const content = document.getElementById('warningContent').value;
+
+            if (!title || !content) {
+                alert('请填写预警标题和内容');
+                return;
+            }
+
+            // 创建预警元素
+            const warningList = document.getElementById('warningList');
+            const warningItem = document.createElement('div');
+            warningItem.className = 'warning-item';
+
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            warningItem.innerHTML = `
+                <div class="warning-title">
+                    <span>${title}</span>
+                    <span class="warning-time">${timeStr}</span>
+                </div>
+                <p>${content}</p>
+            `;
+
+            // 添加到列表顶部
+            warningList.insertBefore(warningItem, warningList.firstChild);
+
+            // 清空表单并关闭模态框
+            document.getElementById('warningTitle').value = '';
+            document.getElementById('warningContent').value = '';
+            closeAddWarningModal();
+
+            alert('预警信息发布成功');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            initMap();
+            getWeatherData();
+            updateAdminUI();
+
+            // 更新最后更新时间
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent =
+                `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        });
+    </script>
 </body>
 
 </html>

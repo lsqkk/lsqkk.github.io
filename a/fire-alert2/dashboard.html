@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据仪表盘 - 山火预警系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-dark: #0a1929;
+            --primary-blue: #1a3a5f;
+            --accent-orange: #ff6b35;
+            --accent-green: #4CAF50;
+            --warning-red: #e74c3c;
+            --text-light: #e0e0e0;
+            --text-gray: #b0b0b0;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0d1f33 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-orange);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-large {
+            grid-column: span 2;
+        }
+
+        .card-full {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .chart-container {
+            height: 300px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .data-table th {
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .risk-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--accent-green);
+        }
+
+        .risk-medium {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .risk-high {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .risk-extreme {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--warning-red);
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-large {
+                grid-column: span 1;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>山火预警防控系统</h1>
+                    <p>数据仪表盘 - 详细分析与统计</p>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">首页</a>
+                <a href="dashboard.html" class="nav-link active">数据仪表盘</a>
+                <a href="satellite.html" class="nav-link">卫星监测</a>
+                <a href="forecast.html" class="nav-link">火险预报</a>
+                <a href="report.html" class="nav-link">灾情上报</a>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- 火险趋势图表 -->
+            <div class="dashboard-card card-large">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        火险等级趋势
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="timeRange"
+                            style="padding: 8px 15px; border-radius: 5px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text-light);">
+                            <option value="7">最近7天</option>
+                            <option value="30">最近30天</option>
+                            <option value="90">最近90天</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="riskTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 气象数据分布 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        气象数据分布
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weatherDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 火情统计 -->
+            <div class="dashboard-card card-full">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        火情统计
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="statRange"
+                            style="padding: 8px 15px; border-radius: 5px; border: 1px solid var(--card-border); background: rgba(255,255,255,0.1); color: var(--text-light);">
+                            <option value="month">本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">总上报数</div>
+                        <div class="stat-value">47</div>
+                        <div class="stat-label">较上月 +12%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">已确认</div>
+                        <div class="stat-value">32</div>
+                        <div class="stat-label">确认率 68%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">误报数</div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">误报率 17%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">处理中</div>
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">待处理 15%</div>
+                    </div>
+                </div>
+                <div class="chart-container" style="height: 250px; margin-top: 20px;">
+                    <canvas id="fireReportChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 预警统计 -->
+            <div class="dashboard-card card-large">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        预警统计
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="warningChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 区域火险排名 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        区域火险排名
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>区域</th>
+                            <th>火险等级</th>
+                            <th>变化</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>北部林区</td>
+                            <td><span class="risk-badge risk-high">高风险</span></td>
+                            <td style="color: var(--warning-red);">↑ 2级</td>
+                        </tr>
+                        <tr>
+                            <td>西山保护区</td>
+                            <td><span class="risk-badge risk-medium">中风险</span></td>
+                            <td style="color: #f39c12;">↑ 1级</td>
+                        </tr>
+                        <tr>
+                            <td>东部平原</td>
+                            <td><span class="risk-badge risk-low">低风险</span></td>
+                            <td style="color: var(--accent-green);">→ 稳定</td>
+                        </tr>
+                        <tr>
+                            <td>南部丘陵</td>
+                            <td><span class="risk-badge risk-medium">中风险</span></td>
+                            <td style="color: #f39c12;">↑ 1级</td>
+                        </tr>
+                        <tr>
+                            <td>中心城区</td>
+                            <td><span class="risk-badge risk-low">低风险</span></td>
+                            <td style="color: var(--accent-green);">→ 稳定</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 系统性能 -->
+            <div class="dashboard-card card-full">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        系统性能监控
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">数据更新</div>
+                        <div class="stat-value" style="color: var(--accent-green);">98.7%</div>
+                        <div class="stat-label">正常</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">API响应</div>
+                        <div class="stat-value" style="color: var(--accent-green);">256ms</div>
+                        <div class="stat-label">平均</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">卫星连接</div>
+                        <div class="stat-value" style="color: var(--accent-green);">100%</div>
+                        <div class="stat-label">正常</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">预警准确率</div>
+                        <div class="stat-value" style="color: var(--accent-green);">89.2%</div>
+                        <div class="stat-label">较上月 +5%</div>
+                    </div>
+                </div>
+                <div class="chart-container" style="height: 200px; margin-top: 20px;">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function () {
+            // 火险趋势图表
+            const riskTrendCtx = document.getElementById('riskTrendChart').getContext('2d');
+            const riskTrendChart = new Chart(riskTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15'],
+                    datasets: [{
+                        label: '火险指数',
+                        data: [45, 52, 48, 65, 72, 68, 75],
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 气象数据分布图表
+            const weatherDistCtx = document.getElementById('weatherDistributionChart').getContext('2d');
+            const weatherDistChart = new Chart(weatherDistCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['温度', '湿度', '风速', '降水'],
+                    datasets: [{
+                        label: '当前值',
+                        data: [28, 45, 12, 5],
+                        backgroundColor: [
+                            'rgba(255, 107, 53, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(46, 204, 113, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 107, 53, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(155, 89, 182, 1)',
+                            'rgba(46, 204, 113, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 火情报告图表
+            const fireReportCtx = document.getElementById('fireReportChart').getContext('2d');
+            const fireReportChart = new Chart(fireReportCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['已确认', '误报', '处理中'],
+                    datasets: [{
+                        data: [32, 8, 7],
+                        backgroundColor: [
+                            'rgba(255, 107, 53, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(241, 196, 15, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 107, 53, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(241, 196, 15, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e0e0e0',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 预警统计图表
+            const warningCtx = document.getElementById('warningChart').getContext('2d');
+            const warningChart = new Chart(warningCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['低风险', '中风险', '高风险', '极高风险'],
+                    datasets: [{
+                        label: '预警数量',
+                        data: [12, 18, 9, 3],
+                        backgroundColor: [
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(241, 196, 15, 0.7)',
+                            'rgba(255, 107, 53, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(241, 196, 15, 1)',
+                            'rgba(255, 107, 53, 1)',
+                            'rgba(231, 76, 60, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 性能监控图表
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+                    datasets: [{
+                        label: 'API响应时间(ms)',
+                        data: [230, 245, 210, 195, 220, 260, 240],
+                        borderColor: '#4a6cf7',
+                        backgroundColor: 'rgba(74, 108, 247, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '数据更新成功率(%)',
+                        data: [98, 99, 97, 99, 98, 96, 98],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '响应时间(ms)',
+                                color: '#b0b0b0'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '成功率(%)',
+                                color: '#b0b0b0'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            },
+                            min: 90,
+                            max: 100
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#b0b0b0'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 时间范围选择事件
+            document.getElementById('timeRange').addEventListener('change', function () {
+                // 在实际应用中，这里会重新获取数据并更新图表
+                alert('时间范围已更改为: ' + this.value + '天');
+            });
+
+            document.getElementById('statRange').addEventListener('change', function () {
+                // 在实际应用中，这里会重新获取数据并更新图表
+                alert('统计范围已更改为: ' + this.options[this.selectedIndex].text);
+            });
+        });
+    </script>
+</body>
+
+</html>
