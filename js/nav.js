@@ -66,6 +66,6 @@ function handleGlobalSearch() {
         // 如果在其他页面，跳转到文章列表页并传递搜索参数
         const searchParams = new URLSearchParams();
         searchParams.set('search', searchTerm);
-        window.location.href = `article-list.html?${searchParams.toString()}`;
+        window.location.href = `/article-list.html?${searchParams.toString()}`;
     }
 }
