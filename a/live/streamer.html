@@ -675,7 +675,6 @@
             }
         }
 
-        // 停止推流
         async function stopStreaming() {
             try {
                 if (agoraClient) {
@@ -696,12 +695,12 @@
                 document.getElementById('start-btn').disabled = false;
                 document.getElementById('stop-btn').disabled = true;
                 document.getElementById('stream-info-panel').classList.add('hidden');
-                document.getElementById('token-input-group').classList.remove('hidden'); // 停止推流后显示Token输入
+                document.getElementById('token-input-group').classList.remove('hidden');
 
                 showMessage('推流已停止', 'success');
                 updateGlobalStatus('已停止');
 
-                // 清理直播信息
+                // 清理直播信息，包括Token
                 db.collection('live-stats').doc('stream-info').delete();
 
             } catch (error) {
@@ -751,13 +750,15 @@
             const streamTitle = document.getElementById('stream-title').value;
             const streamDescription = document.getElementById('stream-description').value;
 
+            // 存储直播信息和Token到Firebase
             db.collection('live-stats').doc('stream-info').set({
                 title: streamTitle,
                 description: streamDescription,
                 isLive: true,
                 startTime: firebase.firestore.FieldValue.serverTimestamp(),
                 lastUpdate: firebase.firestore.FieldValue.serverTimestamp(),
-                channel: agoraConfig.channel
+                channel: agoraConfig.channel,
+                token: agoraConfig.token  // 新增：存储Token
             });
         }
 

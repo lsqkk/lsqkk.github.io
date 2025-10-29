@@ -327,9 +327,10 @@
 
         // 声网Agora配置
         const agoraConfig = {
-            appId: "195fc077c2f74396968d899b8d5025ff", // 请替换为你的实际AppID
-            channel: "lsqkk_live_channel", // 频道名称，必须与主播端一致
-            token: null // 测试阶段可以使用null，生产环境建议使用Token
+            appId: "195fc077c2f74396968d899b8d5025ff",
+            channel: "lsqkk_live_channel",
+            token: "", // 将从Firebase获取
+            uid: null
         };
 
         // 初始化Firebase
@@ -341,6 +342,8 @@
         let remoteUsers = {};
         let likeClicked = false;
         let viewerId = generateViewerId();
+        let isConnecting = false;
+        let currentStreamInfo = null;
 
         // 生成唯一观众ID
         function generateViewerId() {
@@ -354,9 +357,22 @@
                 now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
+        // 检查AgoraRTC是否已加载
+        function checkAgoraLoaded() {
+            if (typeof AgoraRTC === 'undefined') {
+                showError('声网Agora SDK加载失败，请刷新页面重试');
+                return false;
+            }
+            return true;
+        }
+
         // 初始化声网Agora客户端
         async function initializeAgoraClient() {
             try {
+                if (!checkAgoraLoaded()) {
+                    throw new Error('AgoraRTC SDK未加载');
+                }
+
                 // 创建Agora客户端
                 agoraClient = AgoraRTC.createClient({
                     mode: "live",
@@ -370,9 +386,81 @@
             }
         }
 
+        // 监听直播状态变化
+        function initializeStreamListener() {
+            // 监听直播信息变化
+            db.collection('live-stats').doc('stream-info')
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const streamInfo = doc.data();
+                        currentStreamInfo = streamInfo;
+
+                        // 更新页面显示的直播标题
+                        if (streamInfo.title) {
+                            document.querySelector('.header h1').textContent = `🎥 ${streamInfo.title}`;
+                        }
+
+                        // 如果有Token且正在直播，尝试连接
+                        if (streamInfo.isLive && streamInfo.token) {
+                            agoraConfig.token = streamInfo.token;
+                            agoraConfig.channel = streamInfo.channel || "lsqkk_live_channel";
+
+                            if (!isConnecting) {
+                                joinChannel();
+                            }
+                        } else {
+                            // 直播已结束
+                            handleStreamEnded();
+                        }
+                    } else {
+                        // 文档不存在，直播已结束
+                        handleStreamEnded();
+                    }
+                }, (error) => {
+                    console.error('监听直播状态失败:', error);
+                    showError('无法获取直播状态');
+                });
+        }
+
+        // 处理直播结束
+        function handleStreamEnded() {
+            if (agoraClient) {
+                leaveChannel();
+            }
+
+            const videoElement = document.getElementById('live-video');
+            const placeholder = document.getElementById('video-placeholder');
+
+            videoElement.style.display = 'none';
+            placeholder.style.display = 'flex';
+            placeholder.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📺</div>
+                <div>等待直播开始</div>
+                <div style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">主播上线后将自动连接</div>
+            </div>
+        `;
+
+            updateStatus('等待直播');
+            showMessage('直播已结束或尚未开始', 'success');
+        }
+
         // 加入频道并订阅流
         async function joinChannel() {
+            if (isConnecting) {
+                console.log('正在连接中，跳过重复连接');
+                return;
+            }
+
+            if (!agoraConfig.token) {
+                console.log('等待Token...');
+                return;
+            }
+
             try {
+                isConnecting = true;
+                updateStatus('连接中...');
+
                 await initializeAgoraClient();
 
                 // 设置客户端角色为观众
@@ -382,6 +470,7 @@
                 agoraClient.on("user-published", handleUserPublished);
                 agoraClient.on("user-unpublished", handleUserUnpublished);
                 agoraClient.on("user-left", handleUserLeft);
+                agoraClient.on("connection-state-change", handleConnectionStateChange);
 
                 // 加入频道
                 const uid = await agoraClient.join(
@@ -392,12 +481,46 @@
                 );
 
                 console.log("加入频道成功，UID:", uid);
-                updateStatus('连接成功');
+                updateStatus('已连接');
+                isConnecting = false;
 
             } catch (error) {
                 console.error('加入频道失败:', error);
-                showError('加入直播失败: ' + error.message);
+                isConnecting = false;
+
+                // 更详细的错误处理
+                if (error.code === 4096) {
+                    showError('认证失败：Token可能已过期');
+                } else if (error.code === 17) {
+                    showError('加入频道失败：请检查网络连接');
+                } else {
+                    showError('连接失败: ' + error.message);
+                }
                 updateStatus('连接失败');
+
+                // 5秒后重试
+                setTimeout(() => {
+                    if (currentStreamInfo && currentStreamInfo.isLive) {
+                        joinChannel();
+                    }
+                }, 5000);
+            }
+        }
+
+        // 处理连接状态变化
+        function handleConnectionStateChange(curState, prevState) {
+            console.log('连接状态变化:', prevState, '->', curState);
+
+            if (curState === 'DISCONNECTED' && prevState === 'CONNECTED') {
+                showMessage('连接断开，正在尝试重新连接...', 'success');
+                updateStatus('重新连接中');
+
+                // 自动重连
+                setTimeout(() => {
+                    if (currentStreamInfo && currentStreamInfo.isLive) {
+                        joinChannel();
+                    }
+                }, 3000);
             }
         }
 
@@ -419,7 +542,7 @@
                 videoElement.style.display = 'block';
 
                 updateStatus('直播中');
-                showMessage('成功连接到直播流', 'success');
+                showMessage('成功连接到直播', 'success');
             }
 
             if (mediaType === "audio") {
@@ -442,6 +565,12 @@
 
                 videoElement.style.display = 'none';
                 placeholder.style.display = 'flex';
+                placeholder.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">⏸️</div>
+                    <div>直播暂停</div>
+                </div>
+            `;
 
                 updateStatus('直播暂停');
             }
@@ -456,15 +585,7 @@
 
             // 如果没有其他用户，显示直播结束
             if (Object.keys(remoteUsers).length === 0) {
-                const videoElement = document.getElementById('live-video');
-                const placeholder = document.getElementById('video-placeholder');
-
-                videoElement.style.display = 'none';
-                placeholder.style.display = 'flex';
-                placeholder.innerHTML = '<div style="text-align: center;"><div style="font-size: 3rem; margin-bottom: 10px;">📺</div><div>直播已结束</div></div>';
-
-                updateStatus('直播结束');
-                showMessage('直播已结束', 'success');
+                handleStreamEnded();
             }
         }
 
@@ -477,6 +598,12 @@
                     if (user.audioTrack) user.audioTrack.stop();
                 });
                 remoteUsers = {};
+
+                // 移除事件监听器
+                agoraClient.off("user-published", handleUserPublished);
+                agoraClient.off("user-unpublished", handleUserUnpublished);
+                agoraClient.off("user-left", handleUserLeft);
+                agoraClient.off("connection-state-change", handleConnectionStateChange);
 
                 // 离开频道
                 await agoraClient.leave();
@@ -506,7 +633,9 @@
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            updateStatus('连接错误');
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
         }
 
         // 显示成功信息
@@ -655,7 +784,7 @@
         function copyInviteLink() {
             const inviteLink = window.location.href;
             navigator.clipboard.writeText(inviteLink).then(() => {
-                alert('邀请链接已复制到剪贴板！');
+                showMessage('邀请链接已复制到剪贴板', 'success');
             });
         }
 
@@ -672,8 +801,8 @@
             updateCurrentTime();
             setInterval(updateCurrentTime, 60000); // 每分钟更新时间
 
-            // 初始化声网Agora连接
-            joinChannel();
+            // 初始化Firebase监听
+            initializeStreamListener();
 
             // 初始化Firebase功能
             initializeChat();
