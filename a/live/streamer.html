@@ -750,6 +750,8 @@
             const streamTitle = document.getElementById('stream-title').value;
             const streamDescription = document.getElementById('stream-description').value;
 
+            console.log("尝试写入直播信息到Firestore...");
+
             // 存储直播信息和Token到Firebase
             db.collection('live-stats').doc('stream-info').set({
                 title: streamTitle,
@@ -758,8 +760,15 @@
                 startTime: firebase.firestore.FieldValue.serverTimestamp(),
                 lastUpdate: firebase.firestore.FieldValue.serverTimestamp(),
                 channel: agoraConfig.channel,
-                token: agoraConfig.token  // 新增：存储Token
-            });
+                token: agoraConfig.token
+            })
+                .then(() => {
+                    console.log("直播信息写入Firestore成功");
+                })
+                .catch((error) => {
+                    console.error("直播信息写入Firestore失败:", error);
+                    showMessage('无法保存直播信息: ' + error.message);
+                });
         }
 
         // 监听观众数据

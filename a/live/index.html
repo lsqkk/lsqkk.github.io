@@ -387,12 +387,18 @@
         }
 
         // 监听直播状态变化
+        // 在 initializeStreamListener 函数中添加更详细的错误处理
         function initializeStreamListener() {
+            console.log("开始监听直播状态...");
+
             // 监听直播信息变化
             db.collection('live-stats').doc('stream-info')
                 .onSnapshot((doc) => {
+                    console.log("收到直播状态更新:", doc.exists, doc.data());
+
                     if (doc.exists) {
                         const streamInfo = doc.data();
+                        console.log("直播信息:", streamInfo);
                         currentStreamInfo = streamInfo;
 
                         // 更新页面显示的直播标题
@@ -402,6 +408,7 @@
 
                         // 如果有Token且正在直播，尝试连接
                         if (streamInfo.isLive && streamInfo.token) {
+                            console.log("检测到直播开始，Token:", streamInfo.token.substring(0, 20) + "...");
                             agoraConfig.token = streamInfo.token;
                             agoraConfig.channel = streamInfo.channel || "lsqkk_live_channel";
 
@@ -409,16 +416,33 @@
                                 joinChannel();
                             }
                         } else {
-                            // 直播已结束
+                            console.log("直播未开始或缺少Token");
                             handleStreamEnded();
                         }
                     } else {
-                        // 文档不存在，直播已结束
+                        console.log("直播文档不存在");
                         handleStreamEnded();
                     }
                 }, (error) => {
                     console.error('监听直播状态失败:', error);
-                    showError('无法获取直播状态');
+                    console.error('错误代码:', error.code);
+                    console.error('错误信息:', error.message);
+                    showError('无法获取直播状态: ' + error.message);
+                });
+        }
+
+        // 在页面加载时添加连接测试
+        function testFirebaseConnection() {
+            console.log("测试Firebase连接...");
+
+            // 尝试读取一个测试文档
+            db.collection('test').doc('connection').get()
+                .then((doc) => {
+                    console.log("Firebase连接测试成功");
+                })
+                .catch((error) => {
+                    console.error("Firebase连接测试失败:", error);
+                    showError('Firebase连接失败: ' + error.message);
                 });
         }
 
