@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
+    <title>直播 - 夸克博客</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .status {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .live-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .live-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-container {
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        #live-video {
+            width: 100%;
+            height: 400px;
+            background: #000;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 400px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .message .user {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        .message .time {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        #send-btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        #send-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .stats-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        #like-btn {
+            background: #ff4757;
+            color: white;
+        }
+
+        #like-btn:hover {
+            background: #ff3742;
+        }
+
+        #like-btn.liked {
+            background: #2ed573;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .error {
+            background: #ff4757;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 直播房间</h1>
+            <div class="status" id="status">等待连接...</div>
+            <div class="audio-status" id="audio-status" style="margin-top: 5px; font-size: 0.9rem;">
+                🔇 音频等待中
+            </div>
+        </div>
+
+        <div id="error-message" class="error" style="display: none;"></div>
+
+        <div class="live-container">
+            <div class="video-container">
+                <div id="video-placeholder" class="video-placeholder">
+                    <div class="loading">
+                        <div>📺 准备播放直播流...</div>
+                    </div>
+                </div>
+                <video id="live-video" style="display: none;" controls autoplay muted playsinline></video>
+            </div>
+
+            <!-- 在 chat-container 之前添加 -->
+            <div class="manual-panel hidden" id="manual-panel">
+                <h3>🔧 手动连接</h3>
+                <div class="form-group">
+                    <label for="manual-token">Token</label>
+                    <textarea id="manual-token" placeholder="请输入Token" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="manual-channel">频道名称</label>
+                    <input type="text" id="manual-channel" placeholder="请输入频道名称" value="lsqkk_live_channel">
+                </div>
+                <button class="control-btn" onclick="connectManually()">连接</button>
+            </div>
+
+            <div class="chat-container">
+                <h3>💬 实时聊天</h3>
+                <div class="messages" id="messages">
+                    <div class="message">
+                        <span class="user">系统</span>
+                        <span>欢迎来到直播房间！直播开始后这里会显示实时聊天</span>
+                        <span class="time" id="current-time"></span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="message-input" placeholder="输入消息...">
+                    <button id="send-btn">发送</button>
+                </div>
+                <div class="action-buttons">
+                    <button id="like-btn" class="action-btn">❤️ 点赞</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="viewer-count">0</div>
+                    <div class="stat-label">在线观众</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="like-count">0</div>
+                    <div class="stat-label">总点赞数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="message-count">0</div>
+                    <div class="stat-label">消息数量</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="toggleFullscreen()">全屏切换</button>
+            <button class="control-btn" onclick="testAudio()">测试音频</button>
+            <button class="control-btn" onclick="toggleMute()">静音切换</button>
+            <button class="control-btn" onclick="copyInviteLink()">复制邀请链接</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- HLS.js for video streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <script>
+        // Firebase配置
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
+            authDomain: "quark-b7305.firebaseapp.com",
+            databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
+            projectId: "quark-b7305",
+            storageBucket: "quark-b7305.firebasestorage.app",
+            messagingSenderId: "843016834358",
+            appId: "1:843016834358:web:9438c729be28c4d492f797",
+            measurementId: "G-5BVT26KRT6"
+        };
+
+        // 声网Agora配置
+        const agoraConfig = {
+            appId: "195fc077c2f74396968d899b8d5025ff",
+            channel: "lsqkk_live_channel",
+            token: "",
+            uid: null
+        };
+
+        // 初始化Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 全局变量
+        let agoraClient = null;
+        let remoteUsers = {};
+        let likeClicked = false;
+        let viewerId = generateViewerId();
+        let isConnecting = false;
+        let currentStreamInfo = null;
+        let isManualMode = false; // 是否手动输入模式
+
+        // 生成唯一观众ID
+        function generateViewerId() {
+            return 'viewer_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent =
+                now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // 检查AgoraRTC是否已加载
+        function checkAgoraLoaded() {
+            if (typeof AgoraRTC === 'undefined') {
+                showError('声网Agora SDK加载失败，请刷新页面重试');
+                return false;
+            }
+            return true;
+        }
+
+        // 初始化声网Agora客户端
+        async function initializeAgoraClient() {
+            try {
+                if (!checkAgoraLoaded()) {
+                    throw new Error('AgoraRTC SDK未加载');
+                }
+
+                agoraClient = AgoraRTC.createClient({
+                    mode: "live",
+                    codec: "vp8"
+                });
+
+                return agoraClient;
+            } catch (error) {
+                console.error('初始化Agora客户端失败:', error);
+                throw error;
+            }
+        }
+
+        // 监听直播状态变化 - 使用Realtime Database
+        function initializeStreamListener() {
+            console.log("开始监听直播状态...");
+
+            database.ref('live/stream-info').on('value', (snapshot) => {
+                const streamInfo = snapshot.val();
+                console.log("收到直播状态更新:", streamInfo);
+
+                if (streamInfo && streamInfo.isLive) {
+                    currentStreamInfo = streamInfo;
+
+                    // 更新页面显示的直播标题
+                    if (streamInfo.title) {
+                        document.querySelector('.header h1').textContent = `🎥 ${streamInfo.title}`;
+                    }
+
+                    // 如果有Token且正在直播，尝试连接
+                    if (streamInfo.token) {
+                        console.log("检测到直播开始，Token:", streamInfo.token.substring(0, 20) + "...");
+                        agoraConfig.token = streamInfo.token;
+                        agoraConfig.channel = streamInfo.channel || "lsqkk_live_channel";
+
+                        if (!isConnecting && !isManualMode) {
+                            joinChannel();
+                        }
+                    }
+                } else {
+                    // 直播已结束
+                    handleStreamEnded();
+                }
+            }, (error) => {
+                console.error('监听直播状态失败:', error);
+                showError('无法获取直播状态: ' + error.message);
+            });
+        }
+
+        // 添加自动播放失败处理
+        function setupAutoplayFailureHandler() {
+            // 监听自动播放失败事件
+            AgoraRTC.onAutoplayFailed = () => {
+                console.log('自动播放失败，显示用户交互提示');
+
+                // 显示用户交互提示
+                showAutoplayPrompt();
+
+                // 创建并显示交互按钮
+                createAutoplayButton();
+            };
+        }
+
+        // 显示自动播放提示
+        function showAutoplayPrompt() {
+            const prompt = document.createElement('div');
+            prompt.id = 'autoplay-prompt';
+            prompt.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1000;
+        text-align: center;
+        max-width: 300px;
+    `;
+
+            prompt.innerHTML = `
+        <h3>🔊 需要启用音频</h3>
+        <p>请点击下方按钮启用直播音频</p>
+        <button id="enable-audio-btn" style="
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        ">启用音频</button>
+    `;
+
+            document.body.appendChild(prompt);
+
+            // 添加按钮点击事件
+            document.getElementById('enable-audio-btn').addEventListener('click', function () {
+                resumeAllAudioTracks();
+                document.body.removeChild(prompt);
+            });
+        }
+
+        // 创建页面上的音频启用按钮
+        function createAutoplayButton() {
+            // 检查是否已存在按钮
+            if (document.getElementById('autoplay-fix-btn')) return;
+
+            const button = document.createElement('button');
+            button.id = 'autoplay-fix-btn';
+            button.innerHTML = '🔊 点击启用音频';
+            button.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #ff4757;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        z-index: 999;
+        font-size: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    `;
+
+            button.addEventListener('click', function () {
+                resumeAllAudioTracks();
+                this.style.display = 'none';
+                showMessage('音频已启用', 'success');
+            });
+
+            document.body.appendChild(button);
+        }
+
+        // 恢复所有音频轨道
+        function resumeAllAudioTracks() {
+            console.log('恢复音频播放...');
+
+            // 恢复远程用户的音频轨道
+            Object.values(remoteUsers).forEach(user => {
+                if (user.audioTrack) {
+                    try {
+                        // 重新播放音频轨道
+                        user.audioTrack.play();
+                        if (typeof user.audioTrack.setVolume === 'function') {
+                            user.audioTrack.setVolume(100);
+                        }
+                        console.log('恢复音频轨道:', user.uid);
+                    } catch (error) {
+                        console.error('恢复音频轨道失败:', error);
+                    }
+                }
+            });
+
+            // 恢复视频元素的音频
+            const videoElement = document.getElementById('live-video');
+            if (videoElement) {
+                videoElement.play().catch(e => {
+                    console.log('视频播放恢复失败:', e);
+                });
+            }
+
+            // 恢复 AudioContext
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    console.log('AudioContext 已恢复');
+                });
+            }
+        }
+
+        // 增强的音频测试函数
+        function testAudio() {
+            // 先恢复 AudioContext
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    playTestTone();
+                }).catch(error => {
+                    console.error('AudioContext 恢复失败:', error);
+                    showMessage('请先点击"启用音频"按钮', 'error');
+                });
+            } else {
+                playTestTone();
+            }
+        }
+
+        function playTestTone() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 440;
+                gainNode.gain.value = 0.1;
+
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    showMessage('音频测试完成', 'success');
+                }, 500);
+            } catch (error) {
+                console.error('播放测试音调失败:', error);
+                showMessage('音频测试失败', 'error');
+            }
+        }
+        // 添加用户交互事件来初始化 AudioContext
+        function initAudioOnUserInteraction() {
+            document.addEventListener('click', function initAudio() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                // 移除事件监听器，避免重复初始化
+                document.removeEventListener('click', initAudio);
+            }, { once: true });
+        }
+
+        // 处理直播结束
+        function handleStreamEnded() {
+            if (agoraClient) {
+                leaveChannel();
+            }
+
+            const videoElement = document.getElementById('live-video');
+            const placeholder = document.getElementById('video-placeholder');
+
+            videoElement.style.display = 'none';
+            placeholder.style.display = 'flex';
+            placeholder.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">📺</div>
+                <div>等待直播开始</div>
+                <div style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">主播上线后将自动连接</div>
+            </div>
+        `;
+
+            updateStatus('等待直播');
+            showMessage('直播已结束或尚未开始', 'success');
+        }
+
+        // 手动连接模式
+        function enableManualMode() {
+            isManualMode = true;
+            document.getElementById('manual-panel').classList.remove('hidden');
+            document.getElementById('auto-mode-btn').classList.remove('hidden');
+            document.getElementById('manual-mode-btn').classList.add('hidden');
+            showMessage('已切换到手动模式，请输入Token连接', 'success');
+        }
+
+        // 自动连接模式
+        function enableAutoMode() {
+            isManualMode = false;
+            document.getElementById('manual-panel').classList.add('hidden');
+            document.getElementById('auto-mode-btn').classList.add('hidden');
+            document.getElementById('manual-mode-btn').classList.remove('hidden');
+            showMessage('已切换到自动模式，等待直播开始', 'success');
+
+            // 如果当前有直播信息，尝试连接
+            if (currentStreamInfo && currentStreamInfo.isLive) {
+                joinChannel();
+            }
+        }
+
+        // 手动连接
+        function connectManually() {
+            const tokenInput = document.getElementById('manual-token').value.trim();
+            const channelInput = document.getElementById('manual-channel').value.trim() || "lsqkk_live_channel";
+
+            if (!tokenInput) {
+                showError('请输入Token');
+                return;
+            }
+
+            agoraConfig.token = tokenInput;
+            agoraConfig.channel = channelInput;
+
+            joinChannel();
+        }
+
+        // 加入频道并订阅流
+        async function joinChannel() {
+            if (isConnecting) {
+                console.log('正在连接中，跳过重复连接');
+                return;
+            }
+
+            if (!agoraConfig.token) {
+                console.log('等待Token...');
+                return;
+            }
+
+            try {
+                isConnecting = true;
+                updateStatus('连接中...');
+
+                await initializeAgoraClient();
+
+                // 设置客户端角色为观众
+                await agoraClient.setClientRole("audience");
+
+                // 添加事件监听器
+                agoraClient.on("user-published", handleUserPublished);
+                agoraClient.on("user-unpublished", handleUserUnpublished);
+                agoraClient.on("user-left", handleUserLeft);
+                agoraClient.on("connection-state-change", handleConnectionStateChange);
+
+                // 加入频道
+                const uid = await agoraClient.join(
+                    agoraConfig.appId,
+                    agoraConfig.channel,
+                    agoraConfig.token,
+                    null
+                );
+
+                console.log("加入频道成功，UID:", uid);
+                updateStatus('已连接');
+                isConnecting = false;
+
+                // 记录观众信息到Realtime Database
+                database.ref('live/viewers/' + viewerId).set({
+                    timestamp: Date.now(),
+                    userAgent: navigator.userAgent
+                });
+
+            } catch (error) {
+                console.error('加入频道失败:', error);
+                isConnecting = false;
+
+                if (error.code === 4096) {
+                    showError('认证失败：Token可能已过期');
+                } else if (error.code === 17) {
+                    showError('加入频道失败：请检查网络连接');
+                } else {
+                    showError('连接失败: ' + error.message);
+                }
+                updateStatus('连接失败');
+
+                // 5秒后重试
+                setTimeout(() => {
+                    if (currentStreamInfo && currentStreamInfo.isLive) {
+                        joinChannel();
+                    }
+                }, 5000);
+            }
+
+
+            agoraClient.on("user-published", async (user, mediaType) => {
+                console.log(`用户 ${user.uid} 发布了 ${mediaType} 流`);
+
+                await agoraClient.subscribe(user, mediaType);
+
+                if (mediaType === "audio") {
+                    console.log("音频轨道详情:", {
+                        track: user.audioTrack,
+                        state: user.audioTrack.getCurrentState(),
+                        volume: user.audioTrack.getVolumeLevel && user.audioTrack.getVolumeLevel()
+                    });
+
+                    user.audioTrack.play();
+                    user.audioTrack.setVolume(100);
+                }
+
+            });
+
+
+        }
+
+        // 处理连接状态变化
+        function handleConnectionStateChange(curState, prevState) {
+            console.log('连接状态变化:', prevState, '->', curState);
+
+            if (curState === 'DISCONNECTED' && prevState === 'CONNECTED') {
+                showMessage('连接断开，正在尝试重新连接...', 'success');
+                updateStatus('重新连接中');
+
+                setTimeout(() => {
+                    if (currentStreamInfo && currentStreamInfo.isLive) {
+                        joinChannel();
+                    }
+                }, 3000);
+            }
+        }
+
+
+        function updateAudioStatus(hasAudio) {
+            const audioStatusElement = document.getElementById('audio-status');
+            if (hasAudio) {
+                audioStatusElement.innerHTML = '🔊 音频正常';
+                audioStatusElement.style.color = '#2ed573';
+            } else {
+                audioStatusElement.innerHTML = '🔇 无音频';
+                audioStatusElement.style.color = '#ff4757';
+            }
+        }
+
+        async function handleUserPublished(user, mediaType) {
+            console.log("用户发布流:", user.uid, mediaType);
+
+            await agoraClient.subscribe(user, mediaType);
+
+            if (mediaType === "video") {
+                const videoElement = document.getElementById('live-video');
+                const placeholder = document.getElementById('video-placeholder');
+
+                user.videoTrack.play(videoElement);
+
+                placeholder.style.display = 'none';
+                videoElement.style.display = 'block';
+
+                updateStatus('直播中');
+
+                // 尝试自动播放，但捕获可能的错误
+                videoElement.play().catch(error => {
+                    console.log('视频自动播放被阻止，等待用户交互');
+                    // 不显示错误，因为我们会通过 AgoraRTC.onAutoplayFailed 处理
+                });
+            }
+
+            if (mediaType === "audio") {
+                console.log("开始播放音频轨道");
+                try {
+                    // 直接播放音频轨道
+                    user.audioTrack.play();
+                    console.log("音频播放成功");
+
+                    // 设置音量
+                    if (typeof user.audioTrack.setVolume === 'function') {
+                        user.audioTrack.setVolume(100);
+                    }
+
+                    // 更新音频状态
+                    updateAudioStatus(true);
+
+                } catch (audioError) {
+                    console.error("音频播放失败:", audioError);
+                    // 不显示错误，自动播放失败会由 AgoraRTC.onAutoplayFailed 处理
+                }
+            }
+
+            remoteUsers[user.uid] = user;
+        }
+
+        function handleAutoplay() {
+            const videoElement = document.getElementById('live-video');
+
+            // 尝试播放视频（这会同时触发音频播放）
+            videoElement.play().catch(error => {
+                console.log('自动播放被阻止:', error);
+
+                // 显示提示，要求用户交互
+                showMessage('请点击页面任意位置以启用音频', 'error');
+
+                // 添加点击事件来恢复播放
+                document.addEventListener('click', function resumePlayback() {
+                    videoElement.play().then(() => {
+                        console.log('播放已恢复');
+                        showMessage('音频已启用', 'success');
+                    }).catch(e => {
+                        console.error('恢复播放失败:', e);
+                    });
+
+                    // 移除事件监听器
+                    document.removeEventListener('click', resumePlayback);
+                }, { once: true });
+            });
+        }
+
+
+        // 处理用户取消发布流
+        async function handleUserUnpublished(user, mediaType) {
+            console.log("用户取消发布流:", user.uid, mediaType);
+
+            if (mediaType === "video") {
+                const videoElement = document.getElementById('live-video');
+                const placeholder = document.getElementById('video-placeholder');
+
+                videoElement.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">⏸️</div>
+                    <div>直播暂停</div>
+                </div>
+            `;
+
+                updateStatus('直播暂停');
+            }
+        }
+
+        // 处理用户离开
+        async function handleUserLeft(user) {
+            console.log("用户离开:", user.uid);
+
+            delete remoteUsers[user.uid];
+
+            if (Object.keys(remoteUsers).length === 0) {
+                handleStreamEnded();
+            }
+        }
+
+        // 离开频道
+        async function leaveChannel() {
+            if (agoraClient) {
+                Object.values(remoteUsers).forEach(user => {
+                    if (user.videoTrack) user.videoTrack.stop();
+                    if (user.audioTrack) user.audioTrack.stop();
+                });
+                remoteUsers = {};
+
+                agoraClient.off("user-published", handleUserPublished);
+                agoraClient.off("user-unpublished", handleUserUnpublished);
+                agoraClient.off("user-left", handleUserLeft);
+                agoraClient.off("connection-state-change", handleConnectionStateChange);
+
+                await agoraClient.leave();
+                agoraClient = null;
+
+                console.log("离开频道成功");
+                updateStatus('已断开');
+            }
+        }
+
+        // 更新状态显示
+        function updateStatus(status) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = status;
+
+            if (status === '直播中') {
+                statusElement.style.background = 'rgba(46, 213, 115, 0.3)';
+            } else if (status === '连接失败' || status === '直播结束') {
+                statusElement.style.background = 'rgba(255, 71, 87, 0.3)';
+            } else {
+                statusElement.style.background = 'rgba(255, 255, 255, 0.2)';
+            }
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // 显示成功信息
+        function showMessage(message, type = 'success') {
+            console.log(message);
+        }
+
+        // Firebase实时聊天功能 - 使用Realtime Database
+        function initializeChat() {
+            const messagesElement = document.getElementById('messages');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-btn');
+
+            // 监听新消息
+            database.ref('live/chat').on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                addMessageToChat(message);
+                updateMessageCount();
+            });
+
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message) {
+                    database.ref('live/chat').push({
+                        text: message,
+                        timestamp: Date.now(),
+                        user: '观众',
+                        viewerId: viewerId
+                    });
+                    messageInput.value = '';
+                }
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        // 添加消息到聊天窗口
+        function addMessageToChat(messageData) {
+            const messagesElement = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+
+            const time = new Date(messageData.timestamp).toLocaleTimeString('zh-CN', {
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            messageElement.innerHTML = `
+            <span class="user">${messageData.user || '观众'}:</span>
+            <span>${messageData.text}</span>
+            <span class="time">${time}</span>
+        `;
+
+            messagesElement.appendChild(messageElement);
+            messagesElement.scrollTop = messagesElement.scrollHeight;
+        }
+
+        // 点赞功能 - 使用Realtime Database
+        function initializeLikes() {
+            const likeButton = document.getElementById('like-btn');
+            const likeCountElement = document.getElementById('like-count');
+
+            // 监听点赞数变化
+            database.ref('live/stats/likes').on('value', (snapshot) => {
+                const likes = snapshot.val();
+                likeCountElement.textContent = likes || 0;
+            });
+
+            // 处理点赞点击
+            likeButton.addEventListener('click', () => {
+                if (!likeClicked) {
+                    database.ref('live/stats/likes').transaction((currentLikes) => {
+                        return (currentLikes || 0) + 1;
+                    });
+
+                    likeButton.classList.add('liked');
+                    likeButton.innerHTML = '❤️ 已点赞';
+                    likeClicked = true;
+
+                    setTimeout(() => {
+                        likeButton.classList.remove('liked');
+                        likeButton.innerHTML = '❤️ 点赞';
+                        likeClicked = false;
+                    }, 3000);
+                }
+            });
+        }
+
+        // 更新消息计数
+        function updateMessageCount() {
+            const messages = document.querySelectorAll('.message');
+            document.getElementById('message-count').textContent = messages.length - 1;
+        }
+
+        // 观众计数 - 使用Realtime Database
+        function initializeViewerCount() {
+            const viewerCountElement = document.getElementById('viewer-count');
+
+            // 记录观众进入
+            database.ref('live/viewers/' + viewerId).set({
+                timestamp: Date.now(),
+                userAgent: navigator.userAgent
+            });
+
+            // 监听在线观众数
+            database.ref('live/viewers').on('value', (snapshot) => {
+                const viewers = snapshot.val();
+                const viewerCount = viewers ? Object.keys(viewers).length : 0;
+                viewerCountElement.textContent = viewerCount;
+            });
+        }
+
+        // 控制功能
+        function toggleFullscreen() {
+            const videoContainer = document.querySelector('.video-container');
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen().catch(err => {
+                    console.log(`全屏错误: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // 增强静音切换功能
+        function toggleMute() {
+            const video = document.getElementById('live-video');
+            video.muted = !video.muted;
+
+            // 同时静音所有音频轨道
+            Object.values(remoteUsers).forEach(user => {
+                if (user.audioTrack) {
+                    user.audioTrack.setVolume(video.muted ? 0 : 100);
+                }
+            });
+
+            showMessage(video.muted ? '已静音' : '已取消静音', 'success');
+        }
+        // 修复音频状态监控函数
+        function monitorAudioState() {
+            setInterval(() => {
+                let hasAudio = false;
+                Object.values(remoteUsers).forEach(user => {
+                    if (user.audioTrack) {
+                        hasAudio = true;
+                        // 使用安全的方式检查音频状态
+                        console.log("音频轨道状态:", {
+                            enabled: user.audioTrack.enabled,
+                            // 只检查存在的属性
+                        });
+                    }
+                });
+
+                if (!hasAudio) {
+                    console.log('未检测到音频轨道');
+                }
+            }, 10000); // 每10秒检查一次，减少频率
+        }
+        function copyInviteLink() {
+            const inviteLink = window.location.href;
+            navigator.clipboard.writeText(inviteLink).then(() => {
+                showMessage('邀请链接已复制到剪贴板', 'success');
+            });
+        }
+
+        // 重新连接功能
+        function reconnect() {
+            showMessage('尝试重新连接...', 'success');
+            leaveChannel().then(() => {
+                joinChannel();
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000);
+
+            // 初始化Firebase监听
+            initializeStreamListener();
+
+
+            setupAutoplayFailureHandler();
+
+            initAudioContext();
+            // 初始化Firebase功能
+            initializeChat();
+            initializeLikes();
+            initializeViewerCount();
+
+            // 添加重新连接按钮
+            const controls = document.querySelector('.controls');
+            const reconnectBtn = document.createElement('button');
+            reconnectBtn.className = 'control-btn';
+            reconnectBtn.textContent = '重新连接';
+            reconnectBtn.onclick = reconnect;
+            controls.appendChild(reconnectBtn);
+
+            // 添加手动模式按钮
+            const manualModeBtn = document.createElement('button');
+            manualModeBtn.className = 'control-btn';
+            manualModeBtn.id = 'manual-mode-btn';
+            manualModeBtn.textContent = '手动连接';
+            manualModeBtn.onclick = enableManualMode;
+            controls.appendChild(manualModeBtn);
+
+            // 添加自动模式按钮（初始隐藏）
+            const autoModeBtn = document.createElement('button');
+            autoModeBtn.className = 'control-btn';
+            autoModeBtn.id = 'auto-mode-btn';
+            autoModeBtn.textContent = '自动模式';
+            autoModeBtn.style.display = 'none';
+            autoModeBtn.onclick = enableAutoMode;
+            controls.appendChild(autoModeBtn);
+
+            // 清理过期观众记录
+            setInterval(() => {
+                const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+                database.ref('live/viewers').once('value').then((snapshot) => {
+                    const updates = {};
+                    snapshot.forEach((childSnapshot) => {
+                        if (childSnapshot.val().timestamp < fiveMinutesAgo) {
+                            updates[childSnapshot.key] = null;
+                        }
+                    });
+                    database.ref('live/viewers').update(updates);
+                });
+            }, 60000);
+
+            document.addEventListener('click', function () {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            });
+            document.addEventListener('click', function globalAudioResume() {
+                // 尝试恢复所有音频
+                resumeAllAudioTracks();
+
+                // 移除全局监听器，避免重复处理
+                document.removeEventListener('click', globalAudioResume);
+            }, { once: true });
+        });
+    </script>
+</body>
+
+</html>

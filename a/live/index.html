@@ -5,8 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
-    <title>直播 - 夸克博客</title>
+    <title>直播 - 夸克博客直播间</title>
     <style>
+        :root {
+            --primary-color: #ff2e63;
+            --secondary-color: #08d9d6;
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-bg-solid: #1a1a2e;
+            --text-color: #ffffff;
+            --text-secondary: #b8b8b8;
+            --border-radius: 12px;
+            --blur: blur(10px);
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,34 +28,73 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
             min-height: 100vh;
-            color: #333;
+            color: var(--text-color);
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 25px;
+            background: var(--card-bg);
+            backdrop-filter: var(--blur);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        .stream-info {
+            flex: 1;
         }
 
-        .header .status {
-            display: inline-block;
-            padding: 5px 15px;
-            background: rgba(255, 255, 255, 0.2);
+        .stream-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stream-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .stream-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .stream-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
             border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            background: rgba(255, 46, 99, 0.2);
+            color: var(--primary-color);
+            border: 1px solid rgba(255, 46, 99, 0.3);
+        }
+
+        .audio-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
             font-size: 0.9rem;
         }
 
@@ -53,15 +105,15 @@
             margin-bottom: 30px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .live-container {
                 grid-template-columns: 1fr;
             }
         }
 
         .video-container {
-            background: black;
-            border-radius: 12px;
+            background: #000;
+            border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             position: relative;
@@ -69,95 +121,288 @@
 
         #live-video {
             width: 100%;
-            height: 400px;
+            height: 500px;
             background: #000;
+            object-fit: cover;
         }
 
         .video-placeholder {
             width: 100%;
-            height: 400px;
-            background: #1a1a1a;
+            height: 500px;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 1.2rem;
+            flex-direction: column;
+        }
+
+        .video-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
         }
 
         .chat-container {
-            background: white;
-            border-radius: 12px;
+            background: var(--card-bg);
+            backdrop-filter: var(--blur);
+            border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            height: 400px;
+            height: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .messages {
             flex: 1;
             overflow-y: auto;
             margin-bottom: 15px;
-            border: 1px solid #eee;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
-            padding: 15px;
-            background: #fafafa;
         }
 
         .message {
             margin-bottom: 12px;
-            padding: 8px 12px;
-            background: white;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 3px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        .message:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .message-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 8px;
         }
 
         .message .user {
             font-weight: bold;
-            color: #667eea;
+            color: var(--secondary-color);
             margin-right: 8px;
         }
 
         .message .time {
             font-size: 0.8rem;
-            color: #999;
-            margin-left: 8px;
+            color: var(--text-secondary);
+            margin-left: auto;
         }
 
-        .input-group {
+        .message-input-container {
             display: flex;
             gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .avatar-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .avatar-preview:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .avatar-options {
+            position: absolute;
+            bottom: 70px;
+            left: 10px;
+            background: var(--card-bg-solid);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 10;
+            width: 250px;
+        }
+
+        .avatar-options.active {
+            display: block;
+        }
+
+        .avatar-toggle {
+            display: flex;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-btn.active {
+            background: var(--secondary-color);
+            color: #000;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .color-option.selected {
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        #avatar-url {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        #nickname {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
         }
 
         #message-input {
             flex: 1;
             padding: 12px;
-            border: 1px solid #ddd;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             font-size: 1rem;
+            color: var(--text-color);
         }
 
         #send-btn {
-            padding: 12px 24px;
-            background: #667eea;
+            padding: 12px 20px;
+            background: var(--primary-color);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
-            transition: background 0.3s;
+            transition: var(--transition);
+            font-weight: bold;
         }
 
         #send-btn:hover {
-            background: #5a6fd8;
+            background: #ff1a52;
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #like-btn {
+            background: rgba(255, 46, 99, 0.2);
+            color: var(--primary-color);
+            border: 1px solid rgba(255, 46, 99, 0.3);
+        }
+
+        #like-btn:hover {
+            background: rgba(255, 46, 99, 0.3);
+        }
+
+        #like-btn.liked {
+            background: var(--primary-color);
+            color: white;
         }
 
         .stats-container {
-            background: white;
-            border-radius: 12px;
+            background: var(--card-bg);
+            backdrop-filter: var(--blur);
+            border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stats {
@@ -173,58 +418,71 @@
         .stat-value {
             font-size: 2rem;
             font-weight: bold;
-            color: #667eea;
+            color: var(--secondary-color);
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: #666;
+            color: var(--text-secondary);
             margin-top: 5px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        #like-btn {
-            background: #ff4757;
-            color: white;
-        }
-
-        #like-btn:hover {
-            background: #ff3742;
-        }
-
-        #like-btn.liked {
-            background: #2ed573;
         }
 
         .controls {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .control-btn {
             padding: 10px 20px;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
-            background: #667eea;
-            color: white;
+            color: var(--text-color);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .manual-panel {
+            background: var(--card-bg-solid);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .manual-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
         }
 
         .loading {
@@ -234,12 +492,119 @@
         }
 
         .error {
-            background: #ff4757;
-            color: white;
-            padding: 10px;
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
             text-align: center;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .autoplay-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .autoplay-content {
+            background: var(--card-bg-solid);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .autoplay-content h3 {
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .autoplay-content p {
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        #enable-audio-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        #enable-audio-btn:hover {
+            background: #ff1a52;
+            transform: translateY(-2px);
+        }
+
+        .floating-audio-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .floating-audio-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .markdown-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .markdown-toggle input {
+            margin-right: 8px;
+        }
+
+        /* 滚动条样式 */
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+
+        .messages::-webkit-scrollbar-thumb:hover {
+            background: #06b6b3;
         }
     </style>
 </head>
@@ -247,10 +612,19 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎥 直播房间</h1>
-            <div class="status" id="status">等待连接...</div>
-            <div class="audio-status" id="audio-status" style="margin-top: 5px; font-size: 0.9rem;">
-                🔇 音频等待中
+            <div class="stream-info">
+                <div class="stream-title">
+                    <i class="fas fa-video"></i>
+                    <span id="stream-title">直播房间</span>
+                </div>
+                <div class="stream-description" id="stream-description">欢迎来到直播间！</div>
+            </div>
+            <div class="stream-status">
+                <div class="status-badge" id="status">等待连接...</div>
+                <div class="audio-status" id="audio-status">
+                    <i class="fas fa-volume-mute"></i>
+                    <span>音频等待中</span>
+                </div>
             </div>
         </div>
 
@@ -259,42 +633,60 @@
         <div class="live-container">
             <div class="video-container">
                 <div id="video-placeholder" class="video-placeholder">
-                    <div class="loading">
-                        <div>📺 准备播放直播流...</div>
-                    </div>
+                    <i class="fas fa-satellite-dish"></i>
+                    <div>准备播放直播流...</div>
                 </div>
                 <video id="live-video" style="display: none;" controls autoplay muted playsinline></video>
             </div>
 
-            <!-- 在 chat-container 之前添加 -->
-            <div class="manual-panel hidden" id="manual-panel">
-                <h3>🔧 手动连接</h3>
-                <div class="form-group">
-                    <label for="manual-token">Token</label>
-                    <textarea id="manual-token" placeholder="请输入Token" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="manual-channel">频道名称</label>
-                    <input type="text" id="manual-channel" placeholder="请输入频道名称" value="lsqkk_live_channel">
-                </div>
-                <button class="control-btn" onclick="connectManually()">连接</button>
-            </div>
-
             <div class="chat-container">
-                <h3>💬 实时聊天</h3>
+                <div class="chat-header">
+                    <h3><i class="fas fa-comments"></i> 实时聊天</h3>
+                    <div class="message-count">消息: <span id="message-count">0</span></div>
+                </div>
                 <div class="messages" id="messages">
                     <div class="message">
-                        <span class="user">系统</span>
-                        <span>欢迎来到直播房间！直播开始后这里会显示实时聊天</span>
-                        <span class="time" id="current-time"></span>
+                        <div class="message-header">
+                            <div class="message-avatar" style="background: #4a6cf7">系</div>
+                            <span class="user">系统</span>
+                            <span class="time" id="current-time"></span>
+                        </div>
+                        <div class="message-content">欢迎来到直播房间！直播开始后这里会显示实时聊天</div>
                     </div>
                 </div>
-                <div class="input-group">
+
+                <div class="message-input-container">
+                    <div class="user-avatar-input">
+                        <div class="avatar-preview" id="avatar-preview" style="background: #4a6cf7">A</div>
+                        <div class="avatar-options" id="avatar-options">
+                            <div class="avatar-toggle">
+                                <button class="toggle-btn active" id="color-toggle">颜色</button>
+                                <button class="toggle-btn" id="image-toggle">图片URL</button>
+                            </div>
+                            <div class="color-picker" id="color-picker">
+                                <div class="color-option selected" style="background: #4a6cf7"></div>
+                                <div class="color-option" style="background: #f56565"></div>
+                                <div class="color-option" style="background: #48bb78"></div>
+                                <div class="color-option" style="background: #ed8936"></div>
+                                <div class="color-option" style="background: #9f7aea"></div>
+                            </div>
+                            <input type="text" id="avatar-url" placeholder="图片URL (jpg, png, webp)"
+                                style="display: none;">
+                            <input type="text" id="nickname" placeholder="昵称" value="观众">
+                        </div>
+                    </div>
                     <input type="text" id="message-input" placeholder="输入消息...">
                     <button id="send-btn">发送</button>
                 </div>
+                <div class="markdown-toggle">
+                    <input type="checkbox" id="use-markdown" checked>
+                    <label for="use-markdown">使用Markdown格式</label>
+                </div>
                 <div class="action-buttons">
-                    <button id="like-btn" class="action-btn">❤️ 点赞</button>
+                    <button id="like-btn" class="action-btn">
+                        <i class="fas fa-heart"></i>
+                        <span>点赞</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -310,17 +702,57 @@
                     <div class="stat-label">总点赞数</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="message-count">0</div>
+                    <div class="stat-value" id="message-count-stat">0</div>
                     <div class="stat-label">消息数量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stream-duration">00:00</div>
+                    <div class="stat-label">直播时长</div>
                 </div>
             </div>
         </div>
 
         <div class="controls">
-            <button class="control-btn" onclick="toggleFullscreen()">全屏切换</button>
-            <button class="control-btn" onclick="testAudio()">测试音频</button>
-            <button class="control-btn" onclick="toggleMute()">静音切换</button>
-            <button class="control-btn" onclick="copyInviteLink()">复制邀请链接</button>
+            <button class="control-btn" onclick="toggleFullscreen()">
+                <i class="fas fa-expand"></i>
+                全屏切换
+            </button>
+            <button class="control-btn" onclick="testAudio()">
+                <i class="fas fa-volume-up"></i>
+                测试音频
+            </button>
+            <button class="control-btn" onclick="toggleMute()">
+                <i class="fas fa-volume-mute"></i>
+                静音切换
+            </button>
+            <button class="control-btn" onclick="copyInviteLink()">
+                <i class="fas fa-share"></i>
+                复制邀请链接
+            </button>
+            <button class="control-btn" onclick="toggleManualPanel()">
+                <i class="fas fa-cog"></i>
+                手动连接
+            </button>
+            <button class="control-btn" onclick="reconnect()">
+                <i class="fas fa-redo"></i>
+                重新连接
+            </button>
+        </div>
+
+        <div class="manual-panel" id="manual-panel">
+            <h3><i class="fas fa-tools"></i> 手动连接</h3>
+            <div class="form-group">
+                <label for="manual-token">Token</label>
+                <textarea id="manual-token" placeholder="请输入Token" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="manual-channel">频道名称</label>
+                <input type="text" id="manual-channel" placeholder="请输入频道名称" value="lsqkk_live_channel">
+            </div>
+            <button class="control-btn" onclick="connectManually()">
+                <i class="fas fa-plug"></i>
+                连接
+            </button>
         </div>
     </div>
 
@@ -330,6 +762,9 @@
 
     <!-- HLS.js for video streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <script>
         // Firebase配置
@@ -363,7 +798,12 @@
         let viewerId = generateViewerId();
         let isConnecting = false;
         let currentStreamInfo = null;
-        let isManualMode = false; // 是否手动输入模式
+        let isManualMode = false;
+        let audioContext = null;
+        let userAvatarType = 'color';
+        let userColor = '#4a6cf7';
+        let userAvatarUrl = '';
+        let nickname = localStorage.getItem('nickname') || '观众';
 
         // 生成唯一观众ID
         function generateViewerId() {
@@ -405,7 +845,7 @@
             }
         }
 
-        // 监听直播状态变化 - 使用Realtime Database
+        // 监听直播状态变化
         function initializeStreamListener() {
             console.log("开始监听直播状态...");
 
@@ -416,9 +856,14 @@
                 if (streamInfo && streamInfo.isLive) {
                     currentStreamInfo = streamInfo;
 
-                    // 更新页面显示的直播标题
+                    // 更新页面显示的直播标题和描述
                     if (streamInfo.title) {
-                        document.querySelector('.header h1').textContent = `🎥 ${streamInfo.title}`;
+                        document.getElementById('stream-title').textContent = streamInfo.title;
+                        document.title = `${streamInfo.title} - 夸克博客直播间`;
+                    }
+
+                    if (streamInfo.description) {
+                        document.getElementById('stream-description').textContent = streamInfo.description;
                     }
 
                     // 如果有Token且正在直播，尝试连接
@@ -441,182 +886,6 @@
             });
         }
 
-        // 添加自动播放失败处理
-        function setupAutoplayFailureHandler() {
-            // 监听自动播放失败事件
-            AgoraRTC.onAutoplayFailed = () => {
-                console.log('自动播放失败，显示用户交互提示');
-
-                // 显示用户交互提示
-                showAutoplayPrompt();
-
-                // 创建并显示交互按钮
-                createAutoplayButton();
-            };
-        }
-
-        // 显示自动播放提示
-        function showAutoplayPrompt() {
-            const prompt = document.createElement('div');
-            prompt.id = 'autoplay-prompt';
-            prompt.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        z-index: 1000;
-        text-align: center;
-        max-width: 300px;
-    `;
-
-            prompt.innerHTML = `
-        <h3>🔊 需要启用音频</h3>
-        <p>请点击下方按钮启用直播音频</p>
-        <button id="enable-audio-btn" style="
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        ">启用音频</button>
-    `;
-
-            document.body.appendChild(prompt);
-
-            // 添加按钮点击事件
-            document.getElementById('enable-audio-btn').addEventListener('click', function () {
-                resumeAllAudioTracks();
-                document.body.removeChild(prompt);
-            });
-        }
-
-        // 创建页面上的音频启用按钮
-        function createAutoplayButton() {
-            // 检查是否已存在按钮
-            if (document.getElementById('autoplay-fix-btn')) return;
-
-            const button = document.createElement('button');
-            button.id = 'autoplay-fix-btn';
-            button.innerHTML = '🔊 点击启用音频';
-            button.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #ff4757;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 25px;
-        cursor: pointer;
-        z-index: 999;
-        font-size: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    `;
-
-            button.addEventListener('click', function () {
-                resumeAllAudioTracks();
-                this.style.display = 'none';
-                showMessage('音频已启用', 'success');
-            });
-
-            document.body.appendChild(button);
-        }
-
-        // 恢复所有音频轨道
-        function resumeAllAudioTracks() {
-            console.log('恢复音频播放...');
-
-            // 恢复远程用户的音频轨道
-            Object.values(remoteUsers).forEach(user => {
-                if (user.audioTrack) {
-                    try {
-                        // 重新播放音频轨道
-                        user.audioTrack.play();
-                        if (typeof user.audioTrack.setVolume === 'function') {
-                            user.audioTrack.setVolume(100);
-                        }
-                        console.log('恢复音频轨道:', user.uid);
-                    } catch (error) {
-                        console.error('恢复音频轨道失败:', error);
-                    }
-                }
-            });
-
-            // 恢复视频元素的音频
-            const videoElement = document.getElementById('live-video');
-            if (videoElement) {
-                videoElement.play().catch(e => {
-                    console.log('视频播放恢复失败:', e);
-                });
-            }
-
-            // 恢复 AudioContext
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume().then(() => {
-                    console.log('AudioContext 已恢复');
-                });
-            }
-        }
-
-        // 增强的音频测试函数
-        function testAudio() {
-            // 先恢复 AudioContext
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume().then(() => {
-                    playTestTone();
-                }).catch(error => {
-                    console.error('AudioContext 恢复失败:', error);
-                    showMessage('请先点击"启用音频"按钮', 'error');
-                });
-            } else {
-                playTestTone();
-            }
-        }
-
-        function playTestTone() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.type = 'sine';
-                oscillator.frequency.value = 440;
-                gainNode.gain.value = 0.1;
-
-                oscillator.start();
-                setTimeout(() => {
-                    oscillator.stop();
-                    showMessage('音频测试完成', 'success');
-                }, 500);
-            } catch (error) {
-                console.error('播放测试音调失败:', error);
-                showMessage('音频测试失败', 'error');
-            }
-        }
-        // 添加用户交互事件来初始化 AudioContext
-        function initAudioOnUserInteraction() {
-            document.addEventListener('click', function initAudio() {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-
-                // 移除事件监听器，避免重复初始化
-                document.removeEventListener('click', initAudio);
-            }, { once: true });
-        }
-
         // 处理直播结束
         function handleStreamEnded() {
             if (agoraClient) {
@@ -629,38 +898,19 @@
             videoElement.style.display = 'none';
             placeholder.style.display = 'flex';
             placeholder.innerHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 10px;">📺</div>
+                <i class="fas fa-satellite-dish"></i>
                 <div>等待直播开始</div>
                 <div style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">主播上线后将自动连接</div>
-            </div>
-        `;
+            `;
 
             updateStatus('等待直播');
             showMessage('直播已结束或尚未开始', 'success');
         }
 
         // 手动连接模式
-        function enableManualMode() {
-            isManualMode = true;
-            document.getElementById('manual-panel').classList.remove('hidden');
-            document.getElementById('auto-mode-btn').classList.remove('hidden');
-            document.getElementById('manual-mode-btn').classList.add('hidden');
-            showMessage('已切换到手动模式，请输入Token连接', 'success');
-        }
-
-        // 自动连接模式
-        function enableAutoMode() {
-            isManualMode = false;
-            document.getElementById('manual-panel').classList.add('hidden');
-            document.getElementById('auto-mode-btn').classList.add('hidden');
-            document.getElementById('manual-mode-btn').classList.remove('hidden');
-            showMessage('已切换到自动模式，等待直播开始', 'success');
-
-            // 如果当前有直播信息，尝试连接
-            if (currentStreamInfo && currentStreamInfo.isLive) {
-                joinChannel();
-            }
+        function toggleManualPanel() {
+            const panel = document.getElementById('manual-panel');
+            panel.classList.toggle('active');
         }
 
         // 手动连接
@@ -673,10 +923,12 @@
                 return;
             }
 
+            isManualMode = true;
             agoraConfig.token = tokenInput;
             agoraConfig.channel = channelInput;
 
             joinChannel();
+            toggleManualPanel();
         }
 
         // 加入频道并订阅流
@@ -744,27 +996,6 @@
                     }
                 }, 5000);
             }
-
-
-            agoraClient.on("user-published", async (user, mediaType) => {
-                console.log(`用户 ${user.uid} 发布了 ${mediaType} 流`);
-
-                await agoraClient.subscribe(user, mediaType);
-
-                if (mediaType === "audio") {
-                    console.log("音频轨道详情:", {
-                        track: user.audioTrack,
-                        state: user.audioTrack.getCurrentState(),
-                        volume: user.audioTrack.getVolumeLevel && user.audioTrack.getVolumeLevel()
-                    });
-
-                    user.audioTrack.play();
-                    user.audioTrack.setVolume(100);
-                }
-
-            });
-
-
         }
 
         // 处理连接状态变化
@@ -783,18 +1014,19 @@
             }
         }
 
-
+        // 更新音频状态
         function updateAudioStatus(hasAudio) {
             const audioStatusElement = document.getElementById('audio-status');
             if (hasAudio) {
-                audioStatusElement.innerHTML = '🔊 音频正常';
-                audioStatusElement.style.color = '#2ed573';
+                audioStatusElement.innerHTML = '<i class="fas fa-volume-up"></i> 音频正常';
+                audioStatusElement.style.color = '#08d9d6';
             } else {
-                audioStatusElement.innerHTML = '🔇 无音频';
+                audioStatusElement.innerHTML = '<i class="fas fa-volume-mute"></i> 无音频';
                 audioStatusElement.style.color = '#ff4757';
             }
         }
 
+        // 处理用户发布流
         async function handleUserPublished(user, mediaType) {
             console.log("用户发布流:", user.uid, mediaType);
 
@@ -814,7 +1046,6 @@
                 // 尝试自动播放，但捕获可能的错误
                 videoElement.play().catch(error => {
                     console.log('视频自动播放被阻止，等待用户交互');
-                    // 不显示错误，因为我们会通过 AgoraRTC.onAutoplayFailed 处理
                 });
             }
 
@@ -835,38 +1066,11 @@
 
                 } catch (audioError) {
                     console.error("音频播放失败:", audioError);
-                    // 不显示错误，自动播放失败会由 AgoraRTC.onAutoplayFailed 处理
                 }
             }
 
             remoteUsers[user.uid] = user;
         }
-
-        function handleAutoplay() {
-            const videoElement = document.getElementById('live-video');
-
-            // 尝试播放视频（这会同时触发音频播放）
-            videoElement.play().catch(error => {
-                console.log('自动播放被阻止:', error);
-
-                // 显示提示，要求用户交互
-                showMessage('请点击页面任意位置以启用音频', 'error');
-
-                // 添加点击事件来恢复播放
-                document.addEventListener('click', function resumePlayback() {
-                    videoElement.play().then(() => {
-                        console.log('播放已恢复');
-                        showMessage('音频已启用', 'success');
-                    }).catch(e => {
-                        console.error('恢复播放失败:', e);
-                    });
-
-                    // 移除事件监听器
-                    document.removeEventListener('click', resumePlayback);
-                }, { once: true });
-            });
-        }
-
 
         // 处理用户取消发布流
         async function handleUserUnpublished(user, mediaType) {
@@ -879,11 +1083,9 @@
                 videoElement.style.display = 'none';
                 placeholder.style.display = 'flex';
                 placeholder.innerHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">⏸️</div>
+                    <i class="fas fa-pause-circle"></i>
                     <div>直播暂停</div>
-                </div>
-            `;
+                `;
 
                 updateStatus('直播暂停');
             }
@@ -928,11 +1130,14 @@
             statusElement.textContent = status;
 
             if (status === '直播中') {
-                statusElement.style.background = 'rgba(46, 213, 115, 0.3)';
+                statusElement.style.background = 'rgba(8, 217, 214, 0.2)';
+                statusElement.style.color = '#08d9d6';
             } else if (status === '连接失败' || status === '直播结束') {
-                statusElement.style.background = 'rgba(255, 71, 87, 0.3)';
+                statusElement.style.background = 'rgba(255, 71, 87, 0.2)';
+                statusElement.style.color = '#ff4757';
             } else {
-                statusElement.style.background = 'rgba(255, 255, 255, 0.2)';
+                statusElement.style.background = 'rgba(255, 255, 255, 0.1)';
+                statusElement.style.color = '#ffffff';
             }
         }
 
@@ -951,11 +1156,125 @@
             console.log(message);
         }
 
-        // Firebase实时聊天功能 - 使用Realtime Database
+        // 头像系统初始化
+        function initializeAvatarSystem() {
+            const avatarPreview = document.getElementById('avatar-preview');
+            const avatarOptions = document.getElementById('avatar-options');
+            const colorToggle = document.getElementById('color-toggle');
+            const imageToggle = document.getElementById('image-toggle');
+            const colorPicker = document.getElementById('color-picker');
+            const avatarUrl = document.getElementById('avatar-url');
+            const nicknameInput = document.getElementById('nickname');
+
+            // 从本地存储加载用户设置
+            const savedAvatarType = localStorage.getItem('avatarType');
+            const savedColor = localStorage.getItem('avatarColor');
+            const savedAvatarUrl = localStorage.getItem('avatarUrl');
+            const savedNickname = localStorage.getItem('nickname');
+
+            if (savedAvatarType) userAvatarType = savedAvatarType;
+            if (savedColor) userColor = savedColor;
+            if (savedAvatarUrl) userAvatarUrl = savedAvatarUrl;
+            if (savedNickname) nickname = savedNickname;
+
+            // 更新UI
+            updateAvatarPreview();
+
+            // 头像预览点击事件
+            avatarPreview.addEventListener('click', function () {
+                avatarOptions.classList.toggle('active');
+            });
+
+            // 颜色/图片切换
+            colorToggle.addEventListener('click', function () {
+                userAvatarType = 'color';
+                colorToggle.classList.add('active');
+                imageToggle.classList.remove('active');
+                colorPicker.style.display = 'flex';
+                avatarUrl.style.display = 'none';
+                updateAvatarPreview();
+                saveAvatarSettings();
+            });
+
+            imageToggle.addEventListener('click', function () {
+                userAvatarType = 'image';
+                imageToggle.classList.add('active');
+                colorToggle.classList.remove('active');
+                colorPicker.style.display = 'none';
+                avatarUrl.style.display = 'block';
+                updateAvatarPreview();
+                saveAvatarSettings();
+            });
+
+            // 颜色选择
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', function () {
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    userColor = this.style.backgroundColor;
+                    updateAvatarPreview();
+                    saveAvatarSettings();
+                });
+            });
+
+            // 图片URL输入
+            avatarUrl.addEventListener('input', function () {
+                userAvatarUrl = this.value;
+                updateAvatarPreview();
+                saveAvatarSettings();
+            });
+
+            // 昵称输入
+            nicknameInput.value = nickname;
+            nicknameInput.addEventListener('input', function () {
+                nickname = this.value;
+                localStorage.setItem('nickname', nickname);
+                updateAvatarPreview();
+            });
+
+            // 点击页面其他区域关闭头像选项
+            document.addEventListener('click', function (e) {
+                if (!avatarPreview.contains(e.target) && !avatarOptions.contains(e.target)) {
+                    avatarOptions.classList.remove('active');
+                }
+            });
+        }
+
+        // 更新头像预览
+        function updateAvatarPreview() {
+            const avatarPreview = document.getElementById('avatar-preview');
+
+            if (userAvatarType === 'color') {
+                avatarPreview.style.background = userColor;
+                avatarPreview.style.backgroundImage = 'none';
+                avatarPreview.textContent = nickname ? nickname[0].toUpperCase() : 'A';
+            } else {
+                if (userAvatarUrl && (userAvatarUrl.endsWith('.jpg') || userAvatarUrl.endsWith('.png') || userAvatarUrl.endsWith('.webp'))) {
+                    avatarPreview.style.backgroundImage = `url(${userAvatarUrl})`;
+                    avatarPreview.textContent = '';
+                } else {
+                    avatarPreview.style.background = userColor;
+                    avatarPreview.style.backgroundImage = 'none';
+                    avatarPreview.textContent = nickname ? nickname[0].toUpperCase() : 'A';
+                }
+            }
+        }
+
+        // 保存头像设置
+        function saveAvatarSettings() {
+            localStorage.setItem('avatarType', userAvatarType);
+            localStorage.setItem('avatarColor', userColor);
+            localStorage.setItem('avatarUrl', userAvatarUrl);
+        }
+
+        // Firebase实时聊天功能
         function initializeChat() {
             const messagesElement = document.getElementById('messages');
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-btn');
+            const useMarkdown = document.getElementById('use-markdown');
 
             // 监听新消息
             database.ref('live/chat').on('child_added', (snapshot) => {
@@ -970,7 +1289,10 @@
                     database.ref('live/chat').push({
                         text: message,
                         timestamp: Date.now(),
-                        user: '观众',
+                        user: nickname || '观众',
+                        avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
+                        avatarType: userAvatarType,
+                        isMarkdown: useMarkdown.checked,
                         viewerId: viewerId
                     });
                     messageInput.value = '';
@@ -995,17 +1317,27 @@
                 hour: '2-digit', minute: '2-digit'
             });
 
+            const avatarStyle = messageData.avatarType === 'color' ?
+                `background: ${messageData.avatar}` :
+                `background-image: url(${messageData.avatar})`;
+
+            const avatarContent = messageData.avatarType === 'color' ?
+                (messageData.user ? messageData.user[0].toUpperCase() : '?') : '';
+
             messageElement.innerHTML = `
-            <span class="user">${messageData.user || '观众'}:</span>
-            <span>${messageData.text}</span>
-            <span class="time">${time}</span>
-        `;
+                <div class="message-header">
+                    <div class="message-avatar" style="${avatarStyle}">${avatarContent}</div>
+                    <span class="user">${messageData.user || '观众'}</span>
+                    <span class="time">${time}</span>
+                </div>
+                <div class="message-content">${messageData.isMarkdown ? marked.parse(messageData.text) : messageData.text.replace(/\n/g, '<br>')}</div>
+            `;
 
             messagesElement.appendChild(messageElement);
             messagesElement.scrollTop = messagesElement.scrollHeight;
         }
 
-        // 点赞功能 - 使用Realtime Database
+        // 点赞功能
         function initializeLikes() {
             const likeButton = document.getElementById('like-btn');
             const likeCountElement = document.getElementById('like-count');
@@ -1024,12 +1356,12 @@
                     });
 
                     likeButton.classList.add('liked');
-                    likeButton.innerHTML = '❤️ 已点赞';
+                    likeButton.innerHTML = '<i class="fas fa-heart"></i> 已点赞';
                     likeClicked = true;
 
                     setTimeout(() => {
                         likeButton.classList.remove('liked');
-                        likeButton.innerHTML = '❤️ 点赞';
+                        likeButton.innerHTML = '<i class="fas fa-heart"></i> 点赞';
                         likeClicked = false;
                     }, 3000);
                 }
@@ -1040,9 +1372,10 @@
         function updateMessageCount() {
             const messages = document.querySelectorAll('.message');
             document.getElementById('message-count').textContent = messages.length - 1;
+            document.getElementById('message-count-stat').textContent = messages.length - 1;
         }
 
-        // 观众计数 - 使用Realtime Database
+        // 观众计数
         function initializeViewerCount() {
             const viewerCountElement = document.getElementById('viewer-count');
 
@@ -1072,7 +1405,7 @@
             }
         }
 
-        // 增强静音切换功能
+        // 静音切换功能
         function toggleMute() {
             const video = document.getElementById('live-video');
             video.muted = !video.muted;
@@ -1086,26 +1419,7 @@
 
             showMessage(video.muted ? '已静音' : '已取消静音', 'success');
         }
-        // 修复音频状态监控函数
-        function monitorAudioState() {
-            setInterval(() => {
-                let hasAudio = false;
-                Object.values(remoteUsers).forEach(user => {
-                    if (user.audioTrack) {
-                        hasAudio = true;
-                        // 使用安全的方式检查音频状态
-                        console.log("音频轨道状态:", {
-                            enabled: user.audioTrack.enabled,
-                            // 只检查存在的属性
-                        });
-                    }
-                });
 
-                if (!hasAudio) {
-                    console.log('未检测到音频轨道');
-                }
-            }, 10000); // 每10秒检查一次，减少频率
-        }
         function copyInviteLink() {
             const inviteLink = window.location.href;
             navigator.clipboard.writeText(inviteLink).then(() => {
@@ -1121,6 +1435,108 @@
             });
         }
 
+        // 音频测试功能
+        function testAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // 恢复 AudioContext 如果被暂停
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 440;
+                gainNode.gain.value = 0.1;
+
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    showMessage('音频测试完成', 'success');
+                }, 500);
+            } catch (error) {
+                console.error('播放测试音调失败:', error);
+                showMessage('音频测试失败', 'error');
+            }
+        }
+
+        // 自动播放失败处理
+        function setupAutoplayFailureHandler() {
+            AgoraRTC.onAutoplayFailed = () => {
+                console.log('自动播放失败，显示用户交互提示');
+                showAutoplayPrompt();
+            };
+        }
+
+        // 显示自动播放提示
+        function showAutoplayPrompt() {
+            const prompt = document.createElement('div');
+            prompt.className = 'autoplay-prompt';
+            prompt.id = 'autoplay-prompt';
+
+            prompt.innerHTML = `
+                <div class="autoplay-content">
+                    <h3>🔊 需要启用音频</h3>
+                    <p>请点击下方按钮启用直播音频</p>
+                    <button id="enable-audio-btn">启用音频</button>
+                </div>
+            `;
+
+            document.body.appendChild(prompt);
+
+            // 添加按钮点击事件
+            document.getElementById('enable-audio-btn').addEventListener('click', function () {
+                resumeAllAudioTracks();
+                document.body.removeChild(prompt);
+            });
+        }
+
+        // 恢复所有音频轨道
+        function resumeAllAudioTracks() {
+            console.log('恢复音频播放...');
+
+            // 恢复远程用户的音频轨道
+            Object.values(remoteUsers).forEach(user => {
+                if (user.audioTrack) {
+                    try {
+                        user.audioTrack.play();
+                        if (typeof user.audioTrack.setVolume === 'function') {
+                            user.audioTrack.setVolume(100);
+                        }
+                        console.log('恢复音频轨道:', user.uid);
+                    } catch (error) {
+                        console.error('恢复音频轨道失败:', error);
+                    }
+                }
+            });
+
+            // 恢复视频元素的音频
+            const videoElement = document.getElementById('live-video');
+            if (videoElement) {
+                videoElement.play().catch(e => {
+                    console.log('视频播放恢复失败:', e);
+                });
+            }
+
+            // 恢复 AudioContext
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    console.log('AudioContext 已恢复');
+                });
+            }
+
+            updateAudioStatus(true);
+            showMessage('音频已启用', 'success');
+        }
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
             updateCurrentTime();
@@ -1129,39 +1545,24 @@
             // 初始化Firebase监听
             initializeStreamListener();
 
-
+            // 初始化音频处理
             setupAutoplayFailureHandler();
 
-            initAudioContext();
+            // 初始化头像系统
+            initializeAvatarSystem();
+
             // 初始化Firebase功能
             initializeChat();
             initializeLikes();
             initializeViewerCount();
 
-            // 添加重新连接按钮
-            const controls = document.querySelector('.controls');
-            const reconnectBtn = document.createElement('button');
-            reconnectBtn.className = 'control-btn';
-            reconnectBtn.textContent = '重新连接';
-            reconnectBtn.onclick = reconnect;
-            controls.appendChild(reconnectBtn);
-
-            // 添加手动模式按钮
-            const manualModeBtn = document.createElement('button');
-            manualModeBtn.className = 'control-btn';
-            manualModeBtn.id = 'manual-mode-btn';
-            manualModeBtn.textContent = '手动连接';
-            manualModeBtn.onclick = enableManualMode;
-            controls.appendChild(manualModeBtn);
-
-            // 添加自动模式按钮（初始隐藏）
-            const autoModeBtn = document.createElement('button');
-            autoModeBtn.className = 'control-btn';
-            autoModeBtn.id = 'auto-mode-btn';
-            autoModeBtn.textContent = '自动模式';
-            autoModeBtn.style.display = 'none';
-            autoModeBtn.onclick = enableAutoMode;
-            controls.appendChild(autoModeBtn);
+            // 初始化AudioContext
+            document.addEventListener('click', function initAudio() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                document.removeEventListener('click', initAudio);
+            }, { once: true });
 
             // 清理过期观众记录
             setInterval(() => {
@@ -1176,19 +1577,6 @@
                     database.ref('live/viewers').update(updates);
                 });
             }, 60000);
-
-            document.addEventListener('click', function () {
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
-            });
-            document.addEventListener('click', function globalAudioResume() {
-                // 尝试恢复所有音频
-                resumeAllAudioTracks();
-
-                // 移除全局监听器，避免重复处理
-                document.removeEventListener('click', globalAudioResume);
-            }, { once: true });
         });
     </script>
 </body>
