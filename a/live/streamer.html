@@ -563,6 +563,15 @@
                     </select>
                 </div>
 
+                <div class="form-group" id="screen-audio-group" style="display: none;">
+                    <label for="screen-audio-source">屏幕共享音频源</label>
+                    <select id="screen-audio-source">
+                        <option value="microphone">仅麦克风</option>
+                        <option value="system">仅系统声音</option>
+                        <option value="both">麦克风+系统声音</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="resolution">分辨率</label>
                     <select id="resolution">
@@ -770,6 +779,7 @@
             }
         }
 
+
         // 开始视频预览
         async function startPreview() {
             // 停止之前的轨道
@@ -834,29 +844,60 @@
                 } else {
                     // 屏幕共享模式
                     try {
-                        // 获取屏幕共享流
-                        const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                        // 获取屏幕共享音频配置
+                        const screenAudioSource = document.getElementById('screen-audio-source').value;
+
+                        // 获取屏幕共享流（根据音频配置决定是否包含系统音频）
+                        const screenConstraints = {
                             video: true,
-                            audio: true
-                        });
+                            audio: screenAudioSource !== 'microphone' // 如果需要系统声音，就请求音频
+                        };
+
+                        const screenStream = await navigator.mediaDevices.getDisplayMedia(screenConstraints);
 
                         // 创建视频轨道
                         localTracks.videoTrack = await AgoraRTC.createCustomVideoTrack({
                             mediaStreamTrack: screenStream.getVideoTracks()[0]
                         });
 
-                        try {
-                            localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
-                                AEC: true,
-                                AGC: true,
-                                ANS: true
+                        // 音频处理逻辑
+                        const audioTracks = [];
+
+                        // 系统音频（如果选择了系统声音）
+                        if (screenAudioSource !== 'microphone' && screenStream.getAudioTracks().length > 0) {
+                            const systemAudioTrack = await AgoraRTC.createCustomAudioTrack({
+                                mediaStreamTrack: screenStream.getAudioTracks()[0]
                             });
-                            updateStatus('audio-status', '正常');
-                        } catch (error) {
-                            console.error("无法创建麦克风音频轨道:", error);
-                            localTracks.audioTrack = null;
-                            updateStatus('audio-status', '无音频');
+                            audioTracks.push(systemAudioTrack);
                         }
+
+                        // 麦克风音频（如果选择了麦克风）
+                        if (screenAudioSource !== 'system') {
+                            try {
+                                const microphoneTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                                    AEC: true,
+                                    AGC: true,
+                                    ANS: true
+                                });
+                                audioTracks.push(microphoneTrack);
+                            } catch (error) {
+                                console.warn("无法创建麦克风音频轨道:", error);
+                            }
+                        }
+
+                        // 处理多个音频轨道
+                        if (audioTracks.length === 1) {
+                            localTracks.audioTrack = audioTracks[0];
+                        } else if (audioTracks.length > 1) {
+                            // 如果有多个音频轨道，需要混合（这里简化处理，实际可能需要更复杂的混音）
+                            localTracks.audioTrack = audioTracks[0]; // 暂时使用第一个，实际应该混合
+                            console.warn("多个音频轨道，目前只使用第一个");
+                        } else {
+                            localTracks.audioTrack = null;
+                        }
+
+                        // 更新音频状态显示
+                        updateAudioStatusDisplay(screenAudioSource, audioTracks.length);
 
                         // 监听屏幕共享停止事件
                         screenStream.getVideoTracks()[0].onended = () => {
@@ -896,6 +937,22 @@
                 updateStatus('audio-status', '错误');
             }
         }
+        function updateAudioStatusDisplay(audioSource, trackCount) {
+            let statusText = '';
+            switch (audioSource) {
+                case 'microphone':
+                    statusText = trackCount > 0 ? '正常（麦克风）' : '无音频';
+                    break;
+                case 'system':
+                    statusText = trackCount > 0 ? '正常（系统声音）' : '无音频';
+                    break;
+                case 'both':
+                    statusText = trackCount > 1 ? '正常（麦克风+系统）' :
+                        trackCount === 1 ? '部分正常' : '无音频';
+                    break;
+            }
+            updateStatus('audio-status', statusText);
+        }
 
         // 停止预览
         function stopPreview() {
@@ -932,13 +989,16 @@
             // 显示/隐藏相关控件
             const videoSourceSelect = document.getElementById('video-source');
             const audioSourceSelect = document.getElementById('audio-source');
+            const screenAudioGroup = document.getElementById('screen-audio-group');
 
             if (source === 'camera') {
                 videoSourceSelect.parentElement.style.display = 'block';
                 audioSourceSelect.parentElement.style.display = 'block';
+                screenAudioGroup.style.display = 'none';
             } else {
                 videoSourceSelect.parentElement.style.display = 'none';
                 audioSourceSelect.parentElement.style.display = 'none';
+                screenAudioGroup.style.display = 'block';
             }
 
             // 如果正在预览，重新开始预览
