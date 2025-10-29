@@ -315,6 +315,7 @@
 
         <div class="controls">
             <button class="control-btn" onclick="toggleFullscreen()">全屏切换</button>
+            <button class="control-btn" onclick="testAudio()">测试音频</button>
             <button class="control-btn" onclick="toggleMute()">静音切换</button>
             <button class="control-btn" onclick="copyInviteLink()">复制邀请链接</button>
         </div>
@@ -435,6 +436,29 @@
                 console.error('监听直播状态失败:', error);
                 showError('无法获取直播状态: ' + error.message);
             });
+        }
+
+        // 添加音频测试函数
+        function testAudio() {
+            // 创建一个测试音频
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 440; // A4 音符
+            gainNode.gain.value = 0.1; // 低音量
+
+            oscillator.start();
+
+            // 播放1秒后停止
+            setTimeout(() => {
+                oscillator.stop();
+                showMessage('音频测试完成，如果听到声音说明音频输出正常', 'success');
+            }, 1000);
         }
 
         // 处理直播结束
@@ -564,6 +588,27 @@
                     }
                 }, 5000);
             }
+
+
+            agoraClient.on("user-published", async (user, mediaType) => {
+                console.log(`用户 ${user.uid} 发布了 ${mediaType} 流`);
+
+                await agoraClient.subscribe(user, mediaType);
+
+                if (mediaType === "audio") {
+                    console.log("音频轨道详情:", {
+                        track: user.audioTrack,
+                        state: user.audioTrack.getCurrentState(),
+                        volume: user.audioTrack.getVolumeLevel && user.audioTrack.getVolumeLevel()
+                    });
+
+                    user.audioTrack.play();
+                    user.audioTrack.setVolume(100);
+                }
+
+            });
+
+
         }
 
         // 处理连接状态变化
@@ -582,13 +627,15 @@
             }
         }
 
-        // 处理用户发布流
+        // 修改处理用户发布流的函数
         async function handleUserPublished(user, mediaType) {
             console.log("用户发布流:", user.uid, mediaType);
 
+            // 订阅远程用户
             await agoraClient.subscribe(user, mediaType);
 
             if (mediaType === "video") {
+                // 显示远程视频流
                 const videoElement = document.getElementById('live-video');
                 const placeholder = document.getElementById('video-placeholder');
 
@@ -602,9 +649,25 @@
             }
 
             if (mediaType === "audio") {
-                user.audioTrack.play();
+                console.log("开始播放音频轨道");
+                // 播放远程音频流 - 添加错误处理
+                try {
+                    user.audioTrack.play();
+                    console.log("音频播放成功");
+
+                    // 设置音量（0-100）
+                    user.audioTrack.setVolume(100);
+
+                    // 检查音频轨道状态
+                    console.log("音频轨道状态:", user.audioTrack.getCurrentState());
+
+                } catch (audioError) {
+                    console.error("音频播放失败:", audioError);
+                    showMessage('音频播放失败: ' + audioError.message);
+                }
             }
 
+            // 保存远程用户
             remoteUsers[user.uid] = user;
         }
 
@@ -812,11 +875,39 @@
             }
         }
 
+        // 增强静音切换功能
         function toggleMute() {
             const video = document.getElementById('live-video');
             video.muted = !video.muted;
-        }
 
+            // 同时静音所有音频轨道
+            Object.values(remoteUsers).forEach(user => {
+                if (user.audioTrack) {
+                    user.audioTrack.setVolume(video.muted ? 0 : 100);
+                }
+            });
+
+            showMessage(video.muted ? '已静音' : '已取消静音', 'success');
+        }
+        function monitorAudioState() {
+            setInterval(() => {
+                let hasAudio = false;
+                Object.values(remoteUsers).forEach(user => {
+                    if (user.audioTrack) {
+                        hasAudio = true;
+                        // 检查音频轨道是否活跃
+                        const state = user.audioTrack.getCurrentState();
+                        if (state === 'stop') {
+                            console.warn('音频轨道已停止');
+                        }
+                    }
+                });
+
+                if (!hasAudio) {
+                    console.log('未检测到音频轨道');
+                }
+            }, 5000); // 每5秒检查一次
+        }
         function copyInviteLink() {
             const inviteLink = window.location.href;
             navigator.clipboard.writeText(inviteLink).then(() => {
@@ -883,6 +974,8 @@
                     database.ref('live/viewers').update(updates);
                 });
             }, 60000);
+
+            monitorAudioState();
         });
     </script>
 </body>

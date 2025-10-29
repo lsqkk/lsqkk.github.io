@@ -319,7 +319,7 @@
                     <textarea id="stream-token" placeholder="请输入从声网控制台生成的Token" rows="3"></textarea>
                     <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
                         每次直播都需要重新生成Token。
-                        <a href="https://console.agora.io/token/" target="_blank"
+                        <a href="https://console.shengwang.cn/overview" target="_blank"
                             style="color: #667eea;">点击这里生成Token</a>
                     </div>
                     <div style="margin-top: 10px;">
@@ -455,14 +455,20 @@
         }
 
         // 获取设备列表
+        // 在 getDevices 函数中添加音频设备检查
         async function getDevices() {
             try {
+                // 首先请求麦克风权限
+                await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoSelect = document.getElementById('video-source');
                 const audioSelect = document.getElementById('audio-source');
 
                 videoSelect.innerHTML = '<option value="">选择摄像头</option>';
                 audioSelect.innerHTML = '<option value="">选择麦克风</option>';
+
+                let hasAudioDevices = false;
 
                 devices.forEach(device => {
                     const option = document.createElement('option');
@@ -473,11 +479,17 @@
                         videoSelect.appendChild(option);
                     } else if (device.kind === 'audioinput') {
                         audioSelect.appendChild(option);
+                        hasAudioDevices = true;
                     }
                 });
+
+                if (!hasAudioDevices) {
+                    showMessage('未检测到音频输入设备，请检查麦克风连接', 'error');
+                }
+
             } catch (error) {
                 console.error('获取设备列表失败:', error);
-                showMessage('无法获取摄像头和麦克风列表');
+                showMessage('无法获取设备列表: ' + error.message);
             }
         }
 
@@ -519,9 +531,31 @@
                     encoderConfig: encoderConfig,
                     cameraId: videoSource || undefined
                 });
-                localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
-                    microphoneId: audioSource || undefined
-                });
+
+                // 检查麦克风权限和设备
+                try {
+                    localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                        microphoneId: audioSource || undefined,
+                        // 添加音频配置
+                        AEC: true,  // 回声消除
+                        AGC: true,  // 自动增益控制
+                        ANS: true   // 噪音抑制
+                    });
+                    console.log("音频轨道创建成功");
+                    updateStatus('audio-status', '正常');
+                } catch (audioError) {
+                    console.error("音频轨道创建失败:", audioError);
+                    showMessage('无法访问麦克风: ' + audioError.message);
+                    // 创建无声的音频轨道作为备选
+                    localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                        microphoneId: 'default',
+                        // 使用默认配置
+                    }).catch(() => {
+                        console.log("无法创建备用音频轨道");
+                        localTracks.audioTrack = null;
+                    });
+                    updateStatus('audio-status', '警告 - 使用默认设备');
+                }
 
                 const videoElement = document.getElementById('local-video');
                 const placeholder = document.getElementById('preview-placeholder');
@@ -532,7 +566,6 @@
                 videoElement.classList.remove('hidden');
 
                 updateStatus('video-status', '正常');
-                updateStatus('audio-status', '正常');
 
             } catch (error) {
                 console.error('启动摄像头失败:', error);
