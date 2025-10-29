@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>主播推流端 - lsqkk的博客</title>
-    <!-- 替换之前可能引入的ZEGO SDK，在streamer.html和index.html的head标签内添加 -->
+    <!-- 引入声网Agora SDK -->
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
     <style>
+        /* 保持原有的CSS样式不变 */
         * {
             margin: 0;
             padding: 0;
@@ -346,14 +347,14 @@
         </div>
 
         <div class="stream-info hidden" id="stream-info-panel">
-            <div class="info-title">📢 直播信息</div>
+            <div class="info-title">📢 直播信息 (声网Agora)</div>
             <div>观众观看地址:</div>
             <div class="stream-url" id="viewer-url">https://lsqkk.github.io/live/</div>
             <button class="copy-btn" onclick="copyViewerUrl()">复制观看地址</button>
 
-            <div style="margin-top: 15px;">OBS推流地址 (备用):</div>
-            <div class="stream-url" id="rtmp-url">等待推流开始...</div>
-            <button class="copy-btn" onclick="copyRtmpUrl()">复制OBS地址</button>
+            <div style="margin-top: 15px;">频道名称:</div>
+            <div class="stream-url" id="agora-channel">lsqkk_live_channel</div>
+            <button class="copy-btn" onclick="copyChannelName()">复制频道名</button>
         </div>
 
         <div class="stats-container">
@@ -384,6 +385,15 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
+        // 检查AgoraRTC是否已加载
+        function checkAgoraLoaded() {
+            if (typeof AgoraRTC === 'undefined') {
+                showMessage('声网Agora SDK加载失败，请刷新页面重试');
+                return false;
+            }
+            return true;
+        }
+
         // Firebase配置
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
@@ -395,9 +405,9 @@
             measurementId: "G-5BVT26KRT6"
         };
 
-        // 声网Agora配置
+        // 声网Agora配置 - 请替换为你的实际AppID
         const agoraConfig = {
-            appId: "195fc077c2f74396968d899b8d5025ff", // 请替换为你的实际AppID
+            appId: "195fc077c2f74396968d899b8d5025ff", // 替换为你的实际AppID
             channel: "lsqkk_live_channel", // 频道名称
             token: null // 测试阶段可以使用null，生产环境建议使用Token
         };
@@ -466,6 +476,11 @@
 
         // 开始视频预览
         async function startPreview() {
+            // 检查AgoraRTC是否已加载
+            if (!checkAgoraLoaded()) {
+                return;
+            }
+
             const videoSource = document.getElementById('video-source').value;
             const audioSource = document.getElementById('audio-source').value;
             const resolution = document.getElementById('resolution').value;
@@ -480,21 +495,31 @@
                 localTracks.audioTrack = null;
             }
 
-            const videoConstraints = {
-                deviceId: videoSource ? { exact: videoSource } : undefined,
-                width: { ideal: getResolutionWidth(resolution) },
-                height: { ideal: getResolutionHeight(resolution) },
-                frameRate: { ideal: 30 }
-            };
-
-            const audioConstraints = {
-                deviceId: audioSource ? { exact: audioSource } : undefined
-            };
+            // 根据分辨率设置编码配置
+            let encoderConfig;
+            switch (resolution) {
+                case '480p':
+                    encoderConfig = '480p';
+                    break;
+                case '720p':
+                    encoderConfig = '720p';
+                    break;
+                case '1080p':
+                    encoderConfig = '1080p';
+                    break;
+                default:
+                    encoderConfig = '720p';
+            }
 
             try {
                 // 创建本地音视频轨道
-                localTracks.videoTrack = await AgoraRTC.createCameraVideoTrack({ cameraId: videoConstraints.deviceId, encoderConfig: resolution });
-                localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({ microphoneId: audioConstraints.deviceId });
+                localTracks.videoTrack = await AgoraRTC.createCameraVideoTrack({
+                    encoderConfig: encoderConfig,
+                    cameraId: videoSource || undefined
+                });
+                localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                    microphoneId: audioSource || undefined
+                });
 
                 const videoElement = document.getElementById('local-video');
                 const placeholder = document.getElementById('preview-placeholder');
@@ -515,25 +540,6 @@
             }
         }
 
-        // 获取分辨率尺寸
-        function getResolutionWidth(resolution) {
-            switch (resolution) {
-                case '480p': return 640;
-                case '720p': return 1280;
-                case '1080p': return 1920;
-                default: return 1280;
-            }
-        }
-
-        function getResolutionHeight(resolution) {
-            switch (resolution) {
-                case '480p': return 480;
-                case '720p': return 720;
-                case '1080p': return 1080;
-                default: return 720;
-            }
-        }
-
         // 更新状态显示
         function updateStatus(elementId, status) {
             const element = document.getElementById(elementId);
@@ -550,6 +556,10 @@
 
         // 初始化Agora客户端
         async function initializeAgoraClient() {
+            if (!checkAgoraLoaded()) {
+                throw new Error('AgoraRTC SDK未加载');
+            }
+
             if (!agoraClient) {
                 // 创建Agora客户端
                 agoraClient = AgoraRTC.createClient({
@@ -740,6 +750,11 @@
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
+            // 检查AgoraRTC是否已加载
+            if (!checkAgoraLoaded()) {
+                return;
+            }
+
             // 获取设备列表
             getDevices();
 
