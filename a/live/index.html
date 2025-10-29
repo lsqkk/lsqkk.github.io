@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_SDK-4.20.2.js"></script>
     <title>直播 - 夸克博客</title>
     <style>
         * {
@@ -324,12 +325,20 @@
             measurementId: "G-5BVT26KRT6"
         };
 
+        // 声网Agora配置
+        const agoraConfig = {
+            appId: "195fc077c2f74396968d899b8d5025ff", // 请替换为你的实际AppID
+            channel: "lsqkk_live_channel", // 频道名称，必须与主播端一致
+            token: null // 测试阶段可以使用null，生产环境建议使用Token
+        };
+
         // 初始化Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         // 全局变量
-        let hls = null;
+        let agoraClient = null;
+        let remoteUsers = {};
         let likeClicked = false;
         let viewerId = generateViewerId();
 
@@ -345,59 +354,136 @@
                 now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
-        // 初始化直播播放器
-        function initializeLiveStream() {
-            const video = document.getElementById('live-video');
-            const placeholder = document.getElementById('video-placeholder');
-
-            // 这里需要替换为你的ZEGO直播流URL
-            const streamUrl = 'https://your-zego-stream-url/playlist.m3u8';
-
-            if (Hls.isSupported()) {
-                hls = new Hls({
-                    enableWorker: false,
-                    lowLatencyMode: true,
-                    backBufferLength: 90
+        // 初始化声网Agora客户端
+        async function initializeAgoraClient() {
+            try {
+                // 创建Agora客户端
+                agoraClient = AgoraRTC.createClient({
+                    mode: "live",
+                    codec: "vp8"
                 });
 
-                hls.loadSource(streamUrl);
-                hls.attachMedia(video);
+                return agoraClient;
+            } catch (error) {
+                console.error('初始化Agora客户端失败:', error);
+                throw error;
+            }
+        }
 
-                hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    console.log('直播流加载成功');
-                    placeholder.style.display = 'none';
-                    video.style.display = 'block';
-                    updateStatus('直播中');
-                });
+        // 加入频道并订阅流
+        async function joinChannel() {
+            try {
+                await initializeAgoraClient();
 
-                hls.on(Hls.Events.ERROR, function (event, data) {
-                    console.error('直播流错误:', data);
-                    if (data.fatal) {
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                showError('网络错误，正在尝试重新连接...');
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                showError('媒体错误，正在尝试恢复...');
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                showError('无法播放直播流');
-                                break;
-                        }
-                    }
+                // 设置客户端角色为观众
+                await agoraClient.setClientRole("audience");
+
+                // 添加事件监听器
+                agoraClient.on("user-published", handleUserPublished);
+                agoraClient.on("user-unpublished", handleUserUnpublished);
+                agoraClient.on("user-left", handleUserLeft);
+
+                // 加入频道
+                const uid = await agoraClient.join(
+                    agoraConfig.appId,
+                    agoraConfig.channel,
+                    agoraConfig.token,
+                    null
+                );
+
+                console.log("加入频道成功，UID:", uid);
+                updateStatus('连接成功');
+
+            } catch (error) {
+                console.error('加入频道失败:', error);
+                showError('加入直播失败: ' + error.message);
+                updateStatus('连接失败');
+            }
+        }
+
+        // 处理用户发布流
+        async function handleUserPublished(user, mediaType) {
+            console.log("用户发布流:", user.uid, mediaType);
+
+            // 订阅远程用户
+            await agoraClient.subscribe(user, mediaType);
+
+            if (mediaType === "video") {
+                // 显示远程视频流
+                const videoElement = document.getElementById('live-video');
+                const placeholder = document.getElementById('video-placeholder');
+
+                user.videoTrack.play(videoElement);
+
+                placeholder.style.display = 'none';
+                videoElement.style.display = 'block';
+
+                updateStatus('直播中');
+                showMessage('成功连接到直播流', 'success');
+            }
+
+            if (mediaType === "audio") {
+                // 播放远程音频流
+                user.audioTrack.play();
+            }
+
+            // 保存远程用户
+            remoteUsers[user.uid] = user;
+        }
+
+        // 处理用户取消发布流
+        async function handleUserUnpublished(user, mediaType) {
+            console.log("用户取消发布流:", user.uid, mediaType);
+
+            if (mediaType === "video") {
+                // 隐藏视频，显示占位符
+                const videoElement = document.getElementById('live-video');
+                const placeholder = document.getElementById('video-placeholder');
+
+                videoElement.style.display = 'none';
+                placeholder.style.display = 'flex';
+
+                updateStatus('直播暂停');
+            }
+        }
+
+        // 处理用户离开
+        async function handleUserLeft(user) {
+            console.log("用户离开:", user.uid);
+
+            // 清理用户资源
+            delete remoteUsers[user.uid];
+
+            // 如果没有其他用户，显示直播结束
+            if (Object.keys(remoteUsers).length === 0) {
+                const videoElement = document.getElementById('live-video');
+                const placeholder = document.getElementById('video-placeholder');
+
+                videoElement.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = '<div style="text-align: center;"><div style="font-size: 3rem; margin-bottom: 10px;">📺</div><div>直播已结束</div></div>';
+
+                updateStatus('直播结束');
+                showMessage('直播已结束', 'success');
+            }
+        }
+
+        // 离开频道
+        async function leaveChannel() {
+            if (agoraClient) {
+                // 停止所有远程流
+                Object.values(remoteUsers).forEach(user => {
+                    if (user.videoTrack) user.videoTrack.stop();
+                    if (user.audioTrack) user.audioTrack.stop();
                 });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Safari原生支持
-                video.src = streamUrl;
-                video.addEventListener('loadedmetadata', function () {
-                    placeholder.style.display = 'none';
-                    video.style.display = 'block';
-                    updateStatus('直播中');
-                });
-            } else {
-                showError('您的浏览器不支持直播播放');
+                remoteUsers = {};
+
+                // 离开频道
+                await agoraClient.leave();
+                agoraClient = null;
+
+                console.log("离开频道成功");
+                updateStatus('已断开');
             }
         }
 
@@ -408,6 +494,10 @@
 
             if (status === '直播中') {
                 statusElement.style.background = 'rgba(46, 213, 115, 0.3)';
+            } else if (status === '连接失败' || status === '直播结束') {
+                statusElement.style.background = 'rgba(255, 71, 87, 0.3)';
+            } else {
+                statusElement.style.background = 'rgba(255, 255, 255, 0.2)';
             }
         }
 
@@ -417,6 +507,12 @@
             errorElement.textContent = message;
             errorElement.style.display = 'block';
             updateStatus('连接错误');
+        }
+
+        // 显示成功信息
+        function showMessage(message, type = 'success') {
+            // 可以添加一个临时消息显示区域
+            console.log(message);
         }
 
         // Firebase实时聊天功能
@@ -472,10 +568,10 @@
                 }) : '刚刚';
 
             messageElement.innerHTML = `
-                <span class="user">${messageData.user || '观众'}:</span>
-                <span>${messageData.text}</span>
-                <span class="time">${time}</span>
-            `;
+            <span class="user">${messageData.user || '观众'}:</span>
+            <span>${messageData.text}</span>
+            <span class="time">${time}</span>
+        `;
 
             messagesElement.appendChild(messageElement);
             messagesElement.scrollTop = messagesElement.scrollHeight;
@@ -541,9 +637,9 @@
 
         // 控制功能
         function toggleFullscreen() {
-            const video = document.getElementById('live-video');
+            const videoContainer = document.querySelector('.video-container');
             if (!document.fullscreenElement) {
-                video.requestFullscreen().catch(err => {
+                videoContainer.requestFullscreen().catch(err => {
                     console.log(`全屏错误: ${err.message}`);
                 });
             } else {
@@ -563,15 +659,34 @@
             });
         }
 
+        // 重新连接功能
+        function reconnect() {
+            showMessage('尝试重新连接...', 'success');
+            leaveChannel().then(() => {
+                joinChannel();
+            });
+        }
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
             updateCurrentTime();
             setInterval(updateCurrentTime, 60000); // 每分钟更新时间
 
-            initializeLiveStream();
+            // 初始化声网Agora连接
+            joinChannel();
+
+            // 初始化Firebase功能
             initializeChat();
             initializeLikes();
             initializeViewerCount();
+
+            // 添加重新连接按钮
+            const controls = document.querySelector('.controls');
+            const reconnectBtn = document.createElement('button');
+            reconnectBtn.className = 'control-btn';
+            reconnectBtn.textContent = '重新连接';
+            reconnectBtn.onclick = reconnect;
+            controls.appendChild(reconnectBtn);
 
             // 清理过期观众记录
             setInterval(() => {
