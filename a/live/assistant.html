@@ -28,32 +28,27 @@
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
             color: var(--text-color);
             min-height: 100vh;
-            padding: 12px;
-            overflow: hidden;
+            padding: 15px;
         }
 
         .container {
             max-width: 100%;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-height: 500px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .header h1 {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: var(--secondary-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .chat-container {
@@ -166,55 +161,55 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 12px;
+            padding: 15px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--secondary-color);
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         .stat-label {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
         .control-panel {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .control-buttons {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-direction: column;
         }
 
         .control-btn {
-            padding: 10px;
+            padding: 12px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             font-weight: bold;
         }
 
@@ -241,23 +236,97 @@
         .stream-info {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .info-item {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .info-label {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         .info-value {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             word-break: break-all;
+        }
+
+        .chat-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .message {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid var(--secondary-color);
+            font-size: 0.8rem;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .message-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 6px;
+            background-size: cover;
+        }
+
+        .message .user {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-right: 6px;
+            font-size: 0.7rem;
+        }
+
+        .message .time {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        .message-content {
+            font-size: 0.8rem;
         }
 
         .hidden {
