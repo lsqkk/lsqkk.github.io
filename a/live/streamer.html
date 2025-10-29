@@ -314,6 +314,21 @@
                         <option value="1080p">1920×1080 (1080p)</option>
                     </select>
                 </div>
+                <div class="form-group" id="token-input-group">
+                    <label for="stream-token">推流Token <span style="color: #ff4757;">*</span></label>
+                    <textarea id="stream-token" placeholder="请输入从声网控制台生成的Token" rows="3"></textarea>
+                    <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                        每次直播都需要重新生成Token。
+                        <a href="https://console.agora.io/token/" target="_blank"
+                            style="color: #667eea;">点击这里生成Token</a>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="copy-btn" onclick="fillExampleToken()"
+                            style="margin-right: 10px;">填充示例</button>
+                        <button type="button" class="copy-btn" onclick="clearToken()"
+                            style="background: #6c757d;">清空</button>
+                    </div>
+                </div>
 
                 <div class="controls">
                     <button id="start-btn" class="control-btn">开始推流</button>
@@ -405,11 +420,12 @@
             measurementId: "G-5BVT26KRT6"
         };
 
-        // 声网Agora配置 - 请替换为你的实际AppID
+        // 声网Agora配置
         const agoraConfig = {
-            appId: "195fc077c2f74396968d899b8d5025ff", // 替换为你的实际AppID
-            channel: "lsqkk_live_channel", // 频道名称
-            token: null // 测试阶段可以使用null，生产环境建议使用Token
+            appId: "195fc077c2f74396968d899b8d5025ff", // 你的AppID
+            channel: "lsqkk_live_channel",
+            token: "", // 初始为空，从输入框获取
+            uid: null
         };
 
         // 初始化Firebase
@@ -570,12 +586,38 @@
             return agoraClient;
         }
 
+        // 验证Token格式
+        function validateToken(token) {
+            if (!token || token.trim() === '') {
+                return { valid: false, message: 'Token不能为空' };
+            }
+
+            // 简单的Token格式检查（根据你提供的Token样本）
+            if (token.length < 10) {
+                return { valid: false, message: 'Token格式不正确，长度太短' };
+            }
+
+            return { valid: true, message: 'Token格式正确' };
+        }
+
         // 开始推流到声网Agora
         async function startStreaming() {
             if (!localTracks.videoTrack || !localTracks.audioTrack) {
                 showMessage('请先开启摄像头预览');
                 return;
             }
+
+            // 获取并验证Token
+            const tokenInput = document.getElementById('stream-token').value.trim();
+            const tokenValidation = validateToken(tokenInput);
+
+            if (!tokenValidation.valid) {
+                showMessage(tokenValidation.message);
+                return;
+            }
+
+            // 更新配置中的Token
+            agoraConfig.token = tokenInput;
 
             try {
                 showMessage('正在连接声网Agora服务器...', 'success');
@@ -592,7 +634,7 @@
                     agoraConfig.appId,
                     agoraConfig.channel,
                     agoraConfig.token,
-                    null // 可选UID，传null让服务器分配
+                    agoraConfig.uid
                 );
 
                 console.log("加入频道成功，UID:", uid);
@@ -610,6 +652,7 @@
                 document.getElementById('start-btn').disabled = true;
                 document.getElementById('stop-btn').disabled = false;
                 document.getElementById('stream-info-panel').classList.remove('hidden');
+                document.getElementById('token-input-group').classList.add('hidden'); // 开始推流后隐藏Token输入
 
                 // 更新直播信息到Firebase
                 updateStreamInfo();
@@ -619,7 +662,15 @@
 
             } catch (error) {
                 console.error('推流失败:', error);
-                showMessage('推流失败: ' + error.message);
+
+                // 更详细的错误处理
+                if (error.code === 4096) {
+                    showMessage('认证失败：请检查Token是否正确或已过期');
+                } else if (error.code === 17) {
+                    showMessage('加入频道失败：可能是Token无效或频道名不正确');
+                } else {
+                    showMessage('推流失败: ' + error.message);
+                }
                 updateGlobalStatus('推流失败');
             }
         }
@@ -645,6 +696,7 @@
                 document.getElementById('start-btn').disabled = false;
                 document.getElementById('stop-btn').disabled = true;
                 document.getElementById('stream-info-panel').classList.add('hidden');
+                document.getElementById('token-input-group').classList.remove('hidden'); // 停止推流后显示Token输入
 
                 showMessage('推流已停止', 'success');
                 updateGlobalStatus('已停止');
@@ -746,6 +798,17 @@
             navigator.clipboard.writeText(channelName).then(() => {
                 showMessage('频道名称已复制到剪贴板', 'success');
             });
+        }
+
+        // 快速填充示例Token（用于测试）
+        function fillExampleToken() {
+            document.getElementById('stream-token').value = "007eJxTYPD2Md9W5+F/j23qpOUqnD8Xl130bD65IzLsiczkqbsft/gqMBhamqYlG5ibJxulmZsYW5pZmlmkWFhaJlmkmBoYmaalMW9hzGwIZGSIaFVkYmSAQBBfiCGnuDA7Oz4nsyw1PjkjMS8vNYeBAQD07CPQ";
+            showMessage('已填充示例Token，请修改为实际Token', 'success');
+        }
+
+        // 清空Token
+        function clearToken() {
+            document.getElementById('stream-token').value = "";
         }
 
         // 页面加载完成后初始化
