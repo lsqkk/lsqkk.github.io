@@ -7,6 +7,7 @@
     <title>主播推流端 - 夸克博客</title>
     <!-- 引入声网Agora SDK -->
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
+    <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <style>
         :root {
             --primary-color: #ff2e63;
@@ -32,17 +33,20 @@
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
             min-height: 100vh;
             color: var(--text-color);
-            overflow-x: hidden;
+            overflow: hidden;
+            /* 禁止滚动 */
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
+            flex: 1;
             display: grid;
             grid-template-columns: 1fr 400px;
             gap: 20px;
+            padding: 20px;
             height: 100vh;
+            max-height: 100vh;
         }
 
         @media (max-width: 1200px) {
@@ -56,6 +60,8 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            min-height: 0;
+            /* 重要：允许内部flex子元素收缩 */
         }
 
         .video-container {
@@ -68,12 +74,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 0;
+            /* 重要：允许视频容器收缩 */
         }
 
         #local-video {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
+            /* 保持原始比例，不剪切 */
             background: #000;
         }
 
@@ -107,10 +118,12 @@
             padding: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
         }
 
         .control-btn {
             flex: 1;
+            min-width: 120px;
             padding: 12px;
             border: none;
             border-radius: 8px;
@@ -160,6 +173,8 @@
             flex-direction: column;
             gap: 20px;
             height: 100%;
+            max-height: 100vh;
+            overflow: hidden;
         }
 
         .config-panel {
@@ -171,6 +186,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             overflow-y: auto;
             flex: 1;
+            min-height: 0;
         }
 
         .panel-header {
@@ -361,6 +377,8 @@
             font-size: 0.8rem;
             font-weight: bold;
             margin-right: 8px;
+            background-size: cover;
+            background-position: center;
         }
 
         .message .user {
@@ -373,6 +391,37 @@
             font-size: 0.8rem;
             color: var(--text-secondary);
             margin-left: auto;
+        }
+
+        /* 新增：聊天输入区域 */
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #chat-message-input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        #chat-send-btn {
+            padding: 10px 15px;
+            background: var(--secondary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        #chat-send-btn:hover {
+            background: #06b6b3;
         }
 
         .error {
@@ -546,8 +595,12 @@
                         <div class="message-content">直播开始后，观众的消息将显示在这里</div>
                     </div>
                 </div>
+                <!-- 新增：聊天输入区域 -->
+                <div class="chat-input-container">
+                    <input type="text" id="chat-message-input" placeholder="输入消息...">
+                    <button id="chat-send-btn">发送</button>
+                </div>
             </div>
-
 
             <div class="config-panel">
                 <div class="panel-header">
@@ -665,8 +718,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 
@@ -713,6 +764,7 @@
         let isStreaming = false;
         let isPreviewing = false;
         let currentVideoSource = 'camera'; // 'camera' 或 'screen'
+        let assistantWindow = null;
 
         // 显示消息
         function showMessage(message, type = 'error') {
@@ -994,6 +1046,36 @@
             return { valid: true, message: 'Token格式正确' };
         }
 
+        // 打开直播助手窗口
+        function openAssistantWindow() {
+            if (assistantWindow && !assistantWindow.closed) {
+                assistantWindow.focus();
+                return;
+            }
+
+            const width = 400;
+            const height = 600;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+
+            assistantWindow = window.open('assistant.html', '直播助手',
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
+
+            if (assistantWindow) {
+                // 等待窗口加载完成
+                setTimeout(() => {
+                    if (assistantWindow.updateStreamInfo) {
+                        assistantWindow.updateStreamInfo({
+                            title: document.getElementById('stream-title').value,
+                            description: document.getElementById('stream-description').value,
+                            channel: agoraConfig.channel,
+                            viewerUrl: document.getElementById('viewer-url').textContent
+                        });
+                    }
+                }, 1000);
+            }
+        }
+
         // 开始推流到声网Agora
         async function startStreaming() {
             if (!localTracks.videoTrack || !localTracks.audioTrack) {
@@ -1050,6 +1132,9 @@
                 // 更新直播信息到Firebase Realtime Database
                 updateStreamInfo();
 
+                // 打开直播助手窗口
+                openAssistantWindow();
+
                 showMessage('推流成功！观众现在可以观看直播了', 'success');
 
             } catch (error) {
@@ -1092,6 +1177,11 @@
 
                 // 清理直播信息
                 database.ref('live/stream-info').remove();
+
+                // 关闭助手窗口
+                if (assistantWindow && !assistantWindow.closed) {
+                    assistantWindow.close();
+                }
 
             } catch (error) {
                 console.error('停止推流失败:', error);
@@ -1202,6 +1292,24 @@
             messagesElement.scrollTop = messagesElement.scrollHeight;
         }
 
+        // 发送聊天消息
+        function sendChatMessage() {
+            const messageInput = document.getElementById('chat-message-input');
+            const message = messageInput.value.trim();
+
+            if (message) {
+                database.ref('live/chat').push({
+                    text: message,
+                    timestamp: Date.now(),
+                    user: '蓝色奇夸克',
+                    avatar: 'https://lsqkk.github.io/image/touxiang.png',
+                    avatarType: 'image',
+                    isMarkdown: false
+                });
+                messageInput.value = '';
+            }
+        }
+
         // 复制观看地址
         function copyViewerUrl() {
             const url = document.getElementById('viewer-url').textContent;
@@ -1306,6 +1414,14 @@
 
             document.getElementById('screen-source-btn').addEventListener('click', () => {
                 toggleVideoSource('screen');
+            });
+
+            // 聊天发送按钮事件
+            document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage);
+            document.getElementById('chat-message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
             });
 
             // 更新频道名称显示
