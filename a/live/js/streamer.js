@@ -404,6 +404,8 @@ async function startStreaming() {
         // 打开直播助手窗口
         openAssistantWindow();
 
+        localStorage.setItem('lastStreamToken', agoraConfig.token);
+
         showMessage('推流成功！观众现在可以观看直播了', 'success');
 
     } catch (error) {
@@ -595,10 +597,15 @@ function copyChannelName() {
     });
 }
 
-// 快速填充示例Token
-function fillExampleToken() {
-    document.getElementById('stream-token').value = "007eJxTYPD2Md9W5+F/j23qpOUqnD8Xl130bD65IzLsiczkqbsft/gqMBhamqYlG5ibJxulmZsYW5pZmlmkWFhaJlmkmBoYmaalMW9hzGwIZGSIaFVkYmSAQBBfiCGnuDA7Oz4nsyw1PjkjMS8vNYeBAQD07CPQ";
-    showMessage('已填充示例Token，请修改为实际Token', 'success');
+// 填充上一次使用的Token
+function fillLastToken() {
+    const lastToken = localStorage.getItem('lastStreamToken');
+    if (lastToken) {
+        document.getElementById('stream-token').value = lastToken;
+        showMessage('已填充上一次使用的Token', 'success');
+    } else {
+        showMessage('没有找到上一次使用的Token', 'error');
+    }
 }
 
 // 清空Token
