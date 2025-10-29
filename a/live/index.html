@@ -249,6 +249,9 @@
         <div class="header">
             <h1>🎥 直播房间</h1>
             <div class="status" id="status">等待连接...</div>
+            <div class="audio-status" id="audio-status" style="margin-top: 5px; font-size: 0.9rem;">
+                🔇 音频等待中
+            </div>
         </div>
 
         <div id="error-message" class="error" style="display: none;"></div>
@@ -438,10 +441,31 @@
             });
         }
 
-        // 添加音频测试函数
+        // 修复音频测试函数
+        let audioContext = null;
+
         function testAudio() {
-            // 创建一个测试音频
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            // 检查是否已经存在 AudioContext
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // 如果 AudioContext 是挂起状态，需要恢复
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    playTestTone();
+                }).catch(error => {
+                    console.error('AudioContext 恢复失败:', error);
+                    showMessage('请点击页面任意位置后重试音频测试', 'error');
+                });
+            } else {
+                playTestTone();
+            }
+        }
+
+        function playTestTone() {
+            if (!audioContext) return;
+
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
 
@@ -454,11 +478,23 @@
 
             oscillator.start();
 
-            // 播放1秒后停止
+            // 播放0.5秒后停止
             setTimeout(() => {
                 oscillator.stop();
                 showMessage('音频测试完成，如果听到声音说明音频输出正常', 'success');
-            }, 1000);
+            }, 500);
+        }
+
+        // 添加用户交互事件来初始化 AudioContext
+        function initAudioOnUserInteraction() {
+            document.addEventListener('click', function initAudio() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                // 移除事件监听器，避免重复初始化
+                document.removeEventListener('click', initAudio);
+            }, { once: true });
         }
 
         // 处理直播结束
@@ -627,6 +663,18 @@
             }
         }
 
+
+        function updateAudioStatus(hasAudio) {
+            const audioStatusElement = document.getElementById('audio-status');
+            if (hasAudio) {
+                audioStatusElement.innerHTML = '🔊 音频正常';
+                audioStatusElement.style.color = '#2ed573';
+            } else {
+                audioStatusElement.innerHTML = '🔇 无音频';
+                audioStatusElement.style.color = '#ff4757';
+            }
+        }
+
         // 修改处理用户发布流的函数
         async function handleUserPublished(user, mediaType) {
             console.log("用户发布流:", user.uid, mediaType);
@@ -646,20 +694,29 @@
 
                 updateStatus('直播中');
                 showMessage('成功连接到直播', 'success');
+                handleAutoplay();
             }
 
             if (mediaType === "audio") {
+                updateAudioStatus(true);
                 console.log("开始播放音频轨道");
-                // 播放远程音频流 - 添加错误处理
+                // 播放远程音频流 - 修复API使用方式
                 try {
+                    // 直接播放音频轨道，不调用不存在的方法
                     user.audioTrack.play();
                     console.log("音频播放成功");
 
                     // 设置音量（0-100）
-                    user.audioTrack.setVolume(100);
+                    if (user.audioTrack.setVolume) {
+                        user.audioTrack.setVolume(100);
+                    }
 
-                    // 检查音频轨道状态
-                    console.log("音频轨道状态:", user.audioTrack.getCurrentState());
+                    // 检查音频轨道状态 - 使用安全的方式
+                    console.log("音频轨道详情:", {
+                        track: user.audioTrack,
+                        enabled: user.audioTrack.enabled,
+                        // 不调用可能不存在的方法
+                    });
 
                 } catch (audioError) {
                     console.error("音频播放失败:", audioError);
@@ -670,6 +727,32 @@
             // 保存远程用户
             remoteUsers[user.uid] = user;
         }
+
+        function handleAutoplay() {
+            const videoElement = document.getElementById('live-video');
+
+            // 尝试播放视频（这会同时触发音频播放）
+            videoElement.play().catch(error => {
+                console.log('自动播放被阻止:', error);
+
+                // 显示提示，要求用户交互
+                showMessage('请点击页面任意位置以启用音频', 'error');
+
+                // 添加点击事件来恢复播放
+                document.addEventListener('click', function resumePlayback() {
+                    videoElement.play().then(() => {
+                        console.log('播放已恢复');
+                        showMessage('音频已启用', 'success');
+                    }).catch(e => {
+                        console.error('恢复播放失败:', e);
+                    });
+
+                    // 移除事件监听器
+                    document.removeEventListener('click', resumePlayback);
+                }, { once: true });
+            });
+        }
+
 
         // 处理用户取消发布流
         async function handleUserUnpublished(user, mediaType) {
@@ -889,24 +972,25 @@
 
             showMessage(video.muted ? '已静音' : '已取消静音', 'success');
         }
+        // 修复音频状态监控函数
         function monitorAudioState() {
             setInterval(() => {
                 let hasAudio = false;
                 Object.values(remoteUsers).forEach(user => {
                     if (user.audioTrack) {
                         hasAudio = true;
-                        // 检查音频轨道是否活跃
-                        const state = user.audioTrack.getCurrentState();
-                        if (state === 'stop') {
-                            console.warn('音频轨道已停止');
-                        }
+                        // 使用安全的方式检查音频状态
+                        console.log("音频轨道状态:", {
+                            enabled: user.audioTrack.enabled,
+                            // 只检查存在的属性
+                        });
                     }
                 });
 
                 if (!hasAudio) {
                     console.log('未检测到音频轨道');
                 }
-            }, 5000); // 每5秒检查一次
+            }, 10000); // 每10秒检查一次，减少频率
         }
         function copyInviteLink() {
             const inviteLink = window.location.href;
@@ -931,6 +1015,7 @@
             // 初始化Firebase监听
             initializeStreamListener();
 
+            initAudioContext();
             // 初始化Firebase功能
             initializeChat();
             initializeLikes();
@@ -975,7 +1060,11 @@
                 });
             }, 60000);
 
-            monitorAudioState();
+            document.addEventListener('click', function () {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            });
         });
     </script>
 </body>
