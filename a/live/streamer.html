@@ -845,26 +845,17 @@
                             mediaStreamTrack: screenStream.getVideoTracks()[0]
                         });
 
-                        // 创建音频轨道（如果屏幕共享包含音频）
-                        if (screenStream.getAudioTracks().length > 0) {
-                            localTracks.audioTrack = await AgoraRTC.createCustomAudioTrack({
-                                mediaStreamTrack: screenStream.getAudioTracks()[0]
+                        try {
+                            localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                                AEC: true,
+                                AGC: true,
+                                ANS: true
                             });
                             updateStatus('audio-status', '正常');
-                        } else {
-                            // 如果没有屏幕共享音频，则使用麦克风
-                            try {
-                                localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
-                                    AEC: true,
-                                    AGC: true,
-                                    ANS: true
-                                });
-                                updateStatus('audio-status', '正常');
-                            } catch (error) {
-                                console.error("无法创建音频轨道:", error);
-                                localTracks.audioTrack = null;
-                                updateStatus('audio-status', '无音频');
-                            }
+                        } catch (error) {
+                            console.error("无法创建麦克风音频轨道:", error);
+                            localTracks.audioTrack = null;
+                            updateStatus('audio-status', '无音频');
                         }
 
                         // 监听屏幕共享停止事件
