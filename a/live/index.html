@@ -263,6 +263,20 @@
                 <video id="live-video" style="display: none;" controls autoplay muted playsinline></video>
             </div>
 
+            <!-- 在 chat-container 之前添加 -->
+            <div class="manual-panel hidden" id="manual-panel">
+                <h3>🔧 手动连接</h3>
+                <div class="form-group">
+                    <label for="manual-token">Token</label>
+                    <textarea id="manual-token" placeholder="请输入Token" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="manual-channel">频道名称</label>
+                    <input type="text" id="manual-channel" placeholder="请输入频道名称" value="lsqkk_live_channel">
+                </div>
+                <button class="control-btn" onclick="connectManually()">连接</button>
+            </div>
+
             <div class="chat-container">
                 <h3>💬 实时聊天</h3>
                 <div class="messages" id="messages">
@@ -308,7 +322,7 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <!-- HLS.js for video streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -318,6 +332,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
             authDomain: "quark-b7305.firebaseapp.com",
+            databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
             projectId: "quark-b7305",
             storageBucket: "quark-b7305.firebasestorage.app",
             messagingSenderId: "843016834358",
@@ -329,13 +344,13 @@
         const agoraConfig = {
             appId: "195fc077c2f74396968d899b8d5025ff",
             channel: "lsqkk_live_channel",
-            token: "", // 将从Firebase获取
+            token: "",
             uid: null
         };
 
         // 初始化Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const database = firebase.database();
 
         // 全局变量
         let agoraClient = null;
@@ -344,6 +359,7 @@
         let viewerId = generateViewerId();
         let isConnecting = false;
         let currentStreamInfo = null;
+        let isManualMode = false; // 是否手动输入模式
 
         // 生成唯一观众ID
         function generateViewerId() {
@@ -373,7 +389,6 @@
                     throw new Error('AgoraRTC SDK未加载');
                 }
 
-                // 创建Agora客户端
                 agoraClient = AgoraRTC.createClient({
                     mode: "live",
                     codec: "vp8"
@@ -386,64 +401,40 @@
             }
         }
 
-        // 监听直播状态变化
-        // 在 initializeStreamListener 函数中添加更详细的错误处理
+        // 监听直播状态变化 - 使用Realtime Database
         function initializeStreamListener() {
             console.log("开始监听直播状态...");
 
-            // 监听直播信息变化
-            db.collection('live-stats').doc('stream-info')
-                .onSnapshot((doc) => {
-                    console.log("收到直播状态更新:", doc.exists, doc.data());
+            database.ref('live/stream-info').on('value', (snapshot) => {
+                const streamInfo = snapshot.val();
+                console.log("收到直播状态更新:", streamInfo);
 
-                    if (doc.exists) {
-                        const streamInfo = doc.data();
-                        console.log("直播信息:", streamInfo);
-                        currentStreamInfo = streamInfo;
+                if (streamInfo && streamInfo.isLive) {
+                    currentStreamInfo = streamInfo;
 
-                        // 更新页面显示的直播标题
-                        if (streamInfo.title) {
-                            document.querySelector('.header h1').textContent = `🎥 ${streamInfo.title}`;
-                        }
-
-                        // 如果有Token且正在直播，尝试连接
-                        if (streamInfo.isLive && streamInfo.token) {
-                            console.log("检测到直播开始，Token:", streamInfo.token.substring(0, 20) + "...");
-                            agoraConfig.token = streamInfo.token;
-                            agoraConfig.channel = streamInfo.channel || "lsqkk_live_channel";
-
-                            if (!isConnecting) {
-                                joinChannel();
-                            }
-                        } else {
-                            console.log("直播未开始或缺少Token");
-                            handleStreamEnded();
-                        }
-                    } else {
-                        console.log("直播文档不存在");
-                        handleStreamEnded();
+                    // 更新页面显示的直播标题
+                    if (streamInfo.title) {
+                        document.querySelector('.header h1').textContent = `🎥 ${streamInfo.title}`;
                     }
-                }, (error) => {
-                    console.error('监听直播状态失败:', error);
-                    console.error('错误代码:', error.code);
-                    console.error('错误信息:', error.message);
-                    showError('无法获取直播状态: ' + error.message);
-                });
-        }
 
-        // 在页面加载时添加连接测试
-        function testFirebaseConnection() {
-            console.log("测试Firebase连接...");
+                    // 如果有Token且正在直播，尝试连接
+                    if (streamInfo.token) {
+                        console.log("检测到直播开始，Token:", streamInfo.token.substring(0, 20) + "...");
+                        agoraConfig.token = streamInfo.token;
+                        agoraConfig.channel = streamInfo.channel || "lsqkk_live_channel";
 
-            // 尝试读取一个测试文档
-            db.collection('test').doc('connection').get()
-                .then((doc) => {
-                    console.log("Firebase连接测试成功");
-                })
-                .catch((error) => {
-                    console.error("Firebase连接测试失败:", error);
-                    showError('Firebase连接失败: ' + error.message);
-                });
+                        if (!isConnecting && !isManualMode) {
+                            joinChannel();
+                        }
+                    }
+                } else {
+                    // 直播已结束
+                    handleStreamEnded();
+                }
+            }, (error) => {
+                console.error('监听直播状态失败:', error);
+                showError('无法获取直播状态: ' + error.message);
+            });
         }
 
         // 处理直播结束
@@ -467,6 +458,45 @@
 
             updateStatus('等待直播');
             showMessage('直播已结束或尚未开始', 'success');
+        }
+
+        // 手动连接模式
+        function enableManualMode() {
+            isManualMode = true;
+            document.getElementById('manual-panel').classList.remove('hidden');
+            document.getElementById('auto-mode-btn').classList.remove('hidden');
+            document.getElementById('manual-mode-btn').classList.add('hidden');
+            showMessage('已切换到手动模式，请输入Token连接', 'success');
+        }
+
+        // 自动连接模式
+        function enableAutoMode() {
+            isManualMode = false;
+            document.getElementById('manual-panel').classList.add('hidden');
+            document.getElementById('auto-mode-btn').classList.add('hidden');
+            document.getElementById('manual-mode-btn').classList.remove('hidden');
+            showMessage('已切换到自动模式，等待直播开始', 'success');
+
+            // 如果当前有直播信息，尝试连接
+            if (currentStreamInfo && currentStreamInfo.isLive) {
+                joinChannel();
+            }
+        }
+
+        // 手动连接
+        function connectManually() {
+            const tokenInput = document.getElementById('manual-token').value.trim();
+            const channelInput = document.getElementById('manual-channel').value.trim() || "lsqkk_live_channel";
+
+            if (!tokenInput) {
+                showError('请输入Token');
+                return;
+            }
+
+            agoraConfig.token = tokenInput;
+            agoraConfig.channel = channelInput;
+
+            joinChannel();
         }
 
         // 加入频道并订阅流
@@ -508,11 +538,16 @@
                 updateStatus('已连接');
                 isConnecting = false;
 
+                // 记录观众信息到Realtime Database
+                database.ref('live/viewers/' + viewerId).set({
+                    timestamp: Date.now(),
+                    userAgent: navigator.userAgent
+                });
+
             } catch (error) {
                 console.error('加入频道失败:', error);
                 isConnecting = false;
 
-                // 更详细的错误处理
                 if (error.code === 4096) {
                     showError('认证失败：Token可能已过期');
                 } else if (error.code === 17) {
@@ -539,7 +574,6 @@
                 showMessage('连接断开，正在尝试重新连接...', 'success');
                 updateStatus('重新连接中');
 
-                // 自动重连
                 setTimeout(() => {
                     if (currentStreamInfo && currentStreamInfo.isLive) {
                         joinChannel();
@@ -552,11 +586,9 @@
         async function handleUserPublished(user, mediaType) {
             console.log("用户发布流:", user.uid, mediaType);
 
-            // 订阅远程用户
             await agoraClient.subscribe(user, mediaType);
 
             if (mediaType === "video") {
-                // 显示远程视频流
                 const videoElement = document.getElementById('live-video');
                 const placeholder = document.getElementById('video-placeholder');
 
@@ -570,11 +602,9 @@
             }
 
             if (mediaType === "audio") {
-                // 播放远程音频流
                 user.audioTrack.play();
             }
 
-            // 保存远程用户
             remoteUsers[user.uid] = user;
         }
 
@@ -583,7 +613,6 @@
             console.log("用户取消发布流:", user.uid, mediaType);
 
             if (mediaType === "video") {
-                // 隐藏视频，显示占位符
                 const videoElement = document.getElementById('live-video');
                 const placeholder = document.getElementById('video-placeholder');
 
@@ -604,10 +633,8 @@
         async function handleUserLeft(user) {
             console.log("用户离开:", user.uid);
 
-            // 清理用户资源
             delete remoteUsers[user.uid];
 
-            // 如果没有其他用户，显示直播结束
             if (Object.keys(remoteUsers).length === 0) {
                 handleStreamEnded();
             }
@@ -616,20 +643,17 @@
         // 离开频道
         async function leaveChannel() {
             if (agoraClient) {
-                // 停止所有远程流
                 Object.values(remoteUsers).forEach(user => {
                     if (user.videoTrack) user.videoTrack.stop();
                     if (user.audioTrack) user.audioTrack.stop();
                 });
                 remoteUsers = {};
 
-                // 移除事件监听器
                 agoraClient.off("user-published", handleUserPublished);
                 agoraClient.off("user-unpublished", handleUserUnpublished);
                 agoraClient.off("user-left", handleUserLeft);
                 agoraClient.off("connection-state-change", handleConnectionStateChange);
 
-                // 离开频道
                 await agoraClient.leave();
                 agoraClient = null;
 
@@ -664,36 +688,28 @@
 
         // 显示成功信息
         function showMessage(message, type = 'success') {
-            // 可以添加一个临时消息显示区域
             console.log(message);
         }
 
-        // Firebase实时聊天功能
+        // Firebase实时聊天功能 - 使用Realtime Database
         function initializeChat() {
             const messagesElement = document.getElementById('messages');
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-btn');
 
             // 监听新消息
-            db.collection('live-chat')
-                .orderBy('timestamp', 'asc')
-                .limit(100)
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === 'added') {
-                            addMessageToChat(change.doc.data());
-                        }
-                    });
-                    updateMessageCount();
-                });
+            database.ref('live/chat').on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                addMessageToChat(message);
+                updateMessageCount();
+            });
 
-            // 发送消息
             function sendMessage() {
                 const message = messageInput.value.trim();
                 if (message) {
-                    db.collection('live-chat').add({
+                    database.ref('live/chat').push({
                         text: message,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        timestamp: Date.now(),
                         user: '观众',
                         viewerId: viewerId
                     });
@@ -715,10 +731,9 @@
             const messageElement = document.createElement('div');
             messageElement.className = 'message';
 
-            const time = messageData.timestamp ?
-                new Date(messageData.timestamp.toDate()).toLocaleTimeString('zh-CN', {
-                    hour: '2-digit', minute: '2-digit'
-                }) : '刚刚';
+            const time = new Date(messageData.timestamp).toLocaleTimeString('zh-CN', {
+                hour: '2-digit', minute: '2-digit'
+            });
 
             messageElement.innerHTML = `
             <span class="user">${messageData.user || '观众'}:</span>
@@ -730,31 +745,28 @@
             messagesElement.scrollTop = messagesElement.scrollHeight;
         }
 
-        // 点赞功能
+        // 点赞功能 - 使用Realtime Database
         function initializeLikes() {
             const likeButton = document.getElementById('like-btn');
             const likeCountElement = document.getElementById('like-count');
 
             // 监听点赞数变化
-            db.collection('live-stats').doc('likes')
-                .onSnapshot((doc) => {
-                    const data = doc.data();
-                    const count = data ? data.count : 0;
-                    likeCountElement.textContent = count;
-                });
+            database.ref('live/stats/likes').on('value', (snapshot) => {
+                const likes = snapshot.val();
+                likeCountElement.textContent = likes || 0;
+            });
 
             // 处理点赞点击
             likeButton.addEventListener('click', () => {
                 if (!likeClicked) {
-                    db.collection('live-stats').doc('likes').set({
-                        count: firebase.firestore.FieldValue.increment(1)
-                    }, { merge: true });
+                    database.ref('live/stats/likes').transaction((currentLikes) => {
+                        return (currentLikes || 0) + 1;
+                    });
 
                     likeButton.classList.add('liked');
                     likeButton.innerHTML = '❤️ 已点赞';
                     likeClicked = true;
 
-                    // 3秒后恢复
                     setTimeout(() => {
                         likeButton.classList.remove('liked');
                         likeButton.innerHTML = '❤️ 点赞';
@@ -767,25 +779,25 @@
         // 更新消息计数
         function updateMessageCount() {
             const messages = document.querySelectorAll('.message');
-            document.getElementById('message-count').textContent = messages.length - 1; // 减去系统消息
+            document.getElementById('message-count').textContent = messages.length - 1;
         }
 
-        // 观众计数
+        // 观众计数 - 使用Realtime Database
         function initializeViewerCount() {
             const viewerCountElement = document.getElementById('viewer-count');
 
             // 记录观众进入
-            db.collection('live-viewers').doc(viewerId).set({
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            database.ref('live/viewers/' + viewerId).set({
+                timestamp: Date.now(),
                 userAgent: navigator.userAgent
             });
 
             // 监听在线观众数
-            db.collection('live-viewers')
-                .where('timestamp', '>', new Date(Date.now() - 5 * 60 * 1000)) // 5分钟内的活跃观众
-                .onSnapshot((snapshot) => {
-                    viewerCountElement.textContent = snapshot.size;
-                });
+            database.ref('live/viewers').on('value', (snapshot) => {
+                const viewers = snapshot.val();
+                const viewerCount = viewers ? Object.keys(viewers).length : 0;
+                viewerCountElement.textContent = viewerCount;
+            });
         }
 
         // 控制功能
@@ -823,7 +835,7 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
             updateCurrentTime();
-            setInterval(updateCurrentTime, 60000); // 每分钟更新时间
+            setInterval(updateCurrentTime, 60000);
 
             // 初始化Firebase监听
             initializeStreamListener();
@@ -841,18 +853,36 @@
             reconnectBtn.onclick = reconnect;
             controls.appendChild(reconnectBtn);
 
+            // 添加手动模式按钮
+            const manualModeBtn = document.createElement('button');
+            manualModeBtn.className = 'control-btn';
+            manualModeBtn.id = 'manual-mode-btn';
+            manualModeBtn.textContent = '手动连接';
+            manualModeBtn.onclick = enableManualMode;
+            controls.appendChild(manualModeBtn);
+
+            // 添加自动模式按钮（初始隐藏）
+            const autoModeBtn = document.createElement('button');
+            autoModeBtn.className = 'control-btn';
+            autoModeBtn.id = 'auto-mode-btn';
+            autoModeBtn.textContent = '自动模式';
+            autoModeBtn.style.display = 'none';
+            autoModeBtn.onclick = enableAutoMode;
+            controls.appendChild(autoModeBtn);
+
             // 清理过期观众记录
             setInterval(() => {
-                const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-                db.collection('live-viewers')
-                    .where('timestamp', '<', fiveMinutesAgo)
-                    .get()
-                    .then((snapshot) => {
-                        snapshot.forEach((doc) => {
-                            doc.ref.delete();
-                        });
+                const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+                database.ref('live/viewers').once('value').then((snapshot) => {
+                    const updates = {};
+                    snapshot.forEach((childSnapshot) => {
+                        if (childSnapshot.val().timestamp < fiveMinutesAgo) {
+                            updates[childSnapshot.key] = null;
+                        }
                     });
-            }, 60000); // 每分钟清理一次
+                    database.ref('live/viewers').update(updates);
+                });
+            }, 60000);
         });
     </script>
 </body>

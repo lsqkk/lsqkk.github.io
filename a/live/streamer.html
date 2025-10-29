@@ -397,22 +397,13 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
-        // 检查AgoraRTC是否已加载
-        function checkAgoraLoaded() {
-            if (typeof AgoraRTC === 'undefined') {
-                showMessage('声网Agora SDK加载失败，请刷新页面重试');
-                return false;
-            }
-            return true;
-        }
-
         // Firebase配置
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
             authDomain: "quark-b7305.firebaseapp.com",
+            databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com", // 添加数据库URL
             projectId: "quark-b7305",
             storageBucket: "quark-b7305.firebasestorage.app",
             messagingSenderId: "843016834358",
@@ -422,15 +413,15 @@
 
         // 声网Agora配置
         const agoraConfig = {
-            appId: "195fc077c2f74396968d899b8d5025ff", // 你的AppID
+            appId: "195fc077c2f74396968d899b8d5025ff",
             channel: "lsqkk_live_channel",
-            token: "", // 初始为空，从输入框获取
+            token: "",
             uid: null
         };
 
         // 初始化Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const database = firebase.database();
 
         // 全局变量
         let localTracks = {
@@ -492,11 +483,6 @@
 
         // 开始视频预览
         async function startPreview() {
-            // 检查AgoraRTC是否已加载
-            if (!checkAgoraLoaded()) {
-                return;
-            }
-
             const videoSource = document.getElementById('video-source').value;
             const audioSource = document.getElementById('audio-source').value;
             const resolution = document.getElementById('resolution').value;
@@ -572,10 +558,6 @@
 
         // 初始化Agora客户端
         async function initializeAgoraClient() {
-            if (!checkAgoraLoaded()) {
-                throw new Error('AgoraRTC SDK未加载');
-            }
-
             if (!agoraClient) {
                 // 创建Agora客户端
                 agoraClient = AgoraRTC.createClient({
@@ -592,7 +574,6 @@
                 return { valid: false, message: 'Token不能为空' };
             }
 
-            // 简单的Token格式检查（根据你提供的Token样本）
             if (token.length < 10) {
                 return { valid: false, message: 'Token格式不正确，长度太短' };
             }
@@ -652,9 +633,9 @@
                 document.getElementById('start-btn').disabled = true;
                 document.getElementById('stop-btn').disabled = false;
                 document.getElementById('stream-info-panel').classList.remove('hidden');
-                document.getElementById('token-input-group').classList.add('hidden'); // 开始推流后隐藏Token输入
+                document.getElementById('token-input-group').classList.add('hidden');
 
-                // 更新直播信息到Firebase
+                // 更新直播信息到Firebase Realtime Database
                 updateStreamInfo();
 
                 showMessage('推流成功！观众现在可以观看直播了', 'success');
@@ -663,7 +644,6 @@
             } catch (error) {
                 console.error('推流失败:', error);
 
-                // 更详细的错误处理
                 if (error.code === 4096) {
                     showMessage('认证失败：请检查Token是否正确或已过期');
                 } else if (error.code === 17) {
@@ -675,6 +655,7 @@
             }
         }
 
+        // 停止推流
         async function stopStreaming() {
             try {
                 if (agoraClient) {
@@ -700,8 +681,8 @@
                 showMessage('推流已停止', 'success');
                 updateGlobalStatus('已停止');
 
-                // 清理直播信息，包括Token
-                db.collection('live-stats').doc('stream-info').delete();
+                // 清理直播信息 - 使用Realtime Database
+                database.ref('live/stream-info').remove();
 
             } catch (error) {
                 console.error('停止推流失败:', error);
@@ -745,53 +726,44 @@
             document.getElementById('stream-duration').textContent = '00:00';
         }
 
-        // 更新直播信息到Firebase
+        // 更新直播信息到Firebase Realtime Database
         function updateStreamInfo() {
             const streamTitle = document.getElementById('stream-title').value;
             const streamDescription = document.getElementById('stream-description').value;
 
-            console.log("尝试写入直播信息到Firestore...");
-
-            // 存储直播信息和Token到Firebase
-            db.collection('live-stats').doc('stream-info').set({
+            // 使用Realtime Database而不是Firestore
+            database.ref('live/stream-info').set({
                 title: streamTitle,
                 description: streamDescription,
                 isLive: true,
-                startTime: firebase.firestore.FieldValue.serverTimestamp(),
-                lastUpdate: firebase.firestore.FieldValue.serverTimestamp(),
+                startTime: Date.now(),
+                lastUpdate: Date.now(),
                 channel: agoraConfig.channel,
                 token: agoraConfig.token
-            })
-                .then(() => {
-                    console.log("直播信息写入Firestore成功");
-                })
-                .catch((error) => {
-                    console.error("直播信息写入Firestore失败:", error);
-                    showMessage('无法保存直播信息: ' + error.message);
-                });
+            });
         }
 
-        // 监听观众数据
+        // 监听观众数据 - 使用Realtime Database
         function initializeStats() {
             // 监听观众数
-            db.collection('live-viewers')
-                .where('timestamp', '>', new Date(Date.now() - 5 * 60 * 1000))
-                .onSnapshot((snapshot) => {
-                    document.getElementById('viewer-count').textContent = snapshot.size;
-                });
+            database.ref('live/viewers').on('value', (snapshot) => {
+                const viewers = snapshot.val();
+                const viewerCount = viewers ? Object.keys(viewers).length : 0;
+                document.getElementById('viewer-count').textContent = viewerCount;
+            });
 
             // 监听点赞数
-            db.collection('live-stats').doc('likes')
-                .onSnapshot((doc) => {
-                    const data = doc.data();
-                    document.getElementById('like-count').textContent = data ? data.count : 0;
-                });
+            database.ref('live/stats/likes').on('value', (snapshot) => {
+                const likes = snapshot.val();
+                document.getElementById('like-count').textContent = likes || 0;
+            });
 
             // 监听消息数
-            db.collection('live-chat')
-                .onSnapshot((snapshot) => {
-                    document.getElementById('message-count').textContent = snapshot.size;
-                });
+            database.ref('live/chat').on('value', (snapshot) => {
+                const messages = snapshot.val();
+                const messageCount = messages ? Object.keys(messages).length : 0;
+                document.getElementById('message-count').textContent = messageCount;
+            });
         }
 
         // 复制观看地址
@@ -810,7 +782,7 @@
             });
         }
 
-        // 快速填充示例Token（用于测试）
+        // 快速填充示例Token
         function fillExampleToken() {
             document.getElementById('stream-token').value = "007eJxTYPD2Md9W5+F/j23qpOUqnD8Xl130bD65IzLsiczkqbsft/gqMBhamqYlG5ibJxulmZsYW5pZmlmkWFhaJlmkmBoYmaalMW9hzGwIZGSIaFVkYmSAQBBfiCGnuDA7Oz4nsyw1PjkjMS8vNYeBAQD07CPQ";
             showMessage('已填充示例Token，请修改为实际Token', 'success');
@@ -823,11 +795,6 @@
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
-            // 检查AgoraRTC是否已加载
-            if (!checkAgoraLoaded()) {
-                return;
-            }
-
             // 获取设备列表
             getDevices();
 
