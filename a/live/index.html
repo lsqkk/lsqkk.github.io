@@ -441,22 +441,138 @@
             });
         }
 
-        // 修复音频测试函数
-        let audioContext = null;
+        // 添加自动播放失败处理
+        function setupAutoplayFailureHandler() {
+            // 监听自动播放失败事件
+            AgoraRTC.onAutoplayFailed = () => {
+                console.log('自动播放失败，显示用户交互提示');
 
-        function testAudio() {
-            // 检查是否已经存在 AudioContext
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // 显示用户交互提示
+                showAutoplayPrompt();
+
+                // 创建并显示交互按钮
+                createAutoplayButton();
+            };
+        }
+
+        // 显示自动播放提示
+        function showAutoplayPrompt() {
+            const prompt = document.createElement('div');
+            prompt.id = 'autoplay-prompt';
+            prompt.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1000;
+        text-align: center;
+        max-width: 300px;
+    `;
+
+            prompt.innerHTML = `
+        <h3>🔊 需要启用音频</h3>
+        <p>请点击下方按钮启用直播音频</p>
+        <button id="enable-audio-btn" style="
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        ">启用音频</button>
+    `;
+
+            document.body.appendChild(prompt);
+
+            // 添加按钮点击事件
+            document.getElementById('enable-audio-btn').addEventListener('click', function () {
+                resumeAllAudioTracks();
+                document.body.removeChild(prompt);
+            });
+        }
+
+        // 创建页面上的音频启用按钮
+        function createAutoplayButton() {
+            // 检查是否已存在按钮
+            if (document.getElementById('autoplay-fix-btn')) return;
+
+            const button = document.createElement('button');
+            button.id = 'autoplay-fix-btn';
+            button.innerHTML = '🔊 点击启用音频';
+            button.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #ff4757;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        z-index: 999;
+        font-size: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    `;
+
+            button.addEventListener('click', function () {
+                resumeAllAudioTracks();
+                this.style.display = 'none';
+                showMessage('音频已启用', 'success');
+            });
+
+            document.body.appendChild(button);
+        }
+
+        // 恢复所有音频轨道
+        function resumeAllAudioTracks() {
+            console.log('恢复音频播放...');
+
+            // 恢复远程用户的音频轨道
+            Object.values(remoteUsers).forEach(user => {
+                if (user.audioTrack) {
+                    try {
+                        // 重新播放音频轨道
+                        user.audioTrack.play();
+                        if (typeof user.audioTrack.setVolume === 'function') {
+                            user.audioTrack.setVolume(100);
+                        }
+                        console.log('恢复音频轨道:', user.uid);
+                    } catch (error) {
+                        console.error('恢复音频轨道失败:', error);
+                    }
+                }
+            });
+
+            // 恢复视频元素的音频
+            const videoElement = document.getElementById('live-video');
+            if (videoElement) {
+                videoElement.play().catch(e => {
+                    console.log('视频播放恢复失败:', e);
+                });
             }
 
-            // 如果 AudioContext 是挂起状态，需要恢复
-            if (audioContext.state === 'suspended') {
+            // 恢复 AudioContext
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    console.log('AudioContext 已恢复');
+                });
+            }
+        }
+
+        // 增强的音频测试函数
+        function testAudio() {
+            // 先恢复 AudioContext
+            if (audioContext && audioContext.state === 'suspended') {
                 audioContext.resume().then(() => {
                     playTestTone();
                 }).catch(error => {
                     console.error('AudioContext 恢复失败:', error);
-                    showMessage('请点击页面任意位置后重试音频测试', 'error');
+                    showMessage('请先点击"启用音频"按钮', 'error');
                 });
             } else {
                 playTestTone();
@@ -464,27 +580,31 @@
         }
 
         function playTestTone() {
-            if (!audioContext) return;
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
 
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            oscillator.type = 'sine';
-            oscillator.frequency.value = 440; // A4 音符
-            gainNode.gain.value = 0.1; // 低音量
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 440;
+                gainNode.gain.value = 0.1;
 
-            oscillator.start();
-
-            // 播放0.5秒后停止
-            setTimeout(() => {
-                oscillator.stop();
-                showMessage('音频测试完成，如果听到声音说明音频输出正常', 'success');
-            }, 500);
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    showMessage('音频测试完成', 'success');
+                }, 500);
+            } catch (error) {
+                console.error('播放测试音调失败:', error);
+                showMessage('音频测试失败', 'error');
+            }
         }
-
         // 添加用户交互事件来初始化 AudioContext
         function initAudioOnUserInteraction() {
             document.addEventListener('click', function initAudio() {
@@ -675,15 +795,12 @@
             }
         }
 
-        // 修改处理用户发布流的函数
         async function handleUserPublished(user, mediaType) {
             console.log("用户发布流:", user.uid, mediaType);
 
-            // 订阅远程用户
             await agoraClient.subscribe(user, mediaType);
 
             if (mediaType === "video") {
-                // 显示远程视频流
                 const videoElement = document.getElementById('live-video');
                 const placeholder = document.getElementById('video-placeholder');
 
@@ -693,38 +810,35 @@
                 videoElement.style.display = 'block';
 
                 updateStatus('直播中');
-                showMessage('成功连接到直播', 'success');
-                handleAutoplay();
+
+                // 尝试自动播放，但捕获可能的错误
+                videoElement.play().catch(error => {
+                    console.log('视频自动播放被阻止，等待用户交互');
+                    // 不显示错误，因为我们会通过 AgoraRTC.onAutoplayFailed 处理
+                });
             }
 
             if (mediaType === "audio") {
-                updateAudioStatus(true);
                 console.log("开始播放音频轨道");
-                // 播放远程音频流 - 修复API使用方式
                 try {
-                    // 直接播放音频轨道，不调用不存在的方法
+                    // 直接播放音频轨道
                     user.audioTrack.play();
                     console.log("音频播放成功");
 
-                    // 设置音量（0-100）
-                    if (user.audioTrack.setVolume) {
+                    // 设置音量
+                    if (typeof user.audioTrack.setVolume === 'function') {
                         user.audioTrack.setVolume(100);
                     }
 
-                    // 检查音频轨道状态 - 使用安全的方式
-                    console.log("音频轨道详情:", {
-                        track: user.audioTrack,
-                        enabled: user.audioTrack.enabled,
-                        // 不调用可能不存在的方法
-                    });
+                    // 更新音频状态
+                    updateAudioStatus(true);
 
                 } catch (audioError) {
                     console.error("音频播放失败:", audioError);
-                    showMessage('音频播放失败: ' + audioError.message);
+                    // 不显示错误，自动播放失败会由 AgoraRTC.onAutoplayFailed 处理
                 }
             }
 
-            // 保存远程用户
             remoteUsers[user.uid] = user;
         }
 
@@ -1015,6 +1129,9 @@
             // 初始化Firebase监听
             initializeStreamListener();
 
+
+            setupAutoplayFailureHandler();
+
             initAudioContext();
             // 初始化Firebase功能
             initializeChat();
@@ -1065,6 +1182,13 @@
                     audioContext.resume();
                 }
             });
+            document.addEventListener('click', function globalAudioResume() {
+                // 尝试恢复所有音频
+                resumeAllAudioTracks();
+
+                // 移除全局监听器，避免重复处理
+                document.removeEventListener('click', globalAudioResume);
+            }, { once: true });
         });
     </script>
 </body>
