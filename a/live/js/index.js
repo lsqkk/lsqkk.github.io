@@ -13,7 +13,7 @@ const firebaseConfig = {
 // 声网Agora配置
 const agoraConfig = {
     appId: "195fc077c2f74396968d899b8d5025ff",
-    channel: "lsqkk_live_channel",
+    channel: "lsqkk",
     token: "",
     uid: null
 };
@@ -101,7 +101,7 @@ function initializeStreamListener() {
             if (streamInfo.token) {
                 console.log("检测到直播开始，Token:", streamInfo.token.substring(0, 20) + "...");
                 agoraConfig.token = streamInfo.token;
-                agoraConfig.channel = streamInfo.channel || "lsqkk_live_channel";
+                agoraConfig.channel = streamInfo.channel || "lsqkk";
 
                 if (!isConnecting && !isManualMode) {
                     joinChannel();
@@ -147,7 +147,7 @@ function toggleManualPanel() {
 // 手动连接
 function connectManually() {
     const tokenInput = document.getElementById('manual-token').value.trim();
-    const channelInput = document.getElementById('manual-channel').value.trim() || "lsqkk_live_channel";
+    const channelInput = document.getElementById('manual-channel').value.trim() || "lsqkk";
 
     if (!tokenInput) {
         showError('请输入Token');

@@ -13,7 +13,7 @@ const firebaseConfig = {
 // 声网Agora配置
 const agoraConfig = {
     appId: "195fc077c2f74396968d899b8d5025ff",
-    channel: "lsqkk_live_channel",
+    channel: "lsqkk",
     token: "",
     uid: null
 };
