@@ -10,6 +10,7 @@ document.write(`
                 <ul class="header-nav">
                     <li><a href="/article-list">文章</a></li>
                     <li><a href="/tool">工具</a></li>
+                    <li><a href="/a/live">LIVE</a></li>
                     <li><a href="/games">游戏</a></li>
                     <li><a href="/a">实验室</a></li>
                     <li><a href="/daily">日报</a></li>
@@ -31,6 +32,7 @@ document.write(`
         <ul class="mobile-nav">
             <li><a href="/article-list">文章</a></li>
             <li><a href="/tool">工具</a></li>
+            <li><a href="/a/live">LIVE</a></li>
             <li><a href="/games">游戏</a></li>
             <li><a href="/a">实验室</a></li>
             <li><a href="/daily">日报</a></li>
