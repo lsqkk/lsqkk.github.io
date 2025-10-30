@@ -34,5 +34,17 @@
         "link": "zk",
         "description": "个人成长与自我管理系统",
         "icon": "fa-cogs"
+    },
+    {
+        "name": "山火预警监测",
+        "link": "fire-alert",
+        "description": "基于卫星数据和气象信息的山火风险预警与监测系统",
+        "icon": "fa-fire"
+    },
+    {
+        "name": "夸克LIVE直播间",
+        "link": "live",
+        "description": "夸克博客实时互动直播平台",
+        "icon": "fa-broadcast-tower"
     }
 ]
