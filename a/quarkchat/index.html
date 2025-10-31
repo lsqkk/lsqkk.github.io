@@ -281,8 +281,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>夸克</h1>
-            <p>智能对话，语音交互，为您服务</p>
+            <h1>与夸克数字人聊天</h1>
+            <p>夸克博客AI智能对话与语音交互</p>
         </header>
 
         <div class="main-content">
@@ -305,7 +305,7 @@
                 </div>
 
                 <div class="input-area">
-                    <input type="text" id="text-input" placeholder="请输入您的问题..." autocomplete="off">
+                    <input type="text" id="text-input" placeholder="请输入..." autocomplete="off">
                     <button id="send-btn">发送</button>
                 </div>
 
@@ -380,7 +380,7 @@
                     }
                 } else {
                     // 如果没有历史记录，显示默认欢迎消息
-                    addMessage('您好！我是夸克，很高兴为您服务。您可以通过文字或语音与我交流。', false, false);
+                    addMessage('您好！我是站主夸克的数字人，很高兴遇见您！可以通过文字或语音与我交流哦~', false, false);
                 }
             }
 
@@ -473,7 +473,7 @@
 
                 recognition.onstart = function () {
                     console.log("语音识别已开始");
-                    updateStatus("正在聆听...");
+                    updateStatus("您请说...");
                 };
 
                 recognition.onresult = (event) => {
@@ -504,7 +504,7 @@
 
                     switch (event.error) {
                         case 'no-speech':
-                            updateStatus("未检测到语音，请说话或检查麦克风");
+                            updateStatus("没有听见您的声音，请说话或检查麦克风");
                             break;
                         case 'audio-capture':
                             updateStatus("未找到麦克风设备");
@@ -555,7 +555,7 @@
                         isRecording = true;
                         startVoiceBtn.style.display = 'none';
                         stopVoiceBtn.style.display = 'flex';
-                        updateStatus("正在录音...请说话");
+                        updateStatus("正在录音，请说完后点击停止录音");
                     })
                     .catch(function (err) {
                         console.error("无法获取麦克风权限:", err);
@@ -564,7 +564,6 @@
                     });
             }
 
-            // 停止语音识别
             // 停止语音识别
             function stopVoiceRecognition() {
                 if (recognition) {
@@ -633,7 +632,7 @@
             // 文字转语音
             async function textToSpeech(text) {
                 try {
-                    updateStatus('正在生成语音...', true);
+                    updateStatus('夸克准备说话...', true);
 
                     // 构建语音API请求URL
                     const voiceUrl = `https://api.suol.cc/v1/zs_tts.php?type=baidu&msg=${encodeURIComponent(text)}&id=4129`;
@@ -645,7 +644,7 @@
                         const data = await response.json();
 
                         if (data.code === 200 && data.tts) {
-                            updateStatus('正在播放语音...', true);
+                            updateStatus('夸克正在说话...', true);
 
                             // 切换到说话视频
                             switchToTalking();
@@ -656,30 +655,30 @@
 
                             // 监听播放结束
                             audio.addEventListener('ended', function () {
-                                updateStatus('语音播放完成');
+                                updateStatus('夸克说完了');
                                 // 切换回静默视频
                                 switchToIdle();
                             });
 
                             // 监听播放错误
                             audio.addEventListener('error', function () {
-                                updateStatus('语音播放失败');
+                                updateStatus('夸克打了个喷嚏');
                                 // 切换回静默视频
                                 switchToIdle();
                             });
                         } else {
-                            updateStatus('语音生成失败');
+                            updateStatus('夸克感冒了');
                             // 切换回静默视频
                             switchToIdle();
                         }
                     } else {
-                        updateStatus('语音API请求失败');
+                        updateStatus('夸克和他的语言中枢失去联系了');
                         // 切换回静默视频
                         switchToIdle();
                     }
                 } catch (error) {
                     console.error('语音API请求错误:', error);
-                    updateStatus('语音生成出错');
+                    updateStatus('夸克语言中枢错乱了');
                     // 切换回静默视频
                     switchToIdle();
                 }
@@ -717,7 +716,7 @@
                 textInput.value = '';
 
                 // 显示加载状态
-                updateStatus('正在思考中...', true);
+                updateStatus('夸克正在组织语言...', true);
 
                 try {
                     // 构建完整的消息
@@ -747,7 +746,7 @@
                             // 生成并播放语音
                             await textToSpeech(data.data.fromtext);
                         } else {
-                            addMessage('抱歉，我没有理解您的意思。', false);
+                            addMessage('抱歉，我没理解您的意思555', false);
                             updateStatus(`请求成功但响应异常，耗时：${duration} 毫秒`);
                         }
                     } else {
