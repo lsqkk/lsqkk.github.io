@@ -4,104 +4,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文本转语音</title>
+    <title>文本转语音工具</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             max-width: 600px;
-            margin: 20px auto;
-            padding: 0 15px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .container {
-            text-align: center;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            margin: 10px 0;
+            height: 100px;
             padding: 10px;
-            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
         }
 
-        select,
         button {
-            padding: 8px 16px;
-            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
-        #status {
-            margin-top: 15px;
-            color: #666;
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7e9;
+            border-radius: 4px;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>文本转语音</h1>
-        <textarea id="textInput" placeholder="请输入要转换的文本..."></textarea>
-        <br>
-        <select id="voiceSelect">
-            <option value="轻松少年">轻松少年</option>
-            <option value="曼波">曼波</option>
-            <!-- 可以根据实际可用的语音选项扩展 -->
-        </select>
-        <button onclick="convertTextToSpeech()">转换并播放</button>
-        <p id="status"></p>
-        <audio id="audioPlayer" style="display:none"></audio>
+        <h1>文本转语音工具</h1>
+        <textarea id="textInput" placeholder="请输入要转换的文本...">你好，这里是慕名API，欢迎使用</textarea>
+        <button id="convertBtn">转换为语音</button>
+
+        <div class="result" id="result" style="display: none;">
+            <p><strong>语音名称：</strong><span id="voiceName"></span></p>
+            <p><strong>返回信息：</strong><span id="returnMsg"></span></p>
+            <audio id="audioPlayer" controls autoplay></audio>
+        </div>
     </div>
 
     <script>
-        function convertTextToSpeech() {
+        document.getElementById('convertBtn').addEventListener('click', function () {
             const text = document.getElementById('textInput').value.trim();
-            const voice = document.getElementById('voiceSelect').value;
-            const statusElement = document.getElementById('status');
-            const audioPlayer = document.getElementById('audioPlayer');
-
             if (!text) {
-                statusElement.textContent = "请输入文本内容";
+                alert('请输入要转换的文本');
                 return;
             }
 
-            statusElement.textContent = "正在生成语音...";
+            // 显示加载状态
+            const btn = document.getElementById('convertBtn');
+            btn.textContent = '转换中...';
+            btn.disabled = true;
 
             // 构建API请求URL
-            const apiUrl = `https://api.cenguigui.cn/api/speech/AiChat/?module=audio&text=${encodeURIComponent(text)}&voice=${encodeURIComponent(voice)}`;
+            const apiUrl = `https://api.suol.cc/v1/zs_tts.php?type=xunfei&msg=${encodeURIComponent(text)}&id=8`;
 
-            // 发送GET请求
-            fetch(apiUrl, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("网络响应不正常");
-                    }
-                    return response.json();
-                })
+            // 发送请求
+            fetch(apiUrl)
+                .then(response => response.json())
                 .then(data => {
-                    if (data.code === 200 && data.data && data.data.audio_url) {
-                        statusElement.textContent = "语音生成成功，正在播放...";
+                    // 恢复按钮状态
+                    btn.textContent = '转换为语音';
+                    btn.disabled = false;
+
+                    if (data.code === 200) {
+                        // 显示结果区域
+                        document.getElementById('result').style.display = 'block';
+
+                        // 更新显示信息
+                        document.getElementById('voiceName').textContent = data.name;
+                        document.getElementById('returnMsg').textContent = data.msg;
+
                         // 设置音频源并自动播放
-                        audioPlayer.src = data.data.audio_url;
-                        audioPlayer.play().catch(error => {
-                            statusElement.textContent = "播放失败，请手动点击播放: " + error.message;
-                            // 显示音频元素让用户手动播放（有些浏览器禁止自动播放）
-                            audioPlayer.style.display = "block";
-                        });
+                        const audioPlayer = document.getElementById('audioPlayer');
+                        audioPlayer.src = data.tts;
+                        audioPlayer.play();
                     } else {
-                        statusElement.textContent = "生成失败: " + (data.message || "未知错误");
+                        alert('转换失败，请重试');
                     }
                 })
                 .catch(error => {
-                    statusElement.textContent = "请求出错: " + error.message;
-                    console.error("Error:", error);
+                    console.error('Error:', error);
+                    btn.textContent = '转换为语音';
+                    btn.disabled = false;
+                    alert('请求失败，请检查网络连接');
                 });
-        }
+        });
     </script>
 </body>
 
