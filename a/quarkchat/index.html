@@ -343,47 +343,20 @@
 
             // API配置
             const API_KEY = '9u4oGqnfwBasVwXArcW';
-            const API_URL = 'https://api.yaohud.cn/api/model/AI_yueyao';
+            const CHAT_API_URL = 'https://api.yaohud.cn/api/v5/smartai';
+            const USER_ID = 'quark';
 
             // 系统提示词
-            const SYSTEM_PROMPT = "接下来的对话中，不要透露你的名字（如果我喊错了你的名字也要答应），以及你的狐狸属性（比如尾巴）";
+            const SYSTEM_PROMPT = "你的名称是\"夸克\"，作为一个虚拟OC，你将尽可能有趣、简短、热情地回复用户";
 
             // 语音识别变量
             let recognition = null;
             let isRecording = false;
 
-            // 初始化 - 加载对话历史并发送系统提示词
+            // 初始化 - 加载对话历史
             function initialize() {
                 // 从localStorage加载对话历史
                 loadChatHistory();
-
-                // 检查是否已经发送过系统提示词
-                const systemPromptSent = localStorage.getItem('systemPromptSent');
-                if (!systemPromptSent) {
-                    // 发送系统提示词（不显示在界面上）
-                    sendSystemPrompt();
-                }
-            }
-
-            // 发送系统提示词
-            async function sendSystemPrompt() {
-                try {
-                    // 构建API请求URL
-                    const url = `${API_URL}?key=${API_KEY}&text=${encodeURIComponent(SYSTEM_PROMPT)}&type=text`;
-
-                    // 发送请求
-                    const response = await fetch(url);
-
-                    if (response.ok) {
-                        // 标记系统提示词已发送
-                        localStorage.setItem('systemPromptSent', 'true');
-                        console.log('系统提示词已发送');
-                    } else {
-                        console.error('系统提示词发送失败');
-                    }
-                } catch (error) {
-                    console.error('系统提示词发送错误:', error);
-                }
             }
 
             // 从localStorage加载对话历史
@@ -412,8 +385,8 @@
                     try {
                         history = JSON.parse(savedHistory);
                         // 限制历史记录长度，避免localStorage过大
-                        if (history.length > 50) {
-                            history = history.slice(-50);
+                        if (history.length > 10) { // 保存最多5轮对话(10条消息)
+                            history = history.slice(-10);
                         }
                     } catch (e) {
                         console.error('解析对话历史失败:', e);
@@ -422,6 +395,43 @@
 
                 history.push({ text, isUser });
                 localStorage.setItem('chatHistory', JSON.stringify(history));
+            }
+
+            // 获取格式化后的历史对话
+            function getFormattedHistory() {
+                const savedHistory = localStorage.getItem('chatHistory');
+                if (!savedHistory) return "";
+
+                try {
+                    const history = JSON.parse(savedHistory);
+                    let formattedHistory = "";
+
+                    // 只取最近5轮对话(10条消息)
+                    const recentHistory = history.slice(-10);
+
+                    // 构建历史对话格式
+                    for (let i = 0; i < recentHistory.length; i += 2) {
+                        if (i + 1 < recentHistory.length) {
+                            const userMsg = recentHistory[i];
+                            const aiMsg = recentHistory[i + 1];
+
+                            if (userMsg.isUser && !aiMsg.isUser) {
+                                formattedHistory += `用户：${userMsg.text}\n你：${aiMsg.text}\n`;
+                            }
+                        }
+                    }
+
+                    return formattedHistory;
+                } catch (e) {
+                    console.error('格式化历史对话失败:', e);
+                    return "";
+                }
+            }
+
+            // 构建完整的消息
+            function buildFullMessage(userMessage) {
+                const history = getFormattedHistory();
+                return `${SYSTEM_PROMPT}\n${history}用户：${userMessage}`;
             }
 
             // 初始化语音识别
@@ -540,10 +550,10 @@
             // 文字转语音
             async function textToSpeech(text) {
                 try {
-                    updateStatus('夸克准备说话...', true);
+                    updateStatus('正在生成语音...', true);
 
                     // 构建语音API请求URL
-                    const voiceUrl = `https://api.suol.cc/v1/zs_tts.php?type=xunfei&msg=${encodeURIComponent(text)}&id=8`;
+                    const voiceUrl = `https://api.suol.cc/v1/zs_tts.php?type=baidu&msg=${encodeURIComponent(text)}&id=4129`;
 
                     // 发送请求
                     const response = await fetch(voiceUrl);
@@ -552,7 +562,7 @@
                         const data = await response.json();
 
                         if (data.code === 200 && data.tts) {
-                            updateStatus('夸克正在说话...', true);
+                            updateStatus('正在播放语音...', true);
 
                             // 切换到说话视频
                             switchToTalking();
@@ -563,7 +573,7 @@
 
                             // 监听播放结束
                             audio.addEventListener('ended', function () {
-                                updateStatus('夸克说完了');
+                                updateStatus('语音播放完成');
                                 // 切换回静默视频
                                 switchToIdle();
                             });
@@ -576,13 +586,19 @@
                             });
                         } else {
                             updateStatus('语音生成失败');
+                            // 切换回静默视频
+                            switchToIdle();
                         }
                     } else {
                         updateStatus('语音API请求失败');
+                        // 切换回静默视频
+                        switchToIdle();
                     }
                 } catch (error) {
                     console.error('语音API请求错误:', error);
                     updateStatus('语音生成出错');
+                    // 切换回静默视频
+                    switchToIdle();
                 }
             }
 
@@ -606,8 +622,11 @@
                 updateStatus('正在思考中...', true);
 
                 try {
+                    // 构建完整的消息
+                    const fullMessage = buildFullMessage(text);
+
                     // 构建API请求URL
-                    const url = `${API_URL}?key=${API_KEY}&text=${encodeURIComponent(text)}&type=text`;
+                    const url = `${CHAT_API_URL}?key=${API_KEY}&msg=${encodeURIComponent(fullMessage)}&type=&userid=${USER_ID}`;
 
                     // 记录开始时间
                     const startTime = Date.now();
@@ -620,18 +639,18 @@
                     const duration = endTime - startTime;
 
                     if (response.ok) {
-                        const textResponse = await response.text();
+                        const data = await response.json();
 
                         // 添加AI回复
-                        if (textResponse) {
-                            addMessage(textResponse, false);
-                            updateStatus(`请求成功：200 success 耗时：${duration} 毫秒`);
+                        if (data.code === 200 && data.data && data.data.fromtext) {
+                            addMessage(data.data.fromtext, false);
+                            updateStatus(`请求成功：${data.msg} 耗时：${duration} 毫秒`);
 
                             // 生成并播放语音
-                            await textToSpeech(textResponse);
+                            await textToSpeech(data.data.fromtext);
                         } else {
                             addMessage('抱歉，我没有理解您的意思。', false);
-                            updateStatus(`请求成功但响应为空，耗时：${duration} 毫秒`);
+                            updateStatus(`请求成功但响应异常，耗时：${duration} 毫秒`);
                         }
                     } else {
                         addMessage('抱歉，服务暂时不可用，请稍后再试。', false);
