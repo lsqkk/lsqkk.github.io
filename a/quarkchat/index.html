@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克数字人 - 夸克博客</title>
+    <title>与夸克聊天 - 夸克博客</title>
     <style>
         * {
             margin: 0;
@@ -354,7 +354,14 @@
             let isRecording = false;
 
             // 初始化 - 加载对话历史
+            // 在initialize函数中添加
             function initialize() {
+                // 检查浏览器兼容性
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    document.getElementById('start-voice-btn').style.display = 'none';
+                    updateStatus("当前浏览器不支持语音识别");
+                }
+
                 // 从localStorage加载对话历史
                 loadChatHistory();
             }
@@ -435,11 +442,12 @@
             }
 
             // 初始化语音识别
+            // 初始化语音识别
             function initializeRecognition() {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
                 if (!SpeechRecognition) {
-                    alert("当前浏览器不支持语音识别功能，请使用最新版Chrome浏览器");
+                    alert("当前浏览器不支持语音识别功能，请使用最新版Chrome、Edge或Safari浏览器");
                     return false;
                 }
 
@@ -448,29 +456,82 @@
                 recognition.interimResults = true;
                 recognition.lang = 'zh-CN';
 
+                // 添加更多配置选项
+                recognition.maxAlternatives = 1;
+
+                // 请求麦克风权限
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function (stream) {
+                        console.log("麦克风权限已获取");
+                        // 可以在这里开始识别，但为了用户体验，我们还是让用户手动开始
+                    })
+                    .catch(function (err) {
+                        console.error("麦克风权限被拒绝:", err);
+                        updateStatus("麦克风权限被拒绝，请允许使用麦克风");
+                        return false;
+                    });
+
+                recognition.onstart = function () {
+                    console.log("语音识别已开始");
+                    updateStatus("正在聆听...");
+                };
+
                 recognition.onresult = (event) => {
+                    let finalTranscript = '';
                     let interimTranscript = '';
+
                     for (let i = event.resultIndex; i < event.results.length; i++) {
                         const transcript = event.results[i][0].transcript;
                         if (event.results[i].isFinal) {
-                            textInput.value = transcript;
+                            finalTranscript += transcript;
                         } else {
                             interimTranscript += transcript;
                         }
                     }
-                    if (interimTranscript) {
+
+                    // 优先使用最终结果，如果没有最终结果则使用临时结果
+                    if (finalTranscript) {
+                        textInput.value = finalTranscript;
+                        updateStatus("识别完成");
+                    } else if (interimTranscript) {
                         textInput.value = interimTranscript;
+                        updateStatus("正在识别...");
                     }
                 };
 
                 recognition.onerror = (event) => {
                     console.error('识别错误:', event.error);
-                    updateStatus(`识别错误: ${event.error}`);
+
+                    switch (event.error) {
+                        case 'no-speech':
+                            updateStatus("未检测到语音，请说话或检查麦克风");
+                            break;
+                        case 'audio-capture':
+                            updateStatus("未找到麦克风设备");
+                            break;
+                        case 'not-allowed':
+                            updateStatus("麦克风权限被拒绝");
+                            break;
+                        case 'network':
+                            updateStatus("网络错误，请检查网络连接");
+                            break;
+                        default:
+                            updateStatus(`识别错误: ${event.error}`);
+                    }
+
+                    // 发生错误时自动停止
+                    stopVoiceRecognition();
                 };
 
                 recognition.onend = () => {
+                    console.log("语音识别已结束");
                     if (isRecording) {
-                        recognition.start(); // 自动重新开始
+                        // 延迟一下再重新开始，避免频繁重启
+                        setTimeout(() => {
+                            if (isRecording) {
+                                recognition.start();
+                            }
+                        }, 500);
                     }
                 };
 
@@ -478,18 +539,32 @@
             }
 
             // 开始语音识别
+            // 开始语音识别
             function startVoiceRecognition() {
-                if (!recognition && !initializeRecognition()) {
-                    return;
-                }
+                // 先检查麦克风权限
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function (stream) {
+                        // 权限已获取，停止所有音频轨道
+                        stream.getTracks().forEach(track => track.stop());
 
-                recognition.start();
-                isRecording = true;
-                startVoiceBtn.style.display = 'none';
-                stopVoiceBtn.style.display = 'flex';
-                updateStatus("正在录音...");
+                        if (!recognition && !initializeRecognition()) {
+                            return;
+                        }
+
+                        recognition.start();
+                        isRecording = true;
+                        startVoiceBtn.style.display = 'none';
+                        stopVoiceBtn.style.display = 'flex';
+                        updateStatus("正在录音...请说话");
+                    })
+                    .catch(function (err) {
+                        console.error("无法获取麦克风权限:", err);
+                        updateStatus("无法访问麦克风，请检查权限设置");
+                        alert("请允许浏览器访问麦克风以使用语音识别功能");
+                    });
             }
 
+            // 停止语音识别
             // 停止语音识别
             function stopVoiceRecognition() {
                 if (recognition) {
@@ -499,6 +574,14 @@
                 startVoiceBtn.style.display = 'flex';
                 stopVoiceBtn.style.display = 'none';
                 updateStatus("已停止录音");
+
+                // 检查输入框是否有内容，如果有则自动发送
+                setTimeout(() => {
+                    const text = textInput.value.trim();
+                    if (text) {
+                        sendMessage();
+                    }
+                }, 300); // 稍微延迟一下，确保识别结果已经填充
             }
 
             // 添加消息到聊天窗口
@@ -603,10 +686,25 @@
             }
 
             // 发送消息到API
+            // 发送消息到API
             async function sendMessage() {
                 const text = textInput.value.trim();
                 if (!text) return;
 
+                // 如果正在录音，先停止录音
+                if (isRecording) {
+                    stopVoiceRecognition();
+                    // 等待录音停止后再发送
+                    setTimeout(() => {
+                        actuallySendMessage(text);
+                    }, 500);
+                } else {
+                    actuallySendMessage(text);
+                }
+            }
+
+            // 实际的发送消息逻辑
+            async function actuallySendMessage(text) {
                 // 禁用输入和按钮
                 textInput.disabled = true;
                 sendBtn.disabled = true;
