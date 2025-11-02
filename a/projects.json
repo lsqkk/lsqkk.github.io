@@ -46,5 +46,11 @@
         "link": "live",
         "description": "夸克博客实时互动直播平台",
         "icon": "fa-broadcast-tower"
+    },
+    {
+        "name": "夸克数字人",
+        "link": "quarkchat",
+        "description": "支持语音/文字可视化对话聊天的数字人交互平台",
+        "icon": "fa-robot"
     }
 ]
