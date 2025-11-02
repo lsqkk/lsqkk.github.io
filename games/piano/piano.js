@@ -5,20 +5,20 @@ let isPlaying = false;
 let currentSchedule = [];
 let audioContext; // 在全局作用域中定义
 const audioCache = new Map(); // 在全局作用域中定义
-	const noteColors = {
-        0: 0,    // C
-        1: 30,   // C#
-        2: 60,   // D
-        3: 90,   // D#
-        4: 120,  // E
-        5: 150,  // F
-        6: 180,  // F#
-        7: 210,  // G
-        8: 240,  // G#
-        9: 270,  // A
-        10: 300, // A#
-        11: 330  // B
-    };
+const noteColors = {
+    0: 0,    // C
+    1: 30,   // C#
+    2: 60,   // D
+    3: 90,   // D#
+    4: 120,  // E
+    5: 150,  // F
+    6: 180,  // F#
+    7: 210,  // G
+    8: 240,  // G#
+    9: 270,  // A
+    10: 300, // A#
+    11: 330  // B
+};
 
 // 加载音乐列表
 async function loadMusicList() {
@@ -46,7 +46,7 @@ function scheduleNotes(tracks) {
     console.log('开始调度音符:', tracks); // 调试信息
     const startTime = audioContext.currentTime; // 使用全局 audioContext
     currentSchedule = []; // 清空之前的调度计划
-isMidiPlayback = true; // 标记为MIDI播放状态
+    isMidiPlayback = true; // 标记为MIDI播放状态
 
     tracks.forEach(track => {
         track.notes.forEach(note => {
@@ -74,7 +74,7 @@ isMidiPlayback = true; // 标记为MIDI播放状态
         source.start(triggerTime, 0, event.duration);
 
 
-    event.timeoutId = setTimeout(() => {
+        event.timeoutId = setTimeout(() => {
             activateKey(event.note, true); // 新增参数表示是MIDI触发的
             setTimeout(() => deactivateKey(event.note), event.duration * 1000);
         }, event.time * 1000);
@@ -92,7 +92,7 @@ async function playNote(note) {
 
     try {
         const audioBuffer = await loadAudio(note);
-        
+
         // 创建新的音频源实例
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
@@ -121,7 +121,7 @@ async function loadAudio(note) {
 
     if (!audioCache.has(note)) {
         console.log(`加载音频文件: ${note}`); // 调试信息
-        const response = await fetch(`sounds/piano_key_${note+3}.ogg`);
+        const response = await fetch(`sounds/piano_key_${note + 3}.ogg`);
         if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer); // 使用全局 audioContext
@@ -131,35 +131,35 @@ async function loadAudio(note) {
 }
 
 
-    function createRibbon(note, key) {
+function createRibbon(note, key) {
 
     if (window.innerWidth < 1200) {
         return;
     }
-        const hue = noteColors[note % 12];
-        const ribbon = document.createElement('div');
-        ribbon.className = 'ribbon';
-        ribbon.style.setProperty('--hue', hue);
+    const hue = noteColors[note % 12];
+    const ribbon = document.createElement('div');
+    ribbon.className = 'ribbon';
+    ribbon.style.setProperty('--hue', hue);
 
 
-        ribbon.style.left = `${key.offsetLeft + key.offsetWidth / 2}px`;
+    ribbon.style.left = `${key.offsetLeft + key.offsetWidth / 2}px`;
 
-        document.body.appendChild(ribbon);
+    document.body.appendChild(ribbon);
 
-        // 动态调整丝带长度
-        const growInterval = setInterval(() => {
-            if (!activeKeys.has(note)) {
-                clearInterval(growInterval);
-                ribbon.classList.add('release');
-            } else {
-                ribbon.style.height = `${ribbon.offsetHeight + 5}px`;
-            }
-        }, 20);
+    // 动态调整丝带长度
+    const growInterval = setInterval(() => {
+        if (!activeKeys.has(note)) {
+            clearInterval(growInterval);
+            ribbon.classList.add('release');
+        } else {
+            ribbon.style.height = `${ribbon.offsetHeight + 5}px`;
+        }
+    }, 20);
 
-        ribbon.addEventListener('animationend', () => {
-            ribbon.remove();
-        });
-    }
+    ribbon.addEventListener('animationend', () => {
+        ribbon.remove();
+    });
+}
 
 // 初始化播放器
 document.getElementById('playButton').addEventListener('click', async () => {
@@ -185,7 +185,7 @@ document.getElementById('playButton').addEventListener('click', async () => {
 
 document.getElementById('stopButton').addEventListener('click', () => {
     isPlaying = false;
-isMidiPlayback = false;
+    isMidiPlayback = false;
     // 停止所有正在播放的音频源
     activeSources.forEach(source => {
         if (source.state === 'playing') {
@@ -227,27 +227,27 @@ function clearTimeouts() {
 }
 
 function activateKey(note, isFromMidi = false) {
-        if (activeKeys.has(note)) return;
-        activeKeys.add(note);
-        
-        const key = document.querySelector(`[data-note="${note}"]`);
-        if (!key) return;
+    if (activeKeys.has(note)) return;
+    activeKeys.add(note);
 
-        // 添加active类（按下效果）
-        key.classList.add('active');
+    const key = document.querySelector(`[data-note="${note}"]`);
+    if (!key) return;
 
-        // 创建丝带效果
-        createRibbon(note, key);
+    // 添加active类（按下效果）
+    key.classList.add('active');
+
+    // 创建丝带效果
+    createRibbon(note, key);
     if (!isFromMidi) {
         playNote(note);
     }
-    }
+}
 
-    function deactivateKey(note) {
-        activeKeys.delete(note);
-        const key = document.querySelector(`[data-note="${note}"]`);
-        key?.classList.remove('active');
-    }
+function deactivateKey(note) {
+    activeKeys.delete(note);
+    const key = document.querySelector(`[data-note="${note}"]`);
+    key?.classList.remove('active');
+}
 
 
 async function preloadAllNotes() {
@@ -274,7 +274,7 @@ async function preloadAllNotes() {
 // 轮播字幕配置
 // 轮播字幕配置
 const marqueeTexts = [
-    "欢迎使用夸客博客在线钢琴",
+    "欢迎使用夸克博客在线钢琴",
     "可选音乐播放，支持上传本地MIDI文件",
     "初次加载较慢，建议等待一段时间再播放音乐",
     "点击琴键或使用键盘演奏",
@@ -322,7 +322,7 @@ function startMarquee() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-     startMarquee();
+    startMarquee();
     const pianoKeys = document.getElementById('pianoKeys');
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const WHITE_KEY_WIDTH = 40;
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let note = 0; note < 88; note++) {
             const isBlack = [1, 3, 6, 8, 10].includes(note % 12);
-            
+
             if (!isBlack) {
                 createWhiteKey(note, whiteKeyCount);
                 whiteKeyCount++;
@@ -354,44 +354,44 @@ document.addEventListener('DOMContentLoaded', () => {
         key.className = 'key white-key';
         key.style.left = `${position * WHITE_KEY_WIDTH}px`;
         key.dataset.note = note;
-        
+
         const label = document.createElement('div');
         label.className = 'key-label';
         label.textContent = getKeyLabel(note);
         key.appendChild(label);
-        
+
         pianoKeys.appendChild(key);
     }
 
     function createBlackKey(note) {
         const key = document.createElement('div');
         key.className = 'key black-key';
-        
+
         // 计算黑键位置
         const referenceNote = note - (note % 12);
         const basePosition = Math.floor(referenceNote / 12) * 7;
-        const offsetMap = {1:1, 3:2, 6:4, 8:5, 10:6};
+        const offsetMap = { 1: 1, 3: 2, 6: 4, 8: 5, 10: 6 };
         const position = basePosition + offsetMap[note % 12];
-        
-        key.style.left = `${position * WHITE_KEY_WIDTH - BLACK_KEY_WIDTH/2}px`;
+
+        key.style.left = `${position * WHITE_KEY_WIDTH - BLACK_KEY_WIDTH / 2}px`;
         key.dataset.note = note;
-        
+
         const label = document.createElement('div');
         label.className = 'key-label';
         label.textContent = getKeyLabel(note);
         key.appendChild(label);
-        
+
         pianoKeys.appendChild(key);
     }
 
     // 修正音名标签计算
-function getKeyLabel(note) {
-    const midiNumber = note + 24; // 直接对应MIDI编号21（A0）
-    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    const octave = Math.floor((midiNumber) / 12) - 1;
-    const noteIndex = midiNumber % 12;
-    return notes[noteIndex] + octave;
-}
+    function getKeyLabel(note) {
+        const midiNumber = note + 24; // 直接对应MIDI编号21（A0）
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octave = Math.floor((midiNumber) / 12) - 1;
+        const noteIndex = midiNumber % 12;
+        return notes[noteIndex] + octave;
+    }
 
     // 播放声音
 
@@ -447,37 +447,37 @@ function getKeyLabel(note) {
 
     // 初始化
     createPiano();
- loadMusicList();
-preloadAllNotes();
-// 新增：处理上传的MIDI文件
-document.getElementById('uploadPlayButton').addEventListener('click', () => {
-    // 创建隐藏的文件输入元素
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.mid,.midi';
-    
-    fileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    loadMusicList();
+    preloadAllNotes();
+    // 新增：处理上传的MIDI文件
+    document.getElementById('uploadPlayButton').addEventListener('click', () => {
+        // 创建隐藏的文件输入元素
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.mid,.midi';
 
-        // 先执行停止操作
-        document.getElementById('stopButton').click();
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const midi = await new Midi(arrayBuffer);
-            scheduleNotes(midi.tracks);
-            isPlaying = true;
-        } catch (error) {
-            console.error('上传文件播放失败:', error);
-            isPlaying = false;
-        }
+            // 先执行停止操作
+            document.getElementById('stopButton').click();
+
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const midi = await new Midi(arrayBuffer);
+                scheduleNotes(midi.tracks);
+                isPlaying = true;
+            } catch (error) {
+                console.error('上传文件播放失败:', error);
+                isPlaying = false;
+            }
+        });
+
+        fileInput.click();
     });
-
-    fileInput.click();
-});
 });
