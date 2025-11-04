@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OGAS - 全苏自动化系统</title>
+    <style>
+        :root {
+            --primary: #b71c1c;
+            --secondary: #0d47a1;
+            --accent: #ffd600;
+            --dark: #121212;
+            --light: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 头部样式 */
+        header {
+            background: linear-gradient(to bottom, rgba(18, 18, 18, 0.9), transparent);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        header.scrolled {
+            background-color: rgba(18, 18, 18, 0.95);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 30%, var(--accent) 70%);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 0.7; }
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .logo-text span {
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+        
+        nav ul li a::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        /* 英雄区域 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(183, 28, 28, 0.1), transparent 50%),
+                        radial-gradient(circle at 70% 20%, rgba(13, 71, 161, 0.1), transparent 50%);
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .hero h1 span {
+            color: var(--primary);
+            display: block;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--light);
+            padding: 12px 30px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+        }
+        
+        .cta-button:hover {
+            background-color: transparent;
+            color: var(--primary);
+        }
+        
+        .network-visualization {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.7;
+        }
+        
+        /* 关于部分 */
+        .about {
+            padding: 100px 0;
+            background-color: rgba(13, 71, 161, 0.05);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+        }
+        
+        .about-visual {
+            flex: 1;
+            height: 400px;
+            background: linear-gradient(45deg, var(--dark), var(--secondary));
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        
+        .connection {
+            position: absolute;
+            height: 2px;
+            background-color: rgba(255, 214, 0, 0.3);
+            transform-origin: left center;
+        }
+        
+        /* 功能部分 */
+        .features {
+            padding: 100px 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--primary);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(183, 28, 28, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        /* 系统状态 */
+        .system-status {
+            padding: 100px 0;
+            background-color: rgba(13, 71, 161, 0.05);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .status-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 10px #4caf50;
+        }
+        
+        .status-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        /* 页脚 */
+        footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column ul li a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                margin-top: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .network-visualization {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header id="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L13.09 8.26L20 9L14.55 13.47L16.18 20L12 16.77L7.82 20L9.45 13.47L4 9L10.91 8.26L12 2Z" fill="#FFD600"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">OGAS<span>系统</span></div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#about">系统概述</a></li>
+                        <li><a href="#features">核心功能</a></li>
+                        <li><a href="#status">系统状态</a></li>
+                        <li><a href="#contact">联系我们</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>全苏自动化<span>系统</span></h1>
+                <p>OGAS（全苏自动化系统）是苏联时期提出的全国性计算机网络系统构想，旨在实现经济管理的全面自动化与最优化，构建社会主义信息社会的技术基础。</p>
+                <a href="#about" class="cta-button">探索系统</a>
+            </div>
+        </div>
+        <div class="network-visualization" id="network"></div>
+    </section>
+
+    <!-- 关于部分 -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>系统概述</h2>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>革命性的国家网络构想</h3>
+                    <p>OGAS（全苏自动化系统）是20世纪60年代苏联科学家提出的宏伟计划，旨在建立一个覆盖全国的三级计算机网络系统，实现经济数据的实时收集、处理与分析。</p>
+                    <p>该系统构想包括中央计算中心、共和国级计算中心和地区级计算中心，通过统一的信息交换协议连接，形成全国性的信息基础设施。</p>
+                    <p>OGAS不仅是技术项目，更是对社会主义经济管理方式的根本性革新，试图通过信息技术实现经济计划的最优化与自动化。</p>
+                </div>
+                <div class="about-visual" id="network-visual"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能部分 -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>核心功能</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M19.4 15C19.2669 15.9247 18.962 16.8166 18.5 17.6332C18.038 18.4497 17.4273 19.1748 16.7 19.7667C15.9727 20.3585 15.1423 20.8055 14.2543 21.0833C13.3663 21.3611 12.4366 21.4645 11.5123 21.388C10.588 21.3115 9.68656 21.0566 8.85431 20.6367C8.02206 20.2168 7.27452 19.6395 6.65 18.9367C6.02548 18.2338 5.53574 17.4184 5.205 16.5341C4.87426 15.6498 4.7087 14.7125 4.71667 13.7683C4.72463 12.8242 4.906 11.8905 5.25167 11.0133C5.59733 10.1362 6.10067 9.33105 6.73333 8.64167" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 4.5835V0.916504" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17.8333 6.1665L20.1666 3.83317" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M4.58325 12H0.916504" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M6.16675 6.1665L3.83341 3.83317" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>实时数据收集</h3>
+                    <p>通过遍布全国的数据采集点，实时收集经济生产、资源分配与消费数据，形成完整的国民经济信息图谱。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 3H19C19.2652 3 19.5196 3.10536 19.7071 3.29289C19.8946 3.48043 20 3.73478 20 4V20C20 20.2652 19.8946 20.5196 19.7071 20.7071C19.5196 20.8946 19.2652 21 19 21H5C4.73478 21 4.48043 20.8946 4.29289 20.7071C4.10536 20.5196 4 20.2652 4 20V4C4 3.73478 4.10536 3.48043 4.29289 3.29289C4.48043 3.10536 4.73478 3 5 3H12Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>经济计划优化</h3>
+                    <p>利用先进的数学建模与优化算法，对国民经济计划进行动态调整与优化，实现资源的最优配置。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 10H8.01M12 10H12.01M16 10H16.01M6 16H18C18.5304 16 19.0391 15.7893 19.4142 15.4142C19.7893 15.0391 20 14.5304 20 14V6C20 5.46957 19.7893 4.96086 19.4142 4.58579C19.0391 4.21071 18.5304 4 18 4H6C5.46957 4 4.96086 4.21071 4.58579 4.58579C4.21071 4.96086 4 5.46957 4 6V14C4 14.5304 4.21071 15.0391 4.58579 15.4142C4.96086 15.7893 5.46957 16 6 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>决策支持系统</h3>
+                    <p>为各级经济管理机构提供基于数据的决策支持，提高经济管理的科学性与效率。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 系统状态 -->
+    <section class="system-status" id="status">
+        <div class="container">
+            <div class="section-title">
+                <h2>系统状态</h2>
+            </div>
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="status-indicator"></div>
+                    <h3>网络节点</h3>
+                    <div class="status-value" id="node-count">0</div>
+                    <p>在线节点数量</p>
+                </div>
+                <div class="status-card">
+                    <div class="status-indicator"></div>
+                    <h3>数据处理</h3>
+                    <div class="status-value" id="data-processed">0</div>
+                    <p>TB/日处理量</p>
+                </div>
+                <div class="status-card">
+                    <div class="status-indicator"></div>
+                    <h3>系统响应</h3>
+                    <div class="status-value" id="response-time">0</div>
+                    <p>毫秒平均响应</p>
+                </div>
+                <div class="status-card">
+                    <div class="status-indicator"></div>
+                    <h3>经济模型</h3>
+                    <div class="status-value" id="model-count">0</div>
+                    <p>活跃模型数量</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>OGAS系统</h3>
+                    <p>全苏自动化系统是苏联信息技术史上的重要构想，代表了社会主义科技发展的宏伟蓝图。</p>
+                </div>
+                <div class="footer-column">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="#about">系统概述</a></li>
+                        <li><a href="#features">核心功能</a></li>
+                        <li><a href="#status">系统状态</a></li>
+                        <li><a href="#contact">联系我们</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>联系我们</h3>
+                    <ul>
+                        <li>莫斯科中心计算站</li>
+                        <li>信息: info@ogas-system.su</li>
+                        <li>技术支持: support@ogas-system.su</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 1970-2023 全苏自动化系统 | 本网站为历史构想模拟展示</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 头部滚动效果
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // 创建网络可视化
+        function createNetworkVisualization() {
+            const container = document.getElementById('network');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // 创建节点
+            for (let i = 0; i < 50; i++) {
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.style.left = `${Math.random() * width}px`;
+                node.style.top = `${Math.random() * height}px`;
+                container.appendChild(node);
+                
+                // 添加脉动效果
+                node.style.animation = `pulse ${2 + Math.random() * 3}s infinite`;
+            }
+            
+            // 创建连接线
+            for (let i = 0; i < 30; i++) {
+                const connection = document.createElement('div');
+                connection.className = 'connection';
+                
+                const startX = Math.random() * width;
+                const startY = Math.random() * height;
+                const endX = Math.random() * width;
+                const endY = Math.random() * height;
+                
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                connection.style.width = `${length}px`;
+                connection.style.left = `${startX}px`;
+                connection.style.top = `${startY}px`;
+                connection.style.transform = `rotate(${angle}deg)`;
+                
+                container.appendChild(connection);
+            }
+        }
+
+        // 创建关于部分的网络可视化
+        function createAboutNetwork() {
+            const container = document.getElementById('network-visual');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // 创建中心节点
+            const centerNode = document.createElement('div');
+            centerNode.className = 'node';
+            centerNode.style.left = '50%';
+            centerNode.style.top = '50%';
+            centerNode.style.transform = 'translate(-50%, -50%)';
+            centerNode.style.width = '20px';
+            centerNode.style.height = '20px';
+            container.appendChild(centerNode);
+            
+            // 创建外围节点
+            const nodeCount = 12;
+            for (let i = 0; i < nodeCount; i++) {
+                const angle = (i / nodeCount) * 2 * Math.PI;
+                const radius = Math.min(width, height) * 0.35;
+                
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.style.left = `calc(50% + ${radius * Math.cos(angle)}px)`;
+                node.style.top = `calc(50% + ${radius * Math.sin(angle)}px)`;
+                container.appendChild(node);
+                
+                // 创建连接线
+                const connection = document.createElement('div');
+                connection.className = 'connection';
+                
+                const startX = width / 2;
+                const startY = height / 2;
+                const endX = width / 2 + radius * Math.cos(angle);
+                const endY = height / 2 + radius * Math.sin(angle);
+                
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angleDeg = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                connection.style.width = `${length}px`;
+                connection.style.left = `${startX}px`;
+                connection.style.top = `${startY}px`;
+                connection.style.transform = `rotate(${angleDeg}deg)`;
+                
+                container.appendChild(connection);
+            }
+        }
+
+        // 系统状态计数动画
+        function animateCounters() {
+            const nodeCount = document.getElementById('node-count');
+            const dataProcessed = document.getElementById('data-processed');
+            const responseTime = document.getElementById('response-time');
+            const modelCount = document.getElementById('model-count');
+            
+            animateValue(nodeCount, 0, 247, 2000);
+            animateValue(dataProcessed, 0, 15.7, 2000);
+            animateValue(responseTime, 0, 42, 2000);
+            animateValue(modelCount, 0, 128, 2000);
+        }
+        
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.innerHTML = value;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            createNetworkVisualization();
+            createAboutNetwork();
+            animateCounters();
+        });
+    </script>
+</body>
+</html>
