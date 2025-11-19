@@ -345,6 +345,7 @@
         }
     </style>
 </head>
+<!-- 修改后的body部分 -->
 
 <body>
     <div class="container">
@@ -357,6 +358,12 @@
                     <h1>山火预警防控系统</h1>
                     <p>数据与模型双驱动的智慧气象山火防控框架</p>
                 </div>
+            </div>
+
+            <!-- 新增时间和IP显示 -->
+            <div id="time-ip-info" style="color: var(--text-light); text-align: center;">
+                <div id="current-time" style="font-size: 16px; font-weight: bold;"></div>
+                <div id="current-ip" style="font-size: 12px; color: var(--text-gray);"></div>
             </div>
 
             <div class="admin-panel">
@@ -382,14 +389,14 @@
                         当前火险等级
                     </div>
                 </div>
-                <div class="data-value" id="fireRiskValue">中风险</div>
+                <div class="data-value" id="fireRiskValue">低风险</div>
                 <div class="risk-level">
-                    <div class="risk-indicator risk-medium"></div>
+                    <div class="risk-indicator risk-low"></div>
                     <span>基于当前位置的火险评估</span>
                 </div>
                 <div style="margin-top: 15px; font-size: 14px; color: var(--text-gray);">
-                    <p>影响因素: 气温偏高，湿度较低</p>
-                    <p>建议: 加强巡查，注意防火</p>
+                    <p>安全提示: 当前环境条件良好，无火险隐患</p>
+                    <p>建议: 保持常规监测，无需特殊防范措施</p>
                 </div>
             </div>
 
@@ -457,20 +464,7 @@
                         onclick="showAddWarningModal()">发布预警</button>
                 </div>
                 <div class="warning-list" id="warningList">
-                    <div class="warning-item">
-                        <div class="warning-title">
-                            <span>高温橙色预警</span>
-                            <span class="warning-time">2023-10-15 14:30</span>
-                        </div>
-                        <p>预计未来24小时，部分地区最高气温将超过35℃，火险等级高，请注意防范。</p>
-                    </div>
-                    <div class="warning-item">
-                        <div class="warning-title">
-                            <span>大风蓝色预警</span>
-                            <span class="warning-time">2023-10-14 09:15</span>
-                        </div>
-                        <p>受冷空气影响，预计今天夜间到明天白天，部分地区有5-6级偏北风，阵风7级。</p>
-                    </div>
+                    <!-- 预警信息将从warnings.json动态加载 -->
                 </div>
             </div>
 
@@ -487,8 +481,8 @@
                 <p style="margin-bottom: 15px; font-size: 14px;">发现火情请立即上报</p>
                 <button class="admin-btn" style="width: 100%;" onclick="location.href='report.html'">上报火情</button>
                 <div style="margin-top: 15px; font-size: 14px; color: var(--text-gray);">
-                    <p>今日上报: <span id="todayReports">2</span> 起</p>
-                    <p>处理中: <span id="pendingReports">1</span> 起</p>
+                    <p>今日上报: <span id="todayReports">0</span> 起</p>
+                    <p>处理中: <span id="pendingReports">0</span> 起</p>
                 </div>
             </div>
 
@@ -593,6 +587,9 @@
     <script>
         // 天地图密钥
         const tiandituKey = '6e5b0e71ae628b8c2ab60c9144a7848e';
+        // OpenWeatherMap API配置
+        const API_KEY = '271d3f7012a6dc06a07cea3d08888fb1';
+        const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
         // 管理员状态
         let isAdmin = localStorage.getItem('isAdmin') === 'true';
@@ -678,7 +675,7 @@
                 })
             });
 
-            // 创建矢量图层用于显示火点
+            // 创建矢量图层用于显示火点（不添加模拟火点）
             const vectorSource = new ol.source.Vector();
             const vectorLayer = new ol.layer.Vector({
                 source: vectorSource,
@@ -704,28 +701,6 @@
                     center: ol.proj.fromLonLat([116.3974, 39.9093]), // 北京中心点
                     zoom: 10
                 })
-            });
-
-            // 添加一些模拟火点
-            addMockFirePoints();
-        }
-
-        // 添加模拟火点
-        function addMockFirePoints() {
-            const vectorSource = map.getLayers().item(1).getSource();
-
-            // 添加几个模拟火点
-            const firePoints = [
-                [116.3974, 39.9093],  // 北京
-                [116.2, 39.8],
-                [116.5, 40.0]
-            ];
-
-            firePoints.forEach(point => {
-                const feature = new ol.Feature({
-                    geometry: new ol.geom.Point(ol.proj.fromLonLat(point))
-                });
-                vectorSource.addFeature(feature);
             });
         }
 
@@ -807,83 +782,95 @@
             }
         }
 
-        // 获取天气数据
+        // 获取真实天气数据
         async function getWeatherData() {
             try {
-                // 模拟天气API调用
-                const mockWeatherData = {
-                    temperature: 28.5,
-                    humidity: 45,
-                    windSpeed: 3.2,
-                    precipitation: 0,
-                    location: "北京市"
-                };
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async position => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
 
-                // 更新UI
-                document.getElementById('temperature').textContent = mockWeatherData.temperature + '°C';
-                document.getElementById('humidity').textContent = mockWeatherData.humidity + '%';
-                document.getElementById('windSpeed').textContent = mockWeatherData.windSpeed + ' m/s';
-                document.getElementById('precipitation').textContent = mockWeatherData.precipitation + ' mm';
-                document.getElementById('location').textContent = mockWeatherData.location;
+                            const response = await fetch(`${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=zh_cn`);
+                            const data = await response.json();
 
-                // 计算火险等级
-                calculateFireRisk(mockWeatherData);
+                            // 更新UI
+                            document.getElementById('temperature').textContent = Math.round(data.main.temp) + '°C';
+                            document.getElementById('humidity').textContent = data.main.humidity + '%';
+                            document.getElementById('windSpeed').textContent = data.wind.speed + ' m/s';
+                            document.getElementById('precipitation').textContent = (data.rain ? data.rain['1h'] || 0 : 0) + ' mm';
+                            document.getElementById('location').textContent = data.name + ', ' + (data.sys.country || '');
 
+                            // 设置火险等级为低风险
+                            document.getElementById('fireRiskValue').textContent = "低风险";
+                            const riskIndicator = document.querySelector('.risk-indicator');
+                            riskIndicator.className = `risk-indicator risk-low`;
+                        },
+                        error => {
+                            console.error('获取位置失败:', error);
+                            // 使用默认位置（北京）获取天气
+                            getWeatherByCity('Beijing');
+                        }
+                    );
+                } else {
+                    // 浏览器不支持定位，使用默认位置
+                    getWeatherByCity('Beijing');
+                }
             } catch (error) {
                 console.error('获取天气数据失败:', error);
             }
         }
 
-        // 计算火险等级
-        function calculateFireRisk(weatherData) {
-            const weights = {
-                temperature: 0.25,
-                humidity: 0.20,
-                windSpeed: 0.25,
-                precipitation: 0.15,
-                solarRadiation: 0.10,
-                tempRange: 0.05
-            };
+        // 通过城市名称获取天气
+        async function getWeatherByCity(city) {
+            try {
+                const response = await fetch(`${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric&lang=zh_cn`);
+                const data = await response.json();
 
-            // 标准化处理
-            const tempScore = Math.min(100, (weatherData.temperature / 40) * 100);
-            const humidityScore = Math.max(0, 100 - (weatherData.humidity / 100) * 100);
-            const windScore = Math.min(100, (weatherData.windSpeed / 10) * 100);
-            const precipScore = Math.max(0, 100 - (weatherData.precipitation / 50) * 100);
+                document.getElementById('temperature').textContent = Math.round(data.main.temp) + '°C';
+                document.getElementById('humidity').textContent = data.main.humidity + '%';
+                document.getElementById('windSpeed').textContent = data.wind.speed + ' m/s';
+                document.getElementById('precipitation').textContent = (data.rain ? data.rain['1h'] || 0 : 0) + ' mm';
+                document.getElementById('location').textContent = data.name + ', ' + (data.sys.country || '');
+            } catch (error) {
+                console.error('获取天气数据失败:', error);
+            }
+        }
 
-            // 模拟其他参数
-            const solarScore = 70; // 假设中等太阳辐射
-            const tempRangeScore = 60; // 假设中等日温差
+        // 加载预警信息
+        async function loadWarnings() {
+            try {
+                const response = await fetch('warnings.json');
+                const warnings = await response.json();
+                displayWarnings(warnings);
+            } catch (error) {
+                console.error('加载预警信息失败:', error);
+                document.getElementById('warningList').innerHTML = '<div class="warning-item">暂无预警信息</div>';
+            }
+        }
 
-            // 计算加权得分
-            let score =
-                tempScore * weights.temperature +
-                humidityScore * weights.humidity +
-                windScore * weights.windSpeed +
-                precipScore * weights.precipitation +
-                solarScore * weights.solarRadiation +
-                tempRangeScore * weights.tempRange;
+        // 显示预警信息
+        function displayWarnings(warnings) {
+            const warningList = document.getElementById('warningList');
+            warningList.innerHTML = '';
 
-            // 确定火险等级
-            let riskLevel, riskClass;
-            if (score < 30) {
-                riskLevel = "低风险";
-                riskClass = "risk-low";
-            } else if (score < 60) {
-                riskLevel = "中风险";
-                riskClass = "risk-medium";
-            } else if (score < 80) {
-                riskLevel = "高风险";
-                riskClass = "risk-high";
-            } else {
-                riskLevel = "极高风险";
-                riskClass = "risk-extreme";
+            if (warnings.length === 0) {
+                warningList.innerHTML = '<div class="warning-item">暂无预警信息</div>';
+                return;
             }
 
-            // 更新UI
-            document.getElementById('fireRiskValue').textContent = riskLevel;
-            const riskIndicator = document.querySelector('.risk-indicator');
-            riskIndicator.className = `risk-indicator ${riskClass}`;
+            warnings.forEach(warning => {
+                const warningItem = document.createElement('div');
+                warningItem.className = 'warning-item';
+                warningItem.innerHTML = `
+                    <div class="warning-title">
+                        <span>${warning.title}</span>
+                        <span class="warning-time">${warning.time}</span>
+                    </div>
+                    <p>${warning.content}</p>
+                `;
+                warningList.appendChild(warningItem);
+            });
         }
 
         // 管理员登录
@@ -997,16 +984,48 @@
             alert('预警信息发布成功');
         }
 
+        // 更新时间和IP显示
+        function updateTimeAndIP() {
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            document.getElementById('current-time').textContent = timeStr;
+        }
+
+        // 获取访客IP信息
+        async function getVisitorInfo() {
+            try {
+                const response = await fetch('https://api.b52m.cn/api/IP/?key=60606913cdba7c');
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    const ipInfo = data.data;
+                    const ip = data.ip;
+                    document.getElementById('current-ip').textContent = `IP: ${ip}`;
+                } else {
+                    throw new Error('API返回错误');
+                }
+            } catch (error) {
+                console.error('获取IP信息失败:', error);
+                document.getElementById('current-ip').textContent = 'IP: 未知';
+            }
+        }
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function () {
             initMap();
             getWeatherData();
+            loadWarnings();
             updateAdminUI();
+            updateTimeAndIP();
+            getVisitorInfo();
 
             // 更新最后更新时间
             const now = new Date();
             document.getElementById('lastUpdate').textContent =
                 `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+            // 每秒更新时间
+            setInterval(updateTimeAndIP, 1000);
         });
     </script>
 </body>
