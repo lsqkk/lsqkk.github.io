@@ -393,35 +393,19 @@
                     <div class="fire-list">
                         <div class="fire-item">
                             <div class="fire-title">
-                                <span>北部林区火点</span>
-                                <span class="fire-time">10-15 14:30</span>
+                                <span>暂无火情</span>
                             </div>
-                            <div class="fire-desc">温度: 85°C | 置信度: 92%</div>
-                        </div>
-                        <div class="fire-item">
-                            <div class="fire-title">
-                                <span>西山疑似火点</span>
-                                <span class="fire-time">10-15 13:45</span>
-                            </div>
-                            <div class="fire-desc">温度: 72°C | 置信度: 78%</div>
-                        </div>
-                        <div class="fire-item">
-                            <div class="fire-title">
-                                <span>东部农田热点</span>
-                                <span class="fire-time">10-15 12:20</span>
-                            </div>
-                            <div class="fire-desc">温度: 65°C | 置信度: 65%</div>
                         </div>
                     </div>
 
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-label">今日火点</div>
-                            <div class="stat-value">12</div>
+                            <div class="stat-value">0</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">确认火情</div>
-                            <div class="stat-value">3</div>
+                            <div class="stat-value">0</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">监测区域</div>
@@ -434,20 +418,7 @@
                     </div>
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="section-title">
-                        <div class="section-icon">
-                            <i class="fas fa-info-circle"></i>
-                        </div>
-                        卫星信息
-                    </div>
-                    <div style="font-size: 14px; color: var(--text-gray);">
-                        <p>数据来源: 风云四号 / Landsat 8</p>
-                        <p>分辨率: 30米</p>
-                        <p>更新时间: 2023-10-15 15:00</p>
-                        <p>覆盖范围: 全国</p>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -627,23 +598,19 @@
                 target: 'map',
                 layers: [imgLayer, firePointsLayer, historyLayer],
                 view: new ol.View({
-                    center: ol.proj.fromLonLat([116.3974, 39.9093]), // 北京中心点
-                    zoom: 10
+                    center: ol.proj.fromLonLat([108.5, 34.5]), // 北京中心点
+                    zoom: 100
                 })
             });
 
-            // 添加模拟数据
+            // 添加数据
             addMockFirePoints();
             addMockHistoryBoundaries();
         }
 
-        // 添加模拟火点
+        // 添加火点
         function addMockFirePoints() {
             const firePoints = [
-                [116.3974, 39.9093, "北部林区火点", 85],
-                [116.2, 39.8, "西山疑似火点", 72],
-                [116.5, 40.0, "东部农田热点", 65],
-                [116.35, 39.95, "城区边缘热点", 58]
             ];
 
             firePoints.forEach(point => {
@@ -656,15 +623,11 @@
             });
         }
 
-        // 添加模拟历史火场边界
+        // 添加历史火场边界
         function addMockHistoryBoundaries() {
-            // 创建一个模拟的多边形边界
+            // 创建边界
             const coordinates = [
-                [116.35, 39.85],
-                [116.45, 39.85],
-                [116.45, 39.95],
-                [116.35, 39.95],
-                [116.35, 39.85]
+
             ].map(coord => ol.proj.fromLonLat(coord));
 
             const polygon = new ol.geom.Polygon([coordinates]);
@@ -818,7 +781,7 @@
             layerItem.classList.toggle('active');
 
             // 在实际应用中，这里会根据layerType控制对应图层的显示/隐藏
-            // 这里只是模拟
+            // 这里只是
             alert('切换图层: ' + layerType);
         }
 

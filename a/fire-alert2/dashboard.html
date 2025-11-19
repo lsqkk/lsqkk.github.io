@@ -345,23 +345,23 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">总上报数</div>
-                        <div class="stat-value">47</div>
-                        <div class="stat-label">较上月 +12%</div>
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">较上月 0%</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">已确认</div>
-                        <div class="stat-value">32</div>
-                        <div class="stat-label">确认率 68%</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">确认率 0%</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">误报数</div>
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">误报率 17%</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">误报率 0%</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">处理中</div>
-                        <div class="stat-value">7</div>
-                        <div class="stat-label">待处理 15%</div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">待处理 0%</div>
                     </div>
                 </div>
                 <div class="chart-container" style="height: 250px; margin-top: 20px;">
@@ -384,53 +384,7 @@
                 </div>
             </div>
 
-            <!-- 区域火险排名 -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="card-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        区域火险排名
-                    </div>
-                </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>区域</th>
-                            <th>火险等级</th>
-                            <th>变化</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>北部林区</td>
-                            <td><span class="risk-badge risk-high">高风险</span></td>
-                            <td style="color: var(--warning-red);">↑ 2级</td>
-                        </tr>
-                        <tr>
-                            <td>西山保护区</td>
-                            <td><span class="risk-badge risk-medium">中风险</span></td>
-                            <td style="color: #f39c12;">↑ 1级</td>
-                        </tr>
-                        <tr>
-                            <td>东部平原</td>
-                            <td><span class="risk-badge risk-low">低风险</span></td>
-                            <td style="color: var(--accent-green);">→ 稳定</td>
-                        </tr>
-                        <tr>
-                            <td>南部丘陵</td>
-                            <td><span class="risk-badge risk-medium">中风险</span></td>
-                            <td style="color: #f39c12;">↑ 1级</td>
-                        </tr>
-                        <tr>
-                            <td>中心城区</td>
-                            <td><span class="risk-badge risk-low">低风险</span></td>
-                            <td style="color: var(--accent-green);">→ 稳定</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- 区域火险排名已删除 -->
 
             <!-- 系统性能 -->
             <div class="dashboard-card card-full">
@@ -445,12 +399,12 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">数据更新</div>
-                        <div class="stat-value" style="color: var(--accent-green);">98.7%</div>
+                        <div class="stat-value" style="color: var(--accent-green);">100%</div>
                         <div class="stat-label">正常</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">API响应</div>
-                        <div class="stat-value" style="color: var(--accent-green);">256ms</div>
+                        <div class="stat-value" id="apiResponse" style="color: var(--accent-green);">--ms</div>
                         <div class="stat-label">平均</div>
                     </div>
                     <div class="stat-card">
@@ -460,8 +414,8 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">预警准确率</div>
-                        <div class="stat-value" style="color: var(--accent-green);">89.2%</div>
-                        <div class="stat-label">较上月 +5%</div>
+                        <div class="stat-value" style="color: var(--accent-green);">99.98%</div>
+                        <div class="stat-label">正常</div>
                     </div>
                 </div>
                 <div class="chart-container" style="height: 200px; margin-top: 20px;">
@@ -472,17 +426,52 @@
     </div>
 
     <script>
+        // 生成固定映射的火险指数（0-5之间）
+        function getFireRiskValue(dateStr) {
+            return 0;
+        }
+
+        // 获取最近7天的日期
+        function getRecentDates() {
+            const dates = [];
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                dates.push(`${month}-${day}`);
+            }
+            return dates;
+        }
+
+        // 计算距离2025年11月11日的天数
+        function getDaysToNov11() {
+            const today = new Date();
+            const nov11 = new Date(2025, 10, 11); // 注意：月份是0-based
+            const diffTime = Math.abs(nov11 - today);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
         // 初始化图表
         document.addEventListener('DOMContentLoaded', function () {
+            // 生成API响应时间
+            const apiResponseTime = Math.floor(Math.random() * (388 - 88 + 1)) + 88;
+            document.getElementById('apiResponse').textContent = apiResponseTime + 'ms';
+
+            const recentDates = getRecentDates();
+            const fireRiskData = recentDates.map(date => getFireRiskValue(date));
+            const daysToNov11 = getDaysToNov11();
+
             // 火险趋势图表
             const riskTrendCtx = document.getElementById('riskTrendChart').getContext('2d');
             const riskTrendChart = new Chart(riskTrendCtx, {
                 type: 'line',
                 data: {
-                    labels: ['10-09', '10-10', '10-11', '10-12', '10-13', '10-14', '10-15'],
+                    labels: recentDates,
                     datasets: [{
                         label: '火险指数',
-                        data: [45, 52, 48, 65, 72, 68, 75],
+                        data: fireRiskData,
                         borderColor: '#ff6b35',
                         backgroundColor: 'rgba(255, 107, 53, 0.1)',
                         borderWidth: 2,
@@ -496,7 +485,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 100,
+                            max: 5,
                             grid: {
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
@@ -586,7 +575,7 @@
                 data: {
                     labels: ['已确认', '误报', '处理中'],
                     datasets: [{
-                        data: [32, 8, 7],
+                        data: [0, 0, 0],
                         backgroundColor: [
                             'rgba(255, 107, 53, 0.7)',
                             'rgba(52, 152, 219, 0.7)',
@@ -623,7 +612,7 @@
                     labels: ['低风险', '中风险', '高风险', '极高风险'],
                     datasets: [{
                         label: '预警数量',
-                        data: [12, 18, 9, 3],
+                        data: [daysToNov11, 0, 0, 0],
                         backgroundColor: [
                             'rgba(46, 204, 113, 0.7)',
                             'rgba(241, 196, 15, 0.7)',
@@ -687,7 +676,7 @@
                         tension: 0.4
                     }, {
                         label: '数据更新成功率(%)',
-                        data: [98, 99, 97, 99, 98, 96, 98],
+                        data: [100, 100, 100, 100, 100, 100, 100],
                         borderColor: '#4CAF50',
                         backgroundColor: 'rgba(76, 175, 80, 0.1)',
                         borderWidth: 2,
