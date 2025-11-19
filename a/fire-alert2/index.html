@@ -538,7 +538,7 @@
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <div class="nav-title">火险预报</div>
-                <div class="nav-desc">火险等级预测与蔓延模拟</div>
+                <div class="nav-desc">火险等级预测与蔓延</div>
             </a>
 
             <a href="report.html" class="nav-card">
@@ -675,7 +675,7 @@
                 })
             });
 
-            // 创建矢量图层用于显示火点（不添加模拟火点）
+            // 创建矢量图层用于显示火点（不添加火点）
             const vectorSource = new ol.source.Vector();
             const vectorLayer = new ol.layer.Vector({
                 source: vectorSource,
@@ -1029,5 +1029,27 @@
         });
     </script>
 </body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+
+    $(document).ready(function () {
+
+
+        $(document).on('contextmenu', function (event) {
+
+
+            event.preventDefault();
+
+
+        });
+
+
+    });
+
+
+</script>
 
 </html>
