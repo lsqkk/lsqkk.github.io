@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/cursor.css">
     <script src="js/cursor-trail.js"></script>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .friend-link-item {
             display: flex;
@@ -122,23 +123,15 @@
                 <h1
                     style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;">
                     蓝色奇夸克</h1>
-                <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;">
-                    <a href="https://github.com/lsqkk" target="blank"><img
-                            src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png"
-                            style="height:30px; width:30px; border-radius: 50%;"></a>
-                    <a href="https://space.bilibili.com/2105459088" target="blank"><img
-                            src="https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png"
-                            style="height:30px; width:30px; border-radius: 50%;"></a>
-                    <a href="https://www.acfun.cn/u/76355091" target="blank"><img
-                            src="https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain"
-                            style="height:30px; width:30px; border-radius: 50%;"></a>
-                    <a href="https://tuxun.fun/user/852269" target="blank"><img
-                            src="https://b68res.daai.fun/tuxun/images/app/logo.png"
-                            style="height:30px; width:30px; border-radius: 50%;"></a>
+                <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"
+                    id="social-icons-container">
+                    <!-- 内容将由JS动态生成 -->
                 </div>
                 <h2 style="color: #333; text-align: center; margin-bottom: 20px;">欢迎来到我的博客</h2>
-                <p style="text-align: center; color: #555; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;">
-                    这里记录了我的学习历程、生活感悟和技术分享。</p>
+                <p style="text-align: center; color: #555; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;"
+                    id="welcome-text">
+                    <!-- 内容将由JS动态生成 -->
+                </p>
                 <div class="typewriter-container">
                     <div id="typewriter" class="typewriter" style="width: 100%; overflow: hidden;"></div>
                 </div>
@@ -170,12 +163,26 @@
                 <div class="index-divider"></div>
 
                 <div class="index-sidebar-section">
-                    <h3>最新功能</h3>
-                    <div class="index-feature-boxes">
-                        <div class="index-feature-box"><a href="tool/weather.html">天气查询</a></div>
-                        <div class="index-feature-box"><a href="tool/c0-md.html">Markdown协同编辑</a></div>
-                        <div class="index-feature-box"><a href="a/360">交大360°全景</a></div>
-                        <div class="index-feature-box"><a href="l">混淆网址生成</a></div>
+                    <div class="github-promo"
+                        style="text-align: center; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+                        <p style="margin: 0; font-size: 0.85em; color: #555; line-height: 1.4;">
+                            ✨ 这不是模板生成的项目<br>
+                            <a href="https://github.com/lsqkk/lsqkk.github.io" target="_blank"
+                                style="color: #0366d6; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
+                                <i class="fab fa-github" style="font-size: 1.1em;"></i>
+                                前往 Github 仓库
+                            </a><br>
+                            <span style="font-size: 0.8em; color: #888;">欢迎 Star 和 Fork 🌟</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="index-divider"></div>
+
+                <div class="index-sidebar-section">
+                    <h3>🆕 最新功能</h3>
+                    <div class="index-feature-boxes" id="features-container">
+                        <!-- 内容将由JS动态生成 -->
                     </div>
                     <div style="text-align: center; margin: 15px 0;"> <a href="log"
                             style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a></div>
@@ -184,22 +191,26 @@
                 <div class="index-divider"></div>
 
                 <div class="index-sidebar-section">
-                    <h3>站内公告</h3>
-                    <div class="index-announcement">
-                        <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>欢迎<a href="apk/QuarkBlog.apk"
-                                style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
+                    <h3>📢 站内公告</h3>
+                    <div class="index-announcement" id="announcement-container">
+                        <!-- 内容将由JS动态生成 -->
                     </div>
                 </div>
 
                 <div class="index-divider"></div>
 
                 <div class="index-sidebar-section">
-                    <h3>站主的航拍视频👇</h3>
-                    <div style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                        <iframe
-                            src="//player.bilibili.com/player.html?isOutside=true&aid=113146014473384&bvid=BV1qg4oe2EYt&cid=25659577971&p=1"
-                            scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"
-                            style="width:100%; aspect-ratio: 2 / 1;"></iframe>
+                    <h3>🎬 最新视频</h3>
+                    <div id="latest-video-container"
+                        style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="text-align: center; padding: 20px; color: #666;">
+                            视频加载中...
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin: 10px 0;">
+                        <a href="qtv" style="text-decoration: none; color: #007bff; font-size: 0.9em;">
+                            查看全部视频 →
+                        </a>
                     </div>
                 </div>
 

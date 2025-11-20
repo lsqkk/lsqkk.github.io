@@ -1,0 +1,47 @@
+{
+    "socialLinks": [
+        {
+            "url": "https://github.com/lsqkk",
+            "icon": "https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png",
+            "alt": "GitHub"
+        },
+        {
+            "url": "https://space.bilibili.com/2105459088",
+            "icon": "https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png",
+            "alt": "哔哩哔哩"
+        },
+        {
+            "url": "https://www.acfun.cn/u/76355091",
+            "icon": "https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain",
+            "alt": "AcFun"
+        },
+        {
+            "url": "https://tuxun.fun/user/852269",
+            "icon": "https://b68res.daai.fun/tuxun/images/app/logo.png",
+            "alt": "途讯"
+        }
+    ],
+    "welcomeText": "这里记录了我的学习历程、生活感悟和技术分享。",
+    "features": [
+        {
+            "name": "天气查询",
+            "url": "tool/weather.html"
+        },
+        {
+            "name": "Markdown协同编辑",
+            "url": "tool/c0-md.html"
+        },
+        {
+            "name": "交大360°全景",
+            "url": "a/360"
+        },
+        {
+            "name": "混淆网址生成",
+            "url": "l"
+        }
+    ],
+    "announcement": {
+        "title": "想要更方便的阅读博文、移动端获得更好的阅读体验？",
+        "content": "欢迎<a href=\"apk/QuarkBlog.apk\" style=\"color: #007bff; font-weight: bold;\">下载『夸克博客』APP</a>！"
+    }
+}

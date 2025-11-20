@@ -1105,3 +1105,48 @@ button {
     background-color: #7abd9a;
     color: white;
 }
+
+/* 添加社交图标悬停效果 */
+/* 社交图标悬停效果 - 修复版本 */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.social-icons a {
+    display: inline-block;
+    border-radius: 50%;
+    padding: 0;
+    /* 移除内边距 */
+    background: transparent;
+    /* 透明背景 */
+}
+
+.social-icons img {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* 默认阴影 */
+}
+
+.social-icons a:hover img {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* GitHub 推广链接样式 只有主页用*/
+.github-promo a {
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.github-promo a:hover {
+    background: rgba(3, 102, 214, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(3, 102, 214, 0.2);
+}

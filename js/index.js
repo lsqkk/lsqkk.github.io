@@ -1,16 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.main-content').style.opacity = '1';
     loadRecentPosts(); // 加载文章
-
-    // 为社交图标添加悬停效果
-    document.querySelectorAll('.social-icons a').forEach(icon => {
-        icon.addEventListener('mouseover', () => {
-            icon.style.transform = 'translateY(-3px)';
-        });
-        icon.addEventListener('mouseout', () => {
-            icon.style.transform = 'none';
-        });
-    });
+    loadHomeConfig();
 
     // 为导航盒子添加悬停效果
     document.querySelectorAll('.index-feature-box').forEach(box => {
@@ -375,6 +366,131 @@ function renderDynamicEntries(entries) {
     `).join('');
 }
 
+
+// 加载最新视频
+async function loadLatestVideo() {
+    try {
+        const uid = '2105459088'; // 您的B站UID
+        const apiUrl = 'https://uapis.cn/api/v1/social/bilibili/archives';
+
+        const params = new URLSearchParams({
+            mid: uid,
+            pn: '1',
+            ps: '1', // 只获取最新1个视频
+            orderby: 'pubdate'
+        });
+
+        const response = await fetch(`${apiUrl}?${params}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.videos && data.videos.length > 0) {
+            const latestVideo = data.videos[0];
+            renderLatestVideo(latestVideo);
+        } else {
+            throw new Error('No videos found');
+        }
+    } catch (error) {
+        console.error('加载最新视频失败:', error);
+        document.getElementById('latest-video-container').innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #999;">
+                视频加载失败
+            </div>
+        `;
+    }
+}
+
+// 渲染最新视频
+function renderLatestVideo(video) {
+    const container = document.getElementById('latest-video-container');
+
+    // 使用图片代理服务解决防盗链问题
+    const proxyCoverUrl = `https://images.weserv.nl/?url=${encodeURIComponent(video.cover)}&w=320&h=180`;
+
+    // 格式化播放量
+    const playCount = formatVideoCount(video.play_count);
+    // 格式化发布时间
+    const publishTime = formatVideoTime(video.publish_time);
+
+    container.innerHTML = `
+        <div class="latest-video-card" style="cursor: pointer; transition: all 0.3s ease;">
+            <div style="position: relative;">
+                <img src="${proxyCoverUrl}" 
+                     alt="${video.title}" 
+                     style="width: 100%; height: auto; border-radius: 8px 8px 0 0;"
+                     onerror="this.src='https://via.placeholder.com/320x180/1e88e5/ffffff?text=封面加载中'">
+                <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">
+                    ${formatVideoDuration(video.duration)}
+                </div>
+            </div>
+            <div style="padding: 12px; background: white; border-radius: 0 0 8px 8px;">
+                <h4 style="margin: 0 0 8px 0; font-size: 0.95em; line-height: 1.4; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    ${video.title}
+                </h4>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666;">
+                    <span>播放: ${playCount}</span>
+                    <span>${publishTime}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 添加点击事件，跳转到B站视频页面
+    container.querySelector('.latest-video-card').addEventListener('click', () => {
+        window.open(`https://www.bilibili.com/video/${video.bvid}`, '_blank');
+    });
+
+    // 添加悬停效果
+    const videoCard = container.querySelector('.latest-video-card');
+    videoCard.addEventListener('mouseover', () => {
+        videoCard.style.transform = 'translateY(-3px)';
+        videoCard.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+    });
+    videoCard.addEventListener('mouseout', () => {
+        videoCard.style.transform = 'none';
+        videoCard.style.boxShadow = 'none';
+    });
+}
+
+// 格式化视频时长（秒 -> MM:SS）
+function formatVideoDuration(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// 格式化视频播放量
+function formatVideoCount(count) {
+    if (count >= 100000000) {
+        return (count / 100000000).toFixed(1) + '亿';
+    } else if (count >= 10000) {
+        return (count / 10000).toFixed(1) + '万';
+    }
+    return count;
+}
+
+// 格式化视频发布时间
+function formatVideoTime(timestamp) {
+    const date = new Date(timestamp * 1000);
+    const now = new Date();
+    const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+    if (diff === 0) {
+        return '今天';
+    } else if (diff === 1) {
+        return '昨天';
+    } else if (diff < 7) {
+        return `${diff}天前`;
+    } else if (diff < 30) {
+        return `${Math.floor(diff / 7)}周前`;
+    } else {
+        return `${date.getMonth() + 1}-${date.getDate()}`;
+    }
+}
 // 加载最近留言
 async function loadRecentMessages() {
     try {
@@ -503,9 +619,94 @@ function displayFriendLinks(friends) {
 }
 
 
+// 加载主页配置数据
+async function loadHomeConfig() {
+    try {
+        const response = await fetch('/json/index.json');
+        const config = await response.json();
+        renderHomeConfig(config);
+    } catch (error) {
+        console.error('加载主页配置失败:', error);
+        // 设置默认内容
+        setDefaultContent();
+    }
+}
+
+// 渲染主页配置
+function renderHomeConfig(config) {
+    // 渲染社交链接
+    const socialContainer = document.getElementById('social-icons-container');
+    socialContainer.innerHTML = config.socialLinks.map(link => `
+        <a href="${link.url}" target="_blank">
+            <img src="${link.icon}" alt="${link.alt}" 
+                 style="height:30px; width:30px; border-radius: 50%;">
+        </a>
+    `).join('');
+
+    // 渲染欢迎文本
+    document.getElementById('welcome-text').textContent = config.welcomeText;
+
+    // 渲染功能列表
+    const featuresContainer = document.getElementById('features-container');
+    featuresContainer.innerHTML = config.features.map(feature => `
+        <div class="index-feature-box">
+            <a href="${feature.url}">${feature.name}</a>
+        </div>
+    `).join('');
+
+    // 渲染公告
+    const announcementContainer = document.getElementById('announcement-container');
+    announcementContainer.innerHTML = `
+        <p style="margin: 0;">${config.announcement.title}<br>${config.announcement.content}</p>
+    `;
+
+    // 为动态生成的内容添加事件监听
+    addEventListenersToDynamicContent();
+}
+
+// 设置默认内容（备用）
+function setDefaultContent() {
+    document.getElementById('social-icons-container').innerHTML = `
+        <a href="https://github.com/lsqkk" target="_blank">
+            <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" 
+                 style="height:30px; width:30px; border-radius: 50%;">
+        </a>
+        <!-- 其他默认社交图标 -->
+    `;
+
+    document.getElementById('welcome-text').textContent = "这里记录了我的学习历程、生活感悟和技术分享。";
+
+    document.getElementById('features-container').innerHTML = `
+        <div class="index-feature-box"><a href="tool/weather.html">天气查询</a></div>
+        <!-- 其他默认功能 -->
+    `;
+
+    document.getElementById('announcement-container').innerHTML = `
+        <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>
+        欢迎<a href="apk/QuarkBlog.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
+    `;
+}
+
+// 为动态生成的内容添加事件监听
+function addEventListenersToDynamicContent() {
+
+    // 功能盒子悬停效果
+    document.querySelectorAll('#features-container .index-feature-box').forEach(box => {
+        box.addEventListener('mouseover', () => {
+            box.style.transform = 'translateY(-3px)';
+            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
+        });
+        box.addEventListener('mouseout', () => {
+            box.style.transform = 'none';
+            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.5)';
+        });
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     loadDynamicFeed();
     loadRecentMessages();
-    loadFriendLinks(); // 加载友链
+    loadFriendLinks();
+    loadLatestVideo();
 });
+
