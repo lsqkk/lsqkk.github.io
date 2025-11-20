@@ -23,11 +23,8 @@ document.write(`
                             <option value="english">English</option>
                         </select>
                     </li>
-                    <li id="login-button" style="display: none;"><a
+                    <li id="login-button"><a
                             href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
-                    </li>
-                    <li id="user-info" style="display: none;">
-                        <span id="username" style="color: white;"></span>
                     </li>
                 </ul>
             </div>
@@ -55,76 +52,12 @@ document.write(`
                     <option value="english">English</option>
                 </select>
             </li>
-            <li id="mobile-login-button" style="display: none;"><a
+            <li id="mobile-login-button"><a
                     href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
-            </li>
-            <li id="mobile-user-info" style="display: none;">
-                <span id="mobile-username" style="color: white;"></span>
             </li>
         </ul>
     </div>
 `);
-
-// 检查登录状态的函数
-function checkLoginStatus() {
-    const token = localStorage.getItem('github_token');
-    const username = localStorage.getItem('github_username');
-
-    const loginButton = document.getElementById('login-button');
-    const mobileLoginButton = document.getElementById('mobile-login-button');
-    const userInfo = document.getElementById('user-info');
-    const mobileUserInfo = document.getElementById('mobile-user-info');
-    const usernameSpan = document.getElementById('username');
-    const mobileUsernameSpan = document.getElementById('mobile-username');
-
-    if (token && username) {
-        // 用户已登录，隐藏登录按钮，显示用户信息
-        if (loginButton) loginButton.style.display = 'none';
-        if (mobileLoginButton) mobileLoginButton.style.display = 'none';
-        if (userInfo) {
-            userInfo.style.display = 'block';
-            if (usernameSpan) usernameSpan.textContent = username;
-        }
-        if (mobileUserInfo) {
-            mobileUserInfo.style.display = 'block';
-            if (mobileUsernameSpan) mobileUsernameSpan.textContent = username;
-        }
-    } else {
-        // 用户未登录，显示登录按钮，隐藏用户信息
-        if (loginButton) loginButton.style.display = 'block';
-        if (mobileLoginButton) mobileLoginButton.style.display = 'block';
-        if (userInfo) userInfo.style.display = 'none';
-        if (mobileUserInfo) mobileUserInfo.style.display = 'none';
-    }
-}
-
-// 添加登出功能
-function addLogoutListener() {
-    const userInfo = document.getElementById('user-info');
-    const mobileUserInfo = document.getElementById('mobile-user-info');
-
-    if (userInfo) {
-        userInfo.addEventListener('click', function () {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('github_token');
-                localStorage.removeItem('github_username');
-                checkLoginStatus();
-                window.location.reload();
-            }
-        });
-    }
-
-    if (mobileUserInfo) {
-        mobileUserInfo.addEventListener('click', function () {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('github_token');
-                localStorage.removeItem('github_username');
-                checkLoginStatus();
-                window.location.reload();
-            }
-        });
-    }
-}
 
 // 全局搜索处理函数
 function handleGlobalSearch() {
@@ -196,15 +129,41 @@ function performLanguageChange(targetLanguage) {
     });
 }
 
-// 页面加载完成后初始化翻译和登录状态
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-        initializeTranslation();
-        checkLoginStatus();
-        addLogoutListener();
-    });
-} else {
-    initializeTranslation();
-    checkLoginStatus();
-    addLogoutListener();
+// 检查登录状态（与index.js保持一致）
+function checkLoginStatus() {
+    // 使用与index.js完全相同的逻辑
+    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+
+    const loginButton = document.getElementById('login-button');
+    const mobileLoginButton = document.getElementById('mobile-login-button');
+
+    if (isLoggedIn) {
+        // 隐藏电脑端和移动端的登录按钮
+        if (loginButton) loginButton.style.display = 'none';
+        if (mobileLoginButton) mobileLoginButton.style.display = 'none';
+    } else {
+        // 确保登录按钮显示（可能在之前被隐藏了）
+        if (loginButton) loginButton.style.display = 'block';
+        if (mobileLoginButton) mobileLoginButton.style.display = 'block';
+    }
 }
+
+// 页面加载完成后初始化翻译和登录状态检查
+function initializeAll() {
+    initializeTranslation();
+
+    // 延迟执行登录状态检查，确保DOM完全加载
+    setTimeout(() => {
+        checkLoginStatus();
+    }, 100);
+}
+
+// 页面加载完成后初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAll);
+} else {
+    initializeAll();
+}
+
+// 添加一个全局函数，供其他页面手动调用登录状态检查
+window.checkLoginStatus = checkLoginStatus;
