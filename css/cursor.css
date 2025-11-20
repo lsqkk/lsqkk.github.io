@@ -102,3 +102,10 @@
     display: none !important;
   }
 }
+
+/* 确保弹窗内元素使用系统光标 */
+.popup-overlay,
+.popup-overlay *,
+.popup-overlay *:hover {
+  cursor: auto !important;
+}

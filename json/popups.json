@@ -1,0 +1,13 @@
+[
+    {
+        "id": "test26",
+        "title": "🎉 测试弹窗",
+        "content": "## 这是一条测试弹窗！\n\n这是文字\n\n✨ **这是加粗** ✨\n- 这是无字序号\n\n> 这是引用",
+        "startDate": "2025-11-19",
+        "endDate": "2025-11-21",
+        "autoClose": 0,
+        "celebration": true,
+        "backgroundColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        "textColor": "#ffffff"
+    }
+]

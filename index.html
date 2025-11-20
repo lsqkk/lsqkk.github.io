@@ -265,7 +265,27 @@
         </div>
     </div>
 
+    <!-- 弹窗系统 -->
+    <div id="popup-overlay" class="popup-overlay" style="display: none;">
+        <div id="popup-container" class="popup-container">
+            <div class="popup-header">
+                <h3 id="popup-title"></h3>
+                <button id="popup-close" class="popup-close-btn">&times;</button>
+            </div>
+            <div id="popup-content" class="popup-content"></div>
+            <div class="popup-footer">
+                <label class="popup-option">
+                    <input type="checkbox" id="popup-never-show"> 不再显示
+                </label>
+                <button id="popup-confirm" class="popup-confirm-btn">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 庆祝动效容器 -->
+    <div id="celebration-container"></div>
     <script src="js/index.js"></script>
+
 
 </body>
 
