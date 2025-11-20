@@ -23,8 +23,11 @@ document.write(`
                             <option value="english">English</option>
                         </select>
                     </li>
-                    <li id="login-button"><a
+                    <li id="login-button" style="display: none;"><a
                             href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
+                    </li>
+                    <li id="user-info" style="display: none;">
+                        <span id="username" style="color: white;"></span>
                     </li>
                 </ul>
             </div>
@@ -52,12 +55,76 @@ document.write(`
                     <option value="english">English</option>
                 </select>
             </li>
-            <li id="mobile-login-button"><a
+            <li id="mobile-login-button" style="display: none;"><a
                     href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
+            </li>
+            <li id="mobile-user-info" style="display: none;">
+                <span id="mobile-username" style="color: white;"></span>
             </li>
         </ul>
     </div>
 `);
+
+// 检查登录状态的函数
+function checkLoginStatus() {
+    const token = localStorage.getItem('github_token');
+    const username = localStorage.getItem('github_username');
+
+    const loginButton = document.getElementById('login-button');
+    const mobileLoginButton = document.getElementById('mobile-login-button');
+    const userInfo = document.getElementById('user-info');
+    const mobileUserInfo = document.getElementById('mobile-user-info');
+    const usernameSpan = document.getElementById('username');
+    const mobileUsernameSpan = document.getElementById('mobile-username');
+
+    if (token && username) {
+        // 用户已登录，隐藏登录按钮，显示用户信息
+        if (loginButton) loginButton.style.display = 'none';
+        if (mobileLoginButton) mobileLoginButton.style.display = 'none';
+        if (userInfo) {
+            userInfo.style.display = 'block';
+            if (usernameSpan) usernameSpan.textContent = username;
+        }
+        if (mobileUserInfo) {
+            mobileUserInfo.style.display = 'block';
+            if (mobileUsernameSpan) mobileUsernameSpan.textContent = username;
+        }
+    } else {
+        // 用户未登录，显示登录按钮，隐藏用户信息
+        if (loginButton) loginButton.style.display = 'block';
+        if (mobileLoginButton) mobileLoginButton.style.display = 'block';
+        if (userInfo) userInfo.style.display = 'none';
+        if (mobileUserInfo) mobileUserInfo.style.display = 'none';
+    }
+}
+
+// 添加登出功能
+function addLogoutListener() {
+    const userInfo = document.getElementById('user-info');
+    const mobileUserInfo = document.getElementById('mobile-user-info');
+
+    if (userInfo) {
+        userInfo.addEventListener('click', function () {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('github_token');
+                localStorage.removeItem('github_username');
+                checkLoginStatus();
+                window.location.reload();
+            }
+        });
+    }
+
+    if (mobileUserInfo) {
+        mobileUserInfo.addEventListener('click', function () {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('github_token');
+                localStorage.removeItem('github_username');
+                checkLoginStatus();
+                window.location.reload();
+            }
+        });
+    }
+}
 
 // 全局搜索处理函数
 function handleGlobalSearch() {
@@ -86,9 +153,6 @@ function handleGlobalSearch() {
     }
 }
 
-// nav.js
-// ... (你原有的 document.write() 部分保持不变) ...
-
 // 多语言翻译功能
 function initializeTranslation() {
     const script = document.createElement('script');
@@ -96,7 +160,7 @@ function initializeTranslation() {
     script.onload = function () {
         // 1. 基础配置：设置本地语种并隐藏自动生成的选择框
         translate.language.setLocal('chinese_simplified');
-        translate.selectLanguageTag.show = false; // 确保隐藏自带选择框[citation:3]
+        translate.selectLanguageTag.show = false; // 确保隐藏自带选择框
 
         // 2. 为自定义的选择器绑定事件
         const languageSelectors = document.querySelectorAll('.language-selector');
@@ -115,12 +179,9 @@ function initializeTranslation() {
 
 // 4. 封装统一的语言切换执行函数
 function performLanguageChange(targetLanguage) {
-    // 在切换前，特别是切回中文时，尝试清除该语种的缓存[citation:10]
+    // 在切换前，特别是切回中文时，尝试清除该语种的缓存
     if (targetLanguage === 'chinese_simplified') {
-        // 注意：translate.js 可能没有直接的 clearCache 方法，此处概念性提示清除缓存
-        // 实际使用中请查阅具体API或通过重新加载等方式绕过缓存
         console.log('切换到中文，尝试清除缓存确保更新');
-        // 示例：translate.clearCache('chinese_simplified'); // 请根据实际API调整
     }
 
     // 执行语言切换
@@ -135,9 +196,15 @@ function performLanguageChange(targetLanguage) {
     });
 }
 
-// 页面加载完成后初始化翻译
+// 页面加载完成后初始化翻译和登录状态
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeTranslation);
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeTranslation();
+        checkLoginStatus();
+        addLogoutListener();
+    });
 } else {
     initializeTranslation();
+    checkLoginStatus();
+    addLogoutListener();
 }
