@@ -1,1 +1,4 @@
 serve.py
+.env
+.env.local
+.env.*.local

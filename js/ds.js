@@ -1,4 +1,4 @@
-const WORKER_URL = 'https://deepseek-proxy.jsxzznz.workers.dev';
+const WORKER_URL = 'https://lsqkk-github-io.vercel.app/api/deepseek-proxy';
 const CORRECT_PASSWORD_HASH = "fc5e038d38a57032085441e7fe7010b0";
 let currentChatId = null;
 let currentModel = "deepseek-reasoner";
