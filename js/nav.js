@@ -49,14 +49,14 @@ document.write(`
     </div>
 
     <!-- 移动端侧边栏 -->
-    <div class="mobile-sidebar" id="mobileSidebar">
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-        <div class="sidebar-content">
-            <div class="sidebar-header">
+    <div class="mobile-navsidebar" id="mobilenavsidebar">
+        <div class="navsidebar-overlay" id="navsidebarOverlay"></div>
+        <div class="navsidebar-content">
+            <div class="navsidebar-header">
                 <h2>导航菜单</h2>
-                <button class="sidebar-close" id="sidebarClose">&times;</button>
+                <button class="navsidebar-close" id="navsidebarClose">&times;</button>
             </div>
-            <div class="sidebar-nav">
+            <div class="navsidebar-nav">
                 <ul>
                     <li><a href="/article-list">文章</a></li>
                     <li><a href="/tool">工具</a></li>
@@ -68,18 +68,18 @@ document.write(`
                     <li><a href="/a/lyb" target="blank">留言</a></li>
                 </ul>
             </div>
-            <div class="sidebar-search">
+            <div class="navsidebar-search">
                 <input type="text" id="mobileSearchInput" placeholder="搜索博客...">
                 <button onclick="handleMobileSearch()">搜索</button>
             </div>
-            <div class="sidebar-controls">
-                <div class="sidebar-language">
+            <div class="navsidebar-controls">
+                <div class="navsidebar-language">
                     <select id="mobileLanguageSelector" class="language-selector">
                         <option value="chinese_simplified">中文</option>
                         <option value="english">English</option>
                     </select>
                 </div>
-                <div class="sidebar-login" id="mobile-login-button">
+                <div class="navsidebar-login" id="mobile-login-button">
                     <a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
                 </div>
             </div>
@@ -133,20 +133,20 @@ function handleMobileSearch() {
 
 // 侧边栏控制函数
 function openSidebar() {
-    document.getElementById('mobileSidebar').classList.add('active');
+    document.getElementById('mobilenavsidebar').classList.add('active');
     document.body.style.overflow = 'hidden'; // 防止背景滚动
 }
 
 function closeSidebar() {
-    document.getElementById('mobileSidebar').classList.remove('active');
+    document.getElementById('mobilenavsidebar').classList.remove('active');
     document.body.style.overflow = ''; // 恢复背景滚动
 }
 
 // 初始化侧边栏事件
 function initializeSidebar() {
     const hamburgerMenu = document.getElementById('hamburgerMenu');
-    const sidebarClose = document.getElementById('sidebarClose');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebarClose = document.getElementById('navsidebarClose');
+    const sidebarOverlay = document.getElementById('navsidebarOverlay');
 
     if (hamburgerMenu) {
         hamburgerMenu.addEventListener('click', openSidebar);

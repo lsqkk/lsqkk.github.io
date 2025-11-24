@@ -179,7 +179,7 @@
 }
 
 /* 移动端侧边栏样式 */
-.mobile-sidebar {
+.mobile-navsidebar {
     display: none;
     position: fixed;
     top: 0;
@@ -189,7 +189,7 @@
     z-index: 2000;
 }
 
-.sidebar-overlay {
+.navsidebar-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -202,7 +202,7 @@
     transition: opacity 0.3s ease;
 }
 
-.sidebar-content {
+.navsidebar-content {
     position: absolute;
     top: 0;
     right: -300px;
@@ -218,7 +218,7 @@
     border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.sidebar-header {
+.navsidebar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -226,14 +226,14 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.sidebar-header h2 {
+.navsidebar-header h2 {
     margin: 0;
     color: white;
     font-size: 1.2em;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar-close {
+.navsidebar-close {
     background: none;
     border: none;
     color: white;
@@ -248,26 +248,26 @@
     transition: background-color 0.3s;
 }
 
-.sidebar-close:hover {
+.navsidebar-close:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-.sidebar-nav {
+.navsidebar-nav {
     flex: 1;
     padding: 20px 0;
 }
 
-.sidebar-nav ul {
+.navsidebar-nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.sidebar-nav li {
+.navsidebar-nav li {
     margin: 0;
 }
 
-.sidebar-nav a {
+.navsidebar-nav a {
     display: block;
     padding: 12px 20px;
     color: white;
@@ -276,18 +276,18 @@
     border-left: 3px solid transparent;
 }
 
-.sidebar-nav a:hover {
+.navsidebar-nav a:hover {
     background-color: rgba(255, 255, 255, 0.2);
     border-left-color: rgba(255, 255, 255, 0.5);
 }
 
-.sidebar-search {
+.navsidebar-search {
     padding: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.sidebar-search input {
+.navsidebar-search input {
     width: 100%;
     padding: 10px;
     border-radius: 5px;
@@ -300,11 +300,11 @@
     box-sizing: border-box;
 }
 
-.sidebar-search input::placeholder {
+.navsidebar-search input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.sidebar-search button {
+.navsidebar-search button {
     width: 100%;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.3);
@@ -317,24 +317,24 @@
     transition: background-color 0.3s;
 }
 
-.sidebar-search button:hover {
+.navsidebar-search button:hover {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
-.sidebar-controls {
+.navsidebar-controls {
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.sidebar-language .language-selector {
+.navsidebar-language .language-selector {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
 }
 
-.sidebar-login a {
+.navsidebar-login a {
     display: block;
     padding: 10px;
     text-align: center;
@@ -345,7 +345,7 @@
     transition: background-color 0.3s;
 }
 
-.sidebar-login a:hover {
+.navsidebar-login a:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -370,28 +370,28 @@
         display: flex;
     }
 
-    .mobile-sidebar {
+    .mobile-navsidebar {
         display: block;
         visibility: hidden;
         transition: visibility 0.3s ease;
     }
 
-    .mobile-sidebar.active {
+    .mobile-navsidebar.active {
         visibility: visible;
     }
 
-    .mobile-sidebar.active .sidebar-overlay {
+    .mobile-navsidebar.active .navsidebar-overlay {
         opacity: 1;
     }
 
-    .mobile-sidebar.active .sidebar-content {
+    .mobile-navsidebar.active .navsidebar-content {
         right: 0;
     }
 }
 
 /* PC端样式 */
 @media (min-width: 769px) {
-    .mobile-sidebar {
+    .mobile-navsidebar {
         display: none;
     }
 }
