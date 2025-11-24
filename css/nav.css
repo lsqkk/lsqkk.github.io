@@ -1,6 +1,11 @@
 /* Header 相关样式 */
 .header {
-    background: linear-gradient(to bottom, rgba(122, 189, 154, 1), rgba(122, 189, 154, 0));
+    background: rgba(122, 189, 154, 0.2);
+    /* 半透明背景 */
+    backdrop-filter: blur(10px);
+    /* 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(10px);
+    /* Safari 支持 */
     color: #fff;
     width: 100%;
     position: fixed;
@@ -12,12 +17,21 @@
     justify-content: space-between;
     padding: 10px 20px;
     box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    /* 玻璃边缘效果 */
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        /* 轻微阴影增强立体感 */
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* 内阴影增强玻璃感 */
 }
 
 .header h1 {
     margin: 0;
     font-size: 1.5em;
     white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    /* 文字阴影增强可读性 */
 }
 
 .header-content {
@@ -54,15 +68,23 @@
     border-radius: 5px;
     transition: background-color 0.3s;
     font-size: 0.9em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    /* 文字阴影增强可读性 */
 }
 
 .header-nav li a:hover {
     background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* 悬停时添加阴影 */
 }
 
 /* 语言选择器样式 */
 .language-selector {
     background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    /* 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(5px);
+    /* Safari 支持 */
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 5px;
@@ -77,7 +99,8 @@
 }
 
 .language-selector option {
-    background-color: #7abd9a;
+    background-color: rgba(122, 189, 154, 0.9);
+    /* 半透明背景 */
     color: white;
 }
 
@@ -93,6 +116,10 @@
     border-radius: 5px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    /* 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(5px);
+    /* Safari 支持 */
     color: white;
 }
 
@@ -104,6 +131,10 @@
     padding: 5px 12px;
     margin-left: 8px;
     background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    /* 毛玻璃效果 */
+    -webkit-backdrop-filter: blur(5px);
+    /* Safari 支持 */
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 5px;
@@ -116,11 +147,21 @@
 }
 
 /* 移动端样式 */
+/* 移动端样式 */
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
         align-items: stretch;
         padding: 10px;
+        backdrop-filter: blur(15px);
+        /* 增强毛玻璃效果 */
+        -webkit-backdrop-filter: blur(15px);
+        background: rgba(122, 189, 154, 0.15);
+        /* 更透明的背景 */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     .header-content {
@@ -142,17 +183,29 @@
     .header-search input {
         width: 150px;
         flex-grow: 0;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
     .header-search button {
         white-space: nowrap;
         flex-shrink: 0;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
     .nav {
         display: block;
-        background-color: #A0DFFF;
-        padding: 10px;
+        background: rgba(160, 223, 255, 0.7);
+        /* 更透明的背景 */
+        backdrop-filter: blur(12px);
+        /* 增强毛玻璃效果 */
+        -webkit-backdrop-filter: blur(12px);
+        padding: 12px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow:
+            0 4px 8px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     .mobile-nav {
@@ -170,27 +223,41 @@
     .mobile-nav li a {
         color: #007bff;
         text-decoration: none;
-        padding: 5px 8px;
+        padding: 6px 10px;
         font-size: 0.9em;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .mobile-nav li a:hover {
-        background-color: rgba(153, 221, 243, 0.3);
-        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.35);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
     }
 
     /* 移动端语言选择器样式 */
     .mobile-nav .language-selector {
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         color: #007bff;
-        border: 1px solid rgba(0, 123, 255, 0.3);
-        border-radius: 5px;
-        padding: 4px 6px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 6px;
+        padding: 5px 8px;
         font-size: 0.85em;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-nav .language-selector:hover {
+        background-color: rgba(255, 255, 255, 0.35);
     }
 
     .mobile-nav .language-selector option {
-        background-color: #A0DFFF;
+        background-color: rgba(160, 223, 255, 0.95);
         color: #007bff;
     }
 }
