@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>多人协同Markdown编辑器 | 夸克博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://lsqkk.github.io/css/md.css">
+    <link rel="stylesheet" href="/css/md.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -1060,7 +1060,7 @@ $$
         // 下载HTML
         function downloadHtml() {
             const htmlContent = preview.innerHTML;
-            const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="https://lsqkk.github.io/css/md.css"></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
+            const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="/css/md.css"></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;

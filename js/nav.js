@@ -1,9 +1,14 @@
 // nav.js
+const link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = '/css/nav.css';
+document.head.appendChild(link);
+
 document.write(`
     <div class="header-placeholder"></div>
     <div class="header">
         <div class="header-content">
-            <a href="https://lsqkk.github.io" style="color: white; text-decoration: none;">
+            <a href="/index.html" style="color: white; text-decoration: none;">
                 <h1>夸克博客</h1>
             </a>
             <div class="header-nav-container">
