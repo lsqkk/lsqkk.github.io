@@ -8,9 +8,17 @@ document.write(`
     <div class="header-placeholder"></div>
     <div class="header">
         <div class="header-content">
-            <a href="/index.html" style="color: white; text-decoration: none;">
-                <h1>夸克博客</h1>
-            </a>
+            <div class="header-left">
+                <a href="/index.html" style="color: white; text-decoration: none;">
+                    <h1>夸克博客</h1>
+                </a>
+                <!-- 移动端汉堡菜单按钮 -->
+                <button class="hamburger-menu" id="hamburgerMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
             <div class="header-nav-container">
                 <ul class="header-nav">
                     <li><a href="/article-list">文章</a></li>
@@ -40,27 +48,42 @@ document.write(`
         </div>
     </div>
 
-    <div class="nav">
-        <ul class="mobile-nav">
-            <li><a href="/article-list">文章</a></li>
-            <li><a href="/tool">工具</a></li>
-            <li><a href="/a/live">LIVE</a></li>
-            <li><a href="/games">游戏</a></li>
-            <li><a href="/a">实验室</a></li>
-            <li><a href="/daily">日报</a></li>
-            <li><a href="/qtv">视频</a></li>
-            <li><a href="/a/lyb" target="blank">留言</a></li>
-            <!-- 移动端语言切换器 -->
-            <li class="ignore">
-                <select id="mobileLanguageSelector" class="language-selector">
-                    <option value="chinese_simplified">中文</option>
-                    <option value="english">English</option>
-                </select>
-            </li>
-            <li id="mobile-login-button"><a
-                    href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
-            </li>
-        </ul>
+    <!-- 移动端侧边栏 -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <div class="sidebar-content">
+            <div class="sidebar-header">
+                <h2>导航菜单</h2>
+                <button class="sidebar-close" id="sidebarClose">&times;</button>
+            </div>
+            <div class="sidebar-nav">
+                <ul>
+                    <li><a href="/article-list">文章</a></li>
+                    <li><a href="/tool">工具</a></li>
+                    <li><a href="/a/live">LIVE</a></li>
+                    <li><a href="/games">游戏</a></li>
+                    <li><a href="/a">实验室</a></li>
+                    <li><a href="/daily">日报</a></li>
+                    <li><a href="/qtv">视频</a></li>
+                    <li><a href="/a/lyb" target="blank">留言</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" id="mobileSearchInput" placeholder="搜索博客...">
+                <button onclick="handleMobileSearch()">搜索</button>
+            </div>
+            <div class="sidebar-controls">
+                <div class="sidebar-language">
+                    <select id="mobileLanguageSelector" class="language-selector">
+                        <option value="chinese_simplified">中文</option>
+                        <option value="english">English</option>
+                    </select>
+                </div>
+                <div class="sidebar-login" id="mobile-login-button">
+                    <a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
+                </div>
+            </div>
+        </div>
     </div>
 `);
 
@@ -88,6 +111,51 @@ function handleGlobalSearch() {
         const searchParams = new URLSearchParams();
         searchParams.set('search', searchTerm);
         window.location.href = `/article-list.html?${searchParams.toString()}`;
+    }
+}
+
+// 移动端搜索处理函数
+function handleMobileSearch() {
+    const searchTerm = document.getElementById('mobileSearchInput').value.trim();
+
+    if (!searchTerm) {
+        return;
+    }
+
+    // 关闭侧边栏
+    closeSidebar();
+
+    // 跳转到搜索页面
+    const searchParams = new URLSearchParams();
+    searchParams.set('search', searchTerm);
+    window.location.href = `/article-list.html?${searchParams.toString()}`;
+}
+
+// 侧边栏控制函数
+function openSidebar() {
+    document.getElementById('mobileSidebar').classList.add('active');
+    document.body.style.overflow = 'hidden'; // 防止背景滚动
+}
+
+function closeSidebar() {
+    document.getElementById('mobileSidebar').classList.remove('active');
+    document.body.style.overflow = ''; // 恢复背景滚动
+}
+
+// 初始化侧边栏事件
+function initializeSidebar() {
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const sidebarClose = document.getElementById('sidebarClose');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', openSidebar);
+    }
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeSidebar);
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeSidebar);
     }
 }
 
@@ -156,6 +224,7 @@ function checkLoginStatus() {
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
     initializeTranslation();
+    initializeSidebar();
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
