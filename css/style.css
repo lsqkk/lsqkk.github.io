@@ -58,32 +58,23 @@
     margin-bottom: 15px;
 }
 
-/* 替换原有的.index-feature-boxes相关样式 */
-.index-feature-boxes {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    /* 两栏布局 */
-    gap: 12px;
-    margin: 20px 0;
-}
+
 
 .index-feature-box {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
     padding: 15px 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
-    /* 自动填充网格宽度 */
     height: auto;
     min-height: 60px;
-    /* 统一最小高度 */
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .index-feature-box a {
@@ -118,11 +109,14 @@
 }
 
 .index-announcement {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
     padding: 15px;
     border-radius: 10px;
     text-align: center;
     margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .index-divider {
@@ -248,13 +242,14 @@ body {
 }
 
 .recent-posts {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
     padding: 20px;
     border-radius: 15px;
     margin: 20px auto 0;
-    /* 修改这里 */
     max-width: 800px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .recent-header {
@@ -778,24 +773,27 @@ button {
 }
 
 .main-content {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px) saturate(100%);
+    -webkit-backdrop-filter: blur(15px) saturate(100%);
     border-radius: 15px;
     padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
+
 .sidebar-index {
-    flex: 0 0 300px;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px) saturate(100%);
+    -webkit-backdrop-filter: blur(15px) saturate(100%);
     border-radius: 15px;
     padding: 20px;
-    /* 新增以下属性 */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    flex: 0 0 300px;
     align-self: flex-start;
-    /* 顶部对齐 */
     height: auto !important;
-    /* 强制高度自适应 */
 }
 
 @media (max-width: 768px) {
@@ -865,14 +863,16 @@ button {
 }
 
 .footer-content {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px) saturate(100%);
+    -webkit-backdrop-filter: blur(12px) saturate(100%);
     border-radius: 15px;
     padding: 20px;
     margin-top: 20px;
     text-align: center;
     color: #666;
     font-size: 0.9em;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* 确保在移动端也能正确显示 */
