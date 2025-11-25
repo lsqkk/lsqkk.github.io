@@ -74,7 +74,8 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 10px 0px;
 }
 
 .index-feature-box a {
@@ -242,27 +243,31 @@ body {
 }
 
 .recent-posts {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    padding: 20px;
-    border-radius: 15px;
-    margin: 20px auto 0;
-    max-width: 800px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 
 .recent-header {
     color: #0366d6;
     border-bottom: 2px solid #eee;
     padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .post-item {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px) saturate(100%);
+    -webkit-backdrop-filter: blur(10px) saturate(100%);
+    border-radius: 12px;
+    padding: 20px;
     margin: 15px 0;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .article-list {
@@ -942,6 +947,15 @@ button {
 }
 
 /* GitHub 推广链接样式 只有主页用*/
+.github-promo {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) saturate(100%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(10%) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
 .github-promo a {
     transition: all 0.3s ease;
     padding: 4px 8px;
