@@ -32,7 +32,7 @@ document.write(`
                     <!-- 语言切换器 - 不会被翻译 -->
                     <li class="ignore">
                         <select id="languageSelector" class="language-selector">
-                            <option value="chinese_simplified">中文</option>
+                            <option value="chinese_simplified">中文/CN</option>
                             <option value="english">English</option>
                         </select>
                     </li>
@@ -75,7 +75,7 @@ document.write(`
             <div class="navsidebar-controls">
                 <div class="navsidebar-language">
                     <select id="mobileLanguageSelector" class="language-selector">
-                        <option value="chinese_simplified">中文</option>
+                        <option value="chinese_simplified">中文/CN</option>
                         <option value="english">English</option>
                     </select>
                 </div>

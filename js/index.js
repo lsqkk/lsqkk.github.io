@@ -427,7 +427,7 @@ function renderLatestVideo(video) {
                     ${formatVideoDuration(video.duration)}
                 </div>
             </div>
-            <div style="padding: 12px; background: white; border-radius: 0 0 8px 8px;">
+            <div style="padding: 12px;  background: rgba(255, 255, 255, 0.2);backdrop-filter: blur(10px) saturate(160%);-webkit-backdrop-filter: blur(10px) saturate(160%); border-radius: 0 0 8px 8px;">
                 <h4 style="margin: 0 0 8px 0; font-size: 0.95em; line-height: 1.4; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                     ${video.title}
                 </h4>

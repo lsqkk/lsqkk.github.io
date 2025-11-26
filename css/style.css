@@ -950,7 +950,7 @@ button {
 .github-promo {
     background: rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(10px) saturate(100%) !important;
-    -webkit-backdrop-filter: blur(10px) saturate(10%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(100%) !important;
     border-radius: 8px !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
