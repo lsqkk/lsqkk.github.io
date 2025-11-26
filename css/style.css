@@ -17,36 +17,6 @@
     /* Chrome, Safari和Opera */
 }
 
-.index-left-sidebar {
-    flex: 0 0 300px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-    height: auto;
-    /* 高度自适应 */
-}
-
-.index-main-content {
-    flex: 1;
-    min-width: 0;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-    padding: 15px;
-    height: auto;
-    /* 高度自适应 */
-}
-
-.index-left-sidebar,
-.index-main-content {
-    max-height: none;
-    /* 移除固定高度 */
-    height: auto;
-    /* 高度自适应内容 */
-}
 
 .index-sidebar-section {
     margin-bottom: 25px;

@@ -21,10 +21,11 @@
             gap: 8px;
             margin-bottom: 20px;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(5px) saturate(100%) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(100%) !important;
             border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .tag-btn {
@@ -53,20 +54,21 @@
 
         /* 文章条目样式 */
         .post-item {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(10px) saturate(130%) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(130%) !important;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .post-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.5) !important;
         }
 
         .post-title {
@@ -113,36 +115,41 @@
             gap: 8px;
             margin-top: 30px;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(5px) saturate(100%) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(100%) !important;
             border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .page-btn {
             padding: 8px 16px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #333;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9em;
+            margin: 3px;
         }
 
         .page-btn:hover {
-            background: rgba(0, 123, 255, 0.1);
+            background: rgba(255, 255, 255, 0.5);
             color: #007bff;
+            border-color: rgba(0, 123, 255, 0.3);
         }
 
         .page-btn.active {
-            background: #007bff;
+            background: rgba(0, 123, 255, 0.6);
             color: white;
-            border-color: #007bff;
+            border-color: rgba(0, 123, 255, 0.8);
         }
 
         .page-btn.disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* 搜索区域样式 */
