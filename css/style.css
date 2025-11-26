@@ -166,6 +166,22 @@
     }
 }
 
+.zhuyeboxxxxx {
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 12px;
+    margin: 12px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    width: 80px;
+    height: 30px;
+    /* 高度自适应 */
+    line-height: 30px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
 .zhuyebox {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.1);
@@ -286,11 +302,15 @@ body {
 .morenpost {
     line-height: 1.3em;
     margin-bottom: 1.3em;
-    border-radius: 30px;
-    background-color: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    margin: 15px;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(8px) saturate(100%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(100%) !important;
+    padding: 40px;
+    margin: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
 }
 
 .centered-div {
@@ -420,13 +440,13 @@ button {
 
 /* 侧栏内容容器 */
 .sidebar-content {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(5px) saturate(100%) !important;
+    -webkit-backdrop-filter: blur(5px) saturate(100%) !important;
     height: 100%;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* 侧栏主要内容区域（可滚动） */
@@ -435,7 +455,7 @@ button {
     overflow-y: auto;
     padding: 20px;
     padding-right: 15px;
-    /* 为滚动条留空间 */
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* 侧栏底部固定区域 */
@@ -630,13 +650,6 @@ button {
     min-height: calc(100vh - 150px);
 }
 
-.post-tag {
-    padding: 2px 8px;
-    border-radius: 10px;
-    background: rgba(93, 208, 255, 0.2);
-    color: #007bff;
-    font-size: 0.8em;
-}
 
 
 .game-box {

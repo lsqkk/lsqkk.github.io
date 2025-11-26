@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>文章 - 夸克博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/post.css">
     <script src="js/cursor-trail.js"></script>
@@ -36,7 +37,7 @@
 
     <script src="/js/nav.js"></script>
 
-    <div class="morenpost" style="box-shadow: 0 0 10px 10px rgba(255,255,255,0.3); margin:20px;">
+    <div class="morenpost">
         <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像"
                 style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "></a>
         <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">文 / 蓝色奇夸克 /</div>
@@ -54,18 +55,20 @@
 
         <div>
             <center>
+                <div style="margin: 20px;">
+                    <button class="share-button" onclick="copyLink()">复制本文链接</button>
+                    <span id="copy-notice" style="color: #666; margin-left: 10px; display: none;"><br>链接已复制！</span>
+                </div>
                 <link rel="stylesheet"
                     href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
                 <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div>
                 <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
                 <script
                     src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+
             </center>
         </div>
-        <div style="margin-top: 20px;">
-            <button class="share-button" onclick="copyLink()">分享本文链接</button>
-            <span id="copy-notice" style="color: #666; margin-left: 10px; display: none;">链接已复制！</span>
-        </div>
+
     </div>
 
     <script src="js/marked.min.js"></script>
@@ -74,12 +77,12 @@
 
     <script src="js/post.js"></script>
     <!-- 评论区域 -->
-    <div class="morenpost" style="margin:0px 20px 20px 20px;">
+    <div class="morenpost">
         <div class="giscus"></div>
     </div>
 
-    <div class="morenpost" style="margin:0px 20px 10px 20px;"><a href="post.html?file=copyright.md"
-            style="text-decoration: none; color: black; ">© 2025 夸克博客 All rights reserved.</a></div>
+    <div class="morenpost"><a href="post.html?file=copyright.md" style="text-decoration: none; color: black; ">© 2025
+            夸克博客 All rights reserved.</a></div>
 
 
     <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ"
