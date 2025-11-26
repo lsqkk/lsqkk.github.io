@@ -87,3 +87,17 @@
             color: #ff9800 !important;
             border: 1px solid rgba(255, 193, 7, 0.3);
         }
+
+        .morenpost {
+            line-height: 1.3em;
+            margin-bottom: 1.3em;
+            border-radius: 20px;
+
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(8px) saturate(100%) !important;
+            -webkit-backdrop-filter: blur(8px) saturate(100%) !important;
+            padding: 40px;
+            margin: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
+        }
