@@ -17,7 +17,7 @@
 </head>
 
 <body
-    style=" background: url('image/star.gif') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
+    style="background: url('/image/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
 
     <div class="sidebar">
         <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
@@ -49,7 +49,6 @@
             <span id="post-wordcount" style="display: inline;"></span>
         </div>
         <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;"></div>
-        <span class="mode-toggle" onclick="toggleMode()">🌙</span>
         <div id="content" class="post-content"></div>
         <hr>
 
@@ -57,7 +56,6 @@
             <center>
                 <div style="margin: 20px;">
                     <button class="share-button" onclick="copyLink()">复制本文链接</button>
-                    <span id="copy-notice" style="color: #666; margin-left: 10px; display: none;"><br>链接已复制！</span>
                 </div>
                 <link rel="stylesheet"
                     href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">

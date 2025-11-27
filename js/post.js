@@ -116,20 +116,6 @@ function copyLink() {
     });
 }
 
-// 切换黑暗/白天模式
-function toggleMode() {
-    const body = document.body;
-    const modeToggle = document.querySelector('.mode-toggle');
-    const isDarkMode = body.style.backgroundImage.includes('image/star.gif');
-
-    if (isDarkMode) {
-        body.style.backgroundImage = "url('image/light.gif')";
-        modeToggle.innerText = '☀️';
-    } else {
-        body.style.backgroundImage = "url('image/star.gif')";
-        modeToggle.innerText = '🌙';
-    }
-}
 // 生成目录
 function generateTOC() {
     const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3');

@@ -1,5 +1,6 @@
-// 所有标签
-const allTags = ['全部', '技术', '杂谈', '社科'];
+// 移除硬编码的标签数组
+// const allTags = ['全部', '技术', '杂谈', '社科'];
+let allTags = ['全部']; // 初始只包含"全部"标签
 let currentTag = '全部';
 let currentPage = 1;
 const postsPerPage = 10;
@@ -14,6 +15,27 @@ function getUrlParams() {
     };
 }
 
+// 从文章数据中提取所有标签
+function extractTagsFromPosts(posts) {
+    const tagSet = new Set();
+
+    posts.forEach(post => {
+        if (post.tags && Array.isArray(post.tags)) {
+            post.tags.forEach(tag => {
+                if (tag && tag.trim() !== '') {
+                    tagSet.add(tag.trim());
+                }
+            });
+        }
+    });
+
+    // 将Set转换为数组并排序
+    const tags = Array.from(tagSet).sort();
+
+    // 在开头添加"全部"标签
+    return ['全部', ...tags];
+}
+
 // 加载文章列表
 async function loadPosts() {
     console.log('开始加载文章...');
@@ -25,6 +47,11 @@ async function loadPosts() {
     allPosts.forEach(post => {
         if (!post.tags) post.tags = ['未分类'];
     });
+
+    // 从文章数据中提取标签
+    allTags = extractTagsFromPosts(allPosts);
+    console.log('提取到的标签:', allTags);
+
     renderTagFilter();
     renderPosts();
     renderPagination();

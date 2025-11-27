@@ -1,158 +1,75 @@
-        .tech-background {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .tech-card {
-            background: rgba(15, 32, 39, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 15px;
-            border: 1px solid rgba(93, 208, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .tech-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #5dd0ff, #00ffcc, #5dd0ff);
-            z-index: -1;
-            border-radius: 16px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .tech-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-        
-        .tech-card:hover::before {
-            opacity: 0.3;
-        }
-        
-        .tech-title {
-            color: #5dd0ff;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(93, 208, 255, 0.3);
-            position: relative;
-            display: inline-block;
-        }
-        
-        .tech-title::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, #5dd0ff, transparent);
-        }
-        
-        .tech-subtitle {
-            color: #00ffcc;
-            font-size: 1.3em;
-            margin: 20px 0 15px;
-            text-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
-        }
-        
-        .tech-link {
-            display: block;
-            color: #fff;
-            padding: 12px 15px;
-            margin: 8px 0;
-            border-radius: 8px;
-            background: rgba(93, 208, 255, 0.1);
-            border: 1px solid rgba(93, 208, 255, 0.3);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .tech-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(93, 208, 255, 0.2), transparent);
-            transition: all 0.5s ease;
-        }
-        
-        .tech-link:hover {
-            background: rgba(93, 208, 255, 0.2);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(93, 208, 255, 0.2);
-        }
-        
-        .tech-link:hover::before {
-            left: 100%;
-        }
-        
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-        
-        .tech-intro {
-            color: #a0e4ff;
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        
-        .tech-highlight {
-            color: #00ffcc;
-            font-weight: bold;
-        }
-        
-        .tech-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(93, 208, 255, 0.5), transparent);
-            margin: 30px 0;
-        }
-        
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .tech-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tech-card {
-                padding: 20px;
-            }
-        }
-        
-        /* 粒子背景效果 */
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-        }
-        
-        .content-container {
-            position: relative;
-            z-index: 1;
-        }
+.tech-t {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tech-title {
+    color: #333;
+    font-size: 1.5em;
+}
+
+.tech-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.tech-subtitle {
+    color: #333;
+    font-size: 1.2em;
+    margin: 15px 0 10px;
+}
+
+.tech-link {
+    display: block;
+    color: #333;
+    padding: 10px 12px;
+    margin: 6px 0;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.tech-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(3px);
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-auto-rows: min-content;
+    align-items: start;
+    gap: 15px;
+    padding: 15px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tech-card {
+        padding: 15px;
+        margin: 10px;
+    }
+}
+
+.content-container {
+    position: relative;
+    z-index: 1;
+}
