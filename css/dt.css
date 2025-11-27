@@ -8,7 +8,7 @@
            background: linear-gradient(45deg, #f0f4ff, #ffffff);
            min-height: 100vh;
            padding: 2rem;
-           font-family: 'Segoe UI', system-ui, sans-serif;
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
        }
 
        .dynamic-container {

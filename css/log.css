@@ -8,13 +8,13 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             min-height: 100vh;
             background: linear-gradient(45deg, #6366f1, #8b5cf6, #d946ef);
-background-attachment: fixed;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             padding: 2rem;
@@ -79,7 +79,7 @@ background-attachment: fixed;
             line-height: 1.6;
         }
 
-        .update-card ul, 
+        .update-card ul,
         .update-card ol {
             margin-bottom: 1rem;
             padding-left: 2rem;
@@ -130,7 +130,7 @@ background-attachment: fixed;
             body {
                 padding: 1rem;
             }
-            
+
             .update-card {
                 padding: 1rem;
             }
