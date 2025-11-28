@@ -228,6 +228,44 @@ function getDistance(lat1, lon1, lat2, lon2) {
 
 // 根据省份返回俏皮话
 function getProvinceBanter(province) {
+    // 创建一个映射，将不包含后缀的省份名称映射到完整的省份名称
+    const provinceMapping = {
+        '北京': '北京市',
+        '上海': '上海市',
+        '广东': '广东省',
+        '四川': '四川省',
+        '重庆': '重庆市',
+        '陕西': '陕西省',
+        '山西': '山西省',
+        '内蒙古': '内蒙古自治区',
+        '新疆': '新疆维吾尔自治区',
+        '西藏': '西藏自治区',
+        '云南': '云南省',
+        '贵州': '贵州省',
+        '广西': '广西壮族自治区',
+        '海南': '海南省',
+        '福建': '福建省',
+        '浙江': '浙江省',
+        '江苏': '江苏省',
+        '山东': '山东省',
+        '河南': '河南省',
+        '河北': '河北省',
+        '天津': '天津省',
+        '辽宁': '辽宁省',
+        '吉林': '吉林省',
+        '黑龙江': '黑龙江省',
+        '江西': '江西省',
+        '安徽': '安徽省',
+        '湖北': '湖北省',
+        '湖南': '湖南省',
+        '甘肃': '甘肃省',
+        '宁夏': '宁夏回族自治区',
+        '青海': '青海省',
+        '台湾': '台湾省',
+        '香港': '香港',
+        '澳门': '澳门'
+    };
+
     const banterMap = {
         '北京市': '来碗豆汁儿配焦圈？',
         '上海市': '侬好呀！要尝尝小笼包伐？',
@@ -265,42 +303,42 @@ function getProvinceBanter(province) {
         '澳门': '葡式蛋挞来一打？'
     };
 
-    return banterMap[province] || '欢迎来玩！'; // 如果没有匹配的省份，返回默认欢迎语
+    // 将输入的省份名称转换为完整的省份名称
+    const fullProvinceName = provinceMapping[province] || province;
+
+    return banterMap[fullProvinceName] || '欢迎来玩！';
 }
 
 // 获取访客信息
 async function getVisitorInfo() {
     try {
-        const response = await fetch('https://webapi-pc.meitu.com/common/ip_location');
-        const data = await response.json();
+        const response = await fetch('http://demo.ip-api.com/json/?fields=66842623&lang=zh-CN');
+        const ipInfo = await response.json();
 
-        if (data.code === 0) {
-            // 获取返回数据中的第一个IP对应的信息
-            const ip = Object.keys(data.data)[0];
-            const ipInfo = data.data[ip];
-
-            // 站主位置
-            const bloggerLat = 34.252705;
-            const bloggerLon = 108.990221;
-
-            const distance = getDistance(
-                bloggerLat, bloggerLon,
-                ipInfo.latitude, ipInfo.longitude
-            );
-
-            // 获取省份俏皮话
-            const provinceBanter = getProvinceBanter(ipInfo.province);
-
-            // 显示欢迎信息
-            document.getElementById('welcome-info').innerHTML = `
-                        欢迎来自 <span class="highlight">${ipInfo.province} ${ipInfo.city}</span> 的朋友<br>
-                        <span class="highlight">${provinceBanter}</span><br>
-                        您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
-                        您的IP地址为: <span class="highlight">${ip}</span>
-                    `;
-        } else {
-            throw new Error('API返回错误');
+        // 检查API返回状态
+        if (ipInfo.status !== 'success') {
+            throw new Error(ipInfo.message || 'API查询失败');
         }
+
+        // 站主位置
+        const bloggerLat = 34.252705;
+        const bloggerLon = 108.990221;
+
+        const distance = getDistance(
+            bloggerLat, bloggerLon,
+            ipInfo.lat, ipInfo.lon
+        );
+
+        // 获取省份俏皮话
+        const provinceBanter = getProvinceBanter(ipInfo.regionName);
+
+        // 显示欢迎信息
+        document.getElementById('welcome-info').innerHTML = `
+                    欢迎来自 <span class="highlight">${ipInfo.regionName} ${ipInfo.city}</span> 的朋友<br>
+                    <span class="highlight">${provinceBanter}</span><br>
+                    您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
+                    您的IP地址为: <span class="highlight">${ipInfo.query}</span>
+                `;
     } catch (error) {
         console.error('获取IP信息失败:', error);
         document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';

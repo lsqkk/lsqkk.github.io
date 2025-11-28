@@ -5,117 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克博客 | 蓝色奇夸克のBlog</title>
+    <link rel="manifest" href="/manifest.json">
     <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。">
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="css/cursor.css">
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="/css/nav.css">
     <script src="js/cursor-trail.js"></script>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .friend-link-item {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px) saturate(100%);
-            -webkit-backdrop-filter: blur(8px) saturate(100%);
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
 
-        .friend-link-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .friend-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            flex-shrink: 0;
-            object-fit: cover;
-        }
-
-        .friend-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .friend-nickname {
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #2c3e50;
-        }
-
-        .friend-describe {
-            font-size: 0.85em;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        body {
-            background: url('image/bg.png') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .dynamic-feed {
-            margin: 30px auto;
-            max-width: 800px;
-        }
-
-        .dynamic-card {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px) saturate(160%);
-            -webkit-backdrop-filter: blur(10px) saturate(160%);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 15px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .dynamic-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .dynamic-title {
-            color: #2c3e50;
-            font-size: 1.2em;
-            margin-bottom: 8px;
-        }
-
-        .dynamic-date {
-            color: #7f8c8d;
-            font-size: 0.9em;
-            margin-bottom: 12px;
-        }
-
-        .dynamic-content {
-            color: #34495e;
-            line-height: 1.6;
-            overflow: hidden;
-            display: -webkit-box;
-
-            -webkit-box-orient: vertical;
-        }
-
-        .more-link {
-            display: block;
-            text-align: right;
-            margin-top: 15px;
-            color: #3498db;
-            text-decoration: none;
-        }
-    </style>
 </head>
 
 <body>
@@ -288,6 +188,21 @@
     <!-- 庆祝动效容器 -->
     <div id="celebration-container"></div>
     <script src="js/index.js"></script>
+    <script>
+        // 检查浏览器是否支持Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                // 注册Service Worker文件
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function (registration) {
+                        console.log('Service Worker 注册成功: ', registration);
+                    })
+                    .catch(function (error) {
+                        console.log('Service Worker 注册失败: ', error);
+                    });
+            });
+        }
+    </script>
 
 
 </body>

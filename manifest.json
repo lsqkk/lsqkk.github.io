@@ -1,0 +1,16 @@
+{
+    "name": "夸克博客 | 蓝色奇夸克のBLOG",
+    "short_name": "夸克博客",
+    "description": "这里记录了我的学习历程、生活感悟和技术分享。",
+    "start_url": "https://lsqkk.github.io/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#DEE2E6",
+    "icons": [
+        {
+            "src": "/image/logo_blue.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        }
+    ]
+}
