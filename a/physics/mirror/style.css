@@ -1,30 +1,25 @@
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f7fa;
             color: #333;
         }
-
         h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 10px;
         }
-
         .description {
             text-align: center;
             margin-bottom: 20px;
             color: #7f8c8d;
         }
-
         .container {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-
         .canvas-container {
             background: white;
             border-radius: 8px;
@@ -32,7 +27,6 @@
             padding: 15px;
             position: relative;
         }
-
         canvas {
             display: block;
             margin: 0 auto;
@@ -40,7 +34,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -50,12 +43,10 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 15px;
         }
-
         .control-group {
             flex: 1;
             min-width: 200px;
         }
-
         h2 {
             font-size: 1.2em;
             margin-top: 0;
@@ -63,13 +54,11 @@
             border-bottom: 1px solid #eee;
             padding-bottom: 8px;
         }
-
         .button-group {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-
         button {
             padding: 8px 15px;
             background-color: #3498db;
@@ -79,41 +68,33 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
         button:hover {
             background-color: #2980b9;
         }
-
         button.reset {
             background-color: #e74c3c;
         }
-
         button.reset:hover {
             background-color: #c0392b;
         }
-
         .info-panel {
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 15px;
         }
-
         .info-item {
             margin: 8px 0;
             display: flex;
             justify-content: space-between;
         }
-
         .info-label {
             font-weight: bold;
             color: #2c3e50;
         }
-
         .info-value {
             color: #3498db;
         }
-
         .instructions {
             background: #e8f4fc;
             border-left: 4px solid #3498db;
@@ -121,17 +102,14 @@
             margin-top: 15px;
             border-radius: 0 4px 4px 0;
         }
-
         .instructions h3 {
             margin-top: 0;
             color: #2c3e50;
         }
-
         .instructions ul {
             margin: 5px 0;
             padding-left: 20px;
         }
-
         .instructions li {
             margin: 5px 0;
         }

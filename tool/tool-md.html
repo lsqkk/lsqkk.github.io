@@ -2,6 +2,7 @@
 <html lang="zh">
 
 <head>
+    <link rel="stylesheet" href="/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown编辑器 | 夸克博客</title>
@@ -436,7 +437,8 @@ $$
         // 下载HTML文件
         function downloadHtml() {
             const htmlContent = preview.innerHTML;
-            const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
+            const blob = new Blob([`<!DOCTYPE html><html><head>
+    <link rel="stylesheet" href="/css/basic.css"><meta charset="UTF-8"><title>Markdown Export</title></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;

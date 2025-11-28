@@ -8,15 +8,12 @@
             --text-color: #2b2d42;
             --text-secondary: #8d99ae;
         }
-
         body {
-            font-family: 'Inter', sans-serif;
             background: var(--background);
             margin: 0;
             padding: 20px;
             color: var(--text-color);
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -26,24 +23,20 @@
             padding: 30px;
             transition: all 0.3s ease;
         }
-
         .header {
             text-align: center;
             margin-bottom: 40px;
         }
-
         .header h1 {
             font-weight: 600;
             color: var(--secondary-color);
             margin-bottom: 8px;
         }
-
         .header p {
             color: var(--text-secondary);
             margin: 0;
             font-size: 0.95em;
         }
-
         .controls {
             display: flex;
             gap: 15px;
@@ -53,12 +46,10 @@
             padding: 15px 20px;
             border-radius: 10px;
         }
-
         .controls label {
             font-weight: 500;
             color: var(--secondary-color);
         }
-
         #dayRange {
             flex-grow: 1;
             height: 8px;
@@ -67,7 +58,6 @@
             outline: none;
             -webkit-appearance: none;
         }
-
         #dayRange::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 20px;
@@ -78,11 +68,9 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: all 0.2s ease;
         }
-
         #dayRange::-webkit-slider-thumb:hover {
             transform: scale(1.1);
         }
-
         #dayCount {
             min-width: 60px;
             text-align: center;
@@ -92,7 +80,6 @@
             padding: 5px 10px;
             border-radius: 6px;
         }
-
         .chart-container {
             position: relative;
             height: 500px;
@@ -102,7 +89,6 @@
             padding: 15px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.03);
         }
-
         .date-range {
             color: var(--text-secondary);
             font-size: 0.9em;
@@ -112,31 +98,26 @@
             background: rgba(138, 180, 248, 0.1);
             border-radius: 8px;
         }
-
         .chart-legend {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-top: 20px;
         }
-
         .legend-item {
             display: flex;
             align-items: center;
             font-size: 0.85em;
         }
-
         .legend-color {
             width: 12px;
             height: 12px;
             border-radius: 3px;
             margin-right: 8px;
         }
-
         .pv-color {
             background-color: var(--pv-color);
         }
-
         .uv-color {
             background-color: var(--uv-color);
         }

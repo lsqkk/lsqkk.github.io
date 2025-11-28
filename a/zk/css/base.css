@@ -9,27 +9,22 @@
     --border-radius: 8px;
     --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
+    }
 body {
     background-color: #f5f5f5;
     color: var(--dark-color);
     line-height: 1.6;
 }
-
 .container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
-
 header {
     background-color: white;
     box-shadow: var(--box-shadow);
@@ -38,35 +33,29 @@ header {
     top: 0;
     z-index: 100;
 }
-
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .logo {
     font-size: 24px;
     font-weight: bold;
     color: var(--primary-color);
 }
-
 .nav-links {
     display: flex;
     gap: 20px;
 }
-
 .nav-links a {
     text-decoration: none;
     color: var(--gray-color);
     font-weight: 500;
     transition: color 0.3s;
 }
-
 .nav-links a:hover {
     color: var(--primary-color);
 }
-
 .btn {
     padding: 10px 20px;
     border: none;
@@ -75,25 +64,20 @@ nav {
     font-weight: 500;
     transition: all 0.3s;
 }
-
 .btn-primary {
     background-color: var(--primary-color);
     color: white;
 }
-
 .btn-primary:hover {
     background-color: #3367d6;
 }
-
 .btn-secondary {
     background-color: var(--secondary-color);
     color: white;
 }
-
 .btn-secondary:hover {
     background-color: #2d9249;
 }
-
 .card {
     background-color: white;
     border-radius: var(--border-radius);
@@ -101,24 +85,20 @@ nav {
     padding: 20px;
     margin-bottom: 20px;
 }
-
 .card-title {
     font-size: 18px;
     margin-bottom: 15px;
     color: var(--dark-color);
     font-weight: 600;
 }
-
 .form-group {
     margin-bottom: 15px;
 }
-
 .form-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: 500;
 }
-
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -128,25 +108,21 @@ nav {
     border-radius: var(--border-radius);
     font-size: 16px;
 }
-
 .form-group textarea {
     min-height: 80px;
     resize: vertical;
 }
-
 footer {
     text-align: center;
     padding: 20px 0;
     color: var(--gray-color);
     font-size: 14px;
 }
-
 /* 响应式设计 */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
     }
-
     .container {
         width: 95%;
     }

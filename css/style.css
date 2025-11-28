@@ -1,10 +1,7 @@
 ::-webkit-scrollbar {
     display: none;
 }
-
-
 @media (max-width: 768px) {
-
     html,
     body {
         width: 100%;
@@ -12,21 +9,17 @@
         position: relative;
     }
 }
-
 body,
 html {
     margin: 0;
     padding: 0;
     width: 100%;
 }
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
-
 .post-item {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px) saturate(100%);
@@ -38,18 +31,14 @@ html {
     transition: transform 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 button {
     background-color: rgba(255, 255, 255, 0.5);
     border: none;
     border-radius: 5px;
 }
-
-
 .search-results {
     margin-top: 20px;
 }
-
 .search-result-item {
     background-color: rgba(255, 255, 255, 0.5);
     margin: 10px;
@@ -62,13 +51,10 @@ button {
     box-shadow:
         0 4px 6px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
-
 }
-
 .search-result-item:hover {
     background-color: #f9f9f9;
 }
-
 /* 侧栏样式 */
 /* 侧栏整体样式 */
 .sidebar {
@@ -81,7 +67,6 @@ button {
     z-index: 999;
     overflow: hidden;
 }
-
 /* 侧栏内容容器 */
 .sidebar-content {
     background: rgba(255, 255, 255, 0.5) !important;
@@ -92,7 +77,6 @@ button {
     flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 /* 侧栏主要内容区域（可滚动） */
 .sidebar-main-content {
     flex: 1;
@@ -101,14 +85,12 @@ button {
     padding-right: 15px;
     color: rgba(255, 255, 255, 0.9);
 }
-
 /* 侧栏底部固定区域 */
 .sidebar-footer {
     padding: 15px 20px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     background: rgba(255, 255, 255, 0.6);
 }
-
 /* 侧栏切换按钮 */
 .sidebar-toggle {
     display: none;
@@ -130,25 +112,21 @@ button {
     justify-content: center;
     transition: all 0.3s ease;
 }
-
 .sidebar-toggle:hover {
     background: rgba(255, 255, 255, 0.9);
     transform: scale(1.05);
 }
-
 /* 目录样式 */
 .sidebar h4 {
     margin: 0 0 15px 0;
     color: #0366d6;
     font-size: 1.1em;
 }
-
 .toc-item {
     margin: 8px 0;
     padding: 0;
     line-height: 1.4;
 }
-
 .toc-item a {
     display: block;
     padding: 6px 10px;
@@ -157,12 +135,10 @@ button {
     border-radius: 4px;
     transition: all 0.2s;
 }
-
 .toc-item a:hover {
     background: rgba(0, 123, 255, 0.1);
     color: #007bff;
 }
-
 /* 导航箭头样式 */
 .nav-arrow {
     display: inline-block;
@@ -172,12 +148,10 @@ button {
     font-size: 0.9em;
     transition: opacity 0.3s;
 }
-
 .nav-arrow:hover {
     opacity: 0.8;
     text-decoration: underline;
 }
-
 /* 底部链接样式 */
 .sidebar-footer a {
     display: block;
@@ -186,26 +160,21 @@ button {
     text-decoration: none;
     transition: color 0.2s;
 }
-
 .sidebar-footer a:hover {
     color: #007bff;
 }
-
 /* 响应式设计 */
 @media (max-width: 1200px) {
     .sidebar-toggle {
         display: flex;
     }
-
     .sidebar {
         left: -300px;
     }
-
     .sidebar.active {
         left: 10px;
     }
 }
-
 @media (min-width: 1201px) {
     .sidebar {
         left: 20px;
@@ -213,36 +182,28 @@ button {
         width: 250px;
         height: calc(100vh - 120px);
     }
-
     .morenpost {
         margin-left: 100px;
     }
-
     .sidebar-toggle {
         display: none;
     }
 }
-
 /* 滚动条样式 */
 .sidebar-main-content::-webkit-scrollbar {
     width: 6px;
 }
-
 .sidebar-main-content::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
 }
-
 .sidebar-main-content::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
-
 .sidebar-main-content::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
 }
-
-
 /* 标签分类样式 */
 .tag-filter {
     display: flex;
@@ -252,7 +213,6 @@ button {
     padding: 15px;
     backdrop-filter: blur(10px);
 }
-
 .tag-btn {
     padding: 5px 12px;
     border-radius: 15px;
@@ -263,24 +223,20 @@ button {
     transition: all 0.3s;
     font-size: 0.9em;
 }
-
 .tag-btn:hover {
     background: rgba(93, 208, 255, 0.5);
     transform: translateY(-2px);
 }
-
 .tag-btn.active {
     background: #007bff;
     color: white;
 }
-
 .post-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 8px;
 }
-
 /* 背景样式 */
 .main-background {
     background: url('image/bg.png') no-repeat center center fixed;
@@ -289,7 +245,6 @@ button {
     padding-top: 10px;
     padding-bottom: 60px;
 }
-
 .main-layout {
     display: flex;
     flex-direction: row;
@@ -298,7 +253,6 @@ button {
     margin: 0 auto;
     padding: 20px;
 }
-
 .main-content {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px) saturate(100%);
@@ -308,8 +262,6 @@ button {
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
-
-
 .sidebar-index {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px) saturate(100%);
@@ -322,54 +274,45 @@ button {
     align-self: flex-start;
     height: auto !important;
 }
-
 @media (max-width: 768px) {
     .main-layout {
         flex-direction: column;
     }
-
     .sidebar-index {
         flex: 1;
         width: 100%;
     }
 }
-
 .time {
     font-size: 24px;
     color: #007bff;
     text-align: center;
     margin-bottom: 10px;
 }
-
 .date {
     text-align: center;
     color: #6c757d;
     margin-bottom: 15px;
 }
-
 .info {
     margin-bottom: 10px;
     line-height: 1.5;
 }
-
 .greeting {
     font-size: 18px;
     color: #28a745;
     margin-bottom: 5px;
 }
-
 .tip {
     font-style: italic;
     color: #6c757d;
     border-left: 3px solid #6c757d;
     padding-left: 10px;
 }
-
 .highlight {
     color: #007bff;
     font-weight: bold;
 }
-
 /* 底部容器样式 */
 .footer-container {
     max-width: 1200px;
@@ -379,7 +322,6 @@ button {
     padding: 0 20px;
     /* 与主内容区相同的左右内边距 */
 }
-
 .footer-content {
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(12px) saturate(100%);
@@ -392,20 +334,17 @@ button {
     font-size: 0.9em;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 /* 确保在移动端也能正确显示 */
 @media (max-width: 768px) {
     .footer-container {
         padding: 0 15px;
         /* 移动端稍小的内边距 */
     }
-
     .footer-content {
         margin: 15px;
         padding: 15px;
     }
 }
-
 /* 语言选择器样式 */
 .language-selector {
     background-color: rgba(255, 255, 255, 0.2);
@@ -417,11 +356,9 @@ button {
     cursor: pointer;
     transition: background-color 0.3s;
 }
-
 .language-selector:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
-
 .language-selector option {
     background-color: #7abd9a;
     color: white;

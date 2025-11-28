@@ -25,7 +25,6 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     /* 内阴影增强玻璃感 */
 }
-
 .header h1 {
     margin: 0;
     font-size: 1.5em;
@@ -33,26 +32,22 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     /* 文字阴影增强可读性 */
 }
-
 .header-content {
     display: flex;
     align-items: center;
     width: 100%;
     justify-content: space-between;
 }
-
 .header-left {
     display: flex;
     align-items: center;
 }
-
 .header-nav-container {
     display: flex;
     align-items: center;
     flex-grow: 1;
     justify-content: center;
 }
-
 .header-nav {
     display: flex;
     list-style-type: none;
@@ -60,12 +55,10 @@
     padding: 0;
     align-items: center;
 }
-
 .header-nav li {
     margin: 0 8px;
     white-space: nowrap;
 }
-
 .header-nav li a {
     color: white;
     text-decoration: none;
@@ -76,13 +69,11 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     /* 文字阴影增强可读性 */
 }
-
 .header-nav li a:hover {
     background-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     /* 悬停时添加阴影 */
 }
-
 /* 语言选择器样式 */
 .language-selector {
     background-color: rgba(255, 255, 255, 0.2);
@@ -98,23 +89,19 @@
     cursor: pointer;
     transition: background-color 0.3s;
 }
-
 .language-selector:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
-
 .language-selector option {
     background-color: rgba(122, 189, 154, 0.9);
     /* 半透明背景 */
     color: white;
 }
-
 .header-search {
     display: flex;
     align-items: center;
     margin-left: 15px;
 }
-
 .header-search input {
     width: 150px;
     padding: 5px 10px;
@@ -127,11 +114,9 @@
     /* Safari 支持 */
     color: white;
 }
-
 .header-search input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
-
 .header-search button {
     padding: 5px 12px;
     margin-left: 8px;
@@ -146,11 +131,9 @@
     cursor: pointer;
     transition: background-color 0.3s;
 }
-
 .header-search button:hover {
     background-color: rgba(255, 255, 255, 0.4);
 }
-
 /* 汉堡菜单样式 */
 .hamburger-menu {
     display: none;
@@ -164,7 +147,6 @@
     padding: 0;
     margin-left: 15px;
 }
-
 .hamburger-menu span {
     display: block;
     height: 2px;
@@ -173,11 +155,9 @@
     border-radius: 2px;
     transition: all 0.3s ease;
 }
-
 .hamburger-menu:hover span {
     background-color: rgba(255, 255, 255, 0.8);
 }
-
 /* 移动端侧边栏样式 */
 .mobile-navsidebar {
     display: none;
@@ -188,7 +168,6 @@
     height: 100%;
     z-index: 2000;
 }
-
 .navsidebar-overlay {
     position: absolute;
     top: 0;
@@ -201,7 +180,6 @@
     opacity: 0;
     transition: opacity 0.3s ease;
 }
-
 .navsidebar-content {
     position: absolute;
     top: 0;
@@ -217,7 +195,6 @@
     flex-direction: column;
     border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .navsidebar-header {
     display: flex;
     justify-content: space-between;
@@ -225,14 +202,12 @@
     padding: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .navsidebar-header h2 {
     margin: 0;
     color: white;
     font-size: 1.2em;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
 .navsidebar-close {
     background: none;
     border: none;
@@ -247,26 +222,21 @@
     justify-content: center;
     transition: background-color 0.3s;
 }
-
 .navsidebar-close:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
-
 .navsidebar-nav {
     flex: 1;
     padding: 20px 0;
 }
-
 .navsidebar-nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-
 .navsidebar-nav li {
     margin: 0;
 }
-
 .navsidebar-nav a {
     display: block;
     padding: 12px 20px;
@@ -275,18 +245,15 @@
     transition: background-color 0.3s;
     border-left: 3px solid transparent;
 }
-
 .navsidebar-nav a:hover {
     background-color: rgba(255, 255, 255, 0.2);
     border-left-color: rgba(255, 255, 255, 0.5);
 }
-
 .navsidebar-search {
     padding: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .navsidebar-search input {
     width: 100%;
     padding: 10px;
@@ -299,11 +266,9 @@
     margin-bottom: 10px;
     box-sizing: border-box;
 }
-
 .navsidebar-search input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
-
 .navsidebar-search button {
     width: 100%;
     padding: 10px;
@@ -316,24 +281,20 @@
     cursor: pointer;
     transition: background-color 0.3s;
 }
-
 .navsidebar-search button:hover {
     background-color: rgba(255, 255, 255, 0.4);
 }
-
 .navsidebar-controls {
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
-
 .navsidebar-language .language-selector {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
 }
-
 .navsidebar-login a {
     display: block;
     padding: 10px;
@@ -344,11 +305,9 @@
     border-radius: 5px;
     transition: background-color 0.3s;
 }
-
 .navsidebar-login a:hover {
     background-color: rgba(255, 255, 255, 0.3);
 }
-
 /* 移动端样式 */
 @media (max-width: 768px) {
     .header {
@@ -357,45 +316,36 @@
         -webkit-backdrop-filter: blur(15px);
         background: rgba(122, 189, 154, 0.2);
     }
-
     .header-nav-container {
         display: none;
     }
-
     .header-search {
         display: none;
     }
-
     .hamburger-menu {
         display: flex;
     }
-
     .mobile-navsidebar {
         display: block;
         visibility: hidden;
         transition: visibility 0.3s ease;
     }
-
     .mobile-navsidebar.active {
         visibility: visible;
     }
-
     .mobile-navsidebar.active .navsidebar-overlay {
         opacity: 1;
     }
-
     .mobile-navsidebar.active .navsidebar-content {
         right: 0;
     }
 }
-
 /* PC端样式 */
 @media (min-width: 769px) {
     .mobile-navsidebar {
         display: none;
     }
 }
-
 .header-placeholder {
     height: 60px;
 }

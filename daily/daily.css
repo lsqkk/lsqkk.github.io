@@ -10,14 +10,11 @@
     --blur-amount: 10px;
     --date-header-bg: rgba(66, 133, 244, 0.1);
 }
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-}
-
+    }
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -29,12 +26,10 @@ body {
     background-position: center;
     min-height: 100vh;
 }
-
 .container {
     max-width: 900px;
     margin: 0 auto;
 }
-
 header {
     text-align: center;
     margin-bottom: 30px;
@@ -45,7 +40,6 @@ header {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     /* 移除position: sticky相关属性 */
 }
-
 .header-content111 {
     display: flex;
     justify-content: center;
@@ -53,34 +47,29 @@ header {
     flex-wrap: wrap;
     gap: 10px 20px;
 }
-
 h1 {
     color: var(--primary-color);
     font-size: 2.5rem;
     margin-bottom: 0;
     /* 移除原来的下边距 */
 }
-
 .date {
     color: var(--light-text);
     font-size: 1rem;
     margin-bottom: 0;
     /* 确保没有额外边距 */
 }
-
 .header-description {
     color: var(--light-text);
     font-size: 1rem;
     margin-bottom: 0;
 }
-
 /* 以下保持原有样式不变 */
 .daily-sections {
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
-
 .daily-section {
     background: var(--card-bg);
     border-radius: var(--border-radius);
@@ -88,7 +77,6 @@ h1 {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(var(--blur-amount));
 }
-
 .daily-header {
     background-color: var(--date-header-bg);
     padding: 12px 20px;
@@ -98,14 +86,12 @@ h1 {
     align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 .articles-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 15px;
     padding: 20px;
 }
-
 .article-card {
     background: var(--card-bg);
     border-radius: var(--border-radius);
@@ -113,29 +99,23 @@ h1 {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
-
 .article-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
-
 .article-card.read {
     opacity: 0.7;
 }
-
-
 .article-content {
     padding: 15px;
     position: relative;
 }
-
 .article-title {
     font-size: 1.1rem;
     margin-bottom: 8px;
     color: var(--text-color);
     font-weight: 600;
 }
-
 .article-meta {
     display: flex;
     justify-content: space-between;
@@ -144,16 +124,13 @@ h1 {
     font-size: 0.85rem;
     color: var(--light-text);
 }
-
 .read-time {
     display: flex;
     align-items: center;
 }
-
 .read-time svg {
     margin-right: 5px;
 }
-
 .tag {
     display: inline-block;
     background-color: var(--primary-color);
@@ -164,20 +141,16 @@ h1 {
     margin-right: 5px;
     margin-bottom: 5px;
 }
-
-
 .empty-placeholder {
     text-align: center;
     padding: 30px;
     color: var(--light-text);
     grid-column: 1 / -1;
 }
-
 @media (max-width: 768px) {
     .articles-container {
         grid-template-columns: 1fr;
     }
-
     h1 {
         font-size: 2rem;
     }

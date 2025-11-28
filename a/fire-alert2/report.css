@@ -9,26 +9,21 @@
             --card-bg: rgba(255, 255, 255, 0.08);
             --card-border: rgba(255, 255, 255, 0.12);
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+            }
         body {
             background: linear-gradient(135deg, var(--primary-dark) 0%, #0d1f33 100%);
             color: var(--text-light);
             min-height: 100vh;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -37,13 +32,11 @@
             border-bottom: 1px solid var(--card-border);
             margin-bottom: 30px;
         }
-
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-
         .logo-icon {
             width: 50px;
             height: 50px;
@@ -54,23 +47,19 @@
             justify-content: center;
             font-size: 24px;
         }
-
         .logo-text h1 {
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 5px;
         }
-
         .logo-text p {
             color: var(--text-gray);
             font-size: 14px;
         }
-
         .nav-links {
             display: flex;
             gap: 20px;
         }
-
         .nav-link {
             color: var(--text-light);
             text-decoration: none;
@@ -78,20 +67,17 @@
             border-radius: 5px;
             transition: all 0.3s;
         }
-
         .nav-link:hover,
         .nav-link.active {
             background: rgba(255, 107, 53, 0.2);
             color: var(--accent-orange);
         }
-
         .report-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-bottom: 30px;
         }
-
         .form-card,
         .history-card {
             background: var(--card-bg);
@@ -100,7 +86,6 @@
             border: 1px solid var(--card-border);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
         .card-title {
             font-size: 20px;
             font-weight: 600;
@@ -109,7 +94,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .card-icon {
             width: 36px;
             height: 36px;
@@ -120,17 +104,14 @@
             background: rgba(255, 107, 53, 0.2);
             color: var(--accent-orange);
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         .form-label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
         }
-
         .form-input,
         .form-textarea,
         .form-select {
@@ -142,28 +123,23 @@
             color: var(--text-light);
             font-size: 16px;
         }
-
         .form-textarea {
             resize: vertical;
             min-height: 120px;
         }
-
         .form-input:focus,
         .form-textarea:focus,
         .form-select:focus {
             outline: none;
             border-color: var(--accent-orange);
         }
-
         .location-group {
             display: flex;
             gap: 10px;
         }
-
         .location-group .form-input {
             flex: 1;
         }
-
         .location-btn {
             padding: 12px 20px;
             background: var(--primary-blue);
@@ -176,11 +152,9 @@
             gap: 8px;
             transition: all 0.3s;
         }
-
         .location-btn:hover {
             background: var(--accent-orange);
         }
-
         .upload-area {
             border: 2px dashed var(--card-border);
             border-radius: 5px;
@@ -190,29 +164,24 @@
             transition: all 0.3s;
             margin-bottom: 15px;
         }
-
         .upload-area:hover {
             border-color: var(--accent-orange);
             background: rgba(255, 107, 53, 0.05);
         }
-
         .upload-icon {
             font-size: 40px;
             color: var(--text-gray);
             margin-bottom: 10px;
         }
-
         .upload-text {
             color: var(--text-gray);
         }
-
         .upload-preview {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin-top: 15px;
         }
-
         .preview-item {
             position: relative;
             width: 100px;
@@ -220,13 +189,11 @@
             border-radius: 5px;
             overflow: hidden;
         }
-
         .preview-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .remove-btn {
             position: absolute;
             top: 5px;
@@ -243,7 +210,6 @@
             cursor: pointer;
             font-size: 12px;
         }
-
         .submit-btn {
             width: 100%;
             padding: 15px;
@@ -257,17 +223,14 @@
             transition: all 0.3s;
             margin-top: 10px;
         }
-
         .submit-btn:hover {
             background: #e55a2b;
             transform: translateY(-2px);
         }
-
         .history-list {
             max-height: 500px;
             overflow-y: auto;
         }
-
         .history-item {
             padding: 15px;
             border-left: 3px solid var(--accent-orange);
@@ -275,28 +238,23 @@
             border-radius: 0 5px 5px 0;
             margin-bottom: 15px;
         }
-
         .history-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
-
         .history-title {
             font-weight: 600;
         }
-
         .history-time {
             font-size: 14px;
             color: var(--text-gray);
         }
-
         .history-desc {
             font-size: 14px;
             color: var(--text-gray);
             margin-bottom: 10px;
         }
-
         .history-status {
             display: inline-block;
             padding: 5px 10px;
@@ -304,52 +262,43 @@
             font-size: 12px;
             font-weight: 600;
         }
-
         .status-pending {
             background: rgba(241, 196, 15, 0.2);
             color: #f1c40f;
         }
-
         .status-confirmed {
             background: rgba(46, 204, 113, 0.2);
             color: #2ecc71;
         }
-
         .status-false {
             background: rgba(52, 152, 219, 0.2);
             color: #3498db;
         }
-
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-gray);
         }
-
         .empty-icon {
             font-size: 50px;
             margin-bottom: 15px;
             opacity: 0.5;
         }
-
         @media (max-width: 968px) {
             .report-container {
                 grid-template-columns: 1fr;
             }
         }
-
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
                 gap: 20px;
                 text-align: center;
             }
-
             .nav-links {
                 flex-wrap: wrap;
                 justify-content: center;
             }
-
             .location-group {
                 flex-direction: column;
             }

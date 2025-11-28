@@ -3,26 +3,19 @@
            --glass-bg: rgba(255, 255, 255, 0.9);
            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
        }
-
        body {
            background: linear-gradient(45deg, #f0f4ff, #ffffff);
            min-height: 100vh;
            padding: 2rem;
-           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-       }
-
+           }
        .dynamic-container {
            max-width: 800px;
            margin: 0 auto;
-
-
        }
-
        .dynamic-header {
            text-align: center;
            margin-bottom: 2rem;
        }
-
        .dynamic-card {
            background: var(--glass-bg);
            backdrop-filter: blur(12px);
@@ -33,35 +26,29 @@
            transition: transform 0.3s ease;
            border: 1px solid rgba(0, 0, 0, 0.1);
        }
-
        .dynamic-card:hover {
            transform: translateY(-3px);
        }
-
        .dynamic-title {
            color: #2c3e50;
            font-size: 1.4rem;
            margin-bottom: 0.5rem;
        }
-
        .dynamic-date {
            color: #7f8c8d;
            font-size: 0.9rem;
            margin-bottom: 1rem;
        }
-
        .dynamic-content {
            color: #34495e;
            line-height: 1.7;
        }
-
        .dynamic-content img {
            max-width: 100%;
            border-radius: 8px;
            margin: 1rem 0;
            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
        }
-
        .back-home {
            display: block;
            text-align: center;

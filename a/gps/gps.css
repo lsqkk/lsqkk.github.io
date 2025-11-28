@@ -2,15 +2,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+            }
         body {
             overflow: hidden;
             height: 100vh;
             width: 100vw;
         }
-
         #map {
             position: absolute;
             top: 0;
@@ -19,7 +16,6 @@
             height: 100%;
             z-index: 1;
         }
-
         /* 顶部标题栏 */
         .header {
             position: absolute;
@@ -36,25 +32,21 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-
         .logo {
             display: flex;
             align-items: center;
             margin-right: 20px;
         }
-
         .logo h1 {
             font-size: 1.5rem;
             font-weight: 600;
             color: #0066cc;
         }
-
         .logo span {
             font-size: 0.9rem;
             color: #888;
             margin-left: 10px;
         }
-
         /* 侧边控制栏 */
         .control-panel {
             position: absolute;
@@ -72,16 +64,13 @@
             max-height: calc(100vh - 90px);
             overflow-y: auto;
         }
-
         .panel-collapsed {
             width: 50px;
             overflow: hidden;
         }
-
         .panel-collapsed .panel-content {
             display: none;
         }
-
         .toggle-panel {
             position: absolute;
             top: 10px;
@@ -98,17 +87,14 @@
             font-size: 16px;
             z-index: 1010;
         }
-
         .panel-section {
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
         }
-
         .panel-section:last-child {
             border-bottom: none;
         }
-
         .panel-section h3 {
             font-size: 1rem;
             margin-bottom: 12px;
@@ -116,19 +102,16 @@
             display: flex;
             align-items: center;
         }
-
         .panel-section h3 i {
             margin-right: 8px;
             color: #0066cc;
         }
-
         .btn-group {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-bottom: 10px;
         }
-
         button {
             background: #f0f6ff;
             border: 1px solid #d0e2ff;
@@ -142,26 +125,21 @@
             align-items: center;
             justify-content: center;
         }
-
         button:hover {
             background: #e1efff;
         }
-
         button.active {
             background: #0066cc;
             color: white;
             border-color: #0066cc;
         }
-
         button i {
             margin-right: 5px;
         }
-
         .saved-items {
             max-height: 200px;
             overflow-y: auto;
         }
-
         .saved-item {
             padding: 8px 10px;
             background: #f9f9f9;
@@ -172,21 +150,17 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .saved-item:hover {
             background: #f0f0f0;
         }
-
         .saved-item .actions {
             display: flex;
             gap: 5px;
         }
-
         .saved-item .actions button {
             padding: 4px 8px;
             font-size: 0.8rem;
         }
-
         /* 底部信息栏 */
         .info-bar {
             position: absolute;
@@ -205,12 +179,10 @@
             display: flex;
             align-items: center;
         }
-
         .info-bar i {
             margin-right: 5px;
             color: #0066cc;
         }
-
         /* 移动设备适配 */
         @media (max-width: 768px) {
             .control-panel {
@@ -218,17 +190,14 @@
                 left: 5%;
                 top: 70px;
             }
-
             .panel-collapsed {
                 width: 50px;
                 left: calc(100% - 70px);
             }
-
             .btn-group {
                 grid-template-columns: 1fr;
             }
         }
-
         /* 加载动画 */
         .loader {
             position: absolute;
@@ -244,7 +213,6 @@
             flex-direction: column;
             align-items: center;
         }
-
         .spinner {
             width: 40px;
             height: 40px;
@@ -254,12 +222,10 @@
             animation: spin 1s linear infinite;
             margin-bottom: 10px;
         }
-
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
             }

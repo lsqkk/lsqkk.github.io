@@ -1,5 +1,4 @@
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         line-height: 1.6;
         max-width: 800px;
         margin: 0 auto;
@@ -7,7 +6,6 @@
         color: #333;
         background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
     }
-
     h1 {
         color: #2c3e50;
         text-align: center;
@@ -15,7 +13,6 @@
         font-weight: 600;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
-
     textarea {
         width: 100%;
         height: 200px;
@@ -29,13 +26,11 @@
         transition: all 0.3s ease;
         margin-bottom: 15px;
     }
-
     textarea:focus {
         outline: none;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
         background: rgba(255, 255, 255, 0.95);
     }
-
     button {
         background: linear-gradient(to right, #3498db, #2980b9);
         color: white;
@@ -51,13 +46,11 @@
         transition: all 0.3s ease;
         opacity: 0.9;
     }
-
     button:hover {
         opacity: 1;
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
     }
-
     .output-text {
         border-radius: 12px;
         padding: 20px;
@@ -67,7 +60,6 @@
         margin-bottom: 25px;
         border: 1px solid rgba(0, 0, 0, 0.05);
     }
-
     .high-suspicion {
         background: rgba(231, 76, 60, 0.1);
         border-left: 4px solid #e74c3c;
@@ -76,7 +68,6 @@
         margin: 10px 0;
         backdrop-filter: blur(2px);
     }
-
     .low-suspicion {
         background: rgba(243, 156, 18, 0.1);
         border-left: 4px solid #f39c12;
@@ -84,7 +75,6 @@
         padding: 12px 15px;
         margin: 10px 0;
     }
-
     .none-suspicion {
         background: rgba(46, 204, 113, 0.1);
         border-left: 4px solid #2ecc71;
@@ -92,7 +82,6 @@
         padding: 12px 15px;
         margin: 10px 0;
     }
-
     .reason {
         display: block;
         font-size: 13px;
@@ -102,7 +91,6 @@
         font-style: italic;
         opacity: 0.8;
     }
-
     .stats {
         margin: 25px 0;
         padding: 20px;
@@ -111,7 +99,6 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid rgba(0, 0, 0, 0.03);
     }
-
     .confidence-meter {
         height: 12px;
         background: rgba(236, 240, 241, 0.8);
@@ -119,14 +106,12 @@
         margin: 15px 0;
         overflow: hidden;
     }
-
     .confidence-level {
         height: 100%;
         background: linear-gradient(to left, #2ecc71, #f39c12, #e74c3c);
         border-radius: 6px;
         transition: width 0.5s ease;
     }
-
     .legend {
         display: flex;
         gap: 15px;
@@ -134,7 +119,6 @@
         flex-wrap: wrap;
         justify-content: center;
     }
-
     .legend-item {
         display: flex;
         align-items: center;
@@ -144,26 +128,22 @@
         border-radius: 20px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
-
     .legend-color {
         width: 16px;
         height: 16px;
         margin-right: 8px;
         border-radius: 50%;
     }
-
     h3,
     h4 {
         color: #34495e;
         margin-bottom: 15px;
         font-weight: 600;
     }
-
     p {
         margin: 8px 0;
         color: #4a5568;
     }
-
     .link {
         text-decoration: none;
         /* 去掉下划线 */

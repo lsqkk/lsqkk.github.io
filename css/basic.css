@@ -1,0 +1,8 @@
+/* 统一字体样式定义 */
+body, html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+    font-family: inherit;
+}

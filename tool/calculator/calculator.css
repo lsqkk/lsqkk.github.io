@@ -9,14 +9,11 @@
             --border-radius: 12px;
             --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
-
         * {
             box-sizing: border-box;
-            font-family: 'Roboto', 'Segoe UI', sans-serif;
             margin: 0;
             padding: 0;
         }
-
         body {
             background: var(--bg-dark);
             color: var(--text-primary);
@@ -26,7 +23,6 @@
             padding: 20px;
             min-height: 100vh;
         }
-
         .header {
             text-align: center;
             margin-bottom: 25px;
@@ -34,7 +30,6 @@
             max-width: 600px;
             animation: fadeIn 0.5s ease-out;
         }
-
         .header h1 {
             margin: 0;
             font-size: 28px;
@@ -43,13 +38,11 @@
             margin-bottom: 8px;
             letter-spacing: 1px;
         }
-
         .header .subtitle {
             color: var(--text-secondary);
             font-size: 14px;
             margin-bottom: 12px;
         }
-
         .header a {
             color: var(--secondary-color);
             text-decoration: none;
@@ -59,12 +52,10 @@
             padding: 4px 8px;
             border-radius: 4px;
         }
-
         .header a:hover {
             text-decoration: underline;
             background: rgba(77, 171, 247, 0.1);
         }
-
         .calculator {
             background: var(--bg-medium);
             border-radius: var(--border-radius);
@@ -75,7 +66,6 @@
             margin-bottom: 25px;
             animation: slideUp 0.5s ease-out;
         }
-
         .footer {
             text-align: center;
             width: 100%;
@@ -86,17 +76,14 @@
             padding-top: 20px;
             animation: fadeIn 0.5s ease-out;
         }
-
         .footer a {
             color: var(--secondary-color);
             text-decoration: none;
             transition: all 0.3s;
         }
-
         .footer a:hover {
             text-decoration: underline;
         }
-
         .mode-select {
             width: 100%;
             padding: 12px;
@@ -113,12 +100,10 @@
             background-size: 16px;
             transition: all 0.3s;
         }
-
         .mode-select:focus {
             outline: none;
             box-shadow: 0 0 0 2px var(--primary-color);
         }
-
         .display {
             background: var(--bg-light);
             padding: 20px;
@@ -126,7 +111,6 @@
             margin-bottom: 20px;
             position: relative;
         }
-
         #main-input {
             width: 100%;
             background: none;
@@ -138,11 +122,9 @@
             font-weight: 300;
             caret-color: var(--primary-color);
         }
-
         #main-input:focus {
             outline: none;
         }
-
         .cursor-indicator {
             position: absolute;
             right: 20px;
@@ -150,14 +132,12 @@
             font-size: 12px;
             color: var(--text-secondary);
         }
-
         .button-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 12px;
             margin-bottom: 15px;
         }
-
         button {
             background: var(--bg-light);
             border: none;
@@ -170,7 +150,6 @@
             position: relative;
             overflow: hidden;
         }
-
         button::after {
             content: '';
             position: absolute;
@@ -184,36 +163,29 @@
             transform: scale(1, 1) translate(-50%, -50%);
             transform-origin: 50% 50%;
         }
-
         button:active::after {
             animation: ripple 0.6s ease-out;
         }
-
         button:hover {
             background: #4d4d4d;
             transform: translateY(-2px);
         }
-
         .special-btn {
             background: var(--primary-color);
             color: #fff;
             font-weight: 500;
         }
-
         .special-btn:hover {
             background: #ffaa33;
         }
-
         .sci-btn {
             background: #3a3a3a;
             font-size: 16px;
         }
-
         .fn-btn {
             background: #2a2a2a;
             font-size: 14px;
         }
-
         .function-panel {
             background: var(--bg-light);
             padding: 20px;
@@ -222,18 +194,15 @@
             display: none;
             animation: fadeIn 0.3s ease-out;
         }
-
         .input-group {
             margin-bottom: 15px;
         }
-
         .input-group label {
             display: block;
             margin-bottom: 6px;
             color: var(--text-secondary);
             font-size: 14px;
         }
-
         input[type="text"] {
             width: 100%;
             padding: 12px;
@@ -244,13 +213,11 @@
             font-size: 16px;
             transition: all 0.3s;
         }
-
         input[type="text"]:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.2);
         }
-
         #result {
             background: var(--bg-light);
             padding: 20px;
@@ -261,64 +228,52 @@
             line-height: 1.5;
             animation: fadeIn 0.3s ease-out;
         }
-
         .error {
             color: #ff6b6b;
         }
-
         .success {
             color: #4dabf7;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
             }
-
             to {
                 opacity: 1;
             }
         }
-
         @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
         @keyframes ripple {
             0% {
                 transform: scale(0, 0);
                 opacity: 0.5;
             }
-
             100% {
                 transform: scale(20, 20);
                 opacity: 0;
             }
         }
-
         /* 响应式设计 */
         @media (max-width: 480px) {
             .button-grid {
                 gap: 8px;
             }
-
             button {
                 padding: 14px;
                 font-size: 16px;
             }
-
             .sci-btn {
                 font-size: 14px;
             }
-
             #main-input {
                 font-size: 24px;
             }

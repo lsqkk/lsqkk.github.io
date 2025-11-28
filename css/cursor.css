@@ -1,6 +1,5 @@
 /* 仅对非触摸设备应用自定义光标 */
 @media (hover: hover) and (pointer: fine) {
-
   /* 隐藏系统光标 - 扩展选择器确保覆盖所有情况 */
   html *,
   body *,
@@ -32,7 +31,6 @@
   input:visited {
     cursor: none !important;
   }
-
   /* 自定义光标 - 基础样式 */
   .custom-cursor {
     width: 16px;
@@ -48,7 +46,6 @@
     transform: translate(-50%, -50%);
     transition: all 0.5s ease-out;
   }
-
   /* 可点击元素上的光标样式 */
   .custom-cursor.clickable {
     width: 24px;
@@ -56,18 +53,15 @@
     background: rgba(180, 180, 180, 0.7);
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
   }
-
   /* 当鼠标离开视窗时隐藏自定义光标 */
   body:hover .custom-cursor {
     opacity: 1;
     transition: opacity 0.1s;
   }
-
   body:not(:hover) .custom-cursor {
     opacity: 0;
     transition: opacity 0.1s;
   }
-
   /* 光粒样式 */
   .cursor-particle {
     width: 8px;
@@ -79,13 +73,11 @@
     z-index: 9998;
     animation: particle-flow 0.6s ease-out forwards;
   }
-
   @keyframes particle-flow {
     0% {
       transform: scale(1) translate(0, 0);
       opacity: 1;
     }
-
     100% {
       transform: scale(0.2) translate(var(--tx), var(--ty));
       opacity: 0;
@@ -93,16 +85,13 @@
     }
   }
 }
-
 /* 对触摸设备隐藏自定义光标 */
 @media (hover: none) and (pointer: coarse) {
-
   .custom-cursor,
   .cursor-particle {
     display: none !important;
   }
 }
-
 /* 确保弹窗内元素使用系统光标 */
 .popup-overlay,
 .popup-overlay *,

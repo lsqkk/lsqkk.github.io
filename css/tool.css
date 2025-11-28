@@ -7,12 +7,10 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
 .tech-title {
     color: #333;
     font-size: 1.5em;
 }
-
 .tech-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -22,15 +20,11 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
-
-
 .tech-subtitle {
     color: #333;
     font-size: 1.2em;
     margin: 15px 0 10px;
 }
-
 .tech-link {
     display: block;
     color: #333;
@@ -42,12 +36,10 @@
     transition: all 0.2s ease;
     text-decoration: none;
 }
-
 .tech-link:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: translateX(3px);
 }
-
 .tech-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -56,19 +48,16 @@
     gap: 15px;
     padding: 15px;
 }
-
 /* 响应式调整 */
 @media (max-width: 768px) {
     .tech-grid {
         grid-template-columns: 1fr;
     }
-
     .tech-card {
         padding: 15px;
         margin: 10px;
     }
 }
-
 .content-container {
     position: relative;
     z-index: 1;

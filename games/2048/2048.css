@@ -2,9 +2,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+            }
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
@@ -14,14 +12,12 @@
             padding: 20px;
             color: #776e65;
         }
-
         .container {
             max-width: 500px;
             width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -29,18 +25,15 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-
         .title {
             font-size: 60px;
             font-weight: bold;
             color: #776e65;
         }
-
         .scores-container {
             display: flex;
             gap: 10px;
         }
-
         .score-box {
             background: #bbada0;
             color: white;
@@ -49,31 +42,26 @@
             text-align: center;
             min-width: 80px;
         }
-
         .score-title {
             font-size: 14px;
             text-transform: uppercase;
             font-weight: bold;
         }
-
         .score-value {
             font-size: 22px;
             font-weight: bold;
         }
-
         .game-intro {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-
         .description {
             font-size: 16px;
             line-height: 1.4;
             max-width: 60%;
         }
-
         .restart-button {
             background: #8f7a66;
             color: white;
@@ -85,12 +73,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .restart-button:hover {
             background: #7c6a58;
             transform: scale(1.05);
         }
-
         .game-container {
             position: relative;
             background: #bbada0;
@@ -99,7 +85,6 @@
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -109,7 +94,6 @@
             padding: 10px;
             position: relative;
         }
-
         .grid-cell {
             width: 100%;
             height: 0;
@@ -117,7 +101,6 @@
             background: rgba(238, 228, 218, 0.35);
             border-radius: 5px;
         }
-
         .tile-container {
             position: absolute;
             top: 10px;
@@ -125,7 +108,6 @@
             right: 10px;
             bottom: 10px;
         }
-
         .tile {
             position: absolute;
             display: flex;
@@ -142,68 +124,54 @@
             transform: scale(1);
             /* 确保默认缩放为1 */
         }
-
         /* 其他tile颜色样式保持不变 */
-
-
         .tile-2 {
             background: #eee4da;
         }
-
         .tile-4 {
             background: #ede0c8;
         }
-
         .tile-8 {
             background: #f2b179;
             color: #f9f6f2;
         }
-
         .tile-16 {
             background: #f59563;
             color: #f9f6f2;
         }
-
         .tile-32 {
             background: #f67c5f;
             color: #f9f6f2;
         }
-
         .tile-64 {
             background: #f65e3b;
             color: #f9f6f2;
         }
-
         .tile-128 {
             background: #edcf72;
             color: #f9f6f2;
             font-size: 30px;
         }
-
         .tile-256 {
             background: #edcc61;
             color: #f9f6f2;
             font-size: 30px;
         }
-
         .tile-512 {
             background: #edc850;
             color: #f9f6f2;
             font-size: 30px;
         }
-
         .tile-1024 {
             background: #edc53f;
             color: #f9f6f2;
             font-size: 25px;
         }
-
         .tile-2048 {
             background: #edc22e;
             color: #f9f6f2;
             font-size: 25px;
         }
-
         .game-message {
             position: absolute;
             top: 0;
@@ -218,18 +186,15 @@
             align-items: center;
             z-index: 100;
         }
-
         .game-message.game-won,
         .game-message.game-over {
             display: flex;
         }
-
         .game-message p {
             font-size: 40px;
             font-weight: bold;
             margin-bottom: 20px;
         }
-
         .lower {
             display: flex;
             justify-content: space-between;
@@ -237,21 +202,18 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-
         .controls {
             display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: center;
         }
-
         .directions {
             display: grid;
             grid-template-columns: repeat(3, 60px);
             grid-template-rows: repeat(3, 60px);
             gap: 5px;
         }
-
         .dir-btn {
             background: #8f7a66;
             color: white;
@@ -264,32 +226,26 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .dir-btn:hover {
             background: #7c6a58;
             transform: scale(1.05);
         }
-
         .dir-btn.up {
             grid-column: 2;
             grid-row: 1;
         }
-
         .dir-btn.down {
             grid-column: 2;
             grid-row: 3;
         }
-
         .dir-btn.left {
             grid-column: 1;
             grid-row: 2;
         }
-
         .dir-btn.right {
             grid-column: 3;
             grid-row: 2;
         }
-
         .instructions {
             flex: 1;
             background: #f8f5f0;
@@ -297,17 +253,14 @@
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-
         .instructions h3 {
             margin-bottom: 15px;
             color: #776e65;
         }
-
         .instructions p {
             margin-bottom: 10px;
             line-height: 1.6;
         }
-
         .key {
             display: inline-block;
             background: #e9e6e2;
@@ -317,7 +270,6 @@
             margin: 0 3px;
             box-shadow: 0 2px 0 #d8d4ce;
         }
-
         .more-games {
             display: block;
             width: 100%;
@@ -331,13 +283,11 @@
             margin-top: 20px;
             transition: all 0.3s;
         }
-
         .more-games:hover {
             background: #7c6a58;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .mobile-swipe {
             display: none;
             text-align: center;
@@ -345,52 +295,42 @@
             font-size: 14px;
             color: #776e65;
         }
-
         footer {
             text-align: center;
             margin-top: 30px;
             color: #776e65;
             font-size: 14px;
         }
-
         @media (max-width: 520px) {
             .title {
                 font-size: 40px;
             }
-
             .game-intro {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
-
             .description {
                 max-width: 100%;
             }
-
             .tile {
                 font-size: 24px;
             }
-
             .tile-128,
             .tile-256,
             .tile-512 {
                 font-size: 22px;
             }
-
             .tile-1024,
             .tile-2048 {
                 font-size: 18px;
             }
-
             .lower {
                 flex-direction: column;
             }
-
             .controls {
                 width: 100%;
             }
-
             .mobile-swipe {
                 display: block;
             }

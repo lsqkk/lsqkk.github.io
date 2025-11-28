@@ -1,5 +1,4 @@
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             margin: 0;
             padding: 0;
@@ -10,7 +9,6 @@
             text-align: center;
             color: #333;
         }
-
         .container {
             max-width: 600px;
             padding: 2rem;
@@ -18,23 +16,19 @@
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         }
-
         h1 {
             font-size: 3rem;
             margin: 0;
             color: #4a6fa5;
         }
-
         p {
             font-size: 1.2rem;
             margin: 1rem 0 2rem;
         }
-
         .emoji {
             font-size: 4rem;
             margin-bottom: 1rem;
         }
-
         .btn {
             display: inline-block;
             padding: 0.8rem 1.5rem;
@@ -45,12 +39,10 @@
             font-weight: bold;
             transition: all 0.3s ease;
         }
-
         .btn:hover {
             background: #3a5a8f;
             transform: translateY(-2px);
         }
-
         .countdown {
             font-size: 0.9rem;
             color: #666;

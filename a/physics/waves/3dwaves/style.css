@@ -1,18 +1,15 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
             color: #e0e0e0;
             overflow: hidden;
         }
-
         #container {
             position: absolute;
             width: 100%;
             height: 100%;
         }
-
         #ui {
             position: absolute;
             top: 20px;
@@ -24,35 +21,29 @@
             max-width: 300px;
             backdrop-filter: blur(5px);
         }
-
         h1 {
             margin-top: 0;
             color: #4cc9f0;
             font-size: 1.5em;
             margin-bottom: 15px;
         }
-
         .control-group {
             margin-bottom: 15px;
         }
-
         .control-group h3 {
             margin: 0 0 10px 0;
             color: #8a8aff;
             font-size: 1em;
         }
-
         .slider-container {
             margin-bottom: 10px;
         }
-
         .slider-label {
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
             font-size: 0.9em;
         }
-
         input[type="range"] {
             width: 100%;
             height: 6px;
@@ -61,7 +52,6 @@
             outline: none;
             -webkit-appearance: none;
         }
-
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 16px;
@@ -70,13 +60,11 @@
             background: #4cc9f0;
             cursor: pointer;
         }
-
         .buttons {
             display: flex;
             gap: 10px;
             margin-top: 15px;
         }
-
         button {
             flex: 1;
             padding: 8px 12px;
@@ -87,12 +75,10 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
         button:hover {
             background-color: #4cc9f0;
             color: #121212;
         }
-
         .legend {
             display: flex;
             justify-content: space-between;
@@ -100,7 +86,6 @@
             font-size: 0.8em;
             color: #8a8aff;
         }
-
         #instructions {
             position: absolute;
             bottom: 20px;
@@ -113,30 +98,24 @@
             backdrop-filter: blur(5px);
             font-size: 0.9em;
         }
-
         #instructions h3 {
             margin-top: 0;
             color: #4cc9f0;
         }
-
         #instructions ul {
             padding-left: 20px;
             margin: 0;
         }
-
         #instructions li {
             margin-bottom: 5px;
         }
-
         a:link {
             color: white;
             text-decoration: none;
         }
-
         a:visited {
             color: white;
         }
-
         a:hover {
             color: orange;
         }
