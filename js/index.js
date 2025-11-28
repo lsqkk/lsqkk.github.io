@@ -271,12 +271,13 @@ function getProvinceBanter(province) {
 // 获取访客信息
 async function getVisitorInfo() {
     try {
-        const response = await fetch('https://api.b52m.cn/api/IP/?key=60606913cdba7c');
+        const response = await fetch('https://webapi-pc.meitu.com/common/ip_location');
         const data = await response.json();
 
-        if (data.code === 200) {
-            const ipInfo = data.data;
-            const ip = data.ip;
+        if (data.code === 0) {
+            // 获取返回数据中的第一个IP对应的信息
+            const ip = Object.keys(data.data)[0];
+            const ipInfo = data.data[ip];
 
             // 站主位置
             const bloggerLat = 34.252705;
@@ -284,15 +285,15 @@ async function getVisitorInfo() {
 
             const distance = getDistance(
                 bloggerLat, bloggerLon,
-                ipInfo.latitude_3, ipInfo.longitude_3
+                ipInfo.latitude, ipInfo.longitude
             );
 
             // 获取省份俏皮话
-            const provinceBanter = getProvinceBanter(ipInfo.province_name_3);
+            const provinceBanter = getProvinceBanter(ipInfo.province);
 
             // 显示欢迎信息
             document.getElementById('welcome-info').innerHTML = `
-                        欢迎来自 <span class="highlight">${ipInfo.province_name_3} ${ipInfo.city_name_3} ${ipInfo.district_name_3}</span> 的朋友<br>
+                        欢迎来自 <span class="highlight">${ipInfo.province} ${ipInfo.city}</span> 的朋友<br>
                         <span class="highlight">${provinceBanter}</span><br>
                         您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
                         您的IP地址为: <span class="highlight">${ip}</span>
