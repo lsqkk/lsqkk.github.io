@@ -341,7 +341,7 @@ async function getVisitorInfo() {
                 `;
     } catch (error) {
         console.error('获取IP信息失败:', error);
-        document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
+        document.getElementById('welcome-info').textContent = '这里本来会显示IP和IP对应的问候语，如果你看到这句话就表示它坏了但我懒得修（或没招了），你就当我问候过了吧';
     }
 }
 
