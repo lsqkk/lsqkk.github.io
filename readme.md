@@ -1,62 +1,59 @@
+# 夸克博客
+
 <p> 
-  <a href="https://github.com/lsqkk?tab=followers"> <img src="https://img.shields.io/github/followers/lsqkk?label=Followers&style=plastic" height="25px" alt="github follow" /> </a>
-  <a href="https://scholar.google.com/citations?user=lsqkk"><img src="https://img.shields.io/badge/scholar-4385FE.svg?&style=plastic&logo=google-scholar&logoColor=white" alt="Google Scholar" height="25px"> </a>
-  <a href="mailto:jsxzznz@gmail.com"> <img src="https://img.shields.io/badge/gmail-%23D14836.svg?&style=plastic&logo=gmail&logoColor=white" height="25px" alt="Email">
+  <a href="https://github.com/lsqkk?tab=followers"><img src="https://img.shields.io/github/followers/lsqkk?label=Followers&style=plastic" height="25px" alt="github follow" /></a>
+  <a href="https://scholar.google.com/citations?user=lsqkk"><img src="https://img.shields.io/badge/scholar-4385FE.svg?&style=plastic&logo=google-scholar&logoColor=white" alt="Google Scholar" height="25px"></a>
+  <a href="mailto:jsxzznz@gmail.com"><img src="https://img.shields.io/badge/gmail-%23D14836.svg?&style=plastic&logo=gmail&logoColor=white" height="25px" alt="Email"></a>
   <a href="https://www.zhihu.com/people/jsxzznz"><img src="https://img.shields.io/badge/知乎-0079FF.svg?style=plastic&logo=zhihu&logoColor=white" height="25px" alt="知乎"></a>
-</p> 
+</p>
 
-# **无穷的远方，无数的人们，都和我有关**
+### 无穷的远方，无数的人们，都和我有关
 
-> 夸克博客说明文档
+> 夸克博客 · 技术笔记与项目实践
 
-欢迎来到我的个人博客项目仓库！这里是 **蓝色奇夸克** 在数字世界中的一片自留地，一个由代码、思考与好奇心构筑的空间。
+这是我的个人博客项目仓库，主要记录前端开发、技术实验和产品思考。项目基于原生技术栈构建，部署在 GitHub Pages。
 
-点此直达：[https://lsqkk.github.io](https://lsqkk.github.io)  
+博客地址：[https://lsqkk.github.io](https://lsqkk.github.io)
 更新日志：[https://lsqkk.github.io/log](https://lsqkk.github.io/log)
 
 ## Star 趋势
 
 [![Star History Chart](https://api.star-history.com/svg?repos=lsqkk/lsqkk.github.io&type=date&legend=top-left)](https://www.star-history.com/#lsqkk/lsqkk.github.io&type=date&legend=top-left)
 
-## 🛠️ 技术特色
+## 技术架构
 
-**这不是一个基于常见博客模板 + 静态网站生成器的项目**
+**基于原生技术栈的纯前端解决方案。**
 
-- 🎯 **手搓开发**：从架构到组件均为自主设计与实现
-- 🤖 **AI辅助编码**：在开发过程中与AI结对编程，探索新的开发范式
-- 🎨 **极致自由度**：摆脱模板约束，每个细节都按心中所想实现
-- 📚 **深度学习**：通过亲手构建，深入理解前端技术的每个层面
+- **原生开发**：不依赖主流前端框架（React/Vue/Angular），使用原生 JavaScript + Canvas 实现核心功能
+- **实时数据协同**：集成 Firebase 实现实时数据同步，支撑在线聊天室和实时对战游戏
+- **音视频推流**：通过声网 Agora API 实现直播画面的实时推流与播放
+- **Serverless 集成**：使用云函数托管敏感配置与 API Key，在 GitHub Pages 纯前端托管环境下实现后端能力
 
-虽然这条路更具挑战，但带来的控制力和学习价值是无与伦比的。
+项目探索了在静态站点环境下实现动态应用的技术路径，通过实时数据库和无服务架构弥补前后端分离的鸿沟。
 
-## 🌟 博客内容
+## 内容板块
 
-在这里，我分享：
+- [前端实验室](https://lsqkk.github.io/a)：原生 JavaScript 深入应用、性能优化、浏览器兼容性实践
+- [随笔](https://lsqkk.github.io/article-list)：架构设计、开发心得、技术选型思考
+- [工具集](https://lsqkk.github.io/tools)：自研前端工具、自动化脚本、效率解决方案
+- [游戏实验室](https://lsqkk.github.io/games)：基于 Canvas 的互动游戏，集成 Firebase 实时对战
+- [资讯聚合](https://lsqkk.github.io//daily)：前端技术动态、实时热搜与精选每日推荐
+- [动态相关](https://lsqkk.github.io/dt)：[网页聊天室](https://lsqkk.github.io/chat)、[直播推流](https://lsqkk.github.io/a/live)、[视频](https://lsqkk.github.io/qtv)
 
-- **💻 前端开发**：技术笔记、实战经验与前沿探索
-- **📝 个人感悟**：生活思考、读书心得与成长记录  
-- **🛠️ 实用工具**：自己开发的小工具、效率解决方案
-- **🎮 前端页游**：用前端技术实现的趣味游戏
-- **📢 个人动态**：近况更新、项目进展
+## 参与贡献
 
-## 🤝 支持与互动
+如果你对这个技术方案感兴趣：
 
-如果你被这个项目打动，或者从中获得了些许灵感：
+- **Star**：如果觉得项目有参考价值，欢迎 star 支持
+- **Issues**：反馈 bug 或提出技术建议
+- **Discussions**：欢迎交流原生开发、实时协同、无服务架构等技术话题
 
-- ⭐ **点亮Star** - 你的认可如同夜空中的星光，照亮前行的路
-- 🐛 **反馈建议** - 欢迎提交Issue，让这个项目变得更好
-- 💭 **交流思想** - 期待与你讨论技术、生活或任何有趣的话题
+## 无穷的远方，无数的人们
 
-## 🌌 无穷的远方，无数的人们
+在技术快速迭代的今天，我依然相信深入理解底层原理的价值。这个项目是对原生技术路线的探索，也是对静态站点能力边界的挑战。
 
-在这个信息碎片化的时代，我依然相信：
+每一行亲手编写的代码，都是对技术本质的追问；
+每一个突破限制的方案，都在拓展前端开发的疆域；
+每一次开源分享，都是与更广阔技术社区的对话。
 
-每一个用心构建的数字空间，都是连接彼此的桥梁；  
-每一行真诚写下的代码，都能在某个角落产生回响；  
-每一次无私的分享，都在让这个数字世界变得更有温度。
-
-感谢你的停留，愿我们都能在探索的路上，遇见那些与我们有关的远方和人们。
-
----
-
-*由蓝色奇夸克用 ❤️ 与 🤖 共同构建*
+感谢你的访问，期待在技术的世界里，与更多同行者相遇。
