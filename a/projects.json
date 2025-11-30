@@ -52,5 +52,11 @@
         "link": "quarkchat",
         "description": "支持语音/文字可视化对话聊天的数字人交互平台",
         "icon": "fa-robot"
+    },
+    {
+        "name": "夸克终端",
+        "link": "terminal",
+        "description": "纯前端网页模拟终端，支持自定义指令",
+        "icon": "fa-terminal"
     }
 ]
