@@ -309,39 +309,45 @@ function getProvinceBanter(province) {
     return banterMap[fullProvinceName] || '欢迎来玩！';
 }
 
-// 获取访客信息
 async function getVisitorInfo() {
     try {
-        const response = await fetch('http://demo.ip-api.com/json/?fields=66842623&lang=zh-CN');
-        const ipInfo = await response.json();
+        // 第一个API：获取IP地理信息
+        const ipResponse = await fetch('https://api.vore.top/api/IPdata');
+        const ipData = await ipResponse.json();
 
-        // 检查API返回状态
-        if (ipInfo.status !== 'success') {
-            throw new Error(ipInfo.message || 'API查询失败');
+        if (ipData.code === 200) {
+            const ip = ipData.ipinfo.text;
+            const locationInfo = ipData.ipdata;
+
+            // 第二个API：获取经纬度
+            const geoResponse = await fetch(`https://api.ip.sb/geoip/${ip}`);
+            const geoData = await geoResponse.json();
+
+            // 站主位置
+            const bloggerLat = 34.252705;
+            const bloggerLon = 108.990221;
+
+            const distance = getDistance(
+                bloggerLat, bloggerLon,
+                geoData.latitude, geoData.longitude
+            );
+
+            // 获取省份俏皮话
+            const provinceBanter = getProvinceBanter(locationInfo.info1);
+
+            // 显示欢迎信息
+            document.getElementById('welcome-info').innerHTML = `
+                        欢迎来自 <span class="highlight">${locationInfo.info1} ${locationInfo.info2} ${locationInfo.info3}</span> 的朋友<br>
+                        <span class="highlight">${provinceBanter}</span><br>
+                        您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
+                        您的IP地址为: <span class="highlight">${ip}</span>
+                    `;
+        } else {
+            throw new Error('IP数据API返回错误');
         }
-
-        // 站主位置
-        const bloggerLat = 34.252705;
-        const bloggerLon = 108.990221;
-
-        const distance = getDistance(
-            bloggerLat, bloggerLon,
-            ipInfo.lat, ipInfo.lon
-        );
-
-        // 获取省份俏皮话
-        const provinceBanter = getProvinceBanter(ipInfo.regionName);
-
-        // 显示欢迎信息
-        document.getElementById('welcome-info').innerHTML = `
-                    欢迎来自 <span class="highlight">${ipInfo.regionName} ${ipInfo.city}</span> 的朋友<br>
-                    <span class="highlight">${provinceBanter}</span><br>
-                    您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
-                    您的IP地址为: <span class="highlight">${ipInfo.query}</span>
-                `;
     } catch (error) {
         console.error('获取IP信息失败:', error);
-        document.getElementById('welcome-info').textContent = '这里本来会显示IP和IP对应的问候语，如果你看到这句话就表示它坏了但我懒得修（或没招了），你就当我问候过了吧';
+        document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
     }
 }
 
