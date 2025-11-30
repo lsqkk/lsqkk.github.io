@@ -163,15 +163,13 @@ class Terminal {
 
     showWelcome() {
         const welcomeText = `
-&nbsp;&nbsp;.oooooo.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooooo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.o.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooooooooo.&nbsp;&nbsp;&nbsp;oooo&nbsp;&nbsp;&nbsp;&nbsp;oooo&nbsp; | 欢迎使用 夸克终端 v1.0
-&nbsp;d8P'&nbsp;&nbsp;&nbsp;Y8b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;Y88.&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;.8P'&nbsp;&nbsp;
-888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8"888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;.d88'&nbsp;&nbsp;888&nbsp;&nbsp;d8'&nbsp;&nbsp;&nbsp;&nbsp;  | 输入"帮助"/"help"查看可用命令
-888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888ooo88P'&nbsp;&nbsp;&nbsp;88888[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
-888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;.88ooo8888.&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;88b.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;88b.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| QuarkBlog Terminal [版本 v1.0]
-&nbsp;88b&nbsp;&nbsp;&nbsp;&nbsp;d88b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;88.&nbsp;&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888.&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;88b.&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;88b.&nbsp;&nbsp;
-&nbsp;&nbsp;Y8bood8P'Ybd'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;YbodP'&nbsp;&nbsp;&nbsp;&nbsp;o88o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o8888o&nbsp;o888o&nbsp;&nbsp;o888o&nbsp;o888o&nbsp;&nbsp;o888o&nbsp; | (c) Quark BLog 夸克博客 All rights reserved.
-<br>
-<br>
+&nbsp;&nbsp;.oooooo.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooooo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.o.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ooooooooo.&nbsp;&nbsp;&nbsp;oooo&nbsp;&nbsp;&nbsp;&nbsp;oooo&nbsp; | 欢迎使用 夸克终端 v1.0 <br>
+&nbsp;d8P'&nbsp;&nbsp;&nbsp;Y8b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;Y88.&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;.8P'&nbsp;&nbsp; <br>
+888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8"888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;.d88'&nbsp;&nbsp;888&nbsp;&nbsp;d8'&nbsp;&nbsp;&nbsp;&nbsp;  | 输入"帮助"/"help"查看可用命令 <br>
+888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;888.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888ooo88P'&nbsp;&nbsp;&nbsp;88888[&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <br>
+888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;&nbsp;&nbsp;&nbsp;.88ooo8888.&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;88b.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888&nbsp;88b.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| QuarkBlog Terminal [版本 v1.0] <br>
+&nbsp;88b&nbsp;&nbsp;&nbsp;&nbsp;d88b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;88.&nbsp;&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;&nbsp;.8'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;888.&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;88b.&nbsp;&nbsp;&nbsp;888&nbsp;&nbsp;&nbsp;88b.&nbsp;&nbsp; <br>
+&nbsp;&nbsp;Y8bood8P'Ybd'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;YbodP'&nbsp;&nbsp;&nbsp;&nbsp;o88o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o8888o&nbsp;o888o&nbsp;&nbsp;o888o&nbsp;o888o&nbsp;&nbsp;o888o&nbsp; | (c) Quark BLog 夸克博客 All rights reserved. <br>
         `.trim();
 
         this.output(welcomeText, 'info');
