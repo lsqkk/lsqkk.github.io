@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克终端</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="/js/disable-right-click.js"></script>
+</head>
+
+<body>
+    <div id="terminal">
+        <div id="output"></div>
+        <div id="input-line">
+            <span id="prompt"></span>
+            <input type="text" id="command-input" autocomplete="off" autofocus>
+        </div>
+    </div>
+
+    <!-- 多行输入模态框 -->
+    <div id="multiline-modal" class="modal">
+        <div class="modal-content">
+            <h3>多行输入 - 按 Ctrl+Enter 保存</h3>
+            <textarea id="multiline-textarea" placeholder="请输入内容..."></textarea>
+            <div class="modal-buttons">
+                <button id="save-multiline">保存</button>
+                <button id="cancel-multiline">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/commands.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

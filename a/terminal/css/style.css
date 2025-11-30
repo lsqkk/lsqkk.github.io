@@ -1,0 +1,207 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow: hidden;
+}
+
+#terminal {
+    padding: 10px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#output {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.output-line {
+    margin-bottom: 2px;
+    word-wrap: break-word;
+}
+
+.output-line.error {
+    color: #ff4444;
+}
+
+.output-line.success {
+    color: #44ff44;
+}
+
+.output-line.info {
+    color: #4444ff;
+}
+
+.output-line.warning {
+    color: #ffff44;
+}
+
+#input-line {
+    display: flex;
+    align-items: center;
+}
+
+#prompt {
+    color: #00ff00;
+    margin-right: 5px;
+    white-space: nowrap;
+}
+
+#command-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 14px;
+    outline: none;
+    flex: 1;
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    padding: 20px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content h3 {
+    color: #00ff00;
+    margin-bottom: 15px;
+}
+
+#multiline-textarea {
+    flex: 1;
+    background: #000;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 10px;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 14px;
+    resize: none;
+    min-height: 200px;
+}
+
+.modal-buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-family: 'Courier New', Consolas, monospace;
+}
+
+.modal-buttons button:hover {
+    background: #444;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 文件列表样式 */
+.file-list {
+    margin: 5px 0;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    margin: 2px 0;
+}
+
+.file-icon {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
+}
+
+.file-name {
+    color: #fff;
+}
+
+.dir-name {
+    color: #44ff44;
+}
+
+.file-size {
+    color: #888;
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+/* 树形结构样式 */
+.tree {
+    margin-left: 10px;
+}
+
+.tree-item {
+    margin: 2px 0;
+}
+
+.tree-line {
+    display: flex;
+    align-items: center;
+}
+
+.tree-indent {
+    margin-right: 10px;
+    color: #555;
+}
+
+.tree-branch {
+    margin-right: 5px;
+    color: #555;
+}
