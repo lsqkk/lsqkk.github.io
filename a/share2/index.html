@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克闪传 | QuakeShare P2P</title>
+    <title>夸克闪传 | QuarkShare P2P</title>
     <script src="/js/nav.js"></script>
     <link rel="stylesheet" href="nav.css">
 
@@ -30,7 +30,8 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-light);
+            background: url('/image/bg.png') no-repeat center center fixed;
+            background-size: cover;
             color: #333;
             transition: background-color 0.3s;
         }
@@ -261,7 +262,7 @@
 
     <script>
         // -----------------------------------------------------------
-        // 1. Firebase 配置 (保持不变)
+        // 1. Firebase 配置与 STUN 服务器 (已修正)
         // -----------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
@@ -275,6 +276,20 @@
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        // 完整的 STUN 服务器列表 (已添加回来)
+        const STUN_SERVERS = [
+            { urls: 'stun:stun.minisipserver.com' },
+            { urls: 'stun:stun.zoiper.com' },
+            { urls: 'stun:stun.voipbuster.com' },
+            { urls: 'stun:stun.sipgate.net' },
+            { urls: 'stun:stun.schlund.de' },
+            { urls: 'stun:stun.voipstunt.com' },
+            { urls: 'stun:stun.1und1.de' },
+            { urls: 'stun:stun.gmx.net' },
+            { urls: 'stun:stun.l.google.com:19302' },
+        ];
+
 
         // -----------------------------------------------------------
         // 2. 全局变量与 DOM 元素 (保持不变)
@@ -332,14 +347,13 @@
         }
 
         // -----------------------------------------------------------
-        // 4. WebRTC 初始化 (保持不变)
+        // 4. WebRTC 初始化 (已修正 STUN 服务器引用)
         // -----------------------------------------------------------
 
         /** 初始化 RTCPeerConnection */
         function createPeerConnection(roomCode, isSenderDevice) {
-            // 使用 Google STUN 服务器 (公共且免费)
-            const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
-            peerConnection = new RTCPeerConnection({ iceServers });
+            // 使用完整的 STUN 服务器列表进行初始化
+            peerConnection = new RTCPeerConnection({ iceServers: STUN_SERVERS });
             currentRoomCode = roomCode;
             isSender = isSenderDevice;
 
@@ -616,7 +630,7 @@
         }
 
         // -----------------------------------------------------------
-        // 10. 事件监听器 (仅移除顶栏相关 JS，保持功能 JS)
+        // 10. 事件监听器 (保持不变)
         // -----------------------------------------------------------
 
         // 监听：点击“生成连接码并发送”
