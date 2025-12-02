@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克闪传 | QuarkShare P2P</title>
+    <script src="/js/nav.js"></script>
+    <link rel="stylesheet" href="nav.css">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        /* 1. 极简毛玻璃 CSS 和 顶栏兼容性处理 */
+        :root {
+            --header-height: 60px;
+            --main-blue: #007aff;
+            --main-green: #34c759;
+            --bg-light: #f0f2f5;
+            --card-bg-opacity: 0.8;
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --card-border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('/image/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+
+        .main-content-wrapper {
+            padding-top: var(--header-height);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-bottom: 50px;
+        }
+
+        /* 2. 容器和卡片样式 */
+        .container {
+            width: 90%;
+            max-width: 480px;
+            padding: 30px 20px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        /* 3. 输入框和按钮样式 */
+        .app-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+        }
+
+        .app-input::placeholder {
+            color: #999;
+        }
+
+        .file-select-label {
+            display: block;
+            background-color: var(--main-green);
+            color: white;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        /* 隐藏原生文件选择器 */
+        #file-input {
+            display: none;
+        }
+
+        .app-button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.2s;
+            border: none;
+            background-color: var(--main-blue);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
+        }
+
+        .app-button:disabled {
+            background-color: #a0c4ff;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .app-button:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0, 122, 255, 0.4);
+        }
+
+        /* 4. 文件列表样式 */
+        #file-list {
+            text-align: left;
+            list-style: none;
+            padding: 10px;
+            margin: 0 0 15px 0;
+            border: 1px dashed rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        #file-list li {
+            padding: 3px 0;
+            border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
+            word-break: break-all;
+        }
+
+        #file-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* 5. 状态和进度显示 */
+        #status-card {
+            margin-bottom: 40px;
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(245, 245, 245, 0.9);
+            border-radius: 8px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--main-green);
+            transition: width 0.1s;
+        }
+
+        /* 6. 下载区域美化 */
+        #download-area {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(52, 199, 89, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            text-align: left;
+        }
+
+        #download-area h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--main-green);
+            font-size: 1.1em;
+        }
+
+        #download-list a {
+            display: block;
+            margin: 5px 0;
+            padding: 8px;
+            background-color: rgba(0, 122, 255, 0.1);
+            border-radius: 6px;
+            color: var(--main-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        /* 7. 移动端优化 */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 10px 10px 30px 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content-wrapper">
+        <div class="container">
+
+            <div class="card" id="join-section">
+                <h2>连接设备</h2>
+                <input type="text" id="room-code-input" class="app-input" placeholder="输入三位连接码 (如 ABC)" maxlength="3"
+                    style="text-transform: uppercase;">
+                <button id="join-btn" class="app-button">加入房间并接收</button>
+                <button id="create-btn" class="app-button">生成连接码并发送</button>
+            </div>
+
+            <div class="card" id="transfer-section" style="display: none;">
+                <h2 id="transfer-title">等待连接...</h2>
+                <div id="file-selection-area">
+                    <input type="file" id="file-input" multiple>
+                    <label for="file-input" class="file-select-label">选择文件 (可多选)</label>
+                    <ul id="file-list" style="display: none;"></ul>
+                    <button id="send-btn" class="app-button" disabled>等待连接...</button>
+                </div>
+
+                <p id="current-file-info" style="font-size: 14px; color: #666; margin-top: 15px;"></p>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+
+                <div id="download-area" style="display: none;">
+                    <h3>已接收文件列表</h3>
+                    <div id="download-list">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="status-card">
+                <h2>状态信息</h2>
+                <div id="status">连接状态：未连接</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // -----------------------------------------------------------
+        // 1. Firebase 配置与 STUN 服务器
+        // -----------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
+            authDomain: "quark-b7305.firebaseapp.com",
+            projectId: "quark-b7305",
+            storageBucket: "quark-b7305.firebasestorage.app",
+            messagingSenderId: "843016834358",
+            appId: "1:843016834358:web:9438c729be28c4d492f797",
+            measurementId: "G-5BVT26KRT6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // 完整的 STUN 服务器列表
+        const STUN_SERVERS = [
+            { urls: 'stun:stun.minisipserver.com' },
+            { urls: 'stun:stun.zoiper.com' },
+            { urls: 'stun:stun.voipbuster.com' },
+            { urls: 'stun:stun.sipgate.net' },
+            { urls: 'stun:stun.schlund.de' },
+            { urls: 'stun:stun.voipstunt.com' },
+            { urls: 'stun:stun.1und1.de' },
+            { urls: 'stun:stun.gmx.net' },
+            { urls: 'stun:stun.l.google.com:19302' },
+        ];
+
+
+        // -----------------------------------------------------------
+        // 2. 全局变量与 DOM 元素 (多文件版本更新)
+        // -----------------------------------------------------------
+        let peerConnection;
+        let dataChannel;
+        let isSender = false;
+        let currentRoomCode = null;
+
+        // 发送相关 (更新为数组和索引)
+        let filesToSend = []; // 存储所有待发送的文件
+        let currentFileIndex = 0; // 当前正在发送的文件索引
+
+        // 接收相关 (更新为多文件支持)
+        let currentFileBuffer = []; // 当前正在接收文件的 Buffer
+        let currentFileName = '';
+        let currentFileSize = 0;
+        let totalFilesToReceive = 0;
+        let filesReceivedCount = 0; // 累计已接收的文件数
+
+        // File Chunk Settings
+        const CHUNK_SIZE = 64 * 1024; // 64KB per chunk
+        const METADATA_LABEL = 'metadata';
+
+        const joinSection = document.getElementById('join-section');
+        const transferSection = document.getElementById('transfer-section');
+        const transferTitle = document.getElementById('transfer-title');
+        const roomCodeInput = document.getElementById('room-code-input');
+        const joinBtn = document.getElementById('join-btn');
+        const createBtn = document.getElementById('create-btn');
+        const fileInput = document.getElementById('file-input');
+        const fileListUL = document.getElementById('file-list'); // 新增：文件列表
+        const sendBtn = document.getElementById('send-btn');
+        const statusDiv = document.getElementById('status');
+        const progressBar = document.getElementById('progress-bar');
+        const downloadArea = document.getElementById('download-area');
+        const downloadListDiv = document.getElementById('download-list'); // 新增：下载列表
+        const currentFileInfoP = document.getElementById('current-file-info'); // 新增：当前文件信息
+
+
+        // -----------------------------------------------------------
+        // 3. 核心函数：状态更新与实用工具
+        // -----------------------------------------------------------
+
+        /** 记录状态 */
+        function logStatus(message) {
+            statusDiv.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}\n` + statusDiv.innerHTML;
+            if (statusDiv.scrollTop > 0) statusDiv.scrollTop = 0;
+            console.log(message);
+        }
+
+        /** 生成三位随机大写字母码 */
+        function generateRoomCode() {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < 3; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        /** 更新进度条 */
+        function updateProgress(percentage) {
+            progressBar.style.width = `${Math.min(100, percentage)}%`;
+        }
+
+        /** 重置文件和传输状态 */
+        function resetTransferState() {
+            filesToSend = [];
+            currentFileIndex = 0;
+            currentFileBuffer = [];
+            currentFileName = '';
+            currentFileSize = 0;
+            totalFilesToReceive = 0;
+            filesReceivedCount = 0;
+            fileInput.value = '';
+            fileListUL.innerHTML = '';
+            fileListUL.style.display = 'none';
+            currentFileInfoP.textContent = '';
+            updateProgress(0);
+            downloadListDiv.innerHTML = '';
+            downloadArea.style.display = 'none';
+        }
+
+
+        // -----------------------------------------------------------
+        // 4. WebRTC 初始化 (保持 STUN 列表不变)
+        // -----------------------------------------------------------
+
+        /** 初始化 RTCPeerConnection */
+        function createPeerConnection(roomCode, isSenderDevice) {
+            peerConnection = new RTCPeerConnection({ iceServers: STUN_SERVERS });
+            currentRoomCode = roomCode;
+            isSender = isSenderDevice;
+
+            logStatus(`创建 WebRTC 连接，身份: ${isSender ? '发送方' : '接收方'}。`);
+
+            peerConnection.onicecandidate = async (event) => {
+                if (event.candidate) {
+                    const role = isSender ? 'sender' : 'receiver';
+                    const candidatesRef = database.ref(`rooms/${roomCode}/${role}/iceCandidates`);
+                    await candidatesRef.push(event.candidate.toJSON());
+                    // logStatus('发送 ICE 候选者...'); // 避免日志过多
+                }
+            };
+
+            peerConnection.oniceconnectionstatechange = () => {
+                logStatus(`ICE 连接状态: ${peerConnection.iceConnectionState}`);
+                if (peerConnection.iceConnectionState === 'connected') {
+                    logStatus('✅ P2P 连接建立成功！');
+                    if (isSender) {
+                        sendBtn.textContent = filesToSend.length > 0 ? `发送 ${filesToSend.length} 个文件` : '请选择文件';
+                        sendBtn.disabled = filesToSend.length === 0;
+                    } else {
+                        transferTitle.textContent = '等待发送方传输文件...';
+                    }
+                } else if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'closed') {
+                    logStatus('❌ P2P 连接断开或失败。请重试。');
+                }
+            };
+
+            if (isSender) {
+                dataChannel = peerConnection.createDataChannel('fileTransfer', { ordered: true });
+                setupDataChannel(dataChannel);
+                logStatus('已创建 DataChannel...');
+            } else {
+                peerConnection.ondatachannel = (event) => {
+                    dataChannel = event.channel;
+                    setupDataChannel(dataChannel);
+                    logStatus('已接收 DataChannel...');
+                };
+            }
+        }
+
+        /** DataChannel 的通用设置 */
+        function setupDataChannel(channel) {
+            channel.onopen = () => {
+                logStatus('DataChannel 打开，可以开始传输数据。');
+            };
+            channel.onclose = () => {
+                logStatus('DataChannel 关闭。');
+            };
+            channel.onerror = (error) => {
+                logStatus(`DataChannel 错误: ${error}`);
+            };
+
+            if (!isSender) {
+                channel.onmessage = handleDataChannelMessage;
+            }
+        }
+
+        // -----------------------------------------------------------
+        // 5. 信令函数 (保持不变)
+        // -----------------------------------------------------------
+
+        async function createSenderOffer(roomCode) {
+            createPeerConnection(roomCode, true);
+            transferTitle.textContent = `📢 连接码：${roomCode}`;
+            logStatus(`请将连接码 ${roomCode} 发送给接收方。`);
+
+            try {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                await database.ref(`rooms/${roomCode}/sender/sdp`).set(peerConnection.localDescription.toJSON());
+
+                database.ref(`rooms/${roomCode}/receiver/sdp`).on('value', async (snapshot) => {
+                    const answer = snapshot.val();
+                    if (answer && !peerConnection.currentRemoteDescription) {
+                        logStatus('接收到 Answer SDP，设置远程描述...');
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                        listenForIceCandidates(roomCode, 'receiver');
+                    }
+                });
+
+            } catch (e) {
+                logStatus(`❌ 发送方 Offer 失败: ${e.message}`);
+            }
+        }
+
+        async function createReceiverAnswer(roomCode) {
+            createPeerConnection(roomCode, false);
+            transferTitle.textContent = `连接码：${roomCode}`;
+
+            database.ref(`rooms/${roomCode}/sender/sdp`).once('value').then(async (snapshot) => {
+                const offer = snapshot.val();
+                if (!offer) {
+                    logStatus(`❌ 房间 ${roomCode} 不存在 Offer。`);
+                    return;
+                }
+
+                try {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    await database.ref(`rooms/${roomCode}/receiver/sdp`).set(peerConnection.localDescription.toJSON());
+                    listenForIceCandidates(roomCode, 'sender');
+
+                } catch (e) {
+                    logStatus(`❌ 接收方 Answer 失败: ${e.message}`);
+                }
+            });
+        }
+
+        function listenForIceCandidates(roomCode, remoteRole) {
+            database.ref(`rooms/${roomCode}/${remoteRole}/iceCandidates`).on('child_added', (snapshot) => {
+                const candidate = snapshot.val();
+                if (candidate) {
+                    try {
+                        peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                    } catch (e) {
+                        logStatus(`❌ 添加 ICE 候选者失败: ${e.message}`);
+                    }
+                }
+            });
+        }
+
+
+        // -----------------------------------------------------------
+        // 6. 文件传输逻辑 (发送方 - 重构为多文件支持)
+        // -----------------------------------------------------------
+
+        /** 开始传输下一个文件 */
+        async function sendNextFile() {
+            if (currentFileIndex < filesToSend.length) {
+                const file = filesToSend[currentFileIndex];
+                logStatus(`开始发送文件 [${currentFileIndex + 1}/${filesToSend.length}]: ${file.name}`);
+                await sendFileChunked(file, currentFileIndex, filesToSend.length);
+            } else {
+                // 所有文件发送完毕
+                logStatus('✅ 所有文件发送完成！');
+                transferTitle.textContent = '所有文件传输完成！';
+                currentFileInfoP.textContent = '';
+                sendBtn.textContent = `重新发送 (${filesToSend.length} 个文件)`;
+                sendBtn.disabled = false;
+
+                // 传输完成后清理 Firebase 信令数据
+                if (currentRoomCode) {
+                    database.ref(`rooms/${currentRoomCode}`).remove();
+                }
+            }
+        }
+
+        /** 分块发送单个文件 */
+        async function sendFileChunked(file, index, total) {
+            if (dataChannel.readyState !== 'open') {
+                logStatus('❌ DataChannel 未打开或未连接，无法发送文件。');
+                currentFileIndex = total; // 终止发送
+                return;
+            }
+
+            const fileSize = file.size;
+            let offset = 0;
+
+            sendBtn.disabled = true;
+
+            // 1. 发送文件元数据 (包含多文件信息)
+            const metadata = {
+                label: METADATA_LABEL,
+                fileName: file.name,
+                fileSize: fileSize,
+                fileIndex: index + 1, // 1-based index
+                totalFiles: total,
+            };
+            dataChannel.send(JSON.stringify(metadata));
+
+            const fileReader = new FileReader();
+
+            fileReader.onload = async (e) => {
+                // 优化：等待 DataChannel 发送缓冲区低水位
+                if (dataChannel.bufferedAmount > dataChannel.bufferedAmountLowThreshold) {
+                    await new Promise(resolve => dataChannel.onbufferedamountlow = resolve);
+                }
+
+                dataChannel.send(e.target.result);
+                offset += e.target.result.byteLength;
+
+                const percentage = (offset / fileSize) * 100;
+                updateProgress(percentage);
+
+                const sizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+                currentFileInfoP.textContent = `文件 ${index + 1}/${total} - ${file.name} (${sizeMB} MB)`;
+                transferTitle.textContent = `发送中: ${file.name} | ${percentage.toFixed(1)}%`;
+
+                if (offset < fileSize) {
+                    readSlice(offset);
+                } else {
+                    // 当前文件发送完毕
+                    logStatus(`文件 [${index + 1}/${total}] 发送完毕。`);
+                    currentFileIndex++;
+                    await sendNextFile(); // 自动发送下一个文件
+                }
+            };
+
+            fileReader.onerror = (error) => {
+                logStatus(`❌ 文件 [${index + 1}/${total}] 读取失败: ${error}`);
+                currentFileIndex++; // 跳过该文件
+                sendNextFile();
+            };
+
+            const readSlice = (start) => {
+                const slice = file.slice(start, start + CHUNK_SIZE);
+                fileReader.readAsArrayBuffer(slice);
+            };
+
+            readSlice(0); // 开始读取第一个块
+        }
+
+
+        // -----------------------------------------------------------
+        // 7. 文件传输逻辑 (接收方 - 重构为多文件支持)
+        // -----------------------------------------------------------
+
+        /** 处理接收到的 DataChannel 消息 */
+        function handleDataChannelMessage(event) {
+            const data = event.data;
+
+            if (typeof data === 'string') {
+                try {
+                    const metadata = JSON.parse(data);
+                    if (metadata.label === METADATA_LABEL) {
+                        // 接收到新文件的元数据
+
+                        // 检查上一个文件是否完整接收 (仅用于调试/错误处理)
+                        if (currentFileBuffer.length > 0 && currentFileSize > 0) {
+                            logStatus(`警告：上一个文件 (${currentFileName}) 未完整接收，但收到了新文件的元数据。`);
+                        }
+
+                        currentFileName = metadata.fileName;
+                        currentFileSize = metadata.fileSize;
+                        totalFilesToReceive = metadata.totalFiles;
+                        filesReceivedCount = metadata.fileIndex - 1; // 当前文件是第 N 个，所以已接收 N-1 个
+                        currentFileBuffer = [];
+                        downloadArea.style.display = 'block';
+
+                        const sizeMB = (currentFileSize / (1024 * 1024)).toFixed(2);
+                        logStatus(`开始接收文件 [${metadata.fileIndex}/${totalFilesToReceive}]：${currentFileName} (${sizeMB} MB)`);
+                        currentFileInfoP.textContent = `文件 ${metadata.fileIndex}/${totalFilesToReceive} - ${currentFileName} (${sizeMB} MB)`;
+                        transferTitle.textContent = `接收中: ${currentFileName} | 0.0%`;
+                        updateProgress(0);
+                        return;
+                    }
+                } catch (e) {
+                    // 忽略非元数据的字符串消息
+                }
+            } else if (data instanceof ArrayBuffer) {
+                // 接收到数据块
+                fileBuffer.push(data);
+                const totalBytesReceived = fileBuffer.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+                const percentage = (totalBytesReceived / currentFileSize) * 100;
+
+                updateProgress(percentage);
+                transferTitle.textContent = `接收中: ${currentFileName} | ${percentage.toFixed(1)}%`;
+
+                if (totalBytesReceived >= currentFileSize) {
+                    // 当前文件接收完毕
+                    logStatus(`✅ 文件 [${filesReceivedCount + 1}/${totalFilesToReceive}] 接收完成！正在合成...`);
+
+                    const fullFile = new Blob(fileBuffer);
+                    const downloadUrl = URL.createObjectURL(fullFile);
+
+                    // 添加到下载列表
+                    const downloadElement = document.createElement('a');
+                    downloadElement.href = downloadUrl;
+                    downloadElement.download = currentFileName;
+                    downloadElement.textContent = `下载 ${currentFileName} (${(currentFileSize / 1024 / 1024).toFixed(2)} MB)`;
+                    downloadListDiv.appendChild(downloadElement);
+
+                    // 重置当前文件状态，准备接收下一个
+                    fileBuffer = [];
+                    filesReceivedCount++;
+
+                    if (filesReceivedCount >= totalFilesToReceive) {
+                        // 所有文件接收完毕
+                        logStatus('🎉 所有文件传输完成！');
+                        transferTitle.textContent = '所有文件接收完毕！';
+                        currentFileInfoP.textContent = '';
+
+                        // 传输完成后清理 Firebase 信令数据
+                        if (currentRoomCode) {
+                            database.ref(`rooms/${currentRoomCode}`).remove();
+                        }
+                    } else {
+                        // 等待下一个文件元数据
+                        transferTitle.textContent = `等待发送方发送下一个文件 (${filesReceivedCount + 1}/${totalFilesToReceive})...`;
+                    }
+                }
+            }
+        }
+
+
+        // -----------------------------------------------------------
+        // 8. 事件监听器 (更新为多文件支持)
+        // -----------------------------------------------------------
+
+        // 监听：点击“生成连接码并发送”
+        createBtn.addEventListener('click', () => {
+            const roomCode = generateRoomCode();
+            roomCodeInput.value = roomCode; // 自动填充
+            joinSection.style.display = 'none';
+            transferSection.style.display = 'block';
+            resetTransferState(); // 重置状态
+            createSenderOffer(roomCode);
+        });
+
+        // 监听：点击“加入房间并接收”
+        joinBtn.addEventListener('click', () => {
+            const roomCode = roomCodeInput.value.toUpperCase().trim();
+            if (roomCode.length !== 3) {
+                logStatus('❌ 连接码必须是三位大写字母。');
+                return;
+            }
+            joinSection.style.display = 'none';
+            transferSection.style.display = 'block';
+            resetTransferState(); // 重置状态
+            createReceiverAnswer(roomCode);
+        });
+
+        // 监听：文件选择
+        fileInput.addEventListener('change', (e) => {
+            filesToSend = Array.from(e.target.files);
+            fileListUL.innerHTML = '';
+            currentFileIndex = 0; // 重置索引
+
+            if (filesToSend.length > 0) {
+                fileListUL.style.display = 'block';
+                filesToSend.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+                    fileListUL.appendChild(li);
+                });
+
+                if (peerConnection && peerConnection.iceConnectionState === 'connected') {
+                    sendBtn.textContent = `发送 ${filesToSend.length} 个文件`;
+                    sendBtn.disabled = false;
+                } else {
+                    sendBtn.textContent = `已选择 ${filesToSend.length} 个文件 (等待连接)`;
+                    sendBtn.disabled = true;
+                }
+            } else {
+                fileListUL.style.display = 'none';
+                sendBtn.textContent = '请选择文件';
+                sendBtn.disabled = true;
+            }
+        });
+
+        // 监听：点击发送按钮
+        sendBtn.addEventListener('click', () => {
+            if (filesToSend.length > 0 && dataChannel && dataChannel.readyState === 'open') {
+                currentFileIndex = 0; // 确保从第一个文件开始发送
+                sendNextFile();
+            } else if (filesToSend.length === 0) {
+                logStatus('❌ 请先选择要发送的文件。');
+            } else {
+                logStatus('❌ 请等待连接建立或 DataChannel 打开。');
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
