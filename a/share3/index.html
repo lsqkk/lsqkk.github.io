@@ -326,7 +326,7 @@
 
 
         // -----------------------------------------------------------
-        // 2. 全局变量与 DOM 元素 (更新为多文件支持)
+        // 2. 全局变量与 DOM 元素
         // -----------------------------------------------------------
         let peerConnection;
         let dataChannel;
@@ -355,12 +355,12 @@
         const joinBtn = document.getElementById('join-btn');
         const createBtn = document.getElementById('create-btn');
         const fileInput = document.getElementById('file-input');
-        const fileListUL = document.getElementById('file-list'); // 新增：文件列表
+        const fileListUL = document.getElementById('file-list');
         const sendBtn = document.getElementById('send-btn');
         const statusDiv = document.getElementById('status');
         const progressBar = document.getElementById('progress-bar');
         const downloadArea = document.getElementById('download-area');
-        const downloadListDiv = document.getElementById('download-list'); // 新增：下载列表
+        const downloadListDiv = document.getElementById('download-list');
         const cleanRoomBtn = document.getElementById('clean-room-btn');
         const currentFileInfoP = document.getElementById('current-file-info');
 
@@ -442,7 +442,7 @@
 
 
         // -----------------------------------------------------------
-        // 4. WebRTC 初始化 (保持 STUN 列表完整性)
+        // 4. WebRTC 初始化
         // -----------------------------------------------------------
 
         /** 初始化 RTCPeerConnection */
@@ -574,15 +574,16 @@
 
 
         // -----------------------------------------------------------
-        // 5. 多文件传输逻辑 (发送方)
+        // 5. 多文件传输逻辑 (发送方) - 修复流量控制问题
         // -----------------------------------------------------------
 
         /** 开始传输下一个文件 */
-        async function sendNextFile() {
+        function sendNextFile() {
             if (currentFileIndex < filesToSend.length) {
                 const file = filesToSend[currentFileIndex];
                 logStatus(`开始发送文件 [${currentFileIndex + 1}/${filesToSend.length}]: ${file.name}`);
-                await sendFileChunked(file, currentFileIndex, filesToSend.length);
+                // 修复点: 移除 await，因为文件读取是异步的，不阻塞主线程
+                sendFileChunked(file, currentFileIndex, filesToSend.length);
             } else {
                 // 所有文件发送完毕
                 logStatus('✅ 所有文件发送完成！');
@@ -594,10 +595,10 @@
         }
 
         /** 分块发送单个文件 */
-        async function sendFileChunked(file, index, total) {
+        function sendFileChunked(file, index, total) {
             if (dataChannel.readyState !== 'open') {
                 logStatus('❌ DataChannel 未打开或未连接。');
-                currentFileIndex = total; // 终止发送
+                currentFileIndex = total;
                 return;
             }
 
@@ -606,7 +607,7 @@
 
             sendBtn.disabled = true;
 
-            // 1. 发送文件元数据 (包含多文件信息)
+            // 1. 发送文件元数据
             const metadata = {
                 label: METADATA_LABEL,
                 fileName: file.name,
@@ -618,37 +619,42 @@
 
             const fileReader = new FileReader();
 
-            fileReader.onload = async (e) => {
-                // 确保在 DataChannel 发送缓冲区允许时才发送
-                if (dataChannel.bufferedAmount < dataChannel.bufferedAmountLowThreshold) {
-                    dataChannel.send(e.target.result);
-                    offset += e.target.result.byteLength;
+            // 核心修复点 1: fileReader.onload 不再包含阻塞的 await
+            fileReader.onload = (e) => {
+                // 1. 发送当前已读取的块
+                dataChannel.send(e.target.result);
+                offset += e.target.result.byteLength;
 
-                    const percentage = (offset / fileSize) * 100;
-                    updateProgress(percentage);
+                // 2. 更新 UI
+                const percentage = (offset / fileSize) * 100;
+                updateProgress(percentage);
 
-                    const sizeMB = (fileSize / (1024 * 1024)).toFixed(2);
-                    currentFileInfoP.textContent = `文件 ${index + 1}/${total} - ${file.name} (${sizeMB} MB)`;
-                    transferTitle.textContent = `发送中: ${file.name} | ${percentage.toFixed(1)}%`;
+                const sizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+                currentFileInfoP.textContent = `文件 ${index + 1}/${total} - ${file.name} (${sizeMB} MB)`;
+                transferTitle.textContent = `发送中: ${file.name} | ${percentage.toFixed(1)}%`;
 
-                    if (offset < fileSize) {
-                        readSlice(offset);
+                // 3. 决定下一步动作
+                if (offset < fileSize) {
+                    // 检查缓冲区水位
+                    if (dataChannel.bufferedAmount < dataChannel.bufferedAmountLowThreshold) {
+                        readSlice(offset); // 缓冲区安全，继续读取下一块
                     } else {
-                        // 当前文件发送完毕，准备下一个
-                        logStatus(`文件 [${index + 1}/${total}] 发送完毕。`);
-                        currentFileIndex++;
-                        await sendNextFile();
+                        // 缓冲区已满，暂停读取，等待 onbufferedamountlow 事件触发
+                        logStatus(`DataChannel buffer full (${dataChannel.bufferedAmount} bytes). Pausing file read.`);
                     }
                 } else {
-                    // 如果缓冲区满了，等待 low buffer event
-                    await new Promise(resolve => dataChannel.onbufferedamountlow = resolve);
-                    fileReader.onload(e); // 重新调用 onload 尝试发送
+                    // 文件发送完毕
+                    logStatus(`文件 [${index + 1}/${total}] 发送完毕。`);
+                    dataChannel.onbufferedamountlow = null; // 清除流量控制处理器
+                    currentFileIndex++;
+                    sendNextFile(); // 立即启动下一个文件传输
                 }
             };
 
             fileReader.onerror = (error) => {
                 logStatus(`❌ 文件 [${index + 1}/${total}] 读取失败: ${error}`);
-                currentFileIndex++; // 跳过该文件
+                dataChannel.onbufferedamountlow = null;
+                currentFileIndex++;
                 sendNextFile();
             };
 
@@ -657,10 +663,16 @@
                 fileReader.readAsArrayBuffer(slice);
             };
 
-            // 监听 DataChannel 缓冲区低水位事件，用于流量控制
-            dataChannel.onbufferedamountlow = () => { /* 仅作标记，实际逻辑在 fileReader.onload 中实现 */ };
+            // 核心修复点 2: 独立设置流量控制处理器，用于在缓冲区恢复时，从当前偏移量 (offset) 恢复读取
+            dataChannel.onbufferedamountlow = () => {
+                logStatus('DataChannel buffer low. Resuming file read.');
+                if (offset < fileSize) {
+                    readSlice(offset);
+                }
+            };
 
-            readSlice(0); // 开始读取第一个块
+            // 启动第一次读取
+            readSlice(0);
         }
 
 
@@ -684,7 +696,7 @@
                         currentFileName = metadata.fileName;
                         currentFileSize = metadata.fileSize;
                         totalFilesToReceive = metadata.totalFiles;
-                        filesReceivedCount = metadata.fileIndex - 1; // 当前文件是第 N 个，所以已接收 N-1 个
+                        filesReceivedCount = metadata.fileIndex - 1;
                         currentFileBuffer = [];
                         downloadArea.style.display = 'block';
 
