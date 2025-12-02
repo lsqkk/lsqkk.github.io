@@ -3,332 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>手机平衡球游戏</title>
+    <title>手机平板托乒乓球</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #gameBoard {
-            width: 90vw;
-            height: 70vh;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        #ball {
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle at 30% 30%, #ff9a9e, #fad0c4);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: all 0.1s ease-out;
-        }
-        
-        .controls {
-            margin-top: 20px;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        
-        .tilt-indicator {
-            width: 200px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            margin: 10px auto;
-            position: relative;
-        }
-        
-        .tilt-dot {
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        #startBtn {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s;
-        }
-        
-        #startBtn:hover {
-            transform: scale(1.05);
-        }
-        
-        .hole {
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 50%;
-            position: absolute;
-            border: 3px dashed rgba(255, 255, 255, 0.5);
-        }
-        
-        #score {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 10px;
-        }
+        body { margin: 0; padding: 0; overflow: hidden; background: #f5f5f5; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #tip { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #333; font-size: 16px; text-align: center; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="score">得分: 0</div>
-        <div id="gameBoard">
-            <div id="ball"></div>
-        </div>
-        
-        <div class="controls">
-            <div class="tilt-indicator">
-                <div class="tilt-dot" id="tiltDot"></div>
-            </div>
-            <div id="tiltInfo">倾斜度: 0°</div>
-            <button id="startBtn">开始游戏</button>
-            <div id="permissionInfo" style="font-size: 12px; margin-top: 10px;">
-                *需要授权访问设备运动传感器
-            </div>
-        </div>
-    </div>
+    <div id="tip">点击屏幕激活陀螺仪，倾斜手机控制平板托球～</div>
+    <canvas id="gameCanvas"></canvas>
 
+    <!-- 引入Cannon.js物理引擎 -->
+    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js"></script>
     <script>
-        class BalanceBallGame {
-            constructor() {
-                this.ball = document.getElementById('ball');
-                this.gameBoard = document.getElementById('gameBoard');
-                this.tiltDot = document.getElementById('tiltDot');
-                this.tiltInfo = document.getElementById('tiltInfo');
-                this.startBtn = document.getElementById('startBtn');
-                this.scoreElement = document.getElementById('score');
-                
-                this.ballX = 50; // 百分比位置
-                this.ballY = 50;
-                this.score = 0;
-                this.isPlaying = false;
-                this.tiltX = 0;
-                this.tiltY = 0;
-                this.sensitivity = 0.3; // 灵敏度
-                
-                this.setupEventListeners();
-                this.createHoles();
+        // 1. 初始化Canvas和上下文
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // 2. 初始化Cannon.js物理世界
+        const world = new CANNON.World();
+        world.gravity.set(0, -9.8, 0); // 重力方向（Y轴负方向）
+        world.broadphase = new CANNON.SAPBroadphase(world);
+        world.solver.iterations = 15; // 碰撞精度
+        world.solver.tolerance = 0.001;
+
+        // 3. 创建物理材质（控制摩擦和弹性）
+        const groundMaterial = new CANNON.Material('groundMaterial');
+        const ballMaterial = new CANNON.Material('ballMaterial');
+        const contactMaterial = new CANNON.ContactMaterial(
+            groundMaterial,
+            ballMaterial,
+            {
+                friction: 0.1, // 摩擦系数（越小球越滑）
+                restitution: 0.3, // 弹性系数（越小球越不弹）
+                contactEquationStiffness: 1000,
+                contactEquationRelaxation: 4
             }
-            
-            setupEventListeners() {
-                this.startBtn.addEventListener('click', () => {
-                    if (!this.isPlaying) {
-                        this.requestPermission();
-                    } else {
-                        this.resetGame();
-                    }
-                });
-                
-                // 监听方向变化
-                window.addEventListener('deviceorientation', (event) => {
-                    if (!this.isPlaying) return;
-                    
-                    // gamma: 左右倾斜 (-90到90)
-                    // beta: 前后倾斜 (-180到180)
-                    this.tiltX = event.gamma || 0; // 左右
-                    this.tiltY = event.beta || 0;  // 前后
-                    
-                    // 限制范围
-                    this.tiltX = Math.max(-90, Math.min(90, this.tiltX));
-                    this.tiltY = Math.max(-180, Math.min(180, this.tiltY));
-                    
-                    this.updateTiltIndicator();
-                    this.moveBall();
-                });
-            }
-            
-            requestPermission() {
-                // iOS 13+ 需要用户手势触发
-                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    DeviceOrientationEvent.requestPermission()
-                        .then(permissionState => {
-                            if (permissionState === 'granted') {
-                                this.startGame();
-                            } else {
-                                alert('需要授权才能使用陀螺仪功能');
-                            }
-                        })
-                        .catch(console.error);
-                } else {
-                    this.startGame();
-                }
-            }
-            
-            startGame() {
-                this.isPlaying = true;
-                this.startBtn.textContent = '重新开始';
-                this.score = 0;
-                this.updateScore();
-                this.resetBallPosition();
-                
-                // 添加防抖动的平滑处理
-                this.smoothTiltX = 0;
-                this.smoothTiltY = 0;
-            }
-            
-            resetGame() {
-                this.isPlaying = false;
-                this.startBtn.textContent = '开始游戏';
-                this.resetBallPosition();
-                this.tiltDot.style.left = '50%';
-                this.tiltInfo.textContent = '倾斜度: 0°';
-            }
-            
-            updateTiltIndicator() {
-                // 更新倾斜指示器
-                const dotPosition = 50 + (this.tiltX / 90) * 50;
-                this.tiltDot.style.left = `${Math.max(0, Math.min(100, dotPosition))}%`;
-                
-                this.tiltInfo.textContent = 
-                    `倾斜度: X:${this.tiltX.toFixed(1)}° Y:${this.tiltY.toFixed(1)}°`;
-            }
-            
-            moveBall() {
-                if (!this.isPlaying) return;
-                
-                // 平滑处理
-                this.smoothTiltX = this.smoothTiltX * 0.7 + this.tiltX * 0.3;
-                this.smoothTiltY = this.smoothTiltY * 0.7 + this.tiltY * 0.3;
-                
-                // 计算新位置
-                const maxTilt = 45;
-                const tiltFactorX = this.smoothTiltX / maxTilt;
-                const tiltFactorY = (this.smoothTiltY - 90) / maxTilt; // 调整基准位置
-                
-                // 更新球的位置（百分比）
-                this.ballX += tiltFactorX * this.sensitivity;
-                this.ballY += tiltFactorY * this.sensitivity;
-                
-                // 边界检查
-                this.ballX = Math.max(2, Math.min(98, this.ballX));
-                this.ballY = Math.max(2, Math.min(98, this.ballY));
-                
-                // 应用位置
-                this.ball.style.left = `${this.ballX}%`;
-                this.ball.style.top = `${this.ballY}%`;
-                
-                // 检查是否掉入洞中
-                this.checkHoles();
-                
-                // 检查是否掉落边缘
-                if (this.ballX <= 2 || this.ballX >= 98 || 
-                    this.ballY <= 2 || this.ballY >= 98) {
-                    this.gameOver();
-                }
-            }
-            
-            createHoles() {
-                const holes = [
-                    { x: 20, y: 20 },
-                    { x: 80, y: 20 },
-                    { x: 20, y: 80 },
-                    { x: 80, y: 80 },
-                    { x: 50, y: 50 }
-                ];
-                
-                holes.forEach((hole, index) => {
-                    const holeEl = document.createElement('div');
-                    holeEl.className = 'hole';
-                    holeEl.style.left = `${hole.x}%`;
-                    holeEl.style.top = `${hole.y}%`;
-                    holeEl.dataset.index = index;
-                    this.gameBoard.appendChild(holeEl);
-                });
-            }
-            
-            checkHoles() {
-                const holes = document.querySelectorAll('.hole');
-                const ballRect = this.ball.getBoundingClientRect();
-                
-                holes.forEach(hole => {
-                    const holeRect = hole.getBoundingClientRect();
-                    const distance = Math.sqrt(
-                        Math.pow(ballRect.left + 25 - (holeRect.left + 30), 2) +
-                        Math.pow(ballRect.top + 25 - (holeRect.top + 30), 2)
-                    );
-                    
-                    if (distance < 30) {
-                        this.score += 10;
-                        this.updateScore();
-                        this.resetBallPosition();
-                        
-                        // 短暂闪烁效果
-                        hole.style.animation = 'none';
-                        setTimeout(() => {
-                            hole.style.animation = 'pulse 0.5s';
-                        }, 10);
-                    }
-                });
-            }
-            
-            resetBallPosition() {
-                this.ballX = 50;
-                this.ballY = 50;
-                this.ball.style.left = '50%';
-                this.ball.style.top = '50%';
-            }
-            
-            updateScore() {
-                this.scoreElement.textContent = `得分: ${this.score}`;
-            }
-            
-            gameOver() {
-                alert(`游戏结束！最终得分: ${this.score}`);
-                this.resetGame();
+        );
+        world.addContactMaterial(contactMaterial);
+
+        // 4. 创建"平板"物理体（静止，质量为0）
+        const groundSize = { width: 8, height: 6 }; // 平板物理尺寸
+        const groundShape = new CANNON.Plane();
+        const groundBody = new CANNON.Body({
+            mass: 0, // 质量为0表示固定不动
+            material: groundMaterial,
+            quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0) // 旋转为水平
+        });
+        groundBody.addShape(groundShape, new CANNON.Vec3(0, 0, 0));
+        groundBody.position.set(0, -2, 0); // 平板初始位置
+        world.addBody(groundBody);
+
+        // 5. 创建乒乓球物理体
+        const ballRadius = 0.3;
+        const ballShape = new CANNON.Sphere(ballRadius);
+        const ballBody = new CANNON.Body({
+            mass: 0.1, // 球的质量
+            material: ballMaterial,
+            linearDamping: 0.05, // 空气阻力（减小抖动）
+            angularDamping: 0.1
+        });
+        ballBody.addShape(ballShape);
+        ballBody.position.set(0, 1, 0); // 球初始位置（平板上方）
+        world.addBody(ballBody);
+
+        // 6. 陀螺仪数据处理（核心：将设备倾斜转为平板角度）
+        let beta = 0; // 前后倾斜角度（-180~180）
+        let gamma = 0; // 左右倾斜角度（-90~90）
+        const tiltSensitivity = 0.8; // 倾斜灵敏度（越小越平缓）
+
+        // 点击屏幕激活陀螺仪（iOS必须用户交互触发）
+        document.body.addEventListener('click', initGyro, { once: true });
+        function initGyro() {
+            document.getElementById('tip').textContent = '倾斜手机控制平板，别让球掉下去！';
+            if (window.DeviceOrientationEvent) {
+                // 监听设备方向变化
+                window.addEventListener('deviceorientation', (e) => {
+                    // 限制角度范围，避免过度倾斜
+                    beta = Math.max(-30, Math.min(30, e.beta || 0));
+                    gamma = Math.max(-30, Math.min(30, e.gamma || 0));
+                }, true);
+            } else {
+                alert('当前设备不支持陀螺仪功能，无法玩此游戏～');
             }
         }
-        
-        // 初始化游戏
-        window.addEventListener('DOMContentLoaded', () => {
-            new BalanceBallGame();
-            
-            // 添加CSS动画
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.2); }
-                    100% { transform: scale(1); }
-                }
-            `;
-            document.head.appendChild(style);
-        });
+
+        // 7. 更新平板倾斜角度
+        function updatePlatformTilt() {
+            // 将角度转为弧度，乘以灵敏度控制倾斜幅度
+            const tiltX = gamma * tiltSensitivity * Math.PI / 180;
+            const tiltY = beta * tiltSensitivity * Math.PI / 180;
+            // 旋转平板（X轴控制左右倾斜，Y轴控制前后倾斜）
+            groundBody.quaternion.setFromEuler(-Math.PI/2 + tiltY, tiltX, 0);
+        }
+
+        // 8. 物理世界与Canvas渲染同步
+        function syncPhysicsToRender() {
+            // 平板渲染（Canvas中心为原点，转换物理坐标到屏幕坐标）
+            const groundScreenX = canvas.width / 2;
+            const groundScreenY = canvas.height / 2;
+            const groundRenderWidth = groundSize.width * 50; // 物理尺寸转屏幕像素
+            const groundRenderHeight = groundSize.height * 50;
+
+            // 乒乓球渲染坐标
+            const ballScreenX = canvas.width / 2 + ballBody.position.x * 50;
+            const ballScreenY = canvas.height / 2 - ballBody.position.y * 50; // Y轴反向（Canvas向下为正）
+            const ballRenderRadius = ballRadius * 50;
+
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制平板（半透明矩形）
+            ctx.save();
+            ctx.translate(groundScreenX, groundScreenY);
+            ctx.rotate(gamma * tiltSensitivity * Math.PI / 180); // 跟随倾斜旋转
+            ctx.fillStyle = 'rgba(66, 133, 244, 0.7)';
+            ctx.fillRect(-groundRenderWidth/2, -groundRenderHeight/2, groundRenderWidth, groundRenderHeight);
+            ctx.restore();
+
+            // 绘制乒乓球（黄色圆形）
+            ctx.beginPath();
+            ctx.arc(ballScreenX, ballScreenY, ballRenderRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFC107';
+            ctx.fill();
+            ctx.strokeStyle = '#FF9800';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 球掉出边界后重置位置
+            if (Math.abs(ballBody.position.x) > groundSize.width/2 + ballRadius ||
+                Math.abs(ballBody.position.y) > 5) {
+                ballBody.position.set(0, 1, 0);
+                ballBody.velocity.set(0, 0, 0);
+                ballBody.angularVelocity.set(0, 0, 0);
+            }
+        }
+
+        // 9. 动画循环（60帧/秒）
+        function animate() {
+            requestAnimationFrame(animate);
+            updatePlatformTilt(); // 更新平板倾斜
+            world.step(1/60); // 物理世界更新
+            syncPhysicsToRender(); // 同步渲染
+        }
+        animate();
     </script>
 </body>
 </html>
