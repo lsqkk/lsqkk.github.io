@@ -7,17 +7,15 @@
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background: #f5f5f5; }
         canvas { display: block; width: 100vw; height: 100vh; }
-        #tip { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #333; font-size: 16px; text-align: center; }
+        #tip { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #333; font-size: 16px; text-align: center; max-width: 90%; }
     </style>
 </head>
 <body>
-    <div id="tip">点击屏幕激活陀螺仪，倾斜手机控制平板托球～</div>
+    <div id="tip">正在启动陀螺仪...iOS请允许传感器权限</div>
     <canvas id="gameCanvas"></canvas>
 
-    <!-- 引入Cannon.js物理引擎 -->
     <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js"></script>
     <script>
-        // 1. 初始化Canvas和上下文
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -27,108 +25,118 @@
             canvas.height = window.innerHeight;
         });
 
-        // 2. 初始化Cannon.js物理世界
+        // 初始化物理世界
         const world = new CANNON.World();
-        world.gravity.set(0, -9.8, 0); // 重力方向（Y轴负方向）
+        world.gravity.set(0, -9.8, 0);
         world.broadphase = new CANNON.SAPBroadphase(world);
-        world.solver.iterations = 15; // 碰撞精度
+        world.solver.iterations = 15;
         world.solver.tolerance = 0.001;
 
-        // 3. 创建物理材质（控制摩擦和弹性）
+        // 物理材质
         const groundMaterial = new CANNON.Material('groundMaterial');
         const ballMaterial = new CANNON.Material('ballMaterial');
         const contactMaterial = new CANNON.ContactMaterial(
             groundMaterial,
             ballMaterial,
-            {
-                friction: 0.1, // 摩擦系数（越小球越滑）
-                restitution: 0.3, // 弹性系数（越小球越不弹）
-                contactEquationStiffness: 1000,
-                contactEquationRelaxation: 4
-            }
+            { friction: 0.1, restitution: 0.3, contactEquationStiffness: 1000, contactEquationRelaxation: 4 }
         );
         world.addContactMaterial(contactMaterial);
 
-        // 4. 创建"平板"物理体（静止，质量为0）
-        const groundSize = { width: 8, height: 6 }; // 平板物理尺寸
+        // 创建平板
+        const groundSize = { width: 8, height: 6 };
         const groundShape = new CANNON.Plane();
         const groundBody = new CANNON.Body({
-            mass: 0, // 质量为0表示固定不动
+            mass: 0,
             material: groundMaterial,
-            quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0) // 旋转为水平
+            quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0)
         });
-        groundBody.addShape(groundShape, new CANNON.Vec3(0, 0, 0));
-        groundBody.position.set(0, -2, 0); // 平板初始位置
+        groundBody.addShape(groundShape);
+        groundBody.position.set(0, -2, 0);
         world.addBody(groundBody);
 
-        // 5. 创建乒乓球物理体
+        // 创建乒乓球
         const ballRadius = 0.3;
         const ballShape = new CANNON.Sphere(ballRadius);
         const ballBody = new CANNON.Body({
-            mass: 0.1, // 球的质量
+            mass: 0.1,
             material: ballMaterial,
-            linearDamping: 0.05, // 空气阻力（减小抖动）
+            linearDamping: 0.05,
             angularDamping: 0.1
         });
         ballBody.addShape(ballShape);
-        ballBody.position.set(0, 1, 0); // 球初始位置（平板上方）
+        ballBody.position.set(0, 1, 0);
         world.addBody(ballBody);
 
-        // 6. 陀螺仪数据处理（核心：将设备倾斜转为平板角度）
-        let beta = 0; // 前后倾斜角度（-180~180）
-        let gamma = 0; // 左右倾斜角度（-90~90）
-        const tiltSensitivity = 0.8; // 倾斜灵敏度（越小越平缓）
+        // 陀螺仪变量
+        let beta = 0;
+        let gamma = 0;
+        const tiltSensitivity = 0.8;
 
-        // 点击屏幕激活陀螺仪（iOS必须用户交互触发）
-        document.body.addEventListener('click', initGyro, { once: true });
-        function initGyro() {
-            document.getElementById('tip').textContent = '倾斜手机控制平板，别让球掉下去！';
+        // 页面加载后自动初始化陀螺仪（核心修改）
+        window.addEventListener('load', initGyro);
+        async function initGyro() {
+            try {
+                // 适配iOS 13+的权限请求
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        startOrientationListener();
+                        document.getElementById('tip').textContent = '倾斜手机控制平板，别让球掉下去！';
+                    } else {
+                        document.getElementById('tip').textContent = '请开启传感器权限以正常游戏';
+                    }
+                } else {
+                    // Android直接开启监听
+                    startOrientationListener();
+                    document.getElementById('tip').textContent = '倾斜手机控制平板，别让球掉下去！';
+                }
+            } catch (error) {
+                document.getElementById('tip').textContent = '陀螺仪启动失败，请刷新重试';
+                console.error(error);
+            }
+        }
+
+        // 启动方向监听
+        function startOrientationListener() {
             if (window.DeviceOrientationEvent) {
-                // 监听设备方向变化
                 window.addEventListener('deviceorientation', (e) => {
-                    // 限制角度范围，避免过度倾斜
                     beta = Math.max(-30, Math.min(30, e.beta || 0));
                     gamma = Math.max(-30, Math.min(30, e.gamma || 0));
                 }, true);
             } else {
-                alert('当前设备不支持陀螺仪功能，无法玩此游戏～');
+                document.getElementById('tip').textContent = '当前设备不支持陀螺仪功能';
             }
         }
 
-        // 7. 更新平板倾斜角度
+        // 更新平板倾斜
         function updatePlatformTilt() {
-            // 将角度转为弧度，乘以灵敏度控制倾斜幅度
             const tiltX = gamma * tiltSensitivity * Math.PI / 180;
             const tiltY = beta * tiltSensitivity * Math.PI / 180;
-            // 旋转平板（X轴控制左右倾斜，Y轴控制前后倾斜）
             groundBody.quaternion.setFromEuler(-Math.PI/2 + tiltY, tiltX, 0);
         }
 
-        // 8. 物理世界与Canvas渲染同步
+        // 渲染同步
         function syncPhysicsToRender() {
-            // 平板渲染（Canvas中心为原点，转换物理坐标到屏幕坐标）
             const groundScreenX = canvas.width / 2;
             const groundScreenY = canvas.height / 2;
-            const groundRenderWidth = groundSize.width * 50; // 物理尺寸转屏幕像素
+            const groundRenderWidth = groundSize.width * 50;
             const groundRenderHeight = groundSize.height * 50;
 
-            // 乒乓球渲染坐标
             const ballScreenX = canvas.width / 2 + ballBody.position.x * 50;
-            const ballScreenY = canvas.height / 2 - ballBody.position.y * 50; // Y轴反向（Canvas向下为正）
+            const ballScreenY = canvas.height / 2 - ballBody.position.y * 50;
             const ballRenderRadius = ballRadius * 50;
 
-            // 清空画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 绘制平板（半透明矩形）
+            // 绘制平板
             ctx.save();
             ctx.translate(groundScreenX, groundScreenY);
-            ctx.rotate(gamma * tiltSensitivity * Math.PI / 180); // 跟随倾斜旋转
+            ctx.rotate(gamma * tiltSensitivity * Math.PI / 180);
             ctx.fillStyle = 'rgba(66, 133, 244, 0.7)';
             ctx.fillRect(-groundRenderWidth/2, -groundRenderHeight/2, groundRenderWidth, groundRenderHeight);
             ctx.restore();
 
-            // 绘制乒乓球（黄色圆形）
+            // 绘制乒乓球
             ctx.beginPath();
             ctx.arc(ballScreenX, ballScreenY, ballRenderRadius, 0, Math.PI * 2);
             ctx.fillStyle = '#FFC107';
@@ -137,21 +145,20 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // 球掉出边界后重置位置
-            if (Math.abs(ballBody.position.x) > groundSize.width/2 + ballRadius ||
-                Math.abs(ballBody.position.y) > 5) {
+            // 球掉落重置
+            if (Math.abs(ballBody.position.x) > groundSize.width/2 + ballRadius || Math.abs(ballBody.position.y) > 5) {
                 ballBody.position.set(0, 1, 0);
                 ballBody.velocity.set(0, 0, 0);
                 ballBody.angularVelocity.set(0, 0, 0);
             }
         }
 
-        // 9. 动画循环（60帧/秒）
+        // 动画循环
         function animate() {
             requestAnimationFrame(animate);
-            updatePlatformTilt(); // 更新平板倾斜
-            world.step(1/60); // 物理世界更新
-            syncPhysicsToRender(); // 同步渲染
+            updatePlatformTilt();
+            world.step(1/60);
+            syncPhysicsToRender();
         }
         animate();
     </script>
