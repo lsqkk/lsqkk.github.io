@@ -106,8 +106,18 @@ function initEventListeners() {
 
     // 创建房间
     elements.createRoom.addEventListener('click', () => {
-        roomId = elements.roomIdInput.value || generateRoomId();
-        elements.roomIdInput.value = roomId;
+        const inputRoomId = elements.roomIdInput.value.trim();
+
+        if (!inputRoomId) {
+            // 如果输入框为空，生成随机房间号
+            roomId = generateRoomId();
+            elements.roomIdInput.value = roomId;
+            showToast(`已生成房间号: ${roomId}`);
+        } else {
+            // 使用用户输入的房间号
+            roomId = inputRoomId;
+        }
+
         isInitiator = true;
         setupRoom();
         showToast(`房间 ${roomId} 已创建`);
@@ -115,11 +125,13 @@ function initEventListeners() {
 
     // 加入房间
     elements.joinRoom.addEventListener('click', () => {
-        roomId = elements.roomIdInput.value;
+        roomId = elements.roomIdInput.value.trim();
+
         if (!roomId) {
             showToast('请输入房间号');
             return;
         }
+
         isInitiator = false;
         setupRoom();
         showToast(`正在加入房间 ${roomId}...`);
