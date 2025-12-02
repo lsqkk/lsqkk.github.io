@@ -13,10 +13,16 @@
     <style>
         /* 1. 极简毛玻璃 CSS 和 顶栏兼容性处理 */
         :root {
+            /* 假设顶栏高度为 60px，请根据您 nav.css 中的 .header 实际高度调整 */
             --header-height: 60px;
             --main-blue: #007aff;
+            /* iOS 蓝色 */
             --main-green: #34c759;
+            /* 接收成功绿色 */
+            --main-red: #ff3b30;
+            /* 警告红色 */
             --bg-light: #f0f2f5;
+            /* 极浅背景色 */
             --card-bg-opacity: 0.8;
             --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             --card-border: 1px solid rgba(255, 255, 255, 0.3);
@@ -32,13 +38,17 @@
             transition: background-color 0.3s;
         }
 
+        /* 核心修改：确保内容在固定顶栏下方，且居中显示 */
         .main-content-wrapper {
             padding-top: var(--header-height);
+            /* 留出固定顶栏的空间，防止内容被遮挡 */
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            /* 将主要内容放置在顶栏下方 */
             padding-bottom: 50px;
+            /* 底部留白 */
         }
 
         /* 2. 容器和卡片样式 */
@@ -50,11 +60,16 @@
 
         .card {
             background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+            /* 半透明白色 */
             border-radius: 12px;
             box-shadow: var(--card-shadow);
+            /* 柔和阴影 */
             backdrop-filter: blur(10px);
+            /* 核心：毛玻璃效果 */
             -webkit-backdrop-filter: blur(10px);
+            /* 兼容性 */
             border: var(--card-border);
+            /* 柔和边框 */
             padding: 30px;
             text-align: center;
             margin-bottom: 20px;
@@ -85,6 +100,12 @@
             color: #999;
         }
 
+        /* 隐藏默认文件选择器 */
+        #file-input {
+            display: none;
+        }
+
+        /* 模拟文件选择按钮 */
         .file-select-label {
             display: block;
             background-color: var(--main-green);
@@ -96,11 +117,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(52, 199, 89, 0.4);
         }
 
-        /* 隐藏原生文件选择器 */
-        #file-input {
-            display: none;
+        .file-select-label:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(52, 199, 89, 0.4);
         }
 
         .app-button {
@@ -130,29 +152,13 @@
             box-shadow: 0 1px 2px rgba(0, 122, 255, 0.4);
         }
 
-        /* 4. 文件列表样式 */
-        #file-list {
-            text-align: left;
-            list-style: none;
-            padding: 10px;
-            margin: 0 0 15px 0;
-            border: 1px dashed rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
+        .secondary-btn {
+            background-color: var(--main-red);
+            margin-top: 10px;
         }
 
-        #file-list li {
-            padding: 3px 0;
-            border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
-            word-break: break-all;
-        }
 
-        #file-list li:last-child {
-            border-bottom: none;
-        }
-
-        /* 5. 状态和进度显示 */
+        /* 4. 状态和进度显示 */
         #status-card {
             margin-bottom: 40px;
         }
@@ -176,7 +182,6 @@
             background-color: rgba(0, 0, 0, 0.1);
             border-radius: 4px;
             margin-top: 15px;
-            margin-bottom: 15px;
             overflow: hidden;
         }
 
@@ -187,36 +192,51 @@
             transition: width 0.1s;
         }
 
-        /* 6. 下载区域美化 */
-        #download-area {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(52, 199, 89, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(52, 199, 89, 0.3);
-            text-align: left;
-        }
-
-        #download-area h3 {
+        /* 5. 文件列表和下载区域 */
+        #file-list {
+            list-style: none;
+            padding: 0;
             margin-top: 0;
             margin-bottom: 15px;
-            color: var(--main-green);
-            font-size: 1.1em;
+            text-align: left;
+            border: 1px dashed rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
         }
 
-        #download-list a {
+        #file-list li {
+            padding: 8px 12px;
+            border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
+        }
+
+        #file-list li:last-child {
+            border-bottom: none;
+        }
+
+        .download-list {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .download-list a {
             display: block;
-            margin: 5px 0;
-            padding: 8px;
+            margin: 8px 0;
+            padding: 10px;
             background-color: rgba(0, 122, 255, 0.1);
             border-radius: 6px;
-            color: var(--main-blue);
+            color: #007aff;
             text-decoration: none;
             font-weight: 500;
             transition: background-color 0.2s;
         }
 
-        /* 7. 移动端优化 */
+        .download-list a:hover {
+            background-color: rgba(0, 122, 255, 0.2);
+        }
+
+
+        /* 6. 移动端优化 */
         @media (max-width: 600px) {
             .container {
                 width: 95%;
@@ -244,6 +264,7 @@
 
             <div class="card" id="transfer-section" style="display: none;">
                 <h2 id="transfer-title">等待连接...</h2>
+
                 <div id="file-selection-area">
                     <input type="file" id="file-input" multiple>
                     <label for="file-input" class="file-select-label">选择文件 (可多选)</label>
@@ -251,16 +272,18 @@
                     <button id="send-btn" class="app-button" disabled>等待连接...</button>
                 </div>
 
-                <p id="current-file-info" style="font-size: 14px; color: #666; margin-top: 15px;"></p>
+                <p id="current-file-info" style="font-size: 14px; color: #666;"></p>
                 <div class="progress-bar-container">
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
 
                 <div id="download-area" style="display: none;">
                     <h3>已接收文件列表</h3>
-                    <div id="download-list">
-                    </div>
+                    <div id="download-list" class="download-list"></div>
                 </div>
+
+                <button id="clean-room-btn" class="app-button secondary-btn" style="display: none;">清除房间数据并重置</button>
+
             </div>
 
             <div class="card" id="status-card">
@@ -273,7 +296,7 @@
 
     <script>
         // -----------------------------------------------------------
-        // 1. Firebase 配置与 STUN 服务器
+        // 1. Firebase 配置与 STUN 服务器 (STUN 列表已补全)
         // -----------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
@@ -303,25 +326,25 @@
 
 
         // -----------------------------------------------------------
-        // 2. 全局变量与 DOM 元素 (多文件版本更新)
+        // 2. 全局变量与 DOM 元素 (更新为多文件支持)
         // -----------------------------------------------------------
         let peerConnection;
         let dataChannel;
         let isSender = false;
         let currentRoomCode = null;
+        let hasSentCodePrompt = false;
 
-        // 发送相关 (更新为数组和索引)
+        // 发送相关
         let filesToSend = []; // 存储所有待发送的文件
         let currentFileIndex = 0; // 当前正在发送的文件索引
 
-        // 接收相关 (更新为多文件支持)
+        // 接收相关
         let currentFileBuffer = []; // 当前正在接收文件的 Buffer
         let currentFileName = '';
         let currentFileSize = 0;
         let totalFilesToReceive = 0;
-        let filesReceivedCount = 0; // 累计已接收的文件数
+        let filesReceivedCount = 0;
 
-        // File Chunk Settings
         const CHUNK_SIZE = 64 * 1024; // 64KB per chunk
         const METADATA_LABEL = 'metadata';
 
@@ -338,11 +361,12 @@
         const progressBar = document.getElementById('progress-bar');
         const downloadArea = document.getElementById('download-area');
         const downloadListDiv = document.getElementById('download-list'); // 新增：下载列表
-        const currentFileInfoP = document.getElementById('current-file-info'); // 新增：当前文件信息
+        const cleanRoomBtn = document.getElementById('clean-room-btn');
+        const currentFileInfoP = document.getElementById('current-file-info');
 
 
         // -----------------------------------------------------------
-        // 3. 核心函数：状态更新与实用工具
+        // 3. 核心函数：UI 工具
         // -----------------------------------------------------------
 
         /** 记录状态 */
@@ -367,27 +391,58 @@
             progressBar.style.width = `${Math.min(100, percentage)}%`;
         }
 
-        /** 重置文件和传输状态 */
-        function resetTransferState() {
+        /** 清理房间数据并重置 */
+        async function cleanRoomData(roomCode) {
+            if (roomCode) {
+                logStatus(`正在清理房间 ${roomCode} 的 Firebase 数据...`);
+                try {
+                    await database.ref(`rooms/${roomCode}`).remove();
+                    logStatus('✅ 房间数据清理完毕。');
+                } catch (e) {
+                    logStatus(`❌ 清理失败: ${e.message}`);
+                }
+            }
+            resetUI();
+        }
+
+        /** 重置界面到初始状态 */
+        function resetUI() {
+            joinSection.style.display = 'block';
+            transferSection.style.display = 'none';
+            transferTitle.textContent = '等待连接...';
+            sendBtn.textContent = '等待连接...';
+            sendBtn.disabled = true;
+            fileInput.value = '';
+            fileListUL.style.display = 'none';
+            fileListUL.innerHTML = '';
+            currentFileInfoP.textContent = '';
+            downloadArea.style.display = 'none';
+            downloadListDiv.innerHTML = '';
+            cleanRoomBtn.style.display = 'none';
+            updateProgress(0);
+
+            currentRoomCode = null;
             filesToSend = [];
             currentFileIndex = 0;
             currentFileBuffer = [];
-            currentFileName = '';
-            currentFileSize = 0;
             totalFilesToReceive = 0;
             filesReceivedCount = 0;
-            fileInput.value = '';
-            fileListUL.innerHTML = '';
-            fileListUL.style.display = 'none';
-            currentFileInfoP.textContent = '';
-            updateProgress(0);
-            downloadListDiv.innerHTML = '';
-            downloadArea.style.display = 'none';
+            hasSentCodePrompt = false;
+
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            if (dataChannel) {
+                dataChannel.close();
+                dataChannel = null;
+            }
+            logStatus('界面已重置。');
         }
 
 
         // -----------------------------------------------------------
-        // 4. WebRTC 初始化 (保持 STUN 列表不变)
+        // 4. WebRTC 初始化 (保持 STUN 列表完整性)
         // -----------------------------------------------------------
 
         /** 初始化 RTCPeerConnection */
@@ -396,14 +451,21 @@
             currentRoomCode = roomCode;
             isSender = isSenderDevice;
 
-            logStatus(`创建 WebRTC 连接，身份: ${isSender ? '发送方' : '接收方'}。`);
+            logStatus(`创建 WebRTC 连接，身份: ${isSender ? '发送方' : '接收方'}。连接码: ${roomCode}`);
+            cleanRoomBtn.style.display = 'block';
 
             peerConnection.onicecandidate = async (event) => {
                 if (event.candidate) {
+                    if (isSender && !hasSentCodePrompt) {
+                        transferTitle.textContent = `📢 连接码：${roomCode}。请将此码发送给接收方。`;
+                        logStatus('ICE 候选者正在发送中。**请将连接码发送给接收方。**');
+                        hasSentCodePrompt = true;
+                    }
+
                     const role = isSender ? 'sender' : 'receiver';
                     const candidatesRef = database.ref(`rooms/${roomCode}/${role}/iceCandidates`);
                     await candidatesRef.push(event.candidate.toJSON());
-                    // logStatus('发送 ICE 候选者...'); // 避免日志过多
+                    logStatus('发送 ICE 候选者...');
                 }
             };
 
@@ -411,6 +473,7 @@
                 logStatus(`ICE 连接状态: ${peerConnection.iceConnectionState}`);
                 if (peerConnection.iceConnectionState === 'connected') {
                     logStatus('✅ P2P 连接建立成功！');
+                    transferTitle.textContent = `连接成功！`;
                     if (isSender) {
                         sendBtn.textContent = filesToSend.length > 0 ? `发送 ${filesToSend.length} 个文件` : '请选择文件';
                         sendBtn.disabled = filesToSend.length === 0;
@@ -418,7 +481,7 @@
                         transferTitle.textContent = '等待发送方传输文件...';
                     }
                 } else if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'closed') {
-                    logStatus('❌ P2P 连接断开或失败。请重试。');
+                    logStatus('❌ P2P 连接断开或失败。请检查连接码和网络环境。');
                 }
             };
 
@@ -452,14 +515,9 @@
             }
         }
 
-        // -----------------------------------------------------------
-        // 5. 信令函数 (保持不变)
-        // -----------------------------------------------------------
-
         async function createSenderOffer(roomCode) {
             createPeerConnection(roomCode, true);
-            transferTitle.textContent = `📢 连接码：${roomCode}`;
-            logStatus(`请将连接码 ${roomCode} 发送给接收方。`);
+            transferTitle.textContent = `连接码：${roomCode}。正在等待ICE生成...`;
 
             try {
                 const offer = await peerConnection.createOffer();
@@ -469,12 +527,10 @@
                 database.ref(`rooms/${roomCode}/receiver/sdp`).on('value', async (snapshot) => {
                     const answer = snapshot.val();
                     if (answer && !peerConnection.currentRemoteDescription) {
-                        logStatus('接收到 Answer SDP，设置远程描述...');
                         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
                         listenForIceCandidates(roomCode, 'receiver');
                     }
                 });
-
             } catch (e) {
                 logStatus(`❌ 发送方 Offer 失败: ${e.message}`);
             }
@@ -482,7 +538,7 @@
 
         async function createReceiverAnswer(roomCode) {
             createPeerConnection(roomCode, false);
-            transferTitle.textContent = `连接码：${roomCode}`;
+            transferTitle.textContent = `连接码：${roomCode}。正在等待发送方响应...`;
 
             database.ref(`rooms/${roomCode}/sender/sdp`).once('value').then(async (snapshot) => {
                 const offer = snapshot.val();
@@ -497,7 +553,6 @@
                     await peerConnection.setLocalDescription(answer);
                     await database.ref(`rooms/${roomCode}/receiver/sdp`).set(peerConnection.localDescription.toJSON());
                     listenForIceCandidates(roomCode, 'sender');
-
                 } catch (e) {
                     logStatus(`❌ 接收方 Answer 失败: ${e.message}`);
                 }
@@ -519,7 +574,7 @@
 
 
         // -----------------------------------------------------------
-        // 6. 文件传输逻辑 (发送方 - 重构为多文件支持)
+        // 5. 多文件传输逻辑 (发送方)
         // -----------------------------------------------------------
 
         /** 开始传输下一个文件 */
@@ -535,18 +590,13 @@
                 currentFileInfoP.textContent = '';
                 sendBtn.textContent = `重新发送 (${filesToSend.length} 个文件)`;
                 sendBtn.disabled = false;
-
-                // 传输完成后清理 Firebase 信令数据
-                if (currentRoomCode) {
-                    database.ref(`rooms/${currentRoomCode}`).remove();
-                }
             }
         }
 
         /** 分块发送单个文件 */
         async function sendFileChunked(file, index, total) {
             if (dataChannel.readyState !== 'open') {
-                logStatus('❌ DataChannel 未打开或未连接，无法发送文件。');
+                logStatus('❌ DataChannel 未打开或未连接。');
                 currentFileIndex = total; // 终止发送
                 return;
             }
@@ -569,28 +619,30 @@
             const fileReader = new FileReader();
 
             fileReader.onload = async (e) => {
-                // 优化：等待 DataChannel 发送缓冲区低水位
-                if (dataChannel.bufferedAmount > dataChannel.bufferedAmountLowThreshold) {
-                    await new Promise(resolve => dataChannel.onbufferedamountlow = resolve);
-                }
+                // 确保在 DataChannel 发送缓冲区允许时才发送
+                if (dataChannel.bufferedAmount < dataChannel.bufferedAmountLowThreshold) {
+                    dataChannel.send(e.target.result);
+                    offset += e.target.result.byteLength;
 
-                dataChannel.send(e.target.result);
-                offset += e.target.result.byteLength;
+                    const percentage = (offset / fileSize) * 100;
+                    updateProgress(percentage);
 
-                const percentage = (offset / fileSize) * 100;
-                updateProgress(percentage);
+                    const sizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+                    currentFileInfoP.textContent = `文件 ${index + 1}/${total} - ${file.name} (${sizeMB} MB)`;
+                    transferTitle.textContent = `发送中: ${file.name} | ${percentage.toFixed(1)}%`;
 
-                const sizeMB = (fileSize / (1024 * 1024)).toFixed(2);
-                currentFileInfoP.textContent = `文件 ${index + 1}/${total} - ${file.name} (${sizeMB} MB)`;
-                transferTitle.textContent = `发送中: ${file.name} | ${percentage.toFixed(1)}%`;
-
-                if (offset < fileSize) {
-                    readSlice(offset);
+                    if (offset < fileSize) {
+                        readSlice(offset);
+                    } else {
+                        // 当前文件发送完毕，准备下一个
+                        logStatus(`文件 [${index + 1}/${total}] 发送完毕。`);
+                        currentFileIndex++;
+                        await sendNextFile();
+                    }
                 } else {
-                    // 当前文件发送完毕
-                    logStatus(`文件 [${index + 1}/${total}] 发送完毕。`);
-                    currentFileIndex++;
-                    await sendNextFile(); // 自动发送下一个文件
+                    // 如果缓冲区满了，等待 low buffer event
+                    await new Promise(resolve => dataChannel.onbufferedamountlow = resolve);
+                    fileReader.onload(e); // 重新调用 onload 尝试发送
                 }
             };
 
@@ -605,12 +657,15 @@
                 fileReader.readAsArrayBuffer(slice);
             };
 
+            // 监听 DataChannel 缓冲区低水位事件，用于流量控制
+            dataChannel.onbufferedamountlow = () => { /* 仅作标记，实际逻辑在 fileReader.onload 中实现 */ };
+
             readSlice(0); // 开始读取第一个块
         }
 
 
         // -----------------------------------------------------------
-        // 7. 文件传输逻辑 (接收方 - 重构为多文件支持)
+        // 6. 多文件传输逻辑 (接收方)
         // -----------------------------------------------------------
 
         /** 处理接收到的 DataChannel 消息 */
@@ -621,11 +676,9 @@
                 try {
                     const metadata = JSON.parse(data);
                     if (metadata.label === METADATA_LABEL) {
-                        // 接收到新文件的元数据
-
-                        // 检查上一个文件是否完整接收 (仅用于调试/错误处理)
-                        if (currentFileBuffer.length > 0 && currentFileSize > 0) {
-                            logStatus(`警告：上一个文件 (${currentFileName}) 未完整接收，但收到了新文件的元数据。`);
+                        // 新文件开始
+                        if (currentFileBuffer.length > 0) {
+                            logStatus(`警告：文件 ${currentFileName} 未完整接收，但收到了新文件的元数据。`);
                         }
 
                         currentFileName = metadata.fileName;
@@ -647,8 +700,8 @@
                 }
             } else if (data instanceof ArrayBuffer) {
                 // 接收到数据块
-                fileBuffer.push(data);
-                const totalBytesReceived = fileBuffer.reduce((sum, chunk) => sum + chunk.byteLength, 0);
+                currentFileBuffer.push(data);
+                const totalBytesReceived = currentFileBuffer.reduce((sum, chunk) => sum + chunk.byteLength, 0);
                 const percentage = (totalBytesReceived / currentFileSize) * 100;
 
                 updateProgress(percentage);
@@ -658,7 +711,7 @@
                     // 当前文件接收完毕
                     logStatus(`✅ 文件 [${filesReceivedCount + 1}/${totalFilesToReceive}] 接收完成！正在合成...`);
 
-                    const fullFile = new Blob(fileBuffer);
+                    const fullFile = new Blob(currentFileBuffer);
                     const downloadUrl = URL.createObjectURL(fullFile);
 
                     // 添加到下载列表
@@ -669,7 +722,7 @@
                     downloadListDiv.appendChild(downloadElement);
 
                     // 重置当前文件状态，准备接收下一个
-                    fileBuffer = [];
+                    currentFileBuffer = [];
                     filesReceivedCount++;
 
                     if (filesReceivedCount >= totalFilesToReceive) {
@@ -677,13 +730,8 @@
                         logStatus('🎉 所有文件传输完成！');
                         transferTitle.textContent = '所有文件接收完毕！';
                         currentFileInfoP.textContent = '';
-
-                        // 传输完成后清理 Firebase 信令数据
-                        if (currentRoomCode) {
-                            database.ref(`rooms/${currentRoomCode}`).remove();
-                        }
+                        cleanRoomData(currentRoomCode); // 传输完毕后自动清理房间
                     } else {
-                        // 等待下一个文件元数据
                         transferTitle.textContent = `等待发送方发送下一个文件 (${filesReceivedCount + 1}/${totalFilesToReceive})...`;
                     }
                 }
@@ -692,31 +740,8 @@
 
 
         // -----------------------------------------------------------
-        // 8. 事件监听器 (更新为多文件支持)
+        // 7. 事件监听器
         // -----------------------------------------------------------
-
-        // 监听：点击“生成连接码并发送”
-        createBtn.addEventListener('click', () => {
-            const roomCode = generateRoomCode();
-            roomCodeInput.value = roomCode; // 自动填充
-            joinSection.style.display = 'none';
-            transferSection.style.display = 'block';
-            resetTransferState(); // 重置状态
-            createSenderOffer(roomCode);
-        });
-
-        // 监听：点击“加入房间并接收”
-        joinBtn.addEventListener('click', () => {
-            const roomCode = roomCodeInput.value.toUpperCase().trim();
-            if (roomCode.length !== 3) {
-                logStatus('❌ 连接码必须是三位大写字母。');
-                return;
-            }
-            joinSection.style.display = 'none';
-            transferSection.style.display = 'block';
-            resetTransferState(); // 重置状态
-            createReceiverAnswer(roomCode);
-        });
 
         // 监听：文件选择
         fileInput.addEventListener('change', (e) => {
@@ -751,11 +776,33 @@
             if (filesToSend.length > 0 && dataChannel && dataChannel.readyState === 'open') {
                 currentFileIndex = 0; // 确保从第一个文件开始发送
                 sendNextFile();
-            } else if (filesToSend.length === 0) {
-                logStatus('❌ 请先选择要发送的文件。');
             } else {
-                logStatus('❌ 请等待连接建立或 DataChannel 打开。');
+                logStatus('❌ 请先选择文件或等待连接建立。');
             }
+        });
+
+        // 监听：创建/加入/清理按钮
+        createBtn.addEventListener('click', () => {
+            const roomCode = generateRoomCode();
+            roomCodeInput.value = roomCode;
+            joinSection.style.display = 'none';
+            transferSection.style.display = 'block';
+            createSenderOffer(roomCode);
+        });
+
+        joinBtn.addEventListener('click', () => {
+            const roomCode = roomCodeInput.value.toUpperCase().trim();
+            if (roomCode.length !== 3) {
+                logStatus('❌ 连接码必须是三位大写字母。');
+                return;
+            }
+            joinSection.style.display = 'none';
+            transferSection.style.display = 'block';
+            createReceiverAnswer(roomCode);
+        });
+
+        cleanRoomBtn.addEventListener('click', () => {
+            cleanRoomData(currentRoomCode);
         });
 
     </script>
