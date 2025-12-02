@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件直传</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .room-section,
+        .transfer-section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #34495e;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .room-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .status-box {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #connectionStatus {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .file-drop-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .file-drop-area:hover,
+        .file-drop-area.dragover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .file-drop-area i {
+            font-size: 48px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .file-info {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #1abc9c);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .peer-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .peer-item {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .instructions {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 30px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .glass-container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .room-input {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-container">
+        <h1><i class="fas fa-exchange-alt"></i> 文件直传</h1>
+
+        <div class="room-section">
+            <h2>连接房间</h2>
+            <div class="room-input">
+                <input type="text" id="roomCode" placeholder="输入三位字母房间码 (如: ABC)" maxlength="3" pattern="[A-Za-z]{3}">
+                <button id="joinRoom" class="btn">
+                    <i class="fas fa-door-open"></i> 加入/创建
+                </button>
+            </div>
+            <div class="status-box">
+                <div id="connectionStatus">等待连接房间...</div>
+            </div>
+        </div>
+
+        <div class="transfer-section" style="display: none;">
+            <h2>文件传输</h2>
+            <div class="file-drop-area" id="fileDropArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>拖拽文件到此处 或 <span style="color: #3498db;">点击选择文件</span></p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">支持 10-100MB 文件</p>
+                <input type="file" id="fileInput" style="display: none;">
+            </div>
+
+            <div id="fileInfo" class="file-info">
+                <div><strong>文件名:</strong> <span id="fileName"></span></div>
+                <div><strong>文件大小:</strong> <span id="fileSize"></span></div>
+                <div><strong>准备发送到:</strong> <span id="targetPeer"></span></div>
+                <button id="sendFile" class="btn" style="margin-top: 10px;">
+                    <i class="fas fa-paper-plane"></i> 发送文件
+                </button>
+            </div>
+
+            <div id="progressContainer" class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressText">等待传输开始...</div>
+            </div>
+
+            <div id="peersList">
+                <h2>已连接设备</h2>
+                <ul class="peer-list" id="peerList">
+                    <!-- 动态添加设备 -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p><i class="fas fa-info-circle"></i> 提示: 双方需要在同一房间码下，文件直接传输，不经过服务器存储</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
