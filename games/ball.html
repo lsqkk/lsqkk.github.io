@@ -1,166 +1,211 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>手机平板托乒乓球</title>
+    <title>手机陀螺仪乒乓球</title>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background: #f5f5f5; }
-        canvas { display: block; width: 100vw; height: 100vh; }
-        #tip { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #333; font-size: 16px; text-align: center; max-width: 90%; }
+        body { margin: 0; overflow: hidden; }
+        #gameCanvas { display: block; }
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <div id="tip">正在启动陀螺仪...iOS请允许传感器权限</div>
+    <div id="instructions">旋转手机控制平板</div>
     <canvas id="gameCanvas"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js"></script>
     <script>
+        // 初始化
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener('resize', () => {
+        
+        // 设置画布大小
+        function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-        });
-
-        // 初始化物理世界
-        const world = new CANNON.World();
-        world.gravity.set(0, -9.8, 0);
-        world.broadphase = new CANNON.SAPBroadphase(world);
-        world.solver.iterations = 15;
-        world.solver.tolerance = 0.001;
-
-        // 物理材质
-        const groundMaterial = new CANNON.Material('groundMaterial');
-        const ballMaterial = new CANNON.Material('ballMaterial');
-        const contactMaterial = new CANNON.ContactMaterial(
-            groundMaterial,
-            ballMaterial,
-            { friction: 0.1, restitution: 0.3, contactEquationStiffness: 1000, contactEquationRelaxation: 4 }
-        );
-        world.addContactMaterial(contactMaterial);
-
-        // 创建平板
-        const groundSize = { width: 8, height: 6 };
-        const groundShape = new CANNON.Plane();
-        const groundBody = new CANNON.Body({
-            mass: 0,
-            material: groundMaterial,
-            quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0)
-        });
-        groundBody.addShape(groundShape);
-        groundBody.position.set(0, -2, 0);
-        world.addBody(groundBody);
-
-        // 创建乒乓球
-        const ballRadius = 0.3;
-        const ballShape = new CANNON.Sphere(ballRadius);
-        const ballBody = new CANNON.Body({
-            mass: 0.1,
-            material: ballMaterial,
-            linearDamping: 0.05,
-            angularDamping: 0.1
-        });
-        ballBody.addShape(ballShape);
-        ballBody.position.set(0, 1, 0);
-        world.addBody(ballBody);
-
-        // 陀螺仪变量
-        let beta = 0;
-        let gamma = 0;
-        const tiltSensitivity = 0.8;
-
-        // 页面加载后自动初始化陀螺仪（核心修改）
-        window.addEventListener('load', initGyro);
-        async function initGyro() {
-            try {
-                // 适配iOS 13+的权限请求
-                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    const permission = await DeviceOrientationEvent.requestPermission();
-                    if (permission === 'granted') {
-                        startOrientationListener();
-                        document.getElementById('tip').textContent = '倾斜手机控制平板，别让球掉下去！';
-                    } else {
-                        document.getElementById('tip').textContent = '请开启传感器权限以正常游戏';
-                    }
-                } else {
-                    // Android直接开启监听
-                    startOrientationListener();
-                    document.getElementById('tip').textContent = '倾斜手机控制平板，别让球掉下去！';
-                }
-            } catch (error) {
-                document.getElementById('tip').textContent = '陀螺仪启动失败，请刷新重试';
-                console.error(error);
-            }
         }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        // 启动方向监听
-        function startOrientationListener() {
-            if (window.DeviceOrientationEvent) {
-                window.addEventListener('deviceorientation', (e) => {
-                    beta = Math.max(-30, Math.min(30, e.beta || 0));
-                    gamma = Math.max(-30, Math.min(30, e.gamma || 0));
-                }, true);
+        // 游戏对象
+        const game = {
+            paddle: {
+                x: canvas.width / 2 - 50,
+                y: canvas.height - 40,
+                width: 100,
+                height: 20,
+                angle: 0 // 平板倾斜角度
+            },
+            ball: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 15,
+                dx: 5,
+                dy: -5
+            },
+            isDeviceReady: false
+        };
+
+        // 陀螺仪数据
+        let gyroData = {
+            beta: 0,   // 前后倾斜
+            gamma: 0,  // 左右倾斜
+            lastUpdate: 0
+        };
+
+        // 请求设备方向权限
+        function requestDeviceOrientation() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            startGyroTracking();
+                        }
+                    })
+                    .catch(console.error);
             } else {
-                document.getElementById('tip').textContent = '当前设备不支持陀螺仪功能';
+                startGyroTracking();
             }
         }
 
-        // 更新平板倾斜
-        function updatePlatformTilt() {
-            const tiltX = gamma * tiltSensitivity * Math.PI / 180;
-            const tiltY = beta * tiltSensitivity * Math.PI / 180;
-            groundBody.quaternion.setFromEuler(-Math.PI/2 + tiltY, tiltX, 0);
+        function startGyroTracking() {
+            window.addEventListener('deviceorientation', handleOrientation);
+            game.isDeviceReady = true;
+            document.getElementById('instructions').textContent = 
+                "已启用陀螺仪！旋转手机控制平板";
         }
 
-        // 渲染同步
-        function syncPhysicsToRender() {
-            const groundScreenX = canvas.width / 2;
-            const groundScreenY = canvas.height / 2;
-            const groundRenderWidth = groundSize.width * 50;
-            const groundRenderHeight = groundSize.height * 50;
+        function handleOrientation(event) {
+            gyroData = {
+                beta: event.beta || 0,   // 前后倾斜（手机前后倾斜）
+                gamma: event.gamma || 0,  // 左右倾斜（手机左右倾斜）
+                lastUpdate: Date.now()
+            };
+        }
 
-            const ballScreenX = canvas.width / 2 + ballBody.position.x * 50;
-            const ballScreenY = canvas.height / 2 - ballBody.position.y * 50;
-            const ballRenderRadius = ballRadius * 50;
+        // 物理更新
+        function update() {
+            // 更新平板角度（使用gamma值控制左右倾斜）
+            const tiltFactor = 0.5;
+            game.paddle.angle = gyroData.gamma * tiltFactor;
+            
+            // 限制平板移动范围
+            game.paddle.x = canvas.width / 2 + gyroData.gamma * 2;
+            game.paddle.x = Math.max(0, 
+                Math.min(canvas.width - game.paddle.width, game.paddle.x));
 
+            // 球的位置更新
+            game.ball.x += game.ball.dx;
+            game.ball.y += game.ball.dy;
+
+            // 边界碰撞
+            if (game.ball.x + game.ball.radius > canvas.width || 
+                game.ball.x - game.ball.radius < 0) {
+                game.ball.dx *= -1;
+            }
+            if (game.ball.y - game.ball.radius < 0) {
+                game.ball.dy *= -1;
+            }
+
+            // 球与平板碰撞检测
+            const paddleTop = game.paddle.y;
+            const paddleBottom = game.paddle.y + game.paddle.height;
+            const paddleLeft = game.paddle.x;
+            const paddleRight = game.paddle.x + game.paddle.width;
+
+            if (game.ball.y + game.ball.radius > paddleTop &&
+                game.ball.y - game.ball.radius < paddleBottom &&
+                game.ball.x > paddleLeft &&
+                game.ball.x < paddleRight) {
+                
+                // 根据击球点计算反弹角度
+                const hitPoint = (game.ball.x - game.paddle.x) / game.paddle.width;
+                const angle = (hitPoint - 0.5) * Math.PI / 3; // ±60度范围
+                
+                // 考虑平板倾斜角度
+                const totalAngle = angle + game.paddle.angle * Math.PI / 180;
+                
+                const speed = Math.sqrt(game.ball.dx**2 + game.ball.dy**2);
+                game.ball.dx = Math.sin(totalAngle) * speed;
+                game.ball.dy = -Math.cos(totalAngle) * speed;
+                
+                game.ball.y = paddleTop - game.ball.radius;
+            }
+
+            // 游戏结束检测
+            if (game.ball.y > canvas.height) {
+                resetBall();
+            }
+        }
+
+        function resetBall() {
+            game.ball.x = canvas.width / 2;
+            game.ball.y = canvas.height / 2;
+            game.ball.dx = 5 * (Math.random() > 0.5 ? 1 : -1);
+            game.ball.dy = -5;
+        }
+
+        // 渲染
+        function draw() {
+            // 清空画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 绘制平板
+            
+            // 绘制背景
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制平板（带旋转）
             ctx.save();
-            ctx.translate(groundScreenX, groundScreenY);
-            ctx.rotate(gamma * tiltSensitivity * Math.PI / 180);
-            ctx.fillStyle = 'rgba(66, 133, 244, 0.7)';
-            ctx.fillRect(-groundRenderWidth/2, -groundRenderHeight/2, groundRenderWidth, groundRenderHeight);
+            ctx.translate(game.paddle.x + game.paddle.width / 2, 
+                         game.paddle.y + game.paddle.height / 2);
+            ctx.rotate(game.paddle.angle * Math.PI / 180);
+            ctx.fillStyle = '#333';
+            ctx.fillRect(-game.paddle.width / 2, -game.paddle.height / 2, 
+                        game.paddle.width, game.paddle.height);
             ctx.restore();
-
-            // 绘制乒乓球
+            
+            // 绘制球
             ctx.beginPath();
-            ctx.arc(ballScreenX, ballScreenY, ballRenderRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#FFC107';
+            ctx.arc(game.ball.x, game.ball.y, game.ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#FF6B6B';
             ctx.fill();
-            ctx.strokeStyle = '#FF9800';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#333';
             ctx.stroke();
+            
+            // 绘制陀螺仪数据
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.font = '16px Arial';
+            ctx.fillText(`前后倾斜: ${gyroData.beta.toFixed(1)}°`, 10, 30);
+            ctx.fillText(`左右倾斜: ${gyroData.gamma.toFixed(1)}°`, 10, 60);
+            ctx.fillText(`平板角度: ${game.paddle.angle.toFixed(1)}°`, 10, 90);
+        }
 
-            // 球掉落重置
-            if (Math.abs(ballBody.position.x) > groundSize.width/2 + ballRadius || Math.abs(ballBody.position.y) > 5) {
-                ballBody.position.set(0, 1, 0);
-                ballBody.velocity.set(0, 0, 0);
-                ballBody.angularVelocity.set(0, 0, 0);
+        // 游戏循环
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 点击页面开始游戏
+        document.addEventListener('click', function() {
+            if (!game.isDeviceReady) {
+                requestDeviceOrientation();
             }
-        }
+            gameLoop();
+        });
 
-        // 动画循环
-        function animate() {
-            requestAnimationFrame(animate);
-            updatePlatformTilt();
-            world.step(1/60);
-            syncPhysicsToRender();
-        }
-        animate();
+        // 初始绘制
+        draw();
     </script>
 </body>
 </html>
