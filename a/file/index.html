@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- 顶部标题 -->
@@ -68,8 +70,7 @@
                             <i class="fas fa-key"></i> 输入连接码
                         </label>
                         <div class="input-with-button">
-                            <input type="text" id="connectionCode" 
-                                   placeholder="输入6位数字连接码" maxlength="6">
+                            <input type="text" id="connectionCode" placeholder="输入6位数字连接码" maxlength="6">
                             <button class="btn" onclick="connectManual()">
                                 连接
                             </button>
@@ -126,8 +127,8 @@
                 </div>
             </div>
 
-            <input type="file" id="fileInput" multiple style="display: none;" 
-                   onchange="handleFilesSelected(this.files)">
+            <input type="file" id="fileInput" multiple style="display: none;"
+                onchange="handleFilesSelected(this.files)">
 
             <!-- 文件列表 -->
             <div class="file-list" id="fileList">
@@ -239,4 +240,5 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
