@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克闪传 - 极简文件互传</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- 极简毛玻璃容器 -->
+    <div class="glass-container">
+        <!-- 状态显示区域 -->
+        <div class="status-area">
+            <div class="connection-status" id="connectionStatus">
+                <i class="fas fa-wifi"></i>
+                <span>等待连接...</span>
+            </div>
+            <div class="room-info" id="roomInfo"></div>
+        </div>
+
+        <!-- 主控制区 -->
+        <div class="main-controls">
+            <!-- 房间创建/加入 -->
+            <div class="room-section" id="roomSection">
+                <div class="input-group">
+                    <input type="text" id="roomCode" placeholder="输入3位字母房间号" maxlength="3" pattern="[A-Za-z]{3}"
+                        title="请输入3位字母（A-Z）">
+                    <button id="createRoomBtn" class="btn-primary">
+                        <i class="fas fa-plus"></i> 创建房间
+                    </button>
+                </div>
+                <div class="divider">
+                    <span>或</span>
+                </div>
+                <button id="randomRoomBtn" class="btn-secondary">
+                    <i class="fas fa-random"></i> 随机房间
+                </button>
+                <div class="info-text">
+                    <i class="fas fa-info-circle"></i>
+                    房间号有效期为30分钟，请及时传输文件
+                </div>
+            </div>
+
+            <!-- 连接状态显示 -->
+            <div class="connected-section" id="connectedSection" style="display: none;">
+                <div class="peer-info">
+                    <div class="peer-status">
+                        <i class="fas fa-user-check" id="peerIcon"></i>
+                        <div>
+                            <span id="peerStatusText">等待对方加入...</span>
+                            <div class="peer-id" id="peerId"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文件传输区域 -->
+                <div class="transfer-section">
+                    <div class="file-drop-area" id="fileDropArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>拖放文件到此处</h3>
+                        <p>或点击选择文件</p>
+                        <input type="file" id="fileInput" multiple>
+                    </div>
+
+                    <div class="file-list" id="fileList"></div>
+
+                    <div class="transfer-controls">
+                        <button id="sendBtn" class="btn-primary" disabled>
+                            <i class="fas fa-paper-plane"></i> 发送文件
+                        </button>
+                        <button id="clearBtn" class="btn-secondary">
+                            <i class="fas fa-trash"></i> 清空
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 进度显示 -->
+        <div class="progress-section" id="progressSection" style="display: none;">
+            <div class="progress-header">
+                <h4>传输进度</h4>
+                <button id="closeProgressBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="progress-list" id="progressList"></div>
+        </div>
+
+        <!-- 接收文件区域 -->
+        <div class="receive-section" id="receiveSection" style="display: none;">
+            <h4>收到文件</h4>
+            <div class="received-files" id="receivedFiles"></div>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
