@@ -1,582 +1,608 @@
-class QuarkTransfer {
+class FileTransfer {
     constructor() {
-        this.peer = null;
-        this.connection = null;
-        this.files = [];
-        this.currentTransfers = new Map();
-        this.history = [];
-        this.deviceId = this.generateDeviceId();
-        this.isConnected = false;
+        this.peerConnection = null;
+        this.dataChannel = null;
+        this.localId = this.generateId();
+        this.remoteId = null;
+        this.isInitiator = false;
+        this.pendingCandidates = [];
+        this.fileQueue = [];
+        this.currentTransfer = null;
 
         this.init();
     }
 
-    init() {
-        // 初始化UI
-        this.initUI();
-
-        // 初始化设置
-        this.loadSettings();
-
-        // 加载历史记录
-        this.loadHistory();
-
-        // 初始化WebRTC
-        this.initWebRTC();
-
-        // 绑定事件
-        this.bindEvents();
+    generateId() {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
     }
 
-    initUI() {
-        // 显示设备ID
-        document.getElementById('deviceId').textContent = this.deviceId;
+    init() {
+        // 显示本地ID
+        document.getElementById('myId').textContent = this.localId;
+
+        // 设置事件监听器
+        this.setupEventListeners();
+
+        // 监听连接请求
+        this.listenForConnections();
 
         // 更新状态
-        this.updateStatus('等待连接...', 'disconnected');
-
-        // 生成初始连接码
-        this.generateCode();
-
-        // 初始化拖放功能
-        this.initDragAndDrop();
+        this.updateStatus('准备连接', 'ready');
     }
 
-    generateDeviceId() {
-        // 生成唯一设备ID
-        return 'QK-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    }
-
-    initWebRTC() {
-        // 创建简单的Peer实例用于局域网发现
-        try {
-            // 尝试使用WebRTC进行局域网通信
-            const config = {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478' }
-                ]
-            };
-
-            this.peer = new SimplePeer({
-                initiator: false,
-                trickle: false,
-                config: config
-            });
-
-            this.setupPeerEvents();
-        } catch (error) {
-            console.error('WebRTC初始化失败:', error);
-        }
-    }
-
-    setupPeerEvents() {
-        this.peer.on('signal', (data) => {
-            // 发送信令数据给对等方
-            if (this.connection) {
-                this.sendMessage({ type: 'signal', data });
-            }
+    setupEventListeners() {
+        // 连接按钮
+        document.getElementById('connectBtn').addEventListener('click', () => {
+            this.connectToPeer();
         });
 
-        this.peer.on('connect', () => {
-            console.log('WebRTC连接成功');
-            this.isConnected = true;
-            this.updateStatus('已连接', 'connected');
-
-            // 发送设备信息
-            this.sendMessage({
-                type: 'device_info',
-                id: this.deviceId,
-                name: navigator.userAgent
-            });
+        // 回车连接
+        document.getElementById('peerIdInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.connectToPeer();
         });
 
-        this.peer.on('data', (data) => {
-            this.handleIncomingData(data);
+        // 文件选择
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            this.handleFiles(e.target.files);
         });
 
-        this.peer.on('error', (err) => {
-            console.error('WebRTC错误:', err);
-            this.updateStatus('连接错误', 'error');
+        // 文件拖放
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
         });
 
-        this.peer.on('close', () => {
-            this.isConnected = false;
-            this.updateStatus('连接断开', 'disconnected');
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            this.handleFiles(e.dataTransfer.files);
         });
     }
 
-    // 局域网发现功能
-    async discoverDevices() {
-        try {
-            // 尝试通过mDNS或WebSocket发现设备
-            const devices = await this.scanLocalNetwork();
-            this.updateDeviceList(devices);
-        } catch (error) {
-            console.log('自动发现失败，使用手动连接模式');
-        }
-    }
-
-    async scanLocalNetwork() {
-        const devices = [];
-
-        // 尝试通过WebRTC数据通道发现
-        for (let i = 2; i <= 254; i++) {
-            // 这里简化处理，实际需要更复杂的发现机制
-            const ip = `192.168.1.${i}`;
-
-            // 尝试建立连接
-            try {
-                // 这里应该是实际的发现逻辑
-                // 由于浏览器限制，完整的局域网发现需要额外的服务器
-            } catch (error) {
-                continue;
-            }
+    connectToPeer() {
+        const peerId = document.getElementById('peerIdInput').value.trim();
+        if (!peerId) {
+            alert('请输入对方ID');
+            return;
         }
 
-        return devices;
-    }
+        this.remoteId = peerId;
+        this.isInitiator = true;
 
-    // 连接管理
-    connectManual() {
-        const code = document.getElementById('connectionCode').value;
-        if (code.length === 6 && /^\d+$/.test(code)) {
-            this.connectUsingCode(code);
-        } else {
-            alert('请输入6位数字连接码');
-        }
-    }
-
-    connectUsingCode(code) {
-        // 使用连接码建立连接
-        // 这里简化处理，实际应该通过某种方式找到对应设备
         this.updateStatus('正在连接...', 'connecting');
 
-        // 模拟连接成功
-        setTimeout(() => {
-            this.updateStatus('已连接', 'connected');
-            this.showMessage('连接成功！');
-        }, 1000);
+        // 检查对方是否在线
+        database.ref(`connections/${peerId}`).once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                this.createPeerConnection();
+                this.sendOffer();
+                document.getElementById('peerName').textContent = peerId;
+            } else {
+                alert('对方不在线，请确保对方已打开页面');
+                this.updateStatus('对方不在线', 'disconnected');
+            }
+        });
     }
 
-    // 文件传输
-    async sendFiles(files) {
-        if (!this.isConnected) {
+    createPeerConnection() {
+        // 配置ICE服务器（使用免费的STUN服务器）
+        const config = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' }
+            ],
+            iceCandidatePoolSize: 10
+        };
+
+        this.peerConnection = new RTCPeerConnection(config);
+
+        // 创建数据通道（发起方）
+        if (this.isInitiator) {
+            this.dataChannel = this.peerConnection.createDataChannel('fileTransfer', {
+                ordered: true, // 保证顺序
+                maxRetransmits: 5 // 重传次数
+            });
+            this.setupDataChannel();
+        }
+
+        // 监听传入的数据通道
+        this.peerConnection.ondatachannel = (event) => {
+            this.dataChannel = event.channel;
+            this.setupDataChannel();
+        };
+
+        // ICE候选处理
+        this.peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                this.sendSignal({
+                    type: 'candidate',
+                    candidate: event.candidate
+                });
+            }
+        };
+
+        // 连接状态变化
+        this.peerConnection.onconnectionstatechange = () => {
+            const state = this.peerConnection.connectionState;
+            console.log('Connection state:', state);
+
+            if (state === 'connected') {
+                this.updateStatus('已连接', 'connected');
+                this.showTransferPanel();
+            } else if (state === 'disconnected' || state === 'failed') {
+                this.updateStatus('连接断开', 'disconnected');
+                this.resetConnection();
+            }
+        };
+
+        // ICE连接状态
+        this.peerConnection.oniceconnectionstatechange = () => {
+            const state = this.peerConnection.iceConnectionState;
+            console.log('ICE state:', state);
+
+            if (state === 'disconnected' || state === 'failed') {
+                this.updateStatus('网络连接中断', 'disconnected');
+            }
+        };
+    }
+
+    setupDataChannel() {
+        this.dataChannel.binaryType = 'arraybuffer';
+
+        this.dataChannel.onopen = () => {
+            console.log('Data channel opened');
+            this.updateStatus('通道已建立', 'connected');
+        };
+
+        this.dataChannel.onclose = () => {
+            console.log('Data channel closed');
+            this.updateStatus('通道已关闭', 'disconnected');
+        };
+
+        this.dataChannel.onmessage = (event) => {
+            this.handleMessage(event.data);
+        };
+
+        this.dataChannel.onerror = (error) => {
+            console.error('Data channel error:', error);
+        };
+    }
+
+    async sendOffer() {
+        try {
+            const offer = await this.peerConnection.createOffer();
+            await this.peerConnection.setLocalDescription(offer);
+
+            this.sendSignal({
+                type: 'offer',
+                sdp: offer.sdp
+            });
+        } catch (error) {
+            console.error('Error creating offer:', error);
+            alert('创建连接失败: ' + error.message);
+        }
+    }
+
+    async handleOffer(offer) {
+        try {
+            if (!this.peerConnection) {
+                this.createPeerConnection();
+            }
+
+            await this.peerConnection.setRemoteDescription(new RTCSessionDescription({
+                type: 'offer',
+                sdp: offer.sdp
+            }));
+
+            const answer = await this.peerConnection.createAnswer();
+            await this.peerConnection.setLocalDescription(answer);
+
+            this.sendSignal({
+                type: 'answer',
+                sdp: answer.sdp
+            });
+
+            // 处理之前收到的候选
+            this.pendingCandidates.forEach(candidate => {
+                this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            });
+            this.pendingCandidates = [];
+
+        } catch (error) {
+            console.error('Error handling offer:', error);
+        }
+    }
+
+    handleAnswer(answer) {
+        if (!this.peerConnection) return;
+
+        this.peerConnection.setRemoteDescription(new RTCSessionDescription({
+            type: 'answer',
+            sdp: answer.sdp
+        })).catch(error => {
+            console.error('Error setting answer:', error);
+        });
+    }
+
+    handleCandidate(candidate) {
+        if (!this.peerConnection) {
+            // 存储候选，稍后添加
+            this.pendingCandidates.push(candidate);
+            return;
+        }
+
+        this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+            .catch(error => {
+                console.error('Error adding ICE candidate:', error);
+            });
+    }
+
+    sendSignal(message) {
+        const signalRef = database.ref(`signaling/${this.getRoomId()}`).push();
+        signalRef.set({
+            from: this.localId,
+            to: this.remoteId,
+            type: message.type,
+            data: message,
+            timestamp: Date.now()
+        });
+
+        // 清理旧的信令消息（1分钟后）
+        setTimeout(() => {
+            signalRef.remove();
+        }, 60000);
+    }
+
+    getRoomId() {
+        // 确保房间ID按字母顺序排序，这样双方使用相同的ID
+        const ids = [this.localId, this.remoteId].sort();
+        return `${ids[0]}_${ids[1]}`;
+    }
+
+    listenForConnections() {
+        // 注册自己为在线
+        database.ref(`connections/${this.localId}`).set(true);
+
+        // 监听信令消息
+        database.ref(`signaling`).on('child_added', (snapshot) => {
+            const roomId = snapshot.key;
+            if (!roomId.includes(this.localId)) return;
+
+            snapshot.ref.on('child_added', (messageSnapshot) => {
+                const message = messageSnapshot.val();
+
+                // 检查消息是否发给自己
+                if (message.to !== this.localId && message.from !== this.remoteId) return;
+
+                this.remoteId = message.from;
+                document.getElementById('peerName').textContent = this.remoteId;
+
+                switch (message.data.type) {
+                    case 'offer':
+                        this.handleOffer(message.data);
+                        break;
+                    case 'answer':
+                        this.handleAnswer(message.data);
+                        break;
+                    case 'candidate':
+                        this.handleCandidate(message.data.candidate);
+                        break;
+                }
+
+                // 清理消息
+                messageSnapshot.ref.remove();
+            });
+        });
+
+        // 清理离线用户
+        database.ref('connections').onDisconnect().remove();
+    }
+
+    handleMessage(data) {
+        try {
+            if (typeof data === 'string') {
+                const message = JSON.parse(data);
+                this.handleControlMessage(message);
+            } else if (data instanceof ArrayBuffer) {
+                this.handleFileChunk(data);
+            }
+        } catch (error) {
+            console.error('Error handling message:', error);
+        }
+    }
+
+    handleControlMessage(message) {
+        switch (message.type) {
+            case 'file-start':
+                this.startReceivingFile(message);
+                break;
+            case 'file-chunk':
+                // 处理文件块（实际在handleFileChunk中处理）
+                break;
+            case 'file-end':
+                this.completeReceivingFile();
+                break;
+            case 'file-cancel':
+                this.cancelReceivingFile();
+                break;
+        }
+    }
+
+    handleFiles(files) {
+        if (!files || files.length === 0) return;
+        if (!this.dataChannel || this.dataChannel.readyState !== 'open') {
             alert('请先建立连接');
             return;
         }
 
-        const maxSize = parseInt(document.getElementById('maxFileSize').value) * 1024 * 1024;
-
-        for (const file of files) {
-            if (file.size > maxSize) {
-                alert(`文件 ${file.name} 超过${maxSize / (1024 * 1024)}MB限制`);
-                continue;
+        Array.from(files).forEach(file => {
+            if (file.size > 100 * 1024 * 1024) {
+                alert(`文件 "${file.name}" 超过100MB限制`);
+                return;
             }
 
-            // 创建传输任务
-            const transferId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            this.createTransferUI(file, transferId);
-
-            // 发送文件元数据
-            this.sendMessage({
-                type: 'file_start',
-                id: transferId,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                lastModified: file.lastModified
-            });
-
-            // 分块发送文件
-            const chunkSize = parseInt(document.getElementById('chunkSize').value) * 1024 * 1024;
-            const totalChunks = Math.ceil(file.size / chunkSize);
-            let chunkIndex = 0;
-
-            const reader = new FileReader();
-            let offset = 0;
-
-            reader.onload = (e) => {
-                const chunk = e.target.result;
-
-                this.sendMessage({
-                    type: 'file_chunk',
-                    id: transferId,
-                    chunkIndex: chunkIndex,
-                    totalChunks: totalChunks,
-                    data: chunk
-                });
-
-                // 更新进度
-                this.updateTransferProgress(transferId, chunkIndex + 1, totalChunks);
-
-                chunkIndex++;
-                offset += chunkSize;
-
-                if (offset < file.size) {
-                    this.readNextChunk(file, offset, chunkSize, reader);
-                } else {
-                    // 发送完成
-                    this.sendMessage({
-                        type: 'file_end',
-                        id: transferId
-                    });
-
-                    // 添加到历史记录
-                    this.addToHistory(file, 'sent');
-                }
-            };
-
-            this.readNextChunk(file, offset, chunkSize, reader);
-        }
-    }
-
-    readNextChunk(file, offset, chunkSize, reader) {
-        const chunk = file.slice(offset, offset + chunkSize);
-        reader.readAsArrayBuffer(chunk);
-    }
-
-    // 接收文件
-    handleIncomingData(data) {
-        try {
-            const message = JSON.parse(data.toString());
-
-            switch (message.type) {
-                case 'file_start':
-                    this.startReceivingFile(message);
-                    break;
-
-                case 'file_chunk':
-                    this.receiveFileChunk(message);
-                    break;
-
-                case 'file_end':
-                    this.finishReceivingFile(message.id);
-                    break;
-
-                case 'signal':
-                    if (this.peer) {
-                        this.peer.signal(message.data);
-                    }
-                    break;
-
-                case 'device_info':
-                    this.showConnectionRequest(message);
-                    break;
-            }
-        } catch (error) {
-            console.error('处理数据错误:', error);
-        }
-    }
-
-    startReceivingFile(message) {
-        const autoAccept = document.getElementById('autoAccept').checked;
-
-        if (!autoAccept) {
-            this.showFileRequestDialog(message);
-            return;
-        }
-
-        this.createReceiverUI(message);
-        this.currentTransfers.set(message.id, {
-            name: message.name,
-            size: message.size,
-            chunks: [],
-            received: 0
+            this.addToQueue(file);
         });
-    }
 
-    receiveFileChunk(message) {
-        const transfer = this.currentTransfers.get(message.id);
-        if (transfer) {
-            transfer.chunks[message.chunkIndex] = message.data;
-            transfer.received++;
-
-            // 更新进度
-            this.updateReceiverProgress(message.id, transfer.received, message.totalChunks);
+        // 如果没有正在传输的文件，开始传输
+        if (!this.currentTransfer) {
+            this.startNextTransfer();
         }
     }
 
-    finishReceivingFile(transferId) {
-        const transfer = this.currentTransfers.get(transferId);
-        if (transfer) {
-            // 合并所有chunks
-            const totalSize = transfer.chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
-            const blob = new Blob(transfer.chunks, { type: 'application/octet-stream' });
+    addToQueue(file) {
+        const transferId = Date.now() + Math.random();
+        const transferItem = {
+            id: transferId,
+            file: file,
+            progress: 0,
+            status: 'waiting'
+        };
 
-            // 创建下载链接
-            this.createDownloadLink(blob, transfer.name);
+        this.fileQueue.push(transferItem);
+        this.updateQueueDisplay();
+    }
 
-            // 添加到历史记录
-            this.addToHistory({
-                name: transfer.name,
-                size: transfer.size
-            }, 'received');
+    async startNextTransfer() {
+        if (this.fileQueue.length === 0 || this.currentTransfer) return;
 
-            this.currentTransfers.delete(transferId);
+        this.currentTransfer = this.fileQueue[0];
+        this.currentTransfer.status = 'sending';
+
+        await this.sendFile(this.currentTransfer.file);
+
+        // 传输完成，从队列移除
+        this.fileQueue.shift();
+        this.currentTransfer = null;
+
+        // 继续下一个文件
+        if (this.fileQueue.length > 0) {
+            this.startNextTransfer();
         }
     }
 
-    // UI更新
-    updateStatus(text, status) {
-        const indicator = document.getElementById('statusIndicator');
-        const statusText = document.getElementById('statusText');
+    async sendFile(file) {
+        const CHUNK_SIZE = 16384; // 16KB
 
-        statusText.textContent = text;
-
-        indicator.className = 'status-indicator';
-        switch (status) {
-            case 'connected':
-                indicator.classList.add('connected');
-                document.getElementById('transferBtn').disabled = false;
-                break;
-            case 'connecting':
-                indicator.classList.add('connecting');
-                break;
-            case 'error':
-                indicator.classList.add('error');
-                break;
-            default:
-                indicator.classList.add('disconnected');
-                document.getElementById('transferBtn').disabled = true;
-        }
-    }
-
-    createTransferUI(file, transferId) {
-        const progressList = document.getElementById('fileProgressList');
-        const item = document.createElement('div');
-        item.className = 'file-progress-item';
-        item.id = `transfer-${transferId}`;
-        item.innerHTML = `
-            <div class="file-progress-info">
-                <span class="file-name">${file.name}</span>
-                <span class="file-progress-text">准备中...</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: 0%"></div>
-            </div>
-        `;
-        progressList.appendChild(item);
-
-        document.getElementById('progressSection').style.display = 'block';
-    }
-
-    updateTransferProgress(transferId, current, total) {
-        const percent = (current / total) * 100;
-        const item = document.getElementById(`transfer-${transferId}`);
-
-        if (item) {
-            const progressBar = item.querySelector('.progress-fill');
-            const progressText = item.querySelector('.file-progress-text');
-
-            progressBar.style.width = `${percent}%`;
-            progressText.textContent = `${Math.round(percent)}% (${current}/${total})`;
-        }
-
-        // 更新总体进度
-        this.updateOverallProgress();
-    }
-
-    // 历史记录管理
-    addToHistory(file, direction) {
-        const historyItem = {
-            id: Date.now(),
+        // 发送文件信息
+        this.dataChannel.send(JSON.stringify({
+            type: 'file-start',
             name: file.name,
             size: file.size,
-            direction: direction,
-            timestamp: new Date().toLocaleString(),
-            device: this.deviceId
-        };
+            type: file.type,
+            lastModified: file.lastModified
+        }));
 
-        this.history.unshift(historyItem);
-        this.saveHistory();
-        this.updateHistoryUI();
-    }
+        // 分块发送文件
+        const reader = file.stream().getReader();
+        let offset = 0;
+        let lastUpdate = Date.now();
+        let bytesSent = 0;
 
-    saveHistory() {
-        if (document.getElementById('saveHistory').checked) {
-            localStorage.setItem('quark_transfer_history', JSON.stringify(this.history));
-        }
-    }
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
 
-    loadHistory() {
-        const saved = localStorage.getItem('quark_transfer_history');
-        if (saved) {
-            this.history = JSON.parse(saved);
-            this.updateHistoryUI();
-        }
-    }
+                // 发送数据块
+                this.dataChannel.send(value);
 
-    updateHistoryUI() {
-        const historyList = document.getElementById('historyList');
-        historyList.innerHTML = '';
+                offset += value.byteLength;
+                bytesSent += value.byteLength;
 
-        if (this.history.length === 0) {
-            historyList.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-history"></i>
-                    <p>暂无传输记录</p>
-                </div>
-            `;
-            return;
-        }
-
-        this.history.forEach(item => {
-            const element = document.createElement('div');
-            element.className = 'history-item';
-            element.innerHTML = `
-                <div class="history-info">
-                    <div class="history-name">${item.name}</div>
-                    <div class="history-meta">
-                        <span class="history-size">${this.formatSize(item.size)}</span>
-                        <span class="history-time">${item.timestamp}</span>
-                        <span class="history-direction ${item.direction}">
-                            ${item.direction === 'sent' ? '发送' : '接收'}
-                        </span>
-                    </div>
-                </div>
-                <div class="history-actions">
-                    <button class="btn-icon" onclick="downloadHistoryFile(${item.id})">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
-            `;
-            historyList.appendChild(element);
-        });
-    }
-
-    // 工具函数
-    formatSize(bytes) {
-        const units = ['B', 'KB', 'MB', 'GB'];
-        let size = bytes;
-        let unitIndex = 0;
-
-        while (size >= 1024 && unitIndex < units.length - 1) {
-            size /= 1024;
-            unitIndex++;
-        }
-
-        return `${size.toFixed(2)} ${units[unitIndex]}`;
-    }
-
-    sendMessage(message) {
-        if (this.peer && this.peer.connected) {
-            this.peer.send(JSON.stringify(message));
-        }
-    }
-
-    bindEvents() {
-        // 设置切换
-        document.querySelectorAll('.setting-item input').forEach(input => {
-            input.addEventListener('change', () => this.saveSettings());
-        });
-    }
-
-    loadSettings() {
-        const settings = JSON.parse(localStorage.getItem('quark_settings') || '{}');
-        Object.keys(settings).forEach(key => {
-            const element = document.getElementById(key);
-            if (element) {
-                if (element.type === 'checkbox') {
-                    element.checked = settings[key];
-                } else {
-                    element.value = settings[key];
+                // 更新进度（限制频率）
+                const now = Date.now();
+                if (now - lastUpdate > 100) { // 每秒更新10次
+                    this.updateProgress(offset, file.size);
+                    this.updateSpeed(bytesSent, now);
+                    lastUpdate = now;
+                    bytesSent = 0;
                 }
             }
+
+            // 发送结束标记
+            this.dataChannel.send(JSON.stringify({
+                type: 'file-end'
+            }));
+
+            console.log('File sent:', file.name);
+            this.updateProgress(file.size, file.size);
+
+            // 添加到历史记录
+            this.addToHistory(file, 'sent');
+
+        } catch (error) {
+            console.error('Error sending file:', error);
+            this.dataChannel.send(JSON.stringify({
+                type: 'file-cancel'
+            }));
+        }
+    }
+
+    updateProgress(current, total) {
+        const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+
+        document.getElementById('progressFill').style.width = percentage + '%';
+        document.getElementById('progressText').textContent =
+            `传输中: ${percentage}% (${this.formatBytes(current)} / ${this.formatBytes(total)})`;
+    }
+
+    updateSpeed(bytes, time) {
+        const speed = bytes / (time / 1000); // bytes per second
+        document.getElementById('speedText').textContent =
+            `速度: ${this.formatBytes(speed)}/s`;
+    }
+
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    startReceivingFile(fileInfo) {
+        console.log('Start receiving file:', fileInfo);
+        // 实现接收逻辑...
+    }
+
+    completeReceivingFile() {
+        console.log('File received');
+        // 实现接收完成逻辑...
+    }
+
+    updateQueueDisplay() {
+        const queueElement = document.getElementById('transferQueue');
+        queueElement.innerHTML = '';
+
+        this.fileQueue.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'transfer-item';
+            div.innerHTML = `
+                <div class="file-icon">
+                    <svg width="20" height="20" fill="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                        <path d="M14 2v6h6"/>
+                    </svg>
+                </div>
+                <div class="file-info">
+                    <div class="file-name">${item.file.name}</div>
+                    <div class="file-size">${this.formatBytes(item.file.size)}</div>
+                </div>
+                <div class="transfer-progress">
+                    <div class="transfer-progress-fill" style="width: ${item.progress}%"></div>
+                </div>
+            `;
+            queueElement.appendChild(div);
         });
     }
 
-    saveSettings() {
-        const settings = {
-            autoAccept: document.getElementById('autoAccept').checked,
-            saveHistory: document.getElementById('saveHistory').checked,
-            maxFileSize: document.getElementById('maxFileSize').value,
-            chunkSize: document.getElementById('chunkSize').value
-        };
-        localStorage.setItem('quark_settings', JSON.stringify(settings));
-    }
-}
+    addToHistory(file, direction) {
+        const historyList = document.getElementById('historyList');
+        const emptyState = historyList.querySelector('.empty-state');
 
-// 全局函数
-let app;
+        if (emptyState) {
+            emptyState.remove();
+            document.getElementById('fileList').classList.remove('hidden');
+        }
 
-function initApp() {
-    app = new QuarkTransfer();
-}
-
-function handleFilesSelected(files) {
-    const fileList = document.getElementById('fileList');
-    const totalFiles = document.getElementById('totalFiles');
-    const totalSize = document.getElementById('totalSize');
-
-    // 清除空状态
-    if (fileList.querySelector('.empty-state')) {
-        fileList.innerHTML = '';
-    }
-
-    let totalSizeBytes = 0;
-
-    Array.from(files).forEach(file => {
-        totalSizeBytes += file.size;
-
-        const fileItem = document.createElement('div');
-        fileItem.className = 'file-item';
-        fileItem.innerHTML = `
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
             <div class="file-icon">
-                <i class="fas fa-file"></i>
+                <svg width="20" height="20" fill="currentColor">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                    <path d="M14 2v6h6"/>
+                </svg>
             </div>
             <div class="file-info">
                 <div class="file-name">${file.name}</div>
-                <div class="file-size">${app.formatSize(file.size)}</div>
+                <div class="file-size">${this.formatBytes(file.size)} • ${direction === 'sent' ? '已发送' : '已接收'}</div>
             </div>
-            <button class="btn-icon" onclick="removeFile(this)">
-                <i class="fas fa-times"></i>
-            </button>
+            <span style="color: var(--text-tertiary); font-size: 12px;">${new Date().toLocaleTimeString()}</span>
         `;
 
-        fileList.appendChild(fileItem);
-    });
+        historyList.insertBefore(item, historyList.firstChild);
 
-    totalFiles.textContent = files.length;
-    totalSize.textContent = app.formatSize(totalSizeBytes);
-}
+        // 限制历史记录数量
+        if (historyList.children.length > 10) {
+            historyList.removeChild(historyList.lastChild);
+        }
+    }
 
-function startTransfer() {
-    if (app && app.isConnected) {
-        const fileInput = document.getElementById('fileInput');
-        app.sendFiles(Array.from(fileInput.files));
+    updateStatus(text, state) {
+        const indicator = document.getElementById('statusIndicator');
+        const dot = indicator.querySelector('.dot');
+        const span = indicator.querySelector('span');
+
+        span.textContent = text;
+        dot.className = 'dot';
+        dot.classList.add(state);
+    }
+
+    showTransferPanel() {
+        document.getElementById('connectionPanel').classList.add('hidden');
+        document.getElementById('transferPanel').classList.remove('hidden');
+        document.getElementById('fileList').classList.remove('hidden');
+    }
+
+    resetConnection() {
+        if (this.peerConnection) {
+            this.peerConnection.close();
+            this.peerConnection = null;
+        }
+
+        this.dataChannel = null;
+        this.remoteId = null;
+        this.isInitiator = false;
+        this.pendingCandidates = [];
+
+        document.getElementById('transferPanel').classList.add('hidden');
+        document.getElementById('connectionPanel').classList.remove('hidden');
+    }
+
+    disconnect() {
+        if (confirm('确定要断开连接吗？')) {
+            this.resetConnection();
+            this.updateStatus('已断开连接', 'disconnected');
+        }
     }
 }
 
-function generateCode() {
-    const code = Math.floor(100000 + Math.random() * 900000);
-    document.getElementById('myCode').textContent =
-        code.toString().replace(/(\d{3})/g, '$1 ').trim();
-    return code;
-}
-
-// 初始化应用
-window.addEventListener('DOMContentLoaded', initApp);
-
-// 拖放功能
-function initDragAndDrop() {
-    const fileList = document.getElementById('fileList');
-
-    fileList.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileList.classList.add('drag-over');
-    });
-
-    fileList.addEventListener('dragleave', () => {
-        fileList.classList.remove('drag-over');
-    });
-
-    fileList.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileList.classList.remove('drag-over');
-
-        if (e.dataTransfer.files.length) {
-            handleFilesSelected(e.dataTransfer.files);
-        }
+// 工具函数
+function copyMyId() {
+    const myId = document.getElementById('myId').textContent;
+    navigator.clipboard.writeText(myId).then(() => {
+        alert('ID已复制到剪贴板');
+    }).catch(err => {
+        console.error('复制失败:', err);
     });
 }
+
+function clearHistory() {
+    if (confirm('确定要清空传输历史吗？')) {
+        document.getElementById('historyList').innerHTML =
+            '<div class="empty-state">暂无传输记录</div>';
+        document.getElementById('fileList').classList.add('hidden');
+    }
+}
+
+// 页面加载时初始化
+let fileTransfer;
+
+window.addEventListener('DOMContentLoaded', () => {
+    fileTransfer = new FileTransfer();
+});
+
+// 页面卸载时清理
+window.addEventListener('beforeunload', () => {
+    database.ref(`connections/${fileTransfer.localId}`).remove();
+});

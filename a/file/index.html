@@ -4,240 +4,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克闪传 - 局域网文件快传</title>
+    <title>点对点文件传输</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <div class="app-container">
-        <!-- 顶部标题 -->
-        <header class="app-header">
-            <h1><i class="fas fa-bolt"></i> 夸克闪传</h1>
-            <p class="subtitle">纯局域网·点对点·高速文件传输</p>
-        </header>
-
-        <!-- 连接状态面板 -->
-        <div class="status-panel" id="statusPanel">
-            <div class="connection-status">
-                <span class="status-indicator" id="statusIndicator"></span>
-                <span id="statusText">等待连接...</span>
-            </div>
-            <div class="device-id">
-                <span>设备ID: </span>
-                <code id="deviceId"></code>
-                <button class="btn-icon" onclick="copyDeviceId()">
-                    <i class="fas fa-copy"></i>
-                </button>
-            </div>
+    <div class="glass-container">
+        <!-- 状态指示器 -->
+        <div class="status-indicator" id="statusIndicator">
+            <div class="dot"></div>
+            <span>准备连接</span>
         </div>
 
-        <!-- 连接方式选择 -->
-        <div class="connection-section">
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('auto')">
-                    <i class="fas fa-wifi"></i> 自动发现
-                </button>
-                <button class="tab-btn" onclick="switchTab('manual')">
-                    <i class="fas fa-keyboard"></i> 手动连接
-                </button>
-                <button class="tab-btn" onclick="switchTab('share')">
-                    <i class="fas fa-share-alt"></i> 共享链接
-                </button>
+        <!-- 连接面板 -->
+        <div class="panel" id="connectionPanel">
+            <div class="panel-header">
+                <h2>点对点文件传输</h2>
+                <p class="subtitle">无需服务器，直接传输</p>
             </div>
 
-            <!-- 自动发现 -->
-            <div class="tab-content active" id="tabAuto">
-                <div class="discovery-box">
-                    <h3><i class="fas fa-search"></i> 正在发现局域网设备...</h3>
-                    <div class="device-list" id="deviceList">
-                        <div class="empty-state">
-                            <i class="fas fa-search"></i>
-                            <p>扫描中，请稍候...</p>
-                        </div>
-                    </div>
-                    <button class="btn-secondary" onclick="refreshDiscovery()">
-                        <i class="fas fa-sync-alt"></i> 重新扫描
-                    </button>
-                </div>
-            </div>
-
-            <!-- 手动连接 -->
-            <div class="tab-content" id="tabManual">
-                <div class="manual-connect">
-                    <div class="input-group">
-                        <label for="connectionCode">
-                            <i class="fas fa-key"></i> 输入连接码
-                        </label>
-                        <div class="input-with-button">
-                            <input type="text" id="connectionCode" placeholder="输入6位数字连接码" maxlength="6">
-                            <button class="btn" onclick="connectManual()">
-                                连接
-                            </button>
-                        </div>
-                    </div>
-                    <div class="or-divider">
-                        <span>或</span>
-                    </div>
-                    <div class="generate-code">
-                        <p>生成我的连接码:</p>
-                        <div class="code-display">
-                            <span id="myCode">-- -- --</span>
-                            <button class="btn-secondary" onclick="generateCode()">
-                                生成新码
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 共享链接 -->
-            <div class="tab-content" id="tabShare">
-                <div class="share-box">
-                    <div class="qr-code-container">
-                        <canvas id="qrcode"></canvas>
-                    </div>
-                    <div class="share-link">
-                        <p>扫描二维码或用此链接连接:</p>
-                        <div class="link-display">
-                            <input type="text" id="shareLink" readonly>
-                            <button class="btn-icon" onclick="copyShareLink()">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <button class="btn" onclick="createShareRoom()">
-                            <i class="fas fa-plus"></i> 创建共享房间
+            <div class="panel-body">
+                <div class="id-section">
+                    <label>我的ID（分享给对方）</label>
+                    <div class="id-display">
+                        <code id="myId">正在生成...</code>
+                        <button class="icon-btn" onclick="copyMyId()" title="复制">
+                            <svg width="16" height="16" fill="currentColor">
+                                <path
+                                    d="M13 0H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM6 1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
+                                <path d="M4 3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1v1a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
+                            </svg>
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 文件传输区域 -->
-        <div class="transfer-section">
-            <div class="section-header">
-                <h2><i class="fas fa-exchange-alt"></i> 文件传输</h2>
-                <div class="action-buttons">
-                    <button class="btn" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-plus"></i> 添加文件
-                    </button>
-                    <button class="btn-secondary" onclick="clearFileList()">
-                        <i class="fas fa-trash"></i> 清空
-                    </button>
+                <div class="divider">
+                    <span>或</span>
                 </div>
-            </div>
 
-            <input type="file" id="fileInput" multiple style="display: none;"
-                onchange="handleFilesSelected(this.files)">
-
-            <!-- 文件列表 -->
-            <div class="file-list" id="fileList">
-                <div class="empty-state">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>拖拽文件到此处或点击添加文件</p>
-                </div>
-            </div>
-
-            <!-- 传输控制 -->
-            <div class="transfer-controls">
-                <button class="btn-primary" id="transferBtn" onclick="startTransfer()" disabled>
-                    <i class="fas fa-paper-plane"></i> 开始发送
-                </button>
-                <div class="transfer-stats">
-                    <span>已选择: <span id="totalFiles">0</span> 个文件</span>
-                    <span>总大小: <span id="totalSize">0 B</span></span>
+                <div class="connect-section">
+                    <label>连接其他设备</label>
+                    <div class="input-group">
+                        <input type="text" id="peerIdInput" placeholder="输入对方的ID" spellcheck="false">
+                        <button id="connectBtn" class="primary-btn">连接</button>
+                    </div>
+                    <p class="hint">双方需要同时在线才能建立连接</p>
                 </div>
             </div>
         </div>
 
-        <!-- 传输进度 -->
-        <div class="progress-section" id="progressSection" style="display: none;">
-            <h3><i class="fas fa-tachometer-alt"></i> 传输进度</h3>
-            <div class="progress-container">
-                <div class="overall-progress">
+        <!-- 传输面板（初始隐藏） -->
+        <div class="panel hidden" id="transferPanel">
+            <div class="panel-header">
+                <h2>文件传输</h2>
+                <p class="connection-info">
+                    已连接到：<span id="peerName">未知</span>
+                    <button class="text-btn" onclick="disconnect()">断开</button>
+                </p>
+            </div>
+
+            <div class="panel-body">
+                <!-- 文件拖放区域 -->
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-content">
+                        <svg width="48" height="48" fill="currentColor">
+                            <path
+                                d="M19.5 14a2.5 2.5 0 0 1 5 0v5.5H25a2.5 2.5 0 0 1 0 5h-5.5V25a2.5 2.5 0 0 1-5 0v-5.5H9.5a2.5 2.5 0 0 1 0-5h5.5V14z" />
+                            <path
+                                d="M1 4.5A1.5 1.5 0 0 1 2.5 3h21A1.5 1.5 0 0 1 25 4.5v21a1.5 1.5 0 0 1-1.5 1.5h-21A1.5 1.5 0 0 1 1 25.5v-21zm2.5 0v21h21v-21h-21z" />
+                        </svg>
+                        <h3>拖放文件到此处</h3>
+                        <p>支持单个或多个文件，最大100MB</p>
+                        <button class="secondary-btn" onclick="document.getElementById('fileInput').click()">
+                            选择文件
+                        </button>
+                        <input type="file" id="fileInput" multiple hidden>
+                    </div>
+                </div>
+
+                <!-- 传输队列 -->
+                <div class="transfer-queue" id="transferQueue"></div>
+
+                <!-- 进度条 -->
+                <div class="progress-container">
                     <div class="progress-bar">
-                        <div class="progress-fill" id="overallProgress"></div>
+                        <div class="progress-fill" id="progressFill"></div>
                     </div>
                     <div class="progress-info">
-                        <span id="progressText">准备中...</span>
-                        <span id="speedText">-</span>
+                        <span id="progressText">等待传输</span>
+                        <span id="speedText"></span>
                     </div>
                 </div>
-                <div class="file-progress-list" id="fileProgressList">
-                    <!-- 单个文件进度项将动态添加 -->
-                </div>
             </div>
         </div>
 
-        <!-- 传输历史 -->
-        <div class="history-section">
-            <div class="section-header">
-                <h2><i class="fas fa-history"></i> 传输历史</h2>
-                <button class="btn-secondary" onclick="clearHistory()">
-                    <i class="fas fa-trash"></i> 清空历史
-                </button>
+        <!-- 文件列表 -->
+        <div class="panel file-list hidden" id="fileList">
+            <div class="panel-header">
+                <h3>传输历史</h3>
+                <button class="text-btn" onclick="clearHistory()">清空</button>
             </div>
-            <div class="history-list" id="historyList">
-                <div class="empty-state">
-                    <i class="fas fa-history"></i>
-                    <p>暂无传输记录</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 设置面板 -->
-        <div class="settings-panel">
-            <button class="btn-icon" onclick="toggleSettings()">
-                <i class="fas fa-cog"></i>
-            </button>
-            <div class="settings-content" id="settingsContent">
-                <h3><i class="fas fa-sliders-h"></i> 设置</h3>
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="autoAccept" checked>
-                        自动接收文件
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="saveHistory" checked>
-                        保存传输历史
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <label>
-                        <input type="number" id="maxFileSize" min="1" max="1000" value="100">
-                        最大文件大小 (MB)
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <label>
-                        <input type="number" id="chunkSize" min="1" max="10" value="1">
-                        分块大小 (MB)
-                    </label>
-                </div>
+            <div class="panel-body" id="historyList">
+                <div class="empty-state">暂无传输记录</div>
             </div>
         </div>
     </div>
 
-    <!-- 连接确认对话框 -->
-    <div class="modal" id="connectionModal" style="display: none;">
-        <div class="modal-content">
-            <h3><i class="fas fa-link"></i> 连接请求</h3>
-            <p id="modalMessage">设备正在尝试连接</p>
-            <div class="device-info" id="deviceInfo">
-                <p><i class="fas fa-desktop"></i> 未知设备</p>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="rejectConnection()">拒绝</button>
-                <button class="btn-primary" onclick="acceptConnection()">接受</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 脚本引入 -->
-    <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
 </body>
 
