@@ -320,7 +320,7 @@
 
     <script>
         // -----------------------------------------------------------
-        // 1. Firebase 配置与 STUN 服务器
+        // 1. Firebase 配置与 STUN/TURN 服务器
         // -----------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
@@ -335,16 +335,27 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // 完整的 STUN/TURN 服务器列表 - 增加 TURN 以应对严格 NAT (如教育网)
         const STUN_SERVERS = [
+            // STUN 服务器 (用于穿透宽松 NAT)
             { urls: 'stun:stun.minisipserver.com' },
             { urls: 'stun:stun.zoiper.com' },
             { urls: 'stun:stun.voipbuster.com' },
-            { urls: 'stun:stun.sipgate.net' },
-            { urls: 'stun:stun.schlund.de' },
-            { urls: 'stun:stun.voipstunt.com' },
-            { urls: 'stun:stun.1und1.de' },
-            { urls: 'stun:stun.gmx.net' },
             { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun.voipstunt.com' },
+
+            // TURN 服务器 (用于中继数据，穿透严格 NAT 和防火墙)
+            // 注意: 免费 TURN 服务器的可靠性会波动。
+            {
+                urls: 'turn:numb.viagenie.ca',
+                username: 'webrtc@live.com',
+                credential: 'webrtc'
+            },
+            {
+                urls: 'turn:stun.nextcloud.com:443',
+                username: 'test',
+                credential: 'test'
+            }
         ];
 
 
@@ -387,7 +398,7 @@
         const downloadListDiv = document.getElementById('download-list');
         const cleanRoomBtn = document.getElementById('clean-room-btn');
         const currentFileInfoP = document.getElementById('current-file-info');
-        const zipDownloadBtn = document.getElementById('zip-download-btn'); // 新增 ZIP 按钮
+        const zipDownloadBtn = document.getElementById('zip-download-btn');
 
 
         // -----------------------------------------------------------
@@ -472,6 +483,7 @@
 
         /** 初始化 RTCPeerConnection */
         function createPeerConnection(roomCode, isSenderDevice) {
+            // 使用 STUN_SERVERS 作为 iceServers 配置
             peerConnection = new RTCPeerConnection({ iceServers: STUN_SERVERS });
             currentRoomCode = roomCode;
             isSender = isSenderDevice;
@@ -625,8 +637,6 @@
                 currentFileInfoP.textContent = '';
                 sendBtn.textContent = `重新发送 (${filesToSend.length} 个文件)`;
                 sendBtn.disabled = false;
-
-                // 修正：发送方不再主动关闭 DataChannel，让连接保持开放等待接收方操作
             }
         }
 
@@ -712,7 +722,7 @@
 
 
         // -----------------------------------------------------------
-        // 6. 多文件传输逻辑 (接收方) - 移除自动清理，显示下载链接
+        // 6. 多文件传输逻辑 (接收方)
         // -----------------------------------------------------------
 
         /** 处理接收到的 DataChannel 消息 */
@@ -767,7 +777,7 @@
                         blob: fullFile
                     });
 
-                    // 添加到下载列表
+                    // 添加到下载列表 (提供单独下载)
                     const downloadElement = document.createElement('a');
                     downloadElement.href = downloadUrl;
                     downloadElement.download = currentFileName;
