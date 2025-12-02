@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机平衡球游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #gameBoard {
+            width: 90vw;
+            height: 70vh;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #ball {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #ff9a9e, #fad0c4);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.1s ease-out;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        
+        .tilt-indicator {
+            width: 200px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 10px auto;
+            position: relative;
+        }
+        
+        .tilt-dot {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        #startBtn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        #startBtn:hover {
+            transform: scale(1.05);
+        }
+        
+        .hole {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            position: absolute;
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+        }
+        
+        #score {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="score">得分: 0</div>
+        <div id="gameBoard">
+            <div id="ball"></div>
+        </div>
+        
+        <div class="controls">
+            <div class="tilt-indicator">
+                <div class="tilt-dot" id="tiltDot"></div>
+            </div>
+            <div id="tiltInfo">倾斜度: 0°</div>
+            <button id="startBtn">开始游戏</button>
+            <div id="permissionInfo" style="font-size: 12px; margin-top: 10px;">
+                *需要授权访问设备运动传感器
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class BalanceBallGame {
+            constructor() {
+                this.ball = document.getElementById('ball');
+                this.gameBoard = document.getElementById('gameBoard');
+                this.tiltDot = document.getElementById('tiltDot');
+                this.tiltInfo = document.getElementById('tiltInfo');
+                this.startBtn = document.getElementById('startBtn');
+                this.scoreElement = document.getElementById('score');
+                
+                this.ballX = 50; // 百分比位置
+                this.ballY = 50;
+                this.score = 0;
+                this.isPlaying = false;
+                this.tiltX = 0;
+                this.tiltY = 0;
+                this.sensitivity = 0.3; // 灵敏度
+                
+                this.setupEventListeners();
+                this.createHoles();
+            }
+            
+            setupEventListeners() {
+                this.startBtn.addEventListener('click', () => {
+                    if (!this.isPlaying) {
+                        this.requestPermission();
+                    } else {
+                        this.resetGame();
+                    }
+                });
+                
+                // 监听方向变化
+                window.addEventListener('deviceorientation', (event) => {
+                    if (!this.isPlaying) return;
+                    
+                    // gamma: 左右倾斜 (-90到90)
+                    // beta: 前后倾斜 (-180到180)
+                    this.tiltX = event.gamma || 0; // 左右
+                    this.tiltY = event.beta || 0;  // 前后
+                    
+                    // 限制范围
+                    this.tiltX = Math.max(-90, Math.min(90, this.tiltX));
+                    this.tiltY = Math.max(-180, Math.min(180, this.tiltY));
+                    
+                    this.updateTiltIndicator();
+                    this.moveBall();
+                });
+            }
+            
+            requestPermission() {
+                // iOS 13+ 需要用户手势触发
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission()
+                        .then(permissionState => {
+                            if (permissionState === 'granted') {
+                                this.startGame();
+                            } else {
+                                alert('需要授权才能使用陀螺仪功能');
+                            }
+                        })
+                        .catch(console.error);
+                } else {
+                    this.startGame();
+                }
+            }
+            
+            startGame() {
+                this.isPlaying = true;
+                this.startBtn.textContent = '重新开始';
+                this.score = 0;
+                this.updateScore();
+                this.resetBallPosition();
+                
+                // 添加防抖动的平滑处理
+                this.smoothTiltX = 0;
+                this.smoothTiltY = 0;
+            }
+            
+            resetGame() {
+                this.isPlaying = false;
+                this.startBtn.textContent = '开始游戏';
+                this.resetBallPosition();
+                this.tiltDot.style.left = '50%';
+                this.tiltInfo.textContent = '倾斜度: 0°';
+            }
+            
+            updateTiltIndicator() {
+                // 更新倾斜指示器
+                const dotPosition = 50 + (this.tiltX / 90) * 50;
+                this.tiltDot.style.left = `${Math.max(0, Math.min(100, dotPosition))}%`;
+                
+                this.tiltInfo.textContent = 
+                    `倾斜度: X:${this.tiltX.toFixed(1)}° Y:${this.tiltY.toFixed(1)}°`;
+            }
+            
+            moveBall() {
+                if (!this.isPlaying) return;
+                
+                // 平滑处理
+                this.smoothTiltX = this.smoothTiltX * 0.7 + this.tiltX * 0.3;
+                this.smoothTiltY = this.smoothTiltY * 0.7 + this.tiltY * 0.3;
+                
+                // 计算新位置
+                const maxTilt = 45;
+                const tiltFactorX = this.smoothTiltX / maxTilt;
+                const tiltFactorY = (this.smoothTiltY - 90) / maxTilt; // 调整基准位置
+                
+                // 更新球的位置（百分比）
+                this.ballX += tiltFactorX * this.sensitivity;
+                this.ballY += tiltFactorY * this.sensitivity;
+                
+                // 边界检查
+                this.ballX = Math.max(2, Math.min(98, this.ballX));
+                this.ballY = Math.max(2, Math.min(98, this.ballY));
+                
+                // 应用位置
+                this.ball.style.left = `${this.ballX}%`;
+                this.ball.style.top = `${this.ballY}%`;
+                
+                // 检查是否掉入洞中
+                this.checkHoles();
+                
+                // 检查是否掉落边缘
+                if (this.ballX <= 2 || this.ballX >= 98 || 
+                    this.ballY <= 2 || this.ballY >= 98) {
+                    this.gameOver();
+                }
+            }
+            
+            createHoles() {
+                const holes = [
+                    { x: 20, y: 20 },
+                    { x: 80, y: 20 },
+                    { x: 20, y: 80 },
+                    { x: 80, y: 80 },
+                    { x: 50, y: 50 }
+                ];
+                
+                holes.forEach((hole, index) => {
+                    const holeEl = document.createElement('div');
+                    holeEl.className = 'hole';
+                    holeEl.style.left = `${hole.x}%`;
+                    holeEl.style.top = `${hole.y}%`;
+                    holeEl.dataset.index = index;
+                    this.gameBoard.appendChild(holeEl);
+                });
+            }
+            
+            checkHoles() {
+                const holes = document.querySelectorAll('.hole');
+                const ballRect = this.ball.getBoundingClientRect();
+                
+                holes.forEach(hole => {
+                    const holeRect = hole.getBoundingClientRect();
+                    const distance = Math.sqrt(
+                        Math.pow(ballRect.left + 25 - (holeRect.left + 30), 2) +
+                        Math.pow(ballRect.top + 25 - (holeRect.top + 30), 2)
+                    );
+                    
+                    if (distance < 30) {
+                        this.score += 10;
+                        this.updateScore();
+                        this.resetBallPosition();
+                        
+                        // 短暂闪烁效果
+                        hole.style.animation = 'none';
+                        setTimeout(() => {
+                            hole.style.animation = 'pulse 0.5s';
+                        }, 10);
+                    }
+                });
+            }
+            
+            resetBallPosition() {
+                this.ballX = 50;
+                this.ballY = 50;
+                this.ball.style.left = '50%';
+                this.ball.style.top = '50%';
+            }
+            
+            updateScore() {
+                this.scoreElement.textContent = `得分: ${this.score}`;
+            }
+            
+            gameOver() {
+                alert(`游戏结束！最终得分: ${this.score}`);
+                this.resetGame();
+            }
+        }
+        
+        // 初始化游戏
+        window.addEventListener('DOMContentLoaded', () => {
+            new BalanceBallGame();
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.2); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
