@@ -4,237 +4,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克闪传 | QuakeShare P2P</title>
+    <title>夸克闪传 | Quarkhare P2P</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link rel="stylesheet" href="/css/basic.css">
     <style>
-        /* 1. 极简毛玻璃 CSS */
+        /* 1. 极简毛玻璃 CSS - 使用 qs- 前缀隔离样式 */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* 背景色微调，确保与顶栏颜色区分 */
-            background-color: #e0f0f5;
+            /* --- 修改点 1：移除固定居中样式 --- */
+            /* 移除了 display: flex, justify-content: center, align-items: center */
+            /* 移除了 min-height: 100vh; 和 html, body { height: 100%; } */
+
+            /* 背景色微调，确保与顶栏颜色区分，保持纯净大方 */
+            background: url('/image/bg.png') no-repeat center center fixed;
+            background-size: cover;
             color: #333;
             transition: background-color 0.3s;
         }
 
-        /* 2. 容器和卡片样式 - 核心修改：添加顶部 padding 兼容顶栏占位符 */
-        .container {
+        /* 2. 容器和卡片样式 - 核心修改：确保顶部间距和内容居中 (如果内容宽度有限制) */
+        .qs-container {
             width: 90%;
             max-width: 480px;
+            /* 让内容在页面上居中显示 (如果 width < 100%) */
+            margin: 0 auto;
             padding: 20px;
-            /* 适配 nav.css 中 .header-placeholder 的高度 (约60px + 20px 间距) */
+
+            /* --- 修改点 2：保持足够的顶部 padding 避免遮挡 --- */
+            /* 适配 nav.css 中 header 的高度 (约60px) + 20px 额外间距 */
             padding-top: 80px;
+            padding-bottom: 40px;
+            /* 底部留白 */
+            box-sizing: border-box;
         }
 
-        .card {
+        .qs-card {
             /* 保持极简毛玻璃效果 */
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.18);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 30px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .qs-card:hover {
+            box-shadow: 0 12px 50px 0 rgba(31, 38, 135, 0.25);
         }
 
         /* 标题样式优化 */
-        .main-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #007aff;
-            /* 保持 iOS 蓝色品牌色，与顶栏的绿色系区分 */
-            margin-bottom: 30px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            /* 如果页面被顶栏遮挡，可能需要 margin-top 来让标题可见，但通过 padding-top 解决更标准 */
+        .qs-main-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 35px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        h2 {
+        .qs-card h2 {
             margin-top: 0;
-            margin-bottom: 20px;
-            font-weight: 500;
+            margin-bottom: 25px;
+            font-weight: 600;
             color: #1a1a1a;
+            font-size: 22px;
         }
 
-        /* 3. 输入框和按钮样式 */
-        input[type="text"],
-        input[type="file"],
-        button {
+        /* 3. 输入框和按钮样式 (全部使用 qs- 前缀，避免与 nav.css 类名冲突) */
+        .qs-input-field,
+        .qs-btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             margin-bottom: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             box-sizing: border-box;
             font-size: 16px;
             transition: all 0.2s;
         }
 
-        input[type="text"] {
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background-color: rgba(255, 255, 255, 0.8);
+        .qs-input-field {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+        }
+
+        .qs-input-field:focus {
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
+            outline: none;
         }
 
         #file-input {
             display: none;
         }
 
-        .file-select-label {
+        .qs-file-select-label {
             display: block;
             background-color: #34c759;
             color: white;
-            padding: 12px;
+            padding: 14px;
             margin-bottom: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, box-shadow 0.2s;
         }
 
-        button {
+        .qs-file-select-label:hover {
+            background-color: #28a745;
+            box-shadow: 0 3px 6px rgba(52, 199, 89, 0.4);
+        }
+
+        .qs-btn {
             border: none;
             background-color: #007aff;
             color: white;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 3px 6px rgba(0, 122, 255, 0.3);
         }
 
-        button:disabled {
+        .qs-btn:hover:not(:disabled) {
+            background-color: #005bb5;
+            box-shadow: 0 4px 8px rgba(0, 122, 255, 0.4);
+        }
+
+        .qs-btn:disabled {
             background-color: #a0c4ff;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
-        .secondary-btn {
+        .qs-secondary-btn {
             background-color: #ff3b30;
             margin-top: 10px;
+            box-shadow: 0 3px 6px rgba(255, 59, 48, 0.3);
+        }
+
+        .qs-secondary-btn:hover:not(:disabled) {
+            background-color: #d8291e;
+            box-shadow: 0 4px 8px rgba(255, 59, 48, 0.4);
         }
 
         /* 4. 状态和进度显示 */
         #status {
             margin-top: 20px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
             text-align: left;
             white-space: pre-wrap;
             word-break: break-all;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            max-height: 200px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            max-height: 250px;
             overflow-y: auto;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
         }
 
-        .progress-bar-container {
-            height: 8px;
+        .qs-progress-container {
+            height: 10px;
             background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            margin-top: 10px;
-            margin-bottom: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .progress-bar {
+        .qs-progress-bar {
             height: 100%;
             width: 0%;
             background-color: #34c759;
             transition: width 0.1s;
+            border-radius: 5px;
         }
 
         #file-list {
             text-align: left;
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px dashed rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border: 1px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.85);
             font-size: 14px;
         }
 
         #file-list li {
-            list-style-type: none;
-            padding: 3px 0;
-            border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
+            list-style-type: disc;
+            margin-left: 20px;
+            padding: 5px 0;
+            border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
+            color: #444;
         }
 
         #file-list li:last-child {
             border-bottom: none;
         }
 
-        .download-list {
+        .qs-download-list {
             text-align: left;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
-        .download-list a {
+        .qs-download-list a {
             display: block;
-            margin: 5px 0;
-            padding: 8px;
+            margin: 8px 0;
+            padding: 10px;
             background-color: rgba(0, 122, 255, 0.1);
-            border-radius: 6px;
+            border-radius: 8px;
             color: #007aff;
             text-decoration: none;
             font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .qs-download-list a:hover {
+            background-color: rgba(0, 122, 255, 0.2);
         }
 
         /* 5. 移动端兼容性调整：确保移动端也留出顶栏空间 */
         @media (max-width: 768px) {
-            .container {
+            .qs-container {
                 /* 确保移动端在 Hamburger 菜单后也能看到内容 */
                 padding-top: 80px;
             }
-        }
-
-        /* 6. 确保 body 不会出现滚动条导致内容卡在视窗外 */
-        html,
-        body {
-            height: 100%;
         }
     </style>
 </head>
 
 <body>
     <script src="/js/nav.js"></script>
-    <div class="container">
-        <div class="main-title">夸克闪传</div>
+    <div class="qs-container">
+        <div class="qs-main-title">夸克闪传</div>
 
-        <div class="card" id="join-section">
+        <div class="qs-card" id="join-section">
             <h2>连接设备</h2>
-            <input type="text" id="room-code-input" placeholder="输入三位连接码 (如 ABC)" maxlength="3"
+            <input type="text" id="room-code-input" class="qs-input-field" placeholder="输入三位连接码 (如 ABC)" maxlength="3"
                 style="text-transform: uppercase;">
-            <button id="join-btn">加入房间并接收</button>
-            <button id="create-btn">生成连接码并发送</button>
+            <button id="join-btn" class="qs-btn">加入房间并接收</button>
+            <button id="create-btn" class="qs-btn">生成连接码并发送</button>
         </div>
 
-        <div class="card" id="transfer-section" style="display: none;">
+        <div class="qs-card" id="transfer-section" style="display: none;">
             <h2 id="transfer-title">等待连接...</h2>
 
             <div id="file-selection-area">
                 <input type="file" id="file-input" multiple>
-                <label for="file-input" class="file-select-label">选择文件 (可多选)</label>
+                <label for="file-input" class="qs-file-select-label">选择文件 (可多选)</label>
                 <ul id="file-list" style="display: none;"></ul>
-                <button id="send-btn" disabled>等待连接...</button>
+                <button id="send-btn" class="qs-btn" disabled>等待连接...</button>
             </div>
 
             <p id="current-file-info" style="font-size: 14px; color: #666;"></p>
-            <div class="progress-bar-container">
-                <div id="progress-bar" class="progress-bar"></div>
+            <div class="qs-progress-container">
+                <div id="progress-bar" class="qs-progress-bar"></div>
             </div>
 
             <div id="download-area" style="display: none;">
                 <h2>已接收文件列表</h2>
-                <div id="download-list" class="download-list"></div>
+                <div id="download-list" class="qs-download-list"></div>
             </div>
 
-            <button id="clean-room-btn" class="secondary-btn" style="display: none;">清除房间数据并重置</button>
+            <button id="clean-room-btn" class="qs-btn qs-secondary-btn" style="display: none;">清除房间数据并重置</button>
         </div>
 
-        <div class="card" id="status-card">
+        <div class="qs-card" id="status-card">
             <h2>状态信息</h2>
             <div id="status">连接状态：未连接</div>
         </div>
@@ -400,8 +442,8 @@
             peerConnection.onicecandidate = async (event) => {
                 if (event.candidate) {
                     if (isSender && !hasSentCodePrompt) {
-                        transferTitle.textContent = `📢 连接码：${roomCode}。请将此码发送给接收方。`;
-                        logStatus('ICE 候选者正在发送中。**请将连接码发送给接收方。**');
+                        transferTitle.textContent = `📢 连接码：${roomCode}`;
+                        logStatus('ICE 候选者正在发送中，请在接收方输入连接码。');
                         hasSentCodePrompt = true;
                     }
 
