@@ -1,7 +1,77 @@
-// === 完整修复的 app.js 文件 ===
-// 包含所有功能：Firebase 信令 + WebRTC + 文件传输 + UI
+// === 添加在 app.js 最开头 ===
+console.log('=== WebRTC 兼容性测试 ===');
 
-// 1. Firebase 配置和初始化
+// 1. 测试浏览器支持
+if (!window.RTCPeerConnection) {
+    console.error('❌ 浏览器不支持 RTCPeerConnection');
+    alert('您的浏览器不支持WebRTC，请使用Chrome/Firefox/Edge/Safari的最新版本');
+} else {
+    console.log('✅ 浏览器支持 WebRTC');
+}
+
+// 2. 测试 STUN 服务器
+async function testSTUN() {
+    console.log('测试STUN服务器连接...');
+    const pc = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+
+    return new Promise((resolve, reject) => {
+        pc.createDataChannel('test');
+        pc.createOffer().then(offer => {
+            console.log('✅ STUN服务器可达');
+            pc.setLocalDescription(offer);
+            resolve(true);
+        }).catch(err => {
+            console.error('❌ STUN服务器连接失败:', err);
+            reject(err);
+        });
+
+        // 超时处理
+        setTimeout(() => {
+            console.warn('⚠️ STUN测试超时');
+            resolve(false);
+        }, 3000);
+    });
+}
+
+// 3. 测试 Firebase 连接
+async function testFirebase() {
+    console.log('测试Firebase连接...');
+    try {
+        const connectedRef = firebase.database().ref('.info/connected');
+        connectedRef.once('value').then(snapshot => {
+            if (snapshot.val() === true) {
+                console.log('✅ Firebase连接正常');
+            } else {
+                console.warn('⚠️ Firebase连接不稳定');
+            }
+        });
+    } catch (error) {
+        console.error('❌ Firebase连接失败:', error);
+    }
+}
+
+// 4. 页面加载时运行测试
+window.addEventListener('load', async () => {
+    console.log('开始系统测试...');
+
+    // 等待Firebase初始化
+    setTimeout(async () => {
+        await testFirebase();
+        await testSTUN();
+
+        console.log('=== 系统测试完成 ===');
+        console.log('提示：如果卡在"创建新的Peer Connection"，请检查：');
+        console.log('1. 浏览器控制台是否有错误');
+        console.log('2. 防火墙是否阻止WebRTC');
+        console.log('3. 是否使用HTTPS（GitHub Pages自动提供）');
+    }, 1000);
+});
+
+// === 以下是你的现有代码，但需要修改关键部分 ===
+
+
 const firebaseConfig = {
     apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
     authDomain: "quark-b7305.firebaseapp.com",
@@ -172,16 +242,30 @@ class FileTransfer {
         }
 
         this.remoteId = peerId;
-        this.isInitiator = this.localId < peerId; // 字母顺序决定谁是发起方
+        this.isInitiator = this.localId < peerId;
 
         this.updateStatus('正在连接...', 'connecting');
 
-        // 检查对方是否在线
+        // 添加连接超时
+        const connectionTimeout = setTimeout(() => {
+            if (this.peerConnection &&
+                this.peerConnection.connectionState !== 'connected' &&
+                this.peerConnection.iceConnectionState !== 'connected') {
+                console.error('连接超时（15秒）');
+                this.updateStatus('连接超时', 'error');
+                this.resetConnection();
+                alert('连接超时，请检查网络或重试');
+            }
+        }, 15000);
+
         try {
+            // 检查对方是否在线
             const snapshot = await database.ref(`connections/${peerId}`).once('value');
             if (!snapshot.exists()) {
-                throw new Error('对方不在线');
+                throw new Error('对方不在线，请确保对方已打开页面');
             }
+
+            console.log('对方在线，开始创建连接');
 
             // 创建WebRTC连接
             this.createPeerConnection();
@@ -191,11 +275,16 @@ class FileTransfer {
 
             // 如果是发起方，创建offer
             if (this.isInitiator) {
+                console.log('开始创建Offer...');
                 await this.createAndSendOffer();
             }
 
+            // 清除超时定时器
+            clearTimeout(connectionTimeout);
+
         } catch (error) {
             console.error('连接失败:', error);
+            clearTimeout(connectionTimeout);
             this.updateStatus('连接失败', 'error');
             alert(`连接失败: ${error.message}`);
             this.resetConnection();
@@ -203,46 +292,129 @@ class FileTransfer {
     }
 
     createPeerConnection() {
-        console.log('创建新的Peer Connection');
+        console.log('创建新的Peer Connection - 开始');
 
         // 关闭现有的连接
         if (this.peerConnection) {
+            console.log('关闭现有连接');
             this.peerConnection.close();
+            this.peerConnection = null;
         }
 
-        // 配置ICE服务器（只使用可靠的STUN服务器）
+        // 简化配置 - 只用一个STUN服务器测试
         const config = {
             iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' }
+                {
+                    urls: [
+                        'stun:stun.l.google.com:19302',
+                        'stun:stun1.l.google.com:19302'
+                    ]
+                }
             ],
-            iceCandidatePoolSize: 10,
-            bundlePolicy: 'max-bundle',
+            // 简化配置，避免兼容性问题
+            iceTransportPolicy: 'all',
+            bundlePolicy: 'balanced',
             rtcpMuxPolicy: 'require'
         };
 
-        this.peerConnection = new RTCPeerConnection(config);
+        console.log('使用配置:', config);
+
+        try {
+            this.peerConnection = new RTCPeerConnection(config);
+            console.log('✅ Peer Connection 创建成功');
+        } catch (error) {
+            console.error('❌ 创建 Peer Connection 失败:', error);
+            this.updateStatus('创建连接失败: ' + error.message, 'error');
+            return; // 直接返回，不继续执行
+        }
 
         // 重置状态
         this.hasSetLocalOffer = false;
         this.hasSetRemoteAnswer = false;
         this.pendingIceCandidates = [];
 
-        // 设置事件监听器
-        this.setupPeerConnectionEvents();
+        // 设置事件监听器 - 添加详细的日志
+        console.log('设置事件监听器...');
 
-        // 如果是发起方，创建数据通道
+        // ICE候选处理
+        this.peerConnection.onicecandidate = (event) => {
+            console.log('onicecandidate 触发:', event.candidate ? '有候选' : '收集完成');
+
+            if (!event.candidate) {
+                console.log('ICE候选收集完成');
+                return;
+            }
+
+            // 简化候选发送，避免复杂对象
+            const candidate = {
+                candidate: event.candidate.candidate,
+                sdpMid: event.candidate.sdpMid || '0',
+                sdpMLineIndex: event.candidate.sdpMLineIndex || 0
+            };
+
+            console.log('发送ICE候选:', candidate.candidate.substring(0, 50) + '...');
+
+            if (this.remoteId) {
+                this.sendSignal('candidate', candidate);
+            }
+        };
+
+        // ICE连接状态
+        this.peerConnection.oniceconnectionstatechange = () => {
+            const state = this.peerConnection.iceConnectionState;
+            console.log('ICE连接状态变化:', state);
+
+            switch (state) {
+                case 'checking':
+                    this.updateStatus('正在建立连接...', 'connecting');
+                    break;
+                case 'connected':
+                    console.log('✅ ICE连接成功');
+                    this.updateStatus('已连接', 'connected');
+                    break;
+                case 'completed':
+                    console.log('✅ ICE连接完成');
+                    break;
+                case 'failed':
+                    console.error('❌ ICE连接失败');
+                    this.updateStatus('连接失败', 'error');
+                    this.attemptReconnect();
+                    break;
+                case 'disconnected':
+                    console.warn('⚠️ ICE连接断开');
+                    this.updateStatus('连接断开', 'error');
+                    break;
+            }
+        };
+
+        // 连接状态
+        this.peerConnection.onconnectionstatechange = () => {
+            const state = this.peerConnection.connectionState;
+            console.log('Peer连接状态变化:', state);
+
+            if (state === 'connected') {
+                console.log('✅ Peer-to-Peer连接成功');
+                this.showTransferPanel();
+            } else if (state === 'failed' || state === 'disconnected') {
+                console.error('❌ Peer连接失败');
+            }
+        };
+
+        // 重要：添加数据通道事件监听
+        this.peerConnection.ondatachannel = (event) => {
+            console.log('收到数据通道:', event.channel.label);
+            this.setupDataChannel(event.channel);
+        };
+
+        // 如果是发起方，立即创建数据通道
         if (this.isInitiator) {
+            console.log('作为发起方，创建数据通道');
             this.createDataChannel();
         } else {
-            // 作为接收方，监听数据通道
-            this.peerConnection.ondatachannel = (event) => {
-                console.log('收到数据通道');
-                this.setupDataChannel(event.channel);
-            };
+            console.log('作为接收方，等待数据通道');
         }
+
+        console.log('创建新的Peer Connection - 完成');
     }
 
     setupPeerConnectionEvents() {
@@ -1072,3 +1244,60 @@ if (navigator.connection) {
         }
     });
 }
+
+// 调试函数
+window.debugConnection = function () {
+    console.clear();
+    console.log('=== 连接状态调试 ===');
+
+    if (!fileTransfer) {
+        console.error('❌ FileTransfer 实例不存在');
+        return;
+    }
+
+    console.log('本地ID:', fileTransfer.localId);
+    console.log('远程ID:', fileTransfer.remoteId);
+    console.log('是否是发起方:', fileTransfer.isInitiator);
+
+    if (fileTransfer.peerConnection) {
+        console.log('Peer Connection 状态:');
+        console.log('- connectionState:', fileTransfer.peerConnection.connectionState);
+        console.log('- iceConnectionState:', fileTransfer.peerConnection.iceConnectionState);
+        console.log('- iceGatheringState:', fileTransfer.peerConnection.iceGatheringState);
+        console.log('- signalingState:', fileTransfer.peerConnection.signalingState);
+
+        // 检查数据通道
+        if (fileTransfer.dataChannel) {
+            console.log('数据通道状态:', fileTransfer.dataChannel.readyState);
+            console.log('数据通道标签:', fileTransfer.dataChannel.label);
+        } else {
+            console.log('数据通道: 未创建');
+        }
+
+        // 检查本地/远程描述
+        console.log('本地描述:', fileTransfer.peerConnection.localDescription ? '已设置' : '未设置');
+        console.log('远程描述:', fileTransfer.peerConnection.remoteDescription ? '已设置' : '未设置');
+    } else {
+        console.log('❌ Peer Connection: 未创建');
+    }
+
+    // 测试STUN
+    const testPC = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+
+    testPC.createDataChannel('test');
+    testPC.createOffer().then(offer => {
+        console.log('✅ STUN服务器测试: 正常');
+        testPC.close();
+    }).catch(err => {
+        console.error('❌ STUN服务器测试: 失败', err);
+    });
+
+    // 清理Firebase旧消息
+    database.ref('signaling').limitToLast(5).once('value').then(snapshot => {
+        console.log('最近的信令消息:', snapshot.numChildren());
+    });
+
+    console.log('=== 调试完成 ===');
+};

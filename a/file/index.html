@@ -24,6 +24,11 @@
             <div class="panel-header">
                 <h2>点对点文件传输</h2>
                 <p class="subtitle">无需服务器，直接传输</p>
+                <!-- 添加到你的HTML文件中的某个位置 -->
+                <button onclick="debugConnection()"
+                    style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; padding: 5px 10px; font-size: 12px;">
+                    调试连接
+                </button>
             </div>
 
             <div class="panel-body">
@@ -113,7 +118,6 @@
         </div>
     </div>
 
-    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
 </body>
 
