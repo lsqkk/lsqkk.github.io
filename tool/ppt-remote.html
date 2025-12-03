@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克PPT遥控 - 桌面原生版 | Quark PPT Remote</title>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        /* 样式沿用上一个版本，保持与用户网站的兼容性和美观 */
+        :root {
+            /* 预留顶栏空间，请根据您 nav.css 中的 .header 实际高度调整 */
+            --header-height: 60px;
+            --main-blue: #007aff;
+            --main-green: #34c759;
+            --main-red: #ff3b30;
+            --card-bg-opacity: 0.8;
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --card-border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* 假设您网站背景路径不变 */
+            background: url('/image/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        .main-content-wrapper-remote {
+            padding-top: var(--header-height);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 50px;
+        }
+
+        .app-title-remote {
+            margin: 20px 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .container-remote {
+            width: 90%;
+            max-width: 480px;
+            padding: 0 20px;
+        }
+
+        .card-remote {
+            background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--card-border);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        /* 避免与 nav.css 中的 input 冲突 */
+        .remote-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        /* 避免与 nav.css 中的 button 冲突 */
+        .remote-button-primary {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            border: none;
+            background-color: var(--main-blue);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
+            transition: all 0.2s;
+        }
+
+        .remote-button-secondary {
+            background-color: var(--main-red);
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(255, 59, 48, 0.4);
+        }
+
+        .remote-button-primary:active,
+        .remote-button-secondary:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0, 122, 255, 0.4);
+        }
+
+
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            width: 45%;
+            padding: 20px 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn.next-slide {
+            background-color: var(--main-green);
+        }
+
+        .control-btn.prev-slide {
+            background-color: var(--main-blue);
+        }
+
+        .control-btn.blank-screen {
+            background-color: var(--main-red);
+        }
+
+        .control-btn.pointer-mode {
+            background-color: #f7b731;
+        }
+
+        .control-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #projector-status-box {
+            border: 2px solid var(--main-blue);
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 122, 255, 0.05);
+        }
+
+        .alert-error {
+            color: var(--main-red);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #status-remote {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(245, 245, 245, 0.9);
+            border-radius: 8px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content-wrapper-remote">
+        <h1 class="app-title-remote">夸克PPT遥控 - 桌面原生版</h1>
+
+        <div class="container-remote">
+
+            <div class="card-remote" id="join-section-remote">
+                <h2>启动或加入遥控</h2>
+                <input type="text" id="room-code-input-remote" class="remote-input" placeholder="输入三位连接码 (如 ABC)"
+                    maxlength="3">
+                <button id="start-projector-btn" class="remote-button-primary">作为投影端启动 (需运行本地程序)</button>
+                <button id="join-controller-btn" class="remote-button-primary remote-button-secondary">作为遥控端连接</button>
+            </div>
+
+            <div class="card-remote" id="projector-view" style="display: none;">
+                <h2>投影端：等待本地桥接</h2>
+                <div id="projector-status-box">
+                    <p>🚨 **重要：** 请在电脑上运行下载的 `Quark-PPT-Bridge.exe` 程序！</p>
+                    <p>当前连接码：<span id="projector-code-display"
+                            style="font-size: 1.5em; color: var(--main-red); font-weight: bold;">---</span></p>
+                    <p>本地连接状态：<span id="local-bridge-status" class="alert-error">断开中 (ws://localhost:8080)</span></p>
+                    <p>Firebase 监听状态：<span id="firebase-listen-status">未启动</span></p>
+                </div>
+                <p style="margin-top: 15px;">**一旦连接成功，请切换到您的原生 PPT 软件 (如 PowerPoint) 的演示模式。**</p>
+            </div>
+
+            <div class="card-remote" id="controller-view" style="display: none;">
+                <h2>遥控端：控制面板</h2>
+                <p>当前房间：<span id="controller-code-display"
+                        style="font-size: 1.2em; color: var(--main-blue); font-weight: bold;">---</span></p>
+                <div class="control-panel">
+                    <button class="control-btn prev-slide" onclick="sendCommand('prev')">⏮️ 上一页</button>
+                    <button class="control-btn next-slide" onclick="sendCommand('next')">下一页 ⏭️</button>
+                    <button class="control-btn blank-screen" onclick="sendCommand('blank')">◼️ 屏幕变黑/恢复</button>
+                    <button class="control-btn pointer-mode" onclick="sendCommand('pointer')">🖱️ 激光笔模式</button>
+                </div>
+                <p id="command-status" style="margin-top: 15px; color: #666; font-weight: 500;">状态: 已连接</p>
+            </div>
+
+            <div class="card-remote">
+                <h2>实时日志</h2>
+                <div id="status-remote">应用状态：未启动</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // -----------------------------------------------------------
+        // 1. Firebase 配置 (用于遥控端写入)
+        // -----------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
+            authDomain: "quark-b7305.firebaseapp.com",
+            databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
+            projectId: "quark-b7305",
+            storageBucket: "quark-b7305.firebasestorage.app",
+            messagingSenderId: "843016834358",
+            appId: "1:843016834358:web:9438c729be28c4d492f797",
+            measurementId: "G-5BVT26KRT6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // -----------------------------------------------------------
+        // 2. 核心变量与 DOM 元素
+        // -----------------------------------------------------------
+        let currentRoomCode = null;
+        let localWebSocket = null;
+
+        // DOM 元素引用
+        const joinSection = document.getElementById('join-section-remote');
+        const projectorView = document.getElementById('projector-view');
+        const controllerView = document.getElementById('controller-view');
+        const roomCodeInput = document.getElementById('room-code-input-remote');
+        const projectorCodeDisplay = document.getElementById('projector-code-display');
+        const controllerCodeDisplay = document.getElementById('controller-code-display');
+        const localBridgeStatus = document.getElementById('local-bridge-status');
+        const firebaseListenStatus = document.getElementById('firebase-listen-status');
+        const statusDiv = document.getElementById('status-remote');
+
+
+        // -----------------------------------------------------------
+        // 3. 核心函数：实用工具
+        // -----------------------------------------------------------
+
+        function logStatus(message) {
+            statusDiv.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}\n` + statusDiv.innerHTML;
+            if (statusDiv.scrollTop > 0) statusDiv.scrollTop = 0;
+        }
+
+        function generateRoomCode() {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < 3; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        // -----------------------------------------------------------
+        // 4. 投影端 (Projector) 逻辑 - 连接本地桥接程序
+        // -----------------------------------------------------------
+
+        function setupProjector(code) {
+            currentRoomCode = code;
+            joinSection.style.display = 'none';
+            projectorView.style.display = 'block';
+            projectorCodeDisplay.textContent = code;
+            logStatus(`投影端启动。尝试连接本地桥接程序 ws://localhost:8080 ...`);
+
+            // 1. 启动 WebSocket 连接
+            localWebSocket = new WebSocket('ws://localhost:8080');
+
+            localWebSocket.onopen = () => {
+                localBridgeStatus.textContent = '连接成功';
+                localBridgeStatus.style.color = 'var(--main-green)';
+                logStatus('✅ 已连接本地桥接程序。发送 Firebase 房间码。');
+
+                // 2. 发送命令给本地程序，让它去监听 Firebase
+                localWebSocket.send(JSON.stringify({
+                    type: 'CONNECT_ROOM',
+                    code: currentRoomCode
+                }));
+            };
+
+            localWebSocket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.status === 'LISTENING') {
+                        firebaseListenStatus.textContent = `已开始监听 Firebase 房间 ${data.code}`;
+                        firebaseListenStatus.style.color = 'var(--main-blue)';
+                        logStatus(`本地桥接程序已确认监听 Firebase 房间 ${data.code}。`);
+                    }
+                } catch (e) {
+                    logStatus(`收到桥接程序信息: ${event.data}`);
+                }
+            };
+
+            localWebSocket.onclose = () => {
+                localBridgeStatus.textContent = '断开中 (ws://localhost:8080)';
+                localBridgeStatus.style.color = 'var(--main-red)';
+                firebaseListenStatus.textContent = '未启动';
+                firebaseListenStatus.style.color = '#333';
+                logStatus('❌ 与本地桥接程序断开连接。请确保程序正在运行。');
+            };
+
+            localWebSocket.onerror = (error) => {
+                localBridgeStatus.textContent = '连接失败 (ws://localhost:8080)';
+                localBridgeStatus.style.color = 'var(--main-red)';
+                logStatus(`❌ 本地 WebSocket 错误，请检查程序是否运行: ${error.message}`);
+            };
+        }
+
+
+        // -----------------------------------------------------------
+        // 5. 遥控端 (Controller) 逻辑 - 发送命令
+        // -----------------------------------------------------------
+
+        function setupController(code) {
+            currentRoomCode = code;
+            joinSection.style.display = 'none';
+            controllerView.style.display = 'block';
+            controllerCodeDisplay.textContent = code;
+            logStatus(`遥控端连接中。房间: ${code}`);
+
+            // 检查房间状态
+            database.ref(`rooms/${code}/command`).once('value').then(snapshot => {
+                const commandStatusP = document.getElementById('command-status');
+                if (snapshot.exists()) {
+                    commandStatusP.textContent = '状态: 连接成功，可开始控制';
+                } else {
+                    commandStatusP.textContent = '状态: 警告！等待投影端创建房间...';
+                }
+            });
+        }
+
+        /** 发送命令到 Firebase */
+        function sendCommand(action) {
+            if (!currentRoomCode) {
+                document.getElementById('command-status').textContent = '❌ 未连接房间。请重试。';
+                return;
+            }
+
+            const commandRef = database.ref(`rooms/${currentRoomCode}/command`);
+            const commandPayload = {
+                action: action,
+                timestamp: Date.now()
+            };
+
+            // 使用 set() 覆盖旧命令
+            commandRef.set(commandPayload)
+                .then(() => {
+                    document.getElementById('command-status').textContent = `命令 ${action.toUpperCase()} 发送成功！`;
+                })
+                .catch(error => {
+                    document.getElementById('command-status').textContent = `❌ 命令发送失败: ${error.message}`;
+                    logStatus(`❌ 命令发送失败: ${error.message}`);
+                });
+        }
+
+        // -----------------------------------------------------------
+        // 6. 事件监听器
+        // -----------------------------------------------------------
+
+        document.getElementById('start-projector-btn').addEventListener('click', () => {
+            let roomCode = roomCodeInput.value.toUpperCase().trim();
+            if (roomCode.length !== 3) {
+                roomCode = generateRoomCode();
+            }
+            setupProjector(roomCode);
+        });
+
+        document.getElementById('join-controller-btn').addEventListener('click', () => {
+            const roomCode = roomCodeInput.value.toUpperCase().trim();
+            if (roomCode.length !== 3) {
+                logStatus('❌ 连接码必须是三位大写字母。');
+                return;
+            }
+            setupController(roomCode);
+        });
+
+    </script>
+</body>
+
+</html>
