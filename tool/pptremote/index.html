@@ -208,16 +208,17 @@
             </div>
 
             <div class="card-remote" id="projector-view" style="display: none;">
-                <h2>投影端：等待本地桥接</h2>
+                <h2>放映端：等待本地桥接</h2>
                 <div id="projector-status-box">
                     <p>🚨 重要：请先在电脑上运行<br><a href="quark-ppt-bridge-lite.exe">quark-ppt-bridge-lite.exe</a> (点击下载)
-                        程序<br>并确保8080端口畅通</p>
-                    <p>当前连接码：<span id="projector-code-display"
+                        程序<br>运行后再刷新此页</p>
+                    <p>请在遥控端输入当前连接码：<br><span id="projector-code-display"
                             style="font-size: 1.5em; color: var(--main-red); font-weight: bold;">---</span></p>
                     <p>本地连接状态：<span id="local-bridge-status" class="alert-error">断开中 (ws://localhost:8080)</span></p>
                     <p>Firebase 监听状态：<span id="firebase-listen-status">未启动</span></p>
                 </div>
-                <p style="margin-top: 15px;">一旦连接成功，请切换到您的PowerPoint的演示模式<br>（仅支持.pptx，.ppt需转换后使用）</p>
+                <p style="margin-top: 15px;">一旦连接成功，请切换到您的PowerPoint的演示模式<br>（仅支持.pptx，.ppt需转换后使用）<br>部分网络环境firebase
+                    RTDB连接可能不稳定<br>如程序显示连接失败 请配置科学环境或稍加等待后重试</p>
             </div>
 
             <div class="card-remote" id="controller-view" style="display: none;">
@@ -296,7 +297,7 @@
         }
 
         // -----------------------------------------------------------
-        // 4. 投影端 (Projector) 逻辑 - 连接本地桥接程序
+        // 4. 放映端 (Projector) 逻辑 - 连接本地桥接程序
         // -----------------------------------------------------------
 
         function setupProjector(code) {
@@ -304,7 +305,7 @@
             joinSection.style.display = 'none';
             projectorView.style.display = 'block';
             projectorCodeDisplay.textContent = code;
-            logStatus(`投影端启动。尝试连接本地桥接程序 ws://localhost:8080 ...`);
+            logStatus(`放映端启动。尝试连接本地桥接程序 ws://localhost:8080 ...`);
 
             // 1. 启动 WebSocket 连接
             localWebSocket = new WebSocket('ws://localhost:8080');
@@ -367,7 +368,7 @@
                 if (snapshot.exists()) {
                     commandStatusP.textContent = '状态: 连接成功，可开始控制';
                 } else {
-                    commandStatusP.textContent = '状态: 警告！等待投影端创建房间...';
+                    commandStatusP.textContent = '状态: 警告！等待放映端创建房间...';
                 }
             });
         }
