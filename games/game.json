@@ -13,6 +13,11 @@
     ],
     "singlePlayer": [
         {
+            "name": "手机颠球",
+            "image": "https://raw.githubusercontent.com/lsqkk/image/main/20251203160551799.jpg",
+            "link": "ball"
+        },
+        {
             "name": "单机五子棋",
             "image": "image/9.png",
             "link": "5ziqi-p"
