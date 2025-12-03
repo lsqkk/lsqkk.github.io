@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克PPT遥控 - 桌面原生版 | Quark PPT Remote</title>
-
+    <title>夸克PPT遥控 | 手机遥控电脑PPT | 夸克博客</title>
+    <script src="/js/nav.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -191,28 +191,31 @@
 
 <body>
     <div class="main-content-wrapper-remote">
-        <h1 class="app-title-remote">夸克PPT遥控 - 桌面原生版</h1>
+        <h1 class="app-title-remote">夸克PPT遥控</h1>
 
         <div class="container-remote">
 
             <div class="card-remote" id="join-section-remote">
-                <h2>启动或加入遥控</h2>
-                <input type="text" id="room-code-input-remote" class="remote-input" placeholder="输入三位连接码 (如 ABC)"
+                <h2>手机也可以是PPT遥控器</h2>
+                <button id="start-projector-btn" class="remote-button-primary">我是电脑/放映端</button>
+
+
+                <button id="join-controller-btn" class="remote-button-primary remote-button-secondary">我是手机/遥控器</button>
+                <input type="text" id="room-code-input-remote" class="remote-input" placeholder="遥控器端于此键入连接码后 再点击上方按钮"
                     maxlength="3">
-                <button id="start-projector-btn" class="remote-button-primary">作为投影端启动 (需运行本地程序)</button>
-                <button id="join-controller-btn" class="remote-button-primary remote-button-secondary">作为遥控端连接</button>
             </div>
 
             <div class="card-remote" id="projector-view" style="display: none;">
                 <h2>投影端：等待本地桥接</h2>
                 <div id="projector-status-box">
-                    <p>🚨 **重要：** 请在电脑上运行下载的 `Quark-PPT-Bridge.exe` 程序！</p>
+                    <p>🚨 重要：请先在电脑上运行<br><a href="quark-ppt-bridge-lite.exe">quark-ppt-bridge-lite.exe</a> (点击下载)
+                        程序<br>并确保8080端口畅通</p>
                     <p>当前连接码：<span id="projector-code-display"
                             style="font-size: 1.5em; color: var(--main-red); font-weight: bold;">---</span></p>
                     <p>本地连接状态：<span id="local-bridge-status" class="alert-error">断开中 (ws://localhost:8080)</span></p>
                     <p>Firebase 监听状态：<span id="firebase-listen-status">未启动</span></p>
                 </div>
-                <p style="margin-top: 15px;">**一旦连接成功，请切换到您的原生 PPT 软件 (如 PowerPoint) 的演示模式。**</p>
+                <p style="margin-top: 15px;">一旦连接成功，请切换到您的PowerPoint的演示模式<br>（仅支持.pptx，.ppt需转换后使用）</p>
             </div>
 
             <div class="card-remote" id="controller-view" style="display: none;">
