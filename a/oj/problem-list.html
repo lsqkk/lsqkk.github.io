@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克博客 OJ - 题库列表</title>
+    <link rel="stylesheet" href="/css/basic.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="/js/nav.js"></script>
+</head>
+
+<body>
+
+    <div class="oj-app-wrapper">
+
+        <aside class="oj-sidebar-panel glass-card">
+            <h2 class="oj-sidebar-title">夸克 OJ</h2>
+
+            <nav class="oj-sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="oj-nav-link">首页 | 题目</a></li>
+                    <li><a href="problem-list.html" class="oj-nav-link active">题库</a></li>
+                    <li><a href="discussion.html" class="oj-nav-link">讨论区</a></li>
+                    <li><a href="submission-record.html" class="oj-nav-link">提交记录</a></li>
+                </ul>
+            </nav>
+
+            <hr class="oj-sidebar-divider">
+
+            <div class="oj-sidebar-controls">
+                <div class="oj-search-group">
+                    <input type="text" class="oj-search-input" placeholder="搜索题目 ID/名称">
+                    <button class="oj-search-button">🔍</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="oj-main-content">
+            <section class="oj-problem-list-panel glass-card">
+                <h2 class="oj-problem-title">题库列表</h2>
+                <p>点击题目名称或 ID 即可跳转到在线判题页面。</p>
+
+                <table class="oj-problem-table">
+                    <thead>
+                        <tr>
+                            <th>状态</th>
+                            <th>ID</th>
+                            <th>题目名称</th>
+                            <th>难度</th>
+                        </tr>
+                    </thead>
+                    <tbody id="oj-problem-list-body">
+                        <tr>
+                            <td colspan="4" style="text-align:center;">正在加载题目列表...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="./js/utils.js"></script>
+    <script src="./js/list.js"></script>
+
+</body>
+
+</html>

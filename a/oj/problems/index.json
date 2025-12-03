@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1001,
+        "title": "A + B 求和问题",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1002,
+        "title": "两数相减",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1003,
+        "title": "斐波那契数列",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    }
+]

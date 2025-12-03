@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克博客 OJ - 讨论区</title>
+    <link rel="stylesheet" href="/css/basic.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="discussion.css">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="header-placeholder"></div>
+
+    <div class="oj-app-wrapper">
+        <aside class="oj-sidebar-panel glass-card">
+            <h2 class="oj-sidebar-title">夸克 OJ</h2>
+            <nav class="oj-sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="oj-nav-link">首页 | 题目</a></li>
+                    <li><a href="problem-list.html" class="oj-nav-link">题库</a></li>
+                    <li><a href="discussion.html" class="oj-nav-link active">讨论区</a></li>
+                    <li><a href="submission-record.html" class="oj-nav-link">提交记录</a></li>
+                </ul>
+            </nav>
+            <hr class="oj-sidebar-divider">
+            <div class="oj-sidebar-controls">
+                <div class="oj-search-group">
+                    <input type="text" id="discussionSearchInput" class="oj-search-input" placeholder="搜索主题/题目ID">
+                    <button id="discussionSearchButton" class="oj-search-button">🔍</button>
+                </div>
+            </div>
+
+            <div class="oj-sidebar-controls" id="admin-login-area">
+                <input type="password" id="adminPassword" class="oj-search-input" placeholder="管理员密码">
+                <button class="submit-btn" onclick="adminLogin()">登录</button>
+            </div>
+        </aside>
+
+        <main class="oj-main-content">
+            <div id="listView" class="view active">
+                <section id="newDiscussionForm" class="new-post-form glass-card">
+                    <h3><i class="fas fa-edit"></i> 发起新讨论</h3>
+
+                    <div class="form-compact-row row-nickname-avatar">
+                        <div class="form-group form-nickname">
+                            <label for="nickname">您的昵称</label>
+                            <input type="text" id="nickname" placeholder="昵称">
+                        </div>
+
+                        <div class="form-group form-avatar-controls">
+                            <label>头像设置</label>
+                            <div class="avatar-selection-area">
+                                <div class="avatar-preview" id="avatarPreview" style="background-color: #5C6BC0;">A
+                                </div>
+                                <div class="avatar-toggle">
+                                    <button id="color-toggle" class="active">颜色</button>
+                                    <button id="image-toggle">URL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="avatar-input-container">
+                        <div id="color-selector" class="avatar-selector active">
+                            <input type="color" id="colorPicker" value="#5C6BC0">
+                        </div>
+
+                        <div id="image-selector" class="avatar-selector">
+                            <input type="text" id="avatarUrl"
+                                placeholder="输入图片 URL (例如: https://example.com/avatar.jpg)">
+
+                        </div>
+                    </div>
+
+                    <div class="form-compact-row row-title-id">
+                        <div class="form-group problem-id-group">
+                            <label for="newDiscussionProblemId">题目 ID</label>
+                            <input type="number" id="newDiscussionProblemId" placeholder="如: 1001" value="1001">
+                        </div>
+                        <div class="form-group discussion-title-group">
+                            <label for="newDiscussionTitle">讨论主题</label>
+                            <input type="text" id="newDiscussionTitle" placeholder="请输入主题">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newDiscussionContent">内容 (Markdown)</label>
+                        <textarea id="newDiscussionContent" rows="4" placeholder="支持 Markdown 格式..."></textarea>
+                    </div>
+
+                    <div class="form-submit-row">
+                        <button class="submit-btn" onclick="submitNewDiscussion()">发布讨论</button>
+                    </div>
+                </section>
+
+                <section class="discussions-list-section">
+                    <h2>所有讨论帖</h2>
+                    <div class="discussions-container" id="discussionsContainer">
+                        <!-- 讨论帖将由JavaScript动态加载 -->
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                        <!-- 分页将由JavaScript动态生成 -->
+                    </div>
+                </section>
+            </div>
+
+            <div id="detailView" class="view" style="display:none;">
+                <button class="back-to-list-btn" onclick="showListView()">
+                    <i class="fas fa-arrow-left"></i> 返回讨论列表
+                </button>
+
+                <div id="singleDiscussionContent" class="discussion-detail-card">
+                    <!-- 单个讨论详情将由JavaScript动态加载 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/nav.js"></script>
+    <script src="./js/discussion.js"></script>
+</body>
+
+</html>

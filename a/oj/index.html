@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克博客 OJ - 在线练习</title>
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="/js/nav.js"></script>
+    <link rel="stylesheet" data-name="vs/editor/editor.main"
+        href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css">
+</head>
+
+<body>
+
+    <div class="oj-app-wrapper">
+
+        <aside class="oj-sidebar-panel glass-card">
+            <h2 class="oj-sidebar-title">夸克 OJ</h2>
+
+            <nav class="oj-sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="oj-nav-link active">首页 | 题目</a></li>
+                    <li><a href="problem-list.html" class="oj-nav-link">题库</a></li>
+                    <li><a href="discussion.html" class="oj-nav-link">讨论区</a></li>
+                    <li><a href="submission-record.html" class="oj-nav-link">提交记录</a></li>
+                </ul>
+            </nav>
+
+            <hr class="oj-sidebar-divider">
+            <div class="oj-sidebar-controls">
+                <div class="oj-search-group">
+                    <input type="text" class="oj-search-input" placeholder="搜索题目 ID/名称">
+                    <button class="oj-search-button">🔍</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="oj-main-content">
+            <section class="oj-problem-panel glass-card">
+                <h2 class="oj-problem-title" id="problem-title">加载中...</h2>
+                <div class="oj-problem-info">
+                    <span class="oj-time-limit">时间限制: <strong id="time-limit">1000ms</strong></span>
+                    <span class="oj-memory-limit">内存限制: <strong id="memory-limit">64MB</strong></span>
+                </div>
+                <div class="oj-description-section">
+                    <h3>题目描述</h3>
+                    <div id="problem-description"></div>
+                </div>
+                <div class="oj-description-section">
+                    <h3>输入格式</h3>
+                    <pre id="problem-input-format"></pre>
+                </div>
+                <div class="oj-description-section">
+                    <h3>输出格式</h3>
+                    <pre id="problem-output-format"></pre>
+                </div>
+                <div class="oj-description-section">
+                    <h3>输入/输出示例</h3>
+                    <div class="oj-sample-io">
+                        <div class="oj-sample-block">
+                            <h4>输入示例</h4>
+                            <pre id="sample-input"></pre>
+                        </div>
+                        <div class="oj-sample-block">
+                            <h4>输出示例</h4>
+                            <pre id="sample-output"></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="oj-editor-panel glass-card">
+                <div class="oj-editor-tools">
+                    <label for="language-select" class="oj-control-label">提交语言:</label>
+                    <select id="language-select" class="oj-code-language-select">
+                        <option value="71">Python 3 (ID: 71)</option>
+                        <option value="54" selected>C++ (GCC 9.2.0) (ID: 54)</option>
+                        <option value="62">Java (OpenJDK 13.0.1) (ID: 62)</option>
+                    </select>
+                    <button id="submit-button" class="oj-submit-button">提交代码</button>
+                </div>
+
+                <div id="editor-container" class="oj-editor-container"></div>
+
+                <div id="result-panel" class="oj-result-panel" style="display: none;">
+                    <h3>判题结果</h3>
+                    <p>状态: <strong id="result-status">等待提交...</strong></p>
+                    <p>运行时间: <span id="result-time">--</span></p>
+                    <p>内存占用: <span id="result-memory">--</span></p>
+                    <pre id="result-output" class="oj-result-output"></pre>
+                    <pre id="result-error" class="oj-result-error"></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' } });
+        let editor;
+
+        require(['vs/editor/editor.main'], function () {
+            // Monaco Editor 初始化
+            editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: [
+                    '//your code here'
+                ].join('\n'),
+                language: 'cpp',
+                theme: 'vs-dark',
+                automaticLayout: true,
+            });
+
+            document.getElementById('language-select').addEventListener('change', (e) => {
+                const langId = e.target.value;
+                let monacoLang = 'cpp';
+                if (langId == '71') monacoLang = 'python';
+                if (langId == '62') monacoLang = 'java';
+                if (langId == '54') monacoLang = 'cpp';
+
+                monaco.editor.setModelLanguage(editor.getModel(), monacoLang);
+            });
+
+            // 动态加载 utils.js 和 problem.js，并执行初始化
+            const scriptUtils = document.createElement('script');
+            scriptUtils.src = './js/utils.js';
+            document.body.appendChild(scriptUtils);
+
+            // 确保 utils.js 加载后，再加载 problem.js
+            scriptUtils.onload = function () {
+                const scriptProblem = document.createElement('script');
+                scriptProblem.src = './js/problem.js';
+                document.body.appendChild(scriptProblem);
+
+                // problem.js 加载完成后，调用其初始化函数
+                scriptProblem.onload = function () {
+                    if (typeof initializeProblemPage !== 'undefined') {
+                        initializeProblemPage();
+                    }
+                }
+            };
+        });
+    </script>
+</body>
+
+</html>

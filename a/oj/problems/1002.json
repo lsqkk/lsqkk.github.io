@@ -1,0 +1,25 @@
+{
+    "id": 1001,
+    "title": "A + B 求和问题2222",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "请编写一个程序，接受两个整数 A 和 B 的输入，并计算它们的和。这是所有在线判题系统 (Online Judge) 的第一个经典练习题。",
+    "input_format": "输入包含一行，包含两个由空格分隔的整数 A 和 B (-10000 ≤ A, B ≤ 10000)。",
+    "output_format": "输出包含一行，即 A 和 B 的和。",
+    "sample_input": "1 2",
+    "sample_output": "3",
+    "hidden_tests": [
+        {
+            "input": "10 20",
+            "expected_output": "30"
+        },
+        {
+            "input": "100 -50",
+            "expected_output": "50"
+        },
+        {
+            "input": "9999 1",
+            "expected_output": "10000"
+        }
+    ]
+}

@@ -1,0 +1,530 @@
+/* discussion.css - 修改版：毛玻璃风格，与 style.css 统一 */
+
+/* --- 使用 style.css 的颜色变量体系 --- */
+:root {
+    --oj-primary-color: #7abd9a;
+    --oj-glass-bg: rgba(122, 189, 154, 0.2);
+    --oj-glass-bg-light: rgba(255, 255, 255, 0.1);
+    --oj-text-color-light: #fff;
+    --oj-text-color-dark: #333;
+    --oj-border-color-light: rgba(255, 255, 255, 0.2);
+    --oj-shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --radius: 10px;
+}
+
+/* --- 新讨论表单区域 (发帖区) - 毛玻璃风格 --- */
+#newDiscussionForm {
+    margin-bottom: 20px;
+    padding: 18px;
+    background: var(--oj-glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: var(--radius);
+    color: var(--oj-text-color-light);
+    box-shadow: var(--oj-shadow-light), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+#newDiscussionForm h3 {
+    color: var(--oj-text-color-light);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--oj-border-color-light);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+/* 布局分组行 - 紧凑行布局 */
+.form-compact-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+/* 1. 昵称/头像设置行 */
+.form-group.form-nickname {
+    flex: 0 0 auto;
+    /* 改为不增长不收缩 */
+    width: 140px;
+    /* 固定宽度 */
+}
+
+.form-group.form-avatar-controls {
+    flex: 0 0 auto;
+    /* 改为不增长不收缩 */
+    width: 270px;
+    /* 固定宽度 */
+}
+
+.avatar-selection-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+/* 头像样式 - 圆形，与 lyb.css 对齐 */
+.avatar-preview {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 1.2rem;
+    border: 2px solid var(--oj-primary-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.avatar-toggle {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.avatar-toggle button {
+    padding: 8px 16px;
+    border: none;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.avatar-toggle button.active {
+    background-color: var(--oj-primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+.avatar-toggle button:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 隐藏的输入选项容器 */
+.avatar-input-container {
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+
+.avatar-selector {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding-top: 5px;
+}
+
+.avatar-selector.active {
+    display: flex;
+}
+
+#color-selector {
+    justify-content: flex-start;
+}
+
+#color-selector input[type="color"] {
+    width: 60px;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#image-selector {
+    flex-grow: 1;
+}
+
+#image-selector input[type="text"] {
+    flex-grow: 1;
+}
+
+/* 2. 题目ID和标题行 */
+.problem-id-group {
+    flex: 0 0 auto;
+    /* 改为不增长不收缩 */
+    width: 100px;
+    /* 固定宽度，比原来的120px短一点 */
+}
+
+.discussion-title-group {
+    flex: 0 0 auto;
+    /* 改为不增长不收缩 */
+    width: calc(100% - 120px - 20px);
+    /* 计算剩余宽度，120px=100px+20px间距 */
+}
+
+/* 输入框和文本域通用样式 - 毛玻璃风格 */
+#newDiscussionForm input:not([type="color"]),
+#newDiscussionForm textarea,
+.reply-input-area textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: 6px;
+    color: var(--oj-text-color-light);
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+#newDiscussionForm input::placeholder,
+#newDiscussionForm textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#newDiscussionForm input:focus,
+#newDiscussionForm textarea:focus,
+.reply-input-area textarea:focus {
+    border-color: var(--oj-primary-color);
+    box-shadow: 0 0 0 2px rgba(122, 189, 154, 0.3);
+    background-color: rgba(255, 255, 255, 0.15);
+    outline: none;
+}
+
+#newDiscussionForm textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* 按钮样式 - 与 style.css 统一 */
+.submit-btn {
+    padding: 10px 20px;
+    font-size: 0.95em;
+    background-color: var(--oj-primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.submit-btn:hover {
+    background-color: #6da285;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+.mini-btn {
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
+
+.form-submit-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+/* --- 讨论列表样式 --- */
+.discussions-list-section h2 {
+    color: var(--oj-text-color-light);
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.discussion-summary {
+    background: var(--oj-glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: var(--radius);
+    color: var(--oj-text-color-light);
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: var(--oj-shadow-light);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.discussion-summary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.summary-title {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: var(--oj-text-color-light);
+    margin-bottom: 8px;
+}
+
+.summary-meta {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 1rem;
+    background-size: cover;
+    background-position: center;
+    vertical-align: middle;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.problem-tag {
+    background-color: var(--oj-primary-color);
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 500;
+    font-size: 0.85em;
+    display: inline-block;
+}
+
+/* --- 单个讨论详情样式 --- */
+.discussion-detail-card {
+    background: var(--oj-glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: var(--radius);
+    color: var(--oj-text-color-light);
+    box-shadow: var(--oj-shadow-light);
+    padding: 25px;
+    margin-top: 20px;
+}
+
+.detail-header h1 {
+    color: var(--oj-text-color-light);
+    font-weight: 700;
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.detail-meta-row {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--oj-border-color-light);
+}
+
+.post-content {
+    line-height: 1.7;
+    color: var(--oj-text-color-light);
+    margin-bottom: 25px;
+}
+
+.post-content pre {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #e8e8e8;
+    margin: 15px 0;
+}
+
+.post-content code {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ffcc99;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+/* 回复区 */
+.replies-container {
+    margin-top: 25px;
+}
+
+.reply-card {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--oj-primary-color);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 0 6px 6px 0;
+}
+
+.reply-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.reply-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+    background-size: cover;
+    background-position: center;
+}
+
+.reply-info {
+    flex: 1;
+}
+
+.reply-author {
+    font-weight: 600;
+    color: var(--oj-text-color-light);
+}
+
+.reply-time {
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.reply-content {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.reply-input-area {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--oj-border-color-light);
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+    margin-right: 15px;
+}
+
+.action-btn:hover {
+    color: var(--oj-primary-color);
+}
+
+.back-to-list-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--oj-border-color-light);
+    color: var(--oj-text-color-light);
+    border-radius: 6px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.back-to-list-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* 分页样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 25px;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: 6px;
+    background: var(--oj-glass-bg-light);
+    color: var(--oj-text-color-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.page-btn.active {
+    background: var(--oj-primary-color);
+    color: white;
+    border-color: var(--oj-primary-color);
+}
+
+.page-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 移动端调整 */
+@media (max-width: 768px) {
+    .form-compact-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-group.form-avatar-controls {
+        width: 100%;
+    }
+
+    .avatar-selection-area {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .avatar-toggle {
+        width: 100%;
+    }
+
+    .avatar-toggle button {
+        flex: 1;
+        text-align: center;
+    }
+
+    .form-submit-row {
+        justify-content: center;
+    }
+
+    .detail-meta-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

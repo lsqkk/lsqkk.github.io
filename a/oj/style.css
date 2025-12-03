@@ -1,0 +1,477 @@
+/* --- 通用 UI 样式 (保持与 nav.css 统一的毛玻璃风格) --- */
+:root {
+    /* 继承 nav.css 中 rgba(122, 189, 154, 0.2) 对应的颜色体系 */
+    --oj-primary-color: #7abd9a;
+    --oj-glass-bg: rgba(122, 189, 154, 0.2);
+    --oj-glass-bg-light: rgba(255, 255, 255, 0.1);
+    --oj-text-color-light: #fff;
+    --oj-text-color-dark: #333;
+    --oj-border-color-light: rgba(255, 255, 255, 0.2);
+    --oj-shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background: url('/image/bg.png') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+}
+
+/* 增强 body 背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    /* 放在最底层 */
+}
+
+/* 占位符：必须与 nav.css 中 .header 的高度一致 */
+.header-placeholder {
+    /* 假设 nav.css 中的 header 高度约为 60px (根据 padding: 10px 20px 和 h1 字体大小估算) */
+    height: 60px;
+}
+
+/* 毛玻璃卡片基类 (使用 oj- 前缀) */
+.glass-card {
+    background: var(--oj-glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: 12px;
+    box-shadow: var(--oj-shadow-light), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    color: var(--oj-text-color-light);
+}
+
+.glass-card h2,
+.glass-card h3,
+.glass-card label {
+    color: var(--oj-text-color-light);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* --- 整体布局：侧边栏 + 主内容区 --- */
+.oj-app-wrapper {
+    display: flex;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    gap: 20px;
+    min-height: calc(100vh - 60px);
+    /* 减去 header-placeholder 的高度 */
+    box-sizing: border-box;
+}
+
+/* --- 侧边栏样式 (Vertical Navigation) --- */
+.oj-sidebar-panel {
+    width: 250px;
+    min-width: 250px;
+    height: fit-content;
+    /* 适应内容高度 */
+    position: sticky;
+    /* 使其固定在左侧 */
+    top: 80px;
+    /* 距离顶栏底部留出空间 */
+    padding: 20px 15px;
+    margin-top: 0;
+}
+
+.oj-sidebar-title {
+    font-size: 1.6em;
+    text-align: center;
+    border-bottom: 1px solid var(--oj-border-color-light);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.oj-sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.oj-nav-link {
+    display: block;
+    color: var(--oj-text-color-light);
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s, border-left 0.3s;
+    font-weight: 500;
+}
+
+.oj-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid var(--oj-primary-color);
+}
+
+.oj-nav-link.active {
+    background-color: var(--oj-primary-color);
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.oj-sidebar-divider {
+    border: 0;
+    height: 1px;
+    background: var(--oj-border-color-light);
+    margin: 20px 0;
+}
+
+/* --- 侧边栏控制组件 (搜索/语言) --- */
+.oj-sidebar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.oj-search-group {
+    display: flex;
+}
+
+/* 输入框样式，使用 oj- 前缀 */
+.oj-search-input {
+    flex-grow: 1;
+    padding: 8px 10px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid var(--oj-border-color-light);
+    background-color: var(--oj-glass-bg-light);
+    color: var(--oj-text-color-light);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.oj-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.oj-search-button {
+    padding: 8px 12px;
+    border-radius: 0 5px 5px 0;
+    background-color: var(--oj-primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.oj-search-button:hover {
+    background-color: #6da285;
+}
+
+.oj-control-label {
+    font-size: 0.9em;
+}
+
+
+/* --- 主内容面板样式 (保持与上一个版本类似，但使用 oj- 前缀) --- */
+.oj-main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.oj-problem-panel {
+    /* 题目面板不需要 flex-grow，让它自然包裹内容 */
+    /* 覆盖 glass-card 的 margin-bottom */
+    margin-bottom: 0;
+}
+
+.oj-problem-panel h3 {
+    border-bottom: 1px solid var(--oj-border-color-light);
+    padding-bottom: 5px;
+}
+
+.oj-problem-info {
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--oj-border-color-light);
+    display: flex;
+    gap: 20px;
+}
+
+.oj-problem-panel pre {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #e8e8e8;
+}
+
+/* --- 编辑器面板样式 --- */
+.oj-editor-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* 确保它能占据剩余空间 */
+    margin-top: 20px;
+}
+
+.oj-editor-tools {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 0 15px 0;
+    /* 在 glass-card 内部，只需底部 padding */
+}
+
+/* 避免与 nav.css 中的 .language-selector 冲突，使用特定类名 */
+.oj-code-language-select {
+    padding: 5px 8px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: var(--oj-glass-bg);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.oj-code-language-select option {
+    background-color: rgba(122, 189, 154, 0.9);
+}
+
+/* 避免与 nav.css 中的 button 冲突 */
+.oj-submit-button {
+    padding: 8px 20px;
+    background-color: var(--oj-primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.oj-submit-button:hover {
+    background-color: #6da285;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+.oj-submit-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* 代码编辑器容器 */
+.oj-editor-container {
+    flex: 1;
+    min-height: 400px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--oj-shadow-light);
+}
+
+/* 结果面板 (内部元素，不需要 glass-card) */
+.oj-result-panel {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid var(--oj-primary-color);
+}
+
+/* 媒体查询：适应移动端 */
+@media (max-width: 1024px) {
+
+    /* 1024px 以下侧边栏消失，内容全宽 */
+    .oj-sidebar-panel {
+        display: none;
+    }
+
+    .oj-app-wrapper {
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+    }
+}
+
+/* --- 题库列表页样式新增 --- */
+
+.oj-problem-list-panel {
+    /* 使用 glass-card 样式 */
+    width: 100%;
+}
+
+.oj-problem-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.95em;
+}
+
+.oj-problem-table th,
+.oj-problem-table td {
+    padding: 12px 15px;
+    text-align: left;
+    /* 使用深色文字以在玻璃卡片上保持对比度 */
+    color: var(--oj-text-color-light);
+    border-bottom: 1px solid var(--oj-border-color-light);
+}
+
+.oj-problem-table th {
+    background-color: rgba(0, 0, 0, 0.2);
+    /* 表格头部略深 */
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.oj-list-row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.oj-problem-link {
+    color: #b3e5fc;
+    /* 浅蓝色，链接色 */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.oj-problem-link:hover {
+    color: #81d4fa;
+    text-decoration: underline;
+}
+
+/* --- 状态徽章样式 --- */
+.oj-status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+}
+
+.oj-status-badge-ac {
+    background-color: #4CAF50;
+    /* Accepted - 绿色 */
+}
+
+.oj-status-badge-wa {
+    background-color: #FF9800;
+    /* Wrong Answer - 橙色 */
+}
+
+.oj-status-badge-error {
+    background-color: #F44336;
+    /* TLE/RTE/CE/SYS_ERR - 红色 */
+}
+
+.oj-status-badge-unattempted {
+    background-color: #757575;
+    /* 未尝试 - 灰色 */
+}
+
+/* --- 难度标记样式 --- */
+.oj-difficulty-入门 {
+    color: #4CAF50;
+    /* 绿色 */
+    font-weight: bold;
+}
+
+.oj-difficulty-简单 {
+    color: #b3e5fc;
+    /* 浅蓝色 */
+}
+
+.oj-difficulty-中等 {
+    color: #FF9800;
+    /* 橙色 */
+}
+
+.oj-difficulty-困难 {
+    color: #F44336;
+    /* 红色 */
+}
+
+/* --- Modal 样式 (用于提交记录页的代码展示) --- */
+.oj-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    /* 半透明黑色背景 */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.oj-modal-content {
+    background-color: #1c1c1c;
+    /* 模态框背景色 */
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 80%;
+    max-width: 800px;
+    color: #fff;
+    border-radius: 10px;
+}
+
+.oj-modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.oj-modal-close:hover,
+.oj-modal-close:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.oj-code-pre {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    /* 允许换行 */
+    word-break: break-all;
+    /* 强制断词 */
+    font-family: 'Consolas', 'Monaco', monospace;
+    max-height: 50vh;
+    overflow-y: scroll;
+    /* 可滚动 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.oj-view-code-btn {
+    padding: 5px 10px;
+    background-color: #3f51b5;
+    /* 蓝色按钮 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.oj-view-code-btn:hover {
+    background-color: #303f9f;
+}
