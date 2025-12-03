@@ -6,14 +6,16 @@
 
 // --- Firebase 配置 ---
 // **请将此处替换为您的实际 Firebase 配置**
+
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
+    authDomain: "quark-b7305.firebaseapp.com",
+    databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
+    projectId: "quark-b7305",
+    storageBucket: "quark-b7305.firebasestorage.app",
+    messagingSenderId: "843016834358",
+    appId: "1:843016834358:web:9438c729be28c4d492f797",
+    measurementId: "G-5BVT26KRT6"
 };
 // 确保 firebase 在 discussion.html 中已加载
 if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
