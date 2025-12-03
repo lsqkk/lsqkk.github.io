@@ -76,6 +76,31 @@
       ]
     },
     {
+      "name": "实时协同",
+      "tools": [
+        {
+          "name": "📁 夸克闪传 QuarkShare",
+          "url": "a/share",
+          "target": "_blank"
+        },
+        {
+          "name": "📝 多人协同 Markdown 编辑器",
+          "url": "tool/co-md",
+          "target": "_blank"
+        },
+        {
+          "name": "🎮 手机PPT遥控",
+          "url": "tool/pptremote",
+          "target": "_blank"
+        },
+        {
+          "name": "💬 夸克聊天室",
+          "url": "chat",
+          "target": "_blank"
+        }
+      ]
+    },
+    {
       "name": "图片 Image",
       "tools": [
         {
@@ -106,11 +131,6 @@
         {
           "name": "💬 夸克自控",
           "url": "a/zk",
-          "target": "_blank"
-        },
-        {
-          "name": "💬 夸克聊天室",
-          "url": "chat",
           "target": "_blank"
         },
         {
