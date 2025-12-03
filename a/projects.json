@@ -37,7 +37,7 @@
     },
     {
         "name": "山火预警监测",
-        "link": "fire-alert",
+        "link": "fire-alert2",
         "description": "基于卫星数据和气象信息的山火风险预警与监测系统",
         "icon": "fa-fire"
     },
@@ -58,5 +58,11 @@
         "link": "terminal",
         "description": "纯前端网页模拟终端，支持自定义指令",
         "icon": "fa-terminal"
+    },
+    {
+        "name": "夸克闪传",
+        "link": "share",
+        "description": "基于Firebase RTDB和免费STUN的P2P文件闪传",
+        "icon": "fa-exchange"
     }
 ]
