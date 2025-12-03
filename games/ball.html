@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>手机上的小球滚动</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #ball {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #ee5a52);
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.3),
+                inset -5px -5px 10px rgba(0,0,0,0.2),
+                inset 5px 5px 10px rgba(255,255,255,0.2);
+            transition: transform 0.1s;
+        }
+        
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            max-width: 90%;
+        }
+        
+        #instructions h1 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        #instructions p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        #startBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 25px;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        #startBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.5);
+        }
+        
+        #status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        #obstacle {
+            position: absolute;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .hole {
+            position: absolute;
+            border-radius: 50%;
+            background: #222;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="instructions">
+            <h1>📱 手机平衡球 🎮</h1>
+            <p>倾斜手机控制小球移动，避开黑洞，收集星星</p>
+            <button id="startBtn">开始游戏</button>
+        </div>
+        
+        <div id="ball"></div>
+        <div id="status">
+            倾斜角度: <span id="angleDisplay">0°</span><br>
+            小球速度: <span id="speedDisplay">0</span>
+        </div>
+    </div>
+
+    <script>
+        // 游戏配置
+        const config = {
+            gravity: 0.5,          // 重力加速度
+            friction: 0.98,        // 摩擦系数
+            ballSize: 40,          // 小球直径
+            sensitivity: 0.15,     // 倾斜灵敏度
+            maxSpeed: 20           // 最大速度限制
+        };
+        
+        // 游戏状态
+        const gameState = {
+            ball: {
+                x: 0,
+                y: 0,
+                vx: 0,  // X轴速度
+                vy: 0,  // Y轴速度
+                radius: config.ballSize / 2
+            },
+            orientation: {
+                beta: 0,    // 前后倾斜（-180° 到 180°）
+                gamma: 0,   // 左右倾斜（-90° 到 90°）
+                alpha: 0    // 绕Z轴旋转（0° 到 360°）
+            },
+            isRunning: false,
+            lastTime: 0,
+            obstacles: [],
+            holes: [],
+            stars: [],
+            score: 0
+        };
+        
+        // DOM元素
+        const ballEl = document.getElementById('ball');
+        const gameContainer = document.getElementById('gameContainer');
+        const startBtn = document.getElementById('startBtn');
+        const angleDisplay = document.getElementById('angleDisplay');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const instructions = document.getElementById('instructions');
+        
+        // 初始化游戏
+        function initGame() {
+            // 设置小球初始位置（屏幕中央）
+            gameState.ball.x = window.innerWidth / 2;
+            gameState.ball.y = window.innerHeight / 2;
+            gameState.ball.vx = 0;
+            gameState.ball.vy = 0;
+            
+            // 设置小球样式
+            ballEl.style.width = config.ballSize + 'px';
+            ballEl.style.height = config.ballSize + 'px';
+            
+            // 更新小球位置
+            updateBallPosition();
+            
+            // 创建障碍物
+            createObstacles();
+            
+            gameState.lastTime = Date.now();
+        }
+        
+        // 创建障碍物和黑洞
+        function createObstacles() {
+            gameState.obstacles = [];
+            gameState.holes = [];
+            gameState.stars = [];
+            
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            // 创建黑洞（4个角落）
+            const holes = [
+                { x: 50, y: 50, radius: 30 },
+                { x: width - 50, y: 50, radius: 30 },
+                { x: 50, y: height - 50, radius: 30 },
+                { x: width - 50, y: height - 50, radius: 30 }
+            ];
+            
+            holes.forEach(hole => {
+                const holeEl = document.createElement('div');
+                holeEl.className = 'hole';
+                holeEl.style.width = hole.radius * 2 + 'px';
+                holeEl.style.height = hole.radius * 2 + 'px';
+                holeEl.style.left = (hole.x - hole.radius) + 'px';
+                holeEl.style.top = (hole.y - hole.radius) + 'px';
+                gameContainer.appendChild(holeEl);
+                gameState.holes.push(hole);
+            });
+            
+            // 创建星星（奖励点）
+            for (let i = 0; i < 5; i++) {
+                const star = {
+                    x: 100 + Math.random() * (width - 200),
+                    y: 100 + Math.random() * (height - 200),
+                    radius: 15,
+                    collected: false
+                };
+                gameState.stars.push(star);
+                
+                const starEl = document.createElement('div');
+                starEl.innerHTML = '★';
+                starEl.style.position = 'absolute';
+                starEl.style.left = (star.x - star.radius) + 'px';
+                starEl.style.top = (star.y - star.radius) + 'px';
+                starEl.style.fontSize = star.radius * 2 + 'px';
+                starEl.style.color = 'gold';
+                starEl.style.textShadow = '0 0 10px rgba(255,215,0,0.8)';
+                starEl.style.zIndex = '1';
+                starEl.id = 'star_' + i;
+                gameContainer.appendChild(starEl);
+            }
+        }
+        
+        // 请求陀螺仪权限
+        function requestPermission() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            startGame();
+                        } else {
+                            alert('需要陀螺仪权限才能玩游戏哦~');
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                startGame();
+            }
+        }
+        
+        // 开始游戏
+        function startGame() {
+            initGame();
+            gameState.isRunning = true;
+            instructions.style.display = 'none';
+            
+            // 监听设备方向
+            window.addEventListener('deviceorientation', handleOrientation);
+            
+            // 开始游戏循环
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 处理方向数据
+        function handleOrientation(event) {
+            gameState.orientation = {
+                beta: event.beta || 0,     // 前后倾斜
+                gamma: event.gamma || 0,   // 左右倾斜
+                alpha: event.alpha || 0    // 方向
+            };
+            
+            // 更新显示
+            const tiltAngle = Math.sqrt(
+                Math.pow(gameState.orientation.beta, 2) + 
+                Math.pow(gameState.orientation.gamma, 2)
+            );
+            angleDisplay.textContent = Math.round(tiltAngle) + '°';
+        }
+        
+        // 游戏物理更新
+        function updatePhysics(deltaTime) {
+            const { beta, gamma } = gameState.orientation;
+            const { ball } = gameState;
+            
+            // 关键部分：将手机倾斜角度转换为加速度
+            // gamma（左右倾斜）：控制X轴加速度
+            // beta（前后倾斜）：控制Y轴加速度
+            
+            // 加速度计算（带灵敏度调节）
+            const ax = gamma * config.sensitivity;
+            const ay = beta * config.sensitivity;
+            
+            // 应用加速度（考虑时间间隔）
+            const timeScale = deltaTime / 16; // 标准化时间
+            ball.vx += ax * timeScale;
+            ball.vy += ay * timeScale;
+            
+            // 应用重力效果
+            ball.vx *= config.friction;
+            ball.vy *= config.friction;
+            
+            // 速度限制
+            const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+            if (speed > config.maxSpeed) {
+                ball.vx = (ball.vx / speed) * config.maxSpeed;
+                ball.vy = (ball.vy / speed) * config.maxSpeed;
+            }
+            
+            // 更新位置
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+            
+            // 边界碰撞检测
+            const radius = ball.radius;
+            if (ball.x < radius) {
+                ball.x = radius;
+                ball.vx = Math.abs(ball.vx) * 0.8; // 反弹并损失能量
+            }
+            if (ball.x > window.innerWidth - radius) {
+                ball.x = window.innerWidth - radius;
+                ball.vx = -Math.abs(ball.vx) * 0.8;
+            }
+            if (ball.y < radius) {
+                ball.y = radius;
+                ball.vy = Math.abs(ball.vy) * 0.8;
+            }
+            if (ball.y > window.innerHeight - radius) {
+                ball.y = window.innerHeight - radius;
+                ball.vy = -Math.abs(ball.vy) * 0.8;
+            }
+            
+            // 更新速度显示
+            const displaySpeed = Math.round(speed * 10) / 10;
+            speedDisplay.textContent = displaySpeed;
+        }
+        
+        // 碰撞检测
+        function checkCollisions() {
+            const { ball } = gameState;
+            
+            // 检查黑洞碰撞（游戏结束）
+            for (const hole of gameState.holes) {
+                const dx = ball.x - hole.x;
+                const dy = ball.y - hole.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < ball.radius + hole.radius) {
+                    alert('游戏结束！小球掉进黑洞了！');
+                    location.reload();
+                    return;
+                }
+            }
+            
+            // 检查星星收集
+            gameState.stars.forEach((star, index) => {
+                if (!star.collected) {
+                    const dx = ball.x - star.x;
+                    const dy = ball.y - star.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < ball.radius + star.radius) {
+                        star.collected = true;
+                        const starEl = document.getElementById('star_' + index);
+                        if (starEl) {
+                            starEl.style.opacity = '0.3';
+                            starEl.style.transform = 'scale(0.5)';
+                            starEl.style.transition = 'all 0.5s';
+                        }
+                        gameState.score++;
+                        
+                        // 得分效果
+                        if (gameState.score >= gameState.stars.length) {
+                            setTimeout(() => {
+                                alert('恭喜！收集了所有星星！🎉');
+                            }, 100);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 更新小球位置
+        function updateBallPosition() {
+            ballEl.style.left = (gameState.ball.x - gameState.ball.radius) + 'px';
+            ballEl.style.top = (gameState.ball.y - gameState.ball.radius) + 'px';
+            
+            // 添加小球倾斜效果
+            const tiltX = gameState.ball.vx * 0.5;
+            const tiltY = gameState.ball.vy * 0.5;
+            ballEl.style.transform = `translate(${tiltX}px, ${tiltY}px) scale(${1 + Math.abs(gameState.ball.vx + gameState.ball.vy) * 0.01})`;
+        }
+        
+        // 游戏主循环
+        function gameLoop() {
+            if (!gameState.isRunning) return;
+            
+            const currentTime = Date.now();
+            const deltaTime = currentTime - gameState.lastTime;
+            gameState.lastTime = currentTime;
+            
+            updatePhysics(deltaTime);
+            checkCollisions();
+            updateBallPosition();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 窗口大小变化处理
+        window.addEventListener('resize', () => {
+            initGame();
+        });
+        
+        // 触摸设备兼容性：点击开始
+        startBtn.addEventListener('click', requestPermission);
+        
+        // 防止滚动
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // 初始显示
+        initGame();
+        
+        // 演示模式（如果没有陀螺仪）
+        setTimeout(() => {
+            if (!gameState.isRunning) {
+                instructions.querySelector('p').innerHTML += 
+                    '<br><small>如果没有陀螺仪，可以使用键盘方向键演示</small>';
+                
+                // 键盘控制演示
+                document.addEventListener('keydown', (e) => {
+                    if (!gameState.isRunning) return;
+                    
+                    switch(e.key) {
+                        case 'ArrowLeft': gameState.orientation.gamma = -20; break;
+                        case 'ArrowRight': gameState.orientation.gamma = 20; break;
+                        case 'ArrowUp': gameState.orientation.beta = -20; break;
+                        case 'ArrowDown': gameState.orientation.beta = 20; break;
+                    }
+                });
+                
+                document.addEventListener('keyup', () => {
+                    gameState.orientation.gamma = 0;
+                    gameState.orientation.beta = 0;
+                });
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
