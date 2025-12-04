@@ -1061,7 +1061,8 @@ $$
         function downloadHtml() {
             const htmlContent = preview.innerHTML;
             const blob = new Blob([`<!DOCTYPE html><html><head>
-    <link rel="stylesheet" href="/css/basic.css"><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="/css/md.css"></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
+    <link rel="stylesheet" href="/css/basic.css"><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="/css/md.css"></head><body>${htmlContent}    <script src="/js/disable-right-click.js"></script>
+</body></html>`], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -1593,6 +1594,7 @@ $$
             localStorage.setItem('recent-docs', JSON.stringify(recentDocs));
         }
     </script>
+    <script src="/js/disable-right-click.js"></script>
 </body>
 
 </html>
