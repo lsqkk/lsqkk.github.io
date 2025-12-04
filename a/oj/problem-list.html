@@ -8,6 +8,19 @@
     <link rel="stylesheet" href="/css/basic.css">
     <link rel="stylesheet" href="style.css">
     <script src="/js/nav.js"></script>
+    <script>
+        function handleSearch() {
+            const searchInput = document.getElementById('oj-search-input');
+            const searchValue = searchInput.value.trim();
+            if (searchValue) {
+                // 跳转到带有 search 参数的 URL
+                window.location.href = `problem-list.html?search=${encodeURIComponent(searchValue)}`;
+            } else {
+                // 如果输入为空，则跳转到纯净的列表页
+                window.location.href = `problem-list.html`;
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -30,15 +43,15 @@
 
             <div class="oj-sidebar-controls">
                 <div class="oj-search-group">
-                    <input type="text" class="oj-search-input" placeholder="搜索题目 ID/名称">
-                    <button class="oj-search-button">🔍</button>
+                    <input type="text" id="oj-search-input" class="oj-search-input" placeholder="搜索题目 ID/名称">
+                    <button class="oj-search-button" onclick="handleSearch()">🔍</button>
                 </div>
             </div>
         </aside>
 
         <main class="oj-main-content">
             <section class="oj-problem-list-panel glass-card">
-                <h2 class="oj-problem-title">题库列表</h2>
+                <h2 class="oj-problem-title">题库列表 <span id="search-query-display"></span></h2>
                 <p>点击题目名称或 ID 即可跳转到在线判题页面。</p>
 
                 <table class="oj-problem-table">

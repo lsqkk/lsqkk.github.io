@@ -43,6 +43,17 @@ function getProblemStatus(problemId) {
     return record ? record.status : '未尝试';
 }
 
+
+// 🏆 新增函数：从 URL 获取搜索查询参数
+/**
+ * 从 URL 获取搜索查询参数
+ * @returns {string|null} 搜索查询字符串
+ */
+function getSearchQueryFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('search');
+}
+
 // js/utils.js (更新后的 saveSubmission 函数)
 
 // ... (省略前面的常量和函数) ...

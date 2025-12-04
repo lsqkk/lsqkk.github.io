@@ -13,6 +13,19 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <script>
+        function handleSearch() {
+            const searchInput = document.getElementById('oj-search-input');
+            const searchValue = searchInput.value.trim();
+            if (searchValue) {
+                // 跳转到带有 search 参数的 URL
+                window.location.href = `problem-list.html?search=${encodeURIComponent(searchValue)}`;
+            } else {
+                // 如果输入为空，则跳转到纯净的列表页
+                window.location.href = `problem-list.html`;
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -32,11 +45,11 @@
             <hr class="oj-sidebar-divider">
             <div class="oj-sidebar-controls">
                 <div class="oj-search-group">
-                    <input type="text" id="discussionSearchInput" class="oj-search-input" placeholder="搜索主题/题目ID">
-                    <button id="discussionSearchButton" class="oj-search-button">🔍</button>
+                    <input type="text" id="oj-search-input" class="oj-search-input" placeholder="搜索题目 ID/名称">
+                    <button class="oj-search-button" onclick="handleSearch()">🔍</button>
                 </div>
             </div>
-
+            <br>
             <div class="oj-sidebar-controls" id="admin-login-area">
                 <input type="password" id="adminPassword" class="oj-search-input" placeholder="管理员密码">
                 <button class="submit-btn" onclick="adminLogin()">登录</button>
