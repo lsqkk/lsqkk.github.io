@@ -34,20 +34,24 @@
     "welcomeText": "这里记录了我的学习历程、生活感悟和技术分享。",
     "features": [
         {
-            "name": "天气查询",
-            "url": "tool/weather.html"
+            "name": "夸克终端 QuarkTerminal",
+            "url": "a/terminal"
         },
         {
-            "name": "Markdown协同编辑",
+            "name": "夸克闪传 QuarkShare P2P",
             "url": "tool/c0-md.html"
         },
         {
-            "name": "交大360°全景",
-            "url": "a/360"
+            "name": "手机颠球游戏（手抖者慎入）",
+            "url": "games/ball"
         },
         {
-            "name": "混淆网址生成",
-            "url": "l"
+            "name": "手机PPT遥控",
+            "url": "tool/pptremote"
+        },
+        {
+            "name": "QUARK OJ",
+            "url": "a/oj"
         }
     ],
     "announcement": {
