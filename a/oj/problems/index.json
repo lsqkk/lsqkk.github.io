@@ -824,5 +824,313 @@
         "difficulty": "极难",
         "time_limit": "2000ms",
         "memory_limit": "128MB"
+    },
+    {
+        "id": 1108,
+        "title": "模拟与高精度 - 时钟同步",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1109,
+        "title": "模拟与高精度 - 日期格式标准化",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1110,
+        "title": "模拟与高精度 - 停车场计费",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1111,
+        "title": "模拟与高精度 - 大整数加法",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1112,
+        "title": "模拟与高精度 - 文本格式化：去除多余空格",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1113,
+        "title": "模拟与高精度 - 考试分数排名",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1114,
+        "title": "模拟与高精度 - 字符串大整数减法",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1115,
+        "title": "模拟与高精度 - 约瑟夫环模拟",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1116,
+        "title": "模拟与高精度 - 矩阵边界求和",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1117,
+        "title": "模拟与高精度 - R 行 R 列迷宫中的最短路径（BFS 模拟）",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1118,
+        "title": "模拟与高精度 - 大整数乘法（单精度乘高精度）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1119,
+        "title": "模拟与高精度 - 表达式求值（含括号和加减乘）",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1120,
+        "title": "模拟与高精度 - 大整数乘法（高精度乘高精度）",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1121,
+        "title": "模拟与高精度 - 俄罗斯方块消除",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1122,
+        "title": "模拟与高精度 - 信用卡号校验（Luhn 算法）",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1123,
+        "title": "模拟与高精度 - 大整数除法（高精度除以低精度）",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1124,
+        "title": "模拟与高精度 - 迷宫寻路：最远可达（DFS 模拟）",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1125,
+        "title": "模拟与高精度 - 括号匹配检查（栈模拟）",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1126,
+        "title": "排序 - 简单数字排序",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1127,
+        "title": "排序 - 冒泡排序过程",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1128,
+        "title": "排序 - 插入排序：第 K 步结果",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1129,
+        "title": "排序 - 优先安排工作",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1130,
+        "title": "排序 - 字符串按长度排序",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1131,
+        "title": "排序 - 快速排序分区（一趟）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1132,
+        "title": "排序 - 合并排序的归并过程",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1133,
+        "title": "排序 - 优先队列（K 个最大元素）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1134,
+        "title": "排序 - 计数排序",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1135,
+        "title": "排序 - 字典序排序",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1136,
+        "title": "排序 - 最大数拼接",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1137,
+        "title": "排序 - 桶排序：数据分组",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1138,
+        "title": "暴力枚举 - 两数之和（下标）",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1139,
+        "title": "暴力枚举 - 猜数字游戏",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1140,
+        "title": "暴力枚举 - 百钱买百鸡",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1141,
+        "title": "暴力枚举 - 找出完全平方数",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1142,
+        "title": "暴力枚举 - N 个元素的排列",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1143,
+        "title": "暴力枚举 - 组合：从 N 中选 K",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1144,
+        "title": "暴力枚举 - 简单背包问题",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1145,
+        "title": "暴力枚举 - 四则运算等式",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1146,
+        "title": "暴力枚举 - 最多 K 次交换的最大数",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1147,
+        "title": "暴力枚举 - N 皇后问题",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1148,
+        "title": "暴力枚举 - 农场牛棚分配",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1149,
+        "title": "暴力枚举 - 完美立方",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1150,
+        "title": "暴力枚举 - 走迷宫：K 步路径计数",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1151,
+        "title": "暴力枚举 - 单词拆分",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
     }
 ]

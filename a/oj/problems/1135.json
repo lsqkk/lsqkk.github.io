@@ -1,0 +1,18 @@
+{
+    "id": 1135,
+    "title": "排序 - 字典序排序",
+    "difficulty": "困难",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定 $N$ 个由小写字母组成的字符串，请将它们按照**字典序**（从小到大）排序并输出。",
+    "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行一个字符串 $S_i$（长度不超过 10）。",
+    "output_format": "输出 $N$ 行，每行一个排序后的字符串。",
+    "sample_input": "3\\napple\\ncat\\nbanana",
+    "sample_output": "apple\\nbanana\\ncat",
+    "hidden_tests": [
+        {
+            "input": "2\\nxyz\\nxya",
+            "expected_output": "xya\\nxyz"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "id": 1122,
+    "title": "模拟与高精度 - 信用卡号校验（Luhn 算法）",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定一个信用卡号（由数字组成的字符串），使用 **Luhn 算法**对其进行校验。规则：从右往左，奇数位数字不变，偶数位数字乘以 2（如果结果大于 9 则减去 9），将所有数字求和，如果总和能被 10 整除，则校验通过 (VALID)，否则不通过 (INVALID)。",
+    "input_format": "输入包含一行字符串 $S$（信用卡号，长度不超过 20）。",
+    "output_format": "输出包含一行，即校验结果 ('VALID' 或 'INVALID')。",
+    "sample_input": "79927398713",
+    "sample_output": "VALID",
+    "hidden_tests": [
+        {
+            "input": "79927398715",
+            "expected_output": "INVALID"
+        }
+    ]
+}

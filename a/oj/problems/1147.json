@@ -1,0 +1,26 @@
+{
+    "id": 1147,
+    "title": "暴力枚举 - N 皇后问题",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "经典的**N 皇后问题**：在一个 $N \\times N$ 的棋盘上放置 $N$ 个皇后，使得它们之间**两两不能互相攻击**（即不能在同一行、同一列或同一对角线上）。请输出所有可能的**放置方案的总数**。",
+    "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 4$)。",
+    "output_format": "输出包含一行，即总的放置方案数。",
+    "sample_input": "4",
+    "sample_output": "2",
+    "hidden_tests": [
+        {
+            "input": "1",
+            "expected_output": "1"
+        },
+        {
+            "input": "2",
+            "expected_output": "0"
+        },
+        {
+            "input": "3",
+            "expected_output": "0"
+        }
+    ]
+}

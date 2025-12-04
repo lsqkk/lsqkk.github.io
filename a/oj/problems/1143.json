@@ -1,0 +1,18 @@
+{
+    "id": 1143,
+    "title": "暴力枚举 - 组合：从 N 中选 K",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定 $N$ 个互不相同的数字（$1$ 到 $N$），请**枚举并输出**所有从这 $N$ 个数字中**选择 $K$ 个数字**的**组合**。",
+    "input_format": "输入包含一行，两个整数 $N$ ($1 \\le N \\le 5$) 和 $K$ ($1 \\le K \\le N$)。",
+    "output_format": "输出所有组合，每个组合占一行，数字之间用空格分隔。组合内的数字按升序排列，组合之间按字典序输出。",
+    "sample_input": "4 2",
+    "sample_output": "1 2\\n1 3\\n1 4\\n2 3\\n2 4\\n3 4",
+    "hidden_tests": [
+        {
+            "input": "3 1",
+            "expected_output": "1\\n2\\n3"
+        }
+    ]
+}

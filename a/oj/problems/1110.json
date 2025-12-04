@@ -1,0 +1,22 @@
+{
+    "id": 1110,
+    "title": "模拟与高精度 - 停车场计费",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "某停车场收费标准：前 3 小时每小时 5 元，之后每小时 3 元（不足一小时按一小时计算）。给定停车时长（分钟），计算总费用。",
+    "input_format": "输入包含一行，一个整数 $M$ ($1 \\le M \\le 600$)，表示停车时长（分钟）。",
+    "output_format": "输出包含一行，即总费用（元）。",
+    "sample_input": "210",
+    "sample_output": "15",
+    "hidden_tests": [
+        {
+            "input": "181",
+            "expected_output": "18"
+        },
+        {
+            "input": "59",
+            "expected_output": "5"
+        }
+    ]
+}

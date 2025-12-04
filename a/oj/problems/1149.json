@@ -1,0 +1,18 @@
+{
+    "id": 1149,
+    "title": "暴力枚举 - 完美立方",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "完美立方定义为：$a^3 = b^3 + c^3 + d^3$，其中 $a, b, c, d$ 都是大于 1 且小于等于 $N$ 的整数。请**枚举**出所有满足条件的 $a, b, c, d$ 的组合。",
+    "input_format": "输入包含一行，一个整数 $N$ ($2 \\le N \\le 20$)。",
+    "output_format": "输出若干行，每行一个完美立方的等式，格式为 $\\text{Cube} = a, \\text{Triple} = (b, c, d)$。其中 $b \\le c \\le d$，且所有解按 $a$ 的升序排列，若 $a$ 相同，则按 $b, c, d$ 的字典序排列。",
+    "sample_input": "25",
+    "sample_output": "Cube = 6, Triple = (3, 4, 5)\\nCube = 12, Triple = (6, 8, 10)\\nCube = 18, Triple = (9, 12, 15)\\nCube = 19, Triple = (3, 10, 18)\\nCube = 20, Triple = (7, 14, 17)\\nCube = 24, Triple = (12, 16, 20)",
+    "hidden_tests": [
+        {
+            "input": "5",
+            "expected_output": ""
+        }
+    ]
+}

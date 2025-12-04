@@ -1,0 +1,18 @@
+{
+    "id": 1109,
+    "title": "模拟与高精度 - 日期格式标准化",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定一个日期 $YYYY-MM-DD$ 的字符串，请将其格式转换为 $DD/MM/YYYY$。",
+    "input_format": "输入包含一行，一个日期字符串 $YYYY-MM-DD$。",
+    "output_format": "输出包含一行，即转换后的日期格式 $DD/MM/YYYY$。",
+    "sample_input": "2024-03-15",
+    "sample_output": "15/03/2024",
+    "hidden_tests": [
+        {
+            "input": "1999-12-01",
+            "expected_output": "01/12/1999"
+        }
+    ]
+}

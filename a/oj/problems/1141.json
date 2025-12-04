@@ -1,0 +1,18 @@
+{
+    "id": 1141,
+    "title": "暴力枚举 - 找出完全平方数",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定一个整数范围 $[A, B]$，请找出该范围内所有**完全平方数**（即 $K^2$ 形式的数）。",
+    "input_format": "输入包含一行，两个整数 $A$ 和 $B$ ($1 \\le A \\le B \\le 100$)。",
+    "output_format": "输出包含一行，即所有完全平方数，用空格分隔。",
+    "sample_input": "10 50",
+    "sample_output": "16 25 36 49",
+    "hidden_tests": [
+        {
+            "input": "1 5",
+            "expected_output": "1 4"
+        }
+    ]
+}

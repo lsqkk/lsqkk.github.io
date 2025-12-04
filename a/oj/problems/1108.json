@@ -1,0 +1,26 @@
+{
+    "id": 1108,
+    "title": "模拟与高精度 - 时钟同步",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定一个 24 小时制的时间，格式为 $HH:MM$。请将这个时间转换为 12 小时制，格式为 $hh:MM \\ A.M./P.M.$。",
+    "input_format": "输入包含一行，一个表示 24 小时制时间的字符串 $HH:MM$ ($00 \\le HH \\le 23, 00 \\le MM \\le 59$)。",
+    "output_format": "输出包含一行，即转换后的 12 小时制时间。",
+    "sample_input": "14:30",
+    "sample_output": "02:30 P.M.",
+    "hidden_tests": [
+        {
+            "input": "00:05",
+            "expected_output": "12:05 A.M."
+        },
+        {
+            "input": "12:00",
+            "expected_output": "12:00 P.M."
+        },
+        {
+            "input": "23:59",
+            "expected_output": "11:59 P.M."
+        }
+    ]
+}

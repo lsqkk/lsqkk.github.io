@@ -1,0 +1,22 @@
+{
+    "id": 1116,
+    "title": "模拟与高精度 - 矩阵边界求和",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定一个 $N \\times M$ 的矩阵，请计算其**最外层一圈元素**（边界元素）的**和**。",
+    "input_format": "第一行是两个整数 $N$ ($1 \\le N \\le 5$) 和 $M$ ($1 \\le M \\le 5$)。接下来 $N$ 行是矩阵元素 $M_{ij}$ ($0 \\le M_{ij} \\le 100$)。",
+    "output_format": "输出包含一行，即边界元素的和。",
+    "sample_input": "3 3\\n1 2 3\\n4 5 6\\n7 8 9",
+    "sample_output": "40",
+    "hidden_tests": [
+        {
+            "input": "1 5\\n1 2 3 4 5",
+            "expected_output": "15"
+        },
+        {
+            "input": "4 1\\n10\\n20\\n30\\n40",
+            "expected_output": "100"
+        }
+    ]
+}

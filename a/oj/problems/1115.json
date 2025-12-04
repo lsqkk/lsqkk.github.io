@@ -1,0 +1,22 @@
+{
+    "id": 1115,
+    "title": "模拟与高精度 - 约瑟夫环模拟",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": " $N$ 个人围成一圈，从 1 号开始报数，数到 $M$ 的人出列。出列后，从下一个人重新从 1 开始报数。请输出**最后出列**的人的编号。",
+    "input_format": "输入包含一行，两个整数 $N$ ($1 \\le N \\le 10$) 和 $M$ ($1 \\le M \\le 10$)。",
+    "output_format": "输出包含一行，即最后出列的人的编号。",
+    "sample_input": "5 3",
+    "sample_output": "4",
+    "hidden_tests": [
+        {
+            "input": "4 2",
+            "expected_output": "1"
+        },
+        {
+            "input": "1 1",
+            "expected_output": "1"
+        }
+    ]
+}

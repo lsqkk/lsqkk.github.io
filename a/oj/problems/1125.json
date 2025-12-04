@@ -1,0 +1,22 @@
+{
+    "id": 1125,
+    "title": "模拟与高精度 - 括号匹配检查（栈模拟）",
+    "difficulty": "极难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定一个只包含 '(', ')', '[', ']', '{', '}' 六种括号的字符串，请判断括号是否**有效匹配**。有效匹配需满足：左括号必须用相同类型的右括号闭合，且左括号必须以正确的顺序闭合。",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+    "output_format": "输出包含一行，如果有效输出 'TRUE'，否则输出 'FALSE'。",
+    "sample_input": "([{}])",
+    "sample_output": "TRUE",
+    "hidden_tests": [
+        {
+            "input": "(]",
+            "expected_output": "FALSE"
+        },
+        {
+            "input": "{[]}",
+            "expected_output": "TRUE"
+        }
+    ]
+}

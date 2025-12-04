@@ -1,0 +1,22 @@
+{
+    "id": 1151,
+    "title": "暴力枚举 - 单词拆分",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "给定一个字符串 $S$ 和一个单词字典 $D$。请判断 $S$ 是否可以被拆分成一个或多个在字典中出现的**单词的组合**。你需要**枚举**所有可能的拆分方式。",
+    "input_format": "第一行是字符串 $S$（长度不超过 10）。第二行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行一个单词 $W_i$（字典单词）。",
+    "output_format": "输出包含一行，如果可以拆分输出 'YES'，否则输出 'NO'。",
+    "sample_input": "applepie\\n3\\napple\\npie\\napp",
+    "sample_output": "YES",
+    "hidden_tests": [
+        {
+            "input": "catsandog\\n4\\ncat\\nsand\\ndog\\ncats",
+            "expected_output": "NO"
+        },
+        {
+            "input": "leetcode\\n2\\nleet\\ncode",
+            "expected_output": "YES"
+        }
+    ]
+}
