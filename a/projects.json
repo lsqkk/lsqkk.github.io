@@ -64,5 +64,11 @@
         "link": "share",
         "description": "基于Firebase RTDB和免费STUN的P2P文件闪传",
         "icon": "fa-exchange"
+    },
+    {
+        "name": "QuarkOJ",
+        "link": "oj",
+        "description": "Genimi赋能 | 题库丰富 | judge0API 秒级判题",
+        "icon": "fa-gavel"
     }
 ]

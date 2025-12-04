@@ -42,6 +42,11 @@
           "name": "📒 论文参考文献生成",
           "url": "tool/ref",
           "target": "_blank"
+        },
+        {
+          "name": "⚖️ Quark OJ 在线判题",
+          "url": "a/oj",
+          "target": "_blank"
         }
       ]
     },
