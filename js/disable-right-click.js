@@ -1,5 +1,16 @@
 // disable-right-click.js - 改进版右键禁用功能
 (function () {
+    // 检查当前主机是否为localhost，如果是则不启用禁用功能
+    var isLocalhost = window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname === '::1';
+
+    // 如果是localhost环境，直接跳过
+    if (isLocalhost) {
+        console.log('检测到localhost环境，禁用功能已跳过');
+        return;
+    }
+
     // 检查是否已加载jQuery
     if (typeof jQuery === 'undefined') {
         // 动态加载jQuery
@@ -17,6 +28,14 @@
 
     function initializeRightClickDisable() {
         $(document).ready(function () {
+            // 再次确认不是localhost（双重保险）
+            if (window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1' ||
+                window.location.hostname === '::1') {
+                console.log('检测到localhost环境，禁用功能已跳过');
+                return;
+            }
+
             // 检查localStorage中的解禁状态
             var isRightClickEnabled = localStorage.getItem('rightClickEnabled') === 'true';
 
@@ -61,8 +80,10 @@
                             color: #999;
                         ">×</button>
                         <h3 style="margin-top: 0; color: #333;">夸克博客</h3>
-                        <p style="color: #666; line-height: 1.6;">为了页面美观，本页右键/保存功能已关闭~</p>
-                        
+                        <p style="color: #666; line-height: 1.6;">为了页面美观，本页右键功能已关闭~</p>
+                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <small style="color: #999;">提示：在弹窗显示期间输入特定密码可解禁右键功能</small>
+                        </div>
                     </div>
                 </div>
             `;
