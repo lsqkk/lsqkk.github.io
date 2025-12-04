@@ -84,8 +84,8 @@ async function renderProblemList() {
         html += `
             <tr class="oj-list-row">
                 <td><span class="oj-status-badge ${statusClass}">${status}</span></td>
-                <td><a href="index.html?p=${problem.id}" class="oj-problem-link">${problem.id}</a></td>
-                <td><a href="index.html?p=${problem.id}" class="oj-problem-link">${problem.title}</a></td>
+                <td><a href="train.html?p=${problem.id}" class="oj-problem-link">${problem.id}</a></td>
+                <td><a href="train.html?p=${problem.id}" class="oj-problem-link">${problem.title}</a></td>
                 <td class="oj-difficulty-${problem.difficulty}">${problem.difficulty}</td>
             </tr>
         `;

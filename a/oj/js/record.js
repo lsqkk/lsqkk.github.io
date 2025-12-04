@@ -96,7 +96,7 @@ function renderSubmissionRecords() {
         // 操作按钮：跳转到题目 + 查看代码按钮
         html += `
             <tr class="oj-list-row">
-                <td><a href="index.html?p=${id}" class="oj-problem-link">${id}</a></td>
+                <td><a href="train.html?p=${id}" class="oj-problem-link">${id}</a></td>
                 <td><span class="oj-status-badge ${statusClass}">${record.status}</span></td>
                 <td>${time}</td>
                 <td>${memory}</td>

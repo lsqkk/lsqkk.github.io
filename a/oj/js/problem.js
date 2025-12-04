@@ -111,9 +111,9 @@ function renderProblemUI(data) {
     $sampleInput.textContent = data.sample_input;
     $sampleOutput.textContent = data.sample_output;
 
-    const currentLink = document.querySelector(`.oj-nav-link[href="index.html"]`);
+    const currentLink = document.querySelector(`.oj-nav-link[href="train.html"]`);
     if (currentLink) {
-        currentLink.href = `index.html?p=${data.id}`;
+        currentLink.href = `train.html?p=${data.id}`;
     }
 }
 
@@ -184,9 +184,9 @@ async function handleSubmission() {
     $resultPanel.style.display = 'block';
     $resultStatus.textContent = '正在提交...';
 
-    // 🏆 使用 index.html 中创建的全局变量 'editor'
+    // 🏆 使用 train.html 中创建的全局变量 'editor'
     if (typeof editor === 'undefined' || !editor || !editor.getValue) {
-        $resultStatus.innerHTML = `<span style="color: #F44336; font-size: 1.2em;">错误：代码编辑器未准备好。请检查 index.html 脚本。</span>`;
+        $resultStatus.innerHTML = `<span style="color: #F44336; font-size: 1.2em;">错误：代码编辑器未准备好。请检查 train.html 脚本。</span>`;
         $submitBtn.disabled = false;
         return;
     }
