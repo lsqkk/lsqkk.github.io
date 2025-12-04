@@ -1,0 +1,22 @@
+{
+    "id": 1023,
+    "title": "判断奇偶性",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个整数 $N$，判断它是奇数还是偶数。",
+    "input_format": "输入包含一行，一个整数 $N$。",
+    "output_format": "输出包含一行，如果是偶数输出 'Even'，否则输出 'Odd'。",
+    "sample_input": "4",
+    "sample_output": "Even",
+    "hidden_tests": [
+        {
+            "input": "7",
+            "expected_output": "Odd"
+        },
+        {
+            "input": "0",
+            "expected_output": "Even"
+        }
+    ]
+}

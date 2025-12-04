@@ -1,0 +1,22 @@
+{
+    "id": 1005,
+    "title": "电影票价优惠",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "电影院的普通票价是 $P$ 元，现在对学生实行 $D$ 折优惠。请计算学生票的实际价格（四舍五入到整数）。",
+    "input_format": "输入包含一行，包含两个整数 $P$ (原价, $1 \\le P \\le 100$) 和 $D$ (折扣，整数，如 $8$ 代表 8 折) ($1 \\le D \\le 10$)",
+    "output_format": "输出包含一行，即四舍五入后的学生票价格。",
+    "sample_input": "80 7",
+    "sample_output": "56",
+    "hidden_tests": [
+        {
+            "input": "50 8",
+            "expected_output": "40"
+        },
+        {
+            "input": "100 9",
+            "expected_output": "90"
+        }
+    ]
+}

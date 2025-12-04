@@ -1,0 +1,22 @@
+{
+    "id": 1053,
+    "title": "平均值与方差计算",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "输入 $N$ 个数，计算它们的平均值 $\\mu$ 和方差 $\\sigma^2$。方差公式为 $\\sigma^2 = \\frac{1}{N} \\sum_{i=1}^N (X_i - \\mu)^2$。结果保留两位小数。",
+    "input_format": "第一行是整数 $N$ ($1 \\le N \\le 100$)，第二行是 $N$ 个由空格分隔的整数 $X_i$。",
+    "output_format": "输出包含两行，第一行是平均值，第二行是方差，均保留两位小数。",
+    "sample_input": "3\n1 2 3",
+    "sample_output": "2.00\n0.67",
+    "hidden_tests": [
+        {
+            "input": "5\n10 10 10 10 10",
+            "expected_output": "10.00\n0.00"
+        },
+        {
+            "input": "2\n1 5",
+            "expected_output": "3.00\n4.00"
+        }
+    ]
+}

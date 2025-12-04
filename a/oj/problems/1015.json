@@ -1,0 +1,22 @@
+{
+    "id": 1015,
+    "title": "整数除法与取余",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个整数 $A$ 和 $B$ ($B \\ne 0$)，计算 $A$ 除以 $B$ 的整数商和余数。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $A$ 和 $B$ ($1 \\le A, B \\le 1000$)",
+    "output_format": "输出包含两行，第一行是整数商，第二行是余数。",
+    "sample_input": "17 5",
+    "sample_output": "3\n2",
+    "hidden_tests": [
+        {
+            "input": "10 3",
+            "expected_output": "3\n1"
+        },
+        {
+            "input": "100 10",
+            "expected_output": "10\n0"
+        }
+    ]
+}

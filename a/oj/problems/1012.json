@@ -1,0 +1,22 @@
+{
+    "id": 1012,
+    "title": "工资税后计算",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "假设税率是 $R$。输入税前工资 $S$ 和税率 $R$（整数百分比），计算税后工资。结果保留两位小数。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $S$ (工资, $1000 \\le S \\le 10000$) 和 $R$ (税率百分比, $0 \\le R \\le 50$)。",
+    "output_format": "输出包含一行，即税后工资，保留两位小数。",
+    "sample_input": "5000 10",
+    "sample_output": "4500.00",
+    "hidden_tests": [
+        {
+            "input": "1000 0",
+            "expected_output": "1000.00"
+        },
+        {
+            "input": "8000 20",
+            "expected_output": "6400.00"
+        }
+    ]
+}

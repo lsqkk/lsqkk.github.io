@@ -1,0 +1,22 @@
+{
+    "id": 1016,
+    "title": "温度单位转换",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个摄氏温度 $C$，将其转换为华氏温度 $F$。转换公式为 $F = C \\times 1.8 + 32$。结果保留两位小数。",
+    "input_format": "输入包含一行，一个整数 $C$ (摄氏温度, $-100 \\le C \\le 100$)",
+    "output_format": "输出包含一行，即华氏温度 $F$，保留两位小数。",
+    "sample_input": "20",
+    "sample_output": "68.00",
+    "hidden_tests": [
+        {
+            "input": "0",
+            "expected_output": "32.00"
+        },
+        {
+            "input": "100",
+            "expected_output": "212.00"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "id": 1003,
+    "title": "魔法药水体积混合",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "炼金术师需要混合三种不同的魔法药水 $A, B, C$，它们的体积分别为 $V_A, V_B, V_C$（毫升）。请计算混合后药水的总体积。",
+    "input_format": "输入包含一行，包含三个由空格分隔的整数 $V_A, V_B, V_C$ ($1 \\le V_A, V_B, V_C \\le 100$)。",
+    "output_format": "输出包含一行，即混合后药水的总体积（毫升）。",
+    "sample_input": "25 10 5",
+    "sample_output": "40",
+    "hidden_tests": [
+        {
+            "input": "1 1 1",
+            "expected_output": "3"
+        },
+        {
+            "input": "99 98 97",
+            "expected_output": "294"
+        }
+    ]
+}

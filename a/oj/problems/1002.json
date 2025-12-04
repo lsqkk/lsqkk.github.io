@@ -1,25 +1,22 @@
 {
-    "id": 1001,
-    "title": "A + B 求和问题2222",
+    "id": 1002,
+    "title": "星际旅行燃料计算",
+    "difficulty": "入门",
     "time_limit": "1000ms",
     "memory_limit": "64MB",
-    "description": "请编写一个程序，接受两个整数 A 和 B 的输入，并计算它们的和。这是所有在线判题系统 (Online Judge) 的第一个经典练习题。",
-    "input_format": "输入包含一行，包含两个由空格分隔的整数 A 和 B (-10000 ≤ A, B ≤ 10000)。",
-    "output_format": "输出包含一行，即 A 和 B 的和。",
-    "sample_input": "1 2",
-    "sample_output": "3",
+    "description": "飞船去最近的行星旅行，已知飞船每小时的燃料消耗量（L/h）和飞行的总时间（h）。请计算总共消耗了多少燃料。",
+    "input_format": "输入包含一行，包含两个由空格分隔的整数 $F$ (燃料消耗率, $L/h$) 和 $T$ (飞行时间, $h$) ($1 \\le F, T \\le 1000$)。",
+    "output_format": "输出包含一行，即总燃料消耗量 $L$。",
+    "sample_input": "15 8",
+    "sample_output": "120",
     "hidden_tests": [
         {
-            "input": "10 20",
-            "expected_output": "30"
+            "input": "100 1",
+            "expected_output": "100"
         },
         {
-            "input": "100 -50",
-            "expected_output": "50"
-        },
-        {
-            "input": "9999 1",
-            "expected_output": "10000"
+            "input": "5 120",
+            "expected_output": "600"
         }
     ]
 }

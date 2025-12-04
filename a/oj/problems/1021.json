@@ -1,0 +1,22 @@
+{
+    "id": 1021,
+    "title": "三角形判断",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入三条线段的长度 $A, B, C$，判断它们是否能构成一个三角形。构成三角形的条件是任意两边之和大于第三边。",
+    "input_format": "输入包含一行，三个由空格分隔的整数 $A, B, C$ ($1 \\le A, B, C \\le 100$)",
+    "output_format": "输出包含一行，如果能构成三角形输出 'Yes'，否则输出 'No'。",
+    "sample_input": "3 4 5",
+    "sample_output": "Yes",
+    "hidden_tests": [
+        {
+            "input": "1 2 5",
+            "expected_output": "No"
+        },
+        {
+            "input": "10 10 10",
+            "expected_output": "Yes"
+        }
+    ]
+}

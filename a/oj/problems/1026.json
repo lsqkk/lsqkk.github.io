@@ -1,0 +1,22 @@
+{
+    "id": 1026,
+    "title": "四舍五入到最近的整数",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个浮点数 $X$，将其四舍五入到最近的整数。如果小数部分刚好是 $0.5$，则向上取整。",
+    "input_format": "输入包含一行，一个浮点数 $X$。",
+    "output_format": "输出包含一行，即四舍五入后的整数。",
+    "sample_input": "3.5",
+    "sample_output": "4",
+    "hidden_tests": [
+        {
+            "input": "3.4",
+            "expected_output": "3"
+        },
+        {
+            "input": "4.6",
+            "expected_output": "5"
+        }
+    ]
+}

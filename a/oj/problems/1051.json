@@ -1,0 +1,18 @@
+{
+    "id": 1051,
+    "title": "打印字符三角形",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个整数 $N$ ($1 \\le N \\le 10$)，打印一个由星号 '*' 组成的 $N$ 行实心三角形。",
+    "input_format": "输入包含一行，一个整数 $N$。",
+    "output_format": "输出 $N$ 行，第 $i$ 行有 $i$ 个星号。",
+    "sample_input": "4",
+    "sample_output": "*\n**\n***\n****",
+    "hidden_tests": [
+        {
+            "input": "1",
+            "expected_output": "*"
+        }
+    ]
+}

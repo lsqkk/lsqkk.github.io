@@ -1,0 +1,22 @@
+{
+    "id": 1040,
+    "title": "计数问题：统计给定区间内的 $K$ 数量",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "输入两个整数 $L$ 和 $R$，以及一个数字 $K$ ($0 \\le K \\le 9$)，统计在 $[L, R]$ 范围内（包括 $L$ 和 $R$）所有整数中，$K$ 出现的总次数。",
+    "input_format": "输入包含一行，三个由空格分隔的整数 $L, R, K$ ($1 \\le L \\le R \\le 1000$)",
+    "output_format": "输出包含一行，即 $K$ 出现的总次数。",
+    "sample_input": "1 10 1",
+    "sample_output": "2",
+    "hidden_tests": [
+        {
+            "input": "10 20 1",
+            "expected_output": "12"
+        },
+        {
+            "input": "1 100 0",
+            "expected_output": "11"
+        }
+    ]
+}

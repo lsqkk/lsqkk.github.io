@@ -1,0 +1,22 @@
+{
+    "id": 1006,
+    "title": "时速转换",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "请将给定的速度 $V$（公里/小时）转换为米/秒。结果保留一位小数。",
+    "input_format": "输入包含一行，一个整数 $V$ ($1 \\le V \\le 1000$)。",
+    "output_format": "输出包含一行，即转换后的速度（米/秒），保留一位小数。",
+    "sample_input": "36",
+    "sample_output": "10.0",
+    "hidden_tests": [
+        {
+            "input": "72",
+            "expected_output": "20.0"
+        },
+        {
+            "input": "1",
+            "expected_output": "0.3"
+        }
+    ]
+}

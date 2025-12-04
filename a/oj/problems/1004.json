@@ -1,0 +1,22 @@
+{
+    "id": 1004,
+    "title": "矩形农田面积",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "农场主需要计算一块矩形农田的面积。已知农田的长 $L$ 和宽 $W$（米）。",
+    "input_format": "输入包含一行，包含两个由空格分隔的整数 $L$ 和 $W$ ($1 \\le L, W \\le 1000$)。",
+    "output_format": "输出包含一行，即矩形农田的面积。",
+    "sample_input": "10 5",
+    "sample_output": "50",
+    "hidden_tests": [
+        {
+            "input": "1 1",
+            "expected_output": "1"
+        },
+        {
+            "input": "500 20",
+            "expected_output": "10000"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "id": 1033,
+    "title": "购房计算：首付判定",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "房屋价格 $P$，最低首付比例为 $R$（百分比）。输入你的现有存款 $S$，判断是否足够支付首付。",
+    "input_format": "输入包含一行，三个由空格分隔的整数 $P$ (房价), $R$ (首付比例百分比) 和 $S$ (存款)。",
+    "output_format": "输出包含一行，如果足够输出 'Sufficient'，否则输出 'Insufficient'。",
+    "sample_input": "100000 30 35000",
+    "sample_output": "Sufficient",
+    "hidden_tests": [
+        {
+            "input": "100000 20 15000",
+            "expected_output": "Insufficient"
+        },
+        {
+            "input": "50000 50 25000",
+            "expected_output": "Sufficient"
+        }
+    ]
+}

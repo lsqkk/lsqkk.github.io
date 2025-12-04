@@ -1,0 +1,22 @@
+{
+    "id": 1011,
+    "title": "三角形周长",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入三角形的三边长 $a, b, c$，计算并输出其周长。请注意，不需要判断是否能构成三角形。",
+    "input_format": "输入包含一行，三个由空格分隔的整数 $a, b, c$ ($1 \\le a, b, c \\le 100$)。",
+    "output_format": "输出包含一行，即三角形的周长。",
+    "sample_input": "3 4 5",
+    "sample_output": "12",
+    "hidden_tests": [
+        {
+            "input": "10 10 10",
+            "expected_output": "30"
+        },
+        {
+            "input": "1 2 3",
+            "expected_output": "6"
+        }
+    ]
+}

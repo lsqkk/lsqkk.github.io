@@ -1,0 +1,22 @@
+{
+    "id": 1052,
+    "title": "求 $S = a + aa + aaa + \\dots$",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入数字 $a$ ($1 \\le a \\le 9$) 和项数 $n$ ($1 \\le n \\le 5$)，计算 $S = a + aa + aaa + \\dots$（共 $n$ 项）的和。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $a$ 和 $n$。",
+    "output_format": "输出包含一行，即 $S$ 的值。",
+    "sample_input": "2 3",
+    "sample_output": "246",
+    "hidden_tests": [
+        {
+            "input": "1 5",
+            "expected_output": "12345"
+        },
+        {
+            "input": "5 1",
+            "expected_output": "5"
+        }
+    ]
+}

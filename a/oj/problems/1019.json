@@ -1,0 +1,22 @@
+{
+    "id": 1019,
+    "title": "三数排序",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入三个整数 $A, B, C$，请将它们从大到小排序后输出。",
+    "input_format": "输入包含一行，三个由空格分隔的整数 $A, B, C$。",
+    "output_format": "输出包含一行，即排序后的三个数，中间用空格分隔。",
+    "sample_input": "5 1 9",
+    "sample_output": "9 5 1",
+    "hidden_tests": [
+        {
+            "input": "1 1 1",
+            "expected_output": "1 1 1"
+        },
+        {
+            "input": "10 20 5",
+            "expected_output": "20 10 5"
+        }
+    ]
+}

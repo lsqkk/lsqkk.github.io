@@ -1,0 +1,22 @@
+{
+    "id": 1022,
+    "title": "考试成绩等级划分",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "根据学生的考试成绩 $S$ 划分等级：$[90, 100]$ 为 'A'；$[80, 90)$ 为 'B'；$[70, 80)$ 为 'C'；$[60, 70)$ 为 'D'；$[0, 60)$ 为 'F'。输入成绩，输出等级。",
+    "input_format": "输入包含一行，一个整数 $S$ ($0 \\le S \\le 100$)",
+    "output_format": "输出包含一行，即对应的等级。",
+    "sample_input": "85",
+    "sample_output": "B",
+    "hidden_tests": [
+        {
+            "input": "100",
+            "expected_output": "A"
+        },
+        {
+            "input": "59",
+            "expected_output": "F"
+        }
+    ]
+}

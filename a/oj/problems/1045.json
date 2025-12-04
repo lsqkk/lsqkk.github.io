@@ -1,0 +1,22 @@
+{
+    "id": 1045,
+    "title": "水仙花数判断",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "判断一个三位数 $N$ 是否为“水仙花数”。水仙花数是指一个三位数，其各位数字的立方和等于该数本身。",
+    "input_format": "输入包含一行，一个整数 $N$ ($100 \\le N \\le 999$)",
+    "output_format": "输出包含一行，如果是水仙花数输出 'Yes'，否则输出 'No'。",
+    "sample_input": "153",
+    "sample_output": "Yes",
+    "hidden_tests": [
+        {
+            "input": "154",
+            "expected_output": "No"
+        },
+        {
+            "input": "370",
+            "expected_output": "Yes"
+        }
+    ]
+}

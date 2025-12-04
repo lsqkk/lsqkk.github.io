@@ -1,0 +1,22 @@
+{
+    "id": 1010,
+    "title": "正方体表面积和体积",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入正方体的边长 $A$，计算并输出它的表面积和体积。",
+    "input_format": "输入包含一行，一个整数 $A$ ($1 \\le A \\le 100$)。",
+    "output_format": "输出包含两行，第一行是表面积，第二行是体积。",
+    "sample_input": "3",
+    "sample_output": "54\n27",
+    "hidden_tests": [
+        {
+            "input": "1",
+            "expected_output": "6\n1"
+        },
+        {
+            "input": "10",
+            "expected_output": "600\n1000"
+        }
+    ]
+}

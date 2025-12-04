@@ -1,0 +1,22 @@
+{
+    "id": 1025,
+    "title": "薪水绩效奖金",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "公司根据员工的绩效评分 $S$ 决定奖金 $B$：$S \\ge 90$ 奖金为基础工资 $W$ 的 $20\\%$；$S \\ge 60$ 奖金为 $10\\%$；否则无奖金。输入 $W$ 和 $S$，计算总薪资（$W + B$）。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $W$ (工资) 和 $S$ (评分, $0 \\le S \\le 100$)",
+    "output_format": "输出包含一行，即总薪资，保留两位小数。",
+    "sample_input": "5000 95",
+    "sample_output": "6000.00",
+    "hidden_tests": [
+        {
+            "input": "3000 60",
+            "expected_output": "3300.00"
+        },
+        {
+            "input": "4000 50",
+            "expected_output": "4000.00"
+        }
+    ]
+}

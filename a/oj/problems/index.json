@@ -2,20 +2,461 @@
     {
         "id": 1001,
         "title": "A + B 求和问题",
-        "difficulty": "入门",
+        "difficulty": "未知",
         "time_limit": "1000ms",
         "memory_limit": "64MB"
     },
     {
         "id": 1002,
-        "title": "两数相减",
-        "difficulty": "简单",
+        "title": "星际旅行燃料计算",
+        "difficulty": "入门",
         "time_limit": "1000ms",
         "memory_limit": "64MB"
     },
     {
         "id": 1003,
-        "title": "斐波那契数列",
+        "title": "魔法药水体积混合",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1004,
+        "title": "矩形农田面积",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1005,
+        "title": "电影票价优惠",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1006,
+        "title": "时速转换",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1007,
+        "title": "三位数反转求和",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1008,
+        "title": "平均分计算",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1009,
+        "title": "单位换算：秒转分秒",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1010,
+        "title": "正方体表面积和体积",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1011,
+        "title": "三角形周长",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1012,
+        "title": "工资税后计算",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1013,
+        "title": "圆的面积和周长",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1014,
+        "title": "数字交换",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1015,
+        "title": "整数除法与取余",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1016,
+        "title": "温度单位转换",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1017,
+        "title": "餐厅点餐折扣",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1018,
+        "title": "判断闰年",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1019,
+        "title": "三数排序",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1020,
+        "title": "判断象限",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1021,
+        "title": "三角形判断",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1022,
+        "title": "考试成绩等级划分",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1023,
+        "title": "判断奇偶性",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1035,
+        "title": "农场收割机任务",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1036,
+        "title": "数列求和",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1037,
+        "title": "打印乘法表",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1038,
+        "title": "因子之和",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1039,
+        "title": "倒序数字",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1040,
+        "title": "计数问题：统计给定区间内的 $K$ 数量",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1041,
+        "title": "几何级数求和",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1042,
+        "title": "判断质数",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1043,
+        "title": "最大公约数和最小公倍数",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1044,
+        "title": "斐波那契数列第 $N$ 项",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1045,
+        "title": "水仙花数判断",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1046,
+        "title": "打印空心矩形",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1047,
+        "title": "数列统计：正数、负数和零的个数",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1048,
+        "title": "循环小数：判断 $A/B$ 是否为有限小数",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1049,
+        "title": "阶乘计算",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1050,
+        "title": "最大值查找",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1051,
+        "title": "打印字符三角形",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1052,
+        "title": "求 $S = a + aa + aaa + \\dots$",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1053,
+        "title": "平均值与方差计算",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1054,
+        "title": "寻找最小差值",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1055,
+        "title": "分数序列求和",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1024,
+        "title": "判断字母类型",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1025,
+        "title": "薪水绩效奖金",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1026,
+        "title": "四舍五入到最近的整数",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1027,
+        "title": "判断两数符号",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1028,
+        "title": "简易计算器",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1029,
+        "title": "时间段判断",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1030,
+        "title": "最大值和最小值",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1031,
+        "title": "分数判断",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1032,
+        "title": "字符大小写转换",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1033,
+        "title": "购房计算：首付判定",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1034,
+        "title": "一元二次方程解的个数",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1045,
+        "title": "水仙花数判断",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1046,
+        "title": "打印空心矩形",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1047,
+        "title": "数列统计：正数、负数和零的个数",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1048,
+        "title": "循环小数：判断 $A/B$ 是否为有限小数",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1049,
+        "title": "阶乘计算",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1050,
+        "title": "最大值查找",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1051,
+        "title": "打印字符三角形",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1052,
+        "title": "求 $S = a + aa + aaa + \\dots$",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1053,
+        "title": "平均值与方差计算",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1054,
+        "title": "寻找最小差值",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1055,
+        "title": "分数序列求和",
         "difficulty": "中等",
         "time_limit": "2000ms",
         "memory_limit": "128MB"

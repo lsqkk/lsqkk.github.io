@@ -1,0 +1,22 @@
+{
+    "id": 1036,
+    "title": "数列求和",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个整数 $N$，计算 $1 + 2 + 3 + \\dots + N$ 的和。",
+    "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 1000$)",
+    "output_format": "输出包含一行，即数列的和。",
+    "sample_input": "5",
+    "sample_output": "15",
+    "hidden_tests": [
+        {
+            "input": "1",
+            "expected_output": "1"
+        },
+        {
+            "input": "10",
+            "expected_output": "55"
+        }
+    ]
+}

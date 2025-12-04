@@ -1,0 +1,22 @@
+{
+    "id": 1008,
+    "title": "平均分计算",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入三门课程 $A, B, C$ 的成绩，计算它们的平均分，结果保留两位小数。",
+    "input_format": "输入包含一行，三个由空格分隔的整数 $A, B, C$ ($0 \\le A, B, C \\le 100$)。",
+    "output_format": "输出包含一行，即平均分，保留两位小数。",
+    "sample_input": "80 90 70",
+    "sample_output": "80.00",
+    "hidden_tests": [
+        {
+            "input": "100 100 100",
+            "expected_output": "100.00"
+        },
+        {
+            "input": "60 70 80",
+            "expected_output": "70.00"
+        }
+    ]
+}

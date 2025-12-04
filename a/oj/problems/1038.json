@@ -1,0 +1,22 @@
+{
+    "id": 1038,
+    "title": "因子之和",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "输入一个正整数 $N$，计算并输出它所有因子（不包括 $N$ 本身）的和。",
+    "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 10000$)",
+    "output_format": "输出包含一行，即所有因子的和。",
+    "sample_input": "12",
+    "sample_output": "16",
+    "hidden_tests": [
+        {
+            "input": "6",
+            "expected_output": "6"
+        },
+        {
+            "input": "7",
+            "expected_output": "1"
+        }
+    ]
+}

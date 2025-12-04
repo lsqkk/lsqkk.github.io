@@ -1,0 +1,22 @@
+{
+    "id": 1020,
+    "title": "判断象限",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入平面坐标系中的一个点的坐标 $(x, y)$，判断该点位于哪个象限。假设 $x \\ne 0$ 且 $y \\ne 0$。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $x$ 和 $y$。",
+    "output_format": "输出包含一行，如果 $x>0, y>0$ 输出 $1$；如果 $x<0, y>0$ 输出 $2$；如果 $x<0, y<0$ 输出 $3$；如果 $x>0, y<0$ 输出 $4$。",
+    "sample_input": "-5 10",
+    "sample_output": "2",
+    "hidden_tests": [
+        {
+            "input": "1 1",
+            "expected_output": "1"
+        },
+        {
+            "input": "-1 -1",
+            "expected_output": "3"
+        }
+    ]
+}

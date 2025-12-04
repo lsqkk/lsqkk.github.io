@@ -1,0 +1,18 @@
+{
+    "id": 1013,
+    "title": "圆的面积和周长",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入圆的半径 $R$，计算并输出圆的面积和周长。取 $\\pi = 3.14159$。结果保留四位小数。",
+    "input_format": "输入包含一行，一个整数 $R$ ($1 \\le R \\le 100$)。",
+    "output_format": "输出包含两行，第一行是面积，第二行是周长，均保留四位小数。",
+    "sample_input": "5",
+    "sample_output": "78.5397\n31.4159",
+    "hidden_tests": [
+        {
+            "input": "1",
+            "expected_output": "3.1416\n6.2832"
+        }
+    ]
+}

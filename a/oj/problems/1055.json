@@ -1,0 +1,22 @@
+{
+    "id": 1055,
+    "title": "分数序列求和",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "计算序列 $S = \\frac{1}{2} + \\frac{2}{3} + \\frac{3}{5} + \\frac{5}{8} + \\dots$ 的前 $N$ 项和。这个序列的特点是：分子和分母是斐波那契数列的连续两项。",
+    "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 20$)",
+    "output_format": "输出包含一行，即序列前 $N$ 项的和，保留四位小数。",
+    "sample_input": "3",
+    "sample_output": "1.8333",
+    "hidden_tests": [
+        {
+            "input": "1",
+            "expected_output": "0.5000"
+        },
+        {
+            "input": "5",
+            "expected_output": "3.2308"
+        }
+    ]
+}

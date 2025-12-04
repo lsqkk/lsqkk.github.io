@@ -1,0 +1,22 @@
+{
+    "id": 1014,
+    "title": "数字交换",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个整数 $A$ 和 $B$，将它们的值互换后输出。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $A$ 和 $B$。",
+    "output_format": "输出包含一行，互换后的 $A$ 和 $B$ (中间用空格分隔)。",
+    "sample_input": "10 20",
+    "sample_output": "20 10",
+    "hidden_tests": [
+        {
+            "input": "1 100",
+            "expected_output": "100 1"
+        },
+        {
+            "input": "5 5",
+            "expected_output": "5 5"
+        }
+    ]
+}
