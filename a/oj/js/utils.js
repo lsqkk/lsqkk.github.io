@@ -44,7 +44,7 @@ function getProblemStatus(problemId) {
 }
 
 
-// 🏆 新增函数：从 URL 获取搜索查询参数
+// 🏆 已新增函数：从 URL 获取搜索查询参数
 /**
  * 从 URL 获取搜索查询参数
  * @returns {string|null} 搜索查询字符串
@@ -54,9 +54,19 @@ function getSearchQueryFromUrl() {
     return params.get('search');
 }
 
-// js/utils.js (更新后的 saveSubmission 函数)
+// 🏆 【核心修改】：新增函数：从 URL 获取通用参数
+/**
+ * 从 URL 获取任意参数的值
+ * @param {string} name 参数名
+ * @returns {string|null} 参数值
+ */
+function getUrlParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
 
-// ... (省略前面的常量和函数) ...
+
+// js/utils.js (更新后的 saveSubmission 函数)
 
 /**
  * 保存一次成功的判题记录（AC/WA/TLE等）
@@ -64,8 +74,8 @@ function getSearchQueryFromUrl() {
  * @param {number} statusId - Judge0 返回的状态 ID
  * @param {string} time - 运行时间
  * @param {number} memory - 内存占用
- * @param {string} code - 提交的源代码 (新增)
- * @param {string} languageId - 提交的语言ID (新增)
+ * @param {string} code - 提交的源代码
+ * @param {string} languageId - 提交的语言ID
  */
 function saveSubmission(problemId, statusId, time, memory, code, languageId) {
     const submissions = getSubmissions();
@@ -84,8 +94,8 @@ function saveSubmission(problemId, statusId, time, memory, code, languageId) {
             time: time,
             memory: memory,
             timestamp: Date.now(),
-            code: code, // <-- 新增
-            languageId: languageId // <-- 新增
+            code: code,
+            languageId: languageId
         };
     } else if (statusText !== 'AC') {
         // 对于非 AC 状态，也记录最新的提交代码
@@ -94,8 +104,8 @@ function saveSubmission(problemId, statusId, time, memory, code, languageId) {
             time: time,
             memory: memory,
             timestamp: Date.now(),
-            code: code, // <-- 新增
-            languageId: languageId // <-- 新增
+            code: code,
+            languageId: languageId
         };
     }
 

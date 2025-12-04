@@ -12,13 +12,17 @@
         function handleSearch() {
             const searchInput = document.getElementById('oj-search-input');
             const searchValue = searchInput.value.trim();
+            // 🏆 搜索时，重置页码为 1
+            const url = new URL(window.location.href);
+            url.searchParams.delete('page');
+
             if (searchValue) {
-                // 跳转到带有 search 参数的 URL
-                window.location.href = `problem-list.html?search=${encodeURIComponent(searchValue)}`;
+                url.searchParams.set('search', searchValue);
             } else {
-                // 如果输入为空，则跳转到纯净的列表页
-                window.location.href = `problem-list.html`;
+                url.searchParams.delete('search');
             }
+
+            window.location.href = url.toString();
         }
     </script>
 </head>
@@ -70,6 +74,22 @@
                     </tbody>
                 </table>
             </section>
+
+            <div id="oj-pagination" class="oj-pagination-controls glass-card" style="display: none;">
+                <div class="oj-page-size-control">
+                    <label for="page-size-select">每页显示:</label>
+                    <select id="page-size-select" class="oj-page-size-select" onchange="changePageSize(this.value)">
+                        <option value="10">10 题</option>
+                        <option value="20">20 题</option>
+                        <option value="30" selected>30 题 (默认)</option>
+                        <option value="50">50 题</option>
+                        <option value="100">100 题</option>
+                    </select>
+                </div>
+                <div id="oj-page-selector" class="oj-page-selector">
+                </div>
+            </div>
+
         </main>
     </div>
 

@@ -480,3 +480,77 @@ body::before {
 .oj-view-code-btn:hover {
     background-color: #303f9f;
 }
+
+/* --- 分页控件样式 (Pagination) --- */
+.oj-pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: var(--oj-glass-bg-light);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--oj-border-color-light);
+    box-shadow: var(--oj-shadow-light);
+}
+
+.oj-page-selector button,
+.oj-page-size-select {
+    padding: 6px 12px;
+    margin: 0 5px;
+    border: 1px solid var(--oj-border-color-light);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--oj-text-color-light);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.oj-page-selector button:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.oj-page-selector button:disabled {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.oj-page-selector .active-page {
+    background-color: var(--oj-primary-color);
+    border-color: var(--oj-primary-color);
+    font-weight: bold;
+}
+
+.oj-page-size-select {
+    /* 保持与按钮风格一致 */
+    appearance: none;
+    padding-right: 30px;
+    /* 留出空间给下拉箭头 */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22white%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    color: var(--oj-text-color-light);
+}
+
+.oj-page-size-select option {
+    background-color: rgba(122, 189, 154, 0.9);
+    color: white;
+}
+
+/* 移动端优化 */
+@media (max-width: 600px) {
+    .oj-pagination-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .oj-page-selector {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
