@@ -1,0 +1,18 @@
+{
+    "id": 1105,
+    "title": "函数与结构体 - 坐标系中的矩形面积",
+    "difficulty": "困难",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "定义一个**结构体** $\\text{Rectangle}$ 包含左上角 $\\text{Point}$ 和右下角 $\\text{Point}$（**Point 结构体**包含 $x, y$ 整数坐标）。编写一个函数 $\\text{calculate\\_area}(R)$，计算并返回矩形 $R$ 的**面积**。",
+    "input_format": "输入包含一行，四个整数 $x_1, y_1, x_2, y_2$，分别表示左上角和右下角的坐标 ($0 \\le x_1 < x_2 \\le 10, 0 \\le y_2 < y_1 \\le 10$)。",
+    "output_format": "输出包含一行，即矩形的面积。",
+    "sample_input": "1 5 4 2",
+    "sample_output": "9",
+    "hidden_tests": [
+        {
+            "input": "0 10 10 0",
+            "expected_output": "100"
+        }
+    ]
+}

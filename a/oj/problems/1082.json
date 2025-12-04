@@ -1,0 +1,22 @@
+{
+    "id": 1082,
+    "title": "字符串 - 查找特定字符",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定一个字符串和一个目标字符，请判断目标字符是否在字符串中**出现**。如果出现，输出 **'YES'**，否则输出 **'NO'**。",
+    "input_format": "输入包含两行。第一行是一个字符串 $S$（长度不超过 50）。第二行是一个字符 $C$。",
+    "output_format": "输出包含一行，即判断结果 ('YES' 或 'NO')。",
+    "sample_input": "programming\\ng",
+    "sample_output": "YES",
+    "hidden_tests": [
+        {
+            "input": "apple\\nb",
+            "expected_output": "NO"
+        },
+        {
+            "input": "HELLO\\nO",
+            "expected_output": "YES"
+        }
+    ]
+}

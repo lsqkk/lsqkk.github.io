@@ -1,0 +1,22 @@
+{
+    "id": 1068,
+    "title": "数组 - 稀疏矩阵压缩存储",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "一个 $R \\times C$ 的矩阵中，非零元素的数量很少，被称为稀疏矩阵。为了节省存储空间，我们只记录非零元素的位置 $(r, c)$ 和值 $v$。请输出稀疏矩阵的**三元组表示**：$(\\text{row}, \\text{col}, \\text{value})$。按行优先顺序输出。",
+    "input_format": "第一行是两个整数 $R$ ($1 \\le R \\le 5$) 和 $C$ ($1 \\le C \\le 5$)。接下来是 $R$ 行，每行 $C$ 个由空格分隔的整数 $M_{ij}$ ($0 \\le |M_{ij}| \\le 100$)。",
+    "output_format": "输出若干行，每行一个三元组，格式为 $\\text{row} \\ \\text{col} \\ \\text{value}$。行和列的索引从 1 开始。",
+    "sample_input": "3 3\\n0 0 10\\n0 5 0\\n20 0 0",
+    "sample_output": "1 3 10\\n2 2 5\\n3 1 20",
+    "hidden_tests": [
+        {
+            "input": "2 4\\n1 0 0 2\\n0 3 0 0",
+            "expected_output": "1 1 1\\n1 4 2\\n2 2 3"
+        },
+        {
+            "input": "1 1\\n0",
+            "expected_output": ""
+        }
+    ]
+}

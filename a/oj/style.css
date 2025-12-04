@@ -339,15 +339,20 @@ body::before {
 }
 
 .oj-problem-link {
-    color: #b3e5fc;
-    /* 浅蓝色，链接色 */
+    color: #1976d2;
+    /* 更深的蓝色 */
     text-decoration: none;
-    transition: color 0.2s;
+    font-weight: 500;
+    /* 增加字重 */
+    transition: all 0.2s;
 }
 
 .oj-problem-link:hover {
-    color: #81d4fa;
+    color: #1565c0;
+    /* 悬停时更深 */
     text-decoration: underline;
+    text-decoration-thickness: 2px;
+    /* 下划线加粗 */
 }
 
 /* --- 状态徽章样式 --- */

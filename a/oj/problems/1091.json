@@ -1,0 +1,18 @@
+{
+    "id": 1091,
+    "title": "字符串 - 文本左右对齐",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定一个由单词组成的文本和一个最大宽度 $L$。要求将文本重新排版，使得每行正好 $L$ 个字符，并实现**完全的两端对齐**。",
+    "input_format": "第一行是一个整数 $L$ ($10 \\le L \\le 20$)，表示最大宽度。第二行是一个由空格分隔的单词序列，总长度不超过 100。",
+    "output_format": "输出若干行，每行正好 $L$ 个字符，表示排版后的文本。",
+    "sample_input": "20\\nThis is an example of text justification",
+    "sample_output": "This    is    an    example\\nof   text   justification",
+    "hidden_tests": [
+        {
+            "input": "16\\nWhat must be acknowledgement",
+            "expected_output": "What must be\\nacknowledgement"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "id": 1094,
+    "title": "函数 - 最大公约数",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "编写一个函数 $\\text{gcd}(a, b)$，使用**欧几里得算法**计算两个正整数 $a$ 和 $b$ 的**最大公约数 (GCD)**。",
+    "input_format": "输入包含一行，两个由空格分隔的正整数 $A$ 和 $B$ ($1 \\le A, B \\le 100$)。",
+    "output_format": "输出包含一行，即 $A$ 和 $B$ 的最大公约数。",
+    "sample_input": "12 18",
+    "sample_output": "6",
+    "hidden_tests": [
+        {
+            "input": "100 70",
+            "expected_output": "10"
+        },
+        {
+            "input": "7 13",
+            "expected_output": "1"
+        }
+    ]
+}

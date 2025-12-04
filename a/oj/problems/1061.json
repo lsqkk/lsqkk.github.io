@@ -1,0 +1,22 @@
+{
+    "id": 1061,
+    "title": "数组 - 旋转加密",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "某安全系统采用一种简单的加密方法：将一个长度为 $N$ 的序列**向右循环移动 $K$ 位**。请实现这个操作。",
+    "input_format": "第一行是两个整数 $N$ ($1 \\le N \\le 10$) 和 $K$ ($0 \\le K \\le 10$，$K$ 不会超过 $N$ 的大小)。第二行是 $N$ 个由空格分隔的整数 $A_i$ ($0 \\le A_i \\le 100$)。",
+    "output_format": "输出包含一行，即右移 $K$ 位后的序列，元素之间用一个空格分隔。",
+    "sample_input": "5 2\\n1 2 3 4 5",
+    "sample_output": "4 5 1 2 3",
+    "hidden_tests": [
+        {
+            "input": "4 1\\n10 20 30 40",
+            "expected_output": "40 10 20 30"
+        },
+        {
+            "input": "5 0\\n1 2 3 4 5",
+            "expected_output": "1 2 3 4 5"
+        }
+    ]
+}

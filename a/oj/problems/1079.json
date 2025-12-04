@@ -1,0 +1,22 @@
+{
+    "id": 1079,
+    "title": "数组 - 矩阵乘法",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "进行一个 $R \\times K$ 矩阵 $A$ 和一个 $K \\times C$ 矩阵 $B$ 的**矩阵乘法**，得到 $R \\times C$ 的结果矩阵 $C$。",
+    "input_format": "第一行是三个整数 $R, K, C$ ($1 \\le R, K, C \\le 3$)。接下来 $R$ 行是矩阵 $A$。再接下来 $K$ 行是矩阵 $B$。矩阵元素 $M_{ij}$ ($0 \\le M_{ij} \\le 10$)。",
+    "output_format": "输出 $R$ 行，每行 $C$ 个整数，表示结果矩阵 $C$。每行元素之间用一个空格分隔。",
+    "sample_input": "2 2 2\\n1 2\\n3 4\\n5 6\\n7 8",
+    "sample_output": "19 22\\n43 50",
+    "hidden_tests": [
+        {
+            "input": "1 3 1\\n1 2 3\\n10\\n20\\n30",
+            "expected_output": "140"
+        },
+        {
+            "input": "2 1 2\\n5\\n10\\n1 2",
+            "expected_output": "5 10\\n10 20"
+        }
+    ]
+}

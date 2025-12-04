@@ -1,0 +1,22 @@
+{
+    "id": 1076,
+    "title": "数组 - 快速选择：寻找第K小元素",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定 $N$ 个不同整数的序列，你需要快速找到其中**第 $K$ 小的元素**。例如，序列 $[3, 1, 4, 2, 5]$ 中，第 3 小的元素是 3。",
+    "input_format": "第一行是两个整数 $N$ ($1 \\le N \\le 20$) 和 $K$ ($1 \\le K \\le N$)。第二行是 $N$ 个由空格分隔的不同整数 $A_i$ ($-100 \\le A_i \\le 100$)。",
+    "output_format": "输出包含一行，即第 $K$ 小的元素。",
+    "sample_input": "5 3\\n3 1 4 2 5",
+    "sample_output": "3",
+    "hidden_tests": [
+        {
+            "input": "7 1\\n-5 10 0 20 -10 5 15",
+            "expected_output": "-10"
+        },
+        {
+            "input": "4 4\\n1 2 3 4",
+            "expected_output": "4"
+        }
+    ]
+}

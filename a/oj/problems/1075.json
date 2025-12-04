@@ -1,0 +1,22 @@
+{
+    "id": 1075,
+    "title": "数组 - 最小路径和",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "你在一个 $R \\times C$ 的网格地图上。每个格子 $G_{ij}$ 记录了通过该格子所需消耗的体力值。你从左上角 $(1, 1)$ 出发，只能向**右**或向**下**移动，到达右下角 $(R, C)$。请计算从起点到终点的**最小总体力消耗**。",
+    "input_format": "第一行是两个整数 $R$ ($1 \\le R \\le 5$) 和 $C$ ($1 \\le C \\le 5$)。接下来是 $R$ 行，每行 $C$ 个由空格分隔的整数 $G_{ij}$ (体力消耗， $1 \\le G_{ij} \\le 100$)。",
+    "output_format": "输出包含一行，即最小路径和。",
+    "sample_input": "3 3\\n1 3 1\\n1 5 1\\n4 2 1",
+    "sample_output": "7",
+    "hidden_tests": [
+        {
+            "input": "2 2\\n10 1\\n1 10",
+            "expected_output": "12"
+        },
+        {
+            "input": "1 4\\n1 1 1 1",
+            "expected_output": "4"
+        }
+    ]
+}

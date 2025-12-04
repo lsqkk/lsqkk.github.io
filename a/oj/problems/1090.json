@@ -1,0 +1,22 @@
+{
+    "id": 1090,
+    "title": "字符串 - 最长不重复子串",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定一个字符串 $S$，请找出其中**不包含重复字符**的**最长子串**的**长度**。",
+    "input_format": "输入包含一行字符串 $S$（只包含字母，长度不超过 30）。",
+    "output_format": "输出包含一行，即最长不重复子串的长度。",
+    "sample_input": "abcabcbb",
+    "sample_output": "3",
+    "hidden_tests": [
+        {
+            "input": "bbbbb",
+            "expected_output": "1"
+        },
+        {
+            "input": "pwwkew",
+            "expected_output": "3"
+        }
+    ]
+}

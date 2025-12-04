@@ -1,0 +1,22 @@
+{
+    "id": 1104,
+    "title": "结构体 - 日期有效性检查",
+    "difficulty": "困难",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "定义一个**结构体** $\\text{Date}$ 包含 $\\text{year}$ (年份), $\\text{month}$ (月份), $\\text{day}$ (日期)。编写一个函数 $\\text{is\\_valid\\_date}(D)$，检查输入的日期是否**有效**（考虑闰年）。",
+    "input_format": "输入包含一行，三个整数 $\\text{year}, \\text{month}, \\text{day}$ ($1900 \\le \\text{year} \\le 2050, 1 \\le \\text{month} \\le 12, 1 \\le \\text{day} \\le 31$)。",
+    "output_format": "输出包含一行，如果日期有效输出 'VALID'，否则输出 'INVALID'。",
+    "sample_input": "2024 2 29",
+    "sample_output": "VALID",
+    "hidden_tests": [
+        {
+            "input": "2023 2 29",
+            "expected_output": "INVALID"
+        },
+        {
+            "input": "2000 11 31",
+            "expected_output": "INVALID"
+        }
+    ]
+}

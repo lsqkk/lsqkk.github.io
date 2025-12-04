@@ -1,0 +1,18 @@
+{
+    "id": 1107,
+    "title": "结构体 - 链表插入操作（初级）",
+    "difficulty": "极难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "定义一个**结构体** $\\text{Node}$ 模拟链表节点，包含 $\\text{data}$ (整数) 和 $\\text{next}$ (指向下一个 $\\text{Node}$ 的指针)。给定一个只有 $N$ 个节点的链表头结点，在**链表末尾**插入一个新的节点 $X$，并输出**最终链表**的所有 $\\text{data}$。",
+    "input_format": "第一行是一个整数 $N$ ($0 \\le N \\le 5$)。第二行是 $N$ 个由空格分隔的整数，表示链表初始节点的数据。第三行是一个整数 $X$ (待插入的新节点数据)。",
+    "output_format": "输出包含一行，即最终链表的所有 $\\text{data}$，元素之间用一个空格分隔。",
+    "sample_input": "3\\n10 20 30\\n40",
+    "sample_output": "10 20 30 40",
+    "hidden_tests": [
+        {
+            "input": "0\\n\\n5",
+            "expected_output": "5"
+        }
+    ]
+}

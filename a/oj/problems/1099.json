@@ -1,0 +1,18 @@
+{
+    "id": 1099,
+    "title": "结构体 - 学生信息录入与查询",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "定义一个**结构体** $\\text{Student}$ 包含学生的 $\\text{id}$ (整数) 和 $\\text{score}$ (整数)。输入 $N$ 个学生的信息，然后输入一个 $\\text{id}$，查找并输出该学生的**成绩**。",
+    "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行包含一个学生的 $\\text{id}$ 和 $\\text{score}$。最后一行是一个整数 $Q$ (待查询的 $\\text{id}$)。",
+    "output_format": "输出包含一行，即查询学生的 $\\text{score}$。",
+    "sample_input": "3\\n101 85\\n102 90\\n103 78\\n102",
+    "sample_output": "90",
+    "hidden_tests": [
+        {
+            "input": "2\\n200 60\\n201 100\\n200",
+            "expected_output": "60"
+        }
+    ]
+}

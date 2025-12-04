@@ -460,5 +460,369 @@
         "difficulty": "中等",
         "time_limit": "2000ms",
         "memory_limit": "128MB"
+    },
+    {
+        "id": 1056,
+        "title": "数组 - 星球能量采集",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1057,
+        "title": "数组 - 秘境最高温度",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1058,
+        "title": "数组 - 元素反转排列",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1059,
+        "title": "数组 - 找出偶数",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1060,
+        "title": "数组 - 统计及格人数",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1061,
+        "title": "数组 - 旋转加密",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1062,
+        "title": "数组 - 零点漂移修正",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1063,
+        "title": "数组 - 局部最大值统计",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1064,
+        "title": "数组 - 二维迷宫寻宝",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1065,
+        "title": "数组 - 二维矩阵转置",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1066,
+        "title": "数组 - 棋盘对角线和",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1067,
+        "title": "数组 - 波动次数统计",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1068,
+        "title": "数组 - 稀疏矩阵压缩存储",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1069,
+        "title": "数组 - 货物装载优化",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1070,
+        "title": "数组 - 消除重复颜色",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1071,
+        "title": "数组 - 零元素的排列",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1072,
+        "title": "数组 - 矩阵旋转 90 度",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1073,
+        "title": "数组 - 连续子数组最大和",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1074,
+        "title": "数组 - 螺旋矩阵遍历",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1075,
+        "title": "数组 - 最小路径和",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1076,
+        "title": "数组 - 快速选择：寻找第K小元素",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1077,
+        "title": "数组 - 二维数组差分矩阵",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1078,
+        "title": "数组 - 数组求和",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1079,
+        "title": "数组 - 矩阵乘法",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1080,
+        "title": "数组 - 水池蓄水",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1081,
+        "title": "字符串 - 字符计数",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1082,
+        "title": "字符串 - 查找特定字符",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1083,
+        "title": "字符串 - 字符大小写转换",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1084,
+        "title": "字符串 - 统计元音字母",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1085,
+        "title": "字符串 - 密码检查",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1086,
+        "title": "字符串 - 单词反转",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1087,
+        "title": "字符串 - 回文判断",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1088,
+        "title": "字符串 - 最长公共前缀",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1089,
+        "title": "字符串 - 字符串压缩",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1090,
+        "title": "字符串 - 最长不重复子串",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1091,
+        "title": "字符串 - 文本左右对齐",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1092,
+        "title": "字符串 - 最小窗口子串",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB"
+    },
+    {
+        "id": 1093,
+        "title": "函数 - 绝对值函数",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1094,
+        "title": "函数 - 最大公约数",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1095,
+        "title": "函数 - 斐波那契数列",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1096,
+        "title": "函数 - 数组元素交换",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1097,
+        "title": "函数 - 数组排序检查",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1098,
+        "title": "函数 - 汉诺塔（递归）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1099,
+        "title": "结构体 - 学生信息录入与查询",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1100,
+        "title": "结构体 - 几何点距离排序",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1101,
+        "title": "函数与结构体 - 复杂数加法",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1102,
+        "title": "函数 - 数组指针操作：最大值和最小值",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1103,
+        "title": "函数 - 字符串反转（指针）",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1104,
+        "title": "结构体 - 日期有效性检查",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1105,
+        "title": "函数与结构体 - 坐标系中的矩形面积",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB"
+    },
+    {
+        "id": 1106,
+        "title": "函数 - 快速幂（递归）",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
+    },
+    {
+        "id": 1107,
+        "title": "结构体 - 链表插入操作（初级）",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB"
     }
 ]
