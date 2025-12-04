@@ -27,25 +27,73 @@ const $resultError = document.getElementById('result-error');
 let problemData = null; // 存储加载的题目数据
 
 /**
- * 1. 加载题目数据 (逻辑保持不变)
+ * 渲染 Markdown 内容并启用 LaTeX 渲染
+ * @param {string} markdownText - Markdown 文本
+ * @param {HTMLElement} element - 要渲染到的元素
+ */
+function renderMarkdownWithLatex(markdownText, element) {
+    if (!markdownText || !element) return;
+
+    // 1. 使用 marked 渲染 Markdown 为 HTML
+    let html = marked.parse(markdownText);
+
+    // 2. 将 HTML 设置到元素中
+    element.innerHTML = html;
+
+    // 3. 使用 KaTeX 渲染数学公式
+    if (window.renderMathInElement) {
+        renderMathInElement(element, {
+            // 指定分隔符
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+            ],
+            // 忽略某些元素内的公式
+            ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            // 出错时不抛出异常
+            throwOnError: false,
+            // 不显示错误信息
+            errorColor: '#cc0000'
+        });
+    } else {
+        console.warn('KaTeX auto-render 未加载');
+    }
+}
+
+/**
+ * 1. 加载题目数据
  */
 async function loadProblemData(id) {
     try {
         const response = await fetch(`problems/${id}.json`);
 
         if (!response.ok) {
-            throw new Error(`题目文件加载失败 (Status: ${response.status})。请检查 problems/${id}.json 文件路径和命名是否正确。`);
+            // 增强错误信息，提示文件路径
+            throw new Error(`题目文件加载失败 (Status: ${response.status})。请检查路径: problems/${id}.json`);
         }
         problemData = await response.json();
         renderProblemUI(problemData);
     } catch (error) {
         console.error("加载题目失败:", error);
-        if ($title) $title.textContent = `错误：题目加载失败。详细信息：${error.message}`;
+
+        // 🏆 修正区域：让错误信息在页面上更加突出，避免用户误认为“没有报错”
+        const errorMessage = `❌ 错误：题目加载失败。详细信息：${error.message}`;
+        if ($title) {
+            $title.innerHTML = `<span style="color: #d32f2f;">${errorMessage}</span>`;
+
+            // 清空其他区域
+            if ($timeLimit) $timeLimit.textContent = '---';
+            if ($memoryLimit) $memoryLimit.textContent = '---';
+            if ($description) $description.innerHTML = '<p>请检查控制台(F12)和文件路径是否正确。</p>';
+        }
+        // ----------------------------------------------------
     }
 }
 
 /**
- * 2. 渲染题目内容到 UI (逻辑保持不变)
+ * 2. 渲染题目内容到 UI
  */
 function renderProblemUI(data) {
     if (!$title) return;
@@ -53,9 +101,13 @@ function renderProblemUI(data) {
     $title.textContent = `${data.id}. ${data.title}`;
     $timeLimit.textContent = data.time_limit;
     $memoryLimit.textContent = data.memory_limit;
-    $description.innerHTML = data.description.replace(/\n/g, '<br>');
-    $inputFormat.textContent = data.input_format;
-    $outputFormat.textContent = data.output_format;
+
+    // 使用 Markdown + LaTeX 渲染
+    renderMarkdownWithLatex(data.description, $description);
+    renderMarkdownWithLatex(data.input_format, $inputFormat);
+    renderMarkdownWithLatex(data.output_format, $outputFormat);
+
+    // 示例输入输出保持原样（代码块）
     $sampleInput.textContent = data.sample_input;
     $sampleOutput.textContent = data.sample_output;
 
@@ -66,7 +118,7 @@ function renderProblemUI(data) {
 }
 
 /**
- * 3. 提交代码到 Judge0 API (逻辑保持不变)
+ * 3. 提交代码到 Judge0 API
  */
 async function submitCode(code, languageId, stdin) {
     const payload = {
@@ -97,7 +149,7 @@ async function submitCode(code, languageId, stdin) {
 }
 
 /**
- * 4. 轮询获取判题结果 (逻辑保持不变)
+ * 4. 轮询获取判题结果
  */
 function getResult(token) {
     return new Promise((resolve, reject) => {
@@ -132,7 +184,7 @@ async function handleSubmission() {
     $resultPanel.style.display = 'block';
     $resultStatus.textContent = '正在提交...';
 
-    // 🏆 修正区域：使用 index.html 中创建的全局变量 'editor'
+    // 🏆 使用 index.html 中创建的全局变量 'editor'
     if (typeof editor === 'undefined' || !editor || !editor.getValue) {
         $resultStatus.innerHTML = `<span style="color: #F44336; font-size: 1.2em;">错误：代码编辑器未准备好。请检查 index.html 脚本。</span>`;
         $submitBtn.disabled = false;
@@ -209,7 +261,7 @@ async function handleSubmission() {
 }
 
 /**
- * 6. 渲染最终结果 (逻辑保持不变)
+ * 6. 渲染最终结果
  */
 function renderFinalResult(statusId, result, time, memory) {
     const STATUS_MAP = {
@@ -242,7 +294,7 @@ function renderFinalResult(statusId, result, time, memory) {
 }
 
 
-// --- 页面初始化入口 (逻辑保持不变) ---
+// --- 页面初始化入口 ---
 function initializeProblemPage() {
     if (typeof getProblemIdFromUrl === 'undefined') {
         console.error("错误: utils.js (getProblemIdFromUrl) 未加载。");
@@ -251,6 +303,7 @@ function initializeProblemPage() {
 
     const problemId = getProblemIdFromUrl() || DEFAULT_PROBLEM_ID;
 
+    // 确保 DEFAULT_PROBLEM_ID 1001 也有对应的文件
     loadProblemData(problemId);
 
     if ($submitBtn) {

@@ -34,10 +34,10 @@ def split_json_and_generate_index():
         index_entries.append(index_entry)
     
     # 生成索引文件
-    with open('index.json', 'w', encoding='utf-8') as f:
+    with open('index2.json', 'w', encoding='utf-8') as f:
         json.dump(index_entries, f, ensure_ascii=False, indent=4)
     
-    print(f"\n已创建索引文件：index.json，包含 {len(index_entries)} 个题目")
+    print(f"\n已创建索引文件：index2.json，包含 {len(index_entries)} 个题目")
 
 if __name__ == "__main__":
     split_json_and_generate_index()

@@ -1,12 +1,3 @@
-/**
- * 夸克博客 OJ 讨论区核心逻辑
- * 功能完善版：包含 Firebase 交互、多级回复、Markdown 解析、完整的头像/昵称管理、管理员登录，
- * 采用列表/详情双视图模式，移除发布模态框。
- */
-
-// --- Firebase 配置 ---
-// **请将此处替换为您的实际 Firebase 配置**
-
 const firebaseConfig = {
     apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
     authDomain: "quark-b7305.firebaseapp.com",
@@ -253,6 +244,99 @@ function updateAdminUI() {
     }
 }
 
+// --- 新增：点赞功能实现 ---
+
+/**
+ * 点赞讨论帖
+ */
+window.likeDiscussion = function (discussionId) {
+    if (!discussionsRef) return;
+
+    const discussionRef = discussionsRef.child(discussionId);
+    discussionRef.transaction(discussion => {
+        if (discussion) {
+            discussion.likes = (discussion.likes || 0) + 1;
+        }
+        return discussion;
+    }).then(() => {
+        // 重新加载当前讨论详情以更新点赞数
+        loadSingleDiscussion(discussionId);
+    }).catch(error => {
+        console.error("点赞失败:", error);
+        alert("点赞失败，请重试");
+    });
+}
+
+/**
+ * 点赞回复
+ */
+window.likeReply = function (discussionId, replyId) {
+    if (!discussionsRef) return;
+
+    const replyRef = discussionsRef.child(discussionId).child('replies').child(replyId);
+    replyRef.transaction(reply => {
+        if (reply) {
+            reply.likes = (reply.likes || 0) + 1;
+        }
+        return reply;
+    }).then(() => {
+        // 重新加载当前讨论详情以更新点赞数
+        loadSingleDiscussion(discussionId);
+    }).catch(error => {
+        console.error("点赞失败:", error);
+        alert("点赞失败，请重试");
+    });
+}
+
+// --- 新增：删除功能实现 ---
+
+/**
+ * 删除讨论帖（管理员）
+ */
+window.deleteDiscussion = function (discussionId) {
+    if (!isAdmin) {
+        alert('无权限删除讨论帖');
+        return;
+    }
+
+    if (!confirm('确定要删除这个讨论帖吗？此操作不可恢复。')) {
+        return;
+    }
+
+    discussionsRef.child(discussionId).remove()
+        .then(() => {
+            alert('讨论帖已删除');
+            showListView(); // 返回列表视图
+        })
+        .catch(error => {
+            console.error("删除失败:", error);
+            alert("删除失败: " + error.message);
+        });
+}
+
+/**
+ * 删除回复（管理员）
+ */
+window.deleteReply = function (discussionId, replyId) {
+    if (!isAdmin) {
+        alert('无权限删除回复');
+        return;
+    }
+
+    if (!confirm('确定要删除这条回复吗？')) {
+        return;
+    }
+
+    discussionsRef.child(discussionId).child('replies').child(replyId).remove()
+        .then(() => {
+            alert('回复已删除');
+            loadSingleDiscussion(discussionId); // 重新加载详情
+        })
+        .catch(error => {
+            console.error("删除失败:", error);
+            alert("删除失败: " + error.message);
+        });
+}
 
 // --- 列表视图逻辑 ---
 
@@ -321,6 +405,7 @@ function renderDiscussionsSummaries(discussions) {
                 <div class="summary-meta">
                     <span class="problem-tag">P${discussion.problemId}</span>
                     <span><i class="fas fa-user"></i> ${discussion.nickname}</span>
+                    <span><i class="fas fa-heart"></i> ${discussion.likes || 0}</span>
                     <span><i class="fas fa-comment"></i> ${replyCount}</span>
                 </div>
             </div>
@@ -370,7 +455,8 @@ window.submitNewDiscussion = function () {
         avatarType: userAvatarType,
         timestamp: Date.now(),
         isMarkdown: true,
-        likes: 0
+        likes: 0,
+        replies: {} // 初始化回复对象
     };
 
     discussionsRef.push(discussion)
@@ -421,8 +507,6 @@ function renderSingleDiscussion(discussion) {
 
     // 主帖内容渲染
     const contentHtml = marked.parse(discussion.text || '');
-
-    // 主帖头像 (仅用于展示作者信息，不渲染在这里，而是渲染在 reply-meta 里)
 
     // 回复树渲染
     const repliesHtml = renderRepliesTree(discussion.id, discussion.replies || {});
@@ -544,6 +628,8 @@ function renderRepliesTree(discussionId, replies) {
     return html;
 }
 
+// --- 新增：回复功能实现 ---
+
 /**
  * 提示用户回复，并将回复目标ID和昵称绑定到回复输入框
  */
@@ -579,6 +665,58 @@ window.resetReplyInput = function (discussionId) {
     }
 }
 
+/**
+ * 提交回复
+ */
+window.submitReply = function (discussionId, parentReplyId) {
+    const replyContent = document.getElementById('replyContent');
+    const content = replyContent.value.trim();
+
+    if (!content) {
+        alert('请输入回复内容');
+        return;
+    }
+
+    // 检查昵称
+    const nicknameInput = document.getElementById('nickname');
+    if (nicknameInput) {
+        nickname = nicknameInput.value.trim();
+        if (!nickname) {
+            alert('请先填写昵称');
+            return;
+        }
+        localStorage.setItem('nickname', nickname);
+    }
+
+    // 确保头像信息是最新的
+    updateAvatar(userAvatarType);
+
+    const reply = {
+        text: content,
+        nickname: nickname,
+        avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
+        avatarType: userAvatarType,
+        timestamp: Date.now(),
+        isMarkdown: true,
+        likes: 0,
+        parentReplyId: parentReplyId || null
+    };
+
+    // 生成唯一的回复ID
+    const replyId = 'reply_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+    // 保存到Firebase
+    discussionsRef.child(discussionId).child('replies').child(replyId).set(reply)
+        .then(() => {
+            alert('回复发布成功！');
+            replyContent.value = '';
+            resetReplyInput(discussionId);
+            loadSingleDiscussion(discussionId); // 重新加载详情
+        })
+        .catch(error => {
+            alert("发布回复失败：" + error.message);
+        });
+}
 
 // --- 初始化入口 ---
 document.addEventListener('DOMContentLoaded', () => {
