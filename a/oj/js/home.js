@@ -125,9 +125,9 @@ function renderFortune(result) {
 
     fortuneContainer.innerHTML = `
         <p class="oj-fortune-status">${result.name}</p>
-        <p class="oj-fortune-yi" style="color: var(--oj-primary-color);">${result.yi.split(':')[1]}：${result.yi_shi}</p>
-        <p class="oj-fortune-ji" style="color: #F44336;">${result.ji.split(':')[1]}：${result.ji_shi}</p>
-        <p style="font-size: 0.8em; margin-top: 15px;">（今日运势已抽取，明日可再次抽取）</p>
+        <p class="oj-fortune-yi" style="color: #12c103ff;">宜 | ${result.yi.split(':')[1]}：${result.yi_shi}</p>
+        <p class="oj-fortune-ji" style="color: #f44336c2;">忌 | ${result.ji.split(':')[1]}：${result.ji_shi}</p>
+        <p style="font-size: 0.8em; margin-top: 15px;">（今日运势已抽取 明日可再次抽取 仅供娱乐请勿当真）</p>
     `;
 }
 
@@ -164,34 +164,64 @@ function setupFortuneFeature() {
     }
 }
 
+/**
+ * 从 problems/index.json 加载题目总数
+ */
+async function loadProblemStats() {
+    try {
+        const response = await fetch('problems/index.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const problems = await response.json();
 
-// 题目范围
-const MIN_PROBLEM_ID = 1001;
-const MAX_PROBLEM_ID = 1140;
+        // 更新总题目数
+        document.getElementById('total-problems').textContent = problems.length;
+
+        // 更新随机跳题的范围
+        if (problems.length > 0) {
+            // 提取所有题目的 ID
+            const problemIds = problems.map(p => p.id);
+            const minId = Math.min(...problemIds);
+            const maxId = Math.max(...problemIds);
+
+            // 更新全局变量供 jumpToRandomProblem 使用
+            window.MIN_PROBLEM_ID = minId;
+            window.MAX_PROBLEM_ID = maxId;
+        }
+
+        return problems.length;
+    } catch (error) {
+        console.error('加载题目统计数据失败:', error);
+        // 显示默认值
+        document.getElementById('total-problems').textContent = '加载失败';
+        return 0;
+    }
+}
 
 /**
  * 全局函数：实现随机跳题，供 index.html 的 onclick 调用
  */
 window.jumpToRandomProblem = function () {
-    const randomId = getRandomInt(MIN_PROBLEM_ID, MAX_PROBLEM_ID);
+    // 使用从 JSON 加载的题目 ID 范围，或使用默认值
+    const minId = window.MIN_PROBLEM_ID || 1001;
+    const maxId = window.MAX_PROBLEM_ID || 1140;
+    const randomId = getRandomInt(minId, maxId);
     // 跳转到题目详情页，假设题目详情页的 URL 格式是 problem.html?p=ID
     window.location.href = `train.html?p=${randomId}`;
 };
 
-
-// --- 页面初始化及模拟数据加载 ---
+// --- 页面初始化及数据加载 ---
 
 /**
  * 页面初始化函数
  */
-window.initializeHomePage = function () {
+window.initializeHomePage = async function () {
     // 1. 设置运势功能
     setupFortuneFeature();
 
-    // 2. 模拟统计数据（纯前端模拟，无后端）
-    document.getElementById('total-problems').textContent = '1024'; // 模拟总题目数
-    document.getElementById('total-submissions').textContent = '56789'; // 模拟总提交数
-    document.getElementById('today-ac').textContent = '245'; // 模拟今日 AC 人次
+    // 2. 从 JSON 文件加载题目统计数据
+    await loadProblemStats();
 
     console.log("夸克 OJ 首页初始化完成，运势和随机跳题功能已就绪。");
 };

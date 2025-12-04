@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
+    <script src="/js/disable-right-click.js"></script>
     <script src="/js/nav.js"></script>
     <script>
         // 搜索功能保持不变
@@ -69,11 +69,15 @@
         .oj-fortune-ji {
             font-size: 1.1em;
             margin: 5px 0;
+            font-weight: bold;
+            /* 加粗 */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            /* 阴影效果 */
         }
 
         .oj-fortune-button {
             padding: 10px 20px;
-            background-color: #f44336;
+            background-color: #f443367b;
             /* 红色 */
             color: white;
             border: none;
@@ -85,7 +89,7 @@
         }
 
         .oj-fortune-button:hover:not(:disabled) {
-            background-color: #d32f2f;
+            background-color: #d32f2fc4;
             transform: translateY(-1px);
         }
 
@@ -113,6 +117,31 @@
             margin: 0;
             color: white;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 新增：移除公告列表的小圆点 */
+        #announcement-list ul,
+        .oj-stats-panel ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        #announcement-list li,
+        .oj-stats-panel li {
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+        }
+
+        #announcement-list li:last-child,
+        .oj-stats-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .oj-stats-panel li a {
+            margin-left: 15px;
+            transition: margin-left 0.3s, border-left 0.3s;
+            display: block;
         }
     </style>
 </head>
@@ -160,14 +189,15 @@
                 </section>
 
                 <section class="oj-stats-panel glass-card">
-                    <h3>📊 OJ 实时数据</h3>
                     <ul>
-                        <li><a href="train.html" class="oj-nav-link" style="background: none;">🔥 开始刷题练习</a></li>
-                        <li><a href="problem-list.html" class="oj-nav-link" style="background: none;">📚 查看完整题库</a></li>
-                        <hr class="oj-sidebar-divider">
-                        <li>总题目数: <strong id="total-problems">加载中...</strong></li>
-                        <li>总提交数: <strong id="total-submissions">加载中...</strong></li>
-                        <li>今日 AC 人次: <strong id="today-ac">加载中...</strong></li>
+                        <li><a href="train.html" class="oj-nav-link" style="background: none;">从第一题开始</a></li>
+                        <li><a href="problem-list.html" class="oj-nav-link" style="background: none;">查看完整题库</a></li>
+                        <li><a href="discussion.html" class="oj-nav-link" style="background: none;">当前讨论</a></li>
+                        <li><a href="submission-record.html" class="oj-nav-link" style="background: none;">我的提交记录</a>
+                        </li>
+
+                        <li><a href="problem-list.html" class="oj-nav-link" style="background: none;">题库当前总题目数:
+                                <strong id="total-problems">加载中...</strong></a></li>
                     </ul>
                 </section>
             </div>
@@ -177,8 +207,18 @@
                 <h3>站内公告</h3>
                 <div id="announcement-list">
                     <ul>
-                        <li>[2025/12/04] 新主页！</li>
-                        <li>[2025/12/03] 夸克 OJ 正式上线~</li>
+                        <li>[2025/12/04] 新主页上线！cos洛谷搞了一个运势</li>
+                        <li>[2025/12/03] 夸克 OJ 正式上线~ 免注册，直接刷题！</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="oj-announcement-panel glass-card">
+                <h3>版权信息</h3>
+                <div id="announcement-list">
+                    <ul>
+                        <li>© 2024 - 2025 夸克博客 / 蓝色奇夸克 / 夸克OJ All rights reserved. </li>
+                        <li>API by: judge0</li>
                     </ul>
                 </div>
             </section>
@@ -189,8 +229,6 @@
     <script src="./js/utils.js"></script>
     <script src="./js/home.js"></script>
     <script>
-
-
         // 初始化函数，用于加载统计数据和检查运势
         if (typeof initializeHomePage !== 'undefined') {
             initializeHomePage();
