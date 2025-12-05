@@ -226,9 +226,11 @@
 
         <div class="section-header">3. 远程画面及操控区</div>
         <div id="video-container">
+            <!-- remote-video 必须在容器内，并且是唯一占据空间的元素 -->
             <video id="remote-video" autoplay playsinline></video>
             <div id="control-overlay"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair;"></div>
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; display: none;">
+            </div>
         </div>
 
         <div class="section-header">4. 状态日志</div>
@@ -300,7 +302,7 @@
          */
         function checkBridgeConnection() {
             bridgeStatusMain.textContent = '正在连接并检查...';
-            localStatusBox.className = 'status-ready'; // 临时显示为检查中颜色
+            localStatusBox.className = 'status-warning'; // 临时显示为检查中颜色
 
             const tempWs = new WebSocket(`ws://localhost:${WS_PORT}`);
 
@@ -437,7 +439,6 @@
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
 
-                // *** 修复点：直接发送 offer 对象，而不是调用 offer.toJSON() ***
                 await getOfferRef(roomCode).set(offer);
                 updateStatus('webrtc-status-sharer', '已发送 Offer，等待控制方加入...', 'warning');
 
@@ -494,7 +495,6 @@
                         const answer = await peerConnection.createAnswer();
                         await peerConnection.setLocalDescription(answer);
 
-                        // *** 修复点：直接发送 answer 对象，而不是调用 answer.toJSON() ***
                         await getAnswerRef(roomCode).set(answer);
                         updateStatus('webrtc-status-controller', '已发送 Answer。正在建立连接...', 'warning');
                     } else {
@@ -534,16 +534,57 @@
                 return;
             }
 
-            // 1. 获取视频容器的尺寸和位置
-            const rect = videoContainer.getBoundingClientRect();
+            // 获取视频容器和远程视频元素的尺寸
+            const containerRect = videoContainer.getBoundingClientRect();
+            const videoRect = remoteVideo.getBoundingClientRect();
 
-            // 2. 计算相对于容器的坐标
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
+            // 检查视频流是否已加载
+            if (remoteVideo.videoWidth === 0 || remoteVideo.videoHeight === 0) {
+                logStatus('⚠️ 视频流未加载或尺寸为零，无法计算准确坐标。', 'warning');
+                return;
+            }
 
-            // 3. 将坐标映射到 0-1000 的标准化范围
-            const normalizedX = Math.min(1000, Math.max(0, Math.round((x / rect.width) * 1000)));
-            const normalizedY = Math.min(1000, Math.max(0, Math.round((y / rect.height) * 1000)));
+            // --- 核心修复 V10：计算视频流的缩放和偏移 ---
+            // 视频流原始比例
+            const videoRatio = remoteVideo.videoWidth / remoteVideo.videoHeight;
+            // 容器比例
+            const containerRatio = containerRect.width / containerRect.height;
+
+            let displayedWidth, displayedHeight, offsetX, offsetY;
+
+            if (videoRatio > containerRatio) {
+                // 视频比容器宽 (顶部和底部有黑边) - object-fit: contain 按照宽度缩放
+                displayedWidth = containerRect.width;
+                displayedHeight = containerRect.width / videoRatio;
+                offsetX = 0;
+                offsetY = (containerRect.height - displayedHeight) / 2;
+            } else {
+                // 视频比容器高 (左右有黑边) - object-fit: contain 按照高度缩放
+                displayedHeight = containerRect.height;
+                displayedWidth = containerRect.height * videoRatio;
+                offsetY = 0;
+                offsetX = (containerRect.width - displayedWidth) / 2;
+            }
+            // --- 核心修复结束 ---
+
+            // 1. 计算相对于容器的点击位置
+            const clickX = event.clientX - containerRect.left;
+            const clickY = event.clientY - containerRect.top;
+
+            // 2. 移除黑边偏移量，获取相对于**实际视频画面**的点击位置
+            const relativeX = clickX - offsetX;
+            const relativeY = clickY - offsetY;
+
+            // 3. 检查点击是否在实际视频画面区域内（排除黑边）
+            if (relativeX < 0 || relativeX > displayedWidth || relativeY < 0 || relativeY > displayedHeight) {
+                logStatus('点击在视频流的黑边区域，不发送控制命令。', 'info');
+                return;
+            }
+
+            // 4. 将坐标映射到 0-1000 的标准化范围 (基于视频流尺寸)
+            // 确保结果在 0 到 1000 之间，以防浮点误差
+            const normalizedX = Math.min(1000, Math.max(0, Math.round((relativeX / displayedWidth) * 1000)));
+            const normalizedY = Math.min(1000, Math.max(0, Math.round((relativeY / displayedHeight) * 1000)));
 
             let button = 'left';
             if (event.button === 2) {
@@ -579,7 +620,11 @@
             }
 
             // 阻止浏览器默认行为，例如 F5 刷新
-            event.preventDefault();
+            // 仅阻止常用功能键，避免影响普通文本输入（虽然目前没有文本输入框）
+            if (event.key.length > 1 || event.ctrlKey || event.altKey) {
+                event.preventDefault();
+            }
+
 
             const commandPayload = {
                 type: "KEY_PRESS",
