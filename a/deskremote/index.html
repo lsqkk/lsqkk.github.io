@@ -244,7 +244,8 @@
             databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
             projectId: "quark-b7305"
         };
-        const WS_PORT = 7070; // 桥接程序端口
+        // 注意：Websocket 端口与 bridge.js 中的定义一致
+        const WS_PORT = 7070;
         const FIREBASE_PATH = 'remote-desktop'; // RTDB 根路径
 
         firebase.initializeApp(FIREBASE_CONFIG);
@@ -423,8 +424,6 @@
             document.getElementById('controller-info').style.display = 'none';
             logStatus(`🚀 启动共享方模式。房间码: ${roomCode}`, 'info');
 
-            // 1. 尝试连接本地桥接程序 (connectToBridge 已经在 checkBridgeConnection 中初始化)
-
             createPeerConnection();
 
             try {
@@ -512,8 +511,16 @@
                 });
 
                 // 4. 添加控制事件监听器
+                // 监听鼠标按下事件 (mousedown)，而不是点击事件 (click)，以便处理左右键
                 controlOverlay.addEventListener('mousedown', sendRemoteControlCommand);
                 document.addEventListener('keydown', sendRemoteKeyCommand);
+
+                // 阻止右键菜单
+                controlOverlay.addEventListener('contextmenu', (e) => {
+                    if (!isSharer && peerConnection && peerConnection.iceConnectionState === 'connected') {
+                        e.preventDefault();
+                    }
+                });
 
 
             } catch (error) {
@@ -526,6 +533,7 @@
 
         /**
          * 发送鼠标点击命令到 Firebase RTDB
+         * 鼠标坐标处理是这里的核心：将点击点映射到 0-1000 归一化坐标。
          * @param {MouseEvent} event 
          */
         function sendRemoteControlCommand(event) {
@@ -534,18 +542,23 @@
                 return;
             }
 
+            // 只处理左键和右键按下事件，确保只发送一次命令（DOWN/UP 拆分在 bridge.js 中完成）
+            if (event.button !== 0 && event.button !== 2) {
+                // 0: 左键, 2: 右键
+                return;
+            }
+
+
             // 获取视频容器和远程视频元素的尺寸
             const containerRect = videoContainer.getBoundingClientRect();
-            const videoRect = remoteVideo.getBoundingClientRect();
-
-            // 检查视频流是否已加载
+            // 确保视频流已加载，否则 videoWidth/videoHeight 为 0
             if (remoteVideo.videoWidth === 0 || remoteVideo.videoHeight === 0) {
                 logStatus('⚠️ 视频流未加载或尺寸为零，无法计算准确坐标。', 'warning');
                 return;
             }
 
-            // --- 核心修复 V10：计算视频流的缩放和偏移 ---
-            // 视频流原始比例
+            // --- V11 核心：处理 object-fit: contain 带来的黑边问题 ---
+            // 视频流原始比例 (远程屏幕的比例)
             const videoRatio = remoteVideo.videoWidth / remoteVideo.videoHeight;
             // 容器比例
             const containerRatio = containerRect.width / containerRect.height;
@@ -553,7 +566,7 @@
             let displayedWidth, displayedHeight, offsetX, offsetY;
 
             if (videoRatio > containerRatio) {
-                // 视频比容器宽 (顶部和底部有黑边) - object-fit: contain 按照宽度缩放
+                // 视频比容器宽 (上下有黑边) - object-fit: contain 按照宽度缩放
                 displayedWidth = containerRect.width;
                 displayedHeight = containerRect.width / videoRatio;
                 offsetX = 0;
@@ -565,7 +578,7 @@
                 offsetY = 0;
                 offsetX = (containerRect.width - displayedWidth) / 2;
             }
-            // --- 核心修复结束 ---
+            // --- 坐标校准结束 ---
 
             // 1. 计算相对于容器的点击位置
             const clickX = event.clientX - containerRect.left;
@@ -581,16 +594,13 @@
                 return;
             }
 
-            // 4. 将坐标映射到 0-1000 的标准化范围 (基于视频流尺寸)
-            // 确保结果在 0 到 1000 之间，以防浮点误差
+            // 4. 将坐标映射到 0-1000 的标准化范围 (这是发送给 bridge.js 的关键坐标)
             const normalizedX = Math.min(1000, Math.max(0, Math.round((relativeX / displayedWidth) * 1000)));
             const normalizedY = Math.min(1000, Math.max(0, Math.round((relativeY / displayedHeight) * 1000)));
 
             let button = 'left';
             if (event.button === 2) {
                 button = 'right';
-            } else if (event.button === 1) {
-                button = 'middle';
             }
 
             const commandPayload = {
@@ -619,12 +629,10 @@
                 return; // 不在控制方或未连接时不发送
             }
 
-            // 阻止浏览器默认行为，例如 F5 刷新
-            // 仅阻止常用功能键，避免影响普通文本输入（虽然目前没有文本输入框）
-            if (event.key.length > 1 || event.ctrlKey || event.altKey) {
+            // 阻止浏览器默认行为，例如 F5 刷新, Tab 切换焦点等
+            if (event.key.length > 1 || event.key === 'Tab' || event.ctrlKey || event.altKey) {
                 event.preventDefault();
             }
-
 
             const commandPayload = {
                 type: "KEY_PRESS",
@@ -680,13 +688,6 @@
                 })
                 .catch(error => logStatus(`❌ 清理房间失败: ${error.message}`, 'error'));
         }
-
-        // 阻止控制方右键菜单弹出
-        controlOverlay.addEventListener('contextmenu', (e) => {
-            if (!isSharer && peerConnection && peerConnection.iceConnectionState === 'connected') {
-                e.preventDefault();
-            }
-        });
 
         // 页面加载完毕后，立即检查本地桥接程序状态
         window.addEventListener('load', checkBridgeConnection);
