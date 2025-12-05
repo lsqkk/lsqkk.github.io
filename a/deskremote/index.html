@@ -59,7 +59,8 @@
             border-left: 4px solid var(--main-blue);
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="number"] {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -67,6 +68,23 @@
             box-sizing: border-box;
             margin-bottom: 10px;
             font-size: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            white-space: nowrap;
+        }
+
+        .input-group input[type="number"] {
+            width: 100px;
+            /* 固定宽度 */
+            flex-grow: 0;
         }
 
         button {
@@ -221,6 +239,16 @@
         <div id="controller-info" style="display:none;">
             <div class="section-header">2. 控制方状态 (Controller)</div>
             <p>**WebRTC 连接状态:** <span id="webrtc-status-controller" class="log-info">等待启动...</span></p>
+
+            <!-- V12 修复：新增坐标修正系数输入框 -->
+            <div class="input-group">
+                <label for="scaling-factor-x">坐标修正系数 (X):</label>
+                <input type="number" id="scaling-factor-x" value="1.0" min="0.1" max="2.0" step="0.01">
+                <label for="scaling-factor-y">坐标修正系数 (Y):</label>
+                <input type="number" id="scaling-factor-y" value="1.0" min="0.1" max="2.0" step="0.01">
+                <p style="font-size:0.8em; color:#888;">* 如果光标有偏差，请尝试调整此系数 (如 0.7)。</p>
+            </div>
+
             <p>点击下方视频画面即可发送鼠标点击事件。</p>
         </div>
 
@@ -265,6 +293,8 @@
         const controlOverlay = document.getElementById('control-overlay');
         const bridgeStatusMain = document.getElementById('bridge-status-main');
         const localStatusBox = document.getElementById('local-status-box');
+        const scalingFactorXInput = document.getElementById('scaling-factor-x');
+        const scalingFactorYInput = document.getElementById('scaling-factor-y');
 
 
         // Signaling paths
@@ -542,11 +572,14 @@
                 return;
             }
 
-            // 只处理左键和右键按下事件，确保只发送一次命令（DOWN/UP 拆分在 bridge.js 中完成）
+            // 只处理左键和右键按下事件 (0: 左键, 2: 右键)
             if (event.button !== 0 && event.button !== 2) {
-                // 0: 左键, 2: 右键
                 return;
             }
+
+            // 获取用户输入的修正系数 (默认为 1.0)
+            const SCALING_FACTOR_X = parseFloat(scalingFactorXInput.value) || 1.0;
+            const SCALING_FACTOR_Y = parseFloat(scalingFactorYInput.value) || 1.0;
 
 
             // 获取视频容器和远程视频元素的尺寸
@@ -594,9 +627,13 @@
                 return;
             }
 
-            // 4. 将坐标映射到 0-1000 的标准化范围 (这是发送给 bridge.js 的关键坐标)
-            const normalizedX = Math.min(1000, Math.max(0, Math.round((relativeX / displayedWidth) * 1000)));
-            const normalizedY = Math.min(1000, Math.max(0, Math.round((relativeY / displayedHeight) * 1000)));
+            // 4. V12 核心：应用用户设置的修正系数
+            const correctedX = relativeX * SCALING_FACTOR_X;
+            const correctedY = relativeY * SCALING_FACTOR_Y;
+
+            // 5. 将修正后的坐标映射到 0-1000 的标准化范围
+            const normalizedX = Math.min(1000, Math.max(0, Math.round((correctedX / displayedWidth) * 1000)));
+            const normalizedY = Math.min(1000, Math.max(0, Math.round((correctedY / displayedHeight) * 1000)));
 
             let button = 'left';
             if (event.button === 2) {
@@ -611,7 +648,7 @@
                 timestamp: Date.now()
             };
 
-            logStatus(`发送鼠标 ${button.toUpperCase()} 点击命令: (${normalizedX}, ${normalizedY})`, 'info');
+            logStatus(`发送鼠标 ${button.toUpperCase()} 点击命令: (${normalizedX}, ${normalizedY}) [修正系数 X:${SCALING_FACTOR_X}, Y:${SCALING_FACTOR_Y}]`, 'info');
 
             // 使用 set() 覆盖旧命令
             getControlRef(currentRoomCode).set(commandPayload)
