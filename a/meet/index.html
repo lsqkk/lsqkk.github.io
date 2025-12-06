@@ -4,156 +4,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC 多人会议室 - P2P 共享</title>
-    <!-- 加载 Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>WebRTC 会议 | 视频与屏幕共享</title>
+    <link rel="stylesheet" href="nav.css">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        /* --- 1. 样式变量 (与 nav.css 风格统一) --- */
+        /* 1. 变量和基础样式 */
         :root {
-            /* 模仿 nav.css 的背景色 */
-            --glass-bg-color: 122, 189, 154;
-            /* 绿色系 */
-            --surface-bg-color: 255, 255, 255;
-            --main-text-color: #1f2937;
-            --main-accent-color: #4f46e5;
-        }
-
-        /* 全局背景和毛玻璃效果 */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
+            --header-height: 60px;
+            /* 预留顶栏空间 */
+            --main-blue: #007aff;
+            /* iOS 蓝色 */
+            --main-green: #34c759;
+            /* 成功绿色 */
+            --main-red: #ff3b30;
+            /* 警告红色 */
+            --bg-light: #f0f2f5;
             /* 极浅背景色 */
-            color: var(--main-text-color);
-            min-height: 100vh;
+            --card-bg-opacity: 0.8;
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --card-border: 1px solid rgba(255, 255, 255, 0.3);
+            --control-bg: rgba(255, 255, 255, 0.1);
+            /* 控制区半透明背景 */
         }
 
-        /* 通用毛玻璃卡片样式 (使用 glass-card 类名以避免冲突) */
-        .glass-card {
-            background: rgba(var(--surface-bg-color), 0.2);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* 使用与 nav.css 协调的半透明背景 */
+            background: rgba(122, 189, 154, 0.8);
+            /* 示例背景，您可以替换为 /image/bg.png */
+            color: #333;
+            transition: background-color 0.3s;
+        }
+
+        /* 核心修改：确保内容在固定顶栏下方，且居中显示 */
+        .meeting-wrapper {
+            padding-top: var(--header-height);
+            /* 留出固定顶栏的空间 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 50px;
+        }
+
+        /* 2. 容器和卡片样式 (沿用毛玻璃风格) */
+        .meeting-container {
+            width: 95%;
+            max-width: 1200px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* 会议控制卡片 */
+        .control-card {
+            background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            border: 1px solid rgba(var(--surface-bg-color), 0.3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(var(--surface-bg-color), 0.5);
+            border: var(--card-border);
+            padding: 20px;
+            flex: 0 0 300px;
+            /* 固定宽度 */
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
-        /* 视频容器 */
-        #video-grid {
-            display: grid;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            min-height: calc(100vh - 8rem);
-            /* 减去底部控制栏高度 */
-            align-content: start;
+        /* 视频显示区域 */
+        .video-display-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        /* 视频流体布局 */
-        .video-wrapper-item {
-            aspect-ratio: 16 / 9;
-            width: 100%;
-            border-radius: 0.75rem;
+        .video-player-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            min-height: 400px;
+            /* 最小高度保证显示效果 */
+        }
+
+        /* 视频播放器卡片 */
+        .video-card {
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 视频背景通常用深色 */
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            background-color: #000;
+            position: relative;
+            flex: 1 1 45%;
+            /* 桌面端默认双列布局 */
+            min-width: 300px;
+            aspect-ratio: 16 / 9;
+            /* 保持视频比例 */
         }
 
-        .video-wrapper-item video {
+        .video-card video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* 填充整个容器，可能裁剪 */
         }
 
-        /* 响应式网格布局 */
-        @media (min-width: 640px) {
-            #video-grid[data-count="1"] {
-                grid-template-columns: 1fr;
-            }
-
-            #video-grid[data-count="2"] {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            #video-grid[data-count="3"] {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            #video-grid[data-count="4"] {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            #video-grid[data-count="5"],
-            #video-grid[data-count="6"] {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
+        .video-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
         }
 
-        /* 移动端横屏时，如果人数少，视频可以更大 */
-        @media (orientation: landscape) and (max-width: 1024px) {
-            #video-grid[data-count="1"] {
-                min-height: calc(100vh - 4rem);
-            }
+        /* 3. 会议控制元素样式 (避免与 nav.css 冲突) */
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
         }
 
-        /* 按钮和输入框样式修正，避免与 nav.css 冲突 */
-        .ui-btn {
+        .meeting-input-group {
+            margin-bottom: 20px;
+        }
+
+        .meeting-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
             transition: all 0.2s;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
         }
 
-        .ui-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        .meeting-input::placeholder {
+            color: #999;
         }
 
-        .ui-input {
-            background: rgba(var(--surface-bg-color), 0.5);
-            color: var(--main-text-color);
-            border: 1px solid rgba(var(--surface-bg-color), 0.6);
+        .meeting-action-button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.2s;
+            border: none;
+            background-color: var(--main-blue);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
         }
 
-        /* 控制栏的毛玻璃样式 */
-        #control-bar {
-            background: rgba(var(--glass-bg-color), 0.3);
-            /* 沿用 nav.css 的绿色系半透明 */
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        .meeting-action-button:hover {
+            opacity: 0.9;
         }
 
-        /* 切换按钮的样式 */
-        .toggle-btn.is-off {
-            background-color: #ef4444;
-            /* 红色表示关闭或禁用 */
+        .meeting-action-button:disabled {
+            background-color: #a0c4ff;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .meeting-action-button.red-btn {
+            background-color: var(--main-red);
+            box-shadow: 0 2px 4px rgba(255, 59, 48, 0.4);
+        }
+
+        /* 设备控制按钮组 */
+        .device-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .device-btn {
+            flex: 1 1 45%;
+            /* 双列布局 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--control-bg);
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .device-btn:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .device-btn.active {
+            background-color: var(--main-green);
             color: white;
         }
 
-        .toggle-btn:not(.is-off) {
-            background-color: white;
-            color: var(--main-accent-color);
+        .device-btn.active:hover {
+            background-color: #2ab74d;
         }
+
+        .device-btn i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .status-log {
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-size: 0.8em;
+            color: #555;
+            margin-top: 15px;
+        }
+
+        /* 4. 移动端和响应式 */
+        @media (max-width: 800px) {
+            .meeting-container {
+                flex-direction: column;
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .control-card {
+                flex: 1 1 auto;
+                max-height: none;
+                /* 移动端不限制高度 */
+            }
+
+            .video-player-container {
+                flex-direction: column;
+                min-height: 200px;
+            }
+
+            .video-card {
+                flex: 1 1 100%;
+                /* 移动端单列布局 */
+            }
+        }
+
+        /* 横屏优化 (可选) */
+        @media (orientation: landscape) and (max-width: 900px) {
+            .video-card {
+                aspect-ratio: 16 / 9;
+                /* 保持比例 */
+            }
+        }
+
+        /* 引入 Font Awesome 图标 (用于设备控制按钮) */
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 
-    <!-- 引入 Firebase v9/v11 兼容性 SDK -->
-    <script type="module">
-        // 修正: 必须完整导入所有用到的 Firestore 方法
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import {
-            getFirestore,
-            doc,
-            setDoc,
-            deleteDoc,
-            onSnapshot,
-            collection
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<body>
+    <div class="meeting-wrapper">
 
-        // --- 用户的 RTDB 配置 ---
+        <div class="meeting-container">
+
+            <div class="control-card">
+                <h2>🌐 加入/创建会议</h2>
+                <div class="meeting-input-group">
+                    <input type="text" id="room-code-input" class="meeting-input" placeholder="输入三位会议码 (如 XYZ)"
+                        maxlength="3" style="text-transform: uppercase;">
+                    <button id="create-room-btn" class="meeting-action-button">生成会议码并主持</button>
+                    <button id="join-room-btn" class="meeting-action-button">加入房间并参会</button>
+                </div>
+
+                <div id="controls-section" style="display: none;">
+                    <h2>🎙️ 设备控制</h2>
+                    <div class="device-controls">
+                        <button id="camera-btn" class="device-btn">
+                            <i class="fas fa-video"></i>
+                            <span>打开摄像头</span>
+                        </button>
+                        <button id="mic-btn" class="device-btn">
+                            <i class="fas fa-microphone"></i>
+                            <span>启用麦克风</span>
+                        </button>
+                        <button id="screen-share-btn" class="device-btn">
+                            <i class="fas fa-desktop"></i>
+                            <span>共享屏幕</span>
+                        </button>
+                        <button id="hangup-btn" class="meeting-action-button red-btn" style="margin-top: 15px;">
+                            <i class="fas fa-phone-slash"></i>
+                            结束会议
+                        </button>
+                    </div>
+                </div>
+
+                <h2>💬 状态日志</h2>
+                <pre id="status-log" class="status-log">状态：未连接</pre>
+            </div>
+
+            <div class="video-display-area">
+                <h1 id="meeting-title" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">WebRTC 视频会议</h1>
+                <div class="video-player-container">
+                    <div class="video-card" id="local-video-card">
+                        <video id="local-video" autoplay muted playsinline></video>
+                        <span class="video-label">我的视频</span>
+                    </div>
+
+                    <div class="video-card" id="remote-video-card" style="display: none;">
+                        <video id="remote-video" autoplay playsinline></video>
+                        <span class="video-label">对方视频</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // -----------------------------------------------------------
+        // 1. Firebase 配置与 STUN/TURN 服务器
+        // -----------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
             authDomain: "quark-b7305.firebaseapp.com",
-            databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
             projectId: "quark-b7305",
             storageBucket: "quark-b7305.firebasestorage.app",
             messagingSenderId: "843016834358",
@@ -161,854 +357,420 @@
             measurementId: "G-5BVT26KRT6"
         };
 
-        // 如果全局变量存在（Canvas环境），则使用全局变量
-        const appId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.projectId;
-        const configToUse = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        window.firebaseApp = initializeApp(configToUse);
-        window.db = getFirestore(window.firebaseApp);
-        window.appId = appId;
+        const STUN_SERVERS = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun.minisipserver.com' },
+            { urls: 'turn:numb.viagenie.ca', username: 'webrtc@live.com', credential: 'webrtc' } // TURN
+        ];
 
-        // 修正: 必须将导入的函数挂载到 window 上或在全局范围内可用，供其他 script tag 使用
-        // 由于这里使用了 type="module"，它内部的变量不会暴露给外部普通 script，
-        // 但由于整个 JS 代码都在一个 type="module" 块内，所以只需要将它们定义为 window 属性即可
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.deleteDoc = deleteDoc;
-        window.onSnapshot = onSnapshot;
-        window.collection = collection;
+        // -----------------------------------------------------------
+        // 2. 全局变量与 DOM 元素
+        // -----------------------------------------------------------
+        let peerConnection;
+        let localStream = null; // 包含摄像头/麦克风/屏幕的流
+        let currentRoomCode = null;
+        let isCreator = false;
 
-    </script>
-</head>
-
-<body>
-    <main class="min-h-screen pt-4 pb-24">
-        <!-- 房间连接界面 -->
-        <div id="setup-section" class="max-w-xl mx-auto p-6 glass-card space-y-6 m-4">
-            <h1 class="text-3xl font-bold text-center text-gray-800 flex items-center justify-center">
-                <i data-lucide="video" class="w-8 h-8 mr-3 text-indigo-600"></i>
-                WebRTC 会议室
-            </h1>
-            <p class="text-md text-gray-600 text-center">输入三位会议码加入或创建房间，开始视频/屏幕共享。</p>
-
-            <input type="text" id="room-code-input" maxlength="3" placeholder="例如: ABC"
-                class="ui-input w-full p-4 rounded-xl text-center text-3xl tracking-widest uppercase focus:ring-indigo-500 focus:border-indigo-500 shadow-inner" />
-
-            <button id="join-room-btn"
-                class="ui-btn w-full bg-indigo-600 text-white p-4 rounded-xl font-extrabold text-lg hover:bg-indigo-700 shadow-lg"
-                disabled>
-                加入/创建房间
-            </button>
-
-            <div class="flex justify-between items-center text-sm">
-                <span id="status-message" class="min-h-6 font-medium text-gray-600">等待输入会议码...</span>
-                <button id="clean-room-btn"
-                    class="ui-btn p-2 text-red-500 hover:bg-red-100 rounded-lg hidden text-xs font-semibold"
-                    title="清理房间信令数据">
-                    <i data-lucide="trash-2" class="w-4 h-4 mr-1 inline"></i>清理房间
-                </button>
-            </div>
-
-        </div>
-
-        <!-- 会议控制界面 -->
-        <div id="conference-section" class="hidden">
-            <h2 id="room-display" class="text-center text-xl font-semibold mb-4 text-gray-700"></h2>
-
-            <!-- 视频流容器 -->
-            <div id="video-grid" data-count="0">
-                <!-- 视频流将在这里动态添加 -->
-            </div>
-
-            <!-- 控制栏 (固定在底部，毛玻璃效果) -->
-            <div id="control-bar"
-                class="fixed bottom-0 left-0 right-0 p-3 flex justify-center items-center space-x-6 z-20">
-                <!-- 摄像头 -->
-                <button id="toggle-camera" class="toggle-btn p-4 rounded-full shadow-lg" title="切换摄像头">
-                    <i data-lucide="video" class="w-6 h-6"></i>
-                </button>
-                <!-- 麦克风 -->
-                <button id="toggle-mic" class="toggle-btn p-4 rounded-full shadow-lg" title="切换麦克风">
-                    <i data-lucide="mic" class="w-6 h-6"></i>
-                </button>
-                <!-- 屏幕共享 -->
-                <button id="toggle-screenshare" class="toggle-btn p-4 rounded-full shadow-lg" title="切换屏幕共享">
-                    <i data-lucide="monitor" class="w-6 h-6"></i>
-                </button>
-                <!-- 挂断 -->
-                <button id="leave-room" class="ui-btn p-4 bg-red-600 text-white rounded-full hover:bg-red-700 shadow-lg"
-                    title="离开会议">
-                    <i data-lucide="phone-off" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <script type="module">
-        // -------------------------------------------------------------------
-        // 1. 全局配置与状态
-        // -------------------------------------------------------------------
-        const roomCodeInput = document.getElementById('room-code-input');
-        const joinRoomBtn = document.getElementById('join-room-btn');
-        const statusMessage = document.getElementById('status-message');
-        const roomDisplay = document.getElementById('room-display');
-        const videoGrid = document.getElementById('video-grid');
-        const cleanRoomBtn = document.getElementById('clean-room-btn');
-
-        const toggleCameraBtn = document.getElementById('toggle-camera');
-        const toggleMicBtn = document.getElementById('toggle-mic');
-        const toggleScreenshareBtn = document.getElementById('toggle-screenshare');
-        const leaveRoomBtn = document.getElementById('leave-room');
-
-        let localPeerConnection = null; // 此变量不再用于 Mesh，但保留
-        let localStream = null;         // 本地媒体流 (摄像头/麦克风)
-        let screenStream = null;        // 本地屏幕共享流
-        let currentRoomCode = null;     // 当前房间码
-        // 为确保用户 ID 唯一性且能识别，使用时间戳+随机数
-        let localUserId = 'user_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-        let peerConnections = {};       // 存储所有远端用户的 RTCPeerConnection {remoteUserId: RTCPeerConnection}
-        let signalingUnsubscribers = []; // 存储 Firestore 监听取消函数
-
-        // 媒体流状态
+        // 媒体状态
         let isCameraOn = false;
         let isMicOn = false;
-        let isScreensharing = false;
+        let isScreenSharing = false;
 
-        // 修正: 使用 window 上的全局导入
-        let db = window.db;
-        let appId = window.appId;
-        const doc = window.doc;
-        const setDoc = window.setDoc;
-        const deleteDoc = window.deleteDoc;
-        const onSnapshot = window.onSnapshot;
-        const collection = window.collection;
+        // DOM 元素
+        const roomCodeInput = document.getElementById('room-code-input');
+        const createRoomBtn = document.getElementById('create-room-btn');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const controlsSection = document.getElementById('controls-section');
+        const localVideo = document.getElementById('local-video');
+        const remoteVideo = document.getElementById('remote-video');
+        const remoteVideoCard = document.getElementById('remote-video-card');
+        const statusLogDiv = document.getElementById('status-log');
+        const cameraBtn = document.getElementById('camera-btn');
+        const micBtn = document.getElementById('mic-btn');
+        const screenShareBtn = document.getElementById('screen-share-btn');
+        const hangupBtn = document.getElementById('hangup-btn');
+        const meetingTitle = document.getElementById('meeting-title');
 
-        // -------------------------------------------------------------------
-        // 2. 辅助函数
-        // -------------------------------------------------------------------
 
-        /**
-         * 记录状态信息并更新 UI
-         * @param {string} msg 
-         * @param {string} color 
-         */
-        function logStatus(msg, color = 'text-gray-600') {
-            statusMessage.textContent = msg;
-            statusMessage.className = `min-h-6 font-medium ${color}`;
-            console.log(`[STATUS] ${msg}`);
+        // -----------------------------------------------------------
+        // 3. UI/工具函数
+        // -----------------------------------------------------------
+
+        /** 记录状态 */
+        function logStatus(message) {
+            statusLogDiv.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}\n` + statusLogDiv.innerHTML;
+            console.log(message);
         }
 
-        /**
-         * 生成 P2P 连接的 ICE 服务器配置
-         * @returns {object} RTCIceServer 列表
-         */
-        function getIceServers() {
-            // 使用 Google 的公共 STUN 服务器，确保 P2P 连接成功
-            return {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' }
-                ]
-            };
-        }
-
-        /**
-         * 创建一个视频元素并添加到容器中
-         * @param {string} id - 视频元素的ID
-         * @param {boolean} isLocal - 是否为本地视频
-         * @returns {HTMLVideoElement}
-         */
-        function createVideoElement(id, isLocal) {
-            let videoWrapper = document.getElementById(`wrapper-${id}`);
-            if (videoWrapper) return videoWrapper.querySelector('video');
-
-            videoWrapper = document.createElement('div');
-            videoWrapper.id = `wrapper-${id}`;
-            videoWrapper.className = 'video-wrapper-item relative';
-
-            const video = document.createElement('video');
-            video.id = `video-${id}`;
-            video.autoplay = true;
-            video.playsInline = true;
-            video.muted = isLocal; // 本地视频静音
-            video.className = 'shadow-lg bg-gray-800';
-
-            // 确保本地视频有 audio/video 状态图标
-            const iconId = isLocal ? 'local-media-icons' : `remote-media-icons-${id}`;
-            const labelText = isLocal ? `我 (${id.substring(id.length - 4)})` : `用户 (${id.substring(id.length - 4)})`;
-
-            const labelContainer = document.createElement('div');
-            labelContainer.className = 'absolute top-2 left-2 text-xs font-bold bg-black bg-opacity-60 text-white px-2 py-1 rounded-full flex items-center space-x-2';
-            labelContainer.textContent = labelText;
-
-            const iconContainer = document.createElement('div');
-            iconContainer.id = iconId;
-            iconContainer.className = 'flex space-x-1 ml-2';
-
-            labelContainer.appendChild(iconContainer);
-
-
-            videoWrapper.appendChild(video);
-            videoWrapper.appendChild(labelContainer);
-
-            videoGrid.appendChild(videoWrapper);
-            updateVideoLayout();
-
-            // 触发视频加载，确保 isLocal 可以看到自己
-            if (isLocal) {
-                video.addEventListener('loadedmetadata', () => {
-                    video.play();
-                });
+        /** 生成三位随机大写字母码 */
+        function generateRoomCode() {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < 3; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
             }
-
-            return video;
+            return result;
         }
 
-        /**
-         * 更新视频网格布局
-         */
-        function updateVideoLayout() {
-            const count = videoGrid.children.length;
-            videoGrid.setAttribute('data-count', count);
-        }
-
-        /**
-         * 更新用户媒体状态图标
-         * @param {string} userId 
-         * @param {boolean} isVideoOn 
-         * @param {boolean} isAudioOn 
-         * @param {boolean} isScreenOn 
-         */
-        function updateMediaIcons(userId, isVideoOn, isAudioOn, isScreenOn) {
-            const iconContainer = document.getElementById(userId === localUserId ? 'local-media-icons' : `remote-media-icons-${userId}`);
-            if (!iconContainer) return;
-
-            // 修正: Lucide icons 会将 <i> 替换为 SVG，这里需要重新渲染
-            iconContainer.innerHTML = '';
-
-            // 视频图标
-            if (isScreenOn) {
-                iconContainer.innerHTML += `<i data-lucide="monitor" class="w-4 h-4 text-yellow-400"></i>`;
-            } else if (isVideoOn) {
-                iconContainer.innerHTML += `<i data-lucide="video" class="w-4 h-4 text-green-400"></i>`;
+        /** 更新按钮状态和文本 */
+        function updateButton(btn, state, iconOn, iconOff, textOn, textOff) {
+            if (state) {
+                btn.classList.add('active');
+                btn.innerHTML = `<i class="${iconOn}"></i> <span>${textOn}</span>`;
             } else {
-                iconContainer.innerHTML += `<i data-lucide="video-off" class="w-4 h-4 text-red-500"></i>`;
-            }
-
-            // 音频图标
-            if (isAudioOn) {
-                iconContainer.innerHTML += `<i data-lucide="mic" class="w-4 h-4 text-green-400"></i>`;
-            } else {
-                iconContainer.innerHTML += `<i data-lucide="mic-off" class="w-4 h-4 text-red-500"></i>`;
-            }
-
-            // 重新渲染 Lucide 图标
-            if (window.lucide) {
-                window.lucide.createIcons({ attrs: { class: 'w-4 h-4' } });
+                btn.classList.remove('active');
+                btn.innerHTML = `<i class="${iconOff}"></i> <span>${textOff}</span>`;
             }
         }
 
-        /**
-         * 清理房间数据（清除 Firebase 中的所有信令数据）
-         * @param {string} code - 房间码
-         */
-        async function cleanRoomData(code) {
-            if (!code || !db || !doc || !deleteDoc) return;
-            logStatus('🗑️ 正在清理房间信令数据...', 'text-red-500');
+        /** 重置会议 UI 和状态 */
+        function resetUI() {
+            createRoomBtn.disabled = false;
+            joinRoomBtn.disabled = false;
+            roomCodeInput.disabled = false;
+            controlsSection.style.display = 'none';
+            remoteVideoCard.style.display = 'none';
 
-            // 路径: /artifacts/{appId}/public/data/rooms/{code}
-            const roomRef = doc(db, 'artifacts', appId, 'public/data/rooms', code);
-            try {
-                // 删除整个 room 文档，包括子集合 members 和 signals
-                await deleteDoc(roomRef);
-                logStatus(`✅ 房间 ${code} 数据清理完成。`, 'text-green-600');
-            } catch (error) {
-                logStatus(`❌ 清理房间数据失败: ${error.message}`, 'text-red-500');
+            localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
+
+            isCameraOn = false;
+            isMicOn = false;
+            isScreenSharing = false;
+            updateButton(cameraBtn, isCameraOn, 'fas fa-video', 'fas fa-video-slash', '关闭摄像头', '打开摄像头');
+            updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
+            updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
+
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
             }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            currentRoomCode = null;
+            logStatus('会话已结束或重置。');
         }
 
-        // -------------------------------------------------------------------
-        // 3. 媒体流控制
-        // -------------------------------------------------------------------
 
-        /**
-         * 获取本地媒体流
-         */
-        async function getLocalMediaStream() {
-            const constraints = { video: true, audio: true };
+        // -----------------------------------------------------------
+        // 4. 媒体流和轨道管理
+        // -----------------------------------------------------------
+
+        /** 获取并添加本地媒体流 (摄像头/麦克风) */
+        async function getLocalMedia(video = true, audio = true) {
             try {
+                // 强制只获取一个新流，防止轨道混乱
+                const stream = await navigator.mediaDevices.getUserMedia({ video, audio });
+
+                // 如果已经有流在用，先停止它
                 if (localStream) {
                     localStream.getTracks().forEach(track => track.stop());
                 }
 
-                // 获取摄像头和麦克风流
-                localStream = await navigator.mediaDevices.getUserMedia(constraints);
-
-                // 默认关闭轨道，等待用户点击按钮开启
-                localStream.getVideoTracks().forEach(track => track.enabled = false);
-                localStream.getAudioTracks().forEach(track => track.enabled = false);
-
-                const localVideo = createVideoElement(localUserId, true);
+                localStream = stream;
                 localVideo.srcObject = localStream;
-                logStatus('✅ 本地媒体流获取成功，等待加入房间。', 'text-green-600');
+                isCameraOn = video;
+                isMicOn = audio;
 
-                // 初始化本地图标状态
-                updateMediaIcons(localUserId, false, false, false);
+                // **关键：替换所有发送器的轨道**
+                if (peerConnection) {
+                    // 移除旧轨道
+                    peerConnection.getSenders().forEach(sender => {
+                        peerConnection.removeTrack(sender);
+                    });
 
-                return localStream;
+                    // 添加新轨道
+                    localStream.getTracks().forEach(track => {
+                        peerConnection.addTrack(track, localStream);
+                    });
+
+                    // 重新创建 Offer/Answer 来通知远端新轨道
+                    if (isCreator) {
+                        await createOffer(currentRoomCode);
+                    } else {
+                        // 接收方通常需要等待发送方重新发送 offer
+                        logStatus("发送方请稍候重新创建 Offer...");
+                    }
+                }
+
+                logStatus(`✅ 本地媒体流已更新。视频: ${video}, 音频: ${audio}`);
             } catch (e) {
-                logStatus(`❌ 无法获取本地媒体: ${e.message}. 请检查摄像头/麦克风权限。`, 'text-red-500');
-                throw e;
+                logStatus(`❌ 获取本地媒体失败: ${e.name}: ${e.message}`);
+                // 如果失败，更新状态为关闭
+                isCameraOn = false;
+                isMicOn = false;
+            } finally {
+                // 无论成功失败，都更新按钮状态
+                updateButton(cameraBtn, isCameraOn, 'fas fa-video', 'fas fa-video-slash', '关闭摄像头', '打开摄像头');
+                updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
+                isScreenSharing = false; // 屏幕共享状态重置
+                updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
             }
         }
 
-        /**
-         * 切换摄像头状态
-         */
-        function toggleCamera() {
-            if (!localStream) return;
-            const videoTrack = localStream.getVideoTracks()[0];
-            if (!videoTrack) return;
-
-            // 如果正在屏幕共享，则不允许开启摄像头
-            if (isScreensharing) {
-                logStatus('⚠️ 请先关闭屏幕共享再开启摄像头。', 'text-yellow-600');
-                return;
-            }
-
-            isCameraOn = !isCameraOn;
-            videoTrack.enabled = isCameraOn;
-
-            // 更新按钮样式和图标
-            toggleCameraBtn.classList.toggle('is-off', !isCameraOn);
-            // 修正: 确保获取到的是 SVG 元素（如果 Lucide 已转换）或 <i> 元素
-            const iconElement = toggleCameraBtn.querySelector('i') || toggleCameraBtn.querySelector('svg');
-            if (iconElement) {
-                // 修正: 使用 data-lucide 属性来触发重新渲染
-                if (iconElement.tagName === 'I') {
-                    iconElement.setAttribute('data-lucide', isCameraOn ? 'video' : 'video-off');
-                } else {
-                    // 如果已经是 SVG，则直接替换整个按钮内容并重新渲染 Lucide
-                    toggleCameraBtn.innerHTML = `<i data-lucide="${isCameraOn ? 'video' : 'video-off'}" class="w-6 h-6"></i>`;
-                    window.lucide.createIcons({ attrs: { class: 'w-6 h-6' } });
-                }
-            }
-
-            updateMediaIcons(localUserId, isCameraOn, isMicOn, isScreensharing);
-
-            logStatus(`摄像头已${isCameraOn ? '开启' : '关闭'}`);
-
-            // 通知所有远端连接轨道状态已改变
-            Object.values(peerConnections).forEach(pc => {
-                pc.getSenders().forEach(sender => {
-                    if (sender.track && sender.track.kind === 'video' && sender.track.label !== 'screen') {
-                        sender.track.enabled = isCameraOn;
-                    }
-                });
-            });
-            // 发送更新状态信令
-            sendSignalingMessageToAll({ type: 'media_state', state: { video: isCameraOn, audio: isMicOn, screen: isScreensharing } });
-        }
-
-        /**
-         * 切换麦克风状态
-         */
-        function toggleMic() {
-            if (!localStream) return;
-            const audioTrack = localStream.getAudioTracks()[0];
-            if (!audioTrack) return;
-
-            isMicOn = !isMicOn;
-            audioTrack.enabled = isMicOn;
-
-            // 更新按钮样式和图标
-            toggleMicBtn.classList.toggle('is-off', !isMicOn);
-            const iconElement = toggleMicBtn.querySelector('i') || toggleMicBtn.querySelector('svg');
-            if (iconElement) {
-                if (iconElement.tagName === 'I') {
-                    iconElement.setAttribute('data-lucide', isMicOn ? 'mic' : 'mic-off');
-                } else {
-                    toggleMicBtn.innerHTML = `<i data-lucide="${isMicOn ? 'mic' : 'mic-off'}" class="w-6 h-6"></i>`;
-                    window.lucide.createIcons({ attrs: { class: 'w-6 h-6' } });
-                }
-            }
-
-            updateMediaIcons(localUserId, isCameraOn, isMicOn, isScreensharing);
-
-            logStatus(`麦克风已${isMicOn ? '开启' : '关闭'}`);
-
-            // 通知所有远端连接轨道状态已改变
-            Object.values(peerConnections).forEach(pc => {
-                pc.getSenders().forEach(sender => {
-                    if (sender.track && sender.track.kind === 'audio') {
-                        sender.track.enabled = isMicOn;
-                    }
-                });
-            });
-            // 发送更新状态信令
-            sendSignalingMessageToAll({ type: 'media_state', state: { video: isCameraOn, audio: isMicOn, screen: isScreensharing } });
-        }
-
-        /**
-         * 切换屏幕共享
-         */
-        async function toggleScreenshare() {
-            if (!localStream) return;
-
-            if (isScreensharing) {
-                // --- 停止屏幕共享 ---
-                screenStream.getTracks().forEach(track => track.stop());
-                screenStream = null;
-                isScreensharing = false;
-                logStatus('屏幕共享已关闭。');
-
-                // 恢复摄像头流的轨道（如果摄像头是开启状态）
-                const cameraTrack = localStream.getVideoTracks()[0];
-                if (cameraTrack) cameraTrack.enabled = isCameraOn;
-
-                // 替换所有 PeerConnection 中的屏幕共享轨道为摄像头轨道
-                Object.values(peerConnections).forEach(pc => {
-                    pc.getSenders().forEach(sender => {
-                        if (sender.track && sender.track.kind === 'video') {
-                            sender.replaceTrack(cameraTrack);
-                        }
-                    });
-                });
-
-                // 重新启用摄像头按钮，并关闭激活状态
-                toggleCameraBtn.disabled = false;
-                toggleScreenshareBtn.classList.remove('is-off');
-                toggleScreenshareBtn.innerHTML = `<i data-lucide="monitor" class="w-6 h-6"></i>`;
-
-                // 恢复摄像头按钮状态
-                toggleCameraBtn.classList.toggle('is-off', !isCameraOn);
-                toggleCameraBtn.innerHTML = `<i data-lucide="${isCameraOn ? 'video' : 'video-off'}" class="w-6 h-6"></i>`;
-
-
+        /** 切换屏幕共享 */
+        async function toggleScreenShare() {
+            if (isScreenSharing) {
+                // 停止屏幕共享，恢复摄像头/麦克风
+                logStatus('停止屏幕共享，恢复摄像头/麦克风...');
+                await getLocalMedia(isCameraOn, isMicOn); // 恢复之前的状态
+                isScreenSharing = false;
             } else {
-                // --- 开始屏幕共享 ---
+                // 开始屏幕共享
                 try {
-                    // 强制关闭摄像头
-                    if (isCameraOn) {
-                        isCameraOn = false;
-                        localStream.getVideoTracks().forEach(track => track.enabled = false);
-                        toggleCameraBtn.classList.add('is-off');
-                        toggleCameraBtn.innerHTML = `<i data-lucide="video-off" class="w-6 h-6"></i>`;
-                    }
-
                     // 获取屏幕共享流
-                    const audioTracks = localStream.getAudioTracks();
-                    const displayMediaOptions = { video: true, audio: audioTracks.length > 0 }; // 屏幕共享时，可选是否包含系统音频
-                    screenStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-                    isScreensharing = true;
-                    logStatus('屏幕共享已开启。', 'text-indigo-600');
+                    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
 
-                    // 替换所有 PeerConnection 中的摄像头轨道为屏幕共享轨道
-                    const screenTrack = screenStream.getVideoTracks()[0];
-                    Object.values(peerConnections).forEach(pc => {
-                        pc.getSenders().forEach(sender => {
-                            if (sender.track && sender.track.kind === 'video') {
-                                sender.replaceTrack(screenTrack);
+                    // 停止旧流的轨道
+                    if (localStream) {
+                        localStream.getTracks().forEach(track => track.stop());
+                    }
+                    localStream = screenStream;
+                    localVideo.srcObject = localStream;
+
+                    // 替换发送器中的视频和音频轨道
+                    peerConnection.getSenders().forEach(sender => {
+                        const track = localStream.getTracks().find(t => t.kind === sender.track.kind);
+                        if (track) {
+                            sender.replaceTrack(track);
+                        } else {
+                            // 如果屏幕共享没有音频，但旧流有音频，则移除旧音频轨道
+                            if (sender.track && sender.track.kind === 'audio') {
+                                peerConnection.removeTrack(sender);
                             }
-                        });
+                        }
                     });
 
-                    // 监听屏幕共享停止事件
+                    // 监听屏幕共享结束事件 (如用户点击浏览器停止按钮)
                     screenStream.getVideoTracks()[0].onended = () => {
-                        if (isScreensharing) {
-                            toggleScreenshare(); // 自动调用关闭逻辑
-                        }
+                        logStatus('屏幕共享已通过浏览器控件停止。');
+                        // 恢复到摄像头/麦克风状态
+                        toggleScreenShare(); // 自动调用停止逻辑
                     };
 
-                    // 禁用摄像头按钮，并开启屏幕共享激活状态
-                    toggleCameraBtn.disabled = true;
-                    toggleScreenshareBtn.classList.add('is-off');
-                    toggleScreenshareBtn.innerHTML = `<i data-lucide="monitor-stop" class="w-6 h-6"></i>`;
-
+                    logStatus('✅ 屏幕共享已开始。');
+                    isScreenSharing = true;
+                    isCameraOn = false; // 共享屏幕时，摄像头状态视为关闭
                 } catch (err) {
-                    logStatus(`❌ 屏幕共享失败: ${err.message}`, 'text-red-500');
-                    isScreensharing = false;
+                    logStatus(`❌ 屏幕共享失败: ${err.message}`);
+                    isScreenSharing = false;
                 }
             }
-
-            // 每次切换后都需要重新渲染 Lucide 图标
-            if (window.lucide) {
-                window.lucide.createIcons({ attrs: { class: 'w-6 h-6' } });
-            }
-
-            updateMediaIcons(localUserId, isCameraOn, isMicOn, isScreensharing);
-            sendSignalingMessageToAll({ type: 'media_state', state: { video: isCameraOn, audio: isMicOn, screen: isScreensharing } });
+            // 更新按钮 UI
+            updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
+            updateButton(cameraBtn, isCameraOn, 'fas fa-video', 'fas fa-video-slash', '关闭摄像头', '打开摄像头');
+            updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
         }
 
-        // -------------------------------------------------------------------
-        // 4. WebRTC 信令与连接
-        // -------------------------------------------------------------------
 
-        /**
-         * 创建一个新的 RTCPeerConnection 并设置事件监听器
-         * @param {string} remoteUserId - 远端用户的 ID
-         * @returns {RTCPeerConnection}
-         */
-        function createPeerConnection(remoteUserId) {
-            const pc = new RTCPeerConnection(getIceServers());
-            peerConnections[remoteUserId] = pc;
+        // -----------------------------------------------------------
+        // 5. WebRTC 信令与连接
+        // -----------------------------------------------------------
 
-            // 监听 ICE 候选者 (Candidates)
-            pc.onicecandidate = (event) => {
+        /** 初始化 RTCPeerConnection */
+        function createPeerConnection(roomCode, isCreatorDevice) {
+            peerConnection = new RTCPeerConnection({ iceServers: STUN_SERVERS });
+            currentRoomCode = roomCode;
+            isCreator = isCreatorDevice;
+
+            logStatus(`创建 WebRTC 连接，身份: ${isCreator ? '会议主持' : '参会者'}。连接码: ${roomCode}`);
+            meetingTitle.textContent = `会议中：${roomCode}`;
+            createRoomBtn.disabled = true;
+            joinRoomBtn.disabled = true;
+            roomCodeInput.disabled = true;
+            controlsSection.style.display = 'block';
+
+            // 1. ICE 候选者发送
+            peerConnection.onicecandidate = async (event) => {
                 if (event.candidate) {
-                    sendSignalingMessage(remoteUserId, { type: 'candidate', candidate: event.candidate });
+                    const role = isCreator ? 'creator' : 'joiner';
+                    const candidatesRef = database.ref(`rooms/${roomCode}/${role}/iceCandidates`);
+                    await candidatesRef.push(event.candidate.toJSON());
+                    logStatus('发送 ICE 候选者...');
                 }
             };
 
-            // 监听远端流
-            pc.ontrack = (event) => {
-                if (event.streams && event.streams[0]) {
-                    const remoteVideo = createVideoElement(remoteUserId, false);
+            // 2. 远端流接收
+            peerConnection.ontrack = (event) => {
+                if (remoteVideo.srcObject !== event.streams[0]) {
                     remoteVideo.srcObject = event.streams[0];
-                    logStatus(`✅ 收到来自 ${remoteUserId.substring(remoteUserId.length - 4)} 的媒体流。`, 'text-green-600');
+                    remoteVideoCard.style.display = 'block';
+                    logStatus('✅ 接收到远端媒体流。');
                 }
             };
 
-            // 监听连接关闭
-            pc.oniceconnectionstatechange = () => {
-                if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'closed') {
-                    logStatus(`⚠️ 与 ${remoteUserId.substring(remoteUserId.length - 4)} 的连接状态: ${pc.iceConnectionState}`);
+            // 3. 连接状态变更
+            peerConnection.oniceconnectionstatechange = () => {
+                logStatus(`ICE 连接状态: ${peerConnection.iceConnectionState}`);
+                if (peerConnection.iceConnectionState === 'connected') {
+                    logStatus('🎉 P2P 连接建立成功！');
+                } else if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'closed') {
+                    logStatus('❌ P2P 连接断开或失败。');
                 }
             };
-
-            // 将本地流（摄像头/麦克风）添加到连接中
-            if (localStream) {
-                // 确保添加的是当前活动流（可能是 screenStream 的视频轨道）
-                const activeVideoTrack = isScreensharing && screenStream ? screenStream.getVideoTracks()[0] : (localStream.getVideoTracks().length > 0 ? localStream.getVideoTracks()[0] : null);
-                const audioTrack = localStream.getAudioTracks().length > 0 ? localStream.getAudioTracks()[0] : null;
-
-                if (activeVideoTrack) pc.addTrack(activeVideoTrack, localStream);
-                if (audioTrack) pc.addTrack(audioTrack, localStream);
-            }
-
-            logStatus(`🛠️ 已为用户 ${remoteUserId.substring(remoteUserId.length - 4)} 创建新的 PeerConnection。`);
-            return pc;
         }
 
-        /**
-         * 将信令消息 (Offer/Answer/Candidate/State) 发送到 Firestore
-         * @param {string} targetUserId - 目标用户ID
-         * @param {object} message - 信令消息
-         */
-        async function sendSignalingMessage(targetUserId, message) {
-            if (!db || !currentRoomCode || !doc || !setDoc) return;
-
-            // 路径: /artifacts/{appId}/public/data/rooms/{roomCode}/signals/{targetUserId}
-            const signalRef = doc(db, 'artifacts', appId, 'public/data/rooms', currentRoomCode, 'signals', targetUserId);
-
-            const payload = {
-                senderId: localUserId,
-                message: message,
-                timestamp: Date.now()
-            };
-
-            // 使用 set() 覆盖旧的信令，防止消息积压
-            await setDoc(signalRef, payload).catch(console.error);
-        }
-
-        /**
-         * 向所有已连接的 Peer 发送信令消息
-         * @param {object} message - 信令消息
-         */
-        function sendSignalingMessageToAll(message) {
-            Object.keys(peerConnections).forEach(remoteUserId => {
-                sendSignalingMessage(remoteUserId, message);
+        /** 监听远端信令 */
+        function listenForRemoteSignals(roomCode, remoteRole) {
+            // 监听 ICE 候选者
+            database.ref(`rooms/${roomCode}/${remoteRole}/iceCandidates`).on('child_added', (snapshot) => {
+                const candidate = snapshot.val();
+                if (candidate) {
+                    try {
+                        peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                    } catch (e) {
+                        logStatus(`❌ 添加 ICE 候选者失败: ${e.message}`);
+                    }
+                }
             });
         }
 
-
-        /**
-         * 监听远端用户发来的信令消息
-         */
-        function startSignalingListener() {
-            if (!db || !currentRoomCode || !doc || !onSnapshot || !deleteDoc) return;
-
-            // 监听我自己的信令文档
-            const signalRef = doc(db, 'artifacts', appId, 'public/data/rooms', currentRoomCode, 'signals', localUserId);
-
-            const unsubscribe = onSnapshot(signalRef, async (docSnap) => {
-                if (!docSnap.exists()) return;
-
-                const data = docSnap.data();
-                const senderId = data.senderId;
-                const message = data.message;
-
-                if (senderId === localUserId) return; // 忽略自己发送的消息
-
-                let pc = peerConnections[senderId];
-
-                switch (message.type) {
-                    case 'offer':
-                        if (!pc) {
-                            pc = createPeerConnection(senderId);
-                        }
-                        await pc.setRemoteDescription(new RTCSessionDescription(message.offer));
-                        const answer = await pc.createAnswer();
-                        await pc.setLocalDescription(answer);
-                        sendSignalingMessage(senderId, { type: 'answer', answer: pc.localDescription });
-                        break;
-
-                    case 'answer':
-                        if (pc && pc.remoteDescription === null) {
-                            await pc.setRemoteDescription(new RTCSessionDescription(message.answer));
-                        }
-                        break;
-
-                    case 'candidate':
-                        if (pc) {
-                            await pc.addIceCandidate(new RTCIceCandidate(message.candidate)).catch(e => {
-                                console.error('Error adding received ICE candidate:', e);
-                            });
-                        }
-                        break;
-
-                    case 'media_state':
-                        // 远端用户更新媒体状态
-                        const state = message.state;
-                        updateMediaIcons(senderId, state.video, state.audio, state.screen);
-                        break;
-
-                    case 'leave':
-                        // 远端用户主动发送的离开消息
-                        if (pc) {
-                            pc.close();
-                            delete peerConnections[senderId];
-                            document.getElementById(`wrapper-${senderId}`)?.remove();
-                            logStatus(`👋 用户 ${senderId.substring(senderId.length - 4)} 离开了会议。`);
-                            updateVideoLayout();
-                        }
-                        break;
-                }
-
-                // 处理完信令后，清除该信令，防止重复处理
-                deleteDoc(signalRef);
-            }, (error) => {
-                console.error("Firestore 信令监听错误:", error);
-            });
-            signalingUnsubscribers.push(unsubscribe);
-        }
-
-        /**
-         * 创建并发送 Offer
-         * @param {string} remoteUserId - 目标远端用户ID
-         */
-        async function createAndSendOffer(remoteUserId) {
-            const pc = createPeerConnection(remoteUserId);
-
+        /** 主持方创建 Offer */
+        async function createOffer(roomCode) {
             try {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                sendSignalingMessage(remoteUserId, { type: 'offer', offer: pc.localDescription });
-                logStatus(`✉️ 已向 ${remoteUserId.substring(remoteUserId.length - 4)} 发送 Offer。`);
-            } catch (e) {
-                console.error('Error creating or sending offer:', e);
-                logStatus(`❌ 无法向 ${remoteUserId.substring(remoteUserId.length - 4)} 发送 Offer: ${e.message}`, 'text-red-500');
-            }
-        }
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                await database.ref(`rooms/${roomCode}/creator/sdp`).set(peerConnection.localDescription.toJSON());
+                logStatus('✅ 发送 Offer 完成。等待参会者 Answer...');
 
-        /**
-         * 监听房间成员变化，并与新成员建立连接 (Mesh 拓扑)
-         */
-        function startRoomMemberListener() {
-            if (!db || !currentRoomCode || !collection || !onSnapshot) return;
-
-            // 监听房间成员集合 
-            const membersRef = collection(db, 'artifacts', appId, 'public/data/rooms', currentRoomCode, 'members');
-
-            const unsubscribe = onSnapshot(membersRef, (snapshot) => {
-                snapshot.docChanges().forEach(async (change) => {
-                    const remoteUserId = change.doc.id;
-
-                    if (remoteUserId === localUserId) return; // 忽略自己
-
-                    if (change.type === 'added') {
-                        // 新成员加入，通过 ID 字典序决定谁发起 Offer
-                        if (!peerConnections[remoteUserId]) {
-                            logStatus(`🔔 新用户 ${remoteUserId.substring(remoteUserId.length - 4)} 加入房间。`);
-
-                            // 规则：ID 字典序小的发起 Offer
-                            if (localUserId < remoteUserId) {
-                                await createAndSendOffer(remoteUserId);
-                            }
-                        }
-                    } else if (change.type === 'removed') {
-                        // 成员离开
-                        if (peerConnections[remoteUserId]) {
-                            peerConnections[remoteUserId].close();
-                            delete peerConnections[remoteUserId];
-                            document.getElementById(`wrapper-${remoteUserId}`)?.remove();
-                            logStatus(`👋 用户 ${remoteUserId.substring(remoteUserId.length - 4)} 离开了会议。`);
-                            updateVideoLayout();
-                        }
+                // 监听参会者的 Answer
+                database.ref(`rooms/${roomCode}/joiner/sdp`).once('value').then(async (snapshot) => {
+                    const answer = snapshot.val();
+                    if (answer && !peerConnection.currentRemoteDescription) {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                        logStatus('✅ 接收到 Answer，设置远端描述。');
+                        listenForRemoteSignals(roomCode, 'joiner');
                     }
                 });
-            }, (error) => {
-                console.error("Firestore 成员监听错误:", error);
-            });
-            signalingUnsubscribers.push(unsubscribe);
+            } catch (e) {
+                logStatus(`❌ 创建 Offer 失败: ${e.message}`);
+            }
         }
 
-        // -------------------------------------------------------------------
-        // 5. 房间管理
-        // -------------------------------------------------------------------
+        /** 参会方创建 Answer */
+        async function createAnswer(roomCode) {
+            try {
+                // 监听主持方的 Offer
+                database.ref(`rooms/${roomCode}/creator/sdp`).once('value').then(async (snapshot) => {
+                    const offer = snapshot.val();
+                    if (!offer) {
+                        logStatus(`❌ 房间 ${roomCode} 不存在 Offer。`);
+                        resetUI();
+                        return;
+                    }
 
-        /**
-         * 加入或创建房间
-         * @param {string} code - 房间码
-         */
-        async function joinRoom(code) {
-            if (!doc || !setDoc) {
-                logStatus('❌ Firebase 依赖未完全加载，无法加入房间。', 'text-red-500');
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                    logStatus('✅ 接收到 Offer，开始创建 Answer...');
+
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    await database.ref(`rooms/${roomCode}/joiner/sdp`).set(peerConnection.localDescription.toJSON());
+                    logStatus('✅ 发送 Answer 完成。');
+
+                    listenForRemoteSignals(roomCode, 'creator');
+                });
+            } catch (e) {
+                logStatus(`❌ 创建 Answer 失败: ${e.message}`);
+            }
+        }
+
+
+        // -----------------------------------------------------------
+        // 6. 事件监听器
+        // -----------------------------------------------------------
+
+        // 监听：创建房间
+        createRoomBtn.addEventListener('click', async () => {
+            const roomCode = generateRoomCode();
+            roomCodeInput.value = roomCode;
+
+            // 清理旧的房间数据
+            await database.ref(`rooms/${roomCode}`).remove();
+            logStatus(`正在初始化房间 ${roomCode} 的信令数据...`);
+
+            // 1. 初始化 WebRTC
+            createPeerConnection(roomCode, true);
+
+            // 2. 获取并添加初始媒体流 (默认只开麦克风)
+            await getLocalMedia(false, true);
+
+            // 3. 将本地流的轨道添加到 PeerConnection
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+            }
+
+            // 4. 发送 Offer
+            await createOffer(roomCode);
+        });
+
+        // 监听：加入房间
+        joinRoomBtn.addEventListener('click', async () => {
+            const roomCode = roomCodeInput.value.toUpperCase().trim();
+            if (roomCode.length !== 3) {
+                logStatus('❌ 会议码必须是三位大写字母。');
                 return;
             }
 
-            currentRoomCode = code;
+            // 1. 初始化 WebRTC
+            createPeerConnection(roomCode, false);
 
-            // 1. UI 切换
-            document.getElementById('setup-section').classList.add('hidden');
-            document.getElementById('conference-section').classList.remove('hidden');
-            roomDisplay.textContent = `会议码: ${code}`;
-            cleanRoomBtn.classList.remove('hidden');
+            // 2. 获取并添加初始媒体流 (默认只开麦克风)
+            await getLocalMedia(false, true);
 
-            // 2. 将自己添加到房间成员列表中
-            // 路径: /artifacts/{appId}/public/data/rooms/{code}/members/{localUserId}
-            const memberRef = doc(db, 'artifacts', appId, 'public/data/rooms', currentRoomCode, 'members', localUserId);
-            await setDoc(memberRef, { joinedAt: Date.now(), userId: localUserId });
-
-            // 3. 启动监听器
-            startSignalingListener();
-            startRoomMemberListener();
-
-            // 4. 默认开启摄像头和麦克风
-            isCameraOn = true;
-            isMicOn = true;
-
-            // 启用媒体轨道
-            if (localStream && localStream.getVideoTracks().length > 0) localStream.getVideoTracks()[0].enabled = true;
-            if (localStream && localStream.getAudioTracks().length > 0) localStream.getAudioTracks()[0].enabled = true;
-
-            // 更新按钮状态
-            toggleCameraBtn.classList.remove('is-off');
-            toggleMicBtn.classList.remove('is-off');
-            toggleScreenshareBtn.classList.remove('is-off');
-
-            // 修正: 确保按钮的 Lucide 图标状态正确
-            toggleCameraBtn.innerHTML = `<i data-lucide="video" class="w-6 h-6"></i>`;
-            toggleMicBtn.innerHTML = `<i data-lucide="mic" class="w-6 h-6"></i>`;
-            if (window.lucide) {
-                window.lucide.createIcons({ attrs: { class: 'w-6 h-6' } });
+            // 3. 将本地流的轨道添加到 PeerConnection
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
             }
 
-            updateMediaIcons(localUserId, true, true, false);
+            // 4. 发送 Answer
+            await createAnswer(roomCode);
+        });
 
-            // 5. 提醒用户
-            logStatus(`🎉 成功加入房间 ${code}，等待其他成员连接...`, 'text-indigo-600');
-
-            // 6. 注册 beforeunload 事件，确保离开时清理成员列表
-            window.addEventListener('beforeunload', leaveRoom);
-        }
-
-        /**
-         * 离开房间
-         */
-        function leaveRoom() {
+        // 监听：挂断
+        hangupBtn.addEventListener('click', () => {
             if (currentRoomCode) {
-                // 1. 向所有 Peer 发送离开信令
-                sendSignalingMessageToAll({ type: 'leave' });
-
-                // 2. 关闭所有 Peer Connections
-                Object.values(peerConnections).forEach(pc => pc.close());
-                peerConnections = {};
-
-                // 3. 停止本地媒体流
-                if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
-                }
-                if (screenStream) {
-                    screenStream.getTracks().forEach(track => track.stop());
-                }
-
-                // 4. 清理 Firestore 监听器
-                signalingUnsubscribers.forEach(unsubscribe => unsubscribe());
-                signalingUnsubscribers = [];
-
-                // 5. 清理 UI
-                // 修正: 使用正确的 videoGrid 变量
-                videoGrid.innerHTML = '';
-                videoGrid.setAttribute('data-count', 0);
-                document.getElementById('setup-section').classList.remove('hidden');
-                document.getElementById('conference-section').classList.add('hidden');
-                roomDisplay.textContent = '';
-                cleanRoomBtn.classList.add('hidden');
-                logStatus('会议已结束。', 'text-gray-600');
-
-                // 6. 从成员列表中移除自己
-                if (doc && deleteDoc) {
-                    const memberRef = doc(db, 'artifacts', appId, 'public/data/rooms', currentRoomCode, 'members', localUserId);
-                    deleteDoc(memberRef).catch(console.error);
-                }
-
-                currentRoomCode = null;
-                window.removeEventListener('beforeunload', leaveRoom);
+                // 清理 Firebase 数据
+                database.ref(`rooms/${currentRoomCode}`).remove();
             }
-        }
+            resetUI();
+        });
 
-        // -------------------------------------------------------------------
-        // 6. 初始化与事件监听器
-        // -------------------------------------------------------------------
+        // 监听：摄像头开关
+        cameraBtn.addEventListener('click', async () => {
+            isCameraOn = !isCameraOn;
+            await getLocalMedia(isCameraOn, isMicOn || isScreenSharing);
+        });
 
-        // 必须在 window.onload 之后才能确保 db 和 appId 被初始化
-        window.onload = async () => {
-            // 1. 初始化 Lucide Icons
-            if (window.lucide) {
-                window.lucide.createIcons();
-            }
-
-            // 2. 检查全局变量是否已设置
-            if (typeof window.db === 'undefined' || typeof window.appId === 'undefined') {
-                logStatus('❌ Firebase 配置缺失。请检查控制台，并确保在 script type="module" 中正确初始化了 Firebase。', 'text-red-600');
-                // 即使配置缺失，仍尝试获取媒体流以方便调试
-            }
-            // 重新赋值全局变量 (确保在 window.onload 中获取到)
-            db = window.db;
-            appId = window.appId;
-
-            // 3. 预先获取本地媒体流，并在 UI 中显示
-            try {
-                await getLocalMediaStream();
-                joinRoomBtn.disabled = false;
-            } catch (e) {
-                joinRoomBtn.disabled = true;
-                // 无法获取媒体流，禁用按钮，阻止加入会议
-            }
-
-            // --- 绑定事件 ---
-
-            roomCodeInput.addEventListener('input', () => {
-                const code = roomCodeInput.value.toUpperCase().trim();
-                roomCodeInput.value = code;
-                joinRoomBtn.disabled = code.length !== 3 || !localStream; // 必须有流才能加入
-            });
-
-            joinRoomBtn.addEventListener('click', async () => {
-                const code = roomCodeInput.value.toUpperCase().trim();
-                if (code.length === 3) {
-                    await joinRoom(code);
+        // 监听：麦克风开关
+        micBtn.addEventListener('click', async () => {
+            isMicOn = !isMicOn;
+            // 找到音频轨道并启用/禁用
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    audioTrack.enabled = isMicOn;
+                } else {
+                    // 如果流中没有音频，重新获取媒体流
+                    await getLocalMedia(isCameraOn, isMicOn);
                 }
-            });
+            } else {
+                await getLocalMedia(isCameraOn, isMicOn);
+            }
+            updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
+        });
 
-            toggleCameraBtn.addEventListener('click', toggleCamera);
-            toggleMicBtn.addEventListener('click', toggleMic);
-            toggleScreenshareBtn.addEventListener('click', toggleScreenshare);
-            leaveRoomBtn.addEventListener('click', leaveRoom);
-            cleanRoomBtn.addEventListener('click', () => {
-                if (currentRoomCode) cleanRoomData(currentRoomCode);
-            });
-        };
+        // 监听：屏幕共享
+        screenShareBtn.addEventListener('click', toggleScreenShare);
+
     </script>
 </body>
 
