@@ -102,6 +102,11 @@
           "name": "💬 夸克聊天室",
           "url": "chat",
           "target": "_blank"
+        },
+        {
+          "name": "📹 夸克会议",
+          "url": "a/meet",
+          "target": "_blank"
         }
       ]
     },

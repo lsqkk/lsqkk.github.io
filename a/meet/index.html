@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebRTC 会议 | 视频与屏幕共享</title>
     <link rel="stylesheet" href="nav.css">
-
+    <link rel="stylesheet" href="css/basic.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+    <script src="/js/nav.js"></script>
+    <script src="/js/disable-right-click.js"></script>
     <style>
         /* 1. 变量和基础样式 */
         :root {
@@ -31,11 +32,13 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             padding: 0;
             /* 使用与 nav.css 协调的半透明背景 */
-            background: rgba(122, 189, 154, 0.8);
+            background: url('/image/bg.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            background-attachment: fixed;
             /* 示例背景，您可以替换为 /image/bg.png */
             color: #333;
             transition: background-color 0.3s;
@@ -291,7 +294,7 @@
         <div class="meeting-container">
 
             <div class="control-card">
-                <h2>🌐 加入/创建会议</h2>
+                <h2>加入/创建会议</h2>
                 <div class="meeting-input-group">
                     <input type="text" id="room-code-input" class="meeting-input" placeholder="输入三位会议码 (如 XYZ)"
                         maxlength="3" style="text-transform: uppercase;">
@@ -300,10 +303,10 @@
                 </div>
 
                 <div id="controls-section" style="display: none;">
-                    <h2>🎙️ 设备控制</h2>
+                    <h2>设备控制</h2>
                     <div class="device-controls">
                         <button id="camera-btn" class="device-btn">
-                            <i class="fas fa-video"></i>
+                            <i class="fas fa-video-slash"></i>
                             <span>打开摄像头</span>
                         </button>
                         <button id="mic-btn" class="device-btn">
@@ -321,12 +324,13 @@
                     </div>
                 </div>
 
-                <h2>💬 状态日志</h2>
+                <h2>状态日志</h2>
                 <pre id="status-log" class="status-log">状态：未连接</pre>
             </div>
 
             <div class="video-display-area">
-                <h1 id="meeting-title" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">WebRTC 视频会议</h1>
+                <h1 id="meeting-title" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">夸克会议 Quark Meet
+                </h1>
                 <div class="video-player-container">
                     <div class="video-card" id="local-video-card">
                         <video id="local-video" autoplay muted playsinline></video>
@@ -373,6 +377,8 @@
         let localStream = null; // 包含摄像头/麦克风/屏幕的流
         let currentRoomCode = null;
         let isCreator = false;
+        let isInitialSetup = false; // 用于隔离首次 addTrack 逻辑
+        let isSignalingLocked = false; // 用于信令重协商锁
 
         // 媒体状态
         let isCameraOn = false;
@@ -440,6 +446,8 @@
             isCameraOn = false;
             isMicOn = false;
             isScreenSharing = false;
+            isSignalingLocked = false;
+
             updateButton(cameraBtn, isCameraOn, 'fas fa-video', 'fas fa-video-slash', '关闭摄像头', '打开摄像头');
             updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
             updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
@@ -458,16 +466,37 @@
 
 
         // -----------------------------------------------------------
-        // 4. 媒体流和轨道管理
+        // 4. 媒体流和轨道管理 
         // -----------------------------------------------------------
 
-        /** 获取并添加本地媒体流 (摄像头/麦克风) */
+        /** * 获取并更新本地媒体流 (摄像头/麦克风) */
         async function getLocalMedia(video = true, audio = true) {
+            if (!peerConnection && !isInitialSetup) {
+                logStatus('错误：PeerConnection 未初始化，无法获取媒体流。');
+                return;
+            }
+
+            if (!video && !audio && !isScreenSharing) {
+                // 如果所有都关闭，停止旧流
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                    localStream = null;
+                    localVideo.srcObject = null;
+                }
+                logStatus('本地媒体流已全部停止。');
+                isCameraOn = false;
+                isMicOn = false;
+                return;
+            }
+
+            // 如果是屏幕共享状态，则不应更改摄像头和麦克风流
+            if (isScreenSharing) return;
+
             try {
-                // 强制只获取一个新流，防止轨道混乱
+                // 1. 获取新流
                 const stream = await navigator.mediaDevices.getUserMedia({ video, audio });
 
-                // 如果已经有流在用，先停止它
+                // 2. 停止旧流的轨道（如果有）
                 if (localStream) {
                     localStream.getTracks().forEach(track => track.stop());
                 }
@@ -477,24 +506,28 @@
                 isCameraOn = video;
                 isMicOn = audio;
 
-                // **关键：替换所有发送器的轨道**
+                // 3. 替换 PeerConnection 中的轨道 (仅在连接建立后执行)
                 if (peerConnection) {
-                    // 移除旧轨道
-                    peerConnection.getSenders().forEach(sender => {
-                        peerConnection.removeTrack(sender);
+                    let shouldRenegotiate = false;
+
+                    stream.getTracks().forEach(track => {
+                        const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === track.kind);
+
+                        if (sender) {
+                            // 替换已存在的轨道
+                            sender.replaceTrack(track);
+                            logStatus(`✅ 替换 ${track.kind} 轨道成功。`);
+                        } else if (!isInitialSetup) {
+                            // 动态添加新轨道 (如从无视频到有视频)
+                            peerConnection.addTrack(track, localStream);
+                            shouldRenegotiate = true; // 新增轨道，需要重协商
+                            logStatus(`✅ 动态添加 ${track.kind} 轨道成功。`);
+                        }
                     });
 
-                    // 添加新轨道
-                    localStream.getTracks().forEach(track => {
-                        peerConnection.addTrack(track, localStream);
-                    });
-
-                    // 重新创建 Offer/Answer 来通知远端新轨道
-                    if (isCreator) {
+                    // 4. 通知远端更新 (只有在动态添加新轨道时才需要重协商)
+                    if (shouldRenegotiate && isCreator) {
                         await createOffer(currentRoomCode);
-                    } else {
-                        // 接收方通常需要等待发送方重新发送 offer
-                        logStatus("发送方请稍候重新创建 Offer...");
                     }
                 }
 
@@ -508,60 +541,79 @@
                 // 无论成功失败，都更新按钮状态
                 updateButton(cameraBtn, isCameraOn, 'fas fa-video', 'fas fa-video-slash', '关闭摄像头', '打开摄像头');
                 updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
-                isScreenSharing = false; // 屏幕共享状态重置
                 updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
             }
         }
 
         /** 切换屏幕共享 */
         async function toggleScreenShare() {
+            if (!peerConnection) {
+                logStatus('请先加入会议才能共享屏幕。');
+                return;
+            }
             if (isScreenSharing) {
                 // 停止屏幕共享，恢复摄像头/麦克风
                 logStatus('停止屏幕共享，恢复摄像头/麦克风...');
-                await getLocalMedia(isCameraOn, isMicOn); // 恢复之前的状态
                 isScreenSharing = false;
+                // 恢复到之前的媒体状态 (isCameraOn, isMicOn)
+                await getLocalMedia(isCameraOn, isMicOn);
             } else {
                 // 开始屏幕共享
                 try {
-                    // 获取屏幕共享流
+                    // 1. 获取屏幕共享流
                     const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
 
-                    // 停止旧流的轨道
+                    // 2. 停止旧流的轨道
                     if (localStream) {
                         localStream.getTracks().forEach(track => track.stop());
                     }
                     localStream = screenStream;
                     localVideo.srcObject = localStream;
+                    isScreenSharing = true;
+                    isCameraOn = false;
+                    isMicOn = localStream.getAudioTracks().length > 0; // 屏幕流可能有系统声音
 
-                    // 替换发送器中的视频和音频轨道
+                    // 3. 替换 PeerConnection 中的轨道 (修复: 确保 sender.track 存在)
                     peerConnection.getSenders().forEach(sender => {
-                        const track = localStream.getTracks().find(t => t.kind === sender.track.kind);
-                        if (track) {
-                            sender.replaceTrack(track);
-                        } else {
-                            // 如果屏幕共享没有音频，但旧流有音频，则移除旧音频轨道
-                            if (sender.track && sender.track.kind === 'audio') {
-                                peerConnection.removeTrack(sender);
-                            }
+                        // FIX: 确保 sender.track 存在，否则跳过，避免 Cannot read properties of null 错误
+                        if (!sender.track) return;
+
+                        let trackToReplace = null;
+                        if (sender.track.kind === 'video') {
+                            // 尝试从新的屏幕共享流中获取视频轨道
+                            trackToReplace = localStream.getVideoTracks()[0] || null;
+                        } else if (sender.track.kind === 'audio') {
+                            // 尝试从新的屏幕共享流中获取音频轨道
+                            trackToReplace = localStream.getAudioTracks()[0] || null;
                         }
+
+                        // 如果找到了对应的轨道，或者 trackToReplace 为 null (表示停止发送该类型媒体)
+                        sender.replaceTrack(trackToReplace);
                     });
 
-                    // 监听屏幕共享结束事件 (如用户点击浏览器停止按钮)
+                    // 4. 监听屏幕共享结束事件 (如用户点击浏览器停止按钮)
                     screenStream.getVideoTracks()[0].onended = () => {
                         logStatus('屏幕共享已通过浏览器控件停止。');
-                        // 恢复到摄像头/麦克风状态
-                        toggleScreenShare(); // 自动调用停止逻辑
+                        if (isScreenSharing) { // 避免重复触发
+                            toggleScreenShare();
+                        }
                     };
 
                     logStatus('✅ 屏幕共享已开始。');
-                    isScreenSharing = true;
-                    isCameraOn = false; // 共享屏幕时，摄像头状态视为关闭
+
+                    // 5. 通知远端更新 
+                    if (isCreator) {
+                        await createOffer(currentRoomCode);
+                    }
                 } catch (err) {
-                    logStatus(`❌ 屏幕共享失败: ${err.message}`);
+                    logStatus(`❌ 屏幕共享失败: ${err.name}: ${err.message}`);
                     isScreenSharing = false;
+                    // 如果获取失败，需要恢复按钮状态
+                    updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
+                    return;
                 }
             }
-            // 更新按钮 UI
+            // 6. 更新按钮 UI
             updateButton(screenShareBtn, isScreenSharing, 'fas fa-desktop', 'fas fa-desktop', '停止共享', '共享屏幕');
             updateButton(cameraBtn, isCameraOn, 'fas fa-video', 'fas fa-video-slash', '关闭摄像头', '打开摄像头');
             updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
@@ -569,7 +621,7 @@
 
 
         // -----------------------------------------------------------
-        // 5. WebRTC 信令与连接
+        // 5. WebRTC 信令与连接 (移除 onnegotiationneeded 监听)
         // -----------------------------------------------------------
 
         /** 初始化 RTCPeerConnection */
@@ -577,6 +629,7 @@
             peerConnection = new RTCPeerConnection({ iceServers: STUN_SERVERS });
             currentRoomCode = roomCode;
             isCreator = isCreatorDevice;
+            isSignalingLocked = false; // 重置锁
 
             logStatus(`创建 WebRTC 连接，身份: ${isCreator ? '会议主持' : '参会者'}。连接码: ${roomCode}`);
             meetingTitle.textContent = `会议中：${roomCode}`;
@@ -613,6 +666,8 @@
                     logStatus('❌ P2P 连接断开或失败。');
                 }
             };
+
+            // 4. onnegotiationneeded 事件：已移除，由显式调用 createOffer 控制信令流。
         }
 
         /** 监听远端信令 */
@@ -622,7 +677,9 @@
                 const candidate = snapshot.val();
                 if (candidate) {
                     try {
-                        peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                        if (peerConnection && peerConnection.signalingState !== 'closed') {
+                            peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                        }
                     } catch (e) {
                         logStatus(`❌ 添加 ICE 候选者失败: ${e.message}`);
                     }
@@ -632,6 +689,13 @@
 
         /** 主持方创建 Offer */
         async function createOffer(roomCode) {
+            if (!peerConnection || isSignalingLocked) {
+                logStatus('⚠️ 忽略 Offer 请求，信令被锁定或 PeerConnection 未就绪。');
+                return;
+            }
+
+            isSignalingLocked = true; // 锁定信令
+
             try {
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
@@ -639,44 +703,76 @@
                 logStatus('✅ 发送 Offer 完成。等待参会者 Answer...');
 
                 // 监听参会者的 Answer
-                database.ref(`rooms/${roomCode}/joiner/sdp`).once('value').then(async (snapshot) => {
+                database.ref(`rooms/${roomCode}/joiner/sdp`).off('value');
+                database.ref(`rooms/${roomCode}/joiner/sdp`).on('value', async (snapshot) => {
                     const answer = snapshot.val();
-                    if (answer && !peerConnection.currentRemoteDescription) {
-                        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-                        logStatus('✅ 接收到 Answer，设置远端描述。');
-                        listenForRemoteSignals(roomCode, 'joiner');
+                    if (answer && peerConnection.remoteDescription?.sdp !== answer.sdp) {
+
+                        if (peerConnection.signalingState === 'stable' || peerConnection.signalingState === 'have-local-offer') {
+                            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                            logStatus('✅ 接收到 Answer，设置远端描述。');
+                            listenForRemoteSignals(roomCode, 'joiner');
+                        } else {
+                            logStatus(`⚠️ 收到 Answer，但 PeerConnection 状态为 ${peerConnection.signalingState}，暂缓设置。`);
+                        }
+                        isSignalingLocked = false; // 成功设置或收到 Answer 即解锁
                     }
                 });
             } catch (e) {
                 logStatus(`❌ 创建 Offer 失败: ${e.message}`);
+                isSignalingLocked = false; // 失败后解锁
             }
         }
 
         /** 参会方创建 Answer */
         async function createAnswer(roomCode) {
-            try {
-                // 监听主持方的 Offer
-                database.ref(`rooms/${roomCode}/creator/sdp`).once('value').then(async (snapshot) => {
-                    const offer = snapshot.val();
-                    if (!offer) {
-                        logStatus(`❌ 房间 ${roomCode} 不存在 Offer。`);
-                        resetUI();
-                        return;
-                    }
-
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-                    logStatus('✅ 接收到 Offer，开始创建 Answer...');
-
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    await database.ref(`rooms/${roomCode}/joiner/sdp`).set(peerConnection.localDescription.toJSON());
-                    logStatus('✅ 发送 Answer 完成。');
-
-                    listenForRemoteSignals(roomCode, 'creator');
-                });
-            } catch (e) {
-                logStatus(`❌ 创建 Answer 失败: ${e.message}`);
+            if (!peerConnection) {
+                logStatus('⚠️ PeerConnection 未就绪，无法启动 Answer 流程。');
+                return;
             }
+
+            // 监听主持方的 Offer
+            database.ref(`rooms/${roomCode}/creator/sdp`).off('value');
+            database.ref(`rooms/${roomCode}/creator/sdp`).on('value', async (snapshot) => {
+                const offer = snapshot.val();
+                if (!offer) {
+                    logStatus(`❌ 房间 ${roomCode} 不存在 Offer。请创建者先生成。`);
+                    return;
+                }
+
+                // 忽略重复的 Offer
+                if (peerConnection.remoteDescription?.sdp === offer.sdp) {
+                    return;
+                }
+
+                // 收到新 Offer，尝试锁定信令
+                if (isSignalingLocked) {
+                    logStatus('⚠️ 收到新 Offer，但信令已锁定，暂缓处理。');
+                    return;
+                }
+                isSignalingLocked = true;
+
+                try {
+                    // 检查状态，防止 InvalidStateError
+                    if (peerConnection.signalingState === 'stable' || peerConnection.signalingState === 'have-remote-offer') {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                        logStatus('✅ 接收到 Offer，开始创建 Answer...');
+
+                        const answer = await peerConnection.createAnswer();
+                        await peerConnection.setLocalDescription(answer);
+                        await database.ref(`rooms/${roomCode}/joiner/sdp`).set(peerConnection.localDescription.toJSON());
+                        logStatus('✅ 发送 Answer 完成。');
+
+                        listenForRemoteSignals(roomCode, 'creator');
+                    } else {
+                        logStatus(`⚠️ 收到 Offer，但 PeerConnection 状态为 ${peerConnection.signalingState}，暂缓设置。`);
+                    }
+                } catch (e) {
+                    logStatus(`❌ 创建 Answer 失败: ${e.message}`);
+                } finally {
+                    isSignalingLocked = false; // 解锁信令
+                }
+            });
         }
 
 
@@ -689,24 +785,24 @@
             const roomCode = generateRoomCode();
             roomCodeInput.value = roomCode;
 
-            // 清理旧的房间数据
             await database.ref(`rooms/${roomCode}`).remove();
             logStatus(`正在初始化房间 ${roomCode} 的信令数据...`);
 
             // 1. 初始化 WebRTC
             createPeerConnection(roomCode, true);
 
-            // 2. 获取并添加初始媒体流 (默认只开麦克风)
-            await getLocalMedia(false, true);
+            // 2. 首次添加轨道 (使用 isInitialSetup 确保只执行一次)
+            isInitialSetup = true;
+            await getLocalMedia(false, true); // 获取初始流 (默认麦克风)
 
-            // 3. 将本地流的轨道添加到 PeerConnection
             if (localStream) {
                 localStream.getTracks().forEach(track => {
                     peerConnection.addTrack(track, localStream);
                 });
             }
+            isInitialSetup = false;
 
-            // 4. 发送 Offer
+            // 3. 发送 Offer
             await createOffer(roomCode);
         });
 
@@ -721,24 +817,25 @@
             // 1. 初始化 WebRTC
             createPeerConnection(roomCode, false);
 
-            // 2. 获取并添加初始媒体流 (默认只开麦克风)
-            await getLocalMedia(false, true);
+            // 2. 首次添加轨道 (使用 isInitialSetup 确保只执行一次)
+            isInitialSetup = true;
+            await getLocalMedia(false, true); // 获取初始流 (默认麦克风)
 
-            // 3. 将本地流的轨道添加到 PeerConnection
             if (localStream) {
                 localStream.getTracks().forEach(track => {
                     peerConnection.addTrack(track, localStream);
                 });
             }
+            isInitialSetup = false;
 
-            // 4. 发送 Answer
+            // 3. 监听 Offer 并发送 Answer
             await createAnswer(roomCode);
         });
 
         // 监听：挂断
         hangupBtn.addEventListener('click', () => {
             if (currentRoomCode) {
-                // 清理 Firebase 数据
+                database.ref(`rooms/${currentRoomCode}`).off(); // 移除所有监听
                 database.ref(`rooms/${currentRoomCode}`).remove();
             }
             resetUI();
@@ -746,26 +843,22 @@
 
         // 监听：摄像头开关
         cameraBtn.addEventListener('click', async () => {
+            if (isScreenSharing) {
+                logStatus('请先停止屏幕共享再操作摄像头。');
+                return;
+            }
             isCameraOn = !isCameraOn;
-            await getLocalMedia(isCameraOn, isMicOn || isScreenSharing);
+            await getLocalMedia(isCameraOn, isMicOn);
         });
 
         // 监听：麦克风开关
         micBtn.addEventListener('click', async () => {
-            isMicOn = !isMicOn;
-            // 找到音频轨道并启用/禁用
-            if (localStream) {
-                const audioTrack = localStream.getAudioTracks()[0];
-                if (audioTrack) {
-                    audioTrack.enabled = isMicOn;
-                } else {
-                    // 如果流中没有音频，重新获取媒体流
-                    await getLocalMedia(isCameraOn, isMicOn);
-                }
-            } else {
-                await getLocalMedia(isCameraOn, isMicOn);
+            if (isScreenSharing) {
+                logStatus('请先停止屏幕共享再操作麦克风。');
+                return;
             }
-            updateButton(micBtn, isMicOn, 'fas fa-microphone', 'fas fa-microphone-slash', '静音', '启用麦克风');
+            isMicOn = !isMicOn;
+            await getLocalMedia(isCameraOn, isMicOn);
         });
 
         // 监听：屏幕共享
