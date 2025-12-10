@@ -109,7 +109,7 @@ function performSearch(searchTerm) {
             const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item';
             resultItem.innerHTML = `
-                <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
+                <a class="post-title" href="/posts/${post.file.replace('.md', '')}">${post.title}</a>
                 <div class="post-date">${post.date}</div>
                 <div class="post-tags">
                     <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
@@ -197,7 +197,7 @@ function renderPosts() {
 
         return `
                 <div class="post-item">
-                    <a class="post-title" href="post.html?file=${post.file}">${post.title}</a>
+                    <a class="post-title" href="/posts/${post.file.replace('.md', '')}">${post.title}</a>
                     <div class="post-date">${post.date}</div>
                     <div class="post-tags">
                         <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>

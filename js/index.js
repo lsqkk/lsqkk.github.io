@@ -23,7 +23,7 @@ async function loadRecentPosts() {
 
     const list = recentPosts.map(post => `
                 <div class="post-item" style="transition: all 0.3s ease;">
-                    <a class="post-title" href="post.html?file=${post.file}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
+                    <a class="post-title" href=\"/posts/${post.file.replace('.md', '')}\" style="color: #0366d6; text-decoration: none; font-weight: 500;">
                         ${post.title}
                     </a>
                     <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
