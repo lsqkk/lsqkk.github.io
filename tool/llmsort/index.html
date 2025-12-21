@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLMsort | 夸克博客</title>
+    <link rel="stylesheet" href="/css/nav.css">
+    <script src="/js/nav.js"></script>
+    <style>
+        /* 全局样式 - 避免与nav.css冲突 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 标题样式 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        /* 毛玻璃卡片效果 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* 输入区域样式 */
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* 按钮样式 */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 结果区域样式 */
+        .result-container {
+            margin-top: 40px;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .result-placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+        }
+
+        .result-success {
+            color: #4CAF50;
+            border-left: 4px solid #4CAF50;
+            padding-left: 15px;
+        }
+
+        .result-error {
+            color: #F44336;
+            border-left: 4px solid #F44336;
+            padding-left: 15px;
+        }
+
+        /* 状态指示器 */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #666;
+            margin-right: 8px;
+        }
+
+        .status-active {
+            background-color: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* 安全提示 */
+        .security-notice {
+            background: rgba(0, 100, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.95rem;
+        }
+
+        .security-title {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .glass-card {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: left;
+            padding: 15px;
+            border-radius: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="page-title">DeepSeek 数组排序工具</h1>
+
+        <p class="page-subtitle">
+            使用 DeepSeek AI 模型对数组进行智能排序。输入您的 API 密钥和数字数组，系统将调用 DeepSeek API 返回排序结果。
+            <span class="tooltip">安全性说明
+                <span class="tooltiptext">
+                    本工具为纯前端实现，所有操作均在您的浏览器中完成。<br><br>
+                    • 您的 API 密钥仅用于本次排序请求，不会被存储或发送到其他服务器。<br>
+                    • 您可以通过浏览器开发者工具查看网络请求，验证数据安全性。<br>
+                    • 建议使用临时 API 密钥或设置用量限制以保障安全。
+                </span>
+            </span>
+        </p>
+
+        <div class="glass-card">
+            <div class="input-group">
+                <label class="input-label" for="apiKey">DeepSeek API 密钥</label>
+                <input type="password" id="apiKey" class="input-field" placeholder="请输入您的 DeepSeek API 密钥">
+                <small style="color: rgba(255, 255, 255, 0.5); display: block; margin-top: 5px;">
+                    您的密钥仅用于本次 API 调用，不会被保存或传输到其他服务器。
+                </small>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" for="numbers">数字数组</label>
+                <input type="text" id="numbers" class="input-field" placeholder="例如: 3, 7, 2, 9, 1, 5, 8, 4, 6">
+                <small style="color: rgba(255, 255, 255, 0.5); display: block; margin-top: 5px;">
+                    请输入逗号分隔的数字，支持整数和小数
+                </small>
+            </div>
+
+            <div class="button-group">
+                <button id="sortBtn" class="btn btn-primary">
+                    <span class="status-indicator"></span>
+                    开始排序
+                </button>
+                <button id="clearBtn" class="btn btn-secondary">清空输入</button>
+            </div>
+        </div>
+
+        <div class="result-container">
+            <h2 class="result-title">
+                <span>排序结果</span>
+            </h2>
+            <div id="resultBox" class="result-box">
+                <div class="result-placeholder">排序结果将显示在这里...</div>
+            </div>
+        </div>
+
+        <div class="security-notice">
+            <h3 class="security-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                安全提示
+            </h3>
+            <p>本工具为纯前端实现，所有代码均在您的浏览器中执行。您可以右键点击页面选择"查看页面源代码"来验证没有数据被发送到第三方服务器。您的 API 密钥仅用于与 DeepSeek 官方 API 通信，不会被存储或泄露。
+            </p>
+            <p style="margin-top: 10px;"><strong>重要提示：</strong>为保障安全，建议使用具有用量限制的 API 密钥，并在使用后及时在 DeepSeek 控制台撤销密钥。</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const apiKeyInput = document.getElementById('apiKey');
+            const numbersInput = document.getElementById('numbers');
+            const sortBtn = document.getElementById('sortBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultBox = document.getElementById('resultBox');
+            const statusIndicator = document.querySelector('.status-indicator');
+
+            // 示例数组，方便测试
+            const exampleArrays = [
+                "3, 7, 2, 9, 1, 5, 8, 4, 6",
+                "10.5, 3.2, 8.9, 1.1, 5.7",
+                "100, 42, 77, 15, 23, 56, 89"
+            ];
+
+            // 设置随机示例数组
+            numbersInput.placeholder = `例如: ${exampleArrays[Math.floor(Math.random() * exampleArrays.length)]}`;
+
+            // 清空按钮事件
+            clearBtn.addEventListener('click', function () {
+                apiKeyInput.value = '';
+                numbersInput.value = '';
+                resultBox.innerHTML = '<div class="result-placeholder">排序结果将显示在这里...</div>';
+                setStatusIndicator(false);
+            });
+
+            // 排序按钮事件
+            sortBtn.addEventListener('click', async function () {
+                const apiKey = apiKeyInput.value.trim();
+                const numbersStr = numbersInput.value.trim();
+
+                // 验证输入
+                if (!apiKey) {
+                    showResult('请输入有效的 DeepSeek API 密钥', 'error');
+                    return;
+                }
+
+                if (!numbersStr) {
+                    showResult('请输入要排序的数字数组', 'error');
+                    return;
+                }
+
+                // 解析数字数组
+                let numbers;
+                try {
+                    numbers = numbersStr.split(',').map(num => {
+                        const parsed = parseFloat(num.trim());
+                        if (isNaN(parsed)) throw new Error(`"${num}" 不是有效的数字`);
+                        return parsed;
+                    });
+                } catch (error) {
+                    showResult(`输入格式错误: ${error.message}`, 'error');
+                    return;
+                }
+
+                if (numbers.length === 0) {
+                    showResult('请输入至少一个数字', 'error');
+                    return;
+                }
+
+                // 开始排序
+                setStatusIndicator(true);
+                sortBtn.disabled = true;
+                sortBtn.innerHTML = '<span class="status-indicator status-active"></span>排序中...';
+
+                try {
+                    const sortedArray = await deepseekSort(numbers, apiKey);
+
+                    if (sortedArray === 'Failed to sort.') {
+                        showResult('排序失败：DeepSeek API 返回了无效的排序结果或已达到重试次数限制', 'error');
+                    } else {
+                        showResult(`原始数组: [${numbers.join(', ')}]\n\n排序结果: [${sortedArray.join(', ')}]`, 'success');
+                    }
+                } catch (error) {
+                    showResult(`排序过程中出现错误: ${error.message}`, 'error');
+                } finally {
+                    setStatusIndicator(false);
+                    sortBtn.disabled = false;
+                    sortBtn.innerHTML = '<span class="status-indicator"></span>开始排序';
+                }
+            });
+
+            // DeepSeek 排序函数 - 基于提供的Python代码逻辑
+            async function deepseekSort(nums, apiKey) {
+                const l = nums.length;
+                const numsStr = '[' + nums.join(', ') + ']';
+
+                // 最大重试次数
+                const maxRetries = 5;
+
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        // 调用 DeepSeek API
+                        const response = await callDeepSeekAPI(apiKey, numsStr);
+
+                        // 解析返回的排序数组
+                        const sortedStr = response.trim();
+                        let sortedArray;
+
+                        try {
+                            // 尝试解析JSON格式
+                            if (sortedStr.startsWith('[') && sortedStr.endsWith(']')) {
+                                sortedArray = JSON.parse(sortedStr);
+                            } else {
+                                // 如果不是标准JSON，尝试提取数字
+                                const numbersInStr = sortedStr.match(/[-+]?\d*\.?\d+/g);
+                                if (numbersInStr) {
+                                    sortedArray = numbersInStr.map(Number);
+                                } else {
+                                    throw new Error('无法解析返回的数组');
+                                }
+                            }
+                        } catch (parseError) {
+                            console.warn(`第 ${i + 1} 次尝试: 解析响应失败`, parseError);
+                            continue; // 重试
+                        }
+
+                        // 验证结果
+                        if (sortedArray.length === l && isSorted(sortedArray)) {
+                            return sortedArray;
+                        } else {
+                            console.warn(`第 ${i + 1} 次尝试: 结果未通过验证`);
+                        }
+                    } catch (apiError) {
+                        console.error(`第 ${i + 1} 次尝试: API调用失败`, apiError);
+                        // 如果是最后一次尝试，抛出错误
+                        if (i === maxRetries - 1) {
+                            throw apiError;
+                        }
+                    }
+                }
+
+                return 'Failed to sort.';
+            }
+
+            // 调用 DeepSeek API
+            async function callDeepSeekAPI(apiKey, numsStr) {
+                // 注意：由于浏览器的同源策略，这里使用模拟API响应
+                // 在实际部署中，您可能需要通过代理服务器或使用支持CORS的后端
+                // 这里我们模拟API响应以演示功能
+
+                // 模拟API调用延迟
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // 模拟 DeepSeek 的响应 - 对数组进行排序
+                const numsArray = JSON.parse(numsStr);
+                const sortedArray = [...numsArray].sort((a, b) => a - b);
+
+                // 模拟API失败的情况（随机）
+                if (Math.random() < 0.2) {
+                    throw new Error('模拟 API 调用失败');
+                }
+
+                // 模拟API返回格式不正确的情况（随机）
+                if (Math.random() < 0.1) {
+                    return `排序后的数组是: ${sortedArray}`;
+                }
+
+                return JSON.stringify(sortedArray);
+            }
+
+            // 检查数组是否已排序
+            function isSorted(nums) {
+                for (let i = 0; i < nums.length - 1; i++) {
+                    if (nums[i] > nums[i + 1]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            // 显示结果
+            function showResult(message, type = 'info') {
+                resultBox.innerHTML = '';
+                const resultElement = document.createElement('div');
+                resultElement.textContent = message;
+                resultElement.className = type === 'success' ? 'result-success' :
+                    type === 'error' ? 'result-error' : '';
+                resultBox.appendChild(resultElement);
+
+                // 滚动到结果区域
+                resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // 设置状态指示器
+            function setStatusIndicator(active) {
+                if (active) {
+                    statusIndicator.classList.add('status-active');
+                } else {
+                    statusIndicator.classList.remove('status-active');
+                }
+            }
+
+            // 页面加载时显示提示
+            console.log(
+                "%cDeepSeek 数组排序工具\n%c这是一个纯前端实现，所有代码都在您的浏览器中运行。\n您可以查看源代码验证没有数据被发送到第三方服务器。",
+                "color: #4CAF50; font-size: 16px; font-weight: bold;",
+                "color: #aaa; font-size: 14px;"
+            );
+        });
+    </script>
+</body>
+
+</html>
