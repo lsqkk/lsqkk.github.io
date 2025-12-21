@@ -513,30 +513,45 @@
                 return 'Failed to sort.';
             }
 
-            // 调用 DeepSeek API
+            // 调用 DeepSeek API - 真实调用
             async function callDeepSeekAPI(apiKey, numsStr) {
-                // 注意：由于浏览器的同源策略，这里使用模拟API响应
-                // 在实际部署中，您可能需要通过代理服务器或使用支持CORS的后端
-                // 这里我们模拟API响应以演示功能
+                // 使用 DeepSeek 官方 API 端点
+                const apiUrl = "https://api.deepseek.com/v1/chat/completions";
 
-                // 模拟API调用延迟
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You will be given an array. Sort the elements in the array from smallest to largest, where each preceding element is less than or equal to the next. Do not delete or add any elements. Only output the array!!!"
+                            },
+                            {
+                                role: "user",
+                                content: numsStr
+                            }
+                        ],
+                        stream: false
+                    })
+                });
 
-                // 模拟 DeepSeek 的响应 - 对数组进行排序
-                const numsArray = JSON.parse(numsStr);
-                const sortedArray = [...numsArray].sort((a, b) => a - b);
-
-                // 模拟API失败的情况（随机）
-                if (Math.random() < 0.2) {
-                    throw new Error('模拟 API 调用失败');
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`API 请求失败: ${response.status} ${response.statusText} - ${errorData.error?.message || '未知错误'}`);
                 }
 
-                // 模拟API返回格式不正确的情况（随机）
-                if (Math.random() < 0.1) {
-                    return `排序后的数组是: ${sortedArray}`;
+                const data = await response.json();
+
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error('API 返回格式无效');
                 }
 
-                return JSON.stringify(sortedArray);
+                return data.choices[0].message.content;
             }
 
             // 检查数组是否已排序
@@ -571,9 +586,9 @@
                 }
             }
 
-            // 页面加载时显示提示
+            // 页面加载时显示安全提示
             console.log(
-                "%cDeepSeek 数组排序工具\n%c这是一个纯前端实现，所有代码都在您的浏览器中运行。\n您可以查看源代码验证没有数据被发送到第三方服务器。",
+                "%cDeepSeek 数组排序工具\n%c这是一个纯前端实现，所有代码都在您的浏览器中运行。\n您的 API 密钥仅用于本次 DeepSeek API 调用，不会被存储或发送到其他服务器。\n您可以查看源代码验证安全性。",
                 "color: #4CAF50; font-size: 16px; font-weight: bold;",
                 "color: #aaa; font-size: 14px;"
             );
