@@ -725,23 +725,18 @@
         <!-- 页脚 -->
         <div class="footer">
             <p>
-                本工具使用纯前端技术实现，基于
-                <a href="https://github.com/timdream/wordcloud2.js" target="_blank" class="code-link">wordcloud2.js</a>
+                本工具使用纯前端技术实现，
                 和原生JavaScript。
             </p>
             <p style="margin-top: 10px;">
-                纯前端·数据隐私安全·
-                <a href="#" onclick="showSourceCode(); return false;" class="code-link">查看源码验证</a>
-            </p>
-            <p>
-                如您觉得本工具还不错，可以收藏此页并前往
-                <a href="https://github.com/lsqkk/chat-analyzer" target="_blank" class="code-link">本项目仓库</a>给个 star ~
-                和原生JavaScript。
+                基于
+                <a href="https://github.com/timdream/wordcloud2.js" target="_blank"
+                    class="code-link">wordcloud2.js</a>·纯前端·
+                <a href="https://github.com/lsqkk/chat-analyzer" target="_blank" class="code-link">项目仓库(欢迎star)</a>
             </p>
             <p>
                 © 2025
                 <a href="https://lsqkk.github.io" target="_blank" class="code-link">夸克博客</a> All rights reserved.
-                和原生JavaScript。
             </p>
 
             <!-- 引入wordcloud2.js库 -->
@@ -787,10 +782,6 @@
                     defaultStopwords.forEach(word => stopwords.add(word));
                 }
 
-                // 显示源码验证
-                function showSourceCode() {
-                    alert('您可以右键点击页面，选择"查看页面源代码"来验证本工具的实现。\n\n所有代码都在这个HTML文件中，没有外部API调用，确保您的数据安全。');
-                }
 
                 // 文件上传处理
                 document.addEventListener('DOMContentLoaded', function () {
