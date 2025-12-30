@@ -2,64 +2,91 @@
 <html lang="zh-CN">
 
 <head>
-  <link rel="stylesheet" href="/assets/css/basic.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/assets/css/ds.css">
-  <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-  <link rel="stylesheet" href="/assets/css/cursor.css">
-  <script src="/assets/js/cursor-trail.js"></script>
-  <title>DeepSeek - 夸克博客</title>
+  <title>DeepSeek Professional</title>
+  <link rel="stylesheet" href="ds.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
 
 <body>
   <div id="main-container">
-    <!-- 左侧栏 -->
     <div id="sidebar">
-      <button id="sidebar-toggle">≡</button>
       <div id="sidebar-header">
-        <h2>会话管理</h2>
-        <button id="theme-toggle">🌓</button>
+        <span class="brand-text">HISTORY</span>
+        <button id="theme-toggle" class="icon-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path fill="currentColor" d="M12 3V4.35A7.65 7.65 0 1 0 19.65 12H21A9 9 0 1 1 12 3z" />
+          </svg>
+        </button>
       </div>
       <div id="history-list"></div>
-      <button id="new-chat-btn">新建会话</button>
+      <div id="sidebar-footer">
+        <button id="new-chat-btn">NEW CHAT</button>
+        <button id="settings-btn" class="secondary-btn">SETTINGS</button>
+      </div>
     </div>
 
-    <!-- 右侧主内容区 -->
     <div id="chat-container">
       <div id="chat-header">
-        <div id="chat-title">新会话</div>
+        <button id="sidebar-toggle" class="icon-btn">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+          </svg>
+        </button>
+        <div id="chat-title">NEW CHAT</div>
         <div id="model-controls">
+          <div class="model-info">DEEPSEEK REASONER</div>
           <button class="model-toggle" id="model-toggle">
-            <span>深度思考</span>
+            <div class="toggle-slider"></div>
           </button>
         </div>
       </div>
 
       <div id="chat-history">
-        <div class="bot-msg">你好！我是 DeepSeek，请问有什么可以帮您？</div>
+        <div class="bot-msg">
+          <div class="markdown-content">您好！请在设置中配置 API Key 后开始对话。</div>
+        </div>
       </div>
 
       <div id="input-area">
         <div class="drop-area" id="drop-area">
-          <p>拖放文件到这里或点击下方按钮选择</p>
-          <p>支持图片(png/jpg)、文本(txt/md)文件</p>
+          <p>释放以上传文本文件 (.txt, .md)</p>
         </div>
         <div id="input-controls">
-          <button id="file-btn">📎 附件</button>
-          <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.txt,.md" multiple>
-          <textarea id="user-input" placeholder="输入你的问题..." rows="1"></textarea>
-          <button id="send-btn" onclick="sendMessage()">发送</button>
+          <button id="file-btn" class="icon-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor"
+                d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.31 2.69 6 6 6s6-2.69 6-6V6h-1.5z" />
+            </svg>
+          </button>
+          <input type="file" id="file-input" accept=".txt,.md" style="display:none">
+          <textarea id="user-input" placeholder="输入消息..." rows="1"></textarea>
+          <button id="send-btn" class="icon-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   </div>
-  <script src="js/ds.js"></script>
 
-  <script src="/assets/js/disable-right-click.js"></script>
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <h3>API SETTINGS</h3>
+      <div class="input-group">
+        <label>DeepSeek API Key</label>
+        <input type="password" id="api-key-input" placeholder="sk-...">
+      </div>
+      <div class="modal-actions">
+        <button id="save-settings">SAVE</button>
+        <button id="close-settings" class="secondary-btn">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="ds.js"></script>
 </body>
 
 </html>
