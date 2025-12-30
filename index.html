@@ -9,10 +9,11 @@
     <link rel="manifest" href="/json/manifest.json">
     <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="icon" href="assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <link rel="stylesheet" href="/assets/css/index.css">
     <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/nav.js"></script>
     <script src="/assets/js/cursor-trail.js"></script>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -20,7 +21,7 @@
 </head>
 
 <body>
-    <script src="/assets/js/nav.js"></script>
+
 
     <div class="main-background">
         <div class="main-layout">
@@ -211,6 +212,10 @@
 
     <!-- 庆祝动效容器 -->
     <div id="celebration-container"></div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script src="/assets/js/firebase-config.js"></script>
     <script src="/assets/js/index.js"></script>
     <script>
         // 检查浏览器是否支持Service Worker
@@ -227,7 +232,6 @@
             });
         }
     </script>
-
 
     <script src="/assets/js/disable-right-click.js"></script>
 </body>

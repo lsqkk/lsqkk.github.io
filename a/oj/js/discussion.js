@@ -1,17 +1,4 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
-    authDomain: "quark-b7305.firebaseapp.com",
-    databaseURL: "https://quark-b7305-default-rtdb.firebaseio.com",
-    projectId: "quark-b7305",
-    storageBucket: "quark-b7305.firebasestorage.app",
-    messagingSenderId: "843016834358",
-    appId: "1:843016834358:web:9438c729be28c4d492f797",
-    measurementId: "G-5BVT26KRT6"
-};
-// 确保 firebase 在 discussion.html 中已加载
-if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
-    firebase.initializeApp(firebaseConfig);
-}
+firebase.initializeApp(firebaseConfig);
 
 // --- 全局变量和常量 ---
 const BOARD_NAME = 'oj-discussions';

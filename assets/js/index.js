@@ -537,19 +537,17 @@ function formatVideoTime(timestamp) {
         return `${date.getMonth() + 1}-${date.getDate()}`;
     }
 }
+
 // 加载最近留言
 async function loadRecentMessages() {
     try {
-        // Firebase配置（与留言板相同）
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
-            authDomain: "quark-b7305.firebaseapp.com",
-            projectId: "quark-b7305",
-            storageBucket: "quark-b7305.firebasestorage.app",
-            messagingSenderId: "843016834358",
-            appId: "1:843016834358:web:9438c729be28c4d492f797",
-            measurementId: "G-5BVT26KRT6"
-        };
+        // 检查配置是否已加载
+        if (typeof firebaseConfig === 'undefined') {
+            console.error('Firebase配置未加载，请确保firebase-config.js已加载');
+            document.getElementById('recent-messages').innerHTML =
+                '<div class="index-announcement"><p style="margin: 0;">留言功能初始化失败</p></div>';
+            return;
+        }
 
         // 动态加载Firebase（如果尚未加载）
         if (typeof firebase === 'undefined') {
@@ -568,9 +566,9 @@ async function loadRecentMessages() {
             });
         }
 
-        // 初始化Firebase
+        // 初始化Firebase - 使用全局的firebaseConfig
         if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+            firebase.initializeApp(firebaseConfig);  // 使用全局配置
         }
 
         const messagesRef = firebase.database().ref('chatrooms/lsqkk-lyb/messages');

@@ -346,22 +346,13 @@
 
         </div>
     </div>
+    <!-- 放在Firebase SDK之后，初始化代码之前 -->
+    <script src="/assets/js/firebase-config.js"></script>
 
     <script>
-        // -----------------------------------------------------------
-        // 1. Firebase 配置与 STUN/TURN 服务器
-        // -----------------------------------------------------------
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeSI1akqwsPBrVyv7YKirV06fqdkL3YNI",
-            authDomain: "quark-b7305.firebaseapp.com",
-            projectId: "quark-b7305",
-            storageBucket: "quark-b7305.firebasestorage.app",
-            messagingSenderId: "843016834358",
-            appId: "1:843016834358:web:9438c729be28c4d492f797",
-            measurementId: "G-5BVT26KRT6"
-        };
+        // 直接使用全局变量 firebaseConfig
+        firebase.initializeApp(firebaseConfig);  // 或者 firebase.initializeApp(window.firebaseConfig);
 
-        firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         const STUN_SERVERS = [
