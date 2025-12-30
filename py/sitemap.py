@@ -205,7 +205,7 @@ def create_robots_txt():
         robots_content = f"""# robots.txt for {root_dir}
 User-agent: *
 Allow: /
-Sitemap: https://lsqkk.github.io/sitemap.xml
+Sitemap: /sitemap.xml
 
 # Crawl-delay: 10
 # Disallow: /private/

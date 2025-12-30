@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="container" style="text-align:center; padding:50px;">
                 <h1 style="color:#e74c3c; margin-bottom:20px;">跳转失败</h1>
                 <p style="font-size:1.2rem; margin-bottom:30px;">${e.message || '无效的短链接编码'}</p>
-                <button onclick="window.location.href='https://lsqkk.github.io/l'" style="background:#3498db; color:white; border:none; padding:12px 30px; border-radius:8px; font-size:1.1rem; cursor:pointer;">
+                <button onclick="window.location.href='/l'" style="background:#3498db; color:white; border:none; padding:12px 30px; border-radius:8px; font-size:1.1rem; cursor:pointer;">
                     <i class="fas fa-home"></i> 返回首页
                 </button>
             </div>

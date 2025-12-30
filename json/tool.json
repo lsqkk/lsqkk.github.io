@@ -145,7 +145,7 @@
         },
         {
           "name": "🔍 交大360°",
-          "url": "https://lsqkk.github.io/a/360",
+          "url": "/a/360",
           "target": "_blank"
         },
         {
@@ -175,7 +175,7 @@
         },
         {
           "name": "访问量",
-          "url": "https://lsqkk.github.io/tool/stats.html",
+          "url": "/tool/stats.html",
           "target": "_blank"
         }
       ]

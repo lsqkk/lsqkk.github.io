@@ -627,7 +627,7 @@ class CommandManager {
         }
 
         const keyword = encodeURIComponent(args.join(' '));
-        const url = `https://lsqkk.github.io/article-list.html?search=${keyword}`;
+        const url = `/article-list.html?search=${keyword}`;
 
         this.output(`正在打开博客搜索: ${args.join(' ')}`, 'info');
         setTimeout(() => {
@@ -654,7 +654,7 @@ class CommandManager {
     openTools() {
         this.output('正在打开工具页面...', 'info');
         setTimeout(() => {
-            window.open('https://lsqkk.github.io/tool.html', '_blank');
+            window.open('/tool.html', '_blank');
         }, 500);
     }
 

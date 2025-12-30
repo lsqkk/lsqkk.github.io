@@ -652,7 +652,7 @@ function displayFriendLinks(friends) {
     friends.forEach(friend => {
         html += `
             <a href="${friend.url}" target="_blank" class="friend-link-item">
-                <img src="${friend.icon}" alt="${friend.nickname}" class="friend-icon" onerror="this.src='image/logo_blue.png'">
+                <img src="${friend.icon}" alt="${friend.nickname}" class="friend-icon" onerror="this.src='assets/img/logo_blue.png'">
                 <div class="friend-info">
                     <div class="friend-nickname">${friend.nickname}</div>
                     <div class="friend-describe">${friend.describe}</div>

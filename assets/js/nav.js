@@ -37,7 +37,7 @@ document.write(`
                         </select>
                     </li>
                     <li id="login-button"><a
-                            href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
+                            href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=/auth.html&scope=user">登录</a>
                     </li>
                 </ul>
             </div>
@@ -80,7 +80,7 @@ document.write(`
                     </select>
                 </div>
                 <div class="navsidebar-login" id="mobile-login-button">
-                    <a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
+                    <a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=/auth.html&scope=user">登录</a>
                 </div>
             </div>
         </div>
