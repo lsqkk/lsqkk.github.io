@@ -23,7 +23,7 @@
 
 >为获得更好的显示效果，本站于2025年2月使用 [Hugo](https://gohugo.io) + [Blowfish](https://blowfish.page/zh-cn/) 升级维护，点此访问[新版博客](https://bsquark.github.io)。为保留老版博客除文章外的其他内容，新版博客启用了新网址。其$\TeX$渲染使用了 [MathJax](https://github.com/mathjax/MathJax) 。新版博客同样适用以下免责声明、使用条款等内容。
 
-博客文章内容由[蓝色奇夸克](https://space.bilibili.com/2105459088)撰写，Copyright © 2024 - 2025 蓝色奇夸克 All Rights Reserved.
+博客文章内容由[蓝色奇夸克](https://space.bilibili.com/2105459088)撰写，Copyright © 2024 - 2026 蓝色奇夸克 All Rights Reserved.
 
 
 ## 免责声明
