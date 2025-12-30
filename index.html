@@ -2,30 +2,30 @@
 <html lang="zh-CN">
 
 <head>
-    <link rel="stylesheet" href="css/basic.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克博客 | 蓝色奇夸克のBlog</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/json/manifest.json">
     <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="icon" href="image/logo_blue.png" type="image/png">
-    <link rel="stylesheet" href="css/cursor.css">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/nav.css">
-    <script src="js/cursor-trail.js"></script>
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/cursor-trail.js"></script>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 </head>
 
 <body>
-    <script src="/js/nav.js"></script>
+    <script src="/assets/js/nav.js"></script>
 
     <div class="main-background">
         <div class="main-layout">
             <div class="main-content">
-                <a href="post.html?file=about.md"><img src="image/touxiang.png" alt="头像"
+                <a href="posts/about"><img src="image/touxiang.png" alt="头像"
                         style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:65px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
                 <br><br><br><br><br><br>
                 <h1
@@ -128,8 +128,7 @@
                         </div>
                     </div>
                     <div style="text-align: center; margin: 15px 0;">
-                        <a href="https://lsqkk.github.io/a/lyb"
-                            style="text-decoration: none; color: #007bff; font-size: 0.9em;">写留言</a>
+                        <a href="/blog/lyb" style="text-decoration: none; color: #007bff; font-size: 0.9em;">写留言</a>
                     </div>
                 </div>
 
@@ -143,8 +142,7 @@
                         </div>
                     </div>
                     <div style="text-align: center; margin: 15px 0;font-size: 0.8em;">添加友链请
-                        <a href="https://lsqkk.github.io/a/lyb"
-                            style="text-decoration: none; color: #007bff; ">在留言板留言</a>
+                        <a href="/blog/lyb" style="text-decoration: none; color: #007bff; ">在留言板留言</a>
                     </div>
                 </div>
 
@@ -182,7 +180,7 @@
                     id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold;"></span>次
                 <br><br>
                 <a style="text-align: center; color: #666; padding-top: 10px; text-decoration: none;"
-                    href="https://lsqkk.github.io/post.html?file=copyright.md">© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights
+                    href="/posts/copyright">© 2024 - 2025 蓝色奇夸克 | 夸克博客 All rights
                     reserved.</a>
                 <br><br>
                 <a style="text-align: center; color: #666; padding-top: 10px; text-decoration: none;"
@@ -213,13 +211,13 @@
 
     <!-- 庆祝动效容器 -->
     <div id="celebration-container"></div>
-    <script src="js/index.js"></script>
+    <script src="/assets/js/index.js"></script>
     <script>
         // 检查浏览器是否支持Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 // 注册Service Worker文件
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('/assets/js/sw.js')
                     .then(function (registration) {
                         console.log('Service Worker 注册成功: ', registration);
                     })
@@ -231,7 +229,7 @@
     </script>
 
 
-    <script src="/js/disable-right-click.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克热搜 - 多平台实时热榜</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-light: #e8f0fe;
+            --secondary-color: #5f6368;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #202124;
+            --border-color: #dadce0;
+            --gold: #ffc107;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+            --trend-up: #34a853;
+            --trend-down: #ea4335;
+            --trend-new: #1a73e8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .description {
+            color: var(--secondary-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .category-nav {
+            flex: 0 0 250px;
+            background: var(--card-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .category-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-title i {
+            font-size: 1.1rem;
+        }
+
+        .category-section {
+            margin-bottom: 20px;
+        }
+
+        .category-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            padding-left: 5px;
+            border-left: 3px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 10px 12px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .category-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .category-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .category-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .content-area {
+            flex: 1;
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: var(--card-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .platform-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .platform-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            border-radius: 8px;
+            color: var(--primary-color);
+        }
+
+        .update-time {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hot-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .hot-card {
+            background: var(--card-color);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hot-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .hot-card.rank-1 {
+            border-top: 4px solid var(--gold);
+        }
+
+        .hot-card.rank-2 {
+            border-top: 4px solid var(--silver);
+        }
+
+        .hot-card.rank-3 {
+            border-top: 4px solid var(--bronze);
+        }
+
+        .hot-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            text-align: center;
+            line-height: 28px;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .hot-rank.rank-1 {
+            background-color: var(--gold);
+        }
+
+        .hot-rank.rank-2 {
+            background-color: var(--silver);
+        }
+
+        .hot-rank.rank-3 {
+            background-color: var(--bronze);
+        }
+
+        .hot-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .hot-title {
+            font-weight: 500;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .hot-link {
+            text-decoration: none;
+            color: var(--text-color);
+            display: block;
+        }
+
+        .hot-link:hover {
+            color: var(--primary-color);
+        }
+
+        .hot-trend {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
+        .trend-up {
+            background-color: rgba(52, 168, 83, 0.1);
+            color: var(--trend-up);
+        }
+
+        .trend-down {
+            background-color: rgba(234, 67, 53, 0.1);
+            color: var(--trend-down);
+        }
+
+        .trend-new {
+            background-color: rgba(26, 115, 232, 0.1);
+            color: var(--trend-new);
+        }
+
+        .hot-value {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hot-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--secondary-color);
+            grid-column: 1 / -1;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(26, 115, 232, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: #d93025;
+            grid-column: 1 / -1;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #d93025;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 25px 0;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 1100px) {
+            .hot-list {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .category-nav {
+                flex: none;
+                margin-bottom: 20px;
+                position: static;
+            }
+
+            .hot-list {
+                grid-template-columns: 1fr;
+            }
+
+            .platform-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <link rel="stylesheet" href="/assets/css/basic.css">
+            <h1><i class="fas fa-fire"></i> 夸克热搜</h1>
+            <p class="description">聚合多平台实时热榜，快速了解全网热点话题</p>
+        </header>
+
+        <div class="main-content">
+            <nav class="category-nav">
+                <h2 class="category-title"><i class="fas fa-th-list"></i> 分类导航</h2>
+
+                <div class="category-section">
+                    <div class="category-section-title">视频/社区</div>
+                    <ul class="category-list">
+                        <li class="category-item active" data-type="weibo">
+                            <i class="fab fa-weibo"></i>微博热搜
+                        </li>
+                        <li class="category-item" data-type="zhihu">
+                            <i class="fas fa-quora"></i>知乎热榜
+                        </li>
+                        <li class="category-item" data-type="bilibili">
+                            <i class="fas fa-play-circle"></i>哔哩哔哩
+                        </li>
+                        <li class="category-item" data-type="douyin">
+                            <i class="fas fa-music"></i>抖音热榜
+                        </li>
+                        <li class="category-item" data-type="zhihu-daily">
+                            <i class="far fa-newspaper"></i>知乎日报
+                        </li>
+                        <li class="category-item" data-type="acfun">
+                            <i class="fas fa-tv"></i>AcFun
+                        </li>
+                        <li class="category-item" data-type="kuaishou">
+                            <i class="fas fa-video"></i>快手热榜
+                        </li>
+                        <li class="category-item" data-type="douban-movie">
+                            <i class="fas fa-film"></i>豆瓣电影
+                        </li>
+                        <li class="category-item" data-type="douban-group">
+                            <i class="fas fa-users"></i>豆瓣小组
+                        </li>
+                        <li class="category-item" data-type="tieba">
+                            <i class="fab fa-baidu"></i>百度贴吧
+                        </li>
+                        <li class="category-item" data-type="hupu">
+                            <i class="fas fa-basketball-ball"></i>虎扑热帖
+                        </li>
+                        <li class="category-item" data-type="miyoushe">
+                            <i class="fas fa-gamepad"></i>米游社
+                        </li>
+                        <li class="category-item" data-type="ngabbs">
+                            <i class="fas fa-dragon"></i>NGA论坛
+                        </li>
+                        <li class="category-item" data-type="v2ex">
+                            <i class="fas fa-code"></i>V2EX技术
+                        </li>
+                        <li class="category-item" data-type="52pojie">
+                            <i class="fas fa-lock-open"></i>吾爱破解
+                        </li>
+                        <li class="category-item" data-type="hostloc">
+                            <i class="fas fa-server"></i>主机论坛
+                        </li>
+                        <li class="category-item" data-type="coolapk">
+                            <i class="fas fa-mobile-alt"></i>酷安热榜
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-section">
+                    <div class="category-section-title">新闻/资讯</div>
+                    <ul class="category-list">
+                        <li class="category-item" data-type="baidu">
+                            <i class="fas fa-search"></i>百度热搜
+                        </li>
+                        <li class="category-item" data-type="toutiao">
+                            <i class="fas fa-newspaper"></i>今日头条
+                        </li>
+                        <li class="category-item" data-type="thepaper">
+                            <i class="fas fa-newspaper"></i>澎湃新闻
+                        </li>
+                        <li class="category-item" data-type="qq-news">
+                            <i class="fab fa-qq"></i>腾讯新闻
+                        </li>
+                        <li class="category-item" data-type="sina">
+                            <i class="fas fa-globe"></i>新浪热搜
+                        </li>
+                        <li class="category-item" data-type="sina-news">
+                            <i class="far fa-newspaper"></i>新浪新闻
+                        </li>
+                        <li class="category-item" data-type="netease-news">
+                            <i class="fas fa-portrait"></i>网易新闻
+                        </li>
+                        <li class="category-item" data-type="huxiu">
+                            <i class="fas fa-paw"></i>虎嗅网
+                        </li>
+                        <li class="category-item" data-type="ifanr">
+                            <i class="fas fa-mobile-alt"></i>爱范儿
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-section">
+                    <div class="category-section-title">技术/IT</div>
+                    <ul class="category-list">
+                        <li class="category-item" data-type="juejin">
+                            <i class="fas fa-gem"></i>掘金社区
+                        </li>
+                        <li class="category-item" data-type="sspai">
+                            <i class="fas fa-pen-fancy"></i>少数派
+                        </li>
+                        <li class="category-item" data-type="ithome">
+                            <i class="fas fa-home"></i>IT之家
+                        </li>
+                        <li class="category-item" data-type="ithome-xijiayi">
+                            <i class="fas fa-gift"></i>IT喜加一
+                        </li>
+                        <li class="category-item" data-type="csdn">
+                            <i class="fas fa-laptop-code"></i>CSDN博客
+                        </li>
+                        <li class="category-item" data-type="jianshu">
+                            <i class="fas fa-book"></i>简书热榜
+                        </li>
+                        <li class="category-item" data-type="guokr">
+                            <i class="fas fa-flask"></i>果壳热榜
+                        </li>
+                        <li class="category-item" data-type="36kr">
+                            <i class="fas fa-chart-line"></i>36氪热榜
+                        </li>
+                        <li class="category-item" data-type="51cto">
+                            <i class="fas fa-network-wired"></i>51CTO
+                        </li>
+                        <li class="category-item" data-type="nodeseek">
+                            <i class="fas fa-search"></i>NodeSeek
+                        </li>
+                        <li class="category-item" data-type="hellogithub">
+                            <i class="fab fa-github"></i>HelloGitHub
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-section">
+                    <div class="category-section-title">游戏</div>
+                    <ul class="category-list">
+                        <li class="category-item" data-type="lol">
+                            <i class="fas fa-gamepad"></i>英雄联盟
+                        </li>
+                        <li class="category-item" data-type="genshin">
+                            <i class="fas fa-wind"></i>原神热榜
+                        </li>
+                        <li class="category-item" data-type="honkai">
+                            <i class="fas fa-meteor"></i>崩坏3热榜
+                        </li>
+                        <li class="category-item" data-type="starrail">
+                            <i class="fas fa-star"></i>星穹铁道
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-section">
+                    <div class="category-section-title">其他</div>
+                    <ul class="category-list">
+                        <li class="category-item" data-type="weread">
+                            <i class="fas fa-book-reader"></i>微信读书
+                        </li>
+                        <li class="category-item" data-type="weatheralarm">
+                            <i class="fas fa-cloud-sun-rain"></i>天气预警
+                        </li>
+                        <li class="category-item" data-type="earthquake">
+                            <i class="fas fa-mountain"></i>地震速报
+                        </li>
+                        <li class="category-item" data-type="history">
+                            <i class="fas fa-history"></i>历史上的今天
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="content-area">
+                <div class="platform-header">
+                    <h2 class="platform-title">
+                        <span class="platform-icon">
+                            <i class="fab fa-weibo"></i>
+                        </span>
+                        微博热搜
+                    </h2>
+                    <div class="update-time">
+                        <i class="far fa-clock"></i>
+                        更新于：<span id="update-time">-</span>
+                    </div>
+                </div>
+
+                <div id="hot-content" class="hot-list">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <div>正在加载热搜数据...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>数据来源：uapis.cn | 夸克热搜 © 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        // API端点
+        const API_URL = 'https://uapis.cn/api/v1/misc/hotboard';
+
+        // 平台图标映射
+        const platformIcons = {
+            'weibo': 'fab fa-weibo',
+            'zhihu': 'fas fa-quora',
+            'bilibili': 'fas fa-play-circle',
+            'douyin': 'fas fa-music',
+            'zhihu-daily': 'far fa-newspaper',
+            'acfun': 'fas fa-tv',
+            'kuaishou': 'fas fa-video',
+            'douban-movie': 'fas fa-film',
+            'douban-group': 'fas fa-users',
+            'tieba': 'fab fa-baidu',
+            'hupu': 'fas fa-basketball-ball',
+            'miyoushe': 'fas fa-gamepad',
+            'ngabbs': 'fas fa-dragon',
+            'v2ex': 'fas fa-code',
+            '52pojie': 'fas fa-lock-open',
+            'hostloc': 'fas fa-server',
+            'coolapk': 'fas fa-mobile-alt',
+            'baidu': 'fas fa-search',
+            'toutiao': 'fas fa-newspaper',
+            'thepaper': 'fas fa-newspaper',
+            'qq-news': 'fab fa-qq',
+            'sina': 'fas fa-globe',
+            'sina-news': 'far fa-newspaper',
+            'netease-news': 'fas fa-portrait',
+            'huxiu': 'fas fa-paw',
+            'ifanr': 'fas fa-mobile-alt',
+            'juejin': 'fas fa-gem',
+            'sspai': 'fas fa-pen-fancy',
+            'ithome': 'fas fa-home',
+            'ithome-xijiayi': 'fas fa-gift',
+            'csdn': 'fas fa-laptop-code',
+            'jianshu': 'fas fa-book',
+            'guokr': 'fas fa-flask',
+            '36kr': 'fas fa-chart-line',
+            '51cto': 'fas fa-network-wired',
+            'nodeseek': 'fas fa-search',
+            'hellogithub': 'fab fa-github',
+            'lol': 'fas fa-gamepad',
+            'genshin': 'fas fa-wind',
+            'honkai': 'fas fa-meteor',
+            'starrail': 'fas fa-star',
+            'weread': 'fas fa-book-reader',
+            'weatheralarm': 'fas fa-cloud-sun-rain',
+            'earthquake': 'fas fa-mountain',
+            'history': 'fas fa-history'
+        };
+
+        // 平台名称映射
+        const platformNames = {
+            'weibo': '微博热搜',
+            'zhihu': '知乎热榜',
+            'bilibili': '哔哩哔哩热榜',
+            'douyin': '抖音热榜',
+            'zhihu-daily': '知乎日报热榜',
+            'acfun': 'AcFun弹幕视频网',
+            'kuaishou': '快手热榜',
+            'douban-movie': '豆瓣电影榜单',
+            'douban-group': '豆瓣小组话题',
+            'tieba': '百度贴吧热帖',
+            'hupu': '虎扑热帖',
+            'miyoushe': '米游社话题榜',
+            'ngabbs': 'NGA游戏论坛热帖',
+            'v2ex': 'V2EX技术社区热帖',
+            '52pojie': '吾爱破解热帖',
+            'hostloc': '全球主机交流论坛',
+            'coolapk': '酷安热榜',
+            'baidu': '百度热搜',
+            'toutiao': '今日头条热榜',
+            'thepaper': '澎湃新闻热榜',
+            'qq-news': '腾讯新闻热榜',
+            'sina': '新浪热搜',
+            'sina-news': '新浪新闻热榜',
+            'netease-news': '网易新闻热榜',
+            'huxiu': '虎嗅网热榜',
+            'ifanr': '爱范儿热榜',
+            'juejin': '掘金社区热榜',
+            'sspai': '少数派热榜',
+            'ithome': 'IT之家热榜',
+            'ithome-xijiayi': 'IT之家·喜加一栏目',
+            'csdn': 'CSDN博客热榜',
+            'jianshu': '简书热榜',
+            'guokr': '果壳热榜',
+            '36kr': '36氪热榜',
+            '51cto': '51CTO热榜',
+            'nodeseek': 'NodeSeek 技术社区',
+            'hellogithub': 'HelloGitHub 项目推荐',
+            'lol': '英雄联盟热帖',
+            'genshin': '原神热榜',
+            'honkai': '崩坏3热榜',
+            'starrail': '星穹铁道热榜',
+            'weread': '微信读书热门书籍',
+            'weatheralarm': '天气预警信息',
+            'earthquake': '地震速报',
+            'history': '历史上的今天'
+        };
+
+        // 当前选中的平台
+        let currentPlatform = 'weibo';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始化加载微博热搜
+            loadHotData('weibo');
+
+            // 为分类导航项添加点击事件
+            const categoryItems = document.querySelectorAll('.category-item');
+            categoryItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    // 更新选中状态
+                    categoryItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 获取平台类型
+                    const platformType = this.getAttribute('data-type');
+
+                    // 更新平台标题和图标
+                    updatePlatformHeader(platformType);
+
+                    // 加载新数据
+                    loadHotData(platformType);
+                });
+            });
+        });
+
+        // 更新平台标题和图标
+        function updatePlatformHeader(platformType) {
+            const platformTitle = document.querySelector('.platform-title');
+            const platformIcon = document.querySelector('.platform-icon i');
+
+            platformTitle.innerHTML = `
+                <span class="platform-icon">
+                    <i class="${platformIcons[platformType]}"></i>
+                </span>
+                ${platformNames[platformType]}
+            `;
+        }
+
+        // 加载热搜数据
+        async function loadHotData(platform) {
+            currentPlatform = platform;
+
+            // 显示加载状态
+            const contentArea = document.getElementById('hot-content');
+            contentArea.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div>正在加载热搜数据...</div>
+                </div>
+            `;
+
+            try {
+                // 调用API获取数据
+                const response = await fetch(`${API_URL}?type=${platform}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // 更新更新时间
+                const updateTimeElement = document.getElementById('update-time');
+                updateTimeElement.textContent = data.update_time || new Date().toLocaleString();
+
+                // 渲染热搜列表
+                renderHotList(data.list);
+
+            } catch (error) {
+                console.error('获取热搜数据失败:', error);
+                contentArea.innerHTML = `
+                    <div class="error">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        加载失败: ${error.message}<br>
+                        请稍后重试
+                    </div>
+                `;
+            }
+        }
+
+        // 渲染热搜列表
+        function renderHotList(hotList) {
+            const contentArea = document.getElementById('hot-content');
+
+            if (!hotList || hotList.length === 0) {
+                contentArea.innerHTML = `
+                    <div class="error">
+                        <div class="error-icon">
+                            <i class="far fa-frown"></i>
+                        </div>
+                        暂无数据
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            hotList.forEach((item, index) => {
+                // 生成排名样式
+                const rankClass = index < 3 ? `rank-${index + 1}` : '';
+
+                // 随机生成趋势（实际应用中应从API获取）
+                const trendTypes = ['up', 'down', 'new', ''];
+                const trendType = trendTypes[Math.floor(Math.random() * trendTypes.length)];
+                let trendHtml = '';
+
+                if (trendType === 'up') {
+                    trendHtml = `<span class="hot-trend trend-up"><i class="fas fa-caret-up"></i> 上升</span>`;
+                } else if (trendType === 'down') {
+                    trendHtml = `<span class="hot-trend trend-down"><i class="fas fa-caret-down"></i> 下降</span>`;
+                } else if (trendType === 'new') {
+                    trendHtml = `<span class="hot-trend trend-new"><i class="fas fa-star"></i> 新上榜</span>`;
+                }
+
+                // 处理热度值显示
+                let hotValue = '';
+                if (item.hot) {
+                    hotValue = `<div class="hot-value"><i class="fas fa-fire"></i> ${formatHotValue(item.hot)}</div>`;
+                }
+
+                // 创建热搜项HTML
+                html += `
+                    <div class="hot-card ${rankClass}">
+                        <div class="hot-header">
+                            <div class="hot-rank ${rankClass}">${index + 1}</div>
+                            <a href="${item.url || '#'}" target="_blank" class="hot-link">
+                                <div class="hot-title">${item.title} ${trendHtml}</div>
+                            </a>
+                        </div>
+                        <div class="hot-meta">
+                            ${hotValue}
+                            <div class="hot-link-icon">
+                                <i class="fas fa-external-link-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            contentArea.innerHTML = html;
+        }
+
+        // 格式化热度值
+        function formatHotValue(value) {
+            if (typeof value === 'number') {
+                if (value >= 100000000) {
+                    return (value / 100000000).toFixed(1) + '亿';
+                } else if (value >= 10000) {
+                    return (value / 10000).toFixed(1) + '万';
+                }
+                return value.toString();
+            }
+            return value;
+        }
+    </script>
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

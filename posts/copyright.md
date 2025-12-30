@@ -81,7 +81,7 @@
 
 **夸克博客APP软件著作权**
 
-![软著](https://lsqkk.github.io/image/copyright.png)
+![软著](/assets/img/copyright.png)
 
 **ICP备案**
 

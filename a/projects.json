@@ -13,7 +13,7 @@
     },
     {
         "name": "夸克博客留言板",
-        "link": "lyb",
+        "link": "/blog/lyb",
         "description": "用户互动与留言交流平台，支持实时评论和消息通知",
         "icon": "fa-comments"
     },

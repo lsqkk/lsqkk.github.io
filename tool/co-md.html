@@ -2,18 +2,18 @@
 <html lang="zh">
 
 <head>
-    <link rel="stylesheet" href="/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>多人协同Markdown编辑器 | 夸克博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/md.css">
+    <link rel="stylesheet" href="/assets/css/md.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
-    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <style>
         .docs-list {
             list-style: none;
@@ -415,7 +415,7 @@
         </div>
     </div>
 
-    <a href="https://lsqkk.github.io/post.html?file=copyright.md" class="footer">© 2025 蓝色奇夸克 / 夸克博客 All rights
+    <a href="/posts/copyright" class="footer">© 2025 蓝色奇夸克 / 夸克博客 All rights
         reserved. </a>
 
     <div id="toast" class="toast">
@@ -1061,456 +1061,436 @@ $$
         function downloadHtml() {
             const htmlContent = preview.innerHTML;
             const blob = new Blob([`<!DOCTYPE html><html><head>
-    <link rel="stylesheet" href="/css/basic.css"><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="/css/md.css"></head><body>${htmlContent}    <script src="/js/disable-right-click.js"></script>
-</body></html>`], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = currentDocId ? `doc-${currentDocId}.html` : 'markdown-export.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('HTML文件已下载');
-        }
+    <link rel="stylesheet" href="/assets/css/basic.css"><meta charset="UTF-8"><title>Markdown Export</title><link rel="stylesheet" href="/assets/css/md.css"></head><body>${htmlContent}    <script src="/assets/js/disable-right-click.js"></script>
+</body>
 
-        // 下载Markdown
-        function downloadMd() {
-            const mdContent = markdownInput.value;
-            const blob = new Blob([mdContent], { type: 'text/markdown' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = currentDocId ? `doc-${currentDocId}.md` : 'markdown-export.md';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('Markdown文件已下载');
-        }
+</html>`], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = currentDocId ? `doc-${currentDocId}.html` : 'markdown-export.html';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+showToast('HTML文件已下载');
+}
 
-        // 下载Word
-        async function downloadWord() {
-            const markdownText = markdownInput.value.trim();
-            if (!markdownText) {
-                showToast('没有内容可导出', true);
-                return;
-            }
+// 下载Markdown
+function downloadMd() {
+const mdContent = markdownInput.value;
+const blob = new Blob([mdContent], { type: 'text/markdown' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = currentDocId ? `doc-${currentDocId}.md` : 'markdown-export.md';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+showToast('Markdown文件已下载');
+}
 
-            try {
-                downloadWordBtn.classList.add('processing');
-                showToast('正在生成Word文档...');
+// 下载Word
+async function downloadWord() {
+const markdownText = markdownInput.value.trim();
+if (!markdownText) {
+showToast('没有内容可导出', true);
+return;
+}
 
-                const html = convertToHTML(markdownText);
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
+try {
+downloadWordBtn.classList.add('processing');
+showToast('正在生成Word文档...');
 
-                const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType,
-                    Table, TableRow, TableCell, WidthType, convertInchesToTwip,
-                    ExternalHyperlink, UnderlineType } = docx;
+const html = convertToHTML(markdownText);
+const tempDiv = document.createElement('div');
+tempDiv.innerHTML = html;
 
-                const children = [];
+const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType,
+Table, TableRow, TableCell, WidthType, convertInchesToTwip,
+ExternalHyperlink, UnderlineType } = docx;
 
-                for (let i = 0; i < tempDiv.childNodes.length; i++) {
-                    const node = tempDiv.childNodes[i];
+const children = [];
 
-                    if (node.nodeName === 'P') {
-                        const paragraph = new Paragraph({
-                            children: parseInlineNodes(node),
-                            spacing: { after: 200 }
-                        });
-                        children.push(paragraph);
-                    }
-                    else if (node.nodeName.match(/^H[1-6]$/)) {
-                        const level = parseInt(node.nodeName[1]);
-                        const headingLevel = [
-                            HeadingLevel.HEADING_1,
-                            HeadingLevel.HEADING_2,
-                            HeadingLevel.HEADING_3,
-                            HeadingLevel.HEADING_4,
-                            HeadingLevel.HEADING_5,
-                            HeadingLevel.HEADING_6
-                        ][level - 1];
+for (let i = 0; i < tempDiv.childNodes.length; i++) { const node=tempDiv.childNodes[i]; if (node.nodeName==='P' ) {
+    const paragraph=new Paragraph({ children: parseInlineNodes(node), spacing: { after: 200 } });
+    children.push(paragraph); } else if (node.nodeName.match(/^H[1-6]$/)) { const level=parseInt(node.nodeName[1]);
+    const headingLevel=[ HeadingLevel.HEADING_1, HeadingLevel.HEADING_2, HeadingLevel.HEADING_3, HeadingLevel.HEADING_4,
+    HeadingLevel.HEADING_5, HeadingLevel.HEADING_6 ][level - 1]; const paragraph=new Paragraph({ text: node.textContent,
+    heading: headingLevel, spacing: { before: 200, after: 100 } }); children.push(paragraph); } else if
+    (node.nodeName==='UL' ) { const listItems=node.querySelectorAll('li'); listItems.forEach(item=> {
+    const paragraph = new Paragraph({
+    text: item.textContent,
+    bullet: { level: 0 },
+    spacing: { after: 100 }
+    });
+    children.push(paragraph);
+    });
+    }
+    else if (node.nodeName === 'OL') {
+    const listItems = node.querySelectorAll('li');
+    listItems.forEach((item, index) => {
+    const paragraph = new Paragraph({
+    text: item.textContent,
+    numbering: { level: 0, reference: 'ordered-list', style: 'default' },
+    spacing: { after: 100 }
+    });
+    children.push(paragraph);
+    });
+    }
+    else if (node.nodeName === 'PRE') {
+    const code = node.textContent;
+    const paragraph = new Paragraph({
+    children: [
+    new TextRun({
+    text: code,
+    font: 'Consolas',
+    size: 20,
+    color: '333333',
+    break: 1
+    })
+    ],
+    indent: { left: convertInchesToTwip(0.5) },
+    spacing: { line: 240, after: 100 },
+    border: {
+    bottom: { color: 'DDDDDD', size: 6, style: 'single' },
+    left: { color: 'DDDDDD', size: 6, style: 'single' },
+    right: { color: 'DDDDDD', size: 6, style: 'single' },
+    top: { color: 'DDDDDD', size: 6, style: 'single' }
+    },
+    shading: { fill: 'F5F5F5' }
+    });
+    children.push(paragraph);
+    }
+    else if (node.nodeName === 'TABLE') {
+    const rows = node.querySelectorAll('tr');
+    const tableRows = [];
 
-                        const paragraph = new Paragraph({
-                            text: node.textContent,
-                            heading: headingLevel,
-                            spacing: { before: 200, after: 100 }
-                        });
-                        children.push(paragraph);
-                    }
-                    else if (node.nodeName === 'UL') {
-                        const listItems = node.querySelectorAll('li');
-                        listItems.forEach(item => {
-                            const paragraph = new Paragraph({
-                                text: item.textContent,
-                                bullet: { level: 0 },
-                                spacing: { after: 100 }
-                            });
-                            children.push(paragraph);
-                        });
-                    }
-                    else if (node.nodeName === 'OL') {
-                        const listItems = node.querySelectorAll('li');
-                        listItems.forEach((item, index) => {
-                            const paragraph = new Paragraph({
-                                text: item.textContent,
-                                numbering: { level: 0, reference: 'ordered-list', style: 'default' },
-                                spacing: { after: 100 }
-                            });
-                            children.push(paragraph);
-                        });
-                    }
-                    else if (node.nodeName === 'PRE') {
-                        const code = node.textContent;
-                        const paragraph = new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: code,
-                                    font: 'Consolas',
-                                    size: 20,
-                                    color: '333333',
-                                    break: 1
-                                })
-                            ],
-                            indent: { left: convertInchesToTwip(0.5) },
-                            spacing: { line: 240, after: 100 },
-                            border: {
-                                bottom: { color: 'DDDDDD', size: 6, style: 'single' },
-                                left: { color: 'DDDDDD', size: 6, style: 'single' },
-                                right: { color: 'DDDDDD', size: 6, style: 'single' },
-                                top: { color: 'DDDDDD', size: 6, style: 'single' }
-                            },
-                            shading: { fill: 'F5F5F5' }
-                        });
-                        children.push(paragraph);
-                    }
-                    else if (node.nodeName === 'TABLE') {
-                        const rows = node.querySelectorAll('tr');
-                        const tableRows = [];
+    rows.forEach(row => {
+    const cells = row.querySelectorAll('td, th');
+    const tableCells = [];
 
-                        rows.forEach(row => {
-                            const cells = row.querySelectorAll('td, th');
-                            const tableCells = [];
+    cells.forEach(cell => {
+    const isHeader = cell.nodeName === 'TH';
+    const tableCell = new TableCell({
+    children: [
+    new Paragraph({
+    children: parseInlineNodes(cell),
+    alignment: AlignmentType.CENTER
+    })
+    ],
+    shading: isHeader ? { fill: 'F0F0F0' } : undefined
+    });
+    tableCells.push(tableCell);
+    });
 
-                            cells.forEach(cell => {
-                                const isHeader = cell.nodeName === 'TH';
-                                const tableCell = new TableCell({
-                                    children: [
-                                        new Paragraph({
-                                            children: parseInlineNodes(cell),
-                                            alignment: AlignmentType.CENTER
-                                        })
-                                    ],
-                                    shading: isHeader ? { fill: 'F0F0F0' } : undefined
-                                });
-                                tableCells.push(tableCell);
-                            });
+    tableRows.push(new TableRow({ children: tableCells }));
+    });
 
-                            tableRows.push(new TableRow({ children: tableCells }));
-                        });
+    const table = new Table({
+    rows: tableRows,
+    width: { size: 100, type: WidthType.PERCENTAGE }
+    });
 
-                        const table = new Table({
-                            rows: tableRows,
-                            width: { size: 100, type: WidthType.PERCENTAGE }
-                        });
+    children.push(table);
+    }
+    else if (node.nodeName === 'BLOCKQUOTE') {
+    const paragraph = new Paragraph({
+    children: parseInlineNodes(node),
+    indent: { left: convertInchesToTwip(0.5) },
+    border: { left: { color: '4A6FA5', size: 6, style: 'single' } },
+    spacing: { after: 100 }
+    });
+    children.push(paragraph);
+    }
+    else if (node.nodeName === 'HR') {
+    children.push(
+    new Paragraph({
+    border: { bottom: { color: '999999', size: 6, style: 'single' } },
+    spacing: { after: 200, before: 200 }
+    })
+    );
+    }
+    }
 
-                        children.push(table);
-                    }
-                    else if (node.nodeName === 'BLOCKQUOTE') {
-                        const paragraph = new Paragraph({
-                            children: parseInlineNodes(node),
-                            indent: { left: convertInchesToTwip(0.5) },
-                            border: { left: { color: '4A6FA5', size: 6, style: 'single' } },
-                            spacing: { after: 100 }
-                        });
-                        children.push(paragraph);
-                    }
-                    else if (node.nodeName === 'HR') {
-                        children.push(
-                            new Paragraph({
-                                border: { bottom: { color: '999999', size: 6, style: 'single' } },
-                                spacing: { after: 200, before: 200 }
-                            })
-                        );
-                    }
-                }
+    const doc = new Document({
+    styles: {
+    paragraphStyles: [
+    {
+    id: 'Normal',
+    name: 'Normal',
+    run: {
+    font: '微软雅黑',
+    size: 24,
+    color: '333333'
+    },
+    paragraph: {
+    spacing: { line: 276, after: 100 }
+    }
+    },
+    {
+    id: 'Heading1',
+    name: 'Heading 1',
+    basedOn: 'Normal',
+    next: 'Normal',
+    run: {
+    font: '微软雅黑',
+    size: 32,
+    bold: true,
+    color: '4A6FA5'
+    },
+    paragraph: {
+    spacing: { before: 240, after: 120 }
+    }
+    },
+    {
+    id: 'Heading2',
+    name: 'Heading 2',
+    basedOn: 'Normal',
+    next: 'Normal',
+    run: {
+    font: '微软雅黑',
+    size: 28,
+    bold: true,
+    color: '4A6FA5'
+    },
+    paragraph: {
+    spacing: { before: 200, after: 100 }
+    }
+    }
+    ]
+    },
+    numbering: {
+    config: [
+    {
+    reference: 'ordered-list',
+    levels: [
+    {
+    level: 0,
+    format: 'decimal',
+    text: '%1.',
+    alignment: AlignmentType.START
+    }
+    ]
+    }
+    ]
+    },
+    sections: [{
+    properties: {},
+    children: children
+    }]
+    });
 
-                const doc = new Document({
-                    styles: {
-                        paragraphStyles: [
-                            {
-                                id: 'Normal',
-                                name: 'Normal',
-                                run: {
-                                    font: '微软雅黑',
-                                    size: 24,
-                                    color: '333333'
-                                },
-                                paragraph: {
-                                    spacing: { line: 276, after: 100 }
-                                }
-                            },
-                            {
-                                id: 'Heading1',
-                                name: 'Heading 1',
-                                basedOn: 'Normal',
-                                next: 'Normal',
-                                run: {
-                                    font: '微软雅黑',
-                                    size: 32,
-                                    bold: true,
-                                    color: '4A6FA5'
-                                },
-                                paragraph: {
-                                    spacing: { before: 240, after: 120 }
-                                }
-                            },
-                            {
-                                id: 'Heading2',
-                                name: 'Heading 2',
-                                basedOn: 'Normal',
-                                next: 'Normal',
-                                run: {
-                                    font: '微软雅黑',
-                                    size: 28,
-                                    bold: true,
-                                    color: '4A6FA5'
-                                },
-                                paragraph: {
-                                    spacing: { before: 200, after: 100 }
-                                }
-                            }
-                        ]
-                    },
-                    numbering: {
-                        config: [
-                            {
-                                reference: 'ordered-list',
-                                levels: [
-                                    {
-                                        level: 0,
-                                        format: 'decimal',
-                                        text: '%1.',
-                                        alignment: AlignmentType.START
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    sections: [{
-                        properties: {},
-                        children: children
-                    }]
-                });
+    const blob = await docx.Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentDocId ? `doc-${currentDocId}.docx` : 'markdown-export.docx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-                const blob = await docx.Packer.toBlob(doc);
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = currentDocId ? `doc-${currentDocId}.docx` : 'markdown-export.docx';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+    showToast('Word文档生成成功！');
+    } catch (error) {
+    console.error('转换失败:', error);
+    showToast('转换失败: ' + error.message, true);
+    } finally {
+    downloadWordBtn.classList.remove('processing');
+    }
+    }
 
-                showToast('Word文档生成成功！');
-            } catch (error) {
-                console.error('转换失败:', error);
-                showToast('转换失败: ' + error.message, true);
-            } finally {
-                downloadWordBtn.classList.remove('processing');
-            }
-        }
+    // 解析内联节点
+    function parseInlineNodes(parentNode) {
+    const children = [];
 
-        // 解析内联节点
-        function parseInlineNodes(parentNode) {
-            const children = [];
+    for (let node of parentNode.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
+    if (node.textContent.trim()) {
+    children.push(new docx.TextRun({
+    text: node.textContent,
+    font: '微软雅黑',
+    size: 24
+    }));
+    }
+    }
+    else if (node.nodeName === 'STRONG' || node.nodeName === 'B') {
+    children.push(new docx.TextRun({
+    text: node.textContent,
+    bold: true,
+    font: '微软雅黑',
+    size: 24
+    }));
+    }
+    else if (node.nodeName === 'EM' || node.nodeName === 'I') {
+    children.push(new docx.TextRun({
+    text: node.textContent,
+    italics: true,
+    font: '微软雅黑',
+    size: 24
+    }));
+    }
+    else if (node.nodeName === 'CODE') {
+    children.push(new docx.TextRun({
+    text: node.textContent,
+    font: 'Consolas',
+    size: 20,
+    color: '333333'
+    }));
+    }
+    else if (node.nodeName === 'A') {
+    children.push(
+    new docx.ExternalHyperlink({
+    children: [
+    new docx.TextRun({
+    text: node.textContent,
+    font: '微软雅黑',
+    size: 24,
+    color: '0563C1',
+    underline: {
+    type: UnderlineType.SINGLE,
+    color: '0563C1'
+    }
+    })
+    ],
+    link: node.href
+    })
+    );
+    }
+    else if (node.nodeName === 'IMG') {
+    children.push(new docx.TextRun({
+    text: `[图片: ${node.alt || '无描述'}]`,
+    font: '微软雅黑',
+    size: 24,
+    color: '666666'
+    }));
+    }
+    else if (node.nodeType === Node.ELEMENT_NODE) {
+    const inlineChildren = parseInlineNodes(node);
+    children.push(...inlineChildren);
+    }
+    }
 
-            for (let node of parentNode.childNodes) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    if (node.textContent.trim()) {
-                        children.push(new docx.TextRun({
-                            text: node.textContent,
-                            font: '微软雅黑',
-                            size: 24
-                        }));
-                    }
-                }
-                else if (node.nodeName === 'STRONG' || node.nodeName === 'B') {
-                    children.push(new docx.TextRun({
-                        text: node.textContent,
-                        bold: true,
-                        font: '微软雅黑',
-                        size: 24
-                    }));
-                }
-                else if (node.nodeName === 'EM' || node.nodeName === 'I') {
-                    children.push(new docx.TextRun({
-                        text: node.textContent,
-                        italics: true,
-                        font: '微软雅黑',
-                        size: 24
-                    }));
-                }
-                else if (node.nodeName === 'CODE') {
-                    children.push(new docx.TextRun({
-                        text: node.textContent,
-                        font: 'Consolas',
-                        size: 20,
-                        color: '333333'
-                    }));
-                }
-                else if (node.nodeName === 'A') {
-                    children.push(
-                        new docx.ExternalHyperlink({
-                            children: [
-                                new docx.TextRun({
-                                    text: node.textContent,
-                                    font: '微软雅黑',
-                                    size: 24,
-                                    color: '0563C1',
-                                    underline: {
-                                        type: UnderlineType.SINGLE,
-                                        color: '0563C1'
-                                    }
-                                })
-                            ],
-                            link: node.href
-                        })
-                    );
-                }
-                else if (node.nodeName === 'IMG') {
-                    children.push(new docx.TextRun({
-                        text: `[图片: ${node.alt || '无描述'}]`,
-                        font: '微软雅黑',
-                        size: 24,
-                        color: '666666'
-                    }));
-                }
-                else if (node.nodeType === Node.ELEMENT_NODE) {
-                    const inlineChildren = parseInlineNodes(node);
-                    children.push(...inlineChildren);
-                }
-            }
+    return children;
+    }
 
-            return children;
-        }
+    // 更新字数统计
+    function updateWordCount() {
+    const text = markdownInput.value;
+    const count = text.trim() === '' ? 0 : text.length;
+    wordCount.textContent = `${count} 字`;
+    }
 
-        // 更新字数统计
-        function updateWordCount() {
-            const text = markdownInput.value;
-            const count = text.trim() === '' ? 0 : text.length;
-            wordCount.textContent = `${count} 字`;
-        }
+    // 手动触发 MathJax 渲染
+    function renderAll() {
+    try {
+    if (window.MathJax?.typeset) {
+    MathJax.typeset();
+    }
 
-        // 手动触发 MathJax 渲染
-        function renderAll() {
-            try {
-                if (window.MathJax?.typeset) {
-                    MathJax.typeset();
-                }
+    if (window.mermaid?.init) {
+    try {
+    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+    } catch (mermaidErr) {
+    console.error('Mermaid渲染错误:', mermaidErr);
+    }
+    } else {
+    console.warn('Mermaid未加载完成');
+    }
+    } catch (err) {
+    console.error('渲染错误:', err);
+    }
+    }
 
-                if (window.mermaid?.init) {
-                    try {
-                        mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-                    } catch (mermaidErr) {
-                        console.error('Mermaid渲染错误:', mermaidErr);
-                    }
-                } else {
-                    console.warn('Mermaid未加载完成');
-                }
-            } catch (err) {
-                console.error('渲染错误:', err);
-            }
-        }
+    // Markdown 转 HTML 函数
+    function convertToHTML(md) {
+    const mermaidBlocks = [];
+    let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
+    mermaidBlocks.push(code.trim());
+    return `<div class="mermaid">${code.trim()}</div>`;
+    });
 
-        // Markdown 转 HTML 函数
-        function convertToHTML(md) {
-            const mermaidBlocks = [];
-            let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
-                mermaidBlocks.push(code.trim());
-                return `<div class="mermaid">${code.trim()}</div>`;
-            });
+    const codeBlocks = [];
+    html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
+    codeBlocks.push(code);
+    return `\x1BCODE${codeBlocks.length - 1}\x1B`;
+    });
 
-            const codeBlocks = [];
-            html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
-                codeBlocks.push(code);
-                return `\x1BCODE${codeBlocks.length - 1}\x1B`;
-            });
+    const inlineCodes = [];
+    html = html.replace(/`([^`]+)`/g, (match, code) => {
+    inlineCodes.push(code);
+    return `\x1BINLINE${inlineCodes.length - 1}\x1B`;
+    });
 
-            const inlineCodes = [];
-            html = html.replace(/`([^`]+)`/g, (match, code) => {
-                inlineCodes.push(code);
-                return `\x1BINLINE${inlineCodes.length - 1}\x1B`;
-            });
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
+    return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
+    });
 
-            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
-                return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
-            });
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+    return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
+    });
 
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-                return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
-            });
+    html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
+    const cleaned = formula.trim();
+    return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
+    });
 
-            html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
-                const cleaned = formula.trim();
-                return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
-            });
+    html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
+    return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
+    });
 
-            html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
-                return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
-            });
-
-            html = html
-                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
-                .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-                .replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>')
-                .replace(/(<li>.*<\/li>)+/g, (m) =>
-                    m.match(/^\d/) ? `<ol>${m}</ol>` : m
-                )
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-                .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+    html = html
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
+    .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\ /li>)+/g, '<ul>$&</ul>')
+            .replace(/(
+    <li>.*<\ /li>)+/g, (m) =>
+            m.match(/^\d/) ? `<ol>${m}</ol>` : m
+            )
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
 
             html = html.replace(/\x1BCODE(\d+)\x1B/g, (_, n) =>
-                `<pre><code>${codeBlocks[n]}</code></pre>`
+            `
+            <pre><code>${codeBlocks[n]}</code></pre>`
             );
             html = html.replace(/\x1BINLINE(\d+)\x1B/g, (_, n) =>
-                `<code>${inlineCodes[n]}</code>`
+            `<code>${inlineCodes[n]}</code>`
             );
 
             html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
 
             return html;
-        }
+            }
 
-        // 显示 Toast 通知
-        function showToast(message, isError = false) {
+            // 显示 Toast 通知
+            function showToast(message, isError = false) {
             toastMessage.textContent = message;
             toast.className = isError ? 'toast error show' : 'toast show';
             setTimeout(() => {
-                toast.className = 'toast';
+            toast.className = 'toast';
             }, 3000);
-        }
-        function toggleSidebar() {
+            }
+            function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
-        }
+            }
 
-        function loadRecentDocs() {
+            function loadRecentDocs() {
             const docsList = document.getElementById('docsList');
             docsList.innerHTML = '';
 
             recentDocs.forEach(doc => {
-                const li = document.createElement('li');
-                li.className = `doc-item ${doc.id === currentDocId ? 'active' : ''}`;
-                li.dataset.id = doc.id;
+            const li = document.createElement('li');
+            li.className = `doc-item ${doc.id === currentDocId ? 'active' : ''}`;
+            li.dataset.id = doc.id;
 
-                li.innerHTML = `
+            li.innerHTML = `
             <span class="doc-name">${doc.name || '未命名文档'}</span>
             <div class="doc-actions">
                 <button class="doc-action-btn edit-doc" title="重命名">
@@ -1521,80 +1501,80 @@ $$
                 </button>
             </div>
             <span class="doc-code">${doc.id}</span>
-        `;
+            `;
 
-                li.addEventListener('click', (e) => {
-                    if (!e.target.closest('.doc-action-btn')) {
-                        joinDocument(doc.id);
-                    }
-                });
+            li.addEventListener('click', (e) => {
+            if (!e.target.closest('.doc-action-btn')) {
+            joinDocument(doc.id);
+            }
+            });
 
-                docsList.appendChild(li);
+            docsList.appendChild(li);
             });
 
             // 添加事件监听器
             document.querySelectorAll('.edit-doc').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const docId = btn.closest('.doc-item').dataset.id;
-                    editDocName(docId);
-                });
+            btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const docId = btn.closest('.doc-item').dataset.id;
+            editDocName(docId);
+            });
             });
 
             document.querySelectorAll('.delete-doc').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const docId = btn.closest('.doc-item').dataset.id;
-                    deleteRecentDoc(docId);
-                });
+            btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const docId = btn.closest('.doc-item').dataset.id;
+            deleteRecentDoc(docId);
             });
-        }
+            });
+            }
 
-        function addRecentDoc(docId, docName = '') {
+            function addRecentDoc(docId, docName = '') {
             // 避免重复添加
             if (!recentDocs.some(doc => doc.id === docId)) {
-                recentDocs.unshift({
-                    id: docId,
-                    name: docName,
-                    lastAccessed: Date.now()
-                });
+            recentDocs.unshift({
+            id: docId,
+            name: docName,
+            lastAccessed: Date.now()
+            });
 
-                // 限制最近文档数量
-                if (recentDocs.length > 10) {
-                    recentDocs = recentDocs.slice(0, 10);
-                }
-
-                saveRecentDocs();
-                loadRecentDocs();
+            // 限制最近文档数量
+            if (recentDocs.length > 10) {
+            recentDocs = recentDocs.slice(0, 10);
             }
-        }
 
-        function editDocName(docId) {
+            saveRecentDocs();
+            loadRecentDocs();
+            }
+            }
+
+            function editDocName(docId) {
             const doc = recentDocs.find(d => d.id === docId);
             if (!doc) return;
 
             const newName = prompt('输入新的文档名称', doc.name || '未命名文档');
             if (newName !== null) {
-                doc.name = newName.trim();
-                doc.lastAccessed = Date.now();
-                saveRecentDocs();
-                loadRecentDocs();
+            doc.name = newName.trim();
+            doc.lastAccessed = Date.now();
+            saveRecentDocs();
+            loadRecentDocs();
             }
-        }
+            }
 
-        function deleteRecentDoc(docId) {
+            function deleteRecentDoc(docId) {
             if (!confirm('确定要从最近文档中移除此文档吗？')) return;
 
             recentDocs = recentDocs.filter(doc => doc.id !== docId);
             saveRecentDocs();
             loadRecentDocs();
-        }
+            }
 
-        function saveRecentDocs() {
+            function saveRecentDocs() {
             localStorage.setItem('recent-docs', JSON.stringify(recentDocs));
-        }
-    </script>
-    <script src="/js/disable-right-click.js"></script>
-</body>
+            }
+            </script>
+            <script src="/assets/js/disable-right-click.js"></script>
+            </body>
 
-</html>
+            </html>

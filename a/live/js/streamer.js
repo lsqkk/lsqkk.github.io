@@ -573,7 +573,7 @@ function sendChatMessage() {
             text: message,
             timestamp: Date.now(),
             user: '蓝色奇夸克',
-            avatar: 'https://lsqkk.github.io/image/touxiang.png',
+            avatar: '/assets/img/touxiang.png',
             avatarType: 'image',
             isMarkdown: false
         });

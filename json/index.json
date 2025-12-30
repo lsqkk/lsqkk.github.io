@@ -56,6 +56,6 @@
     ],
     "announcement": {
         "title": "想要更方便的阅读博文、移动端获得更好的阅读体验？",
-        "content": "欢迎<a href=\"apk/QuarkBlog.apk\" style=\"color: #007bff; font-weight: bold;\">下载『夸克博客』APP</a>！"
+        "content": "欢迎<a href=\"/assets/apk/QuarkBlog.apk\" style=\"color: #007bff; font-weight: bold;\">下载『夸克博客』APP</a>！"
     }
 }

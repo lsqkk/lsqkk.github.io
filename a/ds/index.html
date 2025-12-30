@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <link rel="stylesheet" href="/assets/css/basic.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/css/ds.css">
+  <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+  <link rel="stylesheet" href="/assets/css/cursor.css">
+  <script src="/assets/js/cursor-trail.js"></script>
+  <title>DeepSeek - 夸克博客</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+</head>
+
+<body>
+  <div id="main-container">
+    <!-- 左侧栏 -->
+    <div id="sidebar">
+      <button id="sidebar-toggle">≡</button>
+      <div id="sidebar-header">
+        <h2>会话管理</h2>
+        <button id="theme-toggle">🌓</button>
+      </div>
+      <div id="history-list"></div>
+      <button id="new-chat-btn">新建会话</button>
+    </div>
+
+    <!-- 右侧主内容区 -->
+    <div id="chat-container">
+      <div id="chat-header">
+        <div id="chat-title">新会话</div>
+        <div id="model-controls">
+          <button class="model-toggle" id="model-toggle">
+            <span>深度思考</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="chat-history">
+        <div class="bot-msg">你好！我是 DeepSeek，请问有什么可以帮您？</div>
+      </div>
+
+      <div id="input-area">
+        <div class="drop-area" id="drop-area">
+          <p>拖放文件到这里或点击下方按钮选择</p>
+          <p>支持图片(png/jpg)、文本(txt/md)文件</p>
+        </div>
+        <div id="input-controls">
+          <button id="file-btn">📎 附件</button>
+          <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.txt,.md" multiple>
+          <textarea id="user-input" placeholder="输入你的问题..." rows="1"></textarea>
+          <button id="send-btn" onclick="sendMessage()">发送</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/ds.js"></script>
+
+  <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

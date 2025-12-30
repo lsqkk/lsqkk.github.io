@@ -14,7 +14,7 @@
 这是我的个人博客项目仓库，主要记录前端开发、技术实验和产品思考。项目基于原生技术栈构建，部署在 GitHub Pages。
 
 博客地址：[https://lsqkk.github.io](https://lsqkk.github.io)
-更新日志：[https://lsqkk.github.io/log](https://lsqkk.github.io/log)
+更新日志：[https://lsqkk.github.io/blog/log](https://lsqkk.github.io/blog/log)
 
 ## Star 趋势
 
@@ -37,8 +37,8 @@
 - [随笔](https://lsqkk.github.io/article-list)：架构设计、开发心得、技术选型思考
 - [工具集](https://lsqkk.github.io/tools)：自研前端工具、自动化脚本、效率解决方案
 - [游戏实验室](https://lsqkk.github.io/games)：基于 Canvas 的互动游戏，集成 Firebase 实时对战
-- [资讯聚合](https://lsqkk.github.io//daily)：前端技术动态、实时热搜与精选每日推荐
-- [动态相关](https://lsqkk.github.io/dt)：[网页聊天室](https://lsqkk.github.io/chat)、[直播推流](https://lsqkk.github.io/a/live)、[视频](https://lsqkk.github.io/qtv)
+- [资讯聚合](https://lsqkk.github.io//blog/daily)：前端技术动态、实时热搜与精选每日推荐
+- [动态相关](https://lsqkk.github.io/blog/dt)：[网页聊天室](https://lsqkk.github.io/a/chat-room)、[直播推流](https://lsqkk.github.io/a/live)、[视频](https://lsqkk.github.io/blog/qtv)
 
 ## 参与贡献
 

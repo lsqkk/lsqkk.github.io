@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克聊天室 - 夸克博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <link rel="stylesheet" href="chat.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+
+<body class="dark-mode">
+
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">夸克聊天室</div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="room-list" id="roomList">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <p>暂无聊天室</p>
+                </div>
+            </div>
+
+            <div class="join-room-container">
+                <input type="text" class="join-room-input" id="roomInput" placeholder="输入房间号">
+                <button class="join-room-btn" onclick="joinRoom()">加入房间</button>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="chat-header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="chat-title" id="currentRoomTitle">请选择一个聊天室</div>
+                <div style="width: 40px;"></div> <!-- 占位保持对称 -->
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <ul class="messages-list" id="messagesList"></ul>
+
+                <div class="profile-setup" id="profileSetup" style="display: none;">
+                    <div class="profile-title">设置您的个人资料</div>
+                    <input type="text" class="profile-input" id="nicknameInput" placeholder="您的昵称">
+                    <div class="color-picker" id="colorPicker">
+                        <div class="color-option" style="background: #40E0D0" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FF6B6B" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #7B68EE" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FFD700" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #C7EDCC" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FAF9DE" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #FFF2E2" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #2b4490" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #faa755" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #f391a9" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #843900" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #a3cf62" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #b22c46" onclick="selectColor(this)"></div>
+                        <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
+                    </div>
+                    <button class="profile-save-btn" onclick="saveProfile()">保存资料</button>
+                </div>
+            </div>
+
+            <div class="input-area" id="inputArea" style="display: none;">
+                <input type="text" class="message-input" id="messageInput" placeholder="输入消息..."
+                    onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+    <script src="chat.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

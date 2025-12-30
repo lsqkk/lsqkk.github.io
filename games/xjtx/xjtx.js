@@ -12,7 +12,7 @@ async function loadQuestion() {
     currentQuestion = data[Math.floor(Math.random() * data.length)];
 
     document.getElementById('question-image').innerHTML = `
-                <img src="https://lsqkk.github.io/games/xjtx/images/${currentQuestion.image}" alt="题目图片">
+                <img src="/games/xjtx/images/${currentQuestion.image}" alt="题目图片">
             `;
 }
 

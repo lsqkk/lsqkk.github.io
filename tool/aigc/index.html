@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 
 <head>
-    <link rel="stylesheet" href="/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克博客 | AIGC文本检测工具</title>
     <link rel="stylesheet" href="aigc.css">
-    <link rel="icon" href="https://lsqkk.github.io/image/logo_blue.png" type="image/png">
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
 
 </head>
 
@@ -52,7 +52,7 @@
             <div class="output-text" id="outputText"></div>
         </div>
     </div>
-    <a href="https://lsqkk.github.io/post.html?file=copyright.md" class="link">© 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights
+    <a href="/posts/copyright" class="link">© 2024 - 2025 蓝色奇夸克 / 夸克博客 All rights
         reserved.</a>
     <script>
         document.getElementById('analyzeBtn').addEventListener('click', analyzeText);
@@ -175,7 +175,7 @@
             return Math.max(0, Math.min(100, 1.5 * 10 ** (humanProb / 50))).toFixed(2);
         }
     </script>
-    <script src="/js/disable-right-click.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
 </body>
 
 </html>

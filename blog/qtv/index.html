@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克TV - 蓝色奇夸克</title>
+    <meta name="description" content="夸克TV | 遇见热爱">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <script src="/assets/js/nav.js"></script>
+    <header>
+        <link rel="stylesheet" href="/assets/css/basic.css">
+        <div class="container">
+            <div class="logo">
+                夸克TV
+            </div>
+            <div class="subtitle">遇见热爱</div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-videos">--</div>
+                    <div class="stat-label">总投稿数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">2105459088</div>
+                    <div class="stat-label">UID</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="user-container">
+            <a href="https://space.bilibili.com/2105459088" target="_blank" class="user-link">
+                <div class="user-info">
+                    <img src="/assets/img/touxiang.png" alt="蓝色奇夸克" class="user-avatar">
+                    <div class="user-details">
+                        <div class="user-name">蓝色奇夸克</div>
+                        <div class="user-signature">无穷的远方，无数的人们，都和我有关</div>
+                    </div>
+                </div>
+            </a>
+            <a href="https://space.bilibili.com/3546767368915813" target="_blank" class="user-link">
+                <div class="user-info">
+                    <img src="https://raw.githubusercontent.com/lsqkk/assets/img/main/202510290027819.jpg" alt="层林漫"
+                        class="user-avatar">
+                    <div class="user-details">
+                        <div class="user-name">层林漫</div>
+                        <div class="user-signature">发一些大号不敢发的</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="搜索视频...">
+                <button id="search-btn">搜索</button>
+            </div>
+            <div class="sort-options">
+                <button class="sort-btn active" data-orderby="pubdate">最新发布</button>
+                <button class="sort-btn" data-orderby="views">最多播放</button>
+            </div>
+        </div>
+
+        <div id="video-container">
+            <div class="loading" id="loading">正在加载视频列表...</div>
+        </div>
+
+        <div class="pagination">
+            <button id="prev-page" disabled>上一页</button>
+            <div class="page-info">第 <span id="current-page">1</span> 页</div>
+            <button id="next-page">下一页</button>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>夸克博客 &copy; 2025 夸克TV | 遇见热爱 - All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="qtv.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>
