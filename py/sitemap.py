@@ -11,10 +11,6 @@ from datetime import datetime
 from pathlib import Path
 import webbrowser
 
-def get_current_directory():
-    """获取脚本所在的目录"""
-    return os.path.dirname(os.path.abspath(__file__))
-
 def generate_sitemap():
     """
     一键生成sitemap.xml
@@ -22,7 +18,7 @@ def generate_sitemap():
     """
     
     # 自动获取当前目录作为网站根目录
-    root_dir = get_current_directory()
+    root_dir = "D:\git\lsqkk\lsqkk.github.io"
     base_url = "https://lsqkk.github.io/"
     
     print("=" * 60)
