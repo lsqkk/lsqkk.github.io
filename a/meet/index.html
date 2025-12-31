@@ -346,12 +346,11 @@
 
         </div>
     </div>
-    <!-- 放在Firebase SDK之后，初始化代码之前 -->
-    <script src="/assets/js/firebase-config.js"></script>
 
+
+    <script src="/assets/js/firebase-config.js"></script>
     <script>
-        // 直接使用全局变量 firebaseConfig
-        firebase.initializeApp(firebaseConfig);  // 或者 firebase.initializeApp(window.firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
 
         const database = firebase.database();
 

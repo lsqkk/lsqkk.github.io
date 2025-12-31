@@ -1,410 +1,305 @@
-/* -----------------------------------------------------------
-   1. 核心变量与深浅模式精修
-   ----------------------------------------------------------- */
+/* --- 全局变量与重置 --- */
 :root {
   --bg-main: #ffffff;
-  --bg-sidebar: #f9f9f9;
-  --bg-chat-user: #f7f7f8;
-  --bg-chat-bot: #ffffff;
-  --bg-input: #ffffff;
-  --bg-modal: #ffffff;
-  --bg-reasoning: #f1f1f1;
-
+  --bg-sidebar: #f8f9fa;
+  --bg-msg-user: #f4f4f7;
+  --bg-msg-bot: #ffffff;
   --text-main: #202123;
-  --text-sec: #6e6e80;
-  --text-reasoning: #888888;
-
+  --text-muted: #6e6e80;
   --border: #e5e5e5;
   --accent: #10a37f;
-  --accent-hover: #1a7f64;
-  --error: #ef4444;
-
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --accent-dark: #0e8c6d;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .dark-mode {
-  --bg-main: #343541;
-  --bg-sidebar: #202123;
-  --bg-chat-user: #444654;
-  --bg-chat-bot: #343541;
-  --bg-input: #40414f;
-  --bg-modal: #2a2b32;
-  --bg-reasoning: rgba(0, 0, 0, 0.2);
-
+  --bg-main: #212121;
+  --bg-sidebar: #171717;
+  --bg-msg-user: #2f2f2f;
+  --bg-msg-bot: #212121;
   --text-main: #ececf1;
-  --text-sec: #acacbe;
-  --text-reasoning: #9a9a9a;
-
-  --border: #4d4d4f;
-  --accent: #10a37f;
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --text-muted: #9a9a9a;
+  --border: #3d3d3d;
 }
 
-/* -----------------------------------------------------------
-   2. 基础复位
-   ----------------------------------------------------------- */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  outline: none;
 }
 
-body,
-html {
-  height: 100%;
-  width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  background-color: var(--bg-main);
+body {
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto;
+  background: var(--bg-main);
   color: var(--text-main);
+  height: 100vh;
   overflow: hidden;
 }
 
-/* -----------------------------------------------------------
-   3. 布局结构 (解决侧边栏消失 Bug)
-   ----------------------------------------------------------- */
+/* --- 布局结构 --- */
 #main-container {
   display: flex;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 }
 
+/* --- 侧边栏 --- */
 #sidebar {
   width: 260px;
-  background-color: var(--bg-sidebar);
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  transition: var(--transition);
-  flex-shrink: 0;
-  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #sidebar.collapsed {
-  width: 0;
-  transform: translateX(-260px);
+  margin-left: -260px;
 }
 
-#chat-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  /* 修复 flex 子元素溢出 */
-  background-color: var(--bg-main);
-  position: relative;
-}
-
-/* -----------------------------------------------------------
-   4. 侧边栏内部元素
-   ----------------------------------------------------------- */
 #sidebar-header {
-  padding: 16px;
+  padding: 20px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
 }
 
 .brand-text {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-sec);
-  letter-spacing: 0.1em;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--accent);
 }
 
 #history-list {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: 10px;
 }
 
 .history-item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px;
+  align-items: center;
+  padding: 10px 12px;
   margin-bottom: 4px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  transition: var(--transition);
-  color: var(--text-main);
-  border: 1px solid transparent;
+  transition: 0.2s;
 }
 
 .history-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .dark-mode .history-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .history-item.active {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-color: var(--border);
+  background: rgba(16, 163, 127, 0.1);
+  color: var(--accent);
+  font-weight: 500;
 }
 
-.history-item span {
+.history-item button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+#sidebar-footer {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* --- 主内容区 --- */
+#chat-container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
+  position: relative;
+}
+
+#chat-header {
+  height: 60px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+#chat-title {
+  font-size: 15px;
+  font-weight: 600;
+  max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.history-item button {
-  background: transparent;
-  border: none;
-  color: var(--text-sec);
-  font-size: 18px;
-  margin-left: 8px;
-  display: none;
-}
-
-.history-item:hover button {
-  display: block;
-}
-
-#sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#new-chat-btn {
-  background-color: var(--accent);
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.secondary-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-/* -----------------------------------------------------------
-   5. 聊天顶部导航 (去 Emoji 化图标)
-   ----------------------------------------------------------- */
-#chat-header {
-  height: 60px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  justify-content: space-between;
-  background: var(--bg-main);
-}
-
-#sidebar-toggle {
-  margin-right: 15px;
-}
-
-#chat-title {
-  flex: 1;
-  font-weight: 600;
-  text-align: center;
-  font-size: 16px;
-}
-
+/* --- 模型开关 --- */
 #model-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .model-info {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--text-sec);
-  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
-/* 滑动开关逻辑 */
 .model-toggle {
-  width: 44px;
-  height: 24px;
-  background-color: var(--accent);
-  border-radius: 12px;
+  width: 40px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--accent);
   position: relative;
   border: none;
   cursor: pointer;
-  transition: var(--transition);
+  transition: 0.3s;
 }
 
 .model-toggle.off {
-  background-color: #ccc;
+  background: #b0b0b0;
 }
 
 .toggle-slider {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   background: white;
   border-radius: 50%;
   position: absolute;
   top: 3px;
   right: 3px;
-  transition: var(--transition);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
 }
 
 .model-toggle.off .toggle-slider {
-  right: 23px;
+  transform: translateX(-20px);
 }
 
-/* -----------------------------------------------------------
-   6. 对话区域与消息气泡
-   ----------------------------------------------------------- */
+/* --- 对话历史 --- */
 #chat-history {
   flex: 1;
   overflow-y: auto;
+  padding-bottom: 50px;
   scroll-behavior: smooth;
-  padding-bottom: 40px;
 }
 
 .user-msg,
-.bot-msg,
-.error-msg {
-  padding: 24px 20%;
+.bot-msg {
+  padding: 25px 15%;
   border-bottom: 1px solid var(--border);
   position: relative;
-  word-break: break-word;
+  line-height: 1.7;
+  font-size: 15px;
 }
 
 .user-msg {
-  background-color: var(--bg-chat-user);
+  background: var(--bg-msg-user);
 }
 
 .bot-msg {
-  background-color: var(--bg-chat-bot);
+  background: var(--bg-msg-bot);
 }
 
-/* 思维链渲染框 */
+/* 思维链盒子 */
 .reasoning-box {
-  background-color: var(--bg-reasoning);
-  border-left: 2px solid var(--text-reasoning);
+  background: rgba(0, 0, 0, 0.03);
+  border-left: 2px solid var(--accent);
   padding: 12px 16px;
-  margin-bottom: 16px;
-  font-size: 13.5px;
-  color: var(--text-reasoning);
-  line-height: 1.6;
-  border-radius: 4px;
-  font-style: normal;
+  margin-bottom: 15px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  white-space: pre-wrap;
+  border-radius: 0 4px 4px 0;
 }
 
-/* COPY 按钮精修 */
+.dark-mode .reasoning-box {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* --- 复制按钮修复 --- */
 .copy-btn {
   position: absolute;
   bottom: 8px;
   right: 8px;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 4px 8px;
+  font-size: 10px;
   font-weight: 600;
   background: var(--bg-main);
   border: 1px solid var(--border);
   border-radius: 4px;
-  color: var(--text-sec);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: var(--transition);
-  z-index: 10;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.bot-msg:hover .copy-btn {
+  opacity: 1;
 }
 
 .copy-btn:hover {
-  border-color: var(--accent);
   color: var(--accent);
+  border-color: var(--accent);
 }
 
-/* -----------------------------------------------------------
-   7. 输入区域与文本框
-   ----------------------------------------------------------- */
+/* --- 输入区域 --- */
 #input-area {
-  padding: 20px 20%;
-  background: transparent;
+  padding: 20px 15%;
 }
 
-#input-controls {
+#input-wrapper {
   display: flex;
   align-items: flex-end;
-  background-color: var(--bg-input);
+  background: var(--bg-sidebar);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 8px 14px;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-}
-
-#input-controls:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.1);
+  padding: 10px;
+  box-shadow: var(--shadow);
 }
 
 #user-input {
   flex: 1;
   border: none;
   background: transparent;
-  color: var(--text-main);
   padding: 10px;
+  color: var(--text-main);
   font-size: 15px;
-  line-height: 1.5;
   resize: none;
   max-height: 200px;
-  outline: none;
 }
 
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-sec);
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-}
-
-.icon-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: var(--text-main);
-}
-
-#send-btn {
-  background-color: var(--accent);
-  color: white !important;
-  margin-left: 8px;
-}
-
-#send-btn:hover {
-  background-color: var(--accent-hover);
-}
-
-#send-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-/* -----------------------------------------------------------
-   8. 文件上传区域
-   ----------------------------------------------------------- */
 .drop-area {
   display: none;
-  border: 2px dashed var(--accent);
-  border-radius: 8px;
-  padding: 12px;
+  padding: 8px;
   text-align: center;
-  margin-bottom: 12px;
-  font-size: 13px;
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
   background: rgba(16, 163, 127, 0.05);
 }
 
@@ -412,9 +307,46 @@ html {
   display: block;
 }
 
-/* -----------------------------------------------------------
-   9. 设置弹窗
-   ----------------------------------------------------------- */
+/* --- 按钮通用 --- */
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-main);
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* --- 弹窗 --- */
 .modal {
   display: none;
   position: fixed;
@@ -422,7 +354,7 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 1000;
   align-items: center;
@@ -430,87 +362,41 @@ html {
 }
 
 .modal-content {
-  background-color: var(--bg-modal);
-  width: 90%;
-  max-width: 400px;
+  background: var(--bg-main);
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
+  border-radius: 16px;
+  width: 380px;
+  box-shadow: var(--shadow);
 }
 
-.input-group label {
-  display: block;
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+
+.modal-hint {
   font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-sec);
+  color: var(--text-muted);
+  margin-bottom: 20px;
 }
 
 .input-group input {
   width: 100%;
   padding: 12px;
-  border-radius: 8px;
   border: 1px solid var(--border);
-  background-color: var(--bg-main);
+  border-radius: 8px;
+  background: var(--bg-sidebar);
   color: var(--text-main);
-  margin-bottom: 20px;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
+  margin-top: 25px;
 }
 
-#save-settings {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-}
-
-/* -----------------------------------------------------------
-   10. 滚动条与响应式
-   ----------------------------------------------------------- */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-.dark-mode ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 1024px) {
-
-  .user-msg,
-  .bot-msg,
-  #input-area {
-    padding-left: 10%;
-    padding-right: 10%;
-  }
-}
-
+/* --- 响应式 --- */
 @media (max-width: 768px) {
-  #sidebar {
-    position: absolute;
-    height: 100%;
-    transform: translateX(-100%);
-    width: 260px;
-  }
-
-  #sidebar.active {
-    transform: translateX(0);
-  }
 
   .user-msg,
   .bot-msg,
