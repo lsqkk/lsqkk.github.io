@@ -6,6 +6,8 @@ class CommandManager {
         this.currentFileName = null;
         this.presetCommands = null;
         this.loadPresetCommands();
+
+        this.dangerAttempts = 0;
     }
 
     async loadPresetCommands() {
@@ -25,6 +27,27 @@ class CommandManager {
         const parts = command.trim().split(/\s+/);
         const cmd = parts[0].toLowerCase();
         const args = parts.slice(1);
+
+
+        // 检查是否处于危险模式
+        if (this.storage.getDangerMode()) {
+            this.handleDangerMode(command);
+            return;
+        }
+
+        // 检查自毁状态
+        if (this.storage.shouldShowDestruction()) {
+            this.triggerSelfDestruction();
+            return;
+        }
+
+        // 检查危险指令
+        if (this.storage.checkDangerousCommand(command)) {
+            this.handleDangerousCommand(command);
+            return;
+        }
+
+
 
         // 检查关机命令
         if (cmd.includes('shutdown')) {
@@ -128,6 +151,237 @@ class CommandManager {
         } catch (error) {
             this.output(`错误: ${error.message}`, 'error');
         }
+    }
+
+
+    handleDangerousCommand(command) {
+        this.dangerAttempts++;
+
+        if (this.dangerAttempts >= 2) {
+            // 第二次尝试危险指令，直接触发自毁
+            this.triggerSelfDestruction();
+            return;
+        }
+
+        // 第一次警告
+        this.output('<span style="color: #ff0000; font-weight: bold;">⚠️ 警告：检测到危险指令！</span>', 'error');
+        this.output('系统已进入保护模式。再次尝试危险操作将导致系统自毁。', 'warning');
+        this.output('输入"安全模式"可退出保护模式，或等待10秒后自动恢复。', 'info');
+
+        // 进入危险模式
+        this.storage.setDangerMode(true);
+
+        // 设置10秒后自动退出危险模式
+        setTimeout(() => {
+            if (this.storage.getDangerMode()) {
+                this.storage.setDangerMode(false);
+                this.dangerAttempts = 0;
+                this.output('系统保护模式已自动关闭。', 'success');
+            }
+        }, 10000);
+    }
+
+    handleDangerMode(command) {
+        if (command.toLowerCase() === '安全模式' || command.toLowerCase() === 'safemode') {
+            this.storage.setDangerMode(false);
+            this.dangerAttempts = 0;
+            this.output('已退出保护模式。', 'success');
+            return;
+        }
+
+        // 在危险模式下尝试危险指令，触发自毁
+        if (this.storage.checkDangerousCommand(command)) {
+            this.triggerSelfDestruction();
+            return;
+        }
+
+        this.output('<span style="color: #ff9900">保护模式：系统处于高度戒备状态</span>', 'warning');
+        this.output('输入"安全模式"可恢复正常操作。', 'info');
+    }
+
+    triggerSelfDestruction() {
+        // 设置自毁状态
+        this.storage.setSelfDestructTriggered(true);
+        this.storage.destroySystem();
+
+        // 显示自毁序列
+        this.showDestructionSequence();
+
+        // 10秒后关闭页面
+        setTimeout(() => {
+            this.finalDestruction();
+        }, 10000);
+    }
+
+    showDestructionSequence() {
+        const messages = [
+            '🚨 危险指令检测到！',
+            '⚠️ 系统完整性受到威胁',
+            '🔓 启动自毁协议...',
+            '💥 正在擦除所有数据...',
+            '🔥 系统核心文件销毁中...',
+            '⚠️ 无法停止此过程',
+            '🕛 倒计时: 10',
+            '🕚 倒计时: 9',
+            '🕙 倒计时: 8',
+            '🕘 倒计时: 7',
+            '🕗 倒计时: 6',
+            '🕖 倒计时: 5',
+            '🕕 倒计时: 4',
+            '🕔 倒计时: 3',
+            '🕓 倒计时: 2',
+            '🕒 倒计时: 1',
+            '💀 系统自毁完成'
+        ];
+
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index < messages.length) {
+                this.output(`<span style="color: #ff0000; font-weight: bold;">${messages[index]}</span>`, 'error');
+                index++;
+
+                // 模拟屏幕闪烁
+                if (index % 3 === 0) {
+                    document.body.style.backgroundColor = '#ff0000';
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = '#000';
+                    }, 100);
+                }
+            } else {
+                clearInterval(interval);
+            }
+        }, 500);
+    }
+
+    finalDestruction() {
+        // 创建自毁页面
+        const destructionHTML = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>系统自毁</title>
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        background: #000;
+                        color: #f00;
+                        font-family: 'Courier New', monospace;
+                        overflow: hidden;
+                        height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        text-align: center;
+                    }
+                    .skull {
+                        font-size: 100px;
+                        animation: pulse 2s infinite;
+                        margin-bottom: 30px;
+                    }
+                    .message {
+                        font-size: 24px;
+                        margin: 10px 0;
+                        text-shadow: 0 0 10px #f00;
+                    }
+                    .warning {
+                        color: #ff9900;
+                        font-size: 18px;
+                        margin-top: 30px;
+                        padding: 20px;
+                        border: 2px solid #f00;
+                        border-radius: 5px;
+                        max-width: 600px;
+                        background: rgba(255, 0, 0, 0.1);
+                    }
+                    @keyframes pulse {
+                        0% { transform: scale(1); opacity: 1; }
+                        50% { transform: scale(1.1); opacity: 0.7; }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                    .glitch {
+                        position: relative;
+                        animation: glitch 5s infinite;
+                    }
+                    @keyframes glitch {
+                        0% { transform: translate(0); }
+                        20% { transform: translate(-2px, 2px); }
+                        40% { transform: translate(-2px, -2px); }
+                        60% { transform: translate(2px, 2px); }
+                        80% { transform: translate(2px, -2px); }
+                        100% { transform: translate(0); }
+                    }
+                    .scanline {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 2px;
+                        background: linear-gradient(to right, transparent, #f00, transparent);
+                        animation: scan 2s linear infinite;
+                        z-index: 1000;
+                    }
+                    @keyframes scan {
+                        0% { top: 0; }
+                        100% { top: 100%; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="scanline"></div>
+                <div class="skull">💀</div>
+                <div class="message glitch">⚠️ 系统已被破坏</div>
+                <div class="message">检测到危险指令执行</div>
+                <div class="message">所有数据已被永久擦除</div>
+                <div class="warning">
+                    <strong>恢复方法：</strong><br>
+                    1. 清除浏览器所有本地存储数据<br>
+                    2. 清除Cookie和站点数据<br>
+                    3. 或使用无痕/隐私模式访问<br>
+                    <br>
+                    <small>下次请谨慎输入危险指令！</small>
+                </div>
+                <script>
+                    // 防止页面被刷新恢复
+                    localStorage.setItem('terminal_self_destruct', 'true');
+                    document.cookie = "terminal_destroyed=true; max-age=31536000; path=/";
+                    
+                    // 添加键盘监听，阻止任何操作
+                    document.addEventListener('keydown', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                    
+                    // 阻止右键菜单
+                    document.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                    });
+                    
+                    // 每5秒检查一次，确保自毁状态
+                    setInterval(function() {
+                        if (!localStorage.getItem('terminal_self_destruct')) {
+                            localStorage.setItem('terminal_self_destruct', 'true');
+                        }
+                    }, 5000);
+                </script>
+            </body>
+            </html>
+        `;
+
+        // 使用新页面替换当前页面
+        document.open();
+        document.write(destructionHTML);
+        document.close();
+
+        // 尝试关闭窗口
+        setTimeout(() => {
+            try {
+                window.close();
+            } catch (e) {
+                // 如果无法关闭，保持自毁页面
+            }
+        }, 3000);
     }
 
     checkPresetAndCustomCommands(cmd, args) {

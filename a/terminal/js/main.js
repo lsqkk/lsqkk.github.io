@@ -1,5 +1,13 @@
 class Terminal {
     constructor() {
+
+
+        if (this.checkDestruction()) {
+            this.showDestructionScreen();
+            return; // 停止正常初始化
+        }
+
+
         this.storage = new StorageManager();
         this.commands = new CommandManager(this.storage, this.output.bind(this));
         this.history = [];
@@ -8,6 +16,100 @@ class Terminal {
         this.initializeTerminal();
         this.setupEventListeners();
         this.showWelcome();
+    }
+
+
+    checkDestruction() {
+        try {
+            // 检查多种存储方式中的自毁标志
+            const storageManager = new StorageManager();
+            return storageManager.shouldShowDestruction();
+        } catch (e) {
+            console.error('检查自毁状态时出错:', e);
+            return false;
+        }
+    }
+
+    showDestructionScreen() {
+        // 阻止终端正常初始化
+        document.getElementById('terminal').style.display = 'none';
+
+        // 创建自毁界面
+        const destructionDiv = document.createElement('div');
+        destructionDiv.id = 'destruction-screen';
+        destructionDiv.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #000;
+                color: #f00;
+                font-family: 'Courier New', monospace;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                text-align: center;
+                padding: 20px;
+            ">
+                <div style="font-size: 80px; margin-bottom: 30px;">💀</div>
+                <div style="font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px #f00;">
+                    系统已被破坏
+                </div>
+                <div style="font-size: 18px; margin-bottom: 10px; color: #ff6666;">
+                    检测到先前执行的危险指令
+                </div>
+                <div style="font-size: 16px; margin-bottom: 30px; color: #ff9999;">
+                    所有终端功能已被永久禁用
+                </div>
+                <div style="
+                    border: 2px solid #f00;
+                    padding: 20px;
+                    border-radius: 5px;
+                    max-width: 600px;
+                    background: rgba(255, 0, 0, 0.1);
+                    text-align: left;
+                    color: #ffcc00;
+                ">
+                    <strong>恢复方法：</strong><br>
+                    1. 清除浏览器所有本地存储数据 (LocalStorage)<br>
+                    2. 清除所有Cookie<br>
+                    3. 清除站点数据<br>
+                    4. 或使用无痕/隐私模式访问<br>
+                    <br>
+                    <small style="color: #999;">警告：系统自毁状态已永久记录</small>
+                </div>
+                <div style="margin-top: 30px; font-size: 14px; color: #666;">
+                    刷新页面无效 - 必须清除本地存储数据
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(destructionDiv);
+
+        // 阻止键盘输入
+        document.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // 阻止右键菜单
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // 定期检查，确保自毁状态
+        setInterval(() => {
+            try {
+                localStorage.setItem('terminal_self_destruct', 'true');
+                document.cookie = "terminal_destroyed=true; max-age=31536000; path=/";
+            } catch (e) {
+                // 忽略错误
+            }
+        }, 10000);
     }
 
     initializeTerminal() {

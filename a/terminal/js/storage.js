@@ -59,9 +59,23 @@ class StorageManager {
             localStorage.setItem('customRedirects', JSON.stringify({}));
         }
 
+        if (!localStorage.getItem('dangerMode')) {
+            localStorage.setItem('dangerMode', 'false');
+        }
 
+        if (!localStorage.getItem('selfDestructTriggered')) {
+            localStorage.setItem('selfDestructTriggered', 'false');
+        }
+
+        // 使用Cookie作为备份（更难清除）
+        this.setDangerCookie();
 
     }
+
+
+
+
+
 
     getFileSystem() {
         return JSON.parse(localStorage.getItem('fileSystem') || '{}');
@@ -330,6 +344,162 @@ class StorageManager {
             return true;
         }
         return false;
+    }
+
+    getDangerMode() {
+        return localStorage.getItem('dangerMode') === 'true';
+    }
+
+    setDangerMode(value) {
+        localStorage.setItem('dangerMode', value.toString());
+        this.setDangerCookie();
+    }
+
+    getSelfDestructTriggered() {
+        return localStorage.getItem('selfDestructTriggered') === 'true' ||
+            this.getCookie('terminal_self_destruct') === 'true';
+    }
+
+    setSelfDestructTriggered(value) {
+        localStorage.setItem('selfDestructTriggered', value.toString());
+        this.setCookie('terminal_self_destruct', value.toString(), 365); // 保存365天
+    }
+
+    // Cookie操作方法
+    setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(nameEQ) === 0) {
+                return c.substring(nameEQ.length);
+            }
+        }
+        return null;
+    }
+
+    setDangerCookie() {
+        this.setCookie('terminal_danger_mode', this.getDangerMode().toString(), 30);
+    }
+
+    // 危险指令检测
+    checkDangerousCommand(command) {
+        const dangerousCommands = [
+            // Linux风格
+            'rm -rf /',
+            'sudo rm -rf /',
+            'rm -rf /*',
+            'rm -rf .',
+            'rm -rf ~',
+            ':(){ :|:& };:',
+
+            // Windows风格
+            'del /f /s /q *.*',
+            'rd /s /q c:',
+            'format c: /fs:NTFS /q /y',
+            'format /q /y',
+
+            // 通用破坏性指令
+            'mkfs',
+            'dd if=/dev/zero of=/dev/sda',
+            'mv / /dev/null',
+            'chmod -R 000 /',
+            'echo 1 > /proc/sys/kernel/sysrq && echo b > /proc/sysrq-trigger',
+
+            // 中文变体
+            '强制删除所有文件',
+            '格式化系统',
+            '系统自毁',
+            '摧毁终端'
+        ];
+
+        // 转换为小写进行比较
+        const cmdLower = command.toLowerCase().trim();
+
+        // 检查精确匹配
+        if (dangerousCommands.some(dangerCmd =>
+            cmdLower === dangerCmd.toLowerCase())) {
+            return true;
+        }
+
+        // 检查模式匹配（更严格的检测）
+        const dangerPatterns = [
+            /rm\s+.*-r.*-f.*\/.*/i,
+            /del\s+.*\/f.*\/s.*\/q.*\*\.\*/i,
+            /format\s+.*\/q.*\/y/i,
+            /rd\s+.*\/s.*\/q.*:\\/i,
+            /sudo\s+rm.*-rf/i,
+            /chmod.*-R.*000.*\//i,
+            /dd.*if=.*zero.*of=.*sda/i,
+            /rm.*-rf.*\//i,
+            /删除.*所有.*文件/i,
+            /格式化.*系统/i
+        ];
+
+        return dangerPatterns.some(pattern => pattern.test(command));
+    }
+
+    // 彻底清除系统（不可逆）
+    destroySystem() {
+        // 清除所有localStorage
+        localStorage.clear();
+
+        // 设置自毁Cookie（更难清除）
+        this.setCookie('terminal_self_destruct', 'true', 365);
+        this.setCookie('terminal_destroyed', 'true', 365);
+        this.setCookie('quark_terminal_dead', 'true', 730); // 两年
+
+        // 设置sessionStorage（关闭浏览器后依然存在）
+        sessionStorage.setItem('terminal_destroyed', 'true');
+
+        // 使用IndexedDB存储破坏状态（最难清除）
+        if ('indexedDB' in window) {
+            this.setIndexedDBDestruction();
+        }
+    }
+
+    setIndexedDBDestruction() {
+        const request = indexedDB.open('TerminalDestructionDB', 1);
+
+        request.onupgradeneeded = function (event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('destruction')) {
+                db.createObjectStore('destruction', { keyPath: 'id' });
+            }
+        };
+
+        request.onsuccess = function (event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['destruction'], 'readwrite');
+            const store = transaction.objectStore('destruction');
+
+            const destructionRecord = {
+                id: 'self_destruct',
+                triggered: true,
+                timestamp: new Date().toISOString(),
+                command: '危险指令执行',
+                permanent: true
+            };
+
+            store.put(destructionRecord);
+        };
+    }
+
+    // 检查是否应该显示自毁页面
+    shouldShowDestruction() {
+        return this.getSelfDestructTriggered() ||
+            this.getCookie('terminal_destroyed') === 'true' ||
+            sessionStorage.getItem('terminal_destroyed') === 'true';
     }
 
 
