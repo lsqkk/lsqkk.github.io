@@ -182,7 +182,7 @@ async function sha256(message) {
 }
 
 /**
- * 管理员登录逻辑
+ * 管理员登录逻辑 (安全版本)
  */
 window.adminLogin = async function () {
     const passwordInput = document.getElementById('adminPassword');
@@ -194,18 +194,29 @@ window.adminLogin = async function () {
     }
 
     try {
-        const hash = await sha256(password);
-        // [重要] 请将此哈希值替换为您实际管理员密码的 SHA-256 哈希值
-        const expectedHash = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af';
+        // 1. 前端计算用户输入密码的哈希
+        const userInputHash = await sha256(password);
 
-        if (hash === expectedHash) {
+        // 2. 调用 Vercel 安全API进行验证
+        const response = await fetch('https://api.lsqkk.space/api/admin-auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ passwordHash: userInputHash }) // 发送哈希值
+        });
+
+        const result = await response.json();
+
+        // 3. 根据API返回结果处理
+        if (response.ok && result.success) {
             isAdmin = true;
             localStorage.setItem('isAdmin', 'true');
             alert('管理员登录成功');
             passwordInput.value = '';
             updateAdminUI();
 
-            // 根据当前视图重新加载内容
+            // ... (你原有的重新加载内容的逻辑)
             const isDetailView = document.getElementById('detailView').style.display !== 'none';
             if (isDetailView) {
                 const currentDiscussionId = document.getElementById('singleDiscussionContent').dataset.discussionId;
@@ -214,10 +225,13 @@ window.adminLogin = async function () {
                 loadDiscussionsList();
             }
         } else {
-            alert('密码错误');
+            // 登录失败
+            alert('密码错误: ' + (result.error || ''));
         }
+
     } catch (e) {
-        alert('登录出错: ' + e.message);
+        console.error('登录过程出错:', e);
+        alert('登录过程发生错误，请检查网络或稍后再试。');
     }
 }
 

@@ -1,6 +1,15 @@
 // /api/admin-auth.js
 export default async function handler(req, res) {
+    console.log(`[Admin Auth] 收到请求:`, {
+        method: req.method,
+        path: req.url,
+        origin: req.headers.origin,
+        referer: req.headers.referer,
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    });
+
     // 1. 只允许 POST 方法
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
