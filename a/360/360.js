@@ -1,6 +1,3 @@
-// 密码哈希值 (helloworld的SHA-256哈希)
-const PASSWORD_HASH = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af';
-
 // 全局变量
 let currentViewer = null;
 let currentScene = null;
@@ -423,33 +420,68 @@ function toggleMobilePanel(panelId) {
     }
 }
 
-// 验证密码
+// 验证密码 (安全API版本)
 async function verifyPassword() {
     const password = document.getElementById('passwordInput').value;
     const errorMsg = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('passwordSubmitBtn'); // 假设你的提交按钮有这个ID，用于防止重复提交
 
-    // 计算SHA-256哈希
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    // 可选：添加防重复提交和加载状态
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '验证中...';
+    }
+    errorMsg.style.display = 'none'; // 先隐藏错误信息
 
-    if (hashHex === PASSWORD_HASH) {
-        // 密码正确
-        isUnlocked = true;
-        localStorage.setItem('watermarkUnlocked', 'true');
-        document.getElementById('watermark').style.display = 'none';
-        document.getElementById('passwordDialog').style.display = 'none';
-        document.getElementById('passwordInput').value = '';
-        errorMsg.style.display = 'none';
-    } else {
-        // 密码错误
+    try {
+        // 1. 计算用户输入密码的SHA-256哈希 (与之前算法保持一致)
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        // 2. 调用Vercel安全API进行验证
+        const response = await fetch('https://api.lsqkk.space/api/admin-auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ passwordHash: hashHex })
+        });
+
+        const result = await response.json();
+
+        // 3. 根据API返回结果处理
+        if (response.ok && result.success) {
+            // 密码正确
+            isUnlocked = true;
+            localStorage.setItem('watermarkUnlocked', 'true');
+            document.getElementById('watermark').style.display = 'none';
+            document.getElementById('passwordDialog').style.display = 'none';
+            document.getElementById('passwordInput').value = ''; // 清空输入框
+            // 解锁成功后的其他操作...
+        } else {
+            // 密码错误 (API返回 401 或其他错误)
+            errorMsg.textContent = result.error || '密码错误，请重试。';
+            errorMsg.style.display = 'block';
+            document.getElementById('passwordInput').value = ''; // 清空输入框
+            document.getElementById('passwordInput').focus(); // 聚焦到输入框，方便重试
+        }
+
+    } catch (error) {
+        // 网络错误或API异常
+        console.error('验证过程出错:', error);
+        errorMsg.textContent = '网络错误或验证服务异常，请稍后重试。';
         errorMsg.style.display = 'block';
-        document.getElementById('passwordInput').value = '';
+    } finally {
+        // 无论成功失败，都恢复按钮状态
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '解锁'; // 恢复按钮原始文字
+        }
     }
 }
-
 // 显示上下文菜单
 function showContextMenu(x, y) {
     // 这里可以添加自定义右键菜单项

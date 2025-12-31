@@ -142,7 +142,6 @@
                 }
             });
 
-            // 检测"helloworld"输入以解禁右键
             var secretInput = '';
             var secretCode = 'helloworld';
 
