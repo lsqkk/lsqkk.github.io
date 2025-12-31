@@ -1,4 +1,3 @@
-// /api/firebase-config.js 的正确完整内容
 export default function handler(req, res) {
     // 1. 获取请求来源
     const referer = req.headers.referer || req.headers.referrer;
