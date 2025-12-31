@@ -3,7 +3,7 @@ export default function handler(req, res) {
     // 1. 获取请求来源
     const referer = req.headers.referer || req.headers.referrer;
     const origin = req.headers.origin;
-    const allowedDomains = ['localhost', 'lsqkk.github.io'];
+    const allowedDomains = ['localhost', 'lsqkk.github.io', 'api.lsqkk.space'];
     let isAllowed = false;
     let requestOrigin = '';
 
