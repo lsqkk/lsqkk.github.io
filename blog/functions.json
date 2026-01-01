@@ -110,6 +110,86 @@
                     "target": "_target"
                 }
             ]
+        },
+        {
+            "name": "仓库Pages",
+            "functions": [
+                {
+                    "name": "夸克文档QuarkDoc",
+                    "categories": [
+                        "文档",
+                        "知识库"
+                    ],
+                    "description": "夸克博客的文档与知识库项目，系统地整理和分享技术笔记、开源项目文档、博客文章的延伸内容以及其他值得记录的知识。由MkDocs构建页面。",
+                    "link": "/quarkdoc",
+                    "target": "_self"
+                },
+                {
+                    "name": "个人学术主页",
+                    "categories": [
+                        "学术",
+                        "个人主页"
+                    ],
+                    "description": "我的学术主页。一个基于 Minimal Light 主题修改的学术个人主页模板，适用于本科生、研究生或研究人员展示个人信息、项目经历、竞赛获奖等内容。",
+                    "link": "/academic-homepage",
+                    "target": "_self"
+                }
+            ]
+        },
+        {
+            "name": "其他仓库项目",
+            "functions": [
+                {
+                    "name": "ZhihuCuration",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "智能整理知乎收藏夹下载内容，调用大模型API实现可定制的自动分类。",
+                    "link": "https://github.com/lsqkk/ZhihuCuration",
+                    "target": "_blank"
+                },
+                {
+                    "name": "Chat Analyzer",
+                    "categories": [
+                        "分析工具",
+                        "GitHub"
+                    ],
+                    "description": "功能强大的中文聊天记录分析工具，能够自动提取高频词汇、统计纯标点消息，并生成精美的词云可视化图表。",
+                    "link": "https://github.com/lsqkk/chat-analyzer",
+                    "target": "_blank"
+                },
+                {
+                    "name": "OrangePi",
+                    "categories": [
+                        "开发笔记",
+                        "GitHub"
+                    ],
+                    "description": "香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器",
+                    "link": "https://github.com/lsqkk/OrangePi",
+                    "target": "_blank"
+                },
+                {
+                    "name": "fire-risk",
+                    "categories": [
+                        "机器学习",
+                        "GitHub"
+                    ],
+                    "description": "一个基于机器学习的火灾风险预测系统，包含预处理数据和模型训练。",
+                    "link": "https://github.com/lsqkk/fire-risk",
+                    "target": "_blank"
+                },
+                {
+                    "name": "ppt-remote",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "摆脱遥控笔，在任何设备（手机、平板）遥控放映PPT。",
+                    "link": "https://github.com/lsqkk/ppt-remote",
+                    "target": "_blank"
+                }
+            ]
         }
     ]
 }

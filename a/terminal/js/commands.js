@@ -908,7 +908,7 @@ class CommandManager {
     openTools() {
         this.output('正在打开工具页面...', 'info');
         setTimeout(() => {
-            window.open('/tool.html', '_blank');
+            window.open('/tool', '_blank');
         }, 500);
     }
 

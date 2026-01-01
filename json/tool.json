@@ -1,81 +1,86 @@
 {
   "categories": [
     {
-      "name": "生活 Life",
+      "name": "生活",
       "tools": [
         {
-          "name": "🕒 经典时钟",
-          "url": "tool/tool-time",
+          "name": "经典时钟",
+          "url": "/tool/tool-time",
           "target": "_blank"
         },
         {
-          "name": "🍅 智能番茄钟",
-          "url": "tool/pomodoro",
+          "name": "智能番茄钟",
+          "url": "/tool/pomodoro",
           "target": "_blank"
         },
         {
-          "name": "⛅ 夸克天气",
-          "url": "tool/weather",
+          "name": "夸克天气",
+          "url": "/tool/weather",
           "target": "_blank"
         }
       ]
     },
     {
-      "name": "学术 Academy",
+      "name": "学术",
       "tools": [
         {
-          "name": "📝 AIGC 检查",
-          "url": "tool/aigc",
+          "name": "AIGC 检查",
+          "url": "/tool/aigc",
           "target": "_blank"
         },
         {
-          "name": "📝 DeepSeek API对话",
-          "url": "ds",
+          "name": "LLM sort",
+          "url": "/tool/llmsort",
           "target": "_blank"
         },
         {
-          "name": "🧮 高级科学计算器",
-          "url": "tool/calculator",
+          "name": "DeepSeek API对话",
+          "url": "/a/ds",
           "target": "_blank"
         },
         {
-          "name": "📒 论文参考文献生成",
-          "url": "tool/ref",
+          "name": "高级科学计算器",
+          "url": "/tool/calculator",
           "target": "_blank"
         },
         {
-          "name": "⚖️ Quark OJ 在线判题",
-          "url": "a/oj",
+          "name": "论文参考文献生成",
+          "url": "/tool/ref",
+          "target": "_blank"
+        },
+        {
+          "name": "Quark OJ 在线判题",
+          "url": "/a/oj",
           "target": "_blank"
         }
       ]
     },
     {
-      "name": "文本 Text",
+      "name": "文本",
       "tools": [
         {
-          "name": "📻 语音识别",
-          "url": "tool/tool-audio2txt",
+          "name": "聊天记录高频词&图云生成",
+          "url": "/tool/chat-analyzer",
           "target": "_blank"
         },
         {
-          "name": "📷 文字识别",
-          "url": "tool/ocr",
+          "name": "语音识别",
+          "url": "/tool/tool-audio2txt",
           "target": "_blank"
         },
         {
-          "name": "📝 Markdown 编辑器",
-          "url": "tool/tool-md",
+          "name": "文字识别",
+          "url": "/tool/ocr",
           "target": "_blank"
         },
         {
-          "name": "📝 多人协同 Markdown 编辑器",
-          "url": "tool/co-md",
+          "name": "Markdown 编辑器",
+          "url": "/tool/tool-md",
           "target": "_blank"
         },
         {
-          "name": "🔗 混淆链接生成器",
-          "url": "l",
+          "name": "多人协同 Markdown 编辑器",
+          "url": "/tool/co-md",
           "target": "_blank"
         }
       ]
@@ -84,98 +89,93 @@
       "name": "实时协同",
       "tools": [
         {
-          "name": "📁 夸克闪传 QuarkShare",
-          "url": "a/share",
+          "name": "夸克闪传 QuarkShare",
+          "url": "/a/share",
           "target": "_blank"
         },
         {
-          "name": "📝 多人协同 Markdown 编辑器",
-          "url": "tool/co-md",
+          "name": "多人协同 Markdown 编辑器",
+          "url": "/tool/co-md",
           "target": "_blank"
         },
         {
-          "name": "🎮 手机PPT遥控",
-          "url": "tool/pptremote",
+          "name": "PPT遥控器",
+          "url": "/tool/pptremote",
           "target": "_blank"
         },
         {
-          "name": "💬 夸克聊天室",
-          "url": "chat",
+          "name": "夸克聊天室",
+          "url": "/a/chat-room",
           "target": "_blank"
         },
         {
-          "name": "📹 夸克会议",
-          "url": "a/meet",
+          "name": "夸克会议",
+          "url": "/a/meet",
           "target": "_blank"
         }
       ]
     },
     {
-      "name": "图片 Image",
+      "name": "图片",
       "tools": [
         {
-          "name": "🔒 图片混淆加密",
-          "url": "tool/tphx",
+          "name": "图片混淆加密",
+          "url": "/tool/tphx",
           "target": "_blank"
         },
         {
-          "name": "❤️ 图片转Emoji",
-          "url": "tool/image-emoji",
+          "name": "图片转Emoji",
+          "url": "/tool/image-emoji",
           "target": "_blank"
         }
       ]
     },
     {
-      "name": "其他 Others",
+      "name": "其他",
       "tools": [
         {
-          "name": "📝 科技伦理立场测试",
-          "url": "tool/estest",
+          "name": "科技伦理立场测试",
+          "url": "/tool/estest",
           "target": "_blank"
         },
         {
-          "name": "🎮 点此玩游戏",
-          "url": "games",
+          "name": "夸克自控",
+          "url": "/a/zk",
           "target": "_blank"
         },
         {
-          "name": "💬 夸克自控",
-          "url": "a/zk",
-          "target": "_blank"
-        },
-        {
-          "name": "🔍 交大360°",
+          "name": "交大360度",
           "url": "/a/360",
           "target": "_blank"
         },
         {
-          "name": "🔍 Bing搜索",
+          "name": "Bing搜索",
           "url": "https://cn.bing.com/",
           "target": "_blank"
         }
       ]
     },
     {
-      "name": "博客管理 Quark Only",
+      "name": "博客管理",
       "tools": [
         {
-          "name": "📂 博客管理",
+          "name": "博客管理",
           "url": "https://github.com/lsqkk/lsqkk.github.io/tree/main",
           "target": "_blank"
         },
         {
-          "name": "🆕 新建文件",
+          "name": "新建文件",
           "url": "https://github.com/lsqkk/lsqkk.github.io/new/main",
           "target": "_blank"
         },
         {
-          "name": "⬆️ 上传文件",
+          "name": "上传文件",
           "url": "https://github.com/lsqkk/lsqkk.github.io/upload/main",
           "target": "_blank"
         },
         {
-          "name": "访问量",
-          "url": "/tool/stats.html",
+          "name": "访问量统计",
+          "url": "/tool/stats",
           "target": "_blank"
         }
       ]

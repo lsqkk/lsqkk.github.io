@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>夸克动态 | 蓝色奇夸克のBlog</title>
-    <base href=“/”>
     <link rel="stylesheet" href="/assets/css/dt.css">
 
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
@@ -17,20 +16,19 @@
 </head>
 <style>
     body {
-        background: url('assets/img/bg.png') no-repeat center center fixed;
+        background: url('/assets/img/bg.png') no-repeat center center fixed;
         background-size: cover;
     }
 </style>
 
 <body>
-    <script src="/assets/js/nav.js"></script>
     <div class="dynamic-container">
         <div class="dynamic-header">
-            <h1>📢 站主动态</h1>
-            <p>仅日常分享，开发日志请移步主页 - 最新功能 - 更新日志</p>
+            <h1>站主动态</h1>
+            <p>仅日常分享，开发日志请移步 → </p><a href="/blog/log" class="back-home">更新日志</a>
         </div>
         <div id="dynamic-content"></div>
-        <a href="index.html" class="back-home">← 返回主页</a>
+        <a href="/" class="back-home">← 返回主页</a>
     </div>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
