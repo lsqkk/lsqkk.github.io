@@ -6,7 +6,7 @@ import os
 from urllib.parse import urlparse
 
 # 端口
-PORT = 8080
+PORT = 8000
 
 class HTMLAwareHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):

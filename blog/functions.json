@@ -1,0 +1,115 @@
+{
+    "categories": [
+        {
+            "name": "基础功能",
+            "functions": [
+                {
+                    "name": "文章列表",
+                    "categories": [
+                        "内容",
+                        "核心功能"
+                    ],
+                    "description": "浏览和管理所有博客文章，按分类、标签和时间排序",
+                    "link": "/article-list",
+                    "target": "_target"
+                },
+                {
+                    "name": "工具箱",
+                    "categories": [
+                        "实用工具",
+                        "效率"
+                    ],
+                    "description": "集合各类实用工具，提高创作和管理效率",
+                    "link": "/tool",
+                    "target": "_target"
+                },
+                {
+                    "name": "游戏",
+                    "categories": [
+                        "娱乐",
+                        "联机",
+                        "前端"
+                    ],
+                    "description": "休闲娱乐游戏，提供轻松的互动体验",
+                    "link": "/games",
+                    "target": "_target"
+                },
+                {
+                    "name": "视频 Q-TV",
+                    "categories": [
+                        "多媒体",
+                        "内容"
+                    ],
+                    "description": "视频内容专区，观看和分享站主视频",
+                    "link": "/blog/qtv",
+                    "target": "_target"
+                },
+                {
+                    "name": "站主动态",
+                    "categories": [
+                        "社交",
+                        "更新"
+                    ],
+                    "description": "查看站主的最新动态和活动信息",
+                    "link": "/blog/dt",
+                    "target": "_target"
+                },
+                {
+                    "name": "更新日志",
+                    "categories": [
+                        "系统",
+                        "公告"
+                    ],
+                    "description": "记录网站的功能更新和版本发布信息",
+                    "link": "/blog/log",
+                    "target": "_target"
+                }
+            ]
+        },
+        {
+            "name": "实验功能",
+            "functions": [
+                {
+                    "name": "日报与热搜",
+                    "categories": [
+                        "资讯",
+                        "实验"
+                    ],
+                    "description": "每日热点资讯和热门话题汇总",
+                    "link": "/blog/daily",
+                    "target": "_target"
+                },
+                {
+                    "name": "前端实验室",
+                    "categories": [
+                        "开发",
+                        "实验"
+                    ],
+                    "description": "前端技术实验和效果展示区域",
+                    "link": "/a",
+                    "target": "_target"
+                },
+                {
+                    "name": "留言板",
+                    "categories": [
+                        "互动",
+                        "实验"
+                    ],
+                    "description": "用户留言和反馈交流区域",
+                    "link": "/blog/lyb",
+                    "target": "_target"
+                },
+                {
+                    "name": "直播 LIVE",
+                    "categories": [
+                        "直播",
+                        "实验"
+                    ],
+                    "description": "实时直播功能和互动平台",
+                    "link": "/a/live",
+                    "target": "_target"
+                }
+            ]
+        }
+    ]
+}

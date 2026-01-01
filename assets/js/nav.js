@@ -21,14 +21,13 @@ document.write(`
             </div>
             <div class="header-nav-container">
                 <ul class="header-nav">
-                    <li><a href="/article-list">文章</a></li>
-                    <li><a href="/tool">工具</a></li>
-                    <li><a href="/a/live">LIVE</a></li>
-                    <li><a href="/games">游戏</a></li>
-                    <li><a href="/a">实验室</a></li>
-                    <li><a href="/blog/daily">日报</a></li>
-                    <li><a href="/blog/qtv">视频</a></li>
+                    <li><a href="/article-list" target="blank">文章</a></li>
+                    <li><a href="/tool" target="blank">工具</a></li>
+                    <li><a href="/games" target="blank">游戏</a></li>
+                    <li><a href="/a" target="blank">实验室</a></li>
+                    <li><a href="/blog/qtv" target="blank">视频</a></li>
                     <li><a href="/blog/lyb" target="blank">留言</a></li>
+                    <li><a href="/blog" target="blank">更多</a></li>
                     <!-- 语言切换器 - 不会被翻译 -->
                     <li class="ignore">
                         <select id="languageSelector" class="language-selector">
@@ -58,14 +57,13 @@ document.write(`
             </div>
             <div class="navsidebar-nav">
                 <ul>
-                    <li><a href="/article-list">文章</a></li>
-                    <li><a href="/tool">工具</a></li>
-                    <li><a href="/a/live">LIVE</a></li>
-                    <li><a href="/games">游戏</a></li>
-                    <li><a href="/a">实验室</a></li>
-                    <li><a href="/blog/daily">日报</a></li>
-                    <li><a href="/blog/qtv">视频</a></li>
+                    <li><a href="/article-list" target="blank">文章</a></li>
+                    <li><a href="/tool" target="blank">工具</a></li>
+                    <li><a href="/games" target="blank">游戏</a></li>
+                    <li><a href="/a" target="blank">实验室</a></li>
+                    <li><a href="/blog/qtv" target="blank">视频</a></li>
                     <li><a href="/blog/lyb" target="blank">留言</a></li>
+                    <li><a href="/blog" target="blank">更多</a></li>
                 </ul>
             </div>
             <div class="navsidebar-search">
