@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思政题库抽测 - 夸克博客</title>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/nav.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-color: #ffffff;
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+        }
+
+        body {
+            background-color: #000;
+            color: var(--text-main);
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 毛玻璃容器 */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            margin-top: 100px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        h1 {
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .config-section,
+        .quiz-section,
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        select,
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .primary-btn {
+            background: #fff;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .primary-btn:hover {
+            background: #ccc;
+        }
+
+        #question-display {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .hint-text {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            border: 1px solid var(--glass-border);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .history-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+            font-size: 10px;
+        }
+
+        .tag-yes {
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+        }
+
+        .tag-no {
+            background: rgba(255, 0, 0, 0.2);
+            color: #f44;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-card">
+        <h1>题库抽测</h1>
+
+        <div id="config-ui" class="config-section">
+            <div class="row">
+                <span>章节范围：</span>
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <select id="start-chap"></select> 到 <select id="end-chap"></select>
+                </div>
+            </div>
+            <div class="row">
+                <span>显示答案条数 (a)：</span>
+                <input type="checkbox" id="show-a" checked>
+            </div>
+            <button class="primary-btn" onclick="startQuiz()">开始抽题</button>
+            <button onclick="toggleStats()">查看统计数据</button>
+        </div>
+
+        <div id="quiz-ui" class="quiz-section hidden">
+            <div id="question-display">加载中...</div>
+            <div id="answer-hint" class="hint-text"></div>
+
+            <div class="row" style="gap: 20px;">
+                <button class="primary-btn" style="flex:1; background:#222; color:#fff; border:1px solid #444;"
+                    onclick="handleResult(false)">我不确定 / 不会</button>
+                <button class="primary-btn" style="flex:1; background:#fff; color:#000;"
+                    onclick="handleResult(true)">这题我会</button>
+            </div>
+            <button onclick="exitQuiz()"
+                style="margin-top: 20px; background:transparent; border:none; color:var(--text-dim);">退出练习</button>
+        </div>
+
+        <div id="stats-ui" class="stats-section hidden">
+            <h3>学习记录</h3>
+            <div id="stats-container" style="max-height: 400px; overflow-y: auto;"></div>
+            <button onclick="hideStats()">返回</button>
+        </div>
+    </div>
+
+    <script>
+        let db = null;
+        let pool = []; // 当前抽题池
+        let currentQuestion = null;
+        let queue = []; // 错题重现队列
+        let historyData = JSON.parse(localStorage.getItem('study_stats') || '{}');
+
+        // 1. 初始化数据
+        fetch('ti.json')
+            .then(res => res.json())
+            .then(data => {
+                db = data;
+                initSelectors();
+            });
+
+        function initSelectors() {
+            const startSel = document.getElementById('start-chap');
+            const endSel = document.getElementById('end-chap');
+            db.chaps.forEach(c => {
+                let opt = `<option value="${c.chap}">${c.chapName}</option>`;
+                startSel.innerHTML += opt;
+                endSel.innerHTML += opt;
+            });
+            endSel.value = db.chaps[db.chaps.length - 1].chap;
+        }
+
+        // 2. 构建题目池（带权随机）
+        function startQuiz() {
+            const s = parseInt(document.getElementById('start-chap').value);
+            const e = parseInt(document.getElementById('end-chap').value);
+            pool = [];
+
+            db.chaps.forEach(c => {
+                if (c.chap >= s && c.chap <= e) {
+                    c.sections.forEach(sec => {
+                        sec.qs.forEach((q, idx) => {
+                            // 唯一标识：章节-小节-索引
+                            const id = `${c.chap}-${sec.sec}-${idx}`;
+                            // 根据重要程度 l 增加题目在桶里的份数
+                            // l通常为6-10，份数越多概率越大
+                            const weight = q.l || 1;
+                            for (let i = 0; i < weight; i++) {
+                                pool.push({ ...q, id, chapName: c.chapName });
+                            }
+                        });
+                    });
+                }
+            });
+
+            if (pool.length === 0) return alert("范围内没有题目");
+
+            document.getElementById('config-ui').classList.add('hidden');
+            document.getElementById('quiz-ui').classList.remove('hidden');
+            nextQuestion();
+        }
+
+        // 3. 抽题逻辑
+        function nextQuestion() {
+            // 优先检查错题队列
+            if (queue.length > 0) {
+                // 检查队首题目是否到了该出现的时候（距离上次错误经过了约4题）
+                if (queue[0].wait <= 0) {
+                    currentQuestion = queue.shift().data;
+                } else {
+                    queue.forEach(item => item.wait--);
+                    drawRandom();
+                }
+            } else {
+                drawRandom();
+            }
+            renderQuestion();
+        }
+
+        function drawRandom() {
+            const idx = Math.floor(Math.random() * pool.length);
+            currentQuestion = pool[idx];
+        }
+
+        function renderQuestion() {
+            document.getElementById('question-display').innerText = currentQuestion.q;
+            const showA = document.getElementById('show-a').checked;
+            document.getElementById('answer-hint').innerText = showA ? `需回答条数：${currentQuestion.a}` : '';
+        }
+
+        // 4. 处理结果
+        function handleResult(isKnown) {
+            const id = currentQuestion.id;
+            if (!historyData[id]) historyData[id] = { count: 0, logs: [] };
+
+            historyData[id].count++;
+            historyData[id].logs.push(isKnown ? 1 : 0);
+            if (historyData[id].logs.length > 5) historyData[id].logs.shift(); // 只存最近5次
+
+            localStorage.setItem('study_stats', JSON.stringify(historyData));
+
+            if (!isKnown) {
+                // 放入队列，4题左右后重现
+                const waitTime = 3 + Math.floor(Math.random() * 3); // 3-5题之间
+                queue.push({ data: currentQuestion, wait: waitTime });
+            }
+
+            nextQuestion();
+        }
+
+        // 5. 统计功能
+        function toggleStats() {
+            const container = document.getElementById('stats-container');
+            let html = '<table class="stats-table"><tr><th>题目</th><th>次数</th><th>近况</th></tr>';
+
+            for (let id in historyData) {
+                const item = historyData[id];
+                // 简单查找题目文本
+                const qText = findQuestionTextById(id);
+                const logHtml = item.logs.map(l =>
+                    `<span class="history-tag ${l == 1 ? 'tag-yes' : 'tag-no'}">${l == 1 ? '会' : '否'}</span>`
+                ).join('');
+
+                html += `<tr><td>${qText}</td><td>${item.count}</td><td>${logHtml}</td></tr>`;
+            }
+            html += '</table>';
+            container.innerHTML = html;
+
+            document.getElementById('config-ui').classList.add('hidden');
+            document.getElementById('stats-ui').classList.remove('hidden');
+        }
+
+        function findQuestionTextById(id) {
+            // 通过ID回溯题目文本，仅用于显示统计
+            const parts = id.split('-');
+            const chap = db.chaps.find(c => c.chap == parts[0]);
+            const sec = chap.sections.find(s => s.sec == parts[1]);
+            return sec.qs[parts[2]].q;
+        }
+
+        function hideStats() {
+            document.getElementById('stats-ui').classList.add('hidden');
+            document.getElementById('config-ui').classList.remove('remove'); // 兼容性修复
+            location.reload(); // 刷新回主页最简单
+        }
+
+        function exitQuiz() {
+            if (confirm("确定要退出练习吗？")) location.reload();
+        }
+    </script>
+</body>
+
+</html>
