@@ -31,25 +31,25 @@
             min-height: 100vh;
         }
 
-        /* 毛玻璃容器 */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 2rem;
+            padding: 2.5rem;
             width: 90%;
-            max-width: 600px;
-            margin-top: 100px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-width: 650px;
+            margin-top: 80px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
         h1 {
             font-weight: 300;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            color: #fff;
         }
 
         .config-section,
@@ -64,141 +64,153 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 15px;
         }
 
         select,
-        button {
-            background: rgba(255, 255, 255, 0.1);
+        button,
+        input[type="checkbox"] {
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--glass-border);
             color: #fff;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 10px 18px;
+            border-radius: 6px;
             outline: none;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.2s ease;
         }
 
         button:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .primary-btn {
             background: #fff;
             color: #000;
-            font-weight: bold;
+            font-weight: 600;
             border: none;
-            padding: 12px;
+            padding: 14px;
             margin-top: 10px;
         }
 
         .primary-btn:hover {
-            background: #ccc;
+            background: #e0e0e0;
+            transform: translateY(-1px);
         }
 
         #question-display {
-            font-size: 1.4rem;
-            line-height: 1.6;
+            font-size: 1.5rem;
+            line-height: 1.5;
             text-align: center;
-            min-height: 100px;
+            min-height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px 0;
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .hint-text {
             color: var(--text-dim);
             font-size: 0.9rem;
             text-align: center;
+            margin-top: 10px;
         }
 
         .hidden {
             display: none !important;
         }
 
+        /* 统计表样式 */
         .stats-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 0.85rem;
         }
 
-        .stats-table th,
-        .stats-table td {
-            border: 1px solid var(--glass-border);
-            padding: 8px;
+        .stats-table th {
+            color: var(--text-dim);
+            font-weight: 400;
             text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+            padding: 10px;
         }
 
-        .history-tag {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            margin-right: 4px;
-            font-size: 10px;
+        .stats-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.9rem;
         }
 
         .tag-yes {
-            background: rgba(0, 255, 0, 0.2);
-            color: #0f0;
+            color: #50fa7b;
+            margin-right: 5px;
         }
 
         .tag-no {
-            background: rgba(255, 0, 0, 0.2);
-            color: #f44;
+            color: #ff5555;
+            margin-right: 5px;
+        }
+
+        .progress-bar {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: right;
         }
     </style>
 </head>
 
 <body>
     <div class="glass-card">
-        <h1>题库抽测</h1>
+        <h1 id="main-title">题库抽测</h1>
 
         <div id="config-ui" class="config-section">
             <div class="row">
-                <span>章节范围：</span>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <select id="start-chap"></select> 到 <select id="end-chap"></select>
+                <span>章节选择</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <select id="start-chap"></select>
+                    <span style="color:var(--text-dim)">至</span>
+                    <select id="end-chap"></select>
                 </div>
             </div>
             <div class="row">
-                <span>显示答案条数 (a)：</span>
+                <span>显示回答条数提醒 (a)</span>
                 <input type="checkbox" id="show-a" checked>
             </div>
             <button class="primary-btn" onclick="startQuiz()">开始抽题</button>
-            <button onclick="toggleStats()">查看统计数据</button>
+            <button onclick="toggleStats()" style="background: transparent;">查看历史统计</button>
         </div>
 
         <div id="quiz-ui" class="quiz-section hidden">
-            <div id="question-display">加载中...</div>
+            <div class="progress-bar" id="quiz-progress"></div>
+            <div id="question-display">准备中...</div>
             <div id="answer-hint" class="hint-text"></div>
 
-            <div class="row" style="gap: 20px;">
-                <button class="primary-btn" style="flex:1; background:#222; color:#fff; border:1px solid #444;"
-                    onclick="handleResult(false)">我不确定 / 不会</button>
-                <button class="primary-btn" style="flex:1; background:#fff; color:#000;"
-                    onclick="handleResult(true)">这题我会</button>
+            <div class="row" style="margin-top: 20px;">
+                <button class="primary-btn" style="flex:1; background:transparent; color:#fff; border:1px solid #444;"
+                    onclick="handleResult(false)">不会 / 模糊</button>
+                <button class="primary-btn" style="flex:1;" onclick="handleResult(true)">这题我会</button>
             </div>
             <button onclick="exitQuiz()"
-                style="margin-top: 20px; background:transparent; border:none; color:var(--text-dim);">退出练习</button>
+                style="margin-top: 15px; background:transparent; border:none; color:var(--text-dim); font-size: 0.8rem;">结束本轮并返回</button>
         </div>
 
         <div id="stats-ui" class="stats-section hidden">
-            <h3>学习记录</h3>
-            <div id="stats-container" style="max-height: 400px; overflow-y: auto;"></div>
-            <button onclick="hideStats()">返回</button>
+            <div id="stats-container" style="max-height: 450px; overflow-y: auto;"></div>
+            <button onclick="location.reload()" class="primary-btn">返回主菜单</button>
         </div>
     </div>
 
     <script>
         let db = null;
-        let pool = []; // 当前抽题池
+        let masterPool = []; // 初始选定的总题池
+        let masteredIds = new Set(); // 本轮已答会的题目ID
         let currentQuestion = null;
-        let queue = []; // 错题重现队列
-        let historyData = JSON.parse(localStorage.getItem('study_stats') || '{}');
+        let queue = []; // 错题待重现队列
+        let historyData = JSON.parse(localStorage.getItem('study_stats_v2') || '{}');
 
-        // 1. 初始化数据
+        // 初始化加载
         fetch('ti.json')
             .then(res => res.json())
             .then(data => {
@@ -217,122 +229,137 @@
             endSel.value = db.chaps[db.chaps.length - 1].chap;
         }
 
-        // 2. 构建题目池（带权随机）
         function startQuiz() {
             const s = parseInt(document.getElementById('start-chap').value);
             const e = parseInt(document.getElementById('end-chap').value);
-            pool = [];
+            masterPool = [];
+            masteredIds.clear();
+            queue = [];
 
             db.chaps.forEach(c => {
                 if (c.chap >= s && c.chap <= e) {
                     c.sections.forEach(sec => {
                         sec.qs.forEach((q, idx) => {
-                            // 唯一标识：章节-小节-索引
-                            const id = `${c.chap}-${sec.sec}-${idx}`;
-                            // 根据重要程度 l 增加题目在桶里的份数
-                            // l通常为6-10，份数越多概率越大
-                            const weight = q.l || 1;
-                            for (let i = 0; i < weight; i++) {
-                                pool.push({ ...q, id, chapName: c.chapName });
-                            }
+                            const id = `q-${c.chap}-${sec.sec}-${idx}`;
+                            masterPool.push({ ...q, id, chapName: c.chapName });
                         });
                     });
                 }
             });
 
-            if (pool.length === 0) return alert("范围内没有题目");
+            if (masterPool.length === 0) return alert("选定范围内无题目");
 
             document.getElementById('config-ui').classList.add('hidden');
             document.getElementById('quiz-ui').classList.remove('hidden');
             nextQuestion();
         }
 
-        // 3. 抽题逻辑
         function nextQuestion() {
-            // 优先检查错题队列
-            if (queue.length > 0) {
-                // 检查队首题目是否到了该出现的时候（距离上次错误经过了约4题）
-                if (queue[0].wait <= 0) {
-                    currentQuestion = queue.shift().data;
-                } else {
-                    queue.forEach(item => item.wait--);
-                    drawRandom();
-                }
-            } else {
-                drawRandom();
-            }
-            renderQuestion();
-        }
+            // 计算还剩多少题没掌握
+            const remainingPool = masterPool.filter(q => !masteredIds.has(q.id));
 
-        function drawRandom() {
-            const idx = Math.floor(Math.random() * pool.length);
-            currentQuestion = pool[idx];
+            if (remainingPool.length === 0 && queue.length === 0) {
+                document.getElementById('question-display').innerHTML = "🎉 已完成本轮所有题目！";
+                document.getElementById('answer-hint').innerText = "";
+                return;
+            }
+
+            // 更新进度条
+            document.getElementById('quiz-progress').innerText = `已掌握: ${masteredIds.size} / 总数: ${masterPool.length}`;
+
+            // 1. 优先检查错题重现队列
+            if (queue.length > 0 && queue[0].wait <= 0) {
+                currentQuestion = queue.shift().data;
+            }
+            // 2. 如果重现队列还没到时候，或者为空，则从剩余池子抽题
+            else {
+                if (remainingPool.length > 0) {
+                    // 逻辑：基于重要程度 l 进行加权随机抽样
+                    let weightedPool = [];
+                    remainingPool.forEach(q => {
+                        for (let i = 0; i < (q.l || 1); i++) weightedPool.push(q);
+                    });
+                    const idx = Math.floor(Math.random() * weightedPool.length);
+                    currentQuestion = weightedPool[idx];
+                } else {
+                    // 如果只剩下重现队列里的题了，强制取出
+                    currentQuestion = queue.shift().data;
+                }
+
+                // 队列中其他题目的等待值减一
+                queue.forEach(item => item.wait--);
+            }
+
+            renderQuestion();
         }
 
         function renderQuestion() {
             document.getElementById('question-display').innerText = currentQuestion.q;
             const showA = document.getElementById('show-a').checked;
-            document.getElementById('answer-hint').innerText = showA ? `需回答条数：${currentQuestion.a}` : '';
+            document.getElementById('answer-hint').innerText = showA ? `需回答点数：${currentQuestion.a}` : '';
         }
 
-        // 4. 处理结果
         function handleResult(isKnown) {
             const id = currentQuestion.id;
-            if (!historyData[id]) historyData[id] = { count: 0, logs: [] };
 
+            // 更新持久化统计
+            if (!historyData[id]) historyData[id] = { count: 0, logs: [] };
             historyData[id].count++;
             historyData[id].logs.push(isKnown ? 1 : 0);
-            if (historyData[id].logs.length > 5) historyData[id].logs.shift(); // 只存最近5次
+            if (historyData[id].logs.length > 5) historyData[id].logs.shift();
+            localStorage.setItem('study_stats_v2', JSON.stringify(historyData));
 
-            localStorage.setItem('study_stats', JSON.stringify(historyData));
-
-            if (!isKnown) {
-                // 放入队列，4题左右后重现
-                const waitTime = 3 + Math.floor(Math.random() * 3); // 3-5题之间
+            if (isKnown) {
+                // 标记为已掌握，本轮不再出现（除非在错题队列中还没清空）
+                masteredIds.add(id);
+                // 如果该题在错题队列中，移除它
+                queue = queue.filter(item => item.data.id !== id);
+            } else {
+                // 如果点“不会”，放入重现队列，4题左右后重现
+                // 即便之前答过“会”，只要点了一次“不会”，它就会重新进入循环
+                masteredIds.delete(id);
+                const waitTime = 3 + Math.floor(Math.random() * 2);
                 queue.push({ data: currentQuestion, wait: waitTime });
             }
 
             nextQuestion();
         }
 
-        // 5. 统计功能
         function toggleStats() {
             const container = document.getElementById('stats-container');
-            let html = '<table class="stats-table"><tr><th>题目</th><th>次数</th><th>近况</th></tr>';
+            let html = `<h3>历史记录</h3><table class="stats-table">
+                        <tr><th>题目</th><th>抽取</th><th>近况</th></tr>`;
 
-            for (let id in historyData) {
+            const sortedIds = Object.keys(historyData).reverse();
+            if (sortedIds.length === 0) html += '<tr><td colspan="3">暂无记录</td></tr>';
+
+            sortedIds.forEach(id => {
                 const item = historyData[id];
-                // 简单查找题目文本
                 const qText = findQuestionTextById(id);
                 const logHtml = item.logs.map(l =>
-                    `<span class="history-tag ${l == 1 ? 'tag-yes' : 'tag-no'}">${l == 1 ? '会' : '否'}</span>`
+                    `<span class="${l == 1 ? 'tag-yes' : 'tag-no'}">${l == 1 ? '●' : '○'}</span>`
                 ).join('');
-
                 html += `<tr><td>${qText}</td><td>${item.count}</td><td>${logHtml}</td></tr>`;
-            }
+            });
             html += '</table>';
             container.innerHTML = html;
 
             document.getElementById('config-ui').classList.add('hidden');
             document.getElementById('stats-ui').classList.remove('hidden');
+            document.getElementById('main-title').innerText = "统计数据";
         }
 
         function findQuestionTextById(id) {
-            // 通过ID回溯题目文本，仅用于显示统计
-            const parts = id.split('-');
-            const chap = db.chaps.find(c => c.chap == parts[0]);
-            const sec = chap.sections.find(s => s.sec == parts[1]);
-            return sec.qs[parts[2]].q;
-        }
-
-        function hideStats() {
-            document.getElementById('stats-ui').classList.add('hidden');
-            document.getElementById('config-ui').classList.remove('remove'); // 兼容性修复
-            location.reload(); // 刷新回主页最简单
+            try {
+                const p = id.split('-');
+                const chap = db.chaps.find(c => c.chap == p[1]);
+                const sec = chap.sections.find(s => s.sec == p[2]);
+                return sec.qs[p[3]].q;
+            } catch (e) { return "未知题目"; }
         }
 
         function exitQuiz() {
-            if (confirm("确定要退出练习吗？")) location.reload();
+            if (confirm("确定结束本轮吗？本轮掌握进度将清空。")) location.reload();
         }
     </script>
 </body>
