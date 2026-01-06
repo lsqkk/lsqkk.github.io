@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>思政题库抽测 - 夸克博客</title>
+    <title>思政题库抽测 - 极简版</title>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script src="/assets/js/cursor-trail.js"></script>
@@ -15,7 +15,6 @@
         :root {
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
-            --accent-color: #ffffff;
             --text-main: #e0e0e0;
             --text-dim: #888;
         }
@@ -33,15 +32,15 @@
 
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
             padding: 2.5rem;
             width: 90%;
-            max-width: 650px;
-            margin-top: 80px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            margin-top: 60px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         h1 {
@@ -57,7 +56,7 @@
         .stats-section {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.2rem;
         }
 
         .row {
@@ -65,6 +64,14 @@
             align-items: center;
             justify-content: space-between;
             gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .range-picker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         select,
@@ -73,16 +80,15 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--glass-border);
             color: #fff;
-            padding: 10px 18px;
-            border-radius: 6px;
+            padding: 8px 12px;
+            border-radius: 4px;
             outline: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 0.9rem;
         }
 
         button:hover {
             background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .primary-btn {
@@ -92,217 +98,219 @@
             border: none;
             padding: 14px;
             margin-top: 10px;
+            border-radius: 6px;
         }
 
         .primary-btn:hover {
-            background: #e0e0e0;
-            transform: translateY(-1px);
+            background: #ccc;
         }
 
         #question-display {
             font-size: 1.5rem;
-            line-height: 1.5;
+            line-height: 1.6;
             text-align: center;
-            min-height: 140px;
+            min-height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            border-bottom: 1px solid var(--glass-border);
         }
 
         .hint-text {
             color: var(--text-dim);
             font-size: 0.9rem;
             text-align: center;
-            margin-top: 10px;
+            height: 20px;
         }
 
         .hidden {
             display: none !important;
         }
 
-        /* 统计表样式 */
         .stats-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
-        .stats-table th {
-            color: var(--text-dim);
-            font-weight: 400;
-            text-align: left;
-            border-bottom: 1px solid var(--glass-border);
-            padding: 10px;
-        }
-
         .stats-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 0.9rem;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
         }
 
         .tag-yes {
             color: #50fa7b;
-            margin-right: 5px;
         }
 
         .tag-no {
             color: #ff5555;
-            margin-right: 5px;
         }
 
         .progress-bar {
             font-size: 0.8rem;
             color: var(--text-dim);
-            text-align: right;
+            text-align: center;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 
 <body>
     <div class="glass-card">
-        <h1 id="main-title">题库抽测</h1>
+        <h1 id="title-text">题库抽测</h1>
 
         <div id="config-ui" class="config-section">
             <div class="row">
-                <span>章节选择</span>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <select id="start-chap"></select>
-                    <span style="color:var(--text-dim)">至</span>
-                    <select id="end-chap"></select>
+                <span>起始范围</span>
+                <div class="range-picker">
+                    <select id="start-chap" onchange="updateSecDropdown('start')"></select>
+                    <select id="start-sec"></select>
                 </div>
             </div>
             <div class="row">
-                <span>显示回答条数提醒 (a)</span>
+                <span>结束范围</span>
+                <div class="range-picker">
+                    <select id="end-chap" onchange="updateSecDropdown('end')"></select>
+                    <select id="end-sec"></select>
+                </div>
+            </div>
+            <div class="row">
+                <span>显示条数提醒 (a)</span>
                 <input type="checkbox" id="show-a" checked>
             </div>
             <button class="primary-btn" onclick="startQuiz()">开始抽题</button>
-            <button onclick="toggleStats()" style="background: transparent;">查看历史统计</button>
+            <button onclick="toggleStats()" style="background: transparent; border-color: transparent;">查看统计记录</button>
         </div>
 
         <div id="quiz-ui" class="quiz-section hidden">
             <div class="progress-bar" id="quiz-progress"></div>
-            <div id="question-display">准备中...</div>
+            <div id="question-display">...</div>
             <div id="answer-hint" class="hint-text"></div>
-
             <div class="row" style="margin-top: 20px;">
                 <button class="primary-btn" style="flex:1; background:transparent; color:#fff; border:1px solid #444;"
-                    onclick="handleResult(false)">不会 / 模糊</button>
-                <button class="primary-btn" style="flex:1;" onclick="handleResult(true)">这题我会</button>
+                    onclick="handleResult(false)">不会</button>
+                <button class="primary-btn" style="flex:1;" onclick="handleResult(true)">我会</button>
             </div>
-            <button onclick="exitQuiz()"
-                style="margin-top: 15px; background:transparent; border:none; color:var(--text-dim); font-size: 0.8rem;">结束本轮并返回</button>
+            <button onclick="location.reload()"
+                style="margin-top: 15px; background:transparent; border:none; color:var(--text-dim); font-size: 0.8rem;">放弃并返回</button>
         </div>
 
         <div id="stats-ui" class="stats-section hidden">
-            <div id="stats-container" style="max-height: 450px; overflow-y: auto;"></div>
-            <button onclick="location.reload()" class="primary-btn">返回主菜单</button>
+            <div id="stats-container" style="max-height: 400px; overflow-y: auto;"></div>
+            <button onclick="location.reload()" class="primary-btn">返回</button>
         </div>
     </div>
 
     <script>
         let db = null;
-        let masterPool = []; // 初始选定的总题池
-        let masteredIds = new Set(); // 本轮已答会的题目ID
+        let masterPool = [];
+        let masteredIds = new Set();
         let currentQuestion = null;
-        let queue = []; // 错题待重现队列
+        let queue = [];
+        // 保持存储名不变
         let historyData = JSON.parse(localStorage.getItem('study_stats_v2') || '{}');
 
-        // 初始化加载
         fetch('ti.json')
             .then(res => res.json())
             .then(data => {
                 db = data;
-                initSelectors();
+                initChapSelectors();
             });
 
-        function initSelectors() {
-            const startSel = document.getElementById('start-chap');
-            const endSel = document.getElementById('end-chap');
+        function initChapSelectors() {
+            const sChap = document.getElementById('start-chap');
+            const eChap = document.getElementById('end-chap');
             db.chaps.forEach(c => {
                 let opt = `<option value="${c.chap}">${c.chapName}</option>`;
-                startSel.innerHTML += opt;
-                endSel.innerHTML += opt;
+                sChap.innerHTML += opt;
+                eChap.innerHTML += opt;
             });
-            endSel.value = db.chaps[db.chaps.length - 1].chap;
+            eChap.value = db.chaps[db.chaps.length - 1].chap;
+            updateSecDropdown('start');
+            updateSecDropdown('end');
+            // 结束节默认选最后一个
+            const eSec = document.getElementById('end-sec');
+            eSec.selectedIndex = eSec.options.length - 1;
+        }
+
+        function updateSecDropdown(type) {
+            const cVal = document.getElementById(`${type}-chap`).value;
+            const sSel = document.getElementById(`${type}-sec`);
+            const chapData = db.chaps.find(c => c.chap == cVal);
+            sSel.innerHTML = '';
+            chapData.sections.forEach(s => {
+                sSel.innerHTML += `<option value="${s.sec}">${s.sec} ${s.secName}</option>`;
+            });
         }
 
         function startQuiz() {
-            const s = parseInt(document.getElementById('start-chap').value);
-            const e = parseInt(document.getElementById('end-chap').value);
+            const sc = parseInt(document.getElementById('start-chap').value);
+            const ss = parseFloat(document.getElementById('start-sec').value);
+            const ec = parseInt(document.getElementById('end-chap').value);
+            const es = parseFloat(document.getElementById('end-sec').value);
+
             masterPool = [];
             masteredIds.clear();
             queue = [];
 
             db.chaps.forEach(c => {
-                if (c.chap >= s && c.chap <= e) {
-                    c.sections.forEach(sec => {
+                c.sections.forEach(sec => {
+                    const secVal = parseFloat(sec.sec);
+                    // 逻辑判断：在起止章节范围内，且符合节的边界
+                    let inRange = false;
+                    if (c.chap > sc && c.chap < ec) inRange = true;
+                    else if (c.chap === sc && c.chap === ec) inRange = (secVal >= ss && secVal <= es);
+                    else if (c.chap === sc) inRange = (secVal >= ss);
+                    else if (c.chap === ec) inRange = (secVal <= es);
+
+                    if (inRange) {
                         sec.qs.forEach((q, idx) => {
                             const id = `q-${c.chap}-${sec.sec}-${idx}`;
-                            masterPool.push({ ...q, id, chapName: c.chapName });
+                            masterPool.push({ ...q, id });
                         });
-                    });
-                }
+                    }
+                });
             });
 
-            if (masterPool.length === 0) return alert("选定范围内无题目");
-
+            if (masterPool.length === 0) return alert("该范围内没有题目，请重新选择");
             document.getElementById('config-ui').classList.add('hidden');
             document.getElementById('quiz-ui').classList.remove('hidden');
             nextQuestion();
         }
 
         function nextQuestion() {
-            // 计算还剩多少题没掌握
             const remainingPool = masterPool.filter(q => !masteredIds.has(q.id));
-
             if (remainingPool.length === 0 && queue.length === 0) {
-                document.getElementById('question-display').innerHTML = "🎉 已完成本轮所有题目！";
+                document.getElementById('question-display').innerHTML = "✨ 本轮练习已全部掌握！";
                 document.getElementById('answer-hint').innerText = "";
                 return;
             }
 
-            // 更新进度条
-            document.getElementById('quiz-progress').innerText = `已掌握: ${masteredIds.size} / 总数: ${masterPool.length}`;
+            document.getElementById('quiz-progress').innerText = `掌握进度：${masteredIds.size} / ${masterPool.length}`;
 
-            // 1. 优先检查错题重现队列
             if (queue.length > 0 && queue[0].wait <= 0) {
                 currentQuestion = queue.shift().data;
-            }
-            // 2. 如果重现队列还没到时候，或者为空，则从剩余池子抽题
-            else {
+            } else {
                 if (remainingPool.length > 0) {
-                    // 逻辑：基于重要程度 l 进行加权随机抽样
-                    let weightedPool = [];
-                    remainingPool.forEach(q => {
-                        for (let i = 0; i < (q.l || 1); i++) weightedPool.push(q);
-                    });
-                    const idx = Math.floor(Math.random() * weightedPool.length);
-                    currentQuestion = weightedPool[idx];
+                    let weighted = [];
+                    remainingPool.forEach(q => { for (let i = 0; i < (q.l || 1); i++) weighted.push(q); });
+                    currentQuestion = weighted[Math.floor(Math.random() * weighted.length)];
                 } else {
-                    // 如果只剩下重现队列里的题了，强制取出
                     currentQuestion = queue.shift().data;
                 }
-
-                // 队列中其他题目的等待值减一
                 queue.forEach(item => item.wait--);
             }
-
             renderQuestion();
         }
 
         function renderQuestion() {
             document.getElementById('question-display').innerText = currentQuestion.q;
-            const showA = document.getElementById('show-a').checked;
-            document.getElementById('answer-hint').innerText = showA ? `需回答点数：${currentQuestion.a}` : '';
+            document.getElementById('answer-hint').innerText = document.getElementById('show-a').checked ? `需答点数：${currentQuestion.a}` : '';
         }
 
         function handleResult(isKnown) {
             const id = currentQuestion.id;
-
-            // 更新持久化统计
             if (!historyData[id]) historyData[id] = { count: 0, logs: [] };
             historyData[id].count++;
             historyData[id].logs.push(isKnown ? 1 : 0);
@@ -310,56 +318,36 @@
             localStorage.setItem('study_stats_v2', JSON.stringify(historyData));
 
             if (isKnown) {
-                // 标记为已掌握，本轮不再出现（除非在错题队列中还没清空）
                 masteredIds.add(id);
-                // 如果该题在错题队列中，移除它
                 queue = queue.filter(item => item.data.id !== id);
             } else {
-                // 如果点“不会”，放入重现队列，4题左右后重现
-                // 即便之前答过“会”，只要点了一次“不会”，它就会重新进入循环
                 masteredIds.delete(id);
-                const waitTime = 3 + Math.floor(Math.random() * 2);
-                queue.push({ data: currentQuestion, wait: waitTime });
+                queue.push({ data: currentQuestion, wait: 3 + Math.floor(Math.random() * 2) });
             }
-
             nextQuestion();
         }
 
         function toggleStats() {
             const container = document.getElementById('stats-container');
-            let html = `<h3>历史记录</h3><table class="stats-table">
-                        <tr><th>题目</th><th>抽取</th><th>近况</th></tr>`;
-
-            const sortedIds = Object.keys(historyData).reverse();
-            if (sortedIds.length === 0) html += '<tr><td colspan="3">暂无记录</td></tr>';
-
-            sortedIds.forEach(id => {
+            let html = '<table class="stats-table"><tr><th>题目</th><th>抽取</th><th>近况</th></tr>';
+            const ids = Object.keys(historyData).reverse();
+            if (!ids.length) html += '<tr><td colspan="3">无记录</td></tr>';
+            ids.forEach(id => {
                 const item = historyData[id];
-                const qText = findQuestionTextById(id);
-                const logHtml = item.logs.map(l =>
-                    `<span class="${l == 1 ? 'tag-yes' : 'tag-no'}">${l == 1 ? '●' : '○'}</span>`
-                ).join('');
-                html += `<tr><td>${qText}</td><td>${item.count}</td><td>${logHtml}</td></tr>`;
+                const logHtml = item.logs.map(l => `<span class="${l ? 'tag-yes' : 'tag-no'}">${l ? '●' : '○'}</span>`).join(' ');
+                html += `<tr><td>${findQ(id)}</td><td>${item.count}</td><td>${logHtml}</td></tr>`;
             });
-            html += '</table>';
-            container.innerHTML = html;
-
+            container.innerHTML = html + '</table>';
             document.getElementById('config-ui').classList.add('hidden');
             document.getElementById('stats-ui').classList.remove('hidden');
-            document.getElementById('main-title').innerText = "统计数据";
+            document.getElementById('title-text').innerText = "学习轨迹";
         }
 
-        function findQuestionTextById(id) {
+        function findQ(id) {
             try {
                 const p = id.split('-');
-                const chap = db.chaps.find(c => c.chap == p[1]);
-                const sec = chap.sections.find(s => s.sec == p[2]);
-                return sec.qs[p[3]].q;
+                return db.chaps.find(c => c.chap == p[1]).sections.find(s => s.sec == p[2]).qs[p[3]].q;
             } catch (e) { return "未知题目"; }
-        }
-
-        function exitQuiz() {
-            if (confirm("确定结束本轮吗？本轮掌握进度将清空。")) location.reload();
         }
     </script>
 </body>
