@@ -4,21 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>云端记事本 - 夸克博客</title>
+    <title>网页记事本 - 夸克博客</title>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script src="/assets/js/cursor-trail.js"></script>
     <link rel="stylesheet" href="/assets/css/nav.css">
     <script src="/assets/js/nav.js"></script>
-    <!-- 由于需要用户检验代码安全性，移除右键禁用脚本 -->
-    <!-- <script src="/assets/js/disable-right-click.js"></script> -->
-
+    <script src="/assets/js/disable-right-click.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --primary-color: #4a6fa5;
+            --hover-color: #3a5a8c;
+            --danger-color: #d9534f;
+            --success-color: #5cb85c;
         }
 
         body {
@@ -26,7 +28,8 @@
             background-size: cover;
             min-height: 100vh;
             padding: 20px;
-            color: #333;
+            margin: 0;
+            font-family: inherit;
         }
 
         .container {
@@ -41,388 +44,604 @@
             align-items: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.85);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px) saturate(120%);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
         }
 
         .header h1 {
-            font-size: 2.2rem;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-
-        .admin-section {
+            margin: 0;
+            color: #333;
+            font-size: 1.8rem;
             display: flex;
             align-items: center;
+            gap: 10px;
+        }
+
+        .header h1 i {
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
             gap: 15px;
+            align-items: center;
         }
 
-        .admin-password-input {
-            padding: 10px 15px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+        .admin-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-status {
             font-size: 0.9rem;
-            width: 200px;
-            background: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.05);
         }
 
-        .admin-password-input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        .admin-status.admin {
+            background-color: rgba(92, 184, 92, 0.2);
+            color: var(--success-color);
+        }
+
+        .admin-status.guest {
+            background-color: rgba(217, 83, 79, 0.1);
+            color: #888;
         }
 
         .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            border-radius: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(5px) saturate(120%);
+            border: 1px solid var(--glass-border);
+            color: #333;
             cursor: pointer;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
-            color: #2c3e50;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .btn-primary {
-            background: #3498db;
-            color: white;
-            border: none;
+            background-color: rgba(74, 111, 165, 0.2);
+            border-color: rgba(74, 111, 165, 0.3);
+            color: var(--primary-color);
         }
 
         .btn-primary:hover {
-            background: #2980b9;
+            background-color: rgba(74, 111, 165, 0.3);
         }
 
         .btn-danger {
-            background: #e74c3c;
-            color: white;
-            border: none;
+            background-color: rgba(217, 83, 79, 0.1);
+            border-color: rgba(217, 83, 79, 0.2);
+            color: var(--danger-color);
         }
 
         .btn-danger:hover {
-            background: #c0392b;
+            background-color: rgba(217, 83, 79, 0.2);
+        }
+
+        .btn-success {
+            background-color: rgba(92, 184, 92, 0.1);
+            border-color: rgba(92, 184, 92, 0.2);
+            color: var(--success-color);
         }
 
         .notes-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
         .note-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px) saturate(120%);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            position: relative;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
             overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 350px;
         }
 
         .note-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .note-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #3498db;
-            border-radius: 15px 15px 0 0;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
         }
 
         .note-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .note-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2c3e50;
-            flex: 1;
-            margin-right: 10px;
-            border: none;
-            background: transparent;
-            padding: 5px;
+            margin: 0;
+            font-size: 1.2rem;
+            color: #333;
+            flex-grow: 1;
+            cursor: pointer;
+            padding: 5px 0;
             border-radius: 5px;
-            transition: all 0.3s ease;
+            transition: background 0.2s;
         }
 
-        .note-title:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        .note-title:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .note-title-input {
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            padding: 5px 10px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .note-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .note-action-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .note-action-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
         }
 
         .note-color-picker {
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            background: transparent;
             padding: 0;
             overflow: hidden;
-        }
-
-        .note-color-picker::-webkit-color-swatch {
-            border: none;
-            border-radius: 50%;
-            padding: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .note-color-picker::-webkit-color-swatch-wrapper {
             padding: 0;
         }
 
-        .note-content {
-            min-height: 150px;
-            width: 100%;
+        .note-color-picker::-webkit-color-swatch {
             border: none;
-            background: transparent;
-            resize: none;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #34495e;
-            padding: 5px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            border-radius: 50%;
         }
 
-        .note-content:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        .note-content {
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #444;
+        }
+
+        .note-textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
         }
 
         .note-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            font-size: 0.8rem;
-            color: #7f8c8d;
+            font-size: 0.85rem;
+            color: #777;
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .note-date {
-            font-style: italic;
-        }
-
-        .add-note-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px dashed rgba(52, 152, 219, 0.3);
-            border-radius: 15px;
-            font-size: 1.1rem;
-            color: #3498db;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px) saturate(120%);
-        }
-
-        .add-note-btn:hover {
-            background: rgba(52, 152, 219, 0.1);
-            border-color: rgba(52, 152, 219, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .add-note-btn i {
-            margin-right: 10px;
-            font-size: 1.2rem;
+            gap: 5px;
         }
 
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
-            color: #7f8c8d;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
+            background: var(--glass-bg);
             backdrop-filter: blur(10px) saturate(120%);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #aaa;
+            margin-bottom: 20px;
         }
 
         .empty-state h3 {
-            font-size: 1.5rem;
+            color: #666;
             margin-bottom: 10px;
-            color: #2c3e50;
+        }
+
+        .empty-state p {
+            color: #888;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px) saturate(120%);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
         }
 
         .footer {
             text-align: center;
-            margin-top: 40px;
             padding: 20px;
-            color: #7f8c8d;
+            margin-top: 40px;
+            color: #666;
             font-size: 0.9rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .footer a {
-            color: #3498db;
+            color: var(--primary-color);
             text-decoration: none;
-            transition: color 0.3s ease;
         }
 
         .footer a:hover {
-            color: #2980b9;
             text-decoration: underline;
-        }
-
-        .admin-only {
-            display: none;
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
             .header {
                 flex-direction: column;
                 gap: 15px;
-                text-align: center;
+                align-items: stretch;
             }
 
-            .admin-section {
-                width: 100%;
-                justify-content: center;
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .admin-password-input {
-                width: 150px;
+            .admin-controls {
+                justify-content: space-between;
             }
 
             .notes-container {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (max-width: 480px) {
-            .admin-section {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .admin-password-input {
-                width: 100%;
+            .container {
+                padding: 10px;
             }
         }
     </style>
 </head>
 
 <body>
+    <!-- 固定顶栏已通过模板引入 -->
+
     <div class="container">
         <div class="header">
-            <h1>📝 云端记事本</h1>
-            <div class="admin-section">
-                <input type="password" id="adminPassword" class="admin-password-input" placeholder="管理员密码">
-                <button id="adminLoginBtn" class="btn btn-primary" onclick="adminLogin()">管理员登录</button>
-                <button id="adminLogoutBtn" class="btn btn-danger admin-only" onclick="adminLogout()">退出管理</button>
+            <h1><i class="fas fa-book"></i> 网页记事本</h1>
+            <div class="controls">
+                <button class="btn btn-primary" id="newNoteBtn">
+                    <i class="fas fa-plus"></i> 新建笔记
+                </button>
+                <div class="admin-controls">
+                    <span class="admin-status guest" id="adminStatus">访客模式</span>
+                    <button class="btn" id="adminToggleBtn">
+                        <i class="fas fa-lock"></i> 管理员登录
+                    </button>
+                </div>
             </div>
         </div>
 
         <div class="notes-container" id="notesContainer">
-            <!-- 笔记将通过JavaScript动态生成 -->
+            <!-- 笔记卡片将在这里动态生成 -->
             <div class="empty-state" id="emptyState">
+                <i class="fas fa-sticky-note"></i>
                 <h3>暂无笔记</h3>
-                <p>点击下方按钮创建您的第一条笔记</p>
+                <p>点击"新建笔记"按钮创建您的第一条笔记。所有笔记将保存在您的浏览器本地存储中。</p>
             </div>
         </div>
 
-        <button class="add-note-btn" onclick="createNewNote()">
-            <i>+</i> 新建笔记
-        </button>
+        <!-- 管理员登录模态框 -->
+        <div class="modal" id="adminLoginModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-lock"></i> 管理员登录</h2>
+                    <button class="modal-close" id="closeLoginModal">&times;</button>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">管理员密码</label>
+                    <input type="password" id="adminPassword" placeholder="请输入管理员密码">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="cancelLoginBtn">取消</button>
+                    <button class="btn btn-primary" id="confirmLoginBtn">登录</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 删除确认模态框 -->
+        <div class="modal" id="deleteModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-trash-alt"></i> 删除确认</h2>
+                    <button class="modal-close" id="closeDeleteModal">&times;</button>
+                </div>
+                <p>您确定要删除笔记 "<span id="noteToDeleteTitle"></span>" 吗？此操作无法撤销。</p>
+                <div class="modal-footer">
+                    <button class="btn" id="cancelDeleteBtn">取消</button>
+                    <button class="btn btn-danger" id="confirmDeleteBtn">删除</button>
+                </div>
+            </div>
+        </div>
 
         <div class="footer">
-            <p>© 2024 - <span id="currentYear"></span> 云端记事本 / <a href="/posts/copyright">夸克博客</a> All rights reserved.
-            </p>
+            © 2024 - <span id="currentYear"></span> 网页记事本 / <a href="/posts/copyright">夸克博客</a> All rights reserved.
         </div>
     </div>
 
-    <!-- SHA-256 哈希函数 -->
     <script>
-        // SHA-256 实现
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-    </script>
+        // 当前选中的笔记ID（用于删除操作）
+        let selectedNoteId = null;
 
-    <!-- 记事本应用逻辑 -->
-    <script>
-        // 获取DOM元素
-        const notesContainer = document.getElementById('notesContainer');
-        const emptyState = document.getElementById('emptyState');
-        const currentYearEl = document.getElementById('currentYear');
-
-        // 设置当前年份
-        currentYearEl.textContent = new Date().getFullYear();
-
-        // 笔记数据结构
+        // 笔记数据模型
         class Note {
-            constructor(id, title = '新笔记', content = '', color = '#3498db') {
+            constructor(id, title, content, color, createdAt, updatedAt) {
                 this.id = id;
                 this.title = title;
                 this.content = content;
                 this.color = color;
-                this.createdAt = new Date().toISOString();
-                this.updatedAt = new Date().toISOString();
-            }
-
-            updateTimestamp() {
-                this.updatedAt = new Date().toISOString();
+                this.createdAt = createdAt;
+                this.updatedAt = updatedAt;
             }
         }
 
         // 从localStorage加载所有笔记
         function loadNotes() {
-            const notesJson = localStorage.getItem('quarkNotes');
-            return notesJson ? JSON.parse(notesJson) : [];
+            const notesJSON = localStorage.getItem('quarkNotes');
+            if (notesJSON) {
+                try {
+                    const notesData = JSON.parse(notesJSON);
+                    return notesData.map(noteData => new Note(
+                        noteData.id,
+                        noteData.title,
+                        noteData.content,
+                        noteData.color || '#ffffff',
+                        new Date(noteData.createdAt),
+                        new Date(noteData.updatedAt)
+                    ));
+                } catch (e) {
+                    console.error('解析笔记数据失败:', e);
+                    return [];
+                }
+            }
+            return [];
         }
 
         // 保存所有笔记到localStorage
         function saveNotes(notes) {
-            localStorage.setItem('quarkNotes', JSON.stringify(notes));
+            const notesData = notes.map(note => ({
+                id: note.id,
+                title: note.title,
+                content: note.content,
+                color: note.color,
+                createdAt: note.createdAt.toISOString(),
+                updatedAt: note.updatedAt.toISOString()
+            }));
+            localStorage.setItem('quarkNotes', JSON.stringify(notesData));
+        }
+
+        // 创建新笔记
+        function createNote() {
+            const notes = loadNotes();
+            const newId = 'note_' + Date.now();
+            const now = new Date();
+
+            const newNote = new Note(
+                newId,
+                '新笔记',
+                '开始记录您的想法...',
+                '#ffffff',
+                now,
+                now
+            );
+
+            notes.push(newNote);
+            saveNotes(notes);
+            renderNotes();
+
+            // 自动聚焦到新笔记的标题
+            setTimeout(() => {
+                const titleElement = document.querySelector(`[data-note-id="${newId}"] .note-title`);
+                if (titleElement) {
+                    titleElement.click();
+                }
+            }, 100);
+        }
+
+        // 更新笔记
+        function updateNote(id, updates) {
+            const notes = loadNotes();
+            const noteIndex = notes.findIndex(note => note.id === id);
+
+            if (noteIndex !== -1) {
+                const note = notes[noteIndex];
+
+                // 应用更新
+                if (updates.title !== undefined) note.title = updates.title;
+                if (updates.content !== undefined) note.content = updates.content;
+                if (updates.color !== undefined) note.color = updates.color;
+
+                note.updatedAt = new Date();
+                saveNotes(notes);
+                renderNotes();
+                return true;
+            }
+
+            return false;
+        }
+
+        // 删除笔记
+        function deleteNote(id) {
+            const notes = loadNotes();
+            const updatedNotes = notes.filter(note => note.id !== id);
+            saveNotes(updatedNotes);
+            renderNotes();
         }
 
         // 渲染所有笔记
         function renderNotes() {
             const notes = loadNotes();
+            const notesContainer = document.getElementById('notesContainer');
+            const emptyState = document.getElementById('emptyState');
 
+            // 如果没有笔记，显示空状态
             if (notes.length === 0) {
                 emptyState.style.display = 'block';
                 notesContainer.innerHTML = '';
@@ -430,159 +649,161 @@
                 return;
             }
 
+            // 隐藏空状态
             emptyState.style.display = 'none';
 
-            notesContainer.innerHTML = '';
+            // 生成笔记卡片HTML
+            let notesHTML = '';
+
             notes.forEach(note => {
-                const noteElement = createNoteElement(note);
-                notesContainer.appendChild(noteElement);
-            });
-        }
+                const createdDate = note.createdAt.toLocaleDateString('zh-CN');
+                const updatedDate = note.updatedAt.toLocaleDateString('zh-CN');
+                const isNew = (new Date() - note.createdAt) < 24 * 60 * 60 * 1000; // 一天内创建的笔记
 
-        // 创建单个笔记的HTML元素
-        function createNoteElement(note) {
-            const noteDiv = document.createElement('div');
-            noteDiv.className = 'note-card';
-            noteDiv.style.borderTop = `4px solid ${note.color}`;
-
-            const date = new Date(note.updatedAt);
-            const formattedDate = date.toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            noteDiv.innerHTML = `
-                <div class="note-header">
-                    <input type="text" 
-                           class="note-title" 
-                           value="${note.title}" 
-                           data-id="${note.id}"
-                           onchange="updateNoteTitle('${note.id}', this.value)">
-                    
-                    <div class="note-actions">
-                        <input type="color" 
-                               class="note-color-picker" 
-                               value="${note.color}"
-                               data-id="${note.id}"
-                               onchange="updateNoteColor('${note.id}', this.value)">
-                        
-                        <button class="btn admin-only delete-btn" 
-                                data-id="${note.id}"
-                                onclick="deleteNote('${note.id}')">删除</button>
+                notesHTML += `
+                <div class="note-card" data-note-id="${note.id}" style="border-top: 4px solid ${note.color}">
+                    <div class="note-header">
+                        <h3 class="note-title" data-note-id="${note.id}">${note.title}</h3>
+                        <div class="note-actions">
+                            <input type="color" class="note-color-picker" value="${note.color}" data-note-id="${note.id}">
+                            <button class="note-action-btn delete-note-btn" data-note-id="${note.id}" title="删除笔记">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-content">
+                        <textarea class="note-textarea" data-note-id="${note.id}" placeholder="输入笔记内容...">${note.content}</textarea>
+                    </div>
+                    <div class="note-footer">
+                        <div class="note-date">
+                            <i class="far fa-calendar-alt"></i>
+                            ${createdDate === updatedDate ? createdDate : `${createdDate} (更新: ${updatedDate})`}
+                        </div>
+                        ${isNew ? '<span style="color: var(--success-color); font-size: 0.8rem;"><i class="fas fa-star"></i> 新</span>' : ''}
                     </div>
                 </div>
-                
-                <textarea class="note-content" 
-                          data-id="${note.id}"
-                          placeholder="开始记录..."
-                          oninput="updateNoteContent('${note.id}', this.value)">${note.content}</textarea>
-                
-                <div class="note-footer">
-                    <span class="note-date">更新于: ${formattedDate}</span>
-                    <span class="note-id">ID: ${note.id.substring(0, 8)}</span>
-                </div>
-            `;
+                `;
+            });
 
-            return noteDiv;
+            notesContainer.innerHTML = notesHTML;
+
+            // 为所有笔记添加事件监听器
+            setupNoteEventListeners();
         }
 
-        // 生成唯一ID
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        // 设置笔记事件监听器
+        function setupNoteEventListeners() {
+            // 标题点击进入编辑模式
+            document.querySelectorAll('.note-title').forEach(titleElement => {
+                titleElement.addEventListener('click', function () {
+                    const noteId = this.getAttribute('data-note-id');
+                    const currentTitle = this.textContent;
+
+                    // 替换为输入框
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentTitle;
+                    input.className = 'note-title-input';
+
+                    this.parentNode.replaceChild(input, this);
+                    input.focus();
+                    input.select();
+
+                    // 保存标题编辑
+                    const saveTitle = () => {
+                        const newTitle = input.value.trim() || '未命名笔记';
+                        updateNote(noteId, { title: newTitle });
+                    };
+
+                    // 按Enter保存
+                    input.addEventListener('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            saveTitle();
+                        }
+                    });
+
+                    // 失去焦点保存
+                    input.addEventListener('blur', saveTitle);
+                });
+            });
+
+            // 颜色选择器变更
+            document.querySelectorAll('.note-color-picker').forEach(colorPicker => {
+                colorPicker.addEventListener('change', function () {
+                    const noteId = this.getAttribute('data-note-id');
+                    const newColor = this.value;
+                    updateNote(noteId, { color: newColor });
+                });
+            });
+
+            // 文本内容变更
+            document.querySelectorAll('.note-textarea').forEach(textarea => {
+                // 防抖处理，避免频繁保存
+                let saveTimeout;
+                textarea.addEventListener('input', function () {
+                    const noteId = this.getAttribute('data-note-id');
+                    const newContent = this.value;
+
+                    // 清除之前的定时器
+                    if (saveTimeout) clearTimeout(saveTimeout);
+
+                    // 设置新的定时器
+                    saveTimeout = setTimeout(() => {
+                        updateNote(noteId, { content: newContent });
+                    }, 500); // 500毫秒后保存
+                });
+            });
+
+            // 删除按钮点击
+            document.querySelectorAll('.delete-note-btn').forEach(deleteBtn => {
+                deleteBtn.addEventListener('click', function () {
+                    const noteId = this.getAttribute('data-note-id');
+                    const notes = loadNotes();
+                    const note = notes.find(n => n.id === noteId);
+
+                    if (note) {
+                        // 检查管理员权限
+                        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+                        if (isAdmin) {
+                            // 管理员可直接删除
+                            selectedNoteId = noteId;
+                            document.getElementById('noteToDeleteTitle').textContent = note.title;
+                            document.getElementById('deleteModal').classList.add('active');
+                        } else {
+                            // 非管理员需要登录
+                            alert('删除笔记需要管理员权限。请先登录管理员账户。');
+                            document.getElementById('adminLoginModal').classList.add('active');
+                        }
+                    }
+                });
+            });
         }
 
-        // 创建新笔记
-        function createNewNote() {
-            const notes = loadNotes();
-            const newNote = new Note(generateId());
-            notes.push(newNote);
-            saveNotes(notes);
-            renderNotes();
+        // 管理员登录相关函数
+        async function sha256(message) {
+            // 将字符串编码为 UTF-8
+            const msgBuffer = new TextEncoder().encode(message);
 
-            // 滚动到新笔记位置
-            setTimeout(() => {
-                const newNoteElement = document.querySelector(`[data-id="${newNote.id}"]`);
-                if (newNoteElement) {
-                    newNoteElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
+            // 计算哈希
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+            // 将 ArrayBuffer 转换为字节数组
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+            // 将字节转换为十六进制字符串
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
         }
 
-        // 更新笔记标题
-        function updateNoteTitle(noteId, newTitle) {
-            const notes = loadNotes();
-            const noteIndex = notes.findIndex(note => note.id === noteId);
-
-            if (noteIndex !== -1) {
-                notes[noteIndex].title = newTitle || '未命名笔记';
-                notes[noteIndex].updateTimestamp();
-                saveNotes(notes);
-                renderNotes();
-            }
-        }
-
-        // 更新笔记内容
-        function updateNoteContent(noteId, newContent) {
-            const notes = loadNotes();
-            const noteIndex = notes.findIndex(note => note.id === noteId);
-
-            if (noteIndex !== -1) {
-                notes[noteIndex].content = newContent;
-                notes[noteIndex].updateTimestamp();
-                saveNotes(notes);
-            }
-        }
-
-        // 更新笔记颜色
-        function updateNoteColor(noteId, newColor) {
-            const notes = loadNotes();
-            const noteIndex = notes.findIndex(note => note.id === noteId);
-
-            if (noteIndex !== -1) {
-                notes[noteIndex].color = newColor;
-                notes[noteIndex].updateTimestamp();
-                saveNotes(notes);
-                renderNotes();
-            }
-        }
-
-        // 删除笔记（需要管理员权限）
-        async function deleteNote(noteId) {
-            const isAdmin = localStorage.getItem('isAdmin') === 'true';
-
-            if (!isAdmin) {
-                alert('删除笔记需要管理员权限，请先登录！');
-                return;
-            }
-
-            if (confirm('确定要删除这个笔记吗？此操作不可撤销。')) {
-                const notes = loadNotes();
-                const filteredNotes = notes.filter(note => note.id !== noteId);
-                saveNotes(filteredNotes);
-                renderNotes();
-            }
-        }
-
-        // 管理员登录函数
         async function adminLogin() {
             const passwordInput = document.getElementById('adminPassword');
-            const loginButton = document.getElementById('adminLoginBtn');
             const password = passwordInput.value.trim();
 
+            // 基础验证
             if (!password) {
-                alert('请输入管理员密码');
+                alert('请输入密码');
                 return;
-            }
-
-            // 设置加载状态
-            let originalButtonText = '管理员登录';
-            if (loginButton) {
-                originalButtonText = loginButton.textContent;
-                loginButton.disabled = true;
-                loginButton.textContent = '验证中...';
             }
 
             try {
@@ -603,15 +824,10 @@
                     // 登录成功逻辑
                     localStorage.setItem('isAdmin', 'true');
                     alert('管理员登录成功');
-                    passwordInput.value = '';
-                    updateAdminUI(true);
-
-                    // 显示所有笔记的删除按钮
-                    const deleteButtons = document.querySelectorAll('.delete-btn');
-                    deleteButtons.forEach(btn => {
-                        btn.style.display = 'block';
-                    });
-
+                    passwordInput.value = ''; // 清空密码框
+                    updateAdminUI();
+                    // 关闭登录模态框
+                    document.getElementById('adminLoginModal').classList.remove('active');
                 } else {
                     // 登录失败
                     alert('密码错误');
@@ -619,112 +835,114 @@
                     passwordInput.focus();
                 }
             } catch (error) {
+                // 网络或意外错误
                 console.error('登录请求失败:', error);
                 alert('登录失败：网络或服务异常');
-            } finally {
-                // 恢复按钮状态
-                if (loginButton) {
-                    loginButton.disabled = false;
-                    loginButton.textContent = originalButtonText;
-                }
             }
         }
 
-        // 管理员登出函数
         function adminLogout() {
             localStorage.setItem('isAdmin', 'false');
             alert('已退出管理员登录');
-            updateAdminUI(false);
-
-            // 隐藏所有笔记的删除按钮
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            deleteButtons.forEach(btn => {
-                btn.style.display = 'none';
-            });
+            updateAdminUI();
         }
 
-        // 更新管理员界面状态
-        function updateAdminUI(isAdmin) {
-            const adminOnlyElements = document.querySelectorAll('.admin-only');
-            adminOnlyElements.forEach(el => {
-                el.style.display = isAdmin ? 'block' : 'none';
-            });
+        // 更新管理员UI
+        function updateAdminUI() {
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            const adminStatus = document.getElementById('adminStatus');
+            const adminToggleBtn = document.getElementById('adminToggleBtn');
 
-            const adminPasswordInput = document.getElementById('adminPassword');
-            const loginButton = document.getElementById('adminLoginBtn');
-            const logoutButton = document.getElementById('adminLogoutBtn');
-
+            // 更新状态显示
             if (isAdmin) {
-                if (adminPasswordInput) adminPasswordInput.style.display = 'none';
-                if (loginButton) loginButton.style.display = 'none';
-                if (logoutButton) logoutButton.style.display = 'inline-block';
+                adminStatus.textContent = '管理员模式';
+                adminStatus.className = 'admin-status admin';
+                adminToggleBtn.innerHTML = '<i class="fas fa-unlock"></i> 退出管理';
+                adminToggleBtn.onclick = adminLogout;
             } else {
-                if (adminPasswordInput) adminPasswordInput.style.display = 'inline-block';
-                if (loginButton) loginButton.style.display = 'inline-block';
-                if (logoutButton) logoutButton.style.display = 'none';
+                adminStatus.textContent = '访客模式';
+                adminStatus.className = 'admin-status guest';
+                adminToggleBtn.innerHTML = '<i class="fas fa-lock"></i> 管理员登录';
+                adminToggleBtn.onclick = () => {
+                    document.getElementById('adminPassword').value = '';
+                    document.getElementById('adminLoginModal').classList.add('active');
+                };
             }
         }
 
-        // 页面加载时初始化
+        // 初始化页面
         document.addEventListener('DOMContentLoaded', function () {
-            // 检查管理员登录状态
-            const isAdmin = localStorage.getItem('isAdmin') === 'true';
-            updateAdminUI(isAdmin);
+            // 设置当前年份
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-            // 加载并渲染所有笔记
+            // 渲染笔记
             renderNotes();
 
-            // 添加自动保存功能
-            setInterval(() => {
-                const notes = loadNotes();
-                saveNotes(notes);
-            }, 30000); // 每30秒自动保存一次
+            // 初始化管理员UI
+            updateAdminUI();
 
-            console.log('记事本已加载。所有数据存储在本地浏览器中。');
-            console.log('管理员功能：删除笔记需要管理员权限验证。');
-        });
+            // 新建笔记按钮
+            document.getElementById('newNoteBtn').addEventListener('click', createNote);
 
-        // 导出笔记功能（扩展功能）
-        function exportNotes() {
-            const notes = loadNotes();
-            const dataStr = JSON.stringify(notes, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-            const exportFileDefaultName = `quark-notes-${new Date().toISOString().slice(0, 10)}.json`;
-
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-
-        // 导入笔记功能（扩展功能）
-        function importNotes(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                try {
-                    const importedNotes = JSON.parse(e.target.result);
-                    const currentNotes = loadNotes();
-
-                    // 合并笔记，避免ID冲突
-                    importedNotes.forEach(note => {
-                        if (!currentNotes.some(n => n.id === note.id)) {
-                            currentNotes.push(note);
-                        }
-                    });
-
-                    saveNotes(currentNotes);
-                    renderNotes();
-                    alert(`成功导入 ${importedNotes.length} 条笔记`);
-                } catch (error) {
-                    alert('导入失败：文件格式不正确');
+            // 管理员登录模态框
+            document.getElementById('adminToggleBtn').addEventListener('click', function () {
+                const isAdmin = localStorage.getItem('isAdmin') === 'true';
+                if (!isAdmin) {
+                    document.getElementById('adminPassword').value = '';
+                    document.getElementById('adminLoginModal').classList.add('active');
                 }
-            };
-            reader.readAsText(file);
-        }
+            });
+
+            // 登录模态框关闭按钮
+            document.getElementById('closeLoginModal').addEventListener('click', function () {
+                document.getElementById('adminLoginModal').classList.remove('active');
+            });
+
+            document.getElementById('cancelLoginBtn').addEventListener('click', function () {
+                document.getElementById('adminLoginModal').classList.remove('active');
+            });
+
+            // 确认登录按钮
+            document.getElementById('confirmLoginBtn').addEventListener('click', adminLogin);
+
+            // 按Enter键登录
+            document.getElementById('adminPassword').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    adminLogin();
+                }
+            });
+
+            // 删除确认模态框
+            document.getElementById('closeDeleteModal').addEventListener('click', function () {
+                document.getElementById('deleteModal').classList.remove('active');
+            });
+
+            document.getElementById('cancelDeleteBtn').addEventListener('click', function () {
+                document.getElementById('deleteModal').classList.remove('active');
+                selectedNoteId = null;
+            });
+
+            // 确认删除按钮
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+                if (selectedNoteId) {
+                    deleteNote(selectedNoteId);
+                    document.getElementById('deleteModal').classList.remove('active');
+                    selectedNoteId = null;
+                }
+            });
+
+            // 点击模态框外部关闭
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                        if (this.id === 'deleteModal') {
+                            selectedNoteId = null;
+                        }
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
