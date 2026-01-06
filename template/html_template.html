@@ -12,7 +12,37 @@
     <!-- 因nav.css内已包含而禁用的样式名：.header, .header h1, .header-content, .header-left, .header-nav-container, .header-nav, .header-nav li, .header-nav li a, .language-selector, .language-selector option, .header-search, .header-search input, .header-search input::placeholder, .header-search button, .hamburger-menu, .hamburger-menu span, .mobile-navsidebar, .navsidebar-overlay, .navsidebar-content, .navsidebar-header, .navsidebar-header h2, .navsidebar-close, .navsidebar-nav, .navsidebar-nav ul, .navsidebar-nav li, .navsidebar-nav a, .navsidebar-search, .navsidebar-search input, .navsidebar-search input::placeholder, .navsidebar-search button, .navsidebar-controls, .navsidebar-language, .navsidebar-language .language-selector, .navsidebar-login, .navsidebar-login a, .mobile-navsidebar.active, .mobile-navsidebar.active .navsidebar-overlay, .mobile-navsidebar.active .navsidebar-content, .header-placeholder -->
     <script src="/assets/js/nav.js"></script>
     <script src="/assets/js/disable-right-click.js"></script>
+
+    <style>
+    </style>
+    <!-- 
+    重要样式说明：
+    默认UI设计为浅白色、高透明、圆角毛玻璃，saturate值在120%左右。
+    严格禁止使用任何花里胡哨的任何渐变、彩条等虽属于现代UI但烂大街、高饱和的庸俗页面设计，应当力求简洁、大气、用更少的样式表达更好的视觉效果。
+    允许轻量使用简洁悬浮交互（如轻微亮度变化、轻微上升、光影追随、Y轴翻转）等，但不宜太多，需根据提示词具体对页面美观或简洁的需求进行调整。
+    
+    默认背景图片（提示词中为博客背景）使用图片地址为：/assets/img/bd.png，当用户明确说明或未指定任何背景时使用此地址。
+    当提示词要求使用纯色背景时，避免使用过浅的颜色或纯白，但需要同时注意整体颜色协调。
+    
+    -->
+
+    <!--
+    其他重要说明：
+
+    当提示词要求你使用管理员登录密码时，你需要浏览网址"https://lsqkk.github.io/template/password.md"并仔细浏览说明，在代码中引入api.lsqkk.space/api/admin-auth脚本及相关功能。
+    当提示词要求你使用firebaseRTDB存储/读写实时数据时，你需要浏览网址"https://lsqkk.github.io/template/firebase.md"并仔细浏览说明，在代码中引入api.lsqkk.space/api/firebase-config脚本及相关功能。
+    当提示词没有要求使用firebase，但需要存储用户相关信息的，存储在localStorage中。
+    
+    当你认为用户描述的功能不够详细，或者你认为存在严重歧义、缺少重要信息，导致你的输出可能使得用户不满意时，你应当首先不输出代码并详细询问用户更多信息。
+
+    如提示词要求，或你认为合适，可以在在页尾恰当地方显示如下版权信息（包含结尾的英文"."符号），并在“夸克博客”字样处提供跳转至/posts/copyright的链接：
+    © 2024 - 当前年份(2026，或写一个简单的js函数) 功能名 / 夸克博客 All rights reserved.
+    
+    当网页可能涉及任何“使用者对安全性的怀疑”，用户在提示词中指定强调“使用者可右键查看源码以检验代码安全性”等类似场合，应当取消上方"<script src="/assets/js/disable-right-click.js"></script>"这一行代码。
+
+    -->
 </head>
+
 
 <body>
 
