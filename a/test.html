@@ -7,29 +7,26 @@
     <title>网页记事本 - 夸克博客</title>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script src="/assets/js/cursor-trail.js"></script>
     <link rel="stylesheet" href="/assets/css/nav.css">
-    <script src="/assets/js/nav.js"></script>
-    <script src="/assets/js/disable-right-click.js"></script>
+
+    <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --primary-color: #4a6fa5;
-            --hover-color: #3a5a8c;
-            --danger-color: #d9534f;
-            --success-color: #5cb85c;
+        /* 自定义样式 - 遵循液态玻璃设计原则 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background: url('/assets/img/bd.png') no-repeat center center fixed;
-            background-size: cover;
             min-height: 100vh;
+            background: url('/assets/img/bg.png') no-repeat center center fixed;
+            background-size: cover;
             padding: 20px;
-            margin: 0;
-            font-family: inherit;
+            padding-top: 80px;
+            /* 为固定顶栏留出空间 */
         }
 
         .container {
@@ -38,110 +35,63 @@
             padding: 20px;
         }
 
+        /* 液态玻璃面板 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: saturate(120%) blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12);
+            transform: translateY(-2px);
+        }
+
+        /* 标题样式 */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px) saturate(120%);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
         }
 
         .header h1 {
-            margin: 0;
+            font-size: 2.5rem;
             color: #333;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 300;
         }
 
-        .header h1 i {
-            color: var(--primary-color);
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
         }
 
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
+        /* 管理员控制区 */
         .admin-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 25px;
+            text-align: right;
         }
 
-        .admin-status {
-            font-size: 0.9rem;
-            padding: 5px 12px;
-            border-radius: 20px;
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .admin-status.admin {
-            background-color: rgba(92, 184, 92, 0.2);
-            color: var(--success-color);
-        }
-
-        .admin-status.guest {
-            background-color: rgba(217, 83, 79, 0.1);
-            color: #888;
-        }
-
-        .btn {
-            padding: 10px 20px;
+        .admin-btn {
+            background: rgba(74, 144, 226, 0.9);
+            color: white;
             border: none;
+            padding: 10px 20px;
             border-radius: 10px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(5px) saturate(120%);
-            border: 1px solid var(--glass-border);
-            color: #333;
             cursor: pointer;
             font-size: 0.95rem;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .btn:hover {
+        .admin-btn:hover {
+            background: rgba(54, 124, 206, 0.9);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.95);
         }
 
-        .btn-primary {
-            background-color: rgba(74, 111, 165, 0.2);
-            border-color: rgba(74, 111, 165, 0.3);
-            color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: rgba(74, 111, 165, 0.3);
-        }
-
-        .btn-danger {
-            background-color: rgba(217, 83, 79, 0.1);
-            border-color: rgba(217, 83, 79, 0.2);
-            color: var(--danger-color);
-        }
-
-        .btn-danger:hover {
-            background-color: rgba(217, 83, 79, 0.2);
-        }
-
-        .btn-success {
-            background-color: rgba(92, 184, 92, 0.1);
-            border-color: rgba(92, 184, 92, 0.2);
-            color: var(--success-color);
-        }
-
+        /* 笔记列表样式 */
         .notes-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -150,167 +100,145 @@
         }
 
         .note-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px) saturate(120%);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            overflow: hidden;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: saturate(120%) blur(8px);
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            height: 350px;
+            height: 250px;
         }
 
         .note-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
         }
 
         .note-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.5);
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .note-title {
-            margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #333;
+            font-weight: 500;
             flex-grow: 1;
-            cursor: pointer;
-            padding: 5px 0;
-            border-radius: 5px;
-            transition: background 0.2s;
+            margin-right: 15px;
+            border: none;
+            background: transparent;
+            outline: none;
         }
 
-        .note-title:hover {
-            background: rgba(0, 0, 0, 0.03);
-        }
-
-        .note-title-input {
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+        .note-title:focus {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px;
             border-radius: 5px;
-            padding: 5px 10px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.9);
         }
 
         .note-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .note-action-btn {
-            background: none;
+        .note-btn {
+            background: transparent;
             border: none;
-            color: #666;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 5px;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .note-action-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #333;
-        }
-
-        .note-color-picker {
-            width: 25px;
-            height: 25px;
-            border: none;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            padding: 0;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
         }
 
-        .note-color-picker::-webkit-color-swatch-wrapper {
-            padding: 0;
+        .edit-btn {
+            color: #4a90e2;
         }
 
-        .note-color-picker::-webkit-color-swatch {
-            border: none;
-            border-radius: 50%;
+        .edit-btn:hover {
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.1);
         }
 
         .note-content {
-            padding: 20px;
             flex-grow: 1;
-            overflow-y: auto;
-            font-size: 1rem;
-            line-height: 1.5;
+            overflow: auto;
             color: #444;
+            line-height: 1.5;
+            border: none;
+            background: transparent;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 15px;
         }
 
-        .note-textarea {
-            width: 100%;
-            height: 100%;
-            min-height: 200px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+        .note-content:focus {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px;
             border-radius: 8px;
-            padding: 15px;
-            font-size: 1rem;
-            line-height: 1.5;
-            resize: none;
-            background: rgba(255, 255, 255, 0.9);
-            font-family: inherit;
         }
 
         .note-footer {
-            padding: 15px 20px;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.85rem;
-            color: #777;
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .note-date {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px) saturate(120%);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            color: #aaa;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
             color: #888;
-            max-width: 500px;
-            margin: 0 auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .modal {
+        /* 新建笔记按钮 */
+        .new-note-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .new-note-btn {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: saturate(120%) blur(8px);
+            border: 2px dashed rgba(74, 144, 226, 0.4);
+            color: #4a90e2;
+            font-size: 1.1rem;
+            padding: 20px 40px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .new-note-btn:hover {
+            background: rgba(74, 144, 226, 0.1);
+            border-color: rgba(74, 144, 226, 0.7);
+            transform: translateY(-3px);
+        }
+
+        /* 登录模态框 */
+        .login-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -320,64 +248,30 @@
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
             z-index: 1000;
-            align-items: center;
             justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px) saturate(120%);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            width: 90%;
-            max-width: 400px;
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
 
-        .modal-header h2 {
-            margin: 0;
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: saturate(120%) blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .login-form h3 {
+            margin-bottom: 25px;
             color: #333;
+            text-align: center;
             font-size: 1.5rem;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #666;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 5px;
-            transition: background 0.2s;
-        }
-
-        .modal-close:hover {
-            background: rgba(0, 0, 0, 0.05);
         }
 
         .form-group {
@@ -388,67 +282,79 @@
             display: block;
             margin-bottom: 8px;
             color: #555;
-            font-weight: 500;
         }
 
-        .form-group input {
+        .form-control {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
             font-size: 1rem;
-            background: rgba(255, 255, 255, 0.9);
-            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        .form-group input:focus {
+        .form-control:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
-        .modal-footer {
+        .form-actions {
             display: flex;
-            justify-content: flex-end;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
-        .footer {
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: rgba(74, 144, 226, 0.9);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: rgba(54, 124, 206, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* 版权信息 */
+        .copyright {
             text-align: center;
+            margin-top: 50px;
             padding: 20px;
-            margin-top: 40px;
-            color: #666;
+            color: #888;
             font-size: 0.9rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .footer a {
-            color: var(--primary-color);
+        .copyright a {
+            color: #4a90e2;
             text-decoration: none;
         }
 
-        .footer a:hover {
+        .copyright a:hover {
             text-decoration: underline;
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: stretch;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .admin-controls {
-                justify-content: space-between;
-            }
-
             .notes-container {
                 grid-template-columns: 1fr;
             }
@@ -456,361 +362,471 @@
             .container {
                 padding: 10px;
             }
+
+            .glass-panel {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                padding-top: 70px;
+            }
+
+            .login-form {
+                padding: 30px 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* 禁用状态 */
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .disabled:hover {
+            transform: none !important;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #666;
         }
     </style>
 </head>
 
 <body>
-    <!-- 固定顶栏已通过模板引入 -->
+    <!-- 固定顶栏由nav.js和nav.css提供 -->
 
     <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-book"></i> 网页记事本</h1>
-            <div class="controls">
-                <button class="btn btn-primary" id="newNoteBtn">
-                    <i class="fas fa-plus"></i> 新建笔记
+        <div class="glass-panel">
+            <div class="header">
+                <h1><i class="fas fa-book-open"></i> 网页记事本</h1>
+                <p>简洁高效的笔记管理工具，数据存储于本地浏览器</p>
+            </div>
+
+            <div class="admin-controls">
+                <button id="adminToggleBtn" class="admin-btn">
+                    <i class="fas fa-user-shield"></i> 管理员登录
                 </button>
-                <div class="admin-controls">
-                    <span class="admin-status guest" id="adminStatus">访客模式</span>
-                    <button class="btn" id="adminToggleBtn">
-                        <i class="fas fa-lock"></i> 管理员登录
-                    </button>
+            </div>
+
+            <div id="notesContainer" class="notes-container">
+                <!-- 笔记卡片将通过JS动态生成 -->
+                <div class="empty-state">
+                    <i class="fas fa-sticky-note"></i>
+                    <h3>暂无笔记</h3>
+                    <p>点击下方按钮创建你的第一个笔记</p>
                 </div>
+            </div>
+
+            <div class="new-note-container">
+                <button id="newNoteBtn" class="new-note-btn">
+                    <i class="fas fa-plus-circle"></i> 新建笔记
+                </button>
             </div>
         </div>
 
-        <div class="notes-container" id="notesContainer">
-            <!-- 笔记卡片将在这里动态生成 -->
-            <div class="empty-state" id="emptyState">
-                <i class="fas fa-sticky-note"></i>
-                <h3>暂无笔记</h3>
-                <p>点击"新建笔记"按钮创建您的第一条笔记。所有笔记将保存在您的浏览器本地存储中。</p>
-            </div>
-        </div>
-
-        <!-- 管理员登录模态框 -->
-        <div class="modal" id="adminLoginModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2><i class="fas fa-lock"></i> 管理员登录</h2>
-                    <button class="modal-close" id="closeLoginModal">&times;</button>
-                </div>
-                <div class="form-group">
-                    <label for="adminPassword">管理员密码</label>
-                    <input type="password" id="adminPassword" placeholder="请输入管理员密码">
-                </div>
-                <div class="modal-footer">
-                    <button class="btn" id="cancelLoginBtn">取消</button>
-                    <button class="btn btn-primary" id="confirmLoginBtn">登录</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 删除确认模态框 -->
-        <div class="modal" id="deleteModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2><i class="fas fa-trash-alt"></i> 删除确认</h2>
-                    <button class="modal-close" id="closeDeleteModal">&times;</button>
-                </div>
-                <p>您确定要删除笔记 "<span id="noteToDeleteTitle"></span>" 吗？此操作无法撤销。</p>
-                <div class="modal-footer">
-                    <button class="btn" id="cancelDeleteBtn">取消</button>
-                    <button class="btn btn-danger" id="confirmDeleteBtn">删除</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            © 2024 - <span id="currentYear"></span> 网页记事本 / <a href="/posts/copyright">夸克博客</a> All rights reserved.
+        <div class="copyright">
+            © 2024 - <span id="currentYear">2026</span> 网页记事本 / <a href="/posts/copyright">夸克博客</a> All rights reserved.
         </div>
     </div>
 
+    <!-- 管理员登录模态框 -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-form glass-panel">
+            <h3><i class="fas fa-lock"></i> 管理员登录</h3>
+            <div class="form-group">
+                <label for="adminPassword">管理员密码</label>
+                <input type="password" id="adminPassword" class="form-control" placeholder="请输入管理员密码">
+            </div>
+            <div class="form-actions">
+                <button id="loginSubmitBtn" class="btn btn-primary">登录</button>
+                <button id="loginCancelBtn" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入模板脚本 -->
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="/assets/js/nav.js"></script>
+    <!-- 根据要求，保留禁用右键脚本 -->
+    <script src="/assets/js/disable-right-click.js"></script>
+
+    <!-- SHA-256 哈希函数 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+
+    <!-- 应用主脚本 -->
     <script>
-        // 当前选中的笔记ID（用于删除操作）
-        let selectedNoteId = null;
+        // 设置当前年份
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-        // 笔记数据模型
-        class Note {
-            constructor(id, title, content, color, createdAt, updatedAt) {
-                this.id = id;
-                this.title = title;
-                this.content = content;
-                this.color = color;
-                this.createdAt = createdAt;
-                this.updatedAt = updatedAt;
+        // 笔记管理类
+        class NotesManager {
+            constructor() {
+                this.notesKey = 'webNotes';
+                this.notes = this.loadNotes();
+                this.currentNoteId = null;
+                this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+                this.init();
             }
-        }
 
-        // 从localStorage加载所有笔记
-        function loadNotes() {
-            const notesJSON = localStorage.getItem('quarkNotes');
-            if (notesJSON) {
-                try {
-                    const notesData = JSON.parse(notesJSON);
-                    return notesData.map(noteData => new Note(
-                        noteData.id,
-                        noteData.title,
-                        noteData.content,
-                        noteData.color || '#ffffff',
-                        new Date(noteData.createdAt),
-                        new Date(noteData.updatedAt)
-                    ));
-                } catch (e) {
-                    console.error('解析笔记数据失败:', e);
-                    return [];
+            // 初始化
+            init() {
+                this.renderNotes();
+                this.setupEventListeners();
+                this.updateAdminUI();
+            }
+
+            // 加载笔记
+            loadNotes() {
+                const notesData = localStorage.getItem(this.notesKey);
+                if (notesData) {
+                    try {
+                        return JSON.parse(notesData);
+                    } catch (e) {
+                        console.error('解析笔记数据失败:', e);
+                        return [];
+                    }
                 }
-            }
-            return [];
-        }
-
-        // 保存所有笔记到localStorage
-        function saveNotes(notes) {
-            const notesData = notes.map(note => ({
-                id: note.id,
-                title: note.title,
-                content: note.content,
-                color: note.color,
-                createdAt: note.createdAt.toISOString(),
-                updatedAt: note.updatedAt.toISOString()
-            }));
-            localStorage.setItem('quarkNotes', JSON.stringify(notesData));
-        }
-
-        // 创建新笔记
-        function createNote() {
-            const notes = loadNotes();
-            const newId = 'note_' + Date.now();
-            const now = new Date();
-
-            const newNote = new Note(
-                newId,
-                '新笔记',
-                '开始记录您的想法...',
-                '#ffffff',
-                now,
-                now
-            );
-
-            notes.push(newNote);
-            saveNotes(notes);
-            renderNotes();
-
-            // 自动聚焦到新笔记的标题
-            setTimeout(() => {
-                const titleElement = document.querySelector(`[data-note-id="${newId}"] .note-title`);
-                if (titleElement) {
-                    titleElement.click();
-                }
-            }, 100);
-        }
-
-        // 更新笔记
-        function updateNote(id, updates) {
-            const notes = loadNotes();
-            const noteIndex = notes.findIndex(note => note.id === id);
-
-            if (noteIndex !== -1) {
-                const note = notes[noteIndex];
-
-                // 应用更新
-                if (updates.title !== undefined) note.title = updates.title;
-                if (updates.content !== undefined) note.content = updates.content;
-                if (updates.color !== undefined) note.color = updates.color;
-
-                note.updatedAt = new Date();
-                saveNotes(notes);
-                renderNotes();
-                return true;
+                return [];
             }
 
-            return false;
-        }
-
-        // 删除笔记
-        function deleteNote(id) {
-            const notes = loadNotes();
-            const updatedNotes = notes.filter(note => note.id !== id);
-            saveNotes(updatedNotes);
-            renderNotes();
-        }
-
-        // 渲染所有笔记
-        function renderNotes() {
-            const notes = loadNotes();
-            const notesContainer = document.getElementById('notesContainer');
-            const emptyState = document.getElementById('emptyState');
-
-            // 如果没有笔记，显示空状态
-            if (notes.length === 0) {
-                emptyState.style.display = 'block';
-                notesContainer.innerHTML = '';
-                notesContainer.appendChild(emptyState);
-                return;
+            // 保存笔记
+            saveNotes() {
+                localStorage.setItem(this.notesKey, JSON.stringify(this.notes));
             }
 
-            // 隐藏空状态
-            emptyState.style.display = 'none';
+            // 创建新笔记
+            createNote() {
+                const noteId = Date.now().toString();
+                const newNote = {
+                    id: noteId,
+                    title: '新笔记',
+                    content: '开始记录你的想法...',
+                    lastModified: new Date().toISOString(),
+                    created: new Date().toISOString()
+                };
 
-            // 生成笔记卡片HTML
-            let notesHTML = '';
+                this.notes.unshift(newNote); // 添加到开头
+                this.saveNotes();
+                this.renderNotes();
 
-            notes.forEach(note => {
-                const createdDate = note.createdAt.toLocaleDateString('zh-CN');
-                const updatedDate = note.updatedAt.toLocaleDateString('zh-CN');
-                const isNew = (new Date() - note.createdAt) < 24 * 60 * 60 * 1000; // 一天内创建的笔记
+                // 聚焦到新笔记的标题
+                setTimeout(() => {
+                    const titleInput = document.querySelector(`[data-note-id="${noteId}"] .note-title`);
+                    if (titleInput) {
+                        titleInput.focus();
+                        titleInput.select();
+                    }
+                }, 100);
+            }
 
-                notesHTML += `
-                <div class="note-card" data-note-id="${note.id}" style="border-top: 4px solid ${note.color}">
-                    <div class="note-header">
-                        <h3 class="note-title" data-note-id="${note.id}">${note.title}</h3>
-                        <div class="note-actions">
-                            <input type="color" class="note-color-picker" value="${note.color}" data-note-id="${note.id}">
-                            <button class="note-action-btn delete-note-btn" data-note-id="${note.id}" title="删除笔记">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="note-content">
-                        <textarea class="note-textarea" data-note-id="${note.id}" placeholder="输入笔记内容...">${note.content}</textarea>
-                    </div>
-                    <div class="note-footer">
-                        <div class="note-date">
-                            <i class="far fa-calendar-alt"></i>
-                            ${createdDate === updatedDate ? createdDate : `${createdDate} (更新: ${updatedDate})`}
-                        </div>
-                        ${isNew ? '<span style="color: var(--success-color); font-size: 0.8rem;"><i class="fas fa-star"></i> 新</span>' : ''}
-                    </div>
-                </div>
-                `;
-            });
-
-            notesContainer.innerHTML = notesHTML;
-
-            // 为所有笔记添加事件监听器
-            setupNoteEventListeners();
-        }
-
-        // 设置笔记事件监听器
-        function setupNoteEventListeners() {
-            // 标题点击进入编辑模式
-            document.querySelectorAll('.note-title').forEach(titleElement => {
-                titleElement.addEventListener('click', function () {
-                    const noteId = this.getAttribute('data-note-id');
-                    const currentTitle = this.textContent;
-
-                    // 替换为输入框
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = currentTitle;
-                    input.className = 'note-title-input';
-
-                    this.parentNode.replaceChild(input, this);
-                    input.focus();
-                    input.select();
-
-                    // 保存标题编辑
-                    const saveTitle = () => {
-                        const newTitle = input.value.trim() || '未命名笔记';
-                        updateNote(noteId, { title: newTitle });
+            // 更新笔记
+            updateNote(noteId, updates) {
+                const noteIndex = this.notes.findIndex(note => note.id === noteId);
+                if (noteIndex !== -1) {
+                    this.notes[noteIndex] = {
+                        ...this.notes[noteIndex],
+                        ...updates,
+                        lastModified: new Date().toISOString()
                     };
 
-                    // 按Enter保存
-                    input.addEventListener('keypress', function (e) {
-                        if (e.key === 'Enter') {
-                            saveTitle();
+                    this.saveNotes();
+                    this.updateNoteCard(noteId);
+                }
+            }
+
+            // 删除笔记
+            deleteNote(noteId) {
+                if (!this.isAdmin) {
+                    alert('需要管理员权限才能删除笔记');
+                    return false;
+                }
+
+                const noteIndex = this.notes.findIndex(note => note.id === noteId);
+                if (noteIndex !== -1) {
+                    this.notes.splice(noteIndex, 1);
+                    this.saveNotes();
+                    this.renderNotes();
+                    return true;
+                }
+                return false;
+            }
+
+            // 渲染所有笔记
+            renderNotes() {
+                const container = document.getElementById('notesContainer');
+
+                if (this.notes.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-sticky-note"></i>
+                            <h3>暂无笔记</h3>
+                            <p>点击下方按钮创建你的第一个笔记</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.notes.map(note => this.createNoteCardHTML(note)).join('');
+
+                // 为每个笔记添加事件监听器
+                this.notes.forEach(note => {
+                    this.attachNoteEventListeners(note.id);
+                });
+            }
+
+            // 更新单个笔记卡片
+            updateNoteCard(noteId) {
+                const note = this.notes.find(n => n.id === noteId);
+                if (!note) return;
+
+                const card = document.querySelector(`[data-note-id="${noteId}"]`);
+                if (card) {
+                    card.querySelector('.note-title').value = note.title;
+                    card.querySelector('.note-content').value = note.content;
+                    card.querySelector('.note-date').textContent = this.formatDate(note.lastModified);
+                }
+            }
+
+            // 创建笔记卡片HTML
+            createNoteCardHTML(note) {
+                return `
+                    <div class="note-card" data-note-id="${note.id}">
+                        <div class="note-header">
+                            <input type="text" class="note-title" value="${this.escapeHtml(note.title)}" placeholder="笔记标题">
+                            <div class="note-actions">
+                                <button class="note-btn edit-btn" title="编辑" data-action="edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="note-btn delete-btn" title="删除" data-action="delete" ${!this.isAdmin ? 'disabled' : ''}>
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea class="note-content" placeholder="笔记内容...">${this.escapeHtml(note.content)}</textarea>
+                        <div class="note-footer">
+                            <span class="note-date">${this.formatDate(note.lastModified)}</span>
+                            <span class="note-status">${note.content.length} 字符</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 为笔记添加事件监听器
+            attachNoteEventListeners(noteId) {
+                const card = document.querySelector(`[data-note-id="${noteId}"]`);
+                if (!card) return;
+
+                // 标题输入
+                const titleInput = card.querySelector('.note-title');
+                titleInput.addEventListener('input', (e) => {
+                    this.updateNote(noteId, { title: e.target.value });
+                });
+
+                // 内容输入
+                const contentInput = card.querySelector('.note-content');
+                contentInput.addEventListener('input', (e) => {
+                    this.updateNote(noteId, { content: e.target.value });
+
+                    // 更新字符计数
+                    const charCount = e.target.value.length;
+                    card.querySelector('.note-status').textContent = `${charCount} 字符`;
+                });
+
+                // 编辑按钮
+                const editBtn = card.querySelector('[data-action="edit"]');
+                editBtn.addEventListener('click', () => {
+                    contentInput.focus();
+                });
+
+                // 删除按钮
+                const deleteBtn = card.querySelector('[data-action="delete"]');
+                deleteBtn.addEventListener('click', () => {
+                    if (this.isAdmin) {
+                        if (confirm('确定要删除这个笔记吗？此操作不可撤销。')) {
+                            this.deleteNote(noteId);
                         }
-                    });
-
-                    // 失去焦点保存
-                    input.addEventListener('blur', saveTitle);
-                });
-            });
-
-            // 颜色选择器变更
-            document.querySelectorAll('.note-color-picker').forEach(colorPicker => {
-                colorPicker.addEventListener('change', function () {
-                    const noteId = this.getAttribute('data-note-id');
-                    const newColor = this.value;
-                    updateNote(noteId, { color: newColor });
-                });
-            });
-
-            // 文本内容变更
-            document.querySelectorAll('.note-textarea').forEach(textarea => {
-                // 防抖处理，避免频繁保存
-                let saveTimeout;
-                textarea.addEventListener('input', function () {
-                    const noteId = this.getAttribute('data-note-id');
-                    const newContent = this.value;
-
-                    // 清除之前的定时器
-                    if (saveTimeout) clearTimeout(saveTimeout);
-
-                    // 设置新的定时器
-                    saveTimeout = setTimeout(() => {
-                        updateNote(noteId, { content: newContent });
-                    }, 500); // 500毫秒后保存
-                });
-            });
-
-            // 删除按钮点击
-            document.querySelectorAll('.delete-note-btn').forEach(deleteBtn => {
-                deleteBtn.addEventListener('click', function () {
-                    const noteId = this.getAttribute('data-note-id');
-                    const notes = loadNotes();
-                    const note = notes.find(n => n.id === noteId);
-
-                    if (note) {
-                        // 检查管理员权限
-                        const isAdmin = localStorage.getItem('isAdmin') === 'true';
-
-                        if (isAdmin) {
-                            // 管理员可直接删除
-                            selectedNoteId = noteId;
-                            document.getElementById('noteToDeleteTitle').textContent = note.title;
-                            document.getElementById('deleteModal').classList.add('active');
-                        } else {
-                            // 非管理员需要登录
-                            alert('删除笔记需要管理员权限。请先登录管理员账户。');
-                            document.getElementById('adminLoginModal').classList.add('active');
-                        }
+                    } else {
+                        this.showLoginModal();
                     }
                 });
-            });
+            }
+
+            // 设置全局事件监听器
+            setupEventListeners() {
+                // 新建笔记按钮
+                document.getElementById('newNoteBtn').addEventListener('click', () => {
+                    this.createNote();
+                });
+
+                // 管理员登录/退出按钮
+                document.getElementById('adminToggleBtn').addEventListener('click', () => {
+                    if (this.isAdmin) {
+                        adminLogout();
+                    } else {
+                        this.showLoginModal();
+                    }
+                });
+
+                // 登录提交按钮
+                document.getElementById('loginSubmitBtn').addEventListener('click', () => {
+                    const password = document.getElementById('adminPassword').value.trim();
+                    if (password) {
+                        adminLogin('adminPassword', 'loginSubmitBtn');
+                    } else {
+                        alert('请输入密码');
+                    }
+                });
+
+                // 登录取消按钮
+                document.getElementById('loginCancelBtn').addEventListener('click', () => {
+                    this.hideLoginModal();
+                });
+
+                // 点击模态框外部关闭
+                document.getElementById('loginModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'loginModal') {
+                        this.hideLoginModal();
+                    }
+                });
+
+                // 回车键提交登录
+                document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        document.getElementById('loginSubmitBtn').click();
+                    }
+                });
+            }
+
+            // 显示登录模态框
+            showLoginModal() {
+                document.getElementById('loginModal').classList.add('active');
+                document.getElementById('adminPassword').focus();
+            }
+
+            // 隐藏登录模态框
+            hideLoginModal() {
+                document.getElementById('loginModal').classList.remove('active');
+                document.getElementById('adminPassword').value = '';
+            }
+
+            // 更新管理员UI
+            updateAdminUI() {
+                this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+                // 更新管理员按钮
+                const adminBtn = document.getElementById('adminToggleBtn');
+                if (adminBtn) {
+                    if (this.isAdmin) {
+                        adminBtn.innerHTML = '<i class="fas fa-user-shield"></i> 退出管理';
+                        adminBtn.style.background = 'rgba(46, 204, 113, 0.9)';
+                    } else {
+                        adminBtn.innerHTML = '<i class="fas fa-user-shield"></i> 管理员登录';
+                        adminBtn.style.background = 'rgba(74, 144, 226, 0.9)';
+                    }
+                }
+
+                // 更新删除按钮状态
+                const deleteButtons = document.querySelectorAll('[data-action="delete"]');
+                deleteButtons.forEach(btn => {
+                    if (this.isAdmin) {
+                        btn.disabled = false;
+                        btn.classList.remove('disabled');
+                    } else {
+                        btn.disabled = true;
+                        btn.classList.add('disabled');
+                    }
+                });
+
+                // 重新渲染笔记以更新按钮状态
+                if (this.notes.length > 0) {
+                    this.renderNotes();
+                }
+            }
+
+            // 格式化日期
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / (1000 * 60));
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                if (diffMins < 1) return '刚刚';
+                if (diffMins < 60) return `${diffMins}分钟前`;
+                if (diffHours < 24) return `${diffHours}小时前`;
+                if (diffDays < 7) return `${diffDays}天前`;
+
+                return date.toLocaleDateString('zh-CN', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: diffDays > 365 ? 'numeric' : undefined
+                });
+            }
+
+            // 转义HTML
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
         }
 
-        // 管理员登录相关函数
-        async function sha256(message) {
-            // 将字符串编码为 UTF-8
-            const msgBuffer = new TextEncoder().encode(message);
+        // 初始化笔记管理器
+        const notesManager = new NotesManager();
 
-            // 计算哈希
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-
-            // 将 ArrayBuffer 转换为字节数组
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-            // 将字节转换为十六进制字符串
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-
-        async function adminLogin() {
-            const passwordInput = document.getElementById('adminPassword');
+        // 管理员登录函数（来自模板说明）
+        async function adminLogin(passwordInputId = 'adminPassword', loginButtonId = 'loginSubmitBtn') {
+            const passwordInput = document.getElementById(passwordInputId);
+            const loginButton = document.getElementById(loginButtonId);
             const password = passwordInput.value.trim();
 
-            // 基础验证
+            // 1. 基础验证
             if (!password) {
                 alert('请输入密码');
                 return;
             }
 
-            try {
-                // 计算密码哈希
-                const passwordHash = await sha256(password);
+            // 2. 设置加载状态
+            let originalButtonText = '登录';
+            if (loginButton) {
+                originalButtonText = loginButton.textContent;
+                loginButton.disabled = true;
+                loginButton.textContent = '验证中...';
+                loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 验证中...';
+            }
 
-                // 调用安全验证API
+            try {
+                // 3. 计算密码哈希
+                const passwordHash = sha256(password);
+
+                // 4. 调用安全验证API
                 const response = await fetch('https://api.lsqkk.space/api/admin-auth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -819,15 +835,19 @@
 
                 const result = await response.json();
 
-                // 处理响应
+                // 5. 处理响应
                 if (response.ok && result.success) {
                     // 登录成功逻辑
                     localStorage.setItem('isAdmin', 'true');
                     alert('管理员登录成功');
-                    passwordInput.value = ''; // 清空密码框
-                    updateAdminUI();
-                    // 关闭登录模态框
-                    document.getElementById('adminLoginModal').classList.remove('active');
+                    passwordInput.value = '';
+
+                    // 隐藏登录模态框
+                    notesManager.hideLoginModal();
+
+                    // 更新UI
+                    notesManager.updateAdminUI();
+
                 } else {
                     // 登录失败
                     alert('密码错误');
@@ -838,111 +858,32 @@
                 // 网络或意外错误
                 console.error('登录请求失败:', error);
                 alert('登录失败：网络或服务异常');
+            } finally {
+                // 6. 恢复按钮状态
+                if (loginButton) {
+                    loginButton.disabled = false;
+                    loginButton.textContent = originalButtonText;
+                    loginButton.innerHTML = originalButtonText;
+                }
             }
         }
 
+        // 管理员登出函数
         function adminLogout() {
             localStorage.setItem('isAdmin', 'false');
             alert('已退出管理员登录');
-            updateAdminUI();
+            notesManager.updateAdminUI();
         }
 
-        // 更新管理员UI
-        function updateAdminUI() {
-            const isAdmin = localStorage.getItem('isAdmin') === 'true';
-            const adminStatus = document.getElementById('adminStatus');
-            const adminToggleBtn = document.getElementById('adminToggleBtn');
-
-            // 更新状态显示
-            if (isAdmin) {
-                adminStatus.textContent = '管理员模式';
-                adminStatus.className = 'admin-status admin';
-                adminToggleBtn.innerHTML = '<i class="fas fa-unlock"></i> 退出管理';
-                adminToggleBtn.onclick = adminLogout;
-            } else {
-                adminStatus.textContent = '访客模式';
-                adminStatus.className = 'admin-status guest';
-                adminToggleBtn.innerHTML = '<i class="fas fa-lock"></i> 管理员登录';
-                adminToggleBtn.onclick = () => {
-                    document.getElementById('adminPassword').value = '';
-                    document.getElementById('adminLoginModal').classList.add('active');
-                };
-            }
-        }
-
-        // 初始化页面
+        // 页面加载时检查登录状态
         document.addEventListener('DOMContentLoaded', function () {
-            // 设置当前年份
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-            // 渲染笔记
-            renderNotes();
-
-            // 初始化管理员UI
-            updateAdminUI();
-
-            // 新建笔记按钮
-            document.getElementById('newNoteBtn').addEventListener('click', createNote);
-
-            // 管理员登录模态框
-            document.getElementById('adminToggleBtn').addEventListener('click', function () {
-                const isAdmin = localStorage.getItem('isAdmin') === 'true';
-                if (!isAdmin) {
-                    document.getElementById('adminPassword').value = '';
-                    document.getElementById('adminLoginModal').classList.add('active');
-                }
-            });
-
-            // 登录模态框关闭按钮
-            document.getElementById('closeLoginModal').addEventListener('click', function () {
-                document.getElementById('adminLoginModal').classList.remove('active');
-            });
-
-            document.getElementById('cancelLoginBtn').addEventListener('click', function () {
-                document.getElementById('adminLoginModal').classList.remove('active');
-            });
-
-            // 确认登录按钮
-            document.getElementById('confirmLoginBtn').addEventListener('click', adminLogin);
-
-            // 按Enter键登录
-            document.getElementById('adminPassword').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    adminLogin();
-                }
-            });
-
-            // 删除确认模态框
-            document.getElementById('closeDeleteModal').addEventListener('click', function () {
-                document.getElementById('deleteModal').classList.remove('active');
-            });
-
-            document.getElementById('cancelDeleteBtn').addEventListener('click', function () {
-                document.getElementById('deleteModal').classList.remove('active');
-                selectedNoteId = null;
-            });
-
-            // 确认删除按钮
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-                if (selectedNoteId) {
-                    deleteNote(selectedNoteId);
-                    document.getElementById('deleteModal').classList.remove('active');
-                    selectedNoteId = null;
-                }
-            });
-
-            // 点击模态框外部关闭
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', function (e) {
-                    if (e.target === this) {
-                        this.classList.remove('active');
-                        if (this.id === 'deleteModal') {
-                            selectedNoteId = null;
-                        }
-                    }
-                });
-            });
+            notesManager.updateAdminUI();
         });
+
+        // 全局更新管理员UI函数（供模板中的代码调用）
+        window.updateAdminUI = function (isAdmin) {
+            notesManager.updateAdminUI();
+        };
     </script>
 </body>
 
