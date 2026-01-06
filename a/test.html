@@ -29,7 +29,7 @@
             /* 为固定顶栏留出空间 */
         }
 
-        .container {
+        .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
@@ -51,20 +51,20 @@
             transform: translateY(-2px);
         }
 
-        /* 标题样式 */
-        .header {
+        /* 页面标题区域 - 避免使用.header类名 */
+        .page-title-area {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .header h1 {
+        .page-title {
             font-size: 2.5rem;
             color: #333;
             margin-bottom: 10px;
             font-weight: 300;
         }
 
-        .header p {
+        .page-subtitle {
             color: #666;
             font-size: 1.1rem;
         }
@@ -117,7 +117,7 @@
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
         }
 
-        .note-header {
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -126,7 +126,7 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .note-title {
+        .note-title-input {
             font-size: 1.3rem;
             color: #333;
             font-weight: 500;
@@ -137,7 +137,7 @@
             outline: none;
         }
 
-        .note-title:focus {
+        .note-title-input:focus {
             background: rgba(255, 255, 255, 0.5);
             padding: 5px;
             border-radius: 5px;
@@ -177,7 +177,7 @@
             background: rgba(231, 76, 60, 0.1);
         }
 
-        .note-content {
+        .note-content-textarea {
             flex-grow: 1;
             overflow: auto;
             color: #444;
@@ -191,13 +191,13 @@
             margin-bottom: 15px;
         }
 
-        .note-content:focus {
+        .note-content-textarea:focus {
             background: rgba(255, 255, 255, 0.5);
             padding: 8px;
             border-radius: 8px;
         }
 
-        .note-footer {
+        .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -256,7 +256,7 @@
             display: flex;
         }
 
-        .login-form {
+        .login-form-panel {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: saturate(120%) blur(20px);
             border-radius: 20px;
@@ -267,7 +267,7 @@
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .login-form h3 {
+        .login-form-title {
             margin-bottom: 25px;
             color: #333;
             text-align: center;
@@ -278,13 +278,13 @@
             margin-bottom: 20px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
             margin-bottom: 8px;
             color: #555;
         }
 
-        .form-control {
+        .form-input {
             width: 100%;
             padding: 12px 15px;
             border-radius: 10px;
@@ -294,19 +294,19 @@
             transition: all 0.3s ease;
         }
 
-        .form-control:focus {
+        .form-input:focus {
             outline: none;
             border-color: #4a90e2;
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
-        .form-actions {
+        .form-buttons {
             display: flex;
             gap: 15px;
             margin-top: 30px;
         }
 
-        .btn {
+        .action-btn {
             flex: 1;
             padding: 12px;
             border-radius: 10px;
@@ -336,7 +336,7 @@
         }
 
         /* 版权信息 */
-        .copyright {
+        .copyright-info {
             text-align: center;
             margin-top: 50px;
             padding: 20px;
@@ -344,12 +344,12 @@
             font-size: 0.9rem;
         }
 
-        .copyright a {
+        .copyright-link {
             color: #4a90e2;
             text-decoration: none;
         }
 
-        .copyright a:hover {
+        .copyright-link:hover {
             text-decoration: underline;
         }
 
@@ -359,7 +359,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .container {
+            .main-container {
                 padding: 10px;
             }
 
@@ -367,7 +367,7 @@
                 padding: 20px;
             }
 
-            .header h1 {
+            .page-title {
                 font-size: 2rem;
             }
         }
@@ -378,11 +378,11 @@
                 padding-top: 70px;
             }
 
-            .login-form {
+            .login-form-panel {
                 padding: 30px 20px;
             }
 
-            .form-actions {
+            .form-buttons {
                 flex-direction: column;
             }
         }
@@ -404,13 +404,13 @@
             color: #888;
         }
 
-        .empty-state i {
+        .empty-icon {
             font-size: 3rem;
             margin-bottom: 20px;
             opacity: 0.5;
         }
 
-        .empty-state h3 {
+        .empty-title {
             margin-bottom: 10px;
             color: #666;
         }
@@ -420,11 +420,11 @@
 <body>
     <!-- 固定顶栏由nav.js和nav.css提供 -->
 
-    <div class="container">
+    <div class="main-container">
         <div class="glass-panel">
-            <div class="header">
-                <h1><i class="fas fa-book-open"></i> 网页记事本</h1>
-                <p>简洁高效的笔记管理工具，数据存储于本地浏览器</p>
+            <div class="page-title-area">
+                <h1 class="page-title"><i class="fas fa-book-open"></i> 网页记事本</h1>
+                <p class="page-subtitle">简洁高效的笔记管理工具，数据存储于本地浏览器</p>
             </div>
 
             <div class="admin-controls">
@@ -436,8 +436,8 @@
             <div id="notesContainer" class="notes-container">
                 <!-- 笔记卡片将通过JS动态生成 -->
                 <div class="empty-state">
-                    <i class="fas fa-sticky-note"></i>
-                    <h3>暂无笔记</h3>
+                    <i class="fas fa-sticky-note empty-icon"></i>
+                    <h3 class="empty-title">暂无笔记</h3>
                     <p>点击下方按钮创建你的第一个笔记</p>
                 </div>
             </div>
@@ -449,22 +449,23 @@
             </div>
         </div>
 
-        <div class="copyright">
-            © 2024 - <span id="currentYear">2026</span> 网页记事本 / <a href="/posts/copyright">夸克博客</a> All rights reserved.
+        <div class="copyright-info">
+            © 2024 - <span id="currentYear">2026</span> 网页记事本 / <a href="/posts/copyright"
+                class="copyright-link">夸克博客</a> All rights reserved.
         </div>
     </div>
 
     <!-- 管理员登录模态框 -->
     <div id="loginModal" class="login-modal">
-        <div class="login-form glass-panel">
-            <h3><i class="fas fa-lock"></i> 管理员登录</h3>
+        <div class="login-form-panel glass-panel">
+            <h3 class="login-form-title"><i class="fas fa-lock"></i> 管理员登录</h3>
             <div class="form-group">
-                <label for="adminPassword">管理员密码</label>
-                <input type="password" id="adminPassword" class="form-control" placeholder="请输入管理员密码">
+                <label for="adminPassword" class="form-label">管理员密码</label>
+                <input type="password" id="adminPassword" class="form-input" placeholder="请输入管理员密码">
             </div>
-            <div class="form-actions">
-                <button id="loginSubmitBtn" class="btn btn-primary">登录</button>
-                <button id="loginCancelBtn" class="btn btn-secondary">取消</button>
+            <div class="form-buttons">
+                <button id="loginSubmitBtn" class="action-btn btn-primary">登录</button>
+                <button id="loginCancelBtn" class="action-btn btn-secondary">取消</button>
             </div>
         </div>
     </div>
@@ -531,13 +532,13 @@
                     created: new Date().toISOString()
                 };
 
-                this.notes.unshift(newNote); // 添加到开头
+                this.notes.unshift(newNote);
                 this.saveNotes();
                 this.renderNotes();
 
                 // 聚焦到新笔记的标题
                 setTimeout(() => {
-                    const titleInput = document.querySelector(`[data-note-id="${noteId}"] .note-title`);
+                    const titleInput = document.querySelector(`[data-note-id="${noteId}"] .note-title-input`);
                     if (titleInput) {
                         titleInput.focus();
                         titleInput.select();
@@ -584,8 +585,8 @@
                 if (this.notes.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <i class="fas fa-sticky-note"></i>
-                            <h3>暂无笔记</h3>
+                            <i class="fas fa-sticky-note empty-icon"></i>
+                            <h3 class="empty-title">暂无笔记</h3>
                             <p>点击下方按钮创建你的第一个笔记</p>
                         </div>
                     `;
@@ -607,8 +608,8 @@
 
                 const card = document.querySelector(`[data-note-id="${noteId}"]`);
                 if (card) {
-                    card.querySelector('.note-title').value = note.title;
-                    card.querySelector('.note-content').value = note.content;
+                    card.querySelector('.note-title-input').value = note.title;
+                    card.querySelector('.note-content-textarea').value = note.content;
                     card.querySelector('.note-date').textContent = this.formatDate(note.lastModified);
                 }
             }
@@ -617,8 +618,8 @@
             createNoteCardHTML(note) {
                 return `
                     <div class="note-card" data-note-id="${note.id}">
-                        <div class="note-header">
-                            <input type="text" class="note-title" value="${this.escapeHtml(note.title)}" placeholder="笔记标题">
+                        <div class="card-header">
+                            <input type="text" class="note-title-input" value="${this.escapeHtml(note.title)}" placeholder="笔记标题">
                             <div class="note-actions">
                                 <button class="note-btn edit-btn" title="编辑" data-action="edit">
                                     <i class="fas fa-edit"></i>
@@ -628,8 +629,8 @@
                                 </button>
                             </div>
                         </div>
-                        <textarea class="note-content" placeholder="笔记内容...">${this.escapeHtml(note.content)}</textarea>
-                        <div class="note-footer">
+                        <textarea class="note-content-textarea" placeholder="笔记内容...">${this.escapeHtml(note.content)}</textarea>
+                        <div class="card-footer">
                             <span class="note-date">${this.formatDate(note.lastModified)}</span>
                             <span class="note-status">${note.content.length} 字符</span>
                         </div>
@@ -643,13 +644,13 @@
                 if (!card) return;
 
                 // 标题输入
-                const titleInput = card.querySelector('.note-title');
+                const titleInput = card.querySelector('.note-title-input');
                 titleInput.addEventListener('input', (e) => {
                     this.updateNote(noteId, { title: e.target.value });
                 });
 
                 // 内容输入
-                const contentInput = card.querySelector('.note-content');
+                const contentInput = card.querySelector('.note-content-textarea');
                 contentInput.addEventListener('input', (e) => {
                     this.updateNote(noteId, { content: e.target.value });
 
@@ -801,7 +802,7 @@
         // 初始化笔记管理器
         const notesManager = new NotesManager();
 
-        // 管理员登录函数（来自模板说明）
+        // 管理员登录函数
         async function adminLogin(passwordInputId = 'adminPassword', loginButtonId = 'loginSubmitBtn') {
             const passwordInput = document.getElementById(passwordInputId);
             const loginButton = document.getElementById(loginButtonId);
@@ -880,7 +881,7 @@
             notesManager.updateAdminUI();
         });
 
-        // 全局更新管理员UI函数（供模板中的代码调用）
+        // 全局更新管理员UI函数
         window.updateAdminUI = function (isAdmin) {
             notesManager.updateAdminUI();
         };
