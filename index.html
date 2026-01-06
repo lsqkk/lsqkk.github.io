@@ -152,30 +152,6 @@
         <div class="footer-container">
             <div class="footer-content">
                 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-                <script>
-                    // 等待不蒜子加载完成后设置初始值
-                    window.onload = function () {
-                        setTimeout(function () {
-                            // 设置初始UV和PV值
-                            if (typeof busuanziValue !== 'undefined') {
-                                // 如果busuanziValue对象存在，直接设置
-                                busuanziValue.site_uv = 845;
-                                busuanziValue.site_pv = 5609;
-                            }
-
-                            // 更新页面显示
-                            var uvElement = document.getElementById('busuanzi_value_site_uv');
-                            var pvElement = document.getElementById('busuanzi_value_site_pv');
-
-                            if (uvElement) uvElement.innerText = '845';
-                            if (pvElement) pvElement.innerText = '5609';
-
-                            // 强制更新localStorage中的数据
-                            localStorage.setItem('bsz__uv', '845');
-                            localStorage.setItem('bsz__pv', '5609');
-                        }, 2000); // 等待2秒确保不蒜子脚本已加载
-                    };
-                </script>
 
                 一共<span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold;"></span>位小伙伴来过<span
                     id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold;"></span>次
