@@ -881,7 +881,7 @@ class CommandManager {
         }
 
         const keyword = encodeURIComponent(args.join(' '));
-        const url = `/article-list.html?search=${keyword}`;
+        const url = `/posts?search=${keyword}`;
 
         this.output(`正在打开博客搜索: ${args.join(' ')}`, 'info');
         setTimeout(() => {

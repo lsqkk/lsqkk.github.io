@@ -21,7 +21,7 @@ document.write(`
             </div>
             <div class="header-nav-container">
                 <ul class="header-nav">
-                    <li><a href="/article-list" target="blank">文章</a></li>
+                    <li><a href="/posts" target="blank">文章</a></li>
                     <li><a href="/tool" target="blank">工具</a></li>
                     <li><a href="/games" target="blank">游戏</a></li>
                     <li><a href="/a" target="blank">实验室</a></li>
@@ -57,7 +57,7 @@ document.write(`
             </div>
             <div class="navsidebar-nav">
                 <ul>
-                    <li><a href="/article-list" target="blank">文章</a></li>
+                    <li><a href="/posts" target="blank">文章</a></li>
                     <li><a href="/tool" target="blank">工具</a></li>
                     <li><a href="/games" target="blank">游戏</a></li>
                     <li><a href="/a" target="blank">实验室</a></li>
@@ -95,9 +95,9 @@ function handleGlobalSearch() {
 
     // 检查当前页面是否是文章列表页
     const currentPath = window.location.pathname;
-    const isArticleListPage = currentPath.includes('article-list') ||
-        currentPath === '/article-list' ||
-        currentPath.endsWith('article-list.html');
+    const isArticleListPage = currentPath.includes('/posts') ||
+        currentPath === '/posts' ||
+        currentPath.endsWith('/posts');
 
     if (isArticleListPage) {
         // 如果在文章列表页，调用该页面的搜索函数
@@ -108,7 +108,7 @@ function handleGlobalSearch() {
         // 如果在其他页面，跳转到文章列表页并传递搜索参数
         const searchParams = new URLSearchParams();
         searchParams.set('search', searchTerm);
-        window.location.href = `/article-list.html?${searchParams.toString()}`;
+        window.location.href = `/posts?${searchParams.toString()}`;
     }
 }
 
@@ -126,7 +126,7 @@ function handleMobileSearch() {
     // 跳转到搜索页面
     const searchParams = new URLSearchParams();
     searchParams.set('search', searchTerm);
-    window.location.href = `/article-list.html?${searchParams.toString()}`;
+    window.location.href = `/posts?${searchParams.toString()}`;
 }
 
 // 侧边栏控制函数

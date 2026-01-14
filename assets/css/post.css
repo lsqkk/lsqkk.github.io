@@ -106,6 +106,5 @@
             /* 使图片填充整个容器 */
             height: auto;
             border-radius: 5px;
-            margin: 5px 0px;
             /* 高度自适应 */
         }

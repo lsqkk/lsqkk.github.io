@@ -34,7 +34,7 @@
 ## 内容板块
 
 - [前端实验室](https://lsqkk.github.io/a)：原生 JavaScript 深入应用、性能优化、浏览器兼容性实践
-- [随笔](https://lsqkk.github.io/article-list)：架构设计、开发心得、技术选型思考
+- [随笔](https://lsqkk.github.io/posts)：架构设计、开发心得、技术选型思考
 - [工具集](https://lsqkk.github.io/tools)：自研前端工具、自动化脚本、效率解决方案
 - [游戏实验室](https://lsqkk.github.io/games)：基于 Canvas 的互动游戏，集成 Firebase 实时对战
 - [资讯聚合](https://lsqkk.github.io//blog/daily)：前端技术动态、实时热搜与精选每日推荐

@@ -10,7 +10,7 @@
                         "核心功能"
                     ],
                     "description": "浏览和管理所有博客文章，按分类、标签和时间排序",
-                    "link": "/article-list",
+                    "link": "/posts",
                     "target": "_target"
                 },
                 {

@@ -4,7 +4,7 @@ const CACHE_NAME = 'quarkblog-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/article-list.html'
+    '/posts'
     // 在这里添加你博客更多的核心资源路径，如CSS、JS、图片等
 ];
 
