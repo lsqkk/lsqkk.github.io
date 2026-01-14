@@ -2,32 +2,32 @@
     "socialLinks": [
         {
             "url": "https://github.com/lsqkk",
-            "icon": "https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png",
+            "icon": "/assets/img/github.png",
             "alt": "GitHub"
         },
         {
             "url": "https://space.bilibili.com/2105459088",
-            "icon": "https://marketplace.canva.cn/MADRpsMo87A/1/thumbnail_large/canva-MADRpsMo87A.png",
+            "icon": "/assets/img/bilibili.png",
             "alt": "哔哩哔哩"
         },
         {
             "url": "https://www.acfun.cn/u/76355091",
-            "icon": "https://tse3-mm.cn.bing.net/th/id/OIP-C.S7J3t-B86ZDQFz7YUYVrlgHaHa?rs=1&pid=ImgDetMain",
+            "icon": "/assets/img/acfun.png",
             "alt": "AcFun"
         },
         {
             "url": "https://tuxun.fun/user/852269",
-            "icon": "https://b68res.daai.fun/tuxun/images/app/logo.png",
+            "icon": "/assets/img/tuxun.png",
             "alt": "图寻"
         },
         {
             "url": "https://www.zhihu.com/people/jsxzznz",
-            "icon": "https://img.88icon.com/upload/jpg/20210525/39840c11a8dba85ceb5b083b005c5f77_46464_630_630.jpg",
+            "icon": "/assets/img/zhihu.jpg",
             "alt": "知乎"
         },
         {
             "url": "https://xhslink.com/m/7tZhd8cvzp9",
-            "icon": "https://ts1.tc.mm.bing.net/th/id/OIP-C.Zs3l9IM3xkUXMsxcqpJcbAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+            "icon": "/assets/img/xhs.png",
             "alt": "小红书"
         }
     ],
