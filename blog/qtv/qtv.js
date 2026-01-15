@@ -203,21 +203,21 @@ function createVideoCard(video) {
                     <h3 class="video-title">${video.title}</h3>
                     <div class="video-stats">
                         <div class="stat">
-                            <span class="stat-icon">👍</span>
-                            <span>${likeCount}</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-icon">🪙</span>
-                            <span>${coinCount}</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-icon">⭐</span>
-                            <span>${favoriteCount}</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-icon">📤</span>
-                            <span>${shareCount}</span>
-                        </div>
+    <span class="stat-icon"><i class="fas fa-thumbs-up"></i></span>
+    <span>${likeCount}</span>
+</div>
+<div class="stat">
+    <span class="stat-icon"><i class="fas fa-coins"></i></span>
+    <span>${coinCount}</span>
+</div>
+<div class="stat">
+    <span class="stat-icon"><i class="fas fa-star"></i></span>
+    <span>${favoriteCount}</span>
+</div>
+<div class="stat">
+    <span class="stat-icon"><i class="fas fa-share-alt"></i></span>
+    <span>${shareCount}</span>
+</div>
                     </div>
                     <div class="video-meta">
                         <span>播放: ${playCount}</span>
