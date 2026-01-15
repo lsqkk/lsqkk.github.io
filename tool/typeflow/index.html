@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeFlow Pro - 智能打字测试 | 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/css/nav.css">
+
+    <!-- 自定义样式和脚本 -->
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+
+    <!-- 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- 页面内容 -->
+    <main class="typeflow-container">
+        <div class="hero-section">
+            <h1>TypeFlow Pro</h1>
+            <p class="subtitle">智能打字分析与技能提升系统</p>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- 左侧控制面板 -->
+            <div class="control-panel glass-card">
+                <h2><i class="fas fa-cogs"></i> 测试设置</h2>
+
+                <div class="form-group">
+                    <label for="textCategory"><i class="fas fa-file-alt"></i> 文本类型</label>
+                    <select id="textCategory" class="glass-select">
+                        <option value="random">随机类型</option>
+                        <!-- 选项将通过JS动态加载 -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="textLength"><i class="fas fa-ruler"></i> 文本长度</label>
+                    <select id="textLength" class="glass-select">
+                        <option value="short">短 (约100字)</option>
+                        <option value="medium" selected>中 (约200字)</option>
+                        <option value="long">长 (约300字)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeLimit"><i class="fas fa-clock"></i> 时间限制</label>
+                    <select id="timeLimit" class="glass-select">
+                        <option value="60">1分钟</option>
+                        <option value="120" selected>2分钟</option>
+                        <option value="180">3分钟</option>
+                        <option value="0">无限制</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button id="startTest" class="primary-btn">
+                        <i class="fas fa-play"></i> 开始测试
+                    </button>
+                    <button id="pauseTest" class="secondary-btn" disabled>
+                        <i class="fas fa-pause"></i> 暂停
+                    </button>
+                    <button id="resetTest" class="secondary-btn">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+
+                <div class="stats-preview glass-card">
+                    <h3><i class="fas fa-chart-line"></i> 历史记录</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="bestWPM">0</div>
+                            <div class="stat-label">最佳WPM</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="bestAccuracy">0%</div>
+                            <div class="stat-label">最佳准确率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="testsCompleted">0</div>
+                            <div class="stat-label">完成测试</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间打字区域 -->
+            <div class="typing-area-wrapper">
+                <div class="typing-header glass-card">
+                    <div class="timer-display">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span id="timer">02:00</span>
+                    </div>
+                    <div class="live-stats">
+                        <div class="live-stat">
+                            <span class="live-stat-label">WPM</span>
+                            <span class="live-stat-value" id="liveWPM">0</span>
+                        </div>
+                        <div class="live-stat">
+                            <span class="live-stat-label">准确率</span>
+                            <span class="live-stat-value" id="liveAccuracy">100%</span>
+                        </div>
+                        <div class="live-stat">
+                            <span class="live-stat-label">进度</span>
+                            <span class="live-stat-value" id="liveProgress">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-display glass-card">
+                    <div id="textDisplay" class="text-content">
+                        请选择文本类型并点击"开始测试"按钮
+                    </div>
+                    <textarea id="typingInput" class="typing-input" placeholder="在这里开始打字..." disabled
+                        rows="4"></textarea>
+                </div>
+
+                <!-- 实时可视化反馈 -->
+                <div class="visualization-section">
+                    <div class="visualization-card glass-card">
+                        <h3><i class="fas fa-tachometer-alt"></i> 速度热力图</h3>
+                        <div class="chart-container">
+                            <canvas id="speedHeatmap"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-item slow">慢</span>
+                            <span class="legend-item medium">中</span>
+                            <span class="legend-item fast">快</span>
+                        </div>
+                    </div>
+
+                    <div class="visualization-card glass-card">
+                        <h3><i class="fas fa-keyboard"></i> 错误分布</h3>
+                        <div class="keyboard-error-map">
+                            <!-- 键盘布局将通过JS动态生成 -->
+                        </div>
+                        <div class="error-stats">
+                            <div class="error-stat">
+                                <span class="error-stat-label">总错误</span>
+                                <span class="error-stat-value" id="totalErrors">0</span>
+                            </div>
+                            <div class="error-stat">
+                                <span class="error-stat-label">退格使用</span>
+                                <span class="error-stat-value" id="backspaceCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧分析面板 -->
+            <div class="analysis-panel glass-card">
+                <h2><i class="fas fa-chart-bar"></i> 详细分析</h2>
+
+                <div class="analysis-section">
+                    <h3><i class="fas fa-crosshairs"></i> 错误模式识别</h3>
+                    <div id="errorPatterns" class="patterns-list">
+                        <p class="empty-state">测试完成后将显示错误模式分析</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h3><i class="fas fa-history"></i> 打字节奏</h3>
+                    <div class="chart-container-small">
+                        <canvas id="rhythmChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h3><i class="fas fa-clipboard-list"></i> 测试摘要</h3>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-label">总字数</span>
+                            <span class="summary-value" id="summaryTotalChars">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">总时间</span>
+                            <span class="summary-value" id="summaryTotalTime">0s</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">平均WPM</span>
+                            <span class="summary-value" id="summaryAvgWPM">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">平均准确率</span>
+                            <span class="summary-value" id="summaryAvgAccuracy">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h3><i class="fas fa-lightbulb"></i> 改进建议</h3>
+                    <div id="improvementTips" class="tips-list">
+                        <p class="empty-state">测试完成后将提供个性化建议</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果模态框 -->
+        <div id="resultsModal" class="modal-overlay">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h2><i class="fas fa-trophy"></i> 测试完成!</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="result-highlights">
+                        <div class="result-highlight primary">
+                            <div class="result-value" id="resultWPM">0</div>
+                            <div class="result-label">WPM</div>
+                        </div>
+                        <div class="result-highlight secondary">
+                            <div class="result-value" id="resultAccuracy">0%</div>
+                            <div class="result-label">准确率</div>
+                        </div>
+                        <div class="result-highlight tertiary">
+                            <div class="result-value" id="resultTime">0s</div>
+                            <div class="result-label">时间</div>
+                        </div>
+                    </div>
+
+                    <div class="result-details">
+                        <h3><i class="fas fa-chart-pie"></i> 详细数据</h3>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">总字数</span>
+                                <span class="detail-value" id="detailTotalChars">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">正确字数</span>
+                                <span class="detail-value" id="detailCorrectChars">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">错误字数</span>
+                                <span class="detail-value" id="detailWrongChars">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">退格使用</span>
+                                <span class="detail-value" id="detailBackspaces">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button id="saveResult" class="primary-btn">
+                            <i class="fas fa-save"></i> 保存结果
+                        </button>
+                        <button id="newTest" class="secondary-btn">
+                            <i class="fas fa-plus"></i> 新测试
+                        </button>
+                        <button id="shareResult" class="secondary-btn">
+                            <i class="fas fa-share-alt"></i> 分享
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="page-footer">
+        <div class="footer-content">
+            <p>© 2024 - <span id="currentYear">2026</span> TypeFlow Pro / <a href="/posts/copyright">夸克博客</a> All rights
+                reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</body>
+
+</html>

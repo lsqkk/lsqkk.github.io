@@ -1,0 +1,54 @@
+{
+    "textCategories": [
+        {
+            "id": "news",
+            "name": "新闻稿",
+            "description": "真实新闻报道文本",
+            "texts": [
+                "人工智能技术正在以前所未有的速度发展，改变着我们生活和工作的方方面面。从智能助手到自动驾驶，AI的应用场景不断扩展。研究人员表示，未来五年内，AI将在医疗诊断、教育个性化等领域取得突破性进展。",
+                "全球气候变化问题日益严峻，各国政府正在加紧制定减排政策。科学家警告，如果不能在本世纪末将全球变暖控制在1.5摄氏度以内，将会对生态系统造成不可逆转的损害。可再生能源的发展为应对气候变化提供了希望。",
+                "数字化转型正在重塑传统行业格局。企业纷纷采用云计算、大数据和物联网技术来提高运营效率。专家预测，到2030年，超过70%的企业将完成核心业务的数字化改造，这将创造数百万个新的就业机会。"
+            ]
+        },
+        {
+            "id": "code",
+            "name": "编程代码",
+            "description": "常见编程语言代码片段",
+            "texts": [
+                "function calculateAverage(numbers) {\n  if (!Array.isArray(numbers) || numbers.length === 0) {\n    return 0;\n  }\n  const sum = numbers.reduce((total, num) => total + num, 0);\n  return sum / numbers.length;\n}",
+                "class User {\n  constructor(name, email) {\n    this.name = name;\n    this.email = email;\n    this.createdAt = new Date();\n  }\n\n  getProfile() {\n    return `Name: ${this.name}, Email: ${this.email}`;\n  }\n\n  updateEmail(newEmail) {\n    this.email = newEmail;\n    return this;\n  }\n}",
+                "import React, { useState, useEffect } from 'react';\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    document.title = `You clicked ${count} times`;\n  }, [count]);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>\n        Increment\n      </button>\n    </div>\n  );\n}\n\nexport default Counter;"
+            ]
+        },
+        {
+            "id": "literature",
+            "name": "文学经典",
+            "description": "文学作品节选",
+            "texts": [
+                "生存还是毁灭，这是一个值得考虑的问题；默然忍受命运的暴虐的毒箭，或是挺身反抗人世的无涯的苦难，通过斗争把它们扫清，这两种行为，哪一种更高贵？",
+                "那是最美好的时代，那是最糟糕的时代；那是智慧的年头，那是愚昧的年头；那是信仰的时期，那是怀疑的时期；那是光明的季节，那是黑暗的季节；那是希望的春天，那是失望的冬天。",
+                "多年以后，面对行刑队，奥雷里亚诺·布恩迪亚上校将会回想起父亲带他去见识冰块的那个遥远的下午。那时的马孔多是一个二十户人家的村落，泥巴和芦苇盖成的屋子沿河岸排开。"
+            ]
+        },
+        {
+            "id": "academic",
+            "name": "学术论文",
+            "description": "学术研究摘要",
+            "texts": [
+                "本研究通过实证分析方法，探讨了社交媒体使用对青少年心理健康的影响。结果显示，适度使用社交媒体与积极的社会连接呈正相关，而过度使用则可能导致焦虑和抑郁症状的增加。研究建议制定合理的屏幕时间管理策略。",
+                "量子计算的理论基础建立在量子比特的叠加态和纠缠现象之上。与传统二进制位不同，量子比特可以同时处于0和1的状态，这使得量子计算机在处理特定类型问题时具有指数级的速度优势。",
+                "机器学习模型的性能评估通常采用准确率、精确率、召回率和F1分数等指标。交叉验证方法可以有效减少过拟合风险，而超参数调优则通过网格搜索或随机搜索算法寻找最优模型配置。"
+            ]
+        },
+        {
+            "id": "technical",
+            "name": "技术文档",
+            "description": "技术说明和文档",
+            "texts": [
+                "HTTP协议是一种无状态的请求-响应协议，基于客户端-服务器模型运作。请求方法包括GET、POST、PUT、DELETE等，状态码分为信息响应、成功响应、重定向、客户端错误和服务器错误五类。",
+                "数据库索引是一种数据结构，用于加快数据检索速度。B树索引是最常见的索引类型，适用于范围查询。创建索引会提高查询性能，但会增加插入、更新和删除操作的开销，并占用额外的存储空间。",
+                "容器化技术通过操作系统级虚拟化实现应用程序的隔离部署。Docker是最流行的容器平台，它使用镜像来打包应用及其依赖环境。Kubernetes则提供了容器编排功能，支持自动扩展和负载均衡。"
+            ]
+        }
+    ]
+}
