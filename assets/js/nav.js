@@ -97,8 +97,7 @@ function handleGlobalSearch() {
 
     // 检查当前页面是否是文章列表页
     const currentPath = window.location.pathname;
-    const isArticleListPage = currentPath.includes('/posts') ||
-        currentPath === '/posts' ||
+    const isArticleListPage = currentPath === '/posts' ||
         currentPath.endsWith('/posts');
 
     if (isArticleListPage) {
