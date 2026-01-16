@@ -1,7 +1,7 @@
 import json
 import os
 import markdown
-from markdown.extensions.toc import TocExtension, slugify # 引入默认的 slugify
+from markdown.extensions.toc import TocExtension
 
 # 配置路径
 POSTS_JSON_PATH = 'json/posts.json'
@@ -11,7 +11,8 @@ MD_SOURCE_ROOT = 'posts'
 
 def load_posts_data(file_path):
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        # 使用 utf-8-sig 处理 JSON 文件，防止 JSON 解析因 BOM 报错
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
             return json.load(f)
     except Exception as e:
         print(f"错误：无法加载 {file_path}: {e}")
@@ -24,16 +25,16 @@ def get_rendered_content(md_relative_path):
         print(f"警告：找不到 MD 文件 {md_full_path}")
         return "<p>文章内容文件丢失。</p>"
     
-    with open(md_full_path, 'r', encoding='utf-8') as f:
+    # 核心修复点：使用 utf-8-sig 自动剔除可能存在的 BOM (U+FEFF)
+    with open(md_full_path, 'r', encoding='utf-8-sig') as f:
         text = f.read()
     
-    # 修复点：移除了 slugify=None
-    # 使用 TocExtension() 将使用默认 ID 生成逻辑，对中文支持友好
+    # 渲染 Markdown
     html = markdown.markdown(text, extensions=[
         'extra',           
         'nl2br',           
         'sane_lists',      
-        TocExtension(),     # 使用默认配置即可支持目录锚点生成
+        TocExtension(),     
     ])
     return html
 
@@ -69,6 +70,7 @@ def generate_html_file(post_data, template_content):
     
     try:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        # 输出文件保持 utf-8 (标准不带 BOM)，利于浏览器解析
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
     except Exception as e:
@@ -82,7 +84,8 @@ def main():
         print(f"错误：模板文件 {TEMPLATE_FILE} 不存在")
         return
 
-    with open(TEMPLATE_FILE, 'r', encoding='utf-8') as f:
+    # 读取模板也使用 utf-8-sig 以防万一
+    with open(TEMPLATE_FILE, 'r', encoding='utf-8-sig') as f:
         template_content = f.read()
 
     print(f"开始生成 {len(posts_data)} 个预渲染页面...")
