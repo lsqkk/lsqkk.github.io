@@ -12,9 +12,8 @@
     <script src="/assets/js/cursor-trail.js"></script>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script src="/assets/js/cursor-trail.js"></script>
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
 </head>
 
 <body
@@ -35,7 +34,6 @@
         </div>
     </div>
 
-
     <script src="/assets/js/nav.js"></script>
 
     <div class="morenpost">
@@ -49,10 +47,142 @@
         <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
             <span id="post-wordcount" style="display: inline;"></span>
         </div>
+
         <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;"
-            data-md-file="2518.md" data-date="2025-12-16" data-word-count="7391" data-tags='["WebRTC", "\u524d\u7aef", "\u8bba\u6587"]'>
+            data-md-file="2518.md" data-date="2025-12-16" data-word-count="7391" data-tags='["WebRTC", "前端", "论文"]'>
         </div>
-        <div id="content" class="post-content"></div>
+
+        <div id="content" class="post-content">
+            <h1 id="webrtc">WebRTC 零服务器信令技术实现</h1>
+<p>《再创式学习方法与技术创新训练》课程论文</p>
+<h2 id="_1">一、 绪论与工程矛盾分析</h2>
+<h3 id="11">1.1 项目背景与问题的提出</h3>
+<p>在数字化协作日益频繁的今天，文件传输已成为跨设备交互的基础需求。但是，审视现有的技术方案，用户往往在便捷性、隐私性与成本之间左右为难。中心化云端存储虽然功能强大，但其带宽限制与付费门槛阻碍了高频即时传输；依赖即时通讯软件的传输方式则强制要求用户进行社交绑定，在公共演示或临时协作场景中极易造成隐私泄露。WebRTC技术的出现为点对点通信提供了底层支撑，其无需插件、低延迟的特性理论上是解决该问题的最佳方案。然而WebRTC在实际工程落地中存在一个显著的“准入门槛”，即必须建立信令服务器来协助终端完成网络发现与握手。对于和我一样的学生个人开发者而言，这意味着必须去承担服务器租赁成本及后端运维压力，这一矛盾在静态前端托管环境（如托管我的博客的GitHub Pages）下表现得尤为突出，成为阻碍创新项目低成本落地的核心技术壁垒。</p>
+<h3 id="12">1.2 再创式学习思想的切入</h3>
+<p>再创式学习的核心在于不满足于对既有技术的工具化调用，而是致力于对技术本质的深挖与重构。面对无法部署后端服务的困局，我并未陷入寻找廉价服务器的常规思路，而是运用再创式学习的“本质思维”对信令服务器进行了抽象分析。从信息论的角度看，信令服务器的本质是一个允许两端异步写入并同步读取的实时数据中继。如果能找到一个具备“实时同步”特征的既有基础设施，并将其功能进行跨界迁移，就能绕过“必须拥有服务器”的教条。通过对以往学习积累的技术栈进行横向扫描，我锁定了曾用于博客留言板的Firebase Realtime Database。尽管在官方文档中它被定义为云数据库，但其基于WebSocket的长连接机制和毫秒级的数据监听特性，在本质上与信令通道高度重合。这种将数据库“再创式”地理解为信令转发器的视角，构成了本项目创新的逻辑起点。</p>
+<h2 id="triz">二、 TRIZ发明理论引导的技术创新</h2>
+<h3 id="21">2.1 基于物理矛盾与分离原理的逻辑演进</h3>
+<p>在将Firebase重构为信令服务器的过程中，我面临着一个典型的TRIZ物理矛盾：为了保证连接的实时性，信令通道必须保持长期活跃并能够处理高频并发，但为了系统的轻量化与隐私安全，信令数据又必须在握手完成后立即消失且不留痕迹。针对这一矛盾，我运用了TRIZ中的“时间分离原理”和“反向操作”原理。在具体实施中，我设计了一套基于三位随机码的动态路径匹配机制。当发送方发起请求时，系统不是在全局数据库中搜寻，而是在一个瞬时的特定路径下写入会话描述协议。接收方通过监听该路径实时“捡起”数据。一旦WebRTC的DataChannel状态变为“Open”，系统会立即触发物理层面的擦除指令，清空数据库中的信令残余。这种“阅后即焚”的动态管理方式，既利用了云端的高性能，又规避了数据持久化的负担。<br />
+为了实现“阅后即焚”的瞬时信令交换，我编写了如下核心逻辑，通过监控特定的三位码路径来完成 SDP（会话描述协议）的异步对等。</p>
+<pre><code class="language-javascript">// 发送方创建 Offer 并写入 Firebase 瞬时路径
+async function createSenderOffer(roomCode) {
+    currentRoomCode = roomCode;
+    const roomRef = db.ref('rooms/' + roomCode);
+
+    // 创建 WebRTC 实例
+    peerConnection = new RTCPeerConnection(rtcConfig);
+
+    // 监听 ICE 候选者并实时写入数据库
+    peerConnection.onicecandidate = event =&gt; {
+        if (event.candidate) {
+            roomRef.child('sender/ice').push(event.candidate.toJSON());
+        }
+    };
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    // 将 Offer 写入数据库，等待接收方“捡起”
+    await roomRef.child('sender/sdp').set({ type: offer.type, sdp: offer.sdp });
+
+    // 监听接收方的 Answer
+    roomRef.child('receiver/sdp').on('value', async (snapshot) =&gt; {
+        const data = snapshot.val();
+        if (data &amp;&amp; !peerConnection.currentRemoteDescription) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data));
+        }
+    });
+}
+</code></pre>
+<h3 id="22">2.2 资源利用与功能迁移的工程实践</h3>
+<p>在处理多文件传输的工程难题时，我引入了TRIZ的“分割与合并”原理。由于WebRTC在传输大文件时容易受到缓冲区溢出的限制，导致连接崩溃或数据包丢失。我并未选择增加硬件缓存，而是从软件逻辑上将待传文件进行原子化拆解。利用JavaScript的文件流API，将大文件切割为等大的二进制分片，并通过序列号机制在接收端进行有序重组。同时，为了进一步提升用户在多文件处理时的体验，我引入了迁移学习的思想，将ZIP压缩算法整合进前端流程中。这种在客户端内存中完成压缩、切割、传输、合并、解压的全链路处理，不仅减轻了网络传输的原子压力，更在不依赖后端的情况下，实现了一站式的复杂文件交互。</p>
+<h2 id="_2">三、 关键技术的具体实施与突破</h2>
+<h3 id="31">3.1 “夸克闪传”的底层实现细节</h3>
+<p>项目的核心逻辑在于如何利用Firebase的SDK实现WebRTC的信令交换。在具体代码实施阶段，我深入挖掘了Firebase的监听机制。发送端首先创建RTCPeerConnection实例，并生成Offer。不同于常规方案将Offer发送至自建后端，我将其序列化为JSON格式，推送到Firebase的特定节点下。接收端在输入连接码后，会立即订阅该节点的变化。一旦捕获到Offer，接收端便生成Answer并将其反馈回数据库的另一个分支。这种基于“节点订阅-发布”的模型，完美规避了复杂的Socket.io逻辑编写。在网络穿透（NAT Traversal）方面，我利用STUN服务器获取ICE候选者，并采取同样的方式进行异步交换，最终在两个完全隔离的内网环境之间建立起一条加密的、高速的二进制传输隧道。<br />
+针对大文件传输中的缓冲区溢出矛盾，我通过“分割原理”实现了基于 ArrayBuffer 的分片发送与 Backpressure（背压）控制：</p>
+<pre><code class="language-javascript">// 大文件分片发送逻辑片段
+function sendFileChunk(file) {
+    const CHUNK_SIZE = 16384; // 16KB 分片
+    let offset = 0;
+    const reader = new FileReader();
+
+    reader.onload = e =&gt; {
+        // 检查 WebRTC DataChannel 缓冲区
+        if (dataChannel.bufferedAmount &gt; dataChannel.bufferedAmountLowThreshold) {
+            // 如果缓冲区过载，等待 lowthreshold 事件后再继续
+            dataChannel.onbufferedamountlow = () =&gt; {
+                dataChannel.onbufferedamountlow = null;
+                sendNextChunk();
+            };
+        } else {
+            dataChannel.send(e.target.result);
+            offset += e.target.result.byteLength;
+            if (offset &lt; file.size) sendNextChunk();
+        }
+    };
+
+    const sendNextChunk = () =&gt; {
+        const slice = file.slice(offset, offset + CHUNK_SIZE);
+        reader.readAsArrayBuffer(slice);
+    };
+    sendNextChunk();
+}
+</code></pre>
+<p><img alt="" src="https://raw.githubusercontent.com/lsqkk/image/main/20260101025735466.png" /></p>
+<p><a href="https://lsqkk.github.io/a/share">夸克闪传项目主页</a></p>
+<h3 id="32-ppt">3.2 网页桥接程序与首创性的PPT控制逻辑</h3>
+<p>在完成文件传输项目后，我思考如何将这一套“零服务器”架构迁移到更具交互性的场景中。由此诞生的“夸克PPT遥控器”项目，试图解决手机控制电脑PPT放映的痛点。然而，浏览器环境的安全沙箱限制了网页直接模拟系统级按键的能力，这是前端技术的“天花板”。为了突破这一限制，我提出了“网页桥接（Web Bridge）”的开创性构想。我编写了一个极简的本地Node.js程序，作为浏览器的“执行体”。该程序通过WebSocket与前端页面保持通信。当用户在手机端点击“下一页”时，指令经过Firebase中转至电脑端页面，页面再将指令转发给本地桥接程序，由桥接程序调用VBScript模拟底层的右箭头按键。这种“手机-云端-页面-本地”的四维联动逻辑，在无需用户扫码或配置繁琐网络的前提下，实现了极致的交互体验，真正做到了行业内的应用首创。</p>
+<p><a href="https://lsqkk.github.io/tool/pptremote">“夸克PPT遥控”项目地址</a></p>
+<p>这是位于本地端的 bridge.js 核心代码，它通过 HTTPS SSE（服务器发送事件）流式读取 Firebase 指令，并调用系统底层 VBScript 实现跨环境的按键模拟：</p>
+<pre><code class="language-javascript">// bridge.js: 本地桥接执行体核心
+function simulateKeyPress(action) {
+    let sendKey = (action === 'next') ? '{RIGHT}' : '{LEFT}';
+
+    // 动态生成临时 VBScript 脚本执行系统按键
+    const vbsPath = path.join(os.tmpdir(), 'press.vbs');
+    const vbsScript = `Set WshShell = WScript.CreateObject(&quot;WScript.Shell&quot;)\nWshShell.SendKeys &quot;${sendKey}&quot;`;
+
+    fs.writeFileSync(vbsPath, vbsScript);
+    exec(`cscript //nologo &quot;${vbsPath}&quot;`, (err) =&gt; {
+        if (err) console.error(&quot;执行模拟按键失败:&quot;, err);
+        fs.unlinkSync(vbsPath); // 运行后立即销毁，保持系统整洁
+    });
+}
+
+// 监听 Firebase 实时指令流
+function listenToFirebase(roomCode) {
+    const url = `https://${FIREBASE_DATABASE_URL}/rooms/${roomCode}/command.json?auth=...`;
+    https.get(url, { headers: { 'Accept': 'text/event-stream' } }, (res) =&gt; {
+        res.on('data', chunk =&gt; {
+            const lines = chunk.toString().split('\n');
+            lines.forEach(line =&gt; {
+                if (line.startsWith('data:')) {
+                    const data = JSON.parse(line.substring(5));
+                    if (data &amp;&amp; data.action) simulateKeyPress(data.action);
+                }
+            });
+        });
+    });
+}
+</code></pre>
+<h2 id="_3">四、 实践应用、成果验证与技术迁移</h2>
+<h3 id="41">4.1 社会实践中的实战应用验证</h3>
+<p>技术的价值最终需在实际应用中接受检验。在2025年西安交通大学社会实践指导中心年会中，我有幸将这两项技术应用于实战环境。当时分会场2的主控电脑因无法读取部分同学的U盘，还有一些同学赛前拷贝PPT时间无法到场更换。我迅速访问部署在GitHub Pages上的“夸克闪传”网址，通过手机上传PPT，主控端迅速完成了接收。这次实战不仅证明了系统的稳定性，更向师生展示了再创式学习如何将“玩具代码”转化为“实用利器”。 </p>
+<p><img alt="" src="https://raw.githubusercontent.com/lsqkk/image/main/20260101025829109.png" /></p>
+<blockquote>
+<p>项目用于年会传输PPT等文件</p>
+</blockquote>
+<h3 id="42">4.2 个人博客系统的功能矩阵重构</h3>
+<p>在部署“夸克博客”的过程中，我持续深化对“隐藏后端”的开发。利用相同的Firebase实时数据库底层，我成功实现了笔记的同步协作功能，支持多个移动端设备同时编辑同一份文档。此外，我还探索了同步答题对战等高度依赖实时响应的游戏功能。这些功能的实现，本质上都是对“同步状态机”这一概念的深度再创。通过将复杂的业务逻辑下沉到客户端，将简单的状态同步上浮到Firebase，我成功在看似受限的GitHub Pages静态空间内，构建起了一个功能丰富的动态生态系统。这种在资源荒漠中通过思维转换创造绿洲的过程，正是工科学子在技术创新训练中最应掌握的核心素养。</p>
+<h2 id="_4">五、 课程学习体会与创新性建议</h2>
+<h3 id="51">5.1 对再创式学习方法论的深度体会</h3>
+<p>通过本学期《再创式学习方法与技术创新训练》的学习，我深刻认识到，真正的创新往往不是发生在实验室的昂贵设备里，而是发生在思维的跨界重组中。再创式学习教会我不再将技术看作一块块不可拆卸的黑盒，而是看作一组组具有特定属性的“功能元”。当我们能穿透表层术语，看清“信令”、“同步”、“存储”的本质联系时，所谓的资源限制便不复存在。TRIZ理论则为我提供了系统化的破局工具，让我学会从矛盾的角度去定义问题，从分离的角度去寻找解法。这种方法论的习得，让我从一个只会调用API的“码农”，转变为一个能够根据实际场景需求，敏锐感知技术本质并进行架构创新的开发者。这种思维的进步，比掌握单一的编程语言更具长远意义。</p>
+<h3 id="52">5.2 针对未来技术创新的学习建议</h3>
+<p>基于本项目的开发经历与课程心得，我提出两点关于创新学习的建议。首先是建立“底层逻辑库”的学习习惯。建议在后续的学习中，不仅要积累算法和语法，更要建立一个关于“技术本质”的映射表。例如，理解到任何分布式系统的本质都是在解决“状态一致性”问题。当这种本质思维形成后，面对新工具、新框架时，我们就能迅速实现知识迁移。其次是鼓励“极限约束下的开发训练”。现在的开发环境往往过于优越，这在一定程度上抑制了创新的灵感。如果能引导学生在资源极度受限的情况下去实现复杂功能，往往能催生出更具颠覆性的技术方案。这种在悬崖边缘起舞的创新过程，最能磨练一个人的工程直觉与创造力。</p>
+<h2 id="_5">结论</h2>
+<p>本文记录了一个基于再创式学习思想的完整创新流程：从发现WebRTC信令缺失的痛点出发，到运用本质思维重构Firebase的功能，再到利用TRIZ理论解决多文件传输与跨环境控制的工程难题。通过“夸克闪传”与“PPT遥控器”的成功落地，我不仅掌握了Web前端与实时通信的前沿技术，更重要的是内化了再创式学习的方法论。在未来的专业实践中，我将继续秉持这种深挖本质、勇于重构的创新精神，致力于在复杂多变的工程环境中寻找最优的解决之道。</p>
+        </div>
+
         <hr>
 
         <div>
@@ -66,42 +196,29 @@
                 <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
                 <script
                     src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
-
             </center>
         </div>
-
     </div>
 
-    <script src="/assets/js/marked.min.js"></script>
-    <script src="/assets/js/katex.min.js"></script>
-    <script src="/assets/js/auto-render.min.js"></script>
-
+    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
     <script src="/assets/js/post-standalone.js"></script>
+
     <div class="morenpost">
         <div class="giscus"></div>
     </div>
 
-
-    <div style="
-    text-align: center;
-    padding: 50px;
-">
+    <div style="text-align: center; padding: 50px;">
         <a href="/posts/copyright"
-            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">©
-            2024
-            - 2026
-            夸克博客 All rights reserved.</a>
+            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">© 2024
+            - 2026 夸克博客 All rights reserved.</a>
     </div>
-
 
     <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ"
         data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0"
         data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme"
         data-lang="zh-CN" crossorigin="anonymous" async>
         </script>
-
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 </body>
 
 </html>

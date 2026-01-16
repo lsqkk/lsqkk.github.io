@@ -12,9 +12,8 @@
     <script src="/assets/js/cursor-trail.js"></script>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script src="/assets/js/cursor-trail.js"></script>
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
 </head>
 
 <body
@@ -35,7 +34,6 @@
         </div>
     </div>
 
-
     <script src="/assets/js/nav.js"></script>
 
     <div class="morenpost">
@@ -49,10 +47,58 @@
         <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
             <span id="post-wordcount" style="display: inline;"></span>
         </div>
+
         <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;"
             data-md-file="2204.md" data-date="2022-11-28" data-word-count="827" data-tags='["C++"]'>
         </div>
-        <div id="content" class="post-content"></div>
+
+        <div id="content" class="post-content">
+            <h1 id="c">C++输出谢尔宾斯基三角形</h1>
+<p>2022年11月28日</p>
+<p><strong>谢尔宾斯基三角形</strong>（Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。</p>
+<p>我们可以这样做一个谢尔宾斯基三角形：</p>
+<ol>
+<li>
+<p>取一个实心的三角形。（最好是等边三角形）</p>
+</li>
+<li>
+<p>沿三边中点的连线，将它分成四个小三角形。</p>
+</li>
+<li>
+<p>去掉中间的那一个小三角形。</p>
+</li>
+<li>
+<p>对其余三个小三角形重复1。</p>
+</li>
+</ol>
+<p>下面是用C++代码模拟的过程：</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+using namespace std;
+int main(){
+    bool a[300][300]; //开一个数组
+    a[1][1] = 1,a[2][1] = 1,a[2][2] = 1; //构造初始的三角块
+    int t = 2, n;
+    cin&gt;&gt;n;
+    if(n&gt;7) n=7; //防止数组越界、爆int
+    while(t&lt;=pow(2,n)){
+        for(int i = 1; i&lt;=t; i++)
+            for(int j = 1; j &lt;= i; j++)
+                if(a[i][j] == 1) a[t+i][j] = 1, a[t+i][t+j] = 1;//分别在左下角、右下角复制同样的三角块
+        t*=2;
+    }
+    for(int i = 1;i&lt;=pow(2,n);i++){ //输出
+        for(int s = 0; s&lt;=pow(2,n)-i;s++) cout&lt;&lt;&quot; &quot;;
+        for(int j = 1; j&lt;=i; j++){
+            if(a[i][j]==1) cout&lt;&lt;&quot;△&quot;;
+            else cout&lt;&lt;&quot;  &quot;; 
+        }
+        cout&lt;&lt;endl;
+    }
+    return 0; //PERFECT!
+}
+</code></pre>
+        </div>
+
         <hr>
 
         <div>
@@ -66,42 +112,29 @@
                 <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
                 <script
                     src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
-
             </center>
         </div>
-
     </div>
 
-    <script src="/assets/js/marked.min.js"></script>
-    <script src="/assets/js/katex.min.js"></script>
-    <script src="/assets/js/auto-render.min.js"></script>
-
+    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
     <script src="/assets/js/post-standalone.js"></script>
+
     <div class="morenpost">
         <div class="giscus"></div>
     </div>
 
-
-    <div style="
-    text-align: center;
-    padding: 50px;
-">
+    <div style="text-align: center; padding: 50px;">
         <a href="/posts/copyright"
-            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">©
-            2024
-            - 2026
-            夸克博客 All rights reserved.</a>
+            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">© 2024
+            - 2026 夸克博客 All rights reserved.</a>
     </div>
-
 
     <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ"
         data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0"
         data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme"
         data-lang="zh-CN" crossorigin="anonymous" async>
         </script>
-
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 </body>
 
 </html>

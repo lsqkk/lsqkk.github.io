@@ -12,9 +12,8 @@
     <script src="/assets/js/cursor-trail.js"></script>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script src="/assets/js/cursor-trail.js"></script>
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
 </head>
 
 <body
@@ -35,7 +34,6 @@
         </div>
     </div>
 
-
     <script src="/assets/js/nav.js"></script>
 
     <div class="morenpost">
@@ -49,10 +47,68 @@
         <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
             <span id="post-wordcount" style="display: inline;"></span>
         </div>
+
         <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;"
-            data-md-file="2305.md" data-date="2023-12-1" data-word-count="4178" data-tags='["\u7269\u7406"]'>
+            data-md-file="2305.md" data-date="2023-12-1" data-word-count="4178" data-tags='["物理"]'>
         </div>
-        <div id="content" class="post-content"></div>
+
+        <div id="content" class="post-content">
+            <h1 id="mathbfufracdtdmathbfx">关于新定义速度$\mathbf{u}=\frac{dt}{d\mathbf{x}}$的讨论</h1>
+<h2 id="_1">摘要</h2>
+<p>前人将速度定义为$\mathbf{v}=\frac{d\mathbf{x}}{dt}$，而本文试图用速度的倒数$\mathbf{u}=\frac{dt}{d\mathbf{x}}$作为新的速度“慢度”尝试解释物理现象，却在探索的过程中遇到种种困难。这是因为“慢度”与人们的直觉相悖、与宇宙万物运行的规律相悖，自然很难解释物理现象，找到其使用价值。</p>
+<h2 id="_2">关键词</h2>
+<p>速度；新定义；物理现象；研究性学习</p>
+<h2 id="_3">引言</h2>
+<p>我们知道，老一辈物理学家将速度定义为$\mathbf{v}=\frac{d\mathbf{x}}{dt}$，作为衡量物体运动快慢的物理量。其含义就是位移随时间的变化率，或者说单位时间内物体的位移。</p>
+<p>那么我们为什么不可以将物体位移随时间的变化率定义新的速度“慢度”$\mathbf{u}$，使得$\mathbf{u}=\frac{dt}{d\mathbf{x}}$呢？（“慢度”和速度互为倒数，可以认为“慢度”描述物体“慢”的程度。）</p>
+<p>那么，“慢度”能够建立一套新的物理体系，能够描述自然现象，并形成逻辑闭环呢？</p>
+<p>我认为不能，或者说很复杂以至于失去了物理的简洁美，以下是我的看法。</p>
+<h2 id="_4">探究过程</h2>
+<h3 id="_5">关于方向的讨论</h3>
+<p>首先，如果$\mathbf{u}=\frac{dt}{d\mathbf{x}}$，像这样将矢量$\mathbf{x}$放在分母上是很不明智的，这会导致$\mathbf{u}=\frac{dt}{d\mathbf{x}}$到底是标量还是矢量的争论。当然也有解决办法。</p>
+<p>《力学》（舒幼生）定义万有引力$\mathbf{F}=G\frac{Mm}{r^3} \mathbf{r}$，在分母上多乘一个r的模，以便于分子可以多一个矢量，这样就避免了将矢量放在分母上导致F没有方向的问题。</p>
+<p>那么我们可以仿照这个方式定义“慢度”$\mathbf{u}=\frac{dt}{dx{}^{2}}d\mathbf{x}$，这样问题就解决了。当然下面为了研究方便，仍认为$\mathbf{u}=\frac{dt}{d\mathbf{x}}$，之后就不再讨论方向问题。</p>
+<h3 id="_6">关于质量与力的讨论</h3>
+<p>可以猜测，在“慢度”体系者在对自然现象的探索中，他们对“质量”的理解应当和我们一样：用天平或者称称嘛。那么我们可以假定他们的$m$和我们一样或成线性（正比例）关系，不做区分。</p>
+<p>他们对于“力”的理解应该也与我们相似。我们最早认识的力是重力，物体质量越大，受到的重力也就越大，可以猜测他们对力的认识和我们一样。</p>
+<h3 id="_7">匀速与加速</h3>
+<p>在匀速运动的情况下，“慢度”$u$和速度$v$同样简便，因为有$x=vt$，那么也会有$t=ux$，没问题啊！因此我们不再讨论匀速的情况。</p>
+<p>下面我们来研究他们理论其中可能的一种情况。</p>
+<p>按照加速度的定义方法，“慢度”体系者可能（注意，只是可能）定义“加慢度”作为慢度的变化率$\mathbf{b}=\frac{d\mathbf{u}}{dx}$。当然，这有什么物理意义我们不知道，只是对加速度的模仿。</p>
+<p>物体在重力作用下做匀加速运动是除匀速运动以外最常见的运动，也最有可能是他们最早研究的运动。</p>
+<p>自由落体运动符合经典动力学公式$x=\frac{1}{2} a t^2 $，那么有$t=\sqrt{\frac{2\text{x}}{a}}$，即$t=\sqrt{\frac{2}{a}}\sqrt{x}$。</p>
+<p>“慢度”体系中的人一定不会知道$\sqrt{\frac{2}{a}}$是什么，但经过大量实验一定会总结出$t=k\sqrt{x}$，当然我们知道$k=\sqrt{\frac{2}{a}}$。</p>
+<p>接下来通过求导就可以知道“慢度”$u=\frac{dt}{dx}=\frac{k}{2}{x^{-\frac{1}{2}}}$，继续求导可以求得“加慢度”<br />
+$b=\frac{du}{dx}=-\frac{k}{4}{x^{-\frac{3}{2}}}$。“加慢度”竟与$x$有关，这已经有点不合理了。</p>
+<p>考察公式$u=\frac{k}{2}{x^{-\frac{1}{2}}}$和$b=-\frac{k}{4} x^{-\tfrac{3}{2}}$，可以知道，在牛顿体系看来的匀加速运动中的一开始，或者说静止的时候，“慢度”ｕ无穷大，加慢度ｂ负无穷大。在开始运动之后，“慢度”ｕ从无穷大逐渐变小；“加慢度”ｂ从负无穷逐渐变大，但恒小于0。但这还只是从零开始加速的最简单基本的情况。</p>
+<h3 id="_8">“第二定律”</h3>
+<p>再次考察公式$b=-\frac{k}{4}{x^{-\tfrac{3}{2}}}$，并将我们知道的$k=\sqrt{\frac{2}{a}}$带入，整理可得$a\frac{1}{b^2 x^3}$。</p>
+<p>经典体系中有$F=ma$，这是在任何低速体系中通行的物理规律。将$a\frac{1}{ b^2 x^3 }$带入可得$F\frac{m}{ b^2 x^3 }$。</p>
+<p>在“慢度”的体系中也一定会把这个公式的比例系数取为1，即在“慢度”体系中，物体在受到恒等拉力下从零加速运动，他们描述自由落体以及其他在我们看来是匀加速运动的“第二定律”就是：</p>
+<p>$$F=\frac{m}{ b^2 x^3 }$$</p>
+<p>其中$m$是质量，$b$是“加慢度”，$x$是物体从0开始加速的位移。我们当然是通过牛顿定律推导出来的，但对于“慢度”体系中的人来说，这个公式是经过大量实验总结的。</p>
+<p>这个公式中看似$b$和$x$都是变量，那$F$是变量吗？但由于$b^2x^3$乘积是恒量，$F$是不变的常量。当然，这样的公式涉及平方、立方、倒数，极其复杂不合理，且这是从0开始加速的最基本情况。因此，从这一方面看，将新的速度“慢度”定义为$\mathbf{u}=\frac{dt}{d\mathbf{x}}$是不合理的。</p>
+<h3 id="_9">速度合成</h3>
+<p>下面再来考虑速度的合成。</p>
+<p>首先在牛顿体系中$\mathbf{v}=\mathbf{v}_1+\mathbf{v}_2$，而且满足平行四边形法则；“慢度”里的合成则要改写成$\frac{1}{\mathbf{u}}=\frac{1}{\mathbf{u}_1}+\frac{1}{\mathbf{u}_2}$，方向问题的处理方法同前所述。可以看出速度的合成也是可以解决的，但是更麻烦，不美观。</p>
+<h3 id="_10">运动量”的出现</h3>
+<p>再来看另一种情况：</p>
+<p>如果他们是从描述运动并把它抽象成一个物理量开始的，那他们的理论应当和经典理论有更多相似之处。我们假设，为了描述运动，他们引入与运动有关的物理量“运动量”。质量不同的物体以相同的速度运动，显然质量更大的物体“运动量”更大，可以假设“运动量”和质量是成正比的。</p>
+<p>当物体静止时，物体没有运动，“运动量”应当为0，但此时的“慢度”为正无穷大，可以自然地想到运动量应当表示为质量和“慢度”相除，如果用$p$表示运动量，那就是$p=\frac{m}{u}$。</p>
+<p>我们知道速度是“慢度”的倒数，即$v=\frac{1}{u}$，那么$p$应当等于$mv$，即“运动量”就是经典理论中的动量，这和经典理论是一致的。</p>
+<p>他们发现，运动量随位移的变化率很难找到规律，但接下来他们的发现也应当和我们一样了，即：作用在物理上的力和“运动量”随时间的变化率成正比（这是客观的物理规律，在任何体系甚至在相对论中都是正确的，自然能在“慢度”体系中发现），即$F\frac{dp}{dt}$，至此和经典力学相统一。这个公式也就是牛顿第二定律的原形式。</p>
+<h2 id="_11">总结</h2>
+<p>以上都是我个人的猜测，第一种情况甚至使用了经典体系公式来推导“慢度”体系公式，并假定这些结果是他们可以通过实验得到的。也假定了他们“质量”“力”的理解和我们相似。当然，如果历史上真的使用了这种定义，也许会与我的推导有很大的不同，也许会发现一些新的守恒量，不过这些我就不得而知了。</p>
+<h3 id="_12">我对“慢度”体系在解释物理现象过程中遇到困难的理解</h3>
+<p>为什么仅仅更换了速度的定义，把它定义为原来速度的倒数，探求物理规律的过程就变得如此繁琐呢？</p>
+<p>按我的理解，这是因为宇宙万物的运行都依靠时间的流逝，是以时间为基底的，而不是以空间为基底的。</p>
+<p>传统的速度$\mathbf{v}=\frac{d\mathbf{x}}{dt}$指的是位移随时间的变化率，这正是以时间为基底的，能够很好地解释自然现象；而我们定义的“慢度”$\mathbf{u}=\frac{dt}{d\mathbf{x}}$是时间随位移的变化率，这默认了在“慢度”体系中，一切与速度有关的物理量（比如我们定义的“加慢度”）都是强制以位移（即空间）为基底的，这与宇宙万物的运行相违背，自然就会在解释物理现象时遇到困难。</p>
+<h3 id="_13">前人的智慧</h3>
+<p>总结以上几种情况可以发现，在速度被定义为$\mathbf{u}=\frac{dt}{d\mathbf{x}}$的情况下，要么探求物理规律的过程极其复杂艰难，要么最终与经典力学等价，可见前人将速度定义为$\mathbf{v}=\frac{d\mathbf{x}}{dt}$是有深刻意义的。</p>
+<p>一切的运动都是在时间流逝的前提下的，将速度定义为位移随时间的变化率，即$\mathbf{v}=\frac{d\mathbf{x}}{dt}$，是符合物理规律的。也许千百年以前已经有先哲尝试过将速度定义为今天我们研究的$\mathbf{u}=\frac{dt}{d\mathbf{x}}$这样，可是最终失败了或被我们现行的经典体系的简洁性所打败。</p>
+<p>仅仅从人们的直观上看，运动越快的物体，它的速度应当越大，然而“慢度”体系中它会越来越小，如此看来经典理论的优势也是巨大的。</p>
+        </div>
+
         <hr>
 
         <div>
@@ -66,42 +122,29 @@
                 <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
                 <script
                     src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
-
             </center>
         </div>
-
     </div>
 
-    <script src="/assets/js/marked.min.js"></script>
-    <script src="/assets/js/katex.min.js"></script>
-    <script src="/assets/js/auto-render.min.js"></script>
-
+    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
     <script src="/assets/js/post-standalone.js"></script>
+
     <div class="morenpost">
         <div class="giscus"></div>
     </div>
 
-
-    <div style="
-    text-align: center;
-    padding: 50px;
-">
+    <div style="text-align: center; padding: 50px;">
         <a href="/posts/copyright"
-            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">©
-            2024
-            - 2026
-            夸克博客 All rights reserved.</a>
+            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">© 2024
+            - 2026 夸克博客 All rights reserved.</a>
     </div>
-
 
     <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ"
         data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0"
         data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme"
         data-lang="zh-CN" crossorigin="anonymous" async>
         </script>
-
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 </body>
 
 </html>
