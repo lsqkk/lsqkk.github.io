@@ -13,6 +13,8 @@
     <script src="/assets/js/cursor-trail.js"></script>
     <link rel="stylesheet" href="/assets/css/nav.css">
     <script src="/assets/js/nav.js"></script>
+    <meta name="referrer" content="never">
+    <script src="https://cdn.jsdelivr.net/npm/qq-wechat-emotion-parser/dist/qq-wechat-emotion-parser.min.js"></script>
 </head>
 <style>
     body {
@@ -46,11 +48,11 @@
                 renderDynamicEntries(entries);
             } catch (error) {
                 document.getElementById('dynamic-content').innerHTML = `
-                    <div class="dynamic-card">
-                        <h3>动态加载失败</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
+            <div class="dynamic-card">
+                <h3>动态加载失败</h3>
+                <p>${error.message}</p>
+            </div>
+        `;
             }
         }
 
@@ -61,27 +63,170 @@
                 const titleMatch = header.match(/^# (.*)/);
                 const dateMatch = body.join('\n').match(/## 日期：(.+)/);
 
+                // 提取图片URL
+                const imageMatches = body.join('\n').match(/!\[.*?\]\((.*?)\)/g);
+                const images = imageMatches ? imageMatches.map(img => {
+                    const match = img.match(/!\[.*?\]\((.*?)\)/);
+                    return match ? match[1] : null;
+                }).filter(Boolean) : [];
+
                 return {
                     title: titleMatch ? titleMatch[1].trim() : '未命名动态',
                     date: dateMatch ? dateMatch[1].trim() : '',
-                    content: body.join('\n').replace(/## 日期：.+\n?/, '').trim()
+                    content: body.join('\n').replace(/## 日期：.+\n?/, '').trim(),
+                    images: images
                 };
             }).filter(entry => entry.title).reverse();
         }
+
         function renderDynamicEntries(entries) {
             const container = document.getElementById('dynamic-content');
-            container.innerHTML = entries.map(entry => `
-                <div class="dynamic-card">
-                    <h2 class="dynamic-title">${entry.title}</h2>
-                    ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
-                    <div class="dynamic-content">
-                        ${marked.parse(entry.content)}
-                    </div>
-                </div>
-            `).join('');
+            container.innerHTML = entries.map((entry, index) => `
+        <div class="dynamic-card" data-entry-index="${index}">
+            <h2 class="dynamic-title">${entry.title}</h2>
+            ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
+            <div class="dynamic-content">
+                ${marked.parse(
+                qqWechatEmotionParser(
+                    entry.content.replace(/!\[.*?\]\((.*?)\)/g, '')
+                )
+            )}
+            </div>
+            ${entry.images.length > 0 ? renderImageGallery(entry.images, index) : ''}
+        </div>
+    `).join('');
+
+            // 初始化所有画廊
+            document.querySelectorAll('.gallery-container').forEach(initGallery);
         }
 
-        window.addEventListener('DOMContentLoaded', loadDynamic);
+        function renderImageGallery(images, entryIndex) {
+            const totalImages = images.length;
+            let colsPerRow;
+
+            if (totalImages <= 4) {
+                colsPerRow = 2; // 1-4张图片，每行2个
+            } else {
+                colsPerRow = 3; // 大于4张图片，每行3个
+            }
+
+            // 计算需要多少行
+            const rows = Math.ceil(totalImages / colsPerRow);
+
+            let galleryHTML = '<div class="gallery-container">';
+
+            for (let row = 0; row < rows; row++) {
+                galleryHTML += '<div class="gallery-row">';
+                const startIdx = row * colsPerRow;
+                const endIdx = Math.min(startIdx + colsPerRow, totalImages);
+
+                for (let i = startIdx; i < endIdx; i++) {
+                    galleryHTML += `
+                <div class="gallery-item" data-entry-index="${entryIndex}" data-img-index="${i}">
+                    <img src="${images[i]}" 
+                         alt="动态图片" 
+                         loading="lazy"
+                         onclick="openGallery(${entryIndex}, ${i})">
+                </div>
+            `;
+                }
+                galleryHTML += '</div>';
+            }
+
+            galleryHTML += '</div>';
+            return galleryHTML;
+        }
+
+        function initGallery(container) {
+            // 这里可以添加画廊的初始化逻辑
+            // 例如：图片懒加载、点击事件等
+        }
+
+        function openGallery(entryIndex, imgIndex) {
+            const entry = document.querySelector(`[data-entry-index="${entryIndex}"]`);
+            const images = entry.querySelectorAll('.gallery-item img');
+            const imageUrls = Array.from(images).map(img => img.src);
+
+            // 创建画廊模态框
+            const modal = document.createElement('div');
+            modal.className = 'gallery-modal';
+            modal.innerHTML = `
+        <div class="gallery-modal-content">
+            <span class="close-btn" onclick="closeGallery()">&times;</span>
+            <div class="gallery-modal-main">
+                <img src="${imageUrls[imgIndex]}" class="current-image" alt="全屏图片">
+                <div class="gallery-nav">
+                    ${imgIndex > 0 ? `<button class="nav-btn prev-btn" onclick="changeImage(${imgIndex - 1}, ${entryIndex})">❮</button>` : ''}
+                    <span class="image-counter">${imgIndex + 1} / ${imageUrls.length}</span>
+                    ${imgIndex < imageUrls.length - 1 ? `<button class="nav-btn next-btn" onclick="changeImage(${imgIndex + 1}, ${entryIndex})">❯</button>` : ''}
+                </div>
+            </div>
+            <div class="gallery-thumbnails">
+                ${imageUrls.map((url, index) => `
+                    <img src="${url}" 
+                         class="thumbnail ${index === imgIndex ? 'active' : ''}" 
+                         onclick="changeImage(${index}, ${entryIndex})"
+                         alt="缩略图 ${index + 1}">
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+
+        function closeGallery() {
+            const modal = document.querySelector('.gallery-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function changeImage(newIndex, entryIndex) {
+            const entry = document.querySelector(`[data-entry-index="${entryIndex}"]`);
+            const images = entry.querySelectorAll('.gallery-item img');
+            const imageUrls = Array.from(images).map(img => img.src);
+
+            if (newIndex >= 0 && newIndex < imageUrls.length) {
+                const modal = document.querySelector('.gallery-modal');
+                if (modal) {
+                    // 更新主图
+                    modal.querySelector('.current-image').src = imageUrls[newIndex];
+
+                    // 更新计数器
+                    modal.querySelector('.image-counter').textContent = `${newIndex + 1} / ${imageUrls.length}`;
+
+                    // 更新缩略图激活状态
+                    modal.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+                        thumb.classList.toggle('active', index === newIndex);
+                    });
+
+                    // 更新导航按钮
+                    const prevBtn = modal.querySelector('.prev-btn');
+                    const nextBtn = modal.querySelector('.next-btn');
+
+                    if (prevBtn) {
+                        prevBtn.onclick = () => changeImage(newIndex - 1, entryIndex);
+                        prevBtn.style.visibility = newIndex > 0 ? 'visible' : 'hidden';
+                    }
+
+                    if (nextBtn) {
+                        nextBtn.onclick = () => changeImage(newIndex + 1, entryIndex);
+                        nextBtn.style.visibility = newIndex < imageUrls.length - 1 ? 'visible' : 'hidden';
+                    }
+                }
+            }
+        }
+
+        // 添加ESC键关闭功能
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeGallery();
+            }
+        });
+        loadDynamic();
     </script>
     <script src="/assets/js/disable-right-click.js"></script>
 </body>
