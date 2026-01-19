@@ -403,13 +403,29 @@ function parseMdEntries(content) {
 
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-entries');
-    container.innerHTML = entries.map(entry => `
+    container.innerHTML = entries.map(entry => {
+        // 将markdown内容转换为HTML
+        let htmlContent = marked.parse(entry.content.join('\n'));
+
+        // 使用正则表达式移除除第一张图片外的所有图片
+        // 先找到第一张图片
+        const firstImgMatch = htmlContent.match(/<img[^>]+>/);
+        if (firstImgMatch) {
+            const firstImg = firstImgMatch[0];
+            // 移除所有图片标签
+            htmlContent = htmlContent.replace(/<img[^>]+>/g, '');
+            // 重新插入第一张图片
+            htmlContent = firstImg + htmlContent;
+        }
+
+        return `
         <div class="dynamic-card">
             <div class="dynamic-title">${entry.title}</div>
             ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
-            <div class="dynamic-content">${marked.parse(entry.content.join('\n'))}</div>
+            <div class="dynamic-content">${htmlContent}</div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 
