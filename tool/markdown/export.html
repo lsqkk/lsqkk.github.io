@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown 定制化导出工具</title>
-    <link rel="stylesheet" href="nav.css">
+    <title>Markdown 定制化导出工具 - 夸克博客</title>
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <script src="/assets/js/nav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* 避免与 nav.css 中的 .header 冲突，使用 .app-container 作为主容器 */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f0f4f7;
@@ -189,7 +190,8 @@
     </style>
     <style id="custom-styles"></style>
 
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png"></head>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+</head>
 
 <body>
 
@@ -278,7 +280,7 @@
 
     </div>
 
-    <script src="app.js"></script>
+    <script src="export.js"></script>
 </body>
 
 </html>

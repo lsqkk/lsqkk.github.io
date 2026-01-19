@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能番茄钟 - 夸克博客</title>
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/nav.js"></script>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <style>
         :root {
@@ -53,13 +55,6 @@
             flex: 1;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-top: 20px;
-        }
 
         .back-button {
             background-color: var(--primary-color);
@@ -158,7 +153,7 @@
             color: white;
         }
 
-        button {
+        .container button {
             padding: 15px 30px;
             border-radius: 50px;
             border: none;
@@ -261,12 +256,6 @@
 
 <body>
     <div class="container">
-        <div class="header">
-            <a href="/tool" class="back-button">
-                ← 更多工具
-            </a>
-            <button class="theme-toggle" id="themeToggle">🌓</button>
-        </div>
 
         <div class="timer-card">
             <h1 class="timer-title">番茄工作法计时器</h1>
@@ -274,8 +263,9 @@
             <div class="time-options">
                 <div class="time-option active" data-time="1500">25分钟</div>
                 <div class="time-option" data-time="3000">50分钟</div>
-            </div>
 
+            </div>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
             <div id="timer" class="timer">25:00</div>
 
             <div class="progress-container">

@@ -3,6 +3,8 @@
 
 <head>
   <link rel="stylesheet" href="/assets/css/basic.css">
+  <link rel="stylesheet" href="/assets/css/nav.css">
+  <script src="/assets/js/nav.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>原生时钟 - 夸克博客</title>
@@ -10,18 +12,12 @@
   <style>
     body,
     html {
+      background: url(https://bing.img.run/rand.php) no-repeat center center fixed;
+      background-size: cover;
       height: 100%;
       margin: 0;
     }
 
-    .bg {
-      background-image: url("https://bing.img.run/rand.php");
-      height: 100%;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      position: relative;
-    }
 
     .content {
       position: absolute;
@@ -45,13 +41,8 @@
 
 <body>
 
-  <div class="bg">
-    <a href="tool"
-      style="background-color: rgba(255,255,255,0.3); padding: 5px 10px; border-radius: 5px; text-decoration: none;color: rgba(255,255,255,0.5)">返回工具箱</a>
-    <div class="content">
-
-      <h1 id="time"></h1>
-    </div>
+  <div class="content">
+    <h1 id="time"></h1>
   </div>
 
   <script>

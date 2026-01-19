@@ -24,7 +24,7 @@
 - 然后更了很多工具，包括[图片混淆](https://lsqkk.github.io/tool/tphx)等等
 - 把[聊天室](https://lsqkk.github.io/a/chat-room)和[ds](https://lsqkk.github.io/a/ds)的UI更了
 - 利用聊天室的那个firebase写了很多新的东西：
-  - 给[夸克markdown编辑器](https://lsqkk.github.io/tool/tool-md)升级了UI同时加了一个[多人协作功能](https://lsqkk.github.io/tool/co-md)，应该是国内第一个不限人数的免费md/tex协同平台
+  - 给[夸克markdown编辑器](https://lsqkk.github.io/tool/markdown)升级了UI同时加了一个[多人协作功能](https://lsqkk.github.io/tool/markdown/co)，应该是国内第一个不限人数的免费md/tex协同平台
   - 把之前没做成的[五子棋对战](https://lsqkk.github.io/games/5ziqi)搞好了，然后顺手写了一个不需要联机的[五子棋](https://lsqkk.github.io/games/5ziqi-p)
   - 把[每日答题](https://lsqkk.github.io/games/dati)也加了联机
   - 下一步也许会把[西交图寻](https://lsqkk.github.io/games/xjtx)也加上联机，这个再说
@@ -72,7 +72,7 @@
 3. 优化 - 抽离工具箱项目至tool.json，更新工具更方便
 # 25.4.2
 1. 优化 - **Markdown-富文本转换器**全面升级为**夸克 Markdown 编辑器**，升级UI并支持实时渲染、TeX和mermaid语法
-   [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250402113721166.png)](https://lsqkk.github.io/tool/tool-md.html)
+   [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250402113721166.png)](https://lsqkk.github.io/tool/markdown.html)
 2. 优化 - 更新**番茄钟**UI界面，增加50min选项，增加夜间模式
    [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250402145833893.png)](https://lsqkk.github.io/tool/pomodoro.html)
 3. 优化 - 微调主页UI
@@ -96,7 +96,7 @@
 1. 优化 - 减少使用postimage.cc图床
 2. 新增 - 建设**夸克图床**功能
 3. 新增 - 录音转文字功能[工具]
-  [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250328202102461.png)](https://lsqkk.github.io/tool/tool-audio2txt.html)
+  [![1](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20250328202102461.png)](https://lsqkk.github.io/tool/audio2txt.html)
 
 # 25.3.27
 1. BingWeb搜索引擎上线

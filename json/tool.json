@@ -5,7 +5,7 @@
       "tools": [
         {
           "name": "经典时钟",
-          "url": "/tool/tool-time",
+          "url": "/tool/time",
           "target": "_blank"
         },
         {
@@ -17,12 +17,22 @@
           "name": "夸克天气",
           "url": "/tool/weather",
           "target": "_blank"
+        },
+        {
+          "name": "自定义网站导航",
+          "url": "/tool/nav",
+          "target": "_blank"
         }
       ]
     },
     {
       "name": "学术",
       "tools": [
+        {
+          "name": "思政题库抽测",
+          "url": "/tool/ti",
+          "target": "_blank"
+        },
         {
           "name": "AIGC 检查",
           "url": "/tool/aigc",
@@ -65,7 +75,7 @@
         },
         {
           "name": "语音识别",
-          "url": "/tool/tool-audio2txt",
+          "url": "/tool/audio2txt",
           "target": "_blank"
         },
         {
@@ -75,12 +85,17 @@
         },
         {
           "name": "Markdown 编辑器",
-          "url": "/tool/tool-md",
+          "url": "/tool/markdown",
           "target": "_blank"
         },
         {
           "name": "多人协同 Markdown 编辑器",
-          "url": "/tool/co-md",
+          "url": "/tool/markdown/co",
+          "target": "_blank"
+        },
+        {
+          "name": "Markdown 定制导出",
+          "url": "/tool/markdown/export",
           "target": "_blank"
         }
       ]
@@ -95,7 +110,7 @@
         },
         {
           "name": "多人协同 Markdown 编辑器",
-          "url": "/tool/co-md",
+          "url": "/tool/markdown/co",
           "target": "_blank"
         },
         {
@@ -151,31 +166,6 @@
         {
           "name": "Bing搜索",
           "url": "https://cn.bing.com/",
-          "target": "_blank"
-        }
-      ]
-    },
-    {
-      "name": "博客管理",
-      "tools": [
-        {
-          "name": "博客管理",
-          "url": "https://github.com/lsqkk/lsqkk.github.io/tree/main",
-          "target": "_blank"
-        },
-        {
-          "name": "新建文件",
-          "url": "https://github.com/lsqkk/lsqkk.github.io/new/main",
-          "target": "_blank"
-        },
-        {
-          "name": "上传文件",
-          "url": "https://github.com/lsqkk/lsqkk.github.io/upload/main",
-          "target": "_blank"
-        },
-        {
-          "name": "访问量统计",
-          "url": "/tool/stats",
           "target": "_blank"
         }
       ]

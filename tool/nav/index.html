@@ -3,9 +3,11 @@
 
 <head>
     <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/nav.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Nav - 现代网站导航</title>
+    <title>Modern Nav - 夸克博客</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
     <style>
@@ -41,11 +43,28 @@
         }
 
         body {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: url('/assets/img/bg.png') no-repeat center center fixed;
+            background-size: cover;
             color: #334155;
             min-height: 100vh;
             padding: 20px;
             line-height: 1.6;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            z-index: -1;
+        }
+
+        .dark-mode body::before {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
         }
 
         .container {
@@ -70,6 +89,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            cursor: pointer;
         }
 
         .logo i {
@@ -212,6 +232,22 @@
             margin-bottom: 25px;
         }
 
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
         .bookmarks-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -226,6 +262,9 @@
             transition: var(--transition);
             box-shadow: var(--shadow);
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .bookmark-card:hover {
@@ -257,6 +296,7 @@
             font-size: 12px;
             color: #64748b;
             word-break: break-all;
+            display: block;
         }
 
         .bookmarks-list {
@@ -273,6 +313,8 @@
             border-radius: var(--radius);
             transition: var(--transition);
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
         }
 
         .bookmark-item:hover {
@@ -384,6 +426,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .color-option {
@@ -487,7 +530,7 @@
     <div class="container">
         <header>
             <link rel="stylesheet" href="/assets/css/basic.css">
-            <div class="logo">
+            <div class="logo" onclick="window.location.href='/'">
                 <i class="fas fa-compass"></i>
                 <h1>Modern Nav</h1>
             </div>
@@ -516,19 +559,19 @@
                 <ul class="folders-list">
                     <li class="folder-item active">
                         <span>常用网站</span>
-                        <i class="fas fa-pen"></i>
+                        <i class="fas fa-pen" onclick="editFolder(event, this)"></i>
                     </li>
                     <li class="folder-item">
                         <span>工作相关</span>
-                        <i class="fas fa-pen"></i>
+                        <i class="fas fa-pen" onclick="editFolder(event, this)"></i>
                     </li>
                     <li class="folder-item">
                         <span>学习资源</span>
-                        <i class="fas fa-pen"></i>
+                        <i class="fas fa-pen" onclick="editFolder(event, this)"></i>
                     </li>
                     <li class="folder-item">
                         <span>娱乐休闲</span>
-                        <i class="fas fa-pen"></i>
+                        <i class="fas fa-pen" onclick="editFolder(event, this)"></i>
                     </li>
                 </ul>
             </div>
@@ -537,71 +580,72 @@
                 <div class="bookmarks-header">
                     <h2>常用网站</h2>
                     <div class="search-box">
-                        <input type="text" class="form-control" placeholder="搜索网站..." style="max-width: 200px;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" id="search-input" placeholder="搜索网站...">
                     </div>
                 </div>
 
-                <div class="bookmarks-grid" id="bookmarks-view">
-                    <div class="bookmark-card">
+                <div class="bookmarks-grid" id="bookmarks-grid-view">
+                    <a href="https://www.google.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #3B82F6;">
                             Goog
                         </div>
                         <h3>Google</h3>
                         <span>google.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.github.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #8B5CF6;">
                             Git
                         </div>
                         <h3>GitHub</h3>
                         <span>github.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.youtube.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #EC4899;">
                             You
                         </div>
                         <h3>YouTube</h3>
                         <span>youtube.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.twitter.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #0EA5E9;">
                             Twi
                         </div>
                         <h3>Twitter</h3>
                         <span>twitter.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.netflix.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #F59E0B;">
                             Net
                         </div>
                         <h3>Netflix</h3>
                         <span>netflix.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.spotify.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #10B981;">
                             Spo
                         </div>
                         <h3>Spotify</h3>
                         <span>spotify.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.reddit.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #EF4444;">
                             Red
                         </div>
                         <h3>Reddit</h3>
                         <span>reddit.com</span>
-                    </div>
-                    <div class="bookmark-card">
+                    </a>
+                    <a href="https://www.discord.com" target="_blank" class="bookmark-card">
                         <div class="icon-box" style="background-color: #6366F1;">
                             Dis
                         </div>
                         <h3>Discord</h3>
                         <span>discord.com</span>
-                    </div>
+                    </a>
                 </div>
 
-                <div class="bookmarks-list" id="list-view">
-                    <div class="bookmark-item">
+                <div class="bookmarks-list" id="bookmarks-list-view">
+                    <a href="https://www.google.com" target="_blank" class="bookmark-item">
                         <div class="icon-box" style="background-color: #3B82F6;">
                             Goog
                         </div>
@@ -610,11 +654,13 @@
                             <span>https://www.google.com</span>
                         </div>
                         <div class="bookmark-actions">
-                            <button class="action-btn"><i class="fas fa-pen"></i></button>
-                            <button class="action-btn"><i class="fas fa-times"></i></button>
+                            <button class="action-btn" onclick="editBookmark(event, this)"><i
+                                    class="fas fa-pen"></i></button>
+                            <button class="action-btn" onclick="deleteBookmark(event, this)"><i
+                                    class="fas fa-times"></i></button>
                         </div>
-                    </div>
-                    <div class="bookmark-item">
+                    </a>
+                    <a href="https://www.github.com" target="_blank" class="bookmark-item">
                         <div class="icon-box" style="background-color: #8B5CF6;">
                             Git
                         </div>
@@ -623,11 +669,13 @@
                             <span>https://www.github.com</span>
                         </div>
                         <div class="bookmark-actions">
-                            <button class="action-btn"><i class="fas fa-pen"></i></button>
-                            <button class="action-btn"><i class="fas fa-times"></i></button>
+                            <button class="action-btn" onclick="editBookmark(event, this)"><i
+                                    class="fas fa-pen"></i></button>
+                            <button class="action-btn" onclick="deleteBookmark(event, this)"><i
+                                    class="fas fa-times"></i></button>
                         </div>
-                    </div>
-                    <div class="bookmark-item">
+                    </a>
+                    <a href="https://www.youtube.com" target="_blank" class="bookmark-item">
                         <div class="icon-box" style="background-color: #EC4899;">
                             You
                         </div>
@@ -636,10 +684,12 @@
                             <span>https://www.youtube.com</span>
                         </div>
                         <div class="bookmark-actions">
-                            <button class="action-btn"><i class="fas fa-pen"></i></button>
-                            <button class="action-btn"><i class="fas fa-times"></i></button>
+                            <button class="action-btn" onclick="editBookmark(event, this)"><i
+                                    class="fas fa-pen"></i></button>
+                            <button class="action-btn" onclick="deleteBookmark(event, this)"><i
+                                    class="fas fa-times"></i></button>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -649,7 +699,7 @@
     <div class="modal" id="add-bookmark-modal">
         <div class="modal-content fade-in">
             <div class="modal-header">
-                <h2>添加新网站</h2>
+                <h2 id="modal-title">添加新网站</h2>
                 <button class="action-btn" id="close-add-bookmark">
                     <i class="fas fa-times"></i>
                 </button>
@@ -677,14 +727,34 @@
                     <div class="color-option" style="background-color: #10B981;" data-color="#10B981"></div>
                     <div class="color-option" style="background-color: #6366F1;" data-color="#6366F1"></div>
                     <div class="color-option" style="background-color: #0EA5E9;" data-color="#0EA5E9"></div>
-                    <button class="btn" id="random-color">
+                    <button type="button" class="btn" id="random-color">
                         <i class="fas fa-dice"></i> 随机颜色
                     </button>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn">取消</button>
-                <button class="btn btn-primary">保存</button>
+                <button class="btn" id="cancel-modal">取消</button>
+                <button class="btn btn-primary" id="save-bookmark">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加文件夹模态框 -->
+    <div class="modal" id="add-folder-modal">
+        <div class="modal-content fade-in">
+            <div class="modal-header">
+                <h2>添加新文件夹</h2>
+                <button class="action-btn" id="close-add-folder">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="form-group">
+                <label for="folder-name">文件夹名称</label>
+                <input type="text" class="form-control" id="folder-name" placeholder="例如：工作资料">
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancel-folder">取消</button>
+                <button class="btn btn-primary" id="save-folder">保存</button>
             </div>
         </div>
     </div>
@@ -693,14 +763,27 @@
         // DOM元素
         const gridViewBtn = document.getElementById('grid-view');
         const listViewBtn = document.getElementById('list-view');
-        const bookmarksGrid = document.querySelector('.bookmarks-grid');
-        const bookmarksList = document.querySelector('.bookmarks-list');
+        const bookmarksGrid = document.getElementById('bookmarks-grid-view');
+        const bookmarksList = document.getElementById('bookmarks-list-view');
         const addBookmarkBtn = document.getElementById('add-bookmark');
         const addBookmarkModal = document.getElementById('add-bookmark-modal');
         const closeAddBookmark = document.getElementById('close-add-bookmark');
         const themeToggle = document.getElementById('theme-toggle');
         const colorOptions = document.querySelectorAll('.color-option');
         const randomColorBtn = document.getElementById('random-color');
+        const cancelModalBtn = document.getElementById('cancel-modal');
+        const saveBookmarkBtn = document.getElementById('save-bookmark');
+        const searchInput = document.getElementById('search-input');
+        const folderItems = document.querySelectorAll('.folder-item');
+        const addFolderBtn = document.getElementById('add-folder');
+        const addFolderModal = document.getElementById('add-folder-modal');
+        const closeAddFolder = document.getElementById('close-add-folder');
+        const cancelFolderBtn = document.getElementById('cancel-folder');
+        const saveFolderBtn = document.getElementById('save-folder');
+
+        // 当前编辑状态
+        let isEditing = false;
+        let editingElement = null;
 
         // 切换视图模式
         gridViewBtn.addEventListener('click', () => {
@@ -719,11 +802,21 @@
 
         // 显示添加书签模态框
         addBookmarkBtn.addEventListener('click', () => {
+            isEditing = false;
+            editingElement = null;
+            document.getElementById('modal-title').textContent = '添加新网站';
+            document.getElementById('website-name').value = '';
+            document.getElementById('website-url').value = '';
+            document.getElementById('icon-text').value = '';
             addBookmarkModal.style.display = 'flex';
         });
 
         // 关闭添加书签模态框
         closeAddBookmark.addEventListener('click', () => {
+            addBookmarkModal.style.display = 'none';
+        });
+
+        cancelModalBtn.addEventListener('click', () => {
             addBookmarkModal.style.display = 'none';
         });
 
@@ -772,6 +865,234 @@
             }
         });
 
+        // 保存书签
+        saveBookmarkBtn.addEventListener('click', () => {
+            const name = document.getElementById('website-name').value.trim();
+            const url = document.getElementById('website-url').value.trim();
+            const iconText = document.getElementById('icon-text').value.trim();
+            const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
+
+            if (!name || !url) {
+                alert('请填写网站名称和网址！');
+                return;
+            }
+
+            // 确保URL有协议前缀
+            let fullUrl = url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                fullUrl = 'https://' + url;
+            }
+
+            // 提取域名用于显示
+            const domain = url.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
+
+            if (isEditing && editingElement) {
+                // 编辑现有书签
+                const bookmarkCard = editingElement.closest('.bookmark-card, .bookmark-item');
+                const iconBox = bookmarkCard.querySelector('.icon-box');
+                const title = bookmarkCard.querySelector('h3');
+                const urlSpan = bookmarkCard.querySelector('span');
+
+                iconBox.textContent = iconText || name.substring(0, 4);
+                iconBox.style.backgroundColor = selectedColor;
+                title.textContent = name;
+                urlSpan.textContent = domain;
+
+                if (bookmarkCard.tagName === 'A') {
+                    bookmarkCard.href = fullUrl;
+                }
+            } else {
+                // 创建新书签
+                const bookmarkCardHTML = `
+                    <a href="${fullUrl}" target="_blank" class="bookmark-card">
+                        <div class="icon-box" style="background-color: ${selectedColor};">
+                            ${iconText || name.substring(0, 4)}
+                        </div>
+                        <h3>${name}</h3>
+                        <span>${domain}</span>
+                    </a>
+                `;
+
+                const bookmarkItemHTML = `
+                    <a href="${fullUrl}" target="_blank" class="bookmark-item">
+                        <div class="icon-box" style="background-color: ${selectedColor};">
+                            ${iconText || name.substring(0, 4)}
+                        </div>
+                        <div class="bookmark-item-details">
+                            <h3>${name}</h3>
+                            <span>${fullUrl}</span>
+                        </div>
+                        <div class="bookmark-actions">
+                            <button class="action-btn" onclick="editBookmark(event, this)"><i class="fas fa-pen"></i></button>
+                            <button class="action-btn" onclick="deleteBookmark(event, this)"><i class="fas fa-times"></i></button>
+                        </div>
+                    </a>
+                `;
+
+                bookmarksGrid.insertAdjacentHTML('beforeend', bookmarkCardHTML);
+                bookmarksList.insertAdjacentHTML('beforeend', bookmarkItemHTML);
+            }
+
+            addBookmarkModal.style.display = 'none';
+        });
+
+        // 搜索功能
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const bookmarks = document.querySelectorAll('.bookmark-card, .bookmark-item');
+
+            bookmarks.forEach(bookmark => {
+                const title = bookmark.querySelector('h3').textContent.toLowerCase();
+                const url = bookmark.querySelector('span').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || url.includes(searchTerm)) {
+                    bookmark.style.display = '';
+                } else {
+                    bookmark.style.display = 'none';
+                }
+            });
+        });
+
+        // 文件夹选择
+        folderItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('fa-pen')) {
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // 更新标题
+                    const folderName = item.querySelector('span').textContent;
+                    document.querySelector('.bookmarks-header h2').textContent = folderName;
+                }
+            });
+        });
+
+        // 编辑文件夹
+        window.editFolder = function (event, element) {
+            event.stopPropagation();
+            const folderItem = element.closest('.folder-item');
+            const folderName = folderItem.querySelector('span').textContent;
+
+            const newName = prompt('请输入新的文件夹名称：', folderName);
+            if (newName && newName.trim()) {
+                folderItem.querySelector('span').textContent = newName.trim();
+
+                // 如果当前文件夹是活动的，更新标题
+                if (folderItem.classList.contains('active')) {
+                    document.querySelector('.bookmarks-header h2').textContent = newName.trim();
+                }
+            }
+        };
+
+        // 添加文件夹
+        addFolderBtn.addEventListener('click', () => {
+            addFolderModal.style.display = 'flex';
+        });
+
+        closeAddFolder.addEventListener('click', () => {
+            addFolderModal.style.display = 'none';
+        });
+
+        cancelFolderBtn.addEventListener('click', () => {
+            addFolderModal.style.display = 'none';
+        });
+
+        addFolderModal.addEventListener('click', (e) => {
+            if (e.target === addFolderModal) {
+                addFolderModal.style.display = 'none';
+            }
+        });
+
+        saveFolderBtn.addEventListener('click', () => {
+            const folderName = document.getElementById('folder-name').value.trim();
+
+            if (!folderName) {
+                alert('请输入文件夹名称！');
+                return;
+            }
+
+            const folderHTML = `
+                <li class="folder-item">
+                    <span>${folderName}</span>
+                    <i class="fas fa-pen" onclick="editFolder(event, this)"></i>
+                </li>
+            `;
+
+            document.querySelector('.folders-list').insertAdjacentHTML('beforeend', folderHTML);
+            addFolderModal.style.display = 'none';
+            document.getElementById('folder-name').value = '';
+
+            // 重新绑定事件
+            document.querySelectorAll('.folder-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('fa-pen')) {
+                        document.querySelectorAll('.folder-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+
+                        const folderName = item.querySelector('span').textContent;
+                        document.querySelector('.bookmarks-header h2').textContent = folderName;
+                    }
+                });
+            });
+        });
+
+        // 编辑书签
+        window.editBookmark = function (event, element) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const bookmarkItem = element.closest('.bookmark-item, .bookmark-card');
+            const iconBox = bookmarkItem.querySelector('.icon-box');
+            const title = bookmarkItem.querySelector('h3').textContent;
+            const urlSpan = bookmarkItem.querySelector('span').textContent;
+            const url = bookmarkItem.href || 'https://' + urlSpan;
+
+            isEditing = true;
+            editingElement = element;
+
+            document.getElementById('modal-title').textContent = '编辑网站';
+            document.getElementById('website-name').value = title;
+            document.getElementById('website-url').value = urlSpan;
+            document.getElementById('icon-text').value = iconBox.textContent;
+
+            // 设置当前颜色
+            const currentColor = iconBox.style.backgroundColor;
+            const rgbToHex = (rgb) => {
+                const result = rgb.match(/\d+/g);
+                if (!result) return '#3B82F6';
+                const r = parseInt(result[0]).toString(16).padStart(2, '0');
+                const g = parseInt(result[1]).toString(16).padStart(2, '0');
+                const b = parseInt(result[2]).toString(16).padStart(2, '0');
+                return `#${r}${g}${b}`.toUpperCase();
+            };
+
+            const currentHex = rgbToHex(currentColor);
+            document.querySelector('.color-option.active').classList.remove('active');
+
+            const matchingColor = Array.from(colorOptions).find(option =>
+                option.getAttribute('data-color') === currentHex
+            );
+
+            if (matchingColor) {
+                matchingColor.classList.add('active');
+            } else {
+                colorOptions[0].classList.add('active');
+            }
+
+            addBookmarkModal.style.display = 'flex';
+        };
+
+        // 删除书签
+        window.deleteBookmark = function (event, element) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (confirm('确定要删除这个书签吗？')) {
+                const bookmarkItem = element.closest('.bookmark-item, .bookmark-card');
+                bookmarkItem.remove();
+            }
+        };
+
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             // 默认显示网格视图
@@ -783,7 +1104,7 @@
                 card.addEventListener('click', (e) => {
                     if (!e.target.classList.contains('action-btn') &&
                         !e.target.parentElement.classList.contains('action-btn')) {
-                        card.style.transform = 'scale(0.95)';
+                        card.style.transform = card.classList.contains('bookmark-card') ? 'scale(0.95)' : 'translateX(10px)';
                         setTimeout(() => {
                             card.style.transform = '';
                         }, 200);
@@ -792,7 +1113,6 @@
             });
         });
     </script>
-    <script src="/assets/js/disable-right-click.js"></script>
 </body>
 
 </html>

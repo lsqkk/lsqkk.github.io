@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多人协同Markdown编辑器 | 夸克博客</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/md.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <style>
+        .docs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .doc-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .doc-item:hover {
+            background-color: #3a3a3a;
+        }
+
+        .doc-item.active {
+            background-color: #4a4a4a;
+        }
+
+        .doc-name {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .doc-code {
+            font-size: 12px;
+            color: #999;
+            display: block;
+        }
+
+        .doc-actions {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            display: none;
+            gap: 5px;
+        }
+
+        .doc-item:hover .doc-actions {
+            display: flex;
+        }
+
+        .doc-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #e0e0e0;
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .doc-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #f9fafb;
+            --text-color: #374151;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --code-bg: #f3f4f6;
+            --sidebar-width: 280px;
+            --sidebar-bg: #f8fafc;
+            --cursor-size: 2px;
+        }
+
+        .cursor {
+            position: absolute;
+            width: var(--cursor-size);
+            height: 1.2em;
+            background-color: var(--cursor-color);
+            z-index: 100;
+            opacity: 0.7;
+        }
+
+        .cursor-label {
+            position: absolute;
+            top: -1.5em;
+            left: 0;
+            background-color: var(--cursor-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .version-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .version-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .version-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .version-item:last-child {
+            border-bottom: none;
+        }
+
+        .version-time {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .version-content {
+            font-size: 0.875rem;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-option.selected {
+            border-color: var(--text-color);
+        }
+
+        .profile-form {
+            margin-top: 1.5rem;
+        }
+
+        .profile-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .profile-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .document-info {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .document-code {
+            background-color: var(--code-bg);
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .user-list {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .user-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .loader {
+            display: inline-block;
+            border: 2px solid rgba(79, 70, 229, 0.2);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .processing .loader {
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .document-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">最近文档</h3>
+            <div class="sidebar-actions">
+                <button class="sidebar-btn" id="refreshDocs">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <ul class="docs-list" id="docsList"></ul>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">
+                <i class="fas fa-users"></i>
+                多人协同Markdown编辑器
+            </h1>
+            <div class="toolbar">
+                <button id="new-doc-btn" class="btn">
+                    <i class="fas fa-file-alt"></i>
+                    新建文档
+                </button>
+                <button id="join-doc-btn" class="btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    加入文档
+                </button>
+                <button id="save-version-btn" class="btn">
+                    <i class="fas fa-history"></i>
+                    暂存版本
+                </button>
+                <button id="view-versions-btn" class="btn">
+                    <i class="fas fa-clock"></i>
+                    查看历史
+                </button>
+                <a href="/tool" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    返回工具箱
+                </a>
+            </div>
+        </div>
+
+        <div id="document-info-container" style="display: none;">
+            <div class="document-info">
+                <div>
+                    <span>文档代码: </span>
+                    <span id="document-code" class="document-code"></span>
+                    <button id="copy-code-btn" class="copy-btn" title="复制代码">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div id="user-list" class="user-list"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <label class="label">Markdown 输入</label>
+                    <span id="word-count" class="word-count">0 字</span>
+                </div>
+                <textarea id="markdown-input" class="textarea" placeholder="在这里输入 Markdown 文本..."
+                    spellcheck="false"></textarea>
+                <div class="toolbar">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <i class="fas fa-trash-alt"></i>
+                        清空
+                    </button>
+                    <button id="sample-btn" class="btn btn-secondary">
+                        <i class="fas fa-lightbulb"></i>
+                        示例
+                    </button>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <label class="label">实时预览</label>
+                </div>
+                <div class="preview-container">
+                    <div id="preview" class="preview"></div>
+                    <div class="toolbar">
+                        <button id="download-html-btn" class="btn">
+                            <i class="fas fa-file-code"></i>
+                            下载HTML
+                        </button>
+                        <button id="download-md-btn" class="btn">
+                            <i class="fas fa-file-alt"></i>
+                            下载MD
+                        </button>
+                        <button id="download-word-btn" class="btn">
+                            <i class="fas fa-file-word"></i>
+                            下载Word
+                            <span class="loader"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/posts/copyright" class="footer">© 2024 - 2026 蓝色奇夸克 / 夸克博客 All rights
+        reserved. </a>
+
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">操作成功</span>
+    </div>
+
+    <!-- 新建/加入文档模态框 -->
+    <div id="doc-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">新建文档</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div id="modal-body">
+                <div class="profile-form">
+                    <input type="text" id="nickname-input" class="profile-input" placeholder="您的昵称">
+                    <div style="margin: 1rem 0;">
+                        <div style="margin-bottom: 0.5rem;">选择您的光标颜色:</div>
+                        <div>
+                            <div class="color-option selected" style="background: #40E0D0"
+                                onclick="selectModalColor(this)"></div>
+                            <div class="color-option" style="background: #FF6B6B" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #7B68EE" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #FFD700" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #C7EDCC" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #FAF9DE" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #FFF2E2" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #2b4490" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #faa755" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #f391a9" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #843900" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #a3cf62" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #b22c46" onclick="selectModalColor(this)">
+                            </div>
+                            <div class="color-option" style="background: #b4532a" onclick="selectModalColor(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="doc-code-container" style="display: none;">
+                        <label for="doc-code-input">文档代码:</label>
+                        <input type="text" id="doc-code-input" class="profile-input" placeholder="输入6位文档代码">
+                    </div>
+                    <button id="modal-confirm-btn" class="profile-btn">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 版本历史模态框 -->
+    <div id="versions-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">文档历史版本</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div id="versions-list" class="version-list">
+                <!-- 版本列表将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://api.lsqkk.space/api/firebase-config?v=1"></script>
+    <script src="co.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

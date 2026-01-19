@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown编辑器 | 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <!-- 简化后的MathJax配置 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        console.log('MathJax初始化完成');
+                        if (window.markdownReady) renderAll();
+                    });
+                }
+            }
+        };
+    </script>
+
+    <!-- 使用可靠的CDN源，添加备用源 -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" onerror="loadMermaidFallback()"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
+
+    <script>
+        // Mermaid备用加载方案
+        function loadMermaidFallback() {
+            const fallback = document.createElement('script');
+            fallback.src = 'https://unpkg.com/mermaid@10/dist/mermaid.min.js';
+            fallback.onload = function () {
+                initMermaid();
+                console.log('Mermaid备用源加载成功');
+            };
+            document.head.appendChild(fallback);
+        }
+
+        // 初始化Mermaid
+        function initMermaid() {
+            window.mermaid = window.mermaid || {};
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        }
+
+        // 初始化Mermaid（主加载方案）
+        if (window.mermaid) {
+            initMermaid();
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/md.css">
+
+</head>
+
+<body>
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">我的笔记</h3>
+            <div class="sidebar-actions">
+                <button class="sidebar-btn" id="refreshNotes">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <ul class="notes-list" id="notesList"></ul>
+
+        <div class="add-note-form">
+            <input type="text" class="add-note-input" id="newNoteName" placeholder="新笔记名称">
+            <button class="add-note-btn" id="addNoteBtn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">
+                夸克 Markdown 编辑器
+            </h1>
+            <a href="tool" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回工具箱
+            </a>
+        </div>
+
+        <div class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <label class="label">Markdown 输入</label>
+                    <span id="word-count" class="word-count">0 字</span>
+                </div>
+                <textarea id="markdown-input" class="textarea" placeholder="在这里输入 Markdown 文本..."
+                    spellcheck="false"></textarea>
+                <div class="toolbar">
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <i class="fas fa-trash-alt"></i>
+                        清空
+                    </button>
+                    <button id="sample-btn" class="btn btn-secondary">
+                        <i class="fas fa-lightbulb"></i>
+                        示例
+                    </button>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <label class="label">实时预览</label>
+                </div>
+                <div class="preview-container">
+                    <div id="preview" class="preview"></div>
+                    <div class="toolbar">
+                        <button id="download-html-btn" class="btn">
+                            <i class="fas fa-file-code"></i>
+                            下载HTML
+                        </button>
+                        <button id="download-md-btn" class="btn">
+                            <i class="fas fa-file-alt"></i>
+                            下载MD
+                        </button>
+                        <button id="download-word-btn" class="btn">
+                            <i class="fas fa-file-word"></i>
+                            下载Word
+                            <span class="loader"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/posts/copyright" class="footer">© 2024 - 2026 蓝色奇夸克 / 夸克博客 All rights
+        reserved. </a>
+
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">操作成功</span>
+    </div>
+    <script src="index.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>
