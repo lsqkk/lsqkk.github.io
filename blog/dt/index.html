@@ -28,13 +28,36 @@
         <div class="dynamic-header">
             <h1 class="page-title">动态 / Life Updates</h1>
         </div>
-        <div id="dynamic-content"></div>
+
+        <div class="dynamic-layout">
+            <!-- 侧边栏：月历 -->
+            <aside class="dynamic-sidebar" id="calendar-sidebar">
+                <!-- 月历内容由JavaScript动态生成 -->
+            </aside>
+
+            <!-- 主内容区 -->
+            <main class="dynamic-main">
+                <div id="dynamic-content"></div>
+
+                <!-- 分页 -->
+                <div id="pagination-container" class="pagination-container">
+                    <!-- 分页内容由JavaScript动态生成 -->
+                </div>
+            </main>
+        </div>
+
         <a href="/" class="back-home">← 返回主页</a>
     </div>
 
     <script src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
 
     <script>
+        // 全局变量
+        let allEntries = [];
+        let currentPage = 1;
+        const entriesPerPage = 10;
+        let monthData = {};
+
         marked.setOptions({
             breaks: true,
             gfm: true
@@ -44,8 +67,14 @@
             try {
                 const response = await fetch('dt.md');
                 const mdContent = await response.text();
-                const entries = parseDynamicEntries(mdContent);
-                renderDynamicEntries(entries);
+                allEntries = parseDynamicEntries(mdContent);
+
+                // 分析月份数据
+                analyzeMonthData();
+
+                // 初始化显示
+                renderCalendar();
+                renderPage(1);
             } catch (error) {
                 document.getElementById('dynamic-content').innerHTML = `
             <div class="dynamic-card">
@@ -57,7 +86,6 @@
         }
 
         function parseDynamicEntries(content) {
-            // 使用正则表达式在#前分割（正向先行断言）
             return content.split(/\n(?=# )/g).map(entry => {
                 const [header, ...body] = entry.split('\n');
                 const titleMatch = header.match(/^# (.*)/);
@@ -70,43 +98,151 @@
                     return match ? match[1] : null;
                 }).filter(Boolean) : [];
 
+                // 解析日期
+                const dateStr = dateMatch ? dateMatch[1].trim() : '';
+                let monthKey = '';
+                let year = '';
+                let month = '';
+
+                if (dateStr) {
+                    const date = new Date(dateStr);
+                    if (!isNaN(date.getTime())) {
+                        year = date.getFullYear();
+                        month = date.getMonth() + 1;
+                        monthKey = `${year}-${month.toString().padStart(2, '0')}`;
+                    }
+                }
+
                 return {
                     title: titleMatch ? titleMatch[1].trim() : '未命名动态',
-                    date: dateMatch ? dateMatch[1].trim() : '',
+                    date: dateStr,
+                    year: year,
+                    month: month,
+                    monthKey: monthKey,
                     content: body.join('\n').replace(/## 日期：.+\n?/, '').trim(),
                     images: images
                 };
-            }).filter(entry => entry.title).reverse();
+            }).filter(entry => entry.title);
+        }
+
+        // 分析月份数据
+        function analyzeMonthData() {
+            monthData = {};
+
+            allEntries.forEach((entry, index) => {
+                if (entry.monthKey) {
+                    if (!monthData[entry.monthKey]) {
+                        monthData[entry.monthKey] = {
+                            count: 0,
+                            latestIndex: index,
+                            year: entry.year,
+                            month: entry.month
+                        };
+                    }
+                    monthData[entry.monthKey].count++;
+
+                    // 保留最新的动态索引（因为allEntries是反序的，所以第一个就是最新的）
+                    monthData[entry.monthKey].latestIndex = index;
+                }
+            });
+        }
+
+        // 渲染月历
+        function renderCalendar() {
+            const sidebar = document.getElementById('calendar-sidebar');
+            const monthKeys = Object.keys(monthData).sort((a, b) => b.localeCompare(a));
+
+            let calendarHTML = '<div class="calendar-widget">';
+            calendarHTML += '<h3 class="calendar-title">📅 动态月历</h3>';
+            calendarHTML += '<div class="month-list">';
+
+            if (monthKeys.length === 0) {
+                calendarHTML += '<div class="month-item">暂无动态</div>';
+            } else {
+                monthKeys.forEach(key => {
+                    const data = monthData[key];
+                    const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月',
+                        '七月', '八月', '九月', '十月', '十一月', '十二月'];
+                    const monthName = `${data.year}年 ${monthNames[data.month - 1]}`;
+
+                    calendarHTML += `
+                    <a href="javascript:void(0)" class="month-item" data-month-key="${key}">
+                        <span class="month-name">${monthName}</span>
+                        <span class="month-count">${data.count}</span>
+                    </a>
+                    `;
+                });
+            }
+
+            calendarHTML += '</div></div>';
+            sidebar.innerHTML = calendarHTML;
+
+            // 添加月份点击事件
+            document.querySelectorAll('.month-item[data-month-key]').forEach(item => {
+                item.addEventListener('click', function () {
+                    const monthKey = this.getAttribute('data-month-key');
+                    jumpToMonth(monthKey);
+                });
+            });
+        }
+
+        // 跳转到指定月份的最新动态
+        function jumpToMonth(monthKey) {
+            const data = monthData[monthKey];
+            if (!data) return;
+
+            // 计算该动态所在的页数
+            const entryIndex = data.latestIndex;
+            const page = Math.floor(entryIndex / entriesPerPage) + 1;
+
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // 渲染该页
+            renderPage(page);
+
+            // 高亮当前月份
+            document.querySelectorAll('.month-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.month-item[data-month-key="${monthKey}"]`).classList.add('active');
+        }
+
+        // 渲染指定页
+        function renderPage(page) {
+            currentPage = page;
+            const startIndex = (page - 1) * entriesPerPage;
+            const endIndex = Math.min(startIndex + entriesPerPage, allEntries.length);
+            const pageEntries = allEntries.slice(startIndex, endIndex);
+
+            renderDynamicEntries(pageEntries);
+            renderPagination();
         }
 
         function renderDynamicEntries(entries) {
             const container = document.getElementById('dynamic-content');
-
-            // 创建QQ表情解析器实例
             const emotionParser = new QQEmotionParser();
 
             container.innerHTML = entries.map((entry, index) => {
-                // 先移除markdown图片语法，避免影响表情解析
                 let contentWithoutImages = entry.content.replace(/!\[.*?\]\((.*?)\)/g, '');
-
-                // 解析表情代码为HTML
                 let parsedContent = emotionParser.parse(contentWithoutImages);
-
-                // 使用marked解析剩余的markdown（现在不包含图片和表情代码）
-                // 注意：marked会处理markdown语法，但表情已经是HTML了，所以需要确保marked不转义HTML
                 const htmlContent = marked.parse(parsedContent, {
-                    breaks: true,  // 启用换行符转换为<br>
-                    gfm: true      // 启用GitHub风格的Markdown
+                    breaks: true,
+                    gfm: true
                 });
 
+                const globalIndex = allEntries.findIndex(e =>
+                    e.title === entry.title && e.date === entry.date
+                );
+
                 return `
-        <div class="dynamic-card" data-entry-index="${index}">
+        <div class="dynamic-card" data-entry-index="${globalIndex}">
             <h2 class="dynamic-title">${entry.title}</h2>
             ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
             <div class="dynamic-content">
                 ${htmlContent}
             </div>
-            ${entry.images.length > 0 ? renderImageGallery(entry.images, index) : ''}
+            ${entry.images.length > 0 ? renderImageGallery(entry.images, globalIndex) : ''}
         </div>
         `;
             }).join('');
@@ -115,17 +251,96 @@
             document.querySelectorAll('.gallery-container').forEach(initGallery);
         }
 
+        // 渲染分页
+        function renderPagination() {
+            const totalPages = Math.ceil(allEntries.length / entriesPerPage);
+            const container = document.getElementById('pagination-container');
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '<div class="pagination">';
+
+            // 上一页按钮
+            paginationHTML += `
+                <button class="page-btn prev-btn" ${currentPage === 1 ? 'disabled' : ''}
+                        onclick="changePage(${currentPage - 1})">上一页</button>
+            `;
+
+            // 页码按钮
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+            if (endPage - startPage + 1 < maxVisible) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            if (startPage > 1) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="page-btn" style="cursor:default">...</span>`;
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                            onclick="changePage(${i})">${i}</button>
+                `;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="page-btn" style="cursor:default">...</span>`;
+                }
+                paginationHTML += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+
+            // 下一页按钮
+            paginationHTML += `
+                <button class="page-btn next-btn" ${currentPage === totalPages ? 'disabled' : ''}
+                        onclick="changePage(${currentPage + 1})">下一页</button>
+            `;
+
+            paginationHTML += '</div>';
+
+            // 添加页面信息
+            const startEntry = (currentPage - 1) * entriesPerPage + 1;
+            const endEntry = Math.min(currentPage * entriesPerPage, allEntries.length);
+            paginationHTML += `
+                <div class="page-info">
+                    显示 ${startEntry}-${endEntry} 条，共 ${allEntries.length} 条动态
+                </div>
+            `;
+
+            container.innerHTML = paginationHTML;
+        }
+
+        // 切换页面
+        function changePage(page) {
+            if (page < 1 || page > Math.ceil(allEntries.length / entriesPerPage)) return;
+
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // 渲染新页面
+            renderPage(page);
+        }
+
+        // 以下为原有的图片画廊相关函数，保持不变
         function renderImageGallery(images, entryIndex) {
             const totalImages = images.length;
             let colsPerRow;
 
             if (totalImages <= 4) {
-                colsPerRow = 2; // 1-4张图片，每行2个
+                colsPerRow = 2;
             } else {
-                colsPerRow = 3; // 大于4张图片，每行3个
+                colsPerRow = 3;
             }
 
-            // 计算需要多少行
             const rows = Math.ceil(totalImages / colsPerRow);
 
             let galleryHTML = '<div class="gallery-container">';
@@ -153,8 +368,7 @@
         }
 
         function initGallery(container) {
-            // 这里可以添加画廊的初始化逻辑
-            // 例如：图片懒加载、点击事件等
+            // 初始化逻辑
         }
 
         function openGallery(entryIndex, imgIndex) {
@@ -162,7 +376,6 @@
             const images = entry.querySelectorAll('.gallery-item img');
             const imageUrls = Array.from(images).map(img => img.src);
 
-            // 创建画廊模态框
             const modal = document.createElement('div');
             modal.className = 'gallery-modal';
             modal.innerHTML = `
@@ -188,7 +401,7 @@
     `;
 
             document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden'; // 防止背景滚动
+            document.body.style.overflow = 'hidden';
         }
 
         function closeGallery() {
@@ -207,18 +420,13 @@
             if (newIndex >= 0 && newIndex < imageUrls.length) {
                 const modal = document.querySelector('.gallery-modal');
                 if (modal) {
-                    // 更新主图
                     modal.querySelector('.current-image').src = imageUrls[newIndex];
-
-                    // 更新计数器
                     modal.querySelector('.image-counter').textContent = `${newIndex + 1} / ${imageUrls.length}`;
 
-                    // 更新缩略图激活状态
                     modal.querySelectorAll('.thumbnail').forEach((thumb, index) => {
                         thumb.classList.toggle('active', index === newIndex);
                     });
 
-                    // 更新导航按钮
                     const prevBtn = modal.querySelector('.prev-btn');
                     const nextBtn = modal.querySelector('.next-btn');
 
@@ -241,6 +449,7 @@
                 closeGallery();
             }
         });
+
         loadDynamic();
     </script>
     <script src="/assets/js/disable-right-click.js"></script>

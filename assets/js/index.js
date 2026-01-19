@@ -398,7 +398,7 @@ function parseMdEntries(content) {
     });
 
     if (currentEntry) entries.push(currentEntry);
-    return entries.reverse(); // 最新在前
+    return entries;
 }
 
 function renderDynamicEntries(entries) {

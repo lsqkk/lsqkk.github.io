@@ -242,3 +242,162 @@
            border: 3px solid #4dabf7;
            transform: scale(1.1);
        }
+
+       .dynamic-layout {
+           display: flex;
+           gap: 20px;
+           max-width: 1200px;
+           margin: 0 auto;
+       }
+
+       /* 主内容区域 */
+       .dynamic-main {
+           flex: 1;
+           min-width: 0;
+       }
+
+       /* 侧边栏 */
+       .dynamic-sidebar {
+           width: 220px;
+           flex-shrink: 0;
+       }
+
+       /* 分页样式 */
+       .pagination-container {
+           margin-top: 30px;
+           text-align: center;
+       }
+
+       .pagination {
+           display: inline-flex;
+           gap: 5px;
+           background: var(--glass-bg);
+           backdrop-filter: blur(12px);
+           border-radius: 8px;
+           padding: 8px;
+           box-shadow: var(--shadow);
+       }
+
+       .page-btn {
+           min-width: 36px;
+           height: 36px;
+           border: none;
+           background: transparent;
+           border-radius: 6px;
+           color: #2c3e50;
+           font-size: 14px;
+           cursor: pointer;
+           transition: all 0.3s ease;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+
+       .page-btn:hover {
+           background: rgba(52, 152, 219, 0.1);
+       }
+
+       .page-btn.active {
+           background: var(--primary-color);
+           color: white;
+       }
+
+       .page-btn:disabled {
+           opacity: 0.5;
+           cursor: not-allowed;
+       }
+
+       .page-info {
+           margin-top: 10px;
+           color: #7f8c8d;
+           font-size: 14px;
+       }
+
+       /* 月历样式 */
+       .calendar-widget {
+           background: var(--glass-bg);
+           backdrop-filter: blur(12px);
+           border-radius: 12px;
+           padding: 1rem;
+           box-shadow: var(--shadow);
+           margin-bottom: 1.5rem;
+           border: 1px solid rgba(0, 0, 0, 0.1);
+       }
+
+       .calendar-title {
+           color: #2c3e50;
+           font-size: 1.2rem;
+           margin-bottom: 1rem;
+           text-align: center;
+           font-weight: 500;
+       }
+
+       .month-list {
+           display: flex;
+           flex-direction: column;
+           gap: 10px;
+       }
+
+       .month-item {
+           padding: 12px 15px;
+           background: rgba(255, 255, 255, 0.5);
+           border-radius: 8px;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           cursor: pointer;
+           transition: all 0.3s ease;
+           text-decoration: none;
+           color: #34495e;
+       }
+
+       .month-item:hover {
+           background: rgba(52, 152, 219, 0.1);
+           transform: translateX(5px);
+       }
+
+       .month-name {
+           font-size: 15px;
+           font-weight: 500;
+       }
+
+       .month-count {
+           background: var(--primary-color);
+           color: white;
+           padding: 2px 8px;
+           border-radius: 10px;
+           font-size: 12px;
+           min-width: 20px;
+           text-align: center;
+       }
+
+       .month-item.active {
+           background: var(--primary-color);
+           color: white;
+       }
+
+       .month-item.active .month-count {
+           background: rgba(255, 255, 255, 0.3);
+           color: white;
+       }
+
+       /* 响应式设计 */
+       @media (max-width: 768px) {
+           .dynamic-layout {
+               flex-direction: column;
+           }
+
+           .dynamic-sidebar {
+               width: 100%;
+               order: -1;
+           }
+
+           .calendar-widget {
+               margin-top: 20px;
+           }
+
+           .pagination {
+               flex-wrap: wrap;
+               justify-content: center;
+           }
+       }
