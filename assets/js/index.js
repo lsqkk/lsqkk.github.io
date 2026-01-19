@@ -403,20 +403,27 @@ function parseMdEntries(content) {
 
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-entries');
-    container.innerHTML = entries.map(entry => {
-        // 将markdown内容转换为HTML
-        let htmlContent = marked.parse(entry.content.join('\n'));
+    const emotionParser = new QQEmotionParser();
 
-        // 使用正则表达式移除除第一张图片外的所有图片
-        // 先找到第一张图片
+    container.innerHTML = entries.map(entry => {
+        // 将数组内容合并为字符串
+        const contentString = entry.content.join('\n');
+
+        // 先用marked解析markdown
+        let htmlContent = marked.parse(contentString);
+
+        // 原有的图片处理逻辑保持不变（在处理表情之前）
         const firstImgMatch = htmlContent.match(/<img[^>]+>/);
         if (firstImgMatch) {
             const firstImg = firstImgMatch[0];
             // 移除所有图片标签
             htmlContent = htmlContent.replace(/<img[^>]+>/g, '');
             // 重新插入第一张图片
-            htmlContent = firstImg + htmlContent;
+            htmlContent = htmlContent + firstImg;
         }
+
+        // 现在解析表情代码
+        htmlContent = emotionParser.parse(htmlContent);
 
         return `
         <div class="dynamic-card">
@@ -427,7 +434,6 @@ function renderDynamicEntries(entries) {
         `;
     }).join('');
 }
-
 
 // 加载最新视频
 async function loadLatestVideo() {
