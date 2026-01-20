@@ -1,4 +1,3 @@
-const TIANDITU_KEY = "6e5b0e71ae628b8c2ab60c9144a7848e";
 
 // 天地图瓦片URL模板
 const TIANDITU_URL_TEMPLATES = {
