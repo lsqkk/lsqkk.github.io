@@ -4,12 +4,12 @@
             "name": "基础功能",
             "functions": [
                 {
-                    "name": "文章列表",
+                    "name": "文章",
                     "categories": [
                         "内容",
                         "核心功能"
                     ],
-                    "description": "浏览和管理所有博客文章，按分类、标签和时间排序",
+                    "description": "浏览所有博客文章，按标签和时间排序",
                     "link": "/posts",
                     "target": "_target"
                 },
@@ -122,10 +122,10 @@
             ]
         },
         {
-            "name": "仓库Pages",
+            "name": "仓库 Pages",
             "functions": [
                 {
-                    "name": "夸克文档QuarkDoc",
+                    "name": "夸克文档 QuarkDoc",
                     "categories": [
                         "文档",
                         "知识库"
@@ -197,6 +197,26 @@
                     ],
                     "description": "摆脱遥控笔，在任何设备（手机、平板）遥控放映PPT。",
                     "link": "https://github.com/lsqkk/ppt-remote",
+                    "target": "_blank"
+                },
+                {
+                    "name": "qq-emotion-parser",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "轻量级 QQ 空间动态表情解析库，解析QQ动态Qzone导出的[em]e数字[/em]格式表情代码并将其转换为可显示的图片表情。",
+                    "link": "https://github.com/lsqkk/qq-emotion-parser",
+                    "target": "_blank"
+                },
+                {
+                    "name": "Quark File Manager",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "小白友好的 AI 文件管家。基于AI的智能文件分类与管理工具，通过分析文件名自动将文件分类到预设的目录结构。采用Web可视化界面，支持批量处理、手动调整和实时配置更新，让文件整理变得简单高效。",
+                    "link": "https://github.com/lsqkk/FileManager",
                     "target": "_blank"
                 }
             ]
