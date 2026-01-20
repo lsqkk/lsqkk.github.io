@@ -1,5 +1,3 @@
-// 天地图密钥
-const tiandituKey = '6e5b0e71ae628b8c2ab60c9144a7848e';
 
 // 初始化地图
 let map;
@@ -10,7 +8,7 @@ function initMap() {
     // 创建影像底图图层
     const imgLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'img',
             style: 'default',
             matrixSet: 'w',
@@ -48,7 +46,7 @@ function initMap() {
     // 创建地形底图图层
     const terLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'ter',
             style: 'default',
             matrixSet: 'w',
@@ -86,7 +84,7 @@ function initMap() {
     // 创建矢量底图图层
     const vecLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'vec',
             style: 'default',
             matrixSet: 'w',
@@ -224,7 +222,7 @@ function switchLayer(layerType) {
 
     if (layerType === 'satellite') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'img',
             style: 'default',
             matrixSet: 'w',
@@ -259,7 +257,7 @@ function switchLayer(layerType) {
         }));
     } else if (layerType === 'terrain') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'ter',
             style: 'default',
             matrixSet: 'w',
@@ -294,7 +292,7 @@ function switchLayer(layerType) {
         }));
     } else if (layerType === 'vector') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/vec_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'vec',
             style: 'default',
             matrixSet: 'w',

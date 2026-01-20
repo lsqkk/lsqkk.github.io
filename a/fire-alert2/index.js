@@ -1,5 +1,3 @@
-// 天地图密钥
-const tiandituKey = '6e5b0e71ae628b8c2ab60c9144a7848e';
 // OpenWeatherMap API配置
 const API_KEY = '271d3f7012a6dc06a07cea3d08888fb1';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
@@ -15,7 +13,7 @@ function initMap() {
     // 创建影像底图图层
     const imgLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'img',
             style: 'default',
             matrixSet: 'w',
@@ -53,7 +51,7 @@ function initMap() {
     // 创建地形底图图层
     const terLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'ter',
             style: 'default',
             matrixSet: 'w',
@@ -124,7 +122,7 @@ function switchLayer(layerType) {
 
     if (layerType === 'satellite') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'img',
             style: 'default',
             matrixSet: 'w',
@@ -159,7 +157,7 @@ function switchLayer(layerType) {
         }));
     } else if (layerType === 'terrain') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + tiandituKey,
+            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'ter',
             style: 'default',
             matrixSet: 'w',
