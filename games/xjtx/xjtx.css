@@ -3,22 +3,26 @@
             --secondary-color: #6b8cae;
             --accent-color: #ff7e5f;
             --text-color: #333;
-            --light-bg: rgba(255, 255, 255, 0.8);
+            --light-bg: rgba(255, 255, 255, 0.6);
             --glass-effect: blur(10px) saturate(180%);
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: url('/assets/img/bg.png') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-color);
             line-height: 1.6;
         }
+
         #game-container {
             text-align: center;
             background: var(--light-bg);
@@ -28,16 +32,19 @@
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        h1 {
+
+        #game-container h1 {
             color: var(--primary-color);
             margin-bottom: 20px;
             font-weight: 600;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         h3 {
             color: var(--secondary-color);
             margin-bottom: 15px;
         }
+
         #question-image {
             height: 400px;
             display: flex;
@@ -49,12 +56,14 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             background-color: rgba(255, 255, 255, 0.7);
         }
+
         #question-image img {
             max-height: 100%;
             max-width: 100%;
             object-fit: contain;
             border-radius: 10px;
         }
+
         #satellite-map {
             display: none;
             position: fixed;
@@ -70,12 +79,14 @@
             cursor: crosshair;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
         .map-overlay {
             position: relative;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
         .marker {
             position: absolute;
             width: 12px;
@@ -85,14 +96,17 @@
             z-index: 1001;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
+
         #correct-marker {
             background: #4CAF50;
             border: 2px solid white;
         }
+
         #user-marker {
             background: #2196F3;
             border: 2px solid white;
         }
+
         #connection-line {
             position: absolute;
             background-color: var(--accent-color);
@@ -101,6 +115,7 @@
             z-index: 1000;
             opacity: 0.8;
         }
+
         .stats {
             margin-top: 25px;
             padding: 20px;
@@ -110,17 +125,20 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
         .stats p {
             margin: 8px 0;
             font-size: 16px;
             display: flex;
             justify-content: space-between;
         }
+
         .stats span {
             font-weight: 600;
             color: var(--primary-color);
         }
-        button {
+
+        #game-container button {
             padding: 12px 25px;
             margin: 8px;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -133,14 +151,17 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        button:hover {
+
+        #game-container button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
         }
-        button:active {
+
+        #game-container button:active {
             transform: translateY(0);
         }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -151,6 +172,7 @@
             backdrop-filter: blur(5px);
             z-index: 999;
         }
+
         #map-result {
             margin-top: 15px;
             padding: 15px;
@@ -160,11 +182,13 @@
             font-size: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
+
         #map-result p {
             margin: 8px 0;
             display: flex;
             justify-content: space-between;
         }
+
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -176,16 +200,19 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
         .footer a {
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
         }
+
         .footer a:hover {
             color: var(--accent-color);
             text-decoration: underline;
         }
+
         .game-link {
             display: inline-block;
             margin-top: 15px;
