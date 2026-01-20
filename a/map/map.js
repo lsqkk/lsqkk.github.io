@@ -1,11 +1,22 @@
-// 天地图密钥
 const TIANDITU_KEY = "6e5b0e71ae628b8c2ab60c9144a7848e";
+
+// 天地图瓦片URL模板
+const TIANDITU_URL_TEMPLATES = {
+    vector: `http://t{s}.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles&tk=${TIANDITU_KEY}`,
+    vector_annotation: `http://t{s}.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles&tk=${TIANDITU_KEY}`,
+    satellite: `http://t{s}.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles&tk=${TIANDITU_KEY}`,
+    satellite_annotation: `http://t{s}.tianditu.gov.cn/cia_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cia&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles&tk=${TIANDITU_KEY}`,
+    terrain: `http://t{s}.tianditu.gov.cn/ter_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ter&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles&tk=${TIANDITU_KEY}`,
+    terrain_annotation: `http://t{s}.tianditu.gov.cn/cta_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cta&STYLE=default&TILEMATRIXSET=w&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=tiles&tk=${TIANDITU_KEY}`
+};
 
 // 全局变量
 let map, currentLayer, userLocation, userMarker;
 let drawnItems = new L.FeatureGroup();
 let measureControl;
 let is3DMode = false;
+let baseLayers = {};
+let currentLayerType = 'vector';
 
 // 初始化地图
 function initMap() {
@@ -13,7 +24,8 @@ function initMap() {
     map = L.map('map', {
         center: [39.9042, 116.4074], // 默认中心点（北京）
         zoom: 10,
-        zoomControl: false
+        zoomControl: false,
+        attributionControl: false
     });
 
     // 添加缩放控件
@@ -35,6 +47,11 @@ function initMap() {
         imperial: false
     }).addTo(map);
 
+    // 添加天地图版权信息
+    L.control.attribution({
+        position: 'bottomright'
+    }).addTo(map);
+
     // 初始化图层
     initLayers();
 
@@ -54,63 +71,83 @@ function initMap() {
     document.getElementById('loader').style.display = 'none';
 }
 
-// 初始化图层
+// 初始化图层 - 使用正确的天地图配置
 function initLayers() {
-    // 矢量图层
-    const vectorLayer = L.tileLayer(`http://t{0-7}.tianditu.gov.cn/vec_w/wmts?tk=${TIANDITU_KEY}`, {
+    // 创建天地图图层
+    const subdomains = ['0', '1', '2', '3', '4', '5', '6', '7'];
+
+    // 矢量地图
+    const vectorLayer = L.tileLayer(TIANDITU_URL_TEMPLATES.vector, {
         maxZoom: 18,
         minZoom: 1,
-        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
+        subdomains: subdomains,
+        tileSize: 256,
+        attribution: '© 天地图 & 夸克博客'
     });
 
     // 矢量注记
-    const vectorAnnotation = L.tileLayer(`http://t{0-7}.tianditu.gov.cn/cva_w/wmts?tk=${TIANDITU_KEY}`, {
+    const vectorAnnotation = L.tileLayer(TIANDITU_URL_TEMPLATES.vector_annotation, {
         maxZoom: 18,
         minZoom: 1,
-        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
+        subdomains: subdomains,
+        tileSize: 256,
+        attribution: '© 天地图 & 夸克博客'
     });
 
-    // 影像图层
-    const imageLayer = L.tileLayer(`http://t{0-7}.tianditu.gov.cn/img_w/wmts?tk=${TIANDITU_KEY}`, {
+    // 卫星影像
+    const imageLayer = L.tileLayer(TIANDITU_URL_TEMPLATES.satellite, {
         maxZoom: 18,
         minZoom: 1,
-        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
+        subdomains: subdomains,
+        tileSize: 256,
+        attribution: '© 天地图 & 夸克博客'
     });
 
     // 影像注记
-    const imageAnnotation = L.tileLayer(`http://t{0-7}.tianditu.gov.cn/cia_w/wmts?tk=${TIANDITU_KEY}`, {
+    const imageAnnotation = L.tileLayer(TIANDITU_URL_TEMPLATES.satellite_annotation, {
         maxZoom: 18,
         minZoom: 1,
-        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
+        subdomains: subdomains,
+        tileSize: 256,
+        attribution: '© 天地图 & 夸克博客'
     });
 
-    // 地形图层
-    const terrainLayer = L.tileLayer(`http://t{0-7}.tianditu.gov.cn/ter_w/wmts?tk=${TIANDITU_KEY}`, {
+    // 地形地图
+    const terrainLayer = L.tileLayer(TIANDITU_URL_TEMPLATES.terrain, {
         maxZoom: 18,
         minZoom: 1,
-        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
+        subdomains: subdomains,
+        tileSize: 256,
+        attribution: '© 天地图 & 夸克博客'
     });
 
     // 地形注记
-    const terrainAnnotation = L.tileLayer(`http://t{0-7}.tianditu.gov.cn/cta_w/wmts?tk=${TIANDITU_KEY}`, {
+    const terrainAnnotation = L.tileLayer(TIANDITU_URL_TEMPLATES.terrain_annotation, {
         maxZoom: 18,
         minZoom: 1,
-        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
+        subdomains: subdomains,
+        tileSize: 256,
+        attribution: '© 天地图 & 夸克博客'
     });
 
-    // 图层组
-    const baseLayers = {
-        "矢量地图": L.layerGroup([vectorLayer, vectorAnnotation]),
-        "卫星影像": L.layerGroup([imageLayer, imageAnnotation]),
-        "地形地图": L.layerGroup([terrainLayer, terrainAnnotation])
+    // 创建图层组
+    baseLayers = {
+        "vector": L.layerGroup([vectorLayer, vectorAnnotation]),
+        "satellite": L.layerGroup([imageLayer, imageAnnotation]),
+        "terrain": L.layerGroup([terrainLayer, terrainAnnotation])
     };
 
-    // 添加默认图层
-    currentLayer = baseLayers["矢量地图"];
+    // 添加默认图层（矢量地图）
+    currentLayer = baseLayers["vector"];
     currentLayer.addTo(map);
+    currentLayerType = 'vector';
 
     // 添加图层控制
-    L.control.layers(baseLayers, null, {
+    const layerControl = L.control.layers({
+        "矢量地图": baseLayers["vector"],
+        "卫星影像": baseLayers["satellite"],
+        "地形地图": baseLayers["terrain"]
+    }, null, {
         position: 'topright'
     }).addTo(map);
 }
@@ -132,6 +169,9 @@ function locateUser() {
                         iconAnchor: [11, 11]
                     })
                 }).addTo(map);
+
+                // 绑定点击事件
+                userMarker.bindPopup(`<b>您的位置</b><br>经度: ${longitude.toFixed(6)}<br>纬度: ${latitude.toFixed(6)}`);
 
                 // 显示位置信息
                 document.getElementById('location-info').textContent =
@@ -167,17 +207,17 @@ function bindEvents() {
 
     // 视图切换按钮
     document.getElementById('vector-btn').addEventListener('click', function () {
-        switchLayer('矢量地图');
+        switchLayer('vector');
         setActiveButton(this);
     });
 
     document.getElementById('satellite-btn').addEventListener('click', function () {
-        switchLayer('卫星影像');
+        switchLayer('satellite');
         setActiveButton(this);
     });
 
     document.getElementById('terrain-btn').addEventListener('click', function () {
-        switchLayer('地形地图');
+        switchLayer('terrain');
         setActiveButton(this);
     });
 
@@ -220,12 +260,13 @@ function bindEvents() {
 }
 
 // 切换图层
-function switchLayer(layerName) {
-    map.removeLayer(currentLayer);
-
-    // 这里需要根据图层名称添加新图层
-    // 简化实现，实际应根据initLayers中的图层组进行切换
-    initLayers();
+function switchLayer(layerType) {
+    if (currentLayer && baseLayers[layerType]) {
+        map.removeLayer(currentLayer);
+        currentLayer = baseLayers[layerType];
+        currentLayer.addTo(map);
+        currentLayerType = layerType;
+    }
 }
 
 // 设置活动按钮
