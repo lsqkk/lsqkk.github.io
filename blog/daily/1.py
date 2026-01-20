@@ -2,7 +2,7 @@ import os
 import re
 from docx import Document as DocxDocument
 
-word_file_path = "blog/daily/2.docx"
+word_file_path = "blog/daily/1.docx"
 
 if not os.path.exists(word_file_path):
     print(f"错误：找不到文件 '{word_file_path}'")

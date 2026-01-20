@@ -4,17 +4,20 @@
     --accent-color: #ea4335;
     --text-color: #333;
     --light-text: #666;
-    --bg-color: #f5f5f5;
+    --bg-color: #bbe0ff;
     --card-bg: rgba(255, 255, 255, 0.85);
     --border-radius: 16px;
     --blur-amount: 10px;
     --date-header-bg: rgba(66, 133, 244, 0.1);
+    --calendar-bg: rgba(255, 255, 255, 0.95);
 }
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    }
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -26,50 +29,394 @@ body {
     background-position: center;
     min-height: 100vh;
 }
+
 .container {
     max-width: 900px;
     margin: 0 auto;
 }
+
 header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     backdrop-filter: blur(var(--blur-amount));
     background-color: rgba(255, 255, 255, 0.7);
     padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    /* 移除position: sticky相关属性 */
+    position: relative;
 }
+
 .header-content111 {
     display: flex;
     justify-content: center;
     align-items: baseline;
     flex-wrap: wrap;
     gap: 10px 20px;
+    margin-bottom: 15px;
 }
-h1 {
+
+.container h1 {
     color: var(--primary-color);
     font-size: 2.5rem;
     margin-bottom: 0;
-    /* 移除原来的下边距 */
 }
+
 .date {
     color: var(--light-text);
     font-size: 1rem;
     margin-bottom: 0;
-    /* 确保没有额外边距 */
 }
+
 .header-description {
     color: var(--light-text);
     font-size: 1rem;
-    margin-bottom: 0;
+    margin-bottom: 15px;
 }
+
+/* 日历控件样式 */
+.calendar-controls {
+    margin-top: 10px;
+}
+
+.calendar-toggle-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+}
+
+.calendar-toggle-btn:hover {
+    background: #3367d6;
+    transform: translateY(-2px);
+}
+
+.calendar-toggle-btn.active {
+    background: var(--accent-color);
+}
+
+.calendar-container {
+    display: none;
+    background: var(--calendar-bg);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-top: 15px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.calendar-container.open {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-header h3 {
+    color: var(--text-color);
+    font-size: 1.2rem;
+}
+
+.nav-btn {
+    background: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.weekday {
+    text-align: center;
+    font-weight: 600;
+    color: var(--light-text);
+    font-size: 0.9rem;
+    padding: 5px 0;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.calendar-day:hover {
+    background: rgba(66, 133, 244, 0.1);
+}
+
+.calendar-day.today {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.calendar-day.has-articles {
+    position: relative;
+    font-weight: 600;
+}
+
+.calendar-day.has-articles::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.calendar-day.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.calendar-day.empty {
+    cursor: default;
+    background: transparent;
+}
+
+.calendar-day.empty:hover {
+    background: transparent;
+}
+
+.calendar-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.today-btn {
+    background: #f0f0f0;
+    color: var(--text-color);
+}
+
+.today-btn:hover {
+    background: #e0e0e0;
+}
+
+.confirm-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.confirm-btn:hover {
+    background: #3367d6;
+}
+
+/* 筛选状态显示 */
+.filter-status {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(var(--blur-amount));
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.filter-status.active {
+    background: rgba(66, 133, 244, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.clear-filter-btn {
+    background: none;
+    border: 1px solid var(--light-text);
+    color: var(--light-text);
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    display: none;
+}
+
+.clear-filter-btn:hover {
+    background: var(--light-text);
+    color: white;
+}
+
+/* 分页控件 */
+.pagination-container {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(var(--blur-amount));
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-top: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.pagination-info {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--light-text);
+    font-size: 0.95rem;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #3367d6;
+    transform: translateY(-2px);
+}
+
+.pagination-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.page-number {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.page-number:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.page-number.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 加载指示器 */
+.loading-indicator {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    color: var(--light-text);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 /* 以下保持原有样式不变 */
 .daily-sections {
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
+
 .daily-section {
     background: var(--card-bg);
     border-radius: var(--border-radius);
@@ -77,6 +424,7 @@ h1 {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(var(--blur-amount));
 }
+
 .daily-header {
     background-color: var(--date-header-bg);
     padding: 12px 20px;
@@ -86,12 +434,14 @@ h1 {
     align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 .articles-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 15px;
     padding: 20px;
 }
+
 .article-card {
     background: var(--card-bg);
     border-radius: var(--border-radius);
@@ -99,23 +449,28 @@ h1 {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
+
 .article-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+
 .article-card.read {
     opacity: 0.7;
 }
+
 .article-content {
     padding: 15px;
     position: relative;
 }
+
 .article-title {
     font-size: 1.1rem;
     margin-bottom: 8px;
     color: var(--text-color);
     font-weight: 600;
 }
+
 .article-meta {
     display: flex;
     justify-content: space-between;
@@ -124,13 +479,16 @@ h1 {
     font-size: 0.85rem;
     color: var(--light-text);
 }
+
 .read-time {
     display: flex;
     align-items: center;
 }
+
 .read-time svg {
     margin-right: 5px;
 }
+
 .tag {
     display: inline-block;
     background-color: var(--primary-color);
@@ -141,17 +499,89 @@ h1 {
     margin-right: 5px;
     margin-bottom: 5px;
 }
+
 .empty-placeholder {
     text-align: center;
     padding: 30px;
     color: var(--light-text);
     grid-column: 1 / -1;
 }
+
+/* 移动端响应式 */
 @media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
     .articles-container {
         grid-template-columns: 1fr;
     }
-    h1 {
+
+    .container h1 {
         font-size: 2rem;
+    }
+
+    .calendar-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .calendar-header {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .calendar-header h3 {
+        order: -1;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .calendar-day {
+        font-size: 0.8rem;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+    }
+
+    .pagination-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .page-numbers {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .header-content111 {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .date,
+    .header-description {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-day {
+        font-size: 0.75rem;
+    }
+
+    .pagination-btn {
+        min-width: auto;
+        padding: 8px 15px;
+    }
+
+    .page-number {
+        width: 35px;
+        height: 35px;
+        font-size: 0.85rem;
     }
 }
