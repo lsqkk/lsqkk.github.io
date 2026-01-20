@@ -18,7 +18,7 @@
         "icon": "fa-comments"
     },
     {
-        "name": "Physics项目",
+        "name": "Physics 项目",
         "link": "physics",
         "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测",
         "icon": "fa-atom"
@@ -76,5 +76,11 @@
         "link": "meet",
         "description": "基于WebRTC和Firebase信令服务器的双人在线会议",
         "icon": "fa-video-camera"
+    },
+    {
+        "name": "音乐可视化",
+        "link": "music-visualizer",
+        "description": "粒子和 3d.js 的充分利用",
+        "icon": "fa-music"
     }
 ]

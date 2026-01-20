@@ -1,351 +1,819 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 
 <head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
-    <title>戳气泡 - 夸克博客(维修中)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>戳气泡游戏 - 夸克博客</title>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script src="/assets/js/cursor-trail.js"></script>
+    <script src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/css/nav.css">
     <style>
+        :root {
+            --primary-blue: #1a237e;
+            --secondary-blue: #0d47a1;
+            --accent-green: #00e676;
+            --accent-red: #ff5252;
+            --accent-yellow: #ffd740;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
+            padding: 0;
             overflow: hidden;
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            min-height: 100vh;
+            font-family: inherit;
+            position: relative;
+        }
+
+        /* 全屏游戏容器 */
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
         }
 
         #gameCanvas {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            margin-top: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-            background: rgba(0, 0, 0, 0.2);
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: transparent;
         }
 
-        .info {
-            color: white;
-            margin: 15px;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        /* 游戏信息面板 - 毛玻璃效果 */
+        .game-info-panel {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
             display: flex;
-            gap: 30px;
+            gap: 40px;
+            padding: 15px 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            min-width: 100px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #score {
+            color: var(--accent-yellow);
+        }
+
+        #lives {
+            color: var(--accent-green);
+        }
+
+        #best {
+            color: #64b5f6;
+        }
+
+        /* 控制按钮 */
+        .control-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 20px;
+        }
+
+        .control-btn {
+            padding: 14px 32px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid var(--glass-border);
+            min-width: 160px;
+            text-align: center;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         #restartBtn {
-            display: none;
-            margin: 20px;
-            padding: 12px 25px;
-            font-size: 20px;
-            cursor: pointer;
-            background: linear-gradient(45deg, #00e676, #00c853);
+            background: linear-gradient(135deg, var(--accent-green), #00c853);
             border: none;
-            color: white;
-            border-radius: 25px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
         }
 
-        #restartBtn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.5);
+        #pauseBtn {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border: none;
         }
 
-        /* 遮罩层样式 */
-        #overlay {
+        /* 游戏结束覆盖层 */
+        #gameOverOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .game-over-modal {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(120%);
+            -webkit-backdrop-filter: blur(20px) saturate(120%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: modalAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .game-over-title {
+            color: white;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .game-over-score {
+            color: var(--accent-yellow);
+            font-size: 32px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .new-best-badge {
+            background: linear-gradient(135deg, #ffd740, #ffab00);
+            color: #333;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 15px 0;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* 气泡样式增强 */
+        .bubble-hit-effect {
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+            animation: bubbleHit 0.6s forwards;
+        }
+
+        @keyframes bubbleHit {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-info-panel {
+                top: 80px;
+                gap: 20px;
+                padding: 10px 20px;
+            }
+
+            .info-item {
+                min-width: 70px;
+            }
+
+            .info-label {
+                font-size: 12px;
+            }
+
+            .info-value {
+                font-size: 22px;
+            }
+
+            .control-buttons {
+                bottom: 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .control-btn {
+                padding: 12px 24px;
+                font-size: 16px;
+                min-width: 140px;
+            }
+
+            .game-over-title {
+                font-size: 36px;
+            }
+
+            .game-over-score {
+                font-size: 24px;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .control-btn {
+                padding: 16px 32px;
+                min-width: 180px;
+            }
+
+            #gameCanvas {
+                touch-action: none;
+            }
         }
 
         /* 规则弹窗样式 */
         #rulesModal {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(120%);
+            -webkit-backdrop-filter: blur(20px) saturate(120%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
-            max-width: 400px;
+            max-width: 450px;
+            width: 90%;
+            animation: modalAppear 0.6s ease-out;
         }
 
         #rulesModal h2 {
-            margin-bottom: 20px;
-        }
-
-        #rulesModal label {
-            display: block;
-            margin: 10px 0;
-        }
-
-        #rulesModal button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background: #00e676;
-            border: none;
             color: white;
-            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        #rulesModal p {
+            color: rgba(255, 255, 255, 0.9);
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .rule-highlight {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .rule-warning {
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .rules-checkbox {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        #startGameBtn {
+            background: linear-gradient(135deg, var(--accent-green), #00c853);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        #startGameBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 230, 118, 0.3);
         }
     </style>
 </head>
 
 <body>
-    <!-- 遮罩层和规则弹窗 -->
-    <div id="overlay">
-        <div id="rulesModal">
-            <h2>游戏规则</h2>
-            <p>点击气泡使其分裂，分裂后的小气泡会继续漂浮下降。</p>
-            <p>气泡触底失去一条生命；戳破最小的气泡加两条生命。</p>
-            <p>初始10条生命，当生命耗尽时，游戏结束。</p>
-            <label>
-                <input type="checkbox" id="dontShowAgain"> 不再显示
-            </label>
-            <button id="startGameBtn">确定</button>
+    <!-- 游戏容器 -->
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- 游戏信息面板 -->
+    <div class="game-info-panel">
+        <div class="info-item">
+            <div class="info-label">得分</div>
+            <div class="info-value" id="score">0</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">生命</div>
+            <div class="info-value" id="lives">10</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">最佳</div>
+            <div class="info-value" id="best">0</div>
         </div>
     </div>
 
-    <div class="info">
-        <div>得分: <span id="score">0</span></div>
-        <div>生命: <span id="lives">10</span></div>
-        <div>最佳: <span id="best">0</span></div>
+    <!-- 控制按钮 -->
+    <div class="control-buttons">
+        <button id="pauseBtn" class="control-btn">暂停</button>
+        <button id="restartBtn" class="control-btn" style="display: none;">重新挑战</button>
     </div>
-    <canvas id="gameCanvas"></canvas>
-    <button id="restartBtn">重新挑战</button>
+
+    <!-- 游戏结束覆盖层 -->
+    <div id="gameOverOverlay">
+        <div class="game-over-modal">
+            <h2 class="game-over-title">游戏结束</h2>
+            <div class="game-over-score" id="finalScore">得分: 0</div>
+            <div id="newBestBadge" class="new-best-badge" style="display: none;">新纪录!</div>
+            <button id="playAgainBtn" class="control-btn"
+                style="margin-top: 30px; background: linear-gradient(135deg, var(--accent-green), #00c853);">再来一次</button>
+        </div>
+    </div>
+
+    <!-- 规则弹窗 -->
+    <div id="overlay"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px);">
+        <div id="rulesModal">
+            <h2>戳气泡！游戏规则</h2>
+            <p>🎯 <span class="rule-highlight">点击气泡使其分裂</span>，分裂后的小气泡会继续漂浮下降。</p>
+            <p>⚠️ <span class="rule-warning">气泡触底会减少生命</span>，最多可叠加5个气泡触底惩罚。</p>
+            <p>💚 <span class="rule-highlight">点击任何气泡都能恢复生命值</span>，点击越大恢复越多！</p>
+            <p>✨ <span class="rule-highlight">戳破最小的气泡额外加2条生命</span></p>
+            <p>⚡ 初始10条生命，当生命耗尽时，游戏结束。</p>
+            <div class="rules-checkbox">
+                <input type="checkbox" id="dontShowAgain">
+                <label for="dontShowAgain">不再显示规则</label>
+            </div>
+            <button id="startGameBtn">开始游戏</button>
+        </div>
+    </div>
 
     <script>
+        // 游戏主逻辑
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const livesElement = document.getElementById('lives');
         const bestElement = document.getElementById('best');
         const restartBtn = document.getElementById('restartBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const finalScoreElement = document.getElementById('finalScore');
+        const newBestBadge = document.getElementById('newBestBadge');
+        const playAgainBtn = document.getElementById('playAgainBtn');
         const overlay = document.getElementById('overlay');
         const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
         const startGameBtn = document.getElementById('startGameBtn');
 
-        canvas.width = 800;
-        canvas.height = 600;
+        // 设置全屏画布
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
+        // 游戏状态
         let score = 0;
         let lives = 10;
         let bubbles = [];
-        let gameActive = false; // 初始状态为 false，等待用户点击“确定”后开始
-        let bestScore = localStorage.getItem('bestBubbleScore') || 0;
+        let gameActive = false;
+        let gamePaused = false;
+        let bestScore = localStorage.getItem('bubbleGameBestScore') || 0;
+        let touchCooldown = false;
+        let lastBottomHitTime = 0;
+        let bottomHitCount = 0;
+        const BOTTOM_HIT_COOLDOWN = 1000; // 1秒内只计算一次触底
+
         bestElement.textContent = bestScore;
 
-        // 检查是否已经勾选“不再显示”
-        if (localStorage.getItem('dontShowRules') === 'true') {
+        // 气泡颜色配置
+        const BUBBLE_COLORS = [
+            'rgba(255, 107, 107, 0.9)',    // 红色
+            'rgba(255, 159, 67, 0.9)',     // 橙色
+            'rgba(86, 217, 140, 0.9)',     // 绿色
+            'rgba(46, 134, 193, 0.9)',     // 蓝色
+            'rgba(155, 81, 224, 0.9)'      // 紫色（最小气泡）
+        ];
+
+        // 检查是否显示规则
+        if (localStorage.getItem('bubbleGameDontShowRules') === 'true') {
             overlay.style.display = 'none';
             gameActive = true;
             gameLoop();
         }
 
-        // 点击“确定”按钮后开始游戏
+        // 开始游戏
         startGameBtn.addEventListener('click', () => {
             if (dontShowAgainCheckbox.checked) {
-                localStorage.setItem('dontShowRules', 'true');
+                localStorage.setItem('bubbleGameDontShowRules', 'true');
             }
             overlay.style.display = 'none';
             gameActive = true;
             gameLoop();
         });
 
+        // 气泡类
         class Bubble {
             constructor(x, y, size, level) {
                 this.x = x;
                 this.y = y;
                 this.size = size;
                 this.level = level;
-                this.color = this.getColor();
-                this.dx = (Math.random() - 0.5) * (5 + level);
-                this.dy = (Math.random() - 0.5) * (5 + level);
-            }
-
-            getColor() {
-                const colors = [
-                    'rgba(255,107,107,0.9)',
-                    'rgba(255,159,67,0.9)',
-                    'rgba(86,217,140,0.9)',
-                    'rgba(46,134,193,0.9)'
-                ];
-                return colors[this.level % colors.length];
+                this.color = BUBBLE_COLORS[Math.min(level, BUBBLE_COLORS.length - 1)];
+                this.dx = (Math.random() - 0.5) * (3 + level); // 降低水平速度
+                this.dy = (Math.random() * 0.5 + 0.2); // 降低垂直速度
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                this.pulsePhase = Math.random() * Math.PI * 2;
+                this.pulseSpeed = 0.02 + Math.random() * 0.03;
             }
 
             draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                // 脉动效果
+                const pulseScale = 1 + Math.sin(this.pulsePhase) * 0.05;
+                ctx.scale(pulseScale, pulseScale);
+
+                // 气泡主体渐变
                 const gradient = ctx.createRadialGradient(
-                    this.x - this.size / 4,
-                    this.y - this.size / 4,
-                    this.size / 8,
-                    this.x,
-                    this.y,
+                    -this.size * 0.3,
+                    -this.size * 0.3,
+                    this.size * 0.1,
+                    0,
+                    0,
                     this.size
                 );
-                gradient.addColorStop(0, 'rgba(255,255,255,0.8)');
-                gradient.addColorStop(1, this.color);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                gradient.addColorStop(0.6, this.color);
+                gradient.addColorStop(1, this.color.replace('0.9', '0.6'));
 
+                // 绘制气泡
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = gradient;
-                ctx.shadowColor = 'rgba(255,255,255,0.4)';
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
                 ctx.shadowBlur = 15;
                 ctx.fill();
 
+                // 高光
                 ctx.beginPath();
                 ctx.ellipse(
-                    this.x - this.size / 3,
-                    this.y - this.size / 3,
-                    this.size / 3,
-                    this.size / 6,
+                    -this.size * 0.3,
+                    -this.size * 0.3,
+                    this.size * 0.3,
+                    this.size * 0.15,
                     Math.PI / 4,
                     0,
                     Math.PI * 2
                 );
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                 ctx.fill();
+
+                // 反射光
+                ctx.beginPath();
+                ctx.ellipse(
+                    this.size * 0.2,
+                    this.size * 0.2,
+                    this.size * 0.15,
+                    this.size * 0.08,
+                    -Math.PI / 4,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.fill();
+
+                ctx.restore();
+                this.pulsePhase += this.pulseSpeed;
             }
 
             update() {
+                if (gamePaused) return true;
+
+                // 边界碰撞
                 if (this.x + this.size > canvas.width || this.x - this.size < 0) {
-                    this.dx *= -0.8;
-                }
-                if (this.y - this.size < 0) {
-                    this.dy *= -0.8;
+                    this.dx *= -0.9;
+                    this.x = Math.max(this.size, Math.min(canvas.width - this.size, this.x));
                 }
 
+                if (this.y - this.size < 0) {
+                    this.dy = Math.abs(this.dy) * 0.9;
+                    this.y = this.size;
+                }
+
+                // 底部碰撞检测（降低惩罚频率）
                 if (this.y + this.size > canvas.height) {
-                    lives--;
-                    livesElement.textContent = lives;
+                    const now = Date.now();
+                    if (now - lastBottomHitTime > BOTTOM_HIT_COOLDOWN) {
+                        lastBottomHitTime = now;
+                        bottomHitCount = Math.min(bottomHitCount + 1, 5);
+                        const penalty = Math.floor(bottomHitCount * 0.5) + 1;
+                        lives = Math.max(0, lives - penalty);
+                        livesElement.textContent = lives;
+                        createHitEffect(this.x, this.y, 'rgba(255, 82, 82, 0.8)');
+                    }
                     return false;
                 }
 
-                this.dy += 0.15;
+                // 物理更新
+                this.dx *= 0.995; // 空气阻力
+                this.dy = Math.min(this.dy + 0.08, 8); // 降低重力加速度
                 this.x += this.dx;
                 this.y += this.dy;
+                this.rotation += this.rotationSpeed;
+
                 return true;
+            }
+
+            isClicked(mx, my) {
+                const distance = Math.sqrt((mx - this.x) ** 2 + (my - this.y) ** 2);
+                return distance < this.size;
             }
         }
 
+        // 创建点击特效
+        function createHitEffect(x, y, color) {
+            const effect = document.createElement('div');
+            effect.className = 'bubble-hit-effect';
+            effect.style.cssText = `
+                position: fixed;
+                left: ${x}px;
+                top: ${y}px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: radial-gradient(circle, ${color}, transparent 70%);
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                z-index: 10;
+            `;
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 600);
+        }
+
+        // 创建新气泡
         function createBubble() {
-            const level = Math.floor(Math.random() * 3);
-            const size = 50 - (level * 10);
+            const level = Math.floor(Math.random() * 4);
+            const size = 60 - (level * 12);
             const x = Math.random() * (canvas.width - size * 2) + size;
-            const y = 50;
+            const y = -size; // 从顶部生成
             bubbles.push(new Bubble(x, y, size, level));
         }
 
+        // 分裂气泡
         function splitBubble(bubble, clickX, clickY) {
-            if (bubble.level < 3) {
-                for (let i = 0; i < 2; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const newSize = bubble.size * 0.7;
-                    bubbles.push(new Bubble(
-                        clickX + Math.cos(angle) * newSize,
-                        clickY + Math.sin(angle) * newSize,
-                        newSize,
-                        bubble.level + 1
-                    ));
+            // 点击气泡恢复生命值（越大的气泡恢复越多）
+            const lifeGain = Math.max(1, Math.floor((5 - bubble.level) * 0.5));
+            lives = Math.min(20, lives + lifeGain); // 生命上限20
+            livesElement.textContent = lives;
+
+            // 重置触底惩罚计数器
+            bottomHitCount = Math.max(0, bottomHitCount - 1);
+
+            if (bubble.level < 4) {
+                // 分裂为2-3个小气泡
+                const splitCount = 2 + Math.floor(Math.random() * 2);
+                for (let i = 0; i < splitCount; i++) {
+                    const angle = (i * Math.PI * 2) / splitCount + Math.random() * 0.5;
+                    const newSize = bubble.size * (0.5 + Math.random() * 0.2);
+                    const newX = clickX + Math.cos(angle) * bubble.size * 0.7;
+                    const newY = clickY + Math.sin(angle) * bubble.size * 0.7;
+                    bubbles.push(new Bubble(newX, newY, newSize, bubble.level + 1));
                 }
-                score += (4 - bubble.level) * 10;
-                scoreElement.textContent = score;
+                score += (5 - bubble.level) * 15;
             } else {
-                lives += 2;
+                // 最小气泡：额外奖励
+                lives = Math.min(20, lives + 2);
                 livesElement.textContent = lives;
-                score += 10;
-                scoreElement.textContent = score;
+                score += 25;
+                createHitEffect(clickX, clickY, 'rgba(100, 255, 100, 0.8)');
             }
 
-            const bubbleIndex = bubbles.indexOf(bubble);
-            if (bubbleIndex !== -1) {
-                bubbles.splice(bubbleIndex, 1);
-            }
+            scoreElement.textContent = score;
+            createHitEffect(clickX, clickY, 'rgba(255, 255, 255, 0.6)');
         }
 
+        // 游戏结束
         function gameOver() {
+            gameActive = false;
+            gameOverOverlay.style.display = 'flex';
+            finalScoreElement.textContent = `得分: ${score}`;
+
             if (score > bestScore) {
                 bestScore = score;
-                localStorage.setItem('bestBubbleScore', bestScore);
+                localStorage.setItem('bubbleGameBestScore', bestScore);
                 bestElement.textContent = bestScore;
+                newBestBadge.style.display = 'block';
+            } else {
+                newBestBadge.style.display = 'none';
             }
 
-            ctx.fillStyle = 'rgba(0,0,0,0.8)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 56px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('游戏结束', canvas.width / 2, canvas.height / 2 - 40);
-            ctx.font = '36px Arial';
-            ctx.fillText(`最终得分: ${score}`, canvas.width / 2, canvas.height / 2 + 40);
+            restartBtn.style.display = 'block';
         }
 
+        // 游戏主循环
         function gameLoop() {
-            if (!gameActive) return;
+            if (!gameActive || gamePaused) return;
 
+            // 清除画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (Math.random() < 0.02 + score / 40000) {
+            // 生成新气泡（频率随得分增加）
+            const spawnRate = 0.01 + (score / 50000);
+            if (Math.random() < spawnRate && bubbles.length < 30) {
                 createBubble();
             }
 
+            // 更新和绘制气泡
             bubbles = bubbles.filter(bubble => {
                 const keep = bubble.update();
                 if (keep) bubble.draw();
                 return keep;
             });
 
+            // 检查游戏结束
             if (lives <= 0) {
-                gameActive = false;
-                restartBtn.style.display = 'block';
                 gameOver();
+                return;
             }
 
             requestAnimationFrame(gameLoop);
         }
 
-        canvas.addEventListener('click', (e) => {
-            if (!gameActive) return;
+        // 点击事件处理
+        function handleClick(x, y) {
+            if (!gameActive || gamePaused || touchCooldown) return;
 
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-
+            let bubbleClicked = false;
             for (let i = bubbles.length - 1; i >= 0; i--) {
                 const bubble = bubbles[i];
-                const distance = Math.sqrt(
-                    Math.pow(clickX - bubble.x, 2) +
-                    Math.pow(clickY - bubble.y, 2)
-                );
-
-                if (distance < bubble.size) {
-                    splitBubble(bubble, clickX, clickY);
+                if (bubble.isClicked(x, y)) {
+                    splitBubble(bubble, x, y);
                     bubbles.splice(i, 1);
+                    bubbleClicked = true;
+
+                    // 触摸设备冷却
+                    if ('ontouchstart' in window) {
+                        touchCooldown = true;
+                        setTimeout(() => touchCooldown = false, 100);
+                    }
                     break;
                 }
+            }
+
+            // 点击空白处轻微恢复生命
+            if (!bubbleClicked && lives < 20) {
+                lives = Math.min(20, lives + 0.5);
+                livesElement.textContent = Math.floor(lives);
+                createHitEffect(x, y, 'rgba(100, 100, 255, 0.4)');
+            }
+        }
+
+        // 事件监听
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            handleClick(x, y);
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            handleClick(x, y);
+        }, { passive: false });
+
+        // 控制按钮事件
+        pauseBtn.addEventListener('click', () => {
+            gamePaused = !gamePaused;
+            pauseBtn.textContent = gamePaused ? '继续' : '暂停';
+            if (!gamePaused && gameActive) {
+                gameLoop();
             }
         });
 
         restartBtn.addEventListener('click', () => {
+            resetGame();
+            gameOverOverlay.style.display = 'none';
+        });
+
+        playAgainBtn.addEventListener('click', () => {
+            resetGame();
+            gameOverOverlay.style.display = 'none';
+        });
+
+        // 重置游戏
+        function resetGame() {
             bubbles = [];
             score = 0;
             lives = 10;
             gameActive = true;
+            gamePaused = false;
+            bottomHitCount = 0;
             scoreElement.textContent = score;
             livesElement.textContent = lives;
+            pauseBtn.textContent = '暂停';
             restartBtn.style.display = 'none';
             gameLoop();
-        });
+        }
+
+        // 版权信息
+        const currentYear = new Date().getFullYear();
+        const footer = document.createElement('footer');
+        footer.style.cssText = `
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            z-index: 100;
+        `;
+        footer.innerHTML = `© 2024-${currentYear} 戳气泡游戏 / <a href="/posts/copyright" style="color: rgba(255, 255, 255, 0.8); text-decoration: none;">夸克博客</a> All rights reserved.`;
+        document.body.appendChild(footer);
     </script>
-    <script src="/assets/js/disable-right-click.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机转盘抽取器 - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <!-- 注意：根据模板说明，这里保留了右键禁用脚本 -->
+    <script src="/assets/js/disable-right-click.js"></script>
+
+    <!-- 自定义样式和脚本 -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <main class="container">
+        <h1><i class="fas fa-dharmachakra"></i> 随机转盘抽取器</h1>
+
+        <div class="main-content">
+            <!-- 左侧：转盘控制和显示区域 -->
+            <div class="left-panel">
+                <div class="wheel-container glass-card">
+                    <div class="wheel-header">
+                        <h2 id="current-wheel-title">午饭吃什么</h2>
+                        <div class="wheel-controls">
+                            <button id="spin-btn" class="btn-primary">
+                                <i class="fas fa-play"></i> 开始抽取
+                            </button>
+                            <button id="reset-btn" class="btn-secondary">
+                                <i class="fas fa-redo"></i> 重置
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="wheel-wrapper">
+                        <canvas id="wheel-canvas" width="500" height="500"></canvas>
+                        <div class="wheel-pointer"></div>
+                    </div>
+
+                    <div class="wheel-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">选项数量:</span>
+                            <span id="option-count" class="stat-value">8</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">抽取模式:</span>
+                            <span id="draw-mode" class="stat-value">不放回</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-container glass-card">
+                    <h3><i class="fas fa-list"></i> 抽取结果</h3>
+                    <div id="results-list" class="results-list">
+                        <p class="empty-results">暂无抽取结果</p>
+                    </div>
+                    <div class="results-actions">
+                        <button id="clear-results" class="btn-secondary">
+                            <i class="fas fa-trash"></i> 清空结果
+                        </button>
+                        <button id="export-results" class="btn-secondary">
+                            <i class="fas fa-download"></i> 导出结果
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：转盘管理和设置区域 -->
+            <div class="right-panel">
+                <!-- 转盘管理 -->
+                <div class="wheel-manager glass-card">
+                    <h3><i class="fas fa-cog"></i> 转盘管理</h3>
+
+                    <div class="wheel-list-container">
+                        <div class="wheel-list-header">
+                            <h4>我的转盘</h4>
+                            <button id="create-wheel" class="btn-primary btn-small">
+                                <i class="fas fa-plus"></i> 新建转盘
+                            </button>
+                        </div>
+                        <div id="wheel-list" class="wheel-list">
+                            <!-- 转盘列表将通过JS动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="current-wheel-info">
+                        <h4>当前转盘设置</h4>
+                        <div class="form-group">
+                            <label for="wheel-name">转盘名称:</label>
+                            <input type="text" id="wheel-name" value="午饭吃什么">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="draw-count">抽取数量:</label>
+                            <input type="number" id="draw-count" min="1" max="10" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="draw-mode-select">抽取模式:</label>
+                            <select id="draw-mode-select">
+                                <option value="with-replacement">放回抽取</option>
+                                <option value="without-replacement" selected>不放回抽取</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 选项管理 -->
+                <div class="options-manager glass-card">
+                    <h3><i class="fas fa-list-ul"></i> 选项管理</h3>
+
+                    <div class="options-list-container">
+                        <div class="options-list-header">
+                            <h4>当前选项</h4>
+                            <button id="add-option" class="btn-primary btn-small">
+                                <i class="fas fa-plus"></i> 添加选项
+                            </button>
+                        </div>
+                        <div id="options-list" class="options-list">
+                            <!-- 选项列表将通过JS动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button id="normalize-weights" class="btn-secondary">
+                            <i class="fas fa-balance-scale"></i> 归一化权重
+                        </button>
+                        <button id="equal-weights" class="btn-secondary">
+                            <i class="fas fa-equals"></i> 平均权重
+                        </button>
+                        <button id="clear-options" class="btn-secondary">
+                            <i class="fas fa-trash"></i> 清空选项
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 数据管理 -->
+                <div class="data-manager glass-card">
+                    <h3><i class="fas fa-database"></i> 数据管理</h3>
+
+                    <div class="data-actions">
+                        <button id="save-wheel" class="btn-primary">
+                            <i class="fas fa-save"></i> 保存转盘
+                        </button>
+                        <button id="delete-wheel" class="btn-danger">
+                            <i class="fas fa-trash"></i> 删除转盘
+                        </button>
+                        <button id="import-json" class="btn-secondary">
+                            <i class="fas fa-file-import"></i> 导入JSON
+                        </button>
+                        <button id="export-json" class="btn-secondary">
+                            <i class="fas fa-file-export"></i> 导出JSON
+                        </button>
+                    </div>
+
+                    <div class="data-info">
+                        <p>数据自动保存到浏览器本地存储中</p>
+                        <p id="last-saved">上次保存: 从未保存</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 选项编辑模态框 -->
+        <div id="option-modal" class="modal">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h3>编辑选项</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="option-text">选项名称:</label>
+                        <input type="text" id="option-text" placeholder="请输入选项名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="option-weight">权重:</label>
+                        <input type="number" id="option-weight" step="0.1" value="1" min="0.1">
+                        <small>权重越高，被抽中的概率越大</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="option-color">颜色:</label>
+                        <input type="color" id="option-color" value="#3498db">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-option" class="btn-secondary">取消</button>
+                    <button id="save-option" class="btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 转盘创建/编辑模态框 -->
+        <div id="wheel-modal" class="modal">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h3 id="modal-wheel-title">新建转盘</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-wheel-name">转盘名称:</label>
+                        <input type="text" id="new-wheel-name" placeholder="请输入转盘名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-wheel-description">描述 (可选):</label>
+                        <textarea id="new-wheel-description" rows="3" placeholder="请输入转盘描述"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>导入预设选项:</label>
+                        <select id="preset-options">
+                            <option value="">-- 选择预设 --</option>
+                            <option value="lunch">午饭选项</option>
+                            <option value="dinner">晚饭选项</option>
+                            <option value="games">游戏选择</option>
+                            <option value="movies">电影选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-wheel" class="btn-secondary">取消</button>
+                    <button id="save-wheel-modal" class="btn-primary">创建</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 - <span id="current-year"></span> 随机转盘抽取器 / <a href="/posts/copyright">夸克博客</a> All rights
+                reserved.</p>
+        </footer>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -9,6 +9,7 @@
             --shadow-color: rgba(0, 0, 0, 0.3);
             --timestamp-color: rgba(255, 255, 255, 0.7);
         }
+
         .dark-mode {
             --primary-color: rgba(64, 224, 208, 0.9);
             --background: rgba(25, 25, 35, 0.95);
@@ -20,6 +21,7 @@
             --shadow-color: rgba(0, 0, 0, 0.3);
             --timestamp-color: rgba(255, 255, 255, 0.7);
         }
+
         .light-mode {
             --primary-color: #40E0D0;
             --background: rgba(255, 255, 255, 0.95);
@@ -31,11 +33,13 @@
             --shadow-color: rgba(0, 0, 0, 0.1);
             --timestamp-color: rgba(0, 0, 0, 0.6);
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
             color: var(--text-color);
             min-height: 100vh;
@@ -44,21 +48,23 @@
             background: var(--background);
             transition: background-color 0.3s ease;
         }
+
         .app-container {
             display: flex;
             width: 100%;
             height: 100vh;
             position: relative;
         }
+
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
         }
+
         .game-header {
-            padding: 15px 20px;
+            padding: 28px 30px;
             background: var(--sidebar-bg);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
@@ -67,10 +73,12 @@
             align-items: center;
             z-index: 5;
         }
+
         .game-title {
             font-size: 1.2rem;
             font-weight: 600;
         }
+
         .theme-toggle {
             background: none;
             border: none;
@@ -81,9 +89,11 @@
             border-radius: 50%;
             transition: all 0.3s ease;
         }
+
         .theme-toggle:hover {
             background: var(--input-bg);
         }
+
         .game-container {
             flex: 1;
             display: flex;
@@ -94,27 +104,33 @@
             backdrop-filter: blur(10px);
             padding: 20px;
         }
+
         .board-container {
             position: relative;
             margin: 20px 0;
         }
+
         .board {
             background: #dcb35c;
             position: relative;
             box-shadow: 0 0 10px var(--shadow-color);
         }
+
         .piece {
             position: absolute;
             border-radius: 50%;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
+
         .piece.black {
             background: #000;
         }
+
         .piece.white {
             background: #fff;
         }
+
         .piece.last-move::after {
             content: '';
             position: absolute;
@@ -126,6 +142,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
         .players-info {
             display: flex;
             justify-content: space-between;
@@ -133,6 +150,7 @@
             max-width: 500px;
             margin-bottom: 20px;
         }
+
         .player {
             display: flex;
             align-items: center;
@@ -142,9 +160,11 @@
             flex: 1;
             max-width: 48%;
         }
+
         .player.active {
             border: 2px solid var(--primary-color);
         }
+
         .player-avatar {
             width: 40px;
             height: 40px;
@@ -158,26 +178,31 @@
             font-size: 1.2rem;
             margin-right: 10px;
         }
+
         .player-name {
             font-weight: 600;
         }
+
         .player-role {
             margin-top: 5px;
             font-size: 0.8rem;
             opacity: 0.8;
         }
+
         .game-status {
             margin-top: 15px;
             font-size: 1.1rem;
             text-align: center;
             min-height: 24px;
         }
+
         .game-controls {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-top: 15px;
         }
+
         .control-btn {
             padding: 10px 20px;
             border: none;
@@ -187,10 +212,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .control-btn:hover {
             opacity: 0.9;
             transform: translateY(-2px);
         }
+
         .winner-overlay {
             position: fixed;
             top: 0;
@@ -203,6 +230,7 @@
             align-items: center;
             z-index: 100;
         }
+
         .winner-box {
             background: var(--sidebar-bg);
             padding: 30px;
@@ -210,19 +238,23 @@
             text-align: center;
             max-width: 80%;
         }
+
         .winner-text {
             font-size: 1.5rem;
             margin-bottom: 20px;
         }
+
         .winner-name {
             color: var(--primary-color);
             font-weight: bold;
         }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);

@@ -38,11 +38,6 @@
             "link": "bubble"
         },
         {
-            "name": "中午赤什么",
-            "image": "image/7.png",
-            "link": "eatwhat"
-        },
-        {
             "name": "钢琴",
             "image": "image/3.png",
             "link": "piano"

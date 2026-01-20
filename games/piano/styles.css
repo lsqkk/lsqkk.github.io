@@ -1,10 +1,12 @@
 body {
     margin: 0;
-    padding-bottom: 220px; /* 给固定底部的钢琴留出空间 */
+    padding-bottom: 220px;
+    /* 给固定底部的钢琴留出空间 */
     min-height: 100vh;
     background-color: #f0f0f0;
     touch-action: manipulation;
 }
+
 .piano-container {
     position: fixed;
     bottom: 0;
@@ -13,29 +15,33 @@ body {
     overflow-x: hidden;
     padding: 20px 0;
 }
+
 .piano-keys {
     display: flex;
     position: relative;
     margin: 0 auto;
     height: 200px;
 }
+
 @media (max-width: 1200px) {
     .piano-keys {
-   overflow-x: hidden;
+        overflow-x: hidden;
         transform: none;
         left: 0;
         width: 100%;
         justify-content: center;
-    width: 2000px;
-    transform: translateX(-1000px);
-    left: 50%;
+        width: 2000px;
+        transform: translateX(-1000px);
+        left: 50%;
     }
 }
+
 .key {
     position: relative;
     cursor: pointer;
     border-radius: 0 0 5px 5px;
 }
+
 .white-key {
     position: absolute;
     width: 40px;
@@ -44,6 +50,7 @@ body {
     border: 1px solid #ccc;
     z-index: 1;
 }
+
 .black-key {
     position: absolute;
     width: 24px;
@@ -52,26 +59,33 @@ body {
     z-index: 2;
     top: 0;
 }
+
 .white-key.active {
     background-color: #e0e0e0;
 }
+
 .black-key.active {
     background-color: #333;
 }
+
 @media (max-width: 768px) {
     body {
         padding-bottom: 160px;
     }
+
     .piano-keys {
         height: 150px;
     }
+
     .white-key {
         height: 150px;
     }
+
     .black-key {
         height: 90px;
     }
 }
+
 .key-label {
     position: absolute;
     bottom: 8px;
@@ -81,70 +95,80 @@ body {
     color: #666;
     user-select: none;
 }
+
 .black-key .key-label {
     color: white;
     bottom: 5px;
     font-size: 10px;
 }
+
 /* 新增的丝带效果 */
 .ribbon {
     position: fixed;
     width: 10px;
     bottom: 0;
     height: 0;
-    background: linear-gradient(
-        to top,
-        hsl(var(--hue), 100%, 50%),
-        hsl(calc(var(--hue) + 30), 70%, 50%)
-    );
+    background: linear-gradient(to top,
+            hsl(var(--hue), 100%, 50%),
+            hsl(calc(var(--hue) + 30), 70%, 50%));
     border-radius: 5px;
     transform: translateX(-50%);
     pointer-events: none;
     z-index: 9999;
 }
+
 .ribbon.release {
     animation: ribbon-release 2s linear forwards;
 }
+
 @keyframes ribbon-release {
     0% {
         opacity: 1;
-        transform: translate(-50%, 0); /* 初始位置在琴键顶部 */
+        transform: translate(-50%, 0);
+        /* 初始位置在琴键顶部 */
     }
+
     100% {
         opacity: 0;
-        transform: translate(-50%, -100vh); /* 向上飘出屏幕 */
+        transform: translate(-50%, -100vh);
+        /* 向上飘出屏幕 */
     }
 }
+
 .player-controls {
     position: fixed;
-    top: 20px;
+    top: 100px;
     left: 20px;
     background: rgba(255, 255, 255, 0.8);
     padding: 10px;
     border-radius: 8px;
     z-index: 1000;
 }
-.player-controls select, .player-controls button {
+
+.player-controls select,
+.player-controls button {
     margin: 5px;
     padding: 5px;
 }
+
 /* 轮播字幕样式 */
 .marquee-container {
     position: fixed;
-    top: 90px;
+    top: 180px;
     left: 50%;
     transform: translateX(-50%);
     width: 600px;
     max-width: 80%;
     height: 40px;
-    background: rgba(255,255,255, 0.3);
-box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
     border-radius: 25px;
     z-index: 1001;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 .marquee-text {
     color: #fff;
     font-size: 18px;
@@ -154,6 +178,7 @@ box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
     transition: opacity 1s ease-in-out;
     position: absolute;
 }
+
 .marquee-text.active {
     opacity: 1;
 }
