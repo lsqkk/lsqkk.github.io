@@ -55,6 +55,16 @@
                     "target": "_target"
                 },
                 {
+                    "name": "留言板",
+                    "categories": [
+                        "互动",
+                        "实验"
+                    ],
+                    "description": "用户留言和反馈交流区域",
+                    "link": "/blog/lyb",
+                    "target": "_target"
+                },
+                {
                     "name": "更新日志",
                     "categories": [
                         "系统",
@@ -100,16 +110,6 @@
                     "target": "_target"
                 },
                 {
-                    "name": "留言板",
-                    "categories": [
-                        "互动",
-                        "实验"
-                    ],
-                    "description": "用户留言和反馈交流区域",
-                    "link": "/blog/lyb",
-                    "target": "_target"
-                },
-                {
                     "name": "直播 LIVE",
                     "categories": [
                         "直播",
@@ -117,6 +117,16 @@
                     ],
                     "description": "实时直播功能和互动平台",
                     "link": "/a/live",
+                    "target": "_target"
+                },
+                {
+                    "name": "夸克贴吧",
+                    "categories": [
+                        "论坛",
+                        "实验"
+                    ],
+                    "description": "畅所欲言的全站公共论坛",
+                    "link": "/blog/tieba",
                     "target": "_target"
                 }
             ]
