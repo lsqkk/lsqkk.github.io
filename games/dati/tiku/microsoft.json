@@ -1,0 +1,1628 @@
+{
+  "quiz_title": "微软公司知识问答",
+  "description": "微软公司知识问答：通过我们包含比尔·盖茨、产品历史、Windows、Office、Xbox等问题的微软问答集，测试您对这家软件巨头的了解！",
+  "total_questions": 60,
+  "questions_per_quiz": 20,
+  "questions": [
+    {
+      "id": 1,
+      "question": "微软公司的两位主要创始人是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·乔布斯和斯蒂夫·沃兹尼亚克",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "比尔·盖茨和保罗·艾伦",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "拉里·佩奇和谢尔盖·布林",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "杨致远和戴维·费罗",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 2,
+      "question": "微软公司成立于哪一年？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1972年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1975年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1980年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1985年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 3,
+      "question": "微软公司的原名是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Microsoft Inc.",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Micro-Soft",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Gates & Allen Software",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Traf-O-Data",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 4,
+      "question": "微软公司最初成立于哪个城市？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "西雅图",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "阿尔伯克基",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "波士顿",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "硅谷",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 5,
+      "question": "微软的第一个商业产品是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "MS-DOS 操作系统",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Altair BASIC 解释器",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Microsoft Word 文字处理器",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows 1.0 操作系统",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 6,
+      "question": "微软为IBM  PC开发了哪个著名的操作系统？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "CP/M",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "MS-DOS (或 PC DOS)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows NT",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "OS/2",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 7,
+      "question": "哪个版本的Windows是第一个凭借图形用户界面取得广泛商业成功的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 1.0",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows 3.0/3.1",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows 95",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows 2.0",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 8,
+      "question": "哪个版本的Windows引入了标志性的“开始”菜单和任务栏？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 3.1",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows 95",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows NT 4.0",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows XP",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 9,
+      "question": "哪个版本的Windows因其稳定性和长期的市场主导地位而广受欢迎？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows Me",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows XP",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows Vista",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows 8",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 10,
+      "question": "Windows  XP在开发过程中的代号是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Chicago",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Whistler",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Longhorn",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Neptune",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 11,
+      "question": "截至2023年底，微软最新的旗舰桌面操作系统版本是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 7",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows 11",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows 10",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows XP",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 12,
+      "question": "微软与IBM共同开发了哪个操作系统，旨在取代DOS？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 95",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "OS/2",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Xenix",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows Me",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 13,
+      "question": "哪个微软操作系统系列主要面向服务器市场？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 家庭版",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows NT / Windows       Server",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows Mobile",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "MS-DOS",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 14,
+      "question": "微软最著名的办公软件套件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Lotus SmartSuite",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Office",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "WordPerfect Office",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "OpenOffice",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 15,
+      "question": "Microsoft  Office套件中的文字处理软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Excel",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Word",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "PowerPoint",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Access",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 16,
+      "question": "Microsoft  Office套件中的电子表格软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Word",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Excel",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Outlook",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "OneNote",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 17,
+      "question": "Microsoft  Office套件中的演示软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Publisher",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft PowerPoint",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Access",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "FrontPage",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 18,
+      "question": "微软的第一个网页浏览器是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Netscape Navigator",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Internet Explorer",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Mosaic",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Microsoft Edge",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 19,
+      "question": "微软当前取代Internet  Explorer的旗舰网页浏览器是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Firefox",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Edge",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Chrome",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Safari",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 20,
+      "question": "微软主要的集成开发环境（IDE）产品是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Eclipse",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Visual Studio",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "IntelliJ IDEA",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "NetBeans",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 21,
+      "question": "微软的关系型数据库服务器软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "MySQL",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "SQL Server",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Oracle Database",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "PostgreSQL",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 22,
+      "question": "微软的电子邮件和日历服务器软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Lotus Domino",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Exchange Server",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Gmail Server",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Postfix",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 23,
+      "question": "包含Office应用和云存储的微软订阅服务通常被称为什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Essentials",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft 365",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Office Online",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows Plus",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 24,
+      "question": "微软的视频游戏机品牌是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "PlayStation",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Xbox",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Nintendo Switch",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Sega Genesis",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 25,
+      "question": "第一代Xbox游戏机于哪一年发布？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1999年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "2001年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "2005年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "2000年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 26,
+      "question": "微软的混合型平板/笔记本电脑产品线是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPad",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Surface",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Chromebook",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Galaxy Tab",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 27,
+      "question": "微软以前的便携式音乐播放器的品牌名称是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPod",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Zune",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Walkman",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Zen",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 28,
+      "question": "除了软件和游戏机，微软还生产哪些常见的计算机外围设备？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "打印机和扫描仪",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "鼠标和键盘",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "显卡和声卡",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "路由器和调制解调器",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 29,
+      "question": "微软的云计算平台叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Amazon Web Services (AWS)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Azure",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Google Cloud Platform (GCP)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "IBM Cloud",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 30,
+      "question": "在云计算中，IaaS是Azure提供的一项服务。它代表什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "互联网即服务",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "基础设施即服务",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "接口即服务",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "信息即服务",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 31,
+      "question": "微软旗下流行的协作平台，作为Microsoft  365的一部分，是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Slack",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Teams",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Zoom",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Google Meet",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 32,
+      "question": "年谁接替比尔·盖茨成为微软的首席执行官？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "保罗·艾伦",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "史蒂夫·鲍尔默",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "萨提亚·纳德拉",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "埃里克·施密特",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 33,
+      "question": "截至2023年底，微软现任首席执行官是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "萨提亚·纳德拉",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "史蒂夫·鲍尔默",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "杰夫·贝索斯",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 34,
+      "question": "除了技术，微软联合创始人保罗·艾伦在哪些领域有重大投资和热情？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "电影制作和餐饮业",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "职业体育队、太空探索和艺术品收藏",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "时尚产业和房地产",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "农业和可再生能源",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 35,
+      "question": "在哪些年代，微软在美国和欧洲面临重大的反垄断诉讼？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1970年代和1980年代",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1990年代和2000年代",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "2000年代和2010年代",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1980年代和1990年代",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 36,
+      "question": "微软的“.NET”计划是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一种新的硬件架构",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "一个软件开发框架和平台",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "一个互联网搜索引擎",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "一个云计算服务",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 37,
+      "question": "微软收购哪个专业社交网站是其最大规模的收购之一？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Facebook",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "LinkedIn",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Twitter",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "MySpace",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 38,
+      "question": "微软收购了哪个流行的代码托管平台？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Bitbucket",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "GitHub",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "GitLab",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "SourceForge",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 39,
+      "question": "微软在2022/2023年完成了对哪家主要视频游戏发行商的收购？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Electronic Arts (EA)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Activision Blizzard",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Take-Two Interactive",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Ubisoft",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 40,
+      "question": "微软曾短暂拥有哪家主要手机制造商的手机业务？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Samsung",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Nokia",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Motorola",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "LG",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 41,
+      "question": "比尔·盖茨和保罗·艾伦为Altair  8800开发了哪种编程语言解释器？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "FORTRAN",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "BASIC",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "COBOL",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Pascal",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 42,
+      "question": "哪个早期的微软电子表格程序与Lotus  1-2-3竞争？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "VisiCalc",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Multiplan (Excel的前身)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Quattro Pro",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "SuperCalc",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 43,
+      "question": "在Windows  3.0之前，微软为MS-DOS提供了哪个图形用户界面外壳？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "GEM",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows 1.0 或 2.0",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "DESQview",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "TopView",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 44,
+      "question": "微软的搜索引擎叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Yahoo Search",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Bing",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Ask Jeeves",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "DuckDuckGo",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 45,
+      "question": "Xbox游戏机标志着微软进入了哪个市场？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "个人电脑市场",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "视频游戏机市场",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "手机市场",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "企业软件市场",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 46,
+      "question": "微软的数字助理，类似于Siri或Alexa，叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Clippy (大眼夹)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Cortana (小娜)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Microsoft Assistant (微软助手)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Bob",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 47,
+      "question": "哪个版本的Windows首次内置了对TCP/IP网络的支持？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 3.1 for Workgroups",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows 95",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows NT 3.51",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows 2000",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 48,
+      "question": "微软公司总部位于哪个城市？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "加利福尼亚州山景城",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "华盛顿州雷德蒙德",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "纽约州阿蒙克",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "德克萨斯州奥斯汀",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 49,
+      "question": "与早期的消费者版Windows相比，Windows  NT的一个关键区别特征是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "更丰富的游戏支持",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "更高的稳定性、安全性以及全新的内核设计",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "更低的硬件要求",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "内置媒体播放器",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 50,
+      "question": "微软在哪一年收购了Skype？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "2008年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "2011年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "2014年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "2005年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 51,
+      "question": "由微软开发、作为JavaScript超集的编程语言是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "C#",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "TypeScript",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "F#",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Visual Basic .NET",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 52,
+      "question": "哪个Microsoft  Office应用程序用于电子邮件和个人信息管理？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "OneNote",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Outlook",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Access",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Publisher",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 53,
+      "question": "微软首个专注于健身的可穿戴技术产品线是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Xbox Fit",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Band",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Surface Watch",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Zune Fitness",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 54,
+      "question": "比尔·盖茨还以通过哪个基金会进行的慈善工作而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "盖茨学习基金会",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "比尔及梅琳达·盖茨基金会",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "微软慈善",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "艾伦家庭基金会",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 55,
+      "question": "在许多早期版本的Microsoft  Word和Windows中，默认字体是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Calibri",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Times New Roman       (在Word中常见) 或 Arial (在Windows UI中常见)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Comic Sans MS",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Verdana",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 56,
+      "question": "微软的游戏订阅服务叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Xbox Live Gold",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Xbox Game Pass",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "EA Play",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "PlayStation Plus",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 57,
+      "question": "哪个微软操作系统在开发期间的代号是“Longhorn”？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows XP",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Windows Vista",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows 7",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Windows 8",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 58,
+      "question": "微软的HoloLens设备与哪种技术相关？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "虚拟现实 (VR)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "混合现实 (MR) / 增强现实 (AR)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "人工智能 (AI)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "云计算",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 59,
+      "question": "微软早期的主要业务重点是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "硬件制造",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "软件，特别是编程语言和操作系统",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "互联网服务",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "企业咨询",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 60,
+      "question": "哪位微软联合创始人在2018年去世？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "保罗·艾伦",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "史蒂夫·鲍尔默",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "查尔斯·西蒙尼",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    }
+  ]
+}

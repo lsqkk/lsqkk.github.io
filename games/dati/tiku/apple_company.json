@@ -1,0 +1,1628 @@
+{
+  "quiz_title": "苹果公司知识问答",
+  "description": "苹果公司知识问答：通过我们收集的关于史蒂夫·乔布斯、产品历史、Mac、iPhone、iPad等的苹果问答，测试您对这家全球市值最高公司的了解！",
+  "total_questions": 60,
+  "questions_per_quiz": 20,
+  "questions": [
+    {
+      "id": 1,
+      "question": "苹果公司成立于哪一年？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1972年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1976年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1980年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1984年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 2,
+      "question": "苹果公司的三位创始人是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·乔布斯、比尔·盖茨、保罗·艾伦",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "史蒂夫·乔布斯、史蒂夫·沃兹尼亚克、罗纳德·韦恩",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "史蒂夫·乔布斯、蒂姆·库克、乔尼·艾维",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "史蒂夫·沃兹尼亚克、比尔·盖茨、拉里·埃里森",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 3,
+      "question": "苹果公司的第一款个人电脑产品是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Macintosh",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Lisa",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Apple I",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Apple II",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 4,
+      "question": "史蒂夫·乔布斯曾在哪个大学短暂学习过？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "斯坦福大学",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "里德学院",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "加州大学伯克利分校",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "哈佛大学",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 5,
+      "question": "苹果公司著名的“1984”广告是在哪个体育赛事的直播中播出的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "奥运会",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "FIFA世界杯",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "超级碗",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "NBA总决赛",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 6,
+      "question": "史蒂夫·乔布斯被苹果公司解雇后创立了哪家公司？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "皮克斯 (Pixar)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "NeXT Computer",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "戴尔 (Dell)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "奥多比 (Adobe)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 7,
+      "question": "史蒂夫·乔布斯最初投资并发展了哪个动画工作室？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "梦工厂动画 (DreamWorks Animation)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "皮克斯动画工作室 (Pixar Animation Studios)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "华特迪士尼动画工作室 (Walt Disney Animation Studios)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "吉卜力工作室 (Studio Ghibli)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 8,
+      "question": "史蒂夫·乔布斯通过收购哪家公司重返苹果？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "奥多比 (Adobe)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "微软 (Microsoft)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "NeXT Computer",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "皮克斯 (Pixar)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 9,
+      "question": "第一代iPod于哪一年发布？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1998年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "2001年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "2004年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "2007年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 10,
+      "question": "第一代iPhone于哪一年发布？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "2003年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "2005年",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "2007年",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "2009年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 11,
+      "question": "苹果公司的macOS操作系统以前叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows NT",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "OS X (曾用名 Mac OS X)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "iOS",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "System V",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 12,
+      "question": "史蒂夫·乔布斯在产品发布会上经常穿的套头高领毛衣是什么颜色的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "白色",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "灰色",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "黑色",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "蓝色",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 13,
+      "question": "苹果哪个产品系列以其超薄设计而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iMac",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "MacBook Air",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Mac Pro",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "HomePod",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 14,
+      "question": "苹果公司的平板电脑系列叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iTab",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iPad",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "iSlate",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "MacPad",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 15,
+      "question": "史蒂夫·乔布斯在哪所大学发表了他著名的“求知若饥，虚心若愚”的毕业典礼演讲？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "哈佛大学",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "斯坦福大学",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "麻省理工学院 (MIT)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "耶鲁大学",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 16,
+      "question": "苹果公司的智能手表产品叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iWatch",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Watch",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Mac Watch",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "TimeBand",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 17,
+      "question": "苹果公司的数字音乐商店和播放软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Spotify",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iTunes",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Napster",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Winamp",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 18,
+      "question": "截至2023年，苹果公司的现任首席执行官是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·沃兹尼亚克",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "乔尼·艾维",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "蒂姆·库克",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 19,
+      "question": "苹果公司的“Think   Different”广告活动是什么时候推出的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "20世纪80年代",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "20世纪90年代末",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "21世纪初",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "21世纪10年代",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 20,
+      "question": "苹果公司的总部位于哪个城市？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "旧金山",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "库比蒂诺",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "洛杉矶",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "西雅图",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 21,
+      "question": "iPhone使用的移动操作系统是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "安卓 (Android)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iOS",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Windows Mobile",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "塞班 (Symbian)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 22,
+      "question": "苹果公司的应用商店叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Google Play",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "App Store",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Microsoft Store",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "iStore",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 23,
+      "question": "史蒂夫·乔布斯对哪种类型的字体特别着迷？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "哥特体",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "书法",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "像素字体",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "手写字体",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 24,
+      "question": "哪款苹果电脑是第一款配备彩色屏幕的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Apple I",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple II",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Macintosh",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "iMac G3",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 25,
+      "question": "哪款苹果产品彻底改变了音乐产业？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPhone",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iPod 和 iTunes",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "MacBook",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Apple TV",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 26,
+      "question": "谁设计了苹果公司标志性的“被咬过的苹果”标志？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·乔布斯",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "罗勃·简诺夫 (Rob Janoff)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "史蒂夫·沃兹尼亚克",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "乔尼·艾维",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 27,
+      "question": "哪款苹果电脑因其色彩鲜艳的半透明外壳而备受关注？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "MacBook Pro",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iMac G3",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Mac mini",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Power Mac G5",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 28,
+      "question": "史蒂夫·乔布斯以哪方面的才能尤为著称？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "硬件工程设计",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "产品营销和演讲演示",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "软件编程",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "金融投资",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 29,
+      "question": "苹果公司的云存储服务叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Google Drive",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iCloud",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Dropbox",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "OneDrive",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 30,
+      "question": "皮克斯动画工作室的第一部完整长度的动画长片是哪一部？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "海底总动员 (Finding Nemo)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "玩具总动员 (Toy Story)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "怪兽电力公司 (Monsters, Inc.)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "超人总动员 (The Incredibles)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 31,
+      "question": "苹果公司的“Macintosh”电脑的名字来源于什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一位发明家的名字",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "一种苹果的品种",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "一个苏格兰氏族的名称",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "一个虚构的角色",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 32,
+      "question": "哪款苹果产品开创了“多点触控”技术的广泛应用？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPod Classic",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iPhone",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "MacBook Pro",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Apple Newton",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 33,
+      "question": "离开苹果后，史蒂夫·乔布斯的NeXT电脑主要针对哪个市场？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "家庭娱乐市场",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "教育和研究市场",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "大型企业市场",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "游戏市场",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 34,
+      "question": "苹果公司的语音助手叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Alexa",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Siri",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Cortana",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Google Assistant",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 35,
+      "question": "苹果公司的无线耳塞产品线叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "SoundBuds",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "AirPods",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "iBeats",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Galaxy Buds",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 36,
+      "question": "史蒂夫·乔布斯通常被认为是一位追求何种理念的产品设计师？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "功能越多越好",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "极简主义和用户体验至上",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "开源和定制化",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "低成本和高价值",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 37,
+      "question": "苹果公司的流媒体音乐服务是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Spotify",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Music",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Tidal",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Pandora",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 38,
+      "question": "史蒂夫·乔布斯重返苹果后领导的第一个非常成功的产品是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPhone",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iMac G3",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "iPod",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "MacBook",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 39,
+      "question": "苹果公司的Apple   Park总部大楼以其什么独特的形状而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "金字塔形",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "圆形（像宇宙飞船）",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "方形",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "不规则多边形",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 40,
+      "question": "哪位苹果联合创始人主要负责早期产品的技术工程？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·乔布斯",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "史蒂夫·沃兹尼亚克",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "罗纳德·韦恩",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "蒂姆·库克",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 41,
+      "question": "第一代iPod使用的是哪种类型的存储介质？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "闪存",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "微型硬盘",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "SD卡",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "CD-ROM",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 42,
+      "question": "macOS中的苹果“访达”(Finder)是什么组件？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "网页浏览器",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "文件管理器",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "电子邮件客户端",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "系统设置工具",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 43,
+      "question": "史蒂夫·乔布斯在2005年斯坦福大学毕业典礼演讲中分享了几个故事？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一个",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "三个",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "五个",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "七个",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 44,
+      "question": "第一款配备视网膜显示屏   (Retina Display) 的苹果产品是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPad 3",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iPhone 4",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "配备视网膜显示屏的MacBook Pro",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "配备视网膜5K显示屏的iMac",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 45,
+      "question": "哪款苹果软件允许用户编辑视频？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "库乐队 (GarageBand)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iMovie剪辑或Final Cut Pro",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Keynote讲演",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Pages文稿",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 46,
+      "question": "史蒂夫·乔布斯以其“现实扭曲力场”而闻名。这是指什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "他预测未来技术趋势的能力",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "他强大的说服力和个人魅力，使人们能够相信并完成看似不可能的任务",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "他对物理学的深入了解",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "他用眼神控制他人的能力",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 47,
+      "question": "苹果公司的智能家居平台叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Google Home",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "HomeKit",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Amazon Alexa",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "SmartThings",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 48,
+      "question": "苹果公司的第一家零售店   (Apple Store) 是在哪一年开业的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1997年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "2001年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "2005年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "2007年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 49,
+      "question": "哪位著名的工业设计师长期担任苹果公司的首席设计官？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "迪特·拉姆斯 (Dieter Rams)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "乔尼·艾维 (Jony Ive)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "马克·纽森 (Marc Newson)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "菲利普·斯塔克 (Philippe Starck)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 50,
+      "question": "苹果公司最初的标志设计是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一个彩虹色的苹果",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "艾萨克·牛顿坐在苹果树下",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "一个纯黑色的苹果剪影",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "字母“A”的抽象设计",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 51,
+      "question": "苹果公司的“Pro”系列产品通常代表什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "入门级且经济实惠",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "专业级且高性能",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "小巧便携",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "色彩鲜艳且时尚",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 52,
+      "question": "史蒂夫·乔布斯生前在苹果产品发布会上通常用哪句话结束他的演讲？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "伙计们，就这些了！",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "还有一件事……",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "谢谢，晚安！",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "未来已来！",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 53,
+      "question": "哪款苹果产品标志着其进入可穿戴技术市场？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPod Shuffle",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Watch",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "AirPods",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "iPhone",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 54,
+      "question": "苹果公司收购Beats   Electronics主要获得了什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "搜索引擎技术",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "耳机品牌和流媒体音乐服务",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "社交媒体平台",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "游戏开发工作室",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 55,
+      "question": "传记电影《史蒂夫·乔布斯》的剧本是谁写的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "昆汀·塔伦蒂诺 (Quentin Tarantino)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "艾伦·索金 (Aaron Sorkin)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "克里斯托弗·诺兰 (Christopher Nolan)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "查理·考夫曼 (Charlie Kaufman)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 56,
+      "question": "哪款早期的苹果产品因其高昂的价格和市场定位问题而失败？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Apple II",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Lisa",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Macintosh Classic",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "iMac G3",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 57,
+      "question": "苹果公司的“AirPlay”隔空播放技术主要用于什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "文件传输",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "无线屏幕镜像和音频流",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "移动支付",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "互联网连接共享",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 58,
+      "question": "史蒂夫·乔布斯和史蒂夫·沃兹尼亚克最初在哪里组装Apple   I电脑？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "大学宿舍",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "乔布斯家的车库",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "租用的办公空间",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "沃兹尼亚克的公寓",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 59,
+      "question": "苹果公司的移动支付服务叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Google Pay",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Pay",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Samsung Pay",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "PayPal",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 60,
+      "question": "哪些产品主要使用苹果公司的“M系列”芯片？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPhone 和 Apple Watch",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Mac 电脑和部分 iPad 型号",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "仅 Apple TV",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "仅 AirPods",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    }
+  ]
+}

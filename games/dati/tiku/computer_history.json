@@ -1,0 +1,2708 @@
+{
+  "quiz_title": "计算机历史冷知识测验",
+  "description": "包含50+个关于先驱人物、创新技术、里程碑事件和技术发展历程的问题！",
+  "total_questions": 100,
+  "questions_per_quiz": 20,
+  "questions": [
+    {
+      "id": 1,
+      "question": "第一台电子计算机ENIAC诞生于哪一年？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1936年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1946年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1956年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1966年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 2,
+      "question": "ENIAC（第一台电子计算机）主要用于什么目的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "天气预报",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "商业数据处理",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "弹道计算",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "文字处理",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 3,
+      "question": "“计算机之父”通常指的是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "史蒂夫·乔布斯",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "艾伦·图灵",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "约翰·冯·诺依曼",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "D"
+    },
+    {
+      "id": 4,
+      "question": "世界上第一个计算机程序员普遍被认为是？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "格蕾丝·霍珀",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "阿达·洛芙莱斯",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "玛格丽特·汉密尔顿",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "简·詹宁斯·巴蒂克",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 5,
+      "question": "计算机鼠标是谁发明的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·沃兹尼亚克",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "道格拉斯·恩格尔巴特",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "蒂姆·伯纳斯-李",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "罗伯特·梅特卡夫",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 6,
+      "question": "最早的计算机鼠标是用什么材料制作外壳的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "塑料",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "金属",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "木头",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "橡胶",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 7,
+      "question": "第一台被广泛认为是个人计算机的是？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "IBM PC",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple II",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Altair 8800",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Commodore PET",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 8,
+      "question": "“摩尔定律”预测了什么的发展趋势？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "硬盘容量",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "集成电路上晶体管的数量",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "互联网速度",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "显示器分辨率",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 9,
+      "question": "晶体管的发明对计算机发展有何重大意义？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "使计算机运行速度变慢",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "使计算机体积更大、更昂贵",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "替代了真空管，使计算机更小、更快、更可靠",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "增加了计算机的功耗",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 10,
+      "question": "互联网的前身是什么网络？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "NSFNET",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "ARPANET",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Ethernet",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "World Wide Web",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 11,
+      "question": "万维网（WWW）是谁发明的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "马克·安德森",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "蒂姆·伯纳斯-李",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "文顿·瑟夫",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "罗伯特·卡恩",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 12,
+      "question": "第一款成功的图形用户界面（GUI）操作系统是哪个公司的产品？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "微软（Microsoft）",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IBM",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "苹果（Apple）",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "施乐（Xerox）",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 13,
+      "question": "“Bug”这个术语在计算机领域指代程序错误，它的起源与什么有关？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一只真正的飞蛾导致计算机故障",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "程序员的笔误",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "病毒入侵",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "科幻小说中的描述",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 14,
+      "question": "世界上第一款商用便携式计算机（笔记本电脑）大约有多重？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "约1公斤",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "约5公斤",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "约11公斤",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "约20公斤",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 15,
+      "question": "哪家公司在1981年推出了IBM PC，对个人计算机市场产生了巨大影响？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "苹果（Apple）",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "康柏（Compaq）",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "IBM",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "惠普（HP）",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 16,
+      "question": "早期的计算机存储数据使用的是什么技术？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "固态硬盘 (SSD)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "光盘 (CD/DVD)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "磁芯存储器或打孔卡",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "U盘",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 17,
+      "question": "世界上第一个计算机病毒的名称是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Melissa",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "ILOVEYOU",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Creeper",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Brain",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 18,
+      "question": "Linux操作系统的创始人是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "理查德·斯托曼",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "林纳斯·托瓦兹",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "安迪·鲁宾",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 19,
+      "question": "第一封电子邮件是什么时候发送的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1961年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1971年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1981年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1991年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 20,
+      "question": "“所见即所得”（WYSIWYG）这个概念最早主要应用于什么类型的软件？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "数据库软件",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "编程工具",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "文字处理和桌面排版软件",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "网络浏览器",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 21,
+      "question": "个人计算机通常被缩写为什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "MAC",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "PC",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "AI",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "CPU",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 22,
+      "question": "苹果公司的第一台计算机叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Macintosh",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apple Lisa",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Apple I",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "iMac",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 23,
+      "question": "微软公司的主要创始人是谁？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "史蒂夫·乔布斯和史蒂夫·沃兹尼亚克",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "比尔·盖茨和保罗·艾伦",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "拉里·佩奇和谢尔盖·布林",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "马克·扎克伯格",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 24,
+      "question": "计算机的“大脑”通常指的是哪个部件？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "硬盘",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "内存",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "中央处理器 (CPU)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "显示器",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 25,
+      "question": "QWERTY键盘布局最初是为了解决什么问题而设计的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "提高打字速度",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "防止打字机卡键",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "减少手指移动",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "适应特定语言",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 26,
+      "question": "第一款获得广泛商业成功的街机电子游戏是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Pong (乓)",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "Pac-Man (吃豆人)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Space Invaders (太空侵略者)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Donkey Kong (大金刚)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 27,
+      "question": "早期的软盘（Floppy Disk）容量大约是多少？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "几百KB (几百千字节)",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "几MB (几兆字节)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "几GB (几吉字节)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "几TB (几太字节)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 28,
+      "question": "“Google”这个名字来源于哪个数学术语？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Algorithm (算法)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Googol (古戈尔)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Binary (二进制)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Matrix (矩阵)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 29,
+      "question": "第一个流行的图形界面网页浏览器是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Internet Explorer",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Mosaic",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Netscape Navigator",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Opera",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 30,
+      "question": "“Wi-Fi”这个名称代表什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Wireless Fidelity (无线保真)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Wireless Fiber (无线光纤)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "World Internet Fiber Optic (世界互联网光纤)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "它本身不是缩写，是一个品牌名",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "D"
+    },
+    {
+      "id": 31,
+      "question": "早期的电子计算机（如ENIAC）体积有多大？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一个手提箱大小",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "一个冰箱大小",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "占据整个房间",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "一张桌子大小",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 32,
+      "question": "计算机内部处理信息的基础是什么数字系统？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "十进制",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "二进制",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "十六进制",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "八进制",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 33,
+      "question": "哪台计算机是第一台捆绑销售鼠标的商用计算机？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Apple Macintosh",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Xerox Star",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "IBM PC",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Commodore Amiga",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 34,
+      "question": "垃圾邮件为什么被称为“Spam”？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "发明者姓Spam",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "源自一种罐头肉的名称和喜剧小品",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "一种早期病毒的代号",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "“Stupid Pointless Annoying Mail”的缩写",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 35,
+      "question": "USB接口的“USB”代表什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Universal Serial Bus (通用串行总线)",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "United System Block (联合系统模块)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "User Service Bay (用户服务端口)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Ultra Speed Buffer (超高速缓冲器)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 36,
+      "question": "互联网历史上第一个注册的域名是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "google.com",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "apple.com",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "symbolics.com",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "microsoft.com",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 37,
+      "question": "著名的街机游戏“吃豆人”(Pac-Man) 在日本最初叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Paku-Paku",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Puck-Man",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Ghost-Man",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Dot-Man",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 38,
+      "question": "世界上第一个硬盘驱动器（IBM 350 RAMAC）的存储容量大约是多少？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "约5兆字节 (5 Megabytes)",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "约5千字节 (5 Kilobytes)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "约5吉字节 (5 Gigabytes)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "约5太字节 (5 Terabytes)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 39,
+      "question": "早期的调制解调器（Modem）主要功能是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "提高电脑运行速度",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "通过电话线连接互联网",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "存储文件",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "玩游戏",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 40,
+      "question": "图像显示中的“像素”(Pixel) 一词是什么的缩写？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Picture Element (图像元素)",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "Photo Extension Link (照片扩展链接)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Primary Illumination Emitter (主照明发射器)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Point of Xylography (木刻点)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 41,
+      "question": "哪家公司在1971年推出了世界上第一款商用微处理器Intel 4004？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "AMD",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Intel",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Motorola",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Texas Instruments",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 42,
+      "question": "电脑键盘上的“Shift”键最初在打字机上有什么作用？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "删除字符",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "切换大小写字母",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "产生一个空格",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "换行",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 43,
+      "question": "Altair 8800（早期个人计算机）最初是如何进行编程的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "使用鼠标和图形界面",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "通过键盘输入高级语言",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "通过拨动开关输入机器码",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "使用语音命令",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 44,
+      "question": "哪家公司在1999年推出了第一款广泛接入互联网（通过WAP）的手机？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Apple",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Samsung",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Nokia",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Motorola",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 45,
+      "question": "网址中的“.com”最初代表什么类型的组织？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Communication (通讯)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Community (社区)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Commercial (商业)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Computer (计算机)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 46,
+      "question": "笔记本电脑的彩色显示屏主要基于哪种技术？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "阴极射线管 (CRT)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "发光二极管 (LED)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "液晶显示 (LCD)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "等离子 (Plasma)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 47,
+      "question": "“开源软件” (Open Source Software) 的核心理念是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "软件必须免费",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "软件的源代码可以被公开访问、修改和共享",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "只能由大公司开发",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "用户不能修改软件",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 48,
+      "question": "早年通过拨号连接互联网时，用户通常会听到什么声音？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "安静的嗡嗡声",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "一系列尖锐的哔哔声和噪音",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "优美的音乐",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "没有特别的声音",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 49,
+      "question": "第一个被广泛使用的电脑表情符号 :-) 是由谁提议的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "蒂姆·伯纳斯-李",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "雷·汤姆林森",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "斯科特·法尔曼",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "拉里·泰斯勒",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 50,
+      "question": "计算机中的RAM (随机存取存储器) 主要作用是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "永久存储操作系统和文件",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "在计算机关机后保存数据",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "临时存储正在运行的程序和数据",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "提高网络连接速度",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 51,
+      "question": "谁被认为是设计了“分析机”，一种早期机械通用计算机概念的人？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "艾伦·图灵",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "查尔斯·巴贝奇",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "约翰·阿塔纳索夫",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "康拉德·楚泽",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 52,
+      "question": "哪款软件是早期个人计算机上非常流行的文字处理软件之一？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Microsoft Word",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "WordStar",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Google Docs",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Notepad",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 53,
+      "question": "在计算机科学中，“算法”指的是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一种计算机硬件",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "解决问题或完成任务的一系列步骤",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "一种编程语言",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "计算机病毒",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 54,
+      "question": "世界上第一台家用视频游戏机是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Atari 2600",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Nintendo Entertainment System (NES)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Magnavox Odyssey",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "ColecoVision",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 55,
+      "question": "苹果公司著名的广告语“Think Different”(不同凡想) 是在哪个时期推出的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1970年代末",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1980年代中期",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "1990年代末",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "2000年代初",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 56,
+      "question": "光盘 (CD) 技术最初是为存储什么而开发的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "计算机软件",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "视频电影",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "数字音频",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "大型数据库",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 57,
+      "question": "年问题 (Y2K Bug) 主要与计算机系统的哪个方面有关？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "网络安全漏洞",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "处理器速度不够",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "日期和时间的表示方式",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "存储容量不足",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 58,
+      "question": "最早的社交媒体网站之一，允许用户创建个人资料和连接朋友的是哪个？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Facebook",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "MySpace",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "SixDegrees.com",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Twitter",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 59,
+      "question": "触摸屏技术在普及到智能手机之前，较早应用于哪些设备？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "家用电视遥控器",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "个人数字助理 (PDAs) 和信息亭",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "汽车收音机",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "游戏手柄",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 60,
+      "question": "“云计算” (Cloud Computing) 的核心思想是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "将所有计算都在本地计算机完成",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "通过互联网按需使用计算资源和服务",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "一种新的天气预报技术",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "保护计算机免受雷击",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 61,
+      "question": "第一款图形界面的网络浏览器Mosaic是哪个大学开发的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "斯坦福大学",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "麻省理工学院",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "伊利诺伊大学厄巴纳-香槟分校",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "加州大学伯克利分校",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 62,
+      "question": "“博客”(Blog) 这个词是由哪个词缩写而来的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Biography Log (传记日志)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Weblog (网络日志)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Broadcasting Log (广播日志)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Book Log (书籍日志)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 63,
+      "question": "世界上第一条发送的短信内容是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Hello",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "LOL",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Merry Christmas",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "OK",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 64,
+      "question": "哪家公司开发了PowerPoint演示软件？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "苹果 (Apple)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "谷歌 (Google)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "IBM",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "微软 (Microsoft)",
+          "is_correct": true
+        }
+      ],
+      "correct_answer": "D"
+    },
+    {
+      "id": 65,
+      "question": "早期的电脑游戏通常存储在什么介质上？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "光盘 (CD-ROM)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "磁带或软盘",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "U盘 (USB Drive)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "云存储",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 66,
+      "question": "“人工智能”(AI) 这个术语最早是在哪一年提出的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1946年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1956年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1966年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1976年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 67,
+      "question": "哪位科学家被认为是“信息论之父”？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "艾伦·图灵",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "约翰·冯·诺依曼",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "克劳德·香农",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "阿尔伯特·爱因斯坦",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 68,
+      "question": "计算机键盘上的“Ctrl”键通常代表什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Copy (复制)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Control (控制)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Continue (继续)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Center (居中)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 69,
+      "question": "世界上第一个鼠标有几个按键？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一个",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "两个",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "三个",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "没有按键",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 70,
+      "question": "哪家公司推出了第一款成功的掌上电脑（PDA）——PalmPilot？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "苹果 (Apple)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "微软 (Microsoft)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Palm Computing",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "IBM",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 71,
+      "question": "互联网域名系统 (DNS) 的主要作用是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "加密网络数据",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "将域名转换为IP地址",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "提高下载速度",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "过滤垃圾邮件",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 72,
+      "question": "“黑客”(Hacker) 这个词最初的含义是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "网络罪犯",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "计算机病毒制造者",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "热衷于解决计算机系统问题的专家",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "密码破解者",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 73,
+      "question": "第一款广泛使用的电子表格软件是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Microsoft Excel",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Lotus 1-2-3",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "VisiCalc",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Google Sheets",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 74,
+      "question": "计算机显示器早期的主要颜色是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "全彩色",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "黑白",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "绿色或琥珀色单色",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "蓝色单色",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 75,
+      "question": "“防火墙”(Firewall) 在网络安全中的主要作用是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "加速网络连接",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "阻止未经授权的访问",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "备份数据",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "清理计算机病毒",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 76,
+      "question": "哪种编程语言是以一位17世纪的数学家命名的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Java",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Python",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Pascal",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "C++",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 77,
+      "question": "哪项技术使得计算机可以做得更小、更快、更便宜？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "真空管",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "集成电路",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "打孔卡",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "磁鼓存储器",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 78,
+      "question": "“Wi-Fi”技术标准主要由哪个组织制定？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "联合国 (UN)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "国际标准化组织 (ISO)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "电气和电子工程师协会 (IEEE)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "万维网联盟 (W3C)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 79,
+      "question": "世界上第一个搜索引擎叫什么名字？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Google",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Yahoo",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Archie",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Bing",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 80,
+      "question": "电脑游戏《俄罗斯方块》(Tetris) 是哪个国家的人发明的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "美国",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "日本",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "苏联/俄罗斯",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "中国",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 81,
+      "question": "“调制解调器”(Modem) 这个词是由哪两个词组合而成的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Mode-Demonstration (模式演示)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Modulator-Demodulator (调制器-解调器)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Modern-Element (现代元件)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Motion-Decoder (运动解码器)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 82,
+      "question": "哪家公司以其图形处理单元 (GPU) 而闻名，尤其是在游戏和人工智能领域？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Intel",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "AMD",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "NVIDIA",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Qualcomm",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 83,
+      "question": "“蓝牙”(Bluetooth) 技术名称的灵感来源于什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一种蓝色的花",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "一位古代丹麦国王的名字",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "发明者的牙齿颜色",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "一种蓝色的鸟",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 84,
+      "question": "早期非常流行的文字处理软件WordPerfect是由哪家公司最初开发的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "微软 (Microsoft)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "苹果 (Apple)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Satellite Software International",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "IBM",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 85,
+      "question": "计算机的“剪切、复制和粘贴”功能是由谁发明的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "史蒂夫·乔布斯",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "拉里·泰斯勒",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "蒂姆·伯纳斯-李",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 86,
+      "question": "哪种早期的操作系统以其命令行界面而闻名，并在IBM PC上广泛使用？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 3.1",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "macOS",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "MS-DOS",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Linux",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 87,
+      "question": "“虚拟现实”(VR) 这个术语最早是什么时候被创造出来的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1960年代",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1970年代",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "1980年代",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "1990年代",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 88,
+      "question": "哪家公司是第一家市值达到一万亿美元的科技公司？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "微软 (Microsoft)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "谷歌 (Google/Alphabet)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "苹果 (Apple)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "亚马逊 (Amazon)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 89,
+      "question": "世界上第一张通过互联网上传的照片是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "一只猫",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "月球表面",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "一个女子乐队 Les Horribles Cernettes",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "咖啡壶",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 90,
+      "question": "“Podcast”(播客) 这个词的“Pod”指的是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "豌豆荚 (Pea pod)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "iPod",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "讲台 (Podium)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "便携式设备 (Portable On Demand)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 91,
+      "question": "哪家公司开发了Java编程语言？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "微软 (Microsoft)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IBM",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Sun Microsystems",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "苹果 (Apple)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 92,
+      "question": "计算机的“桌面”比喻最初是在哪个研究机构提出的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "贝尔实验室 (Bell Labs)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "麻省理工学院媒体实验室 (MIT Media Lab)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "施乐帕洛阿尔托研究中心 (Xerox PARC)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "IBM研究院",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 93,
+      "question": "“CAPTCHA”的主要目的是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "加密数据",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "提高网站加载速度",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "区分计算机和人类用户",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "扫描病毒",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 94,
+      "question": "哪种存储设备因为其便携性和容量取代了软盘？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "磁带",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "CD-ROM",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "U盘/闪存盘",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Zip驱动器",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 95,
+      "question": "世界上第一款智能手机被认为是哪一款？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "iPhone",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "BlackBerry 850",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "IBM Simon",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Nokia 9000 Communicator",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 96,
+      "question": "“超文本标记语言”(HTML) 主要用于创建什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "操作系统",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "数据库",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "网页",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "电子游戏",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 97,
+      "question": "哪位计算机科学家提出了“图灵测试”来判断机器是否能表现出与人无法区分的智能行为？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "约翰·冯·诺依曼",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "克劳德·香农",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "艾伦·图灵",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "查尔斯·巴贝奇",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 98,
+      "question": "“表情包”(Meme) 这个词最初是由谁创造的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "蒂姆·伯纳斯-李",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "斯科特·法尔曼",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "理查德·道金斯",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "互联网用户集体创造",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 99,
+      "question": "哪家公司开发了Flash动画技术，曾在互联网上非常流行？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "微软 (Microsoft)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "苹果 (Apple)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Macromedia",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "谷歌 (Google)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "id": 100,
+      "question": "计算机主板上的BIOS是什么的缩写？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Binary Input Output Signal (二进制输入输出信号)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Basic Integrated Operating System (基本集成操作系统)",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "Basic Input/Output System (基本输入输出系统)",
+          "is_correct": true
+        },
+        {
+          "letter": "D",
+          "text": "Boot Interface Operating Software (引导接口操作软件)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "C"
+    }
+  ]
+}

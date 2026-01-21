@@ -1,0 +1,1628 @@
+{
+  "quiz_title": "IBM公司知识问答",
+  "description": "IBM公司知识问答：通过我们包含关于IBM创始人、计算机历史、大型机、个人电脑等问题的IBM公司系列问答，来测试您对这家百年科技巨头的了解程度！",
+  "total_questions": 60,
+  "questions_per_quiz": 20,
+  "questions": [
+    {
+      "id": 1,
+      "question": "IBM公司的前身是哪家公司？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "国际时间记录公司 (International Time Recording Company)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "计算-制表-记录公司 (Computing-Tabulating-Recording Company)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "美国计算机公司 (American Computer Corporation)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "国家收银机公司 (National Cash Register)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 2,
+      "question": "IBM这个名称是“国际商业机器公司”的缩写，它在哪一年正式采用这个名称？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1911年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1924年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1935年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1946年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 3,
+      "question": "谁被认为是将计算-制表-记录公司（CTR）打造成IBM的关键人物？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "赫尔曼·何乐礼 (Herman Hollerith)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "托马斯·J·沃森 (Thomas J. Watson Sr.)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "查尔斯·弗林特 (Charles Ranlett Flint)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "托马斯·J·沃森二世 (Thomas J. Watson Jr.)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 4,
+      "question": "IBM的座右铭“THINK”是由谁提出的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "比尔·盖茨",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "托马斯·J·沃森 (Thomas J. Watson Sr.)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "史蒂夫·乔布斯",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "路易斯·格斯特纳 (Louis Gerstner)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 5,
+      "question": "IBM在哪一年推出了其第一款个人计算机IBM     PC？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1975年",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1981年",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1984年",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1990年",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 6,
+      "question": "IBM     PC最初使用的操作系统是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows 1.0",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "PC DOS (由微软开发，也称MS-DOS)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "OS/2",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "CP/M",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 7,
+      "question": "IBM的哪个大型计算机系列在20世纪中后期主导了市场？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "System/360",
+          "is_correct": true
+        },
+        {
+          "letter": "B",
+          "text": "VAX系列",
+          "is_correct": false
+        },
+        {
+          "letter": "C",
+          "text": "UNIVAC",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Altair 8800",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "A"
+    },
+    {
+      "id": 8,
+      "question": "IBM的深蓝     (Deep Blue) 计算机因在哪个领域战胜人类世界冠军而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "围棋",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "国际象棋",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "扑克",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Jeopardy! 问答游戏",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 9,
+      "question": "IBM的沃森     (Watson) 人工智能系统最初因赢得哪个电视问答节目而声名大噪？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Wheel of Fortune (幸运之轮)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Jeopardy! (危险边缘)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Who Wants to Be a Millionaire? (谁想成为百万富翁)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Family Feud (家庭问答)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 10,
+      "question": "IBM将个人电脑业务出售给了哪家公司？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "惠普 (HP)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "联想 (Lenovo)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "戴尔 (Dell)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "宏碁 (Acer)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 11,
+      "question": "IBM的ThinkPad笔记本电脑系列以其什么颜色的小红点指点杆而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "蓝色",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "红色 (TrackPoint)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "绿色",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "黑色",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 12,
+      "question": "IBM在哪个领域是量子计算研究的领导者之一？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "社交媒体",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "量子计算",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "智能手机制造",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "电子游戏开发",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 13,
+      "question": "IBM的哪个部门专注于咨询和全球服务？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "IBM硬件部",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IBM咨询 (IBM Consulting，前身为IBM全球企业咨询服务部GBS)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "IBM研究院",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "IBM软件部",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 14,
+      "question": "IBM的“蓝色巨人”(Big     Blue) 这个绰号的由来可能与什么有关？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "其创始人喜欢蓝色",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "其早期计算机外壳的颜色和公司规模",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "其公司Logo的主要颜色",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "其公司股票的颜色",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 15,
+      "question": "IBM的哪位CEO在1990年代成功领导了公司的转型？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "托马斯·J·沃森二世",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "路易斯·格斯特纳 (Louis Gerstner Jr.)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "萨姆·帕尔米萨诺 (Sam Palmisano)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "弗吉尼亚·罗睿兰 (Ginni Rometty)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 16,
+      "question": "IBM在早期对“开放标准”和“兼容机”市场持什么态度？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "积极推动和拥抱",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "允许开放其PC架构，间接促进了兼容机市场的发展",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "坚决抵制和反对",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "完全不关心",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 17,
+      "question": "IBM的软盘驱动器技术对早期个人计算机有何影响？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "没有显著影响",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "成为早期PC数据存储和软件分发的重要标准",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "因价格昂贵而未能普及",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "主要用于大型机",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 18,
+      "question": "IBM的OS/2操作系统是与哪家公司合作开发的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "苹果公司 (Apple)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "微软公司 (Microsoft)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Novell公司",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "Sun Microsystems公司",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 19,
+      "question": "IBM在大型主机上广泛使用的操作系统之一是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Windows Server",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "z/OS (及其前身)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Linux",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "macOS Server",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 20,
+      "question": "IBM的“智慧地球”(Smarter     Planet) 倡议关注什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "太空探索",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "利用技术解决城市、能源、交通等全球性问题",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "开发更快的个人电脑",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "推广IBM的社交媒体平台",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 21,
+      "question": "IBM是哪个著名开源软件基金会的主要贡献者和支持者？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Mozilla基金会",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "Apache软件基金会",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "自由软件基金会",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "维基媒体基金会",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 22,
+      "question": "IBM     Selectric打字机以其什么独特的打印元件而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "菊花轮",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "高尔夫球型打印头 (Typeball)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "针式打印头",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "激光鼓",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 23,
+      "question": "IBM的DB2是什么类型的产品？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "文字处理软件",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "关系数据库管理系统 (RDBMS)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "网络浏览器",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "操作系统",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 24,
+      "question": "IBM在历史上以其员工严格的什么着装规范而闻名？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "休闲装",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "深色西装、白衬衫和领带",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "运动服",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "公司制服T恤",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 25,
+      "question": "IBM的“千年虫”(Y2K)     问题解决方案业务在哪个时期非常繁忙？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1970年代末",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1990年代末至2000年初",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "1980年代中期",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "2010年代",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 26,
+      "question": "IBM的Lotus     Notes/Domino是一款主要用于什么的软件？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "视频编辑",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "企业协作、电子邮件和应用程序开发平台",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "三维建模",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "个人财务管理",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 27,
+      "question": "IBM的哪个研究实验室是世界上最大和最负盛名的工业研究组织之一？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "贝尔实验室 (Bell Labs)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IBM研究院 (IBM Research)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "施乐帕洛阿尔托研究中心 (Xerox PARC)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "微软研究院 (Microsoft Research)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 28,
+      "question": "IBM的“Power”系列微处理器主要用于什么类型的计算机？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "智能手机和平板电脑",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "服务器、超级计算机和工作站",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "个人笔记本电脑",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "游戏机",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 29,
+      "question": "IBM在2019年完成了一项对哪家开源软件公司的重大收购，以加强其混合云业务？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "SUSE",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "红帽公司 (Red Hat)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "Canonical (Ubuntu的母公司)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "GitHub",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 30,
+      "question": "IBM的AS/400     (后来的IBM i) 是一款主要面向哪个市场的计算机系统？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "个人消费者",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "中小型企业",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "科学研究机构",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "图形设计工作室",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 31,
+      "question": "IBM的“条形码”技术发明对哪个行业产生了革命性影响？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "医疗保健",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "零售和物流",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "航空航天",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "金融服务",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 32,
+      "question": "IBM的RAMAC     305是世界上第一台使用什么存储设备的计算机？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "磁带",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "硬盘驱动器 (HDD)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "固态硬盘 (SSD)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "光盘",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 33,
+      "question": "IBM的FORTRAN编程语言编译器是为哪个领域的计算而开发的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "商业数据处理",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "科学和工程计算",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "网页开发",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "人工智能",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 34,
+      "question": "IBM的“SABRE”系统是与哪家航空公司合作开发的早期计算机预订系统？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "泛美航空 (Pan Am)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "美国航空 (American Airlines)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "联合航空 (United Airlines)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "达美航空 (Delta Air Lines)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 35,
+      "question": "IBM的“万国商业机器”这个中文译名体现了其早期哪个特点？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "专注于美国本土市场",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "全球化的业务和视野",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "只生产一种类型的机器",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "主要服务于政府机构",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 36,
+      "question": "IBM的“大型主机”(Mainframe)     最显著的特点之一是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "便携性强",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "高可靠性、可用性和服务性 (RAS)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "价格便宜",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "主要用于运行电子游戏",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 37,
+      "question": "IBM的WebSphere是一款什么类型的软件平台？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "操作系统",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "应用服务器和中间件",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "数据库管理系统",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "办公套件",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 38,
+      "question": "IBM的“Aptiva”是其哪个时期的个人电脑品牌？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "1970年代",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "1990年代",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "2000年代初",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "1980年代初",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 39,
+      "question": "IBM的“区块链”(Blockchain)     技术主要应用于哪些领域？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "仅用于加密货币交易",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "供应链管理、金融服务、医疗保健等",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "个人社交网络",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "视频游戏开发",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 40,
+      "question": "IBM的“Cognos”软件主要用于什么目的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "操作系统内核开发",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "商业智能和绩效管理",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "计算机辅助设计 (CAD)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "网络安全防火墙",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 41,
+      "question": "IBM在阿波罗登月计划中扮演了什么角色？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "设计和制造火箭引擎",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "提供了关键的计算机系统和软件支持，用于导航和任务控制",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "培训宇航员",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "设计宇航服",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 42,
+      "question": "IBM的“PC兼容机”概念对个人电脑市场产生了什么深远影响？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "导致个人电脑价格大幅上涨",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "促进了硬件和软件的标准化，催生了庞大的PC生态系统",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "使得IBM垄断了个人电脑市场",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "减缓了个人电脑技术的发展",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 43,
+      "question": "IBM的“SPSS”软件主要用于哪个领域？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "图形设计",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "统计分析和社会科学研究",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "视频游戏",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "音乐制作",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 44,
+      "question": "IBM的“磁条卡”技术最早应用于哪个领域？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "门禁系统",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "信用卡和银行卡",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "公交卡",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "电话卡",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 45,
+      "question": "IBM的“Thomas     J. Watson Research Center”是其哪个部门的神经中枢？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "市场营销部",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IBM研究院 (IBM Research)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "人力资源部",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "全球销售部",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 46,
+      "question": "IBM的“动态随机存取存储器”(DRAM)     的发明对计算机行业有何贡献？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "使计算机运行更慢",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "成为现代计算机内存的主流技术，大幅降低了内存成本并提高了密度",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "主要用于早期计算器",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "被静态RAM (SRAM) 完全取代",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 47,
+      "question": "IBM的“System     R”项目对哪个领域的发展做出了开创性贡献？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "操作系统",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "关系数据库和SQL语言",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "网络协议",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "图形用户界面",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 48,
+      "question": "IBM的“RISC架构”(精简指令集计算机)     对处理器设计有何影响？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "使处理器指令更复杂",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "推动了更简单、更高效处理器设计的发展，影响了众多现代CPU",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "仅用于IBM内部产品，未对行业产生影响",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "导致处理器功耗大幅增加",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 49,
+      "question": "IBM的“MVS”(Multiple     Virtual Storage) 操作系统主要运行在什么类型的计算机上？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "个人电脑",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IBM大型主机 (Mainframe)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "迷你计算机",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "嵌入式系统",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 50,
+      "question": "IBM的“扫描隧道显微镜”(STM)     发明获得了哪个著名奖项？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "图灵奖",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "诺贝尔物理学奖",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "菲尔兹奖",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "普利策奖",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 51,
+      "question": "IBM的“CICS”(Customer     Information Control System) 是一款主要用于什么的交易处理系统？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "科学计算",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "在线事务处理 (OLTP)，如银行和航空订票系统",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "桌面排版",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "视频流媒体",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 52,
+      "question": "IBM的“分形几何”研究对哪个领域产生了重要影响？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "数据库设计",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "计算机图形学、数据压缩和自然现象建模",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "网络安全",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "操作系统调度算法",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 53,
+      "question": "IBM的“Tivoli”软件组合主要关注哪个领域？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "客户关系管理 (CRM)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "IT服务管理和系统管理",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "供应链管理 (SCM)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "人力资源管理 (HRM)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 54,
+      "question": "IBM的“路易斯·格斯特纳”在接任CEO时，公司面临的主要挑战是什么？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "技术创新不足",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "公司濒临解体，需要进行重大战略调整和文化变革",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "来自新兴互联网公司的激烈竞争",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "员工士气低落",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 55,
+      "question": "IBM的“Cell”微处理器是与哪两家公司合作开发的，并曾用于PlayStation     3游戏机？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "微软和任天堂",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "索尼 (Sony) 和东芝 (Toshiba)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "苹果和摩托罗拉",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "AMD和NVIDIA",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 56,
+      "question": "IBM的“沃森健康”(Watson     Health) 部门主要致力于将人工智能应用于哪个行业？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "金融服务",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "医疗保健",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "零售业",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "交通运输",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 57,
+      "question": "IBM的“京”(K     computer) 超级计算机是由IBM与哪家日本研究机构合作开发的？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "东京大学",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "理化学研究所 (RIKEN)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "京都大学",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "索尼公司",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 58,
+      "question": "IBM的“统一资源定位符”(URL)     的概念对哪个领域的发展至关重要？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "数据库管理",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "万维网 (World Wide Web)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "操作系统设计",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "电子邮件系统",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 59,
+      "question": "IBM的“数据加密标准”(DES)     对哪个领域的发展做出了重要贡献？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "计算机图形学",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "信息安全和密码学",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "人工智能",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "网络路由协议",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "id": 60,
+      "question": "IBM的现任董事长兼首席执行官是谁（截至2023年底信息）？",
+      "options": [
+        {
+          "letter": "A",
+          "text": "弗吉尼亚·罗睿兰 (Ginni Rometty)",
+          "is_correct": false
+        },
+        {
+          "letter": "B",
+          "text": "阿尔温德·克里希纳 (Arvind Krishna)",
+          "is_correct": true
+        },
+        {
+          "letter": "C",
+          "text": "萨提亚·纳德拉 (Satya Nadella)",
+          "is_correct": false
+        },
+        {
+          "letter": "D",
+          "text": "路易斯·格斯特纳 (Louis Gerstner Jr.)",
+          "is_correct": false
+        }
+      ],
+      "correct_answer": "B"
+    }
+  ]
+}
