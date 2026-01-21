@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间管理 | 夸克自控 - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/time-management.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+
+<body>
+    <header>
+        <link rel="stylesheet" href="/assets/css/basic.css">
+        <nav class="container">
+            <div class="logo">夸克自控</div>
+            <div class="nav-links">
+                <a href="index.html">主页</a>
+                <a href="time" class="active">时间管理</a>
+                <a href="study">学习管理</a>
+                <a href="finance">财务管理</a>
+                <a href="health">个人健康</a>
+                <a href="other">其他功能</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>时间管理</h1>
+
+        <!-- 待办事项部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
+                <h2 class="section-title">待办事项</h2>
+                <div class="form-toggle">
+                    <button class="active" onclick="toggleForm('todo-form', this)">添加任务</button>
+                    <button onclick="toggleForm('todo-list', this)">我的任务</button>
+                </div>
+            </div>
+
+            <div id="todo-form" class="form-content active">
+                <form id="add-task-form" class="full-width-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-name">事项名称</label>
+                            <input type="text" id="task-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-due">截止日期</label>
+                            <input type="datetime-local" id="task-due" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-priority">优先级</label>
+                            <select id="task-priority" required>
+                                <option value="high">高</option>
+                                <option value="medium" selected>中</option>
+                                <option value="low">低</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="task-notes">备注</label>
+                            <textarea id="task-notes"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">添加任务</button>
+                </form>
+            </div>
+
+            <div id="todo-list" class="form-content">
+                <div class="full-width-list">
+                    <ul class="task-list" id="task-list">
+                        <!-- 任务将通过JavaScript动态加载 -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 时间追踪部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
+                <h2 class="section-title">时间追踪</h2>
+                <div class="form-toggle">
+                    <button class="active" onclick="toggleForm('time-log-form', this)">记录时间</button>
+                    <button onclick="toggleForm('time-log-stats', this)">时间统计</button>
+                </div>
+            </div>
+
+            <div id="time-log-form" class="form-content active">
+                <form id="add-time-log-form" class="full-width-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="time-log-activity">活动名称</label>
+                            <input type="text" id="time-log-activity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time-log-date">日期</label>
+                            <input type="date" id="time-log-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time-log-duration">花费时间(分钟)</label>
+                            <input type="number" id="time-log-duration" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="time-log-participants">参与者</label>
+                            <input type="text" id="time-log-participants" placeholder="可选">
+                        </div>
+                        <div class="form-group">
+                            <label for="time-log-location">地点</label>
+                            <input type="text" id="time-log-location" placeholder="可选">
+                        </div>
+                        <div class="form-group">
+                            <label for="time-log-category">分类</label>
+                            <select id="time-log-category">
+                                <option value="work">工作</option>
+                                <option value="study">学习</option>
+                                <option value="entertainment">娱乐</option>
+                                <option value="sport">运动</option>
+                                <option value="social">社交</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">记录时间</button>
+                </form>
+            </div>
+
+            <div id="time-log-stats" class="form-content">
+                <div class="chart-container">
+                    <canvas id="time-chart"></canvas>
+                </div>
+                <div class="full-width-list">
+                    <ul class="time-log-list" id="time-log-list">
+                        <!-- 时间记录将通过JavaScript动态加载 -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- FLAG部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
+                <h2 class="section-title">FLAG</h2>
+                <div class="form-toggle">
+                    <button class="active" onclick="toggleForm('flag-form', this)">新建FLAG</button>
+                    <button onclick="toggleForm('flag-list', this)">我的FLAG</button>
+                </div>
+            </div>
+
+            <div id="flag-form" class="form-content active">
+                <form id="add-flag-form" class="full-width-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="flag-name">FLAG内容</label>
+                            <input type="text" id="flag-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="flag-start">开始时间</label>
+                            <input type="date" id="flag-start" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="flag-end">完成时间</label>
+                            <input type="date" id="flag-end" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="flag-reward">完成奖励</label>
+                            <input type="text" id="flag-reward" placeholder="可选">
+                        </div>
+                        <div class="form-group">
+                            <label for="flag-priority">优先级</label>
+                            <select id="flag-priority" required>
+                                <option value="high">高</option>
+                                <option value="medium" selected>中</option>
+                                <option value="low">低</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="flag-status">状态</label>
+                            <select id="flag-status">
+                                <option value="ongoing">进行中</option>
+                                <option value="completed">已完成</option>
+                                <option value="failed">已放弃</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">立下FLAG</button>
+                </form>
+            </div>
+
+            <div id="flag-list" class="form-content">
+                <div class="full-width-list">
+                    <ul class="flag-list" id="flag-list">
+                        <!-- FLAG将通过JavaScript动态加载 -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 定时器部分 -->
+        <section class="full-width-section">
+            <div class="section-header">
+                <h2 class="section-title">定时提醒</h2>
+                <div class="form-toggle">
+                    <button class="active" onclick="toggleForm('timer-form', this)">新建提醒</button>
+                    <button onclick="toggleForm('timer-list', this)">我的提醒</button>
+                </div>
+            </div>
+
+            <div id="timer-form" class="form-content active">
+                <form id="add-timer-form" class="full-width-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="timer-name">提醒事项</label>
+                            <input type="text" id="timer-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="timer-type">提醒类型</label>
+                            <select id="timer-type" required>
+                                <option value="notification">系统通知</option>
+                                <option value="email">电子邮件</option>
+                                <option value="both">两者都</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="timer-time">提醒时间</label>
+                            <input type="datetime-local" id="timer-time" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="timer-repeat">重复周期</label>
+                            <select id="timer-repeat">
+                                <option value="none">不重复</option>
+                                <option value="daily">每天</option>
+                                <option value="weekly">每周</option>
+                                <option value="monthly">每月</option>
+                                <option value="yearly">每年</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="timer-description">提醒描述</label>
+                            <input type="text" id="timer-description" placeholder="可选">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">设置提醒</button>
+                </form>
+            </div>
+
+            <div id="timer-list" class="form-content">
+                <div class="full-width-list">
+                    <ul class="timer-list" id="timer-list">
+                        <!-- 定时器将通过JavaScript动态加载 -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 其他时间工具 -->
+        <section class="full-width-section">
+            <h2 class="section-title">其他时间工具</h2>
+            <div class="other-time-tools">
+                <a href="#">倒计时</a>
+                <a href="#">秒表</a>
+                <a href="#">放假安排</a>
+                <a href="#">保质期</a>
+                <a href="#">闰年计算</a>
+                <a href="/tool" target="_blank">更多工具</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 - 2026 夸克自控 - 个人管理与自控力成长平台</p>
+        </div>
+    </footer>
+
+    <script src="time.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

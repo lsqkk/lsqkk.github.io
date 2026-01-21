@@ -1,0 +1,270 @@
+/* 1. 变量和基础样式 */
+:root {
+    --header-height: 60px;
+    /* 预留顶栏空间 */
+    --main-blue: #007aff;
+    /* iOS 蓝色 */
+    --main-green: #34c759;
+    /* 成功绿色 */
+    --main-red: #ff3b30;
+    /* 警告红色 */
+    --bg-light: #f0f2f5;
+    /* 极浅背景色 */
+    --card-bg-opacity: 0.8;
+    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --card-border: 1px solid rgba(255, 255, 255, 0.3);
+    --control-bg: rgba(255, 255, 255, 0.1);
+    /* 控制区半透明背景 */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /* 使用与 nav.css 协调的半透明背景 */
+    background: url('/assets/img/bg.png') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    background-attachment: fixed;
+    /* 示例背景，您可以替换为 /assets/img/bg.png */
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+/* 核心修改：确保内容在固定顶栏下方，且居中显示 */
+.meeting-wrapper {
+    padding-top: var(--header-height);
+    /* 留出固定顶栏的空间 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 50px;
+}
+
+/* 2. 容器和卡片样式 (沿用毛玻璃风格) */
+.meeting-container {
+    width: 95%;
+    max-width: 1200px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+/* 会议控制卡片 */
+.control-card {
+    background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--card-border);
+    padding: 20px;
+    flex: 0 0 300px;
+    /* 固定宽度 */
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* 视频显示区域 */
+.video-display-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.video-player-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-height: 400px;
+    /* 最小高度保证显示效果 */
+}
+
+/* 视频播放器卡片 */
+.video-card {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 视频背景通常用深色 */
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    position: relative;
+    flex: 1 1 45%;
+    /* 桌面端默认双列布局 */
+    min-width: 300px;
+    aspect-ratio: 16 / 9;
+    /* 保持视频比例 */
+}
+
+.video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 填充整个容器，可能裁剪 */
+}
+
+.video-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+/* 3. 会议控制元素样式 (避免与 nav.css 冲突) */
+h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+}
+
+.meeting-input-group {
+    margin-bottom: 20px;
+}
+
+.meeting-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: all 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+}
+
+.meeting-input::placeholder {
+    color: #999;
+}
+
+.meeting-action-button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: all 0.2s;
+    border: none;
+    background-color: var(--main-blue);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
+}
+
+.meeting-action-button:hover {
+    opacity: 0.9;
+}
+
+.meeting-action-button:disabled {
+    background-color: #a0c4ff;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.meeting-action-button.red-btn {
+    background-color: var(--main-red);
+    box-shadow: 0 2px 4px rgba(255, 59, 48, 0.4);
+}
+
+/* 设备控制按钮组 */
+.device-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.device-btn {
+    flex: 1 1 45%;
+    /* 双列布局 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 5px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--control-bg);
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.device-btn:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.device-btn.active {
+    background-color: var(--main-green);
+    color: white;
+}
+
+.device-btn.active:hover {
+    background-color: #2ab74d;
+}
+
+.device-btn i {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+.status-log {
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 15px;
+}
+
+/* 4. 移动端和响应式 */
+@media (max-width: 800px) {
+    .meeting-container {
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .control-card {
+        flex: 1 1 auto;
+        max-height: none;
+        /* 移动端不限制高度 */
+    }
+
+    .video-player-container {
+        flex-direction: column;
+        min-height: 200px;
+    }
+
+    .video-card {
+        flex: 1 1 100%;
+        /* 移动端单列布局 */
+    }
+}
+
+/* 横屏优化 (可选) */
+@media (orientation: landscape) and (max-width: 900px) {
+    .video-card {
+        aspect-ratio: 16 / 9;
+        /* 保持比例 */
+    }
+}

@@ -1,8 +1,8 @@
 # 
 
+# 更新日志
 
-# 更新日志不再维护
-详情请查看仓库commit记录~
+更新日志不再维护，博客详情请查看仓库commit记录。
 前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
 # 25.10.28

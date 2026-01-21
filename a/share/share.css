@@ -1,0 +1,253 @@
+:root {
+    /* 假设顶栏高度为 60px，请根据您 nav.css 中的 .header 实际高度调整 */
+    --header-height: 60px;
+    --main-blue: #007aff;
+    /* iOS 蓝色 */
+    --main-green: #34c759;
+    /* 接收成功绿色 */
+    --main-red: #ff3b30;
+    /* 警告红色 */
+    --bg-light: #f0f2f5;
+    /* 极浅背景色 */
+    --card-bg-opacity: 0.8;
+    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --card-border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('/assets/img/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+/* 核心修改：确保内容在固定顶栏下方，且居中显示 */
+.main-content-wrapper {
+    padding-top: var(--header-height);
+    /* 留出固定顶栏的空间，防止内容被遮挡 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* 允许子元素垂直堆叠 */
+    align-items: center;
+    padding-bottom: 50px;
+    /* 底部留白 */
+}
+
+/* 新增：顶部标题样式 */
+.app-title {
+    margin: 20px 0;
+    font-size: 2.2em;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    /* 增加标题可读性 */
+}
+
+/* 2. 容器和卡片样式 */
+.container {
+    width: 90%;
+    max-width: 480px;
+    padding: 0 20px;
+    /* 修正：在 main-content-wrapper 中设置了居中，这里只控制宽度 */
+}
+
+.card {
+    background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+    /* 半透明白色 */
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    /* 柔和阴影 */
+    backdrop-filter: blur(10px);
+    /* 核心：毛玻璃效果 */
+    -webkit-backdrop-filter: blur(10px);
+    /* 兼容性 */
+    border: var(--card-border);
+    /* 柔和边框 */
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+/* 3. 输入框和按钮样式 */
+.app-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: all 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+}
+
+.app-input::placeholder {
+    color: #999;
+}
+
+/* 隐藏默认文件选择器 */
+#file-input {
+    display: none;
+}
+
+/* 模拟文件选择按钮 */
+.file-select-label {
+    display: block;
+    background-color: var(--main-green);
+    color: white;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(52, 199, 89, 0.4);
+}
+
+.file-select-label:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(52, 199, 89, 0.4);
+}
+
+.app-button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: all 0.2s;
+    border: none;
+    background-color: var(--main-blue);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
+}
+
+.app-button:disabled {
+    background-color: #a0c4ff;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.app-button:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 122, 255, 0.4);
+}
+
+.secondary-btn {
+    background-color: var(--main-red);
+    margin-top: 10px;
+}
+
+.zip-button {
+    background-color: #f7b731;
+    /* 醒目黄色 */
+    box-shadow: 0 2px 4px rgba(247, 183, 49, 0.4);
+    margin-top: 15px;
+}
+
+
+/* 4. 状态和进度显示 */
+#status-card {
+    margin-bottom: 40px;
+}
+
+#status {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(245, 245, 245, 0.9);
+    border-radius: 8px;
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-all;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 14px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: var(--main-green);
+    transition: width 0.1s;
+}
+
+/* 5. 文件列表和下载区域 */
+#file-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: left;
+    border: 1px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+}
+
+#file-list li {
+    padding: 8px 12px;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.1);
+}
+
+#file-list li:last-child {
+    border-bottom: none;
+}
+
+.download-list {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.download-list a {
+    display: block;
+    margin: 8px 0;
+    padding: 10px;
+    background-color: rgba(0, 122, 255, 0.1);
+    border-radius: 6px;
+    color: #007aff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.download-list a:hover {
+    background-color: rgba(0, 122, 255, 0.2);
+}
+
+
+/* 6. 移动端优化 */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 10px 10px 30px 10px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
