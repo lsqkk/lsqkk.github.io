@@ -1,0 +1,26 @@
+    body,
+    html {
+        background: url(https://bing.img.run/rand.php) no-repeat center center fixed;
+        background-size: cover;
+        height: 100%;
+        margin: 0;
+    }
+
+
+    .content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        border-radius: 15px;
+        background-color: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 10px;
+        width: 60%;
+    }
+
+    .weather {
+        margin-top: 20px;
+    }

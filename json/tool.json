@@ -22,6 +22,11 @@
           "name": "自定义网站导航",
           "url": "/tool/nav",
           "target": "_blank"
+        },
+        {
+          "name": "随机转盘",
+          "url": "/tool/random-wheel",
+          "target": "_blank"
         }
       ]
     },
@@ -150,7 +155,7 @@
       "tools": [
         {
           "name": "科技伦理立场测试",
-          "url": "/tool/estest",
+          "url": "/tool/test",
           "target": "_blank"
         },
         {

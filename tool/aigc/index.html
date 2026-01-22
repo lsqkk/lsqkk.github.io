@@ -5,16 +5,19 @@
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克博客 | AIGC文本检测工具</title>
+    <title>AIGC 文本检测工具 - 夸克博客</title>
     <link rel="stylesheet" href="aigc.css">
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/nav.js"></script>
 
 </head>
 
 <body>
-    <h1>AIGC文本检测工具</h1>
-    <a href="/" class="link">夸克博客</a>
+
+
     <div class="container">
+        <h1>AIGC 文本检测工具</h1>
         <div class="input-section">
             <h3>输入待检测文本</h3>
             <textarea id="inputText" placeholder="请在此粘贴需要检测的文本..."></textarea>
@@ -54,127 +57,7 @@
     </div>
     <a href="/posts/copyright" class="link">© 2024 - 2026 蓝色奇夸克 / 夸克博客 All rights
         reserved.</a>
-    <script>
-        document.getElementById('analyzeBtn').addEventListener('click', analyzeText);
-
-        function analyzeText() {
-            const inputText = document.getElementById('inputText').value;
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerHTML = '';
-
-            if (!inputText.trim()) {
-                outputDiv.textContent = '请输入需要检测的文本';
-                return;
-            }
-
-            const sentences = splitIntoSentences(inputText);
-            document.getElementById('totalSentences').textContent = sentences.length;
-
-            let highCount = 0, lowCount = 0, totalScore = 0;
-
-            sentences.forEach(sentence => {
-                const trimmed = sentence.trim();
-                if (!trimmed) return;
-
-                const analysis = analyzeSentence(trimmed);
-                const sentenceElement = document.createElement('div');
-
-                if (analysis.severity === 'high') {
-                    sentenceElement.className = 'high-suspicion';
-                    highCount++;
-                    totalScore += 0.8;
-                } else if (analysis.severity === 'low') {
-                    sentenceElement.className = 'low-suspicion';
-                    lowCount++;
-                    totalScore += 0.3;
-                } else {
-                    sentenceElement.className = 'none-suspicion';
-                    totalScore += 0.1;
-                }
-
-                sentenceElement.textContent = trimmed;
-                if (analysis.reasons.length > 0) {
-                    analysis.reasons.forEach(r => {
-                        const reasonElement = document.createElement('span');
-                        reasonElement.className = 'reason';
-                        reasonElement.textContent = `⚠️ ${r}`;
-                        sentenceElement.appendChild(reasonElement);
-                    });
-                }
-                outputDiv.appendChild(sentenceElement);
-            });
-
-            document.getElementById('highSuspicion').textContent = highCount;
-            document.getElementById('lowSuspicion').textContent = lowCount;
-            const humanProb = calculateHumanProbability(totalScore, sentences.length);
-            document.getElementById('humanProbability').textContent = `${humanProb}%`;
-            document.getElementById('confidenceBar').style.width = `${humanProb}%`;
-        }
-
-        function splitIntoSentences(text) {
-            // 原版（简单分割）
-            // return text.split(/(?<=[。！？；.!?;])/g); 
-
-            // 修改为以下版本（严格按中文句子边界分割）：
-            return text.split(/(?<=[。！？.!?])/g)  // 只保留常见句子结束符号
-                .map(s => s.trim())          // 去除首尾空格
-                .filter(s => s.length > 0);  // 过滤空句子
-        }
-
-        function analyzeSentence(sentence) {
-            // AI特征规则（压缩格式）
-            const aiRules = [
-                { pattern: /(研究表明|据统计|数据显示|调查表明|报告显示|专家指出)[^，。！？；.!?;]{5,20}(表明|显示|指出)/, reason: "模糊研究引用", severity: 'high' },
-                { pattern: /(20[0-9]{2}年.*(达到|约为|增长|下降|占比|约为|超过))/, reason: "模糊时间数据", severity: 'high' },
-                { pattern: /(随着.*的.*发展|近年来.*日益|当前.*背景下)/, reason: "趋势性开场白", severity: 'high' },
-                { pattern: /(综上所述|总而言之|总之|由此可见|因此|所以|由此可得)/, reason: "结论性语言", severity: 'high' },
-                { pattern: /(本文|本章|本部分|本报告|本小节|如上所述|如下所示)/, reason: "正式报告结构", severity: 'high' },
-                { pattern: /(首先.*其次.*最后|一方面.*另一方面)/, reason: "结构化表达", severity: 'high' },
-                { pattern: /(应该|应当|需要|建议|可以|考虑|推荐|不妨)/, reason: "建议性语言", severity: 'low' },
-                { pattern: /(一般来说|通常情况下|普遍认为|大多数人|常见的是)/, reason: "泛化表述", severity: 'low' },
-                { pattern: /(是一种|具有|包括|分为|主要由|通常指|定义为)/, reason: "定义性语言", severity: 'low' },
-                { pattern: /(被.*所|由.*构成|通过.*实现|基于.*理论)/, reason: "被动语态结构", severity: 'low' }
-            ];
-
-            // 人类特征规则（压缩格式）
-            const humanRules = [
-                { pattern: /(我|我们|你|您|他们)/, reason: "人称代词", severity: 'none' },
-                { pattern: /(个人|自己|感觉|认为|觉得)/, reason: "主观表达", severity: 'none' },
-                { pattern: /(今天|昨天|明天|最近|上周)/, reason: "具体时间", severity: 'none' },
-                { pattern: /[!?？！]{2,}/, reason: "情感化标点", severity: 'none' },
-                { pattern: /(口语|俚语|方言)/, reason: "非正式用语", severity: 'none' }
-            ];
-
-            const reasons = [];
-            let severity = 'none';
-            let humanScore = 0;
-
-            // 检查AI特征
-            aiRules.forEach(rule => {
-                if (rule.pattern.test(sentence)) {
-                    reasons.push(rule.reason);
-                    if (rule.severity === 'high') severity = 'high';
-                    else if (rule.severity === 'low' && severity !== 'high') severity = 'low';
-                }
-            });
-
-            // 检查人类特征
-            humanRules.forEach(rule => {
-                if (rule.pattern.test(sentence)) humanScore++;
-            });
-
-            // 最终判定（人类特征可覆盖AI特征）
-            if (humanScore >= 2 && severity !== 'high') return { severity: 'none', reasons: ["人类特征明显"] };
-            return { severity, reasons };
-        }
-
-        function calculateHumanProbability(totalScore, sentenceCount) {
-            if (sentenceCount === 0) return 0;
-            const avgScore = totalScore / sentenceCount;
-            const humanProb = Math.round((1 - Math.min(1, avgScore * 1.2)) * 100);
-            return Math.max(0, Math.min(100, 1.5 * 10 ** (humanProb / 50))).toFixed(2);
-        }
-    </script>
+    <script src="aigc.js"></script>
     <script src="/assets/js/disable-right-click.js"></script>
 </body>
 

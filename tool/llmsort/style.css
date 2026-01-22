@@ -1,0 +1,299 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 标题样式 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        /* 毛玻璃卡片效果 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* 输入区域样式 */
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* 按钮样式 */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 结果区域样式 */
+        .result-container {
+            margin-top: 40px;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .result-placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+        }
+
+        .result-success {
+            color: #4CAF50;
+            border-left: 4px solid #4CAF50;
+            padding-left: 15px;
+        }
+
+        .result-error {
+            color: #F44336;
+            border-left: 4px solid #F44336;
+            padding-left: 15px;
+        }
+
+        /* 状态指示器 */
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #666;
+            margin-right: 8px;
+        }
+
+        .status-active {
+            background-color: #4CAF50;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* 安全提示 */
+        .security-notice {
+            background: rgba(0, 100, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.95rem;
+        }
+
+        .security-title {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .glass-card {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.4);
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: left;
+            padding: 15px;
+            border-radius: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }

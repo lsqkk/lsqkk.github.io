@@ -1,0 +1,140 @@
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+        }
+
+        body {
+            background-color: #000;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 700px;
+            margin-top: 60px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card h1 {
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #fff;
+        }
+
+        .config-section,
+        .quiz-section,
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .range-picker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        select,
+        button,
+        input[type="checkbox"] {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .primary-btn {
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            border: none;
+            padding: 14px;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+
+        .primary-btn:hover {
+            background: #ccc;
+        }
+
+        #question-display {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            text-align: center;
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hint-text {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-align: center;
+            height: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .stats-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .tag-yes {
+            color: #50fa7b;
+        }
+
+        .tag-no {
+            color: #ff5555;
+        }
+
+        .progress-bar {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+            letter-spacing: 1px;
+        }

@@ -1,15 +1,11 @@
 :root {
     /* 假设顶栏高度为 60px，请根据您 nav.css 中的 .header 实际高度调整 */
     --header-height: 60px;
-    --main-blue: #007aff;
-    /* iOS 蓝色 */
-    --main-green: #34c759;
-    /* 接收成功绿色 */
-    --main-red: #ff3b30;
-    /* 警告红色 */
     --bg-light: #f0f2f5;
-    /* 极浅背景色 */
-    --card-bg-opacity: 0.8;
+    --main-blue: #248dfd;
+    --main-green: #7dd894;
+    --main-red: #ff5328;
+    --card-bg-opacity: 0.2;
     --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     --card-border: 1px solid rgba(255, 255, 255, 0.3);
 }
@@ -250,4 +246,14 @@ h2 {
     .card {
         padding: 20px;
     }
+}
+
+.page-title {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2.8rem;
+    font-weight: 300;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
 }

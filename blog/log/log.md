@@ -111,7 +111,7 @@
 
 # 25.3.24
 1. 新增 - 上线**科技伦理立场光谱测试**功能，点击直达👇
-[![1](https://i.postimg.cc/MKdcZ4cm/image.png)](https://lsqkk.github.io/tool/estest)
+[![1](https://i.postimg.cc/MKdcZ4cm/image.png)](https://lsqkk.github.io/tool/test)
 
 # 这之前
 暂无日志记录~
