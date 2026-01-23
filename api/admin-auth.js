@@ -2,7 +2,7 @@
 export default async function handler(req, res) {
     // ----- 1. 处理 CORS 和 OPTIONS 预检请求 -----
     // 定义允许访问的源（你的前端页面所在的域名）
-    const allowedOrigins = ['http://localhost:8080', 'https://lsqkk.github.io'];
+    const allowedOrigins = ['localhost:8000', 'lsqkk.github.io'];
     const requestOrigin = req.headers.origin;
 
     // 检查请求来源是否在白名单中
