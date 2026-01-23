@@ -11,7 +11,7 @@ document.write(`
             <div class="header-left">
                 <img src="/assets/img/logo_blue.png" alt="头像"
                 style="width: 27px; border-radius: 50%; margin: 4px 7px 0px 0px; overflow: hidden; ">
-                <a href="/index.html" style="color: white; text-decoration: none;">
+                <a href="/" style="color: white; text-decoration: none;">
                     <h1>夸克博客</h1>
                 </a>
                 <!-- 移动端汉堡菜单按钮 -->
