@@ -21,25 +21,17 @@ def generate_sitemap():
     root_dir = "D:\git\lsqkk\lsqkk.github.io"
     base_url = "https://lsqkk.github.io/"
     
-    print("=" * 60)
-    print("         🚀 一键生成 sitemap.xml")
-    print("=" * 60)
-    print(f"📁 网站根目录: {root_dir}")
-    print(f"🌐 基础URL: {base_url}")
-    print("=" * 60)
-    
     # 默认排除的目录
     exclude_dirs = [
         '.git', '.vscode', '__pycache__', 'node_modules',
-        '.idea', 'venv', 'env', '.github', 'dist', 'build',
-        'cache', '.svn', '.hg', 'test', 'tests', 'temp'
+        '.idea', '.venv','venv', 'env', '.github', 'dist', 'build',
+        'cache', '.svn', '.hg', 'test', 'tests', 'temp', 'rubbish', 'template'
     ]
     
     # 默认排除的文件
     exclude_files = [
         'sitemap.xml', 'robots.txt', '.gitignore', 'CNAME',
-        'sitemap_generator.py', 'generate_sitemap.py',
-        'README.md', 'LICENSE', '.DS_Store'
+        'README.md', 'LICENSE', 'readme.md',  '404.html', 'auth.html'
     ]
     
     # 创建XML根元素
@@ -48,8 +40,6 @@ def generate_sitemap():
     
     # 扫描所有HTML文件
     html_files = []
-    
-    print("🔍 正在扫描HTML文件...")
     
     for root, dirs, files in os.walk(root_dir):
         # 排除不需要的目录
@@ -131,9 +121,9 @@ def generate_sitemap():
         url_count += 1
         
         # 显示进度
-        if url_count <= 10:  # 只显示前10个URL
+        if url_count <= 3:  # 只显示前3个URL
             print(f"  {url_count:3d}. {full_url} (优先级: {priority:.1f})")
-        elif url_count == 11:
+        elif url_count == 4:
             print(f"  ... 还有 {len(html_files) - 10} 个URL未显示")
     
     # 生成XML字符串
@@ -148,50 +138,10 @@ def generate_sitemap():
     with open(output_path, 'wb') as f:
         f.write(pretty_xml)
     
-    print("=" * 60)
-    print(f"✅ sitemap.xml 生成成功！")
-    print(f"📄 文件位置: {output_path}")
-    print(f"🔗 总共添加了 {url_count} 个URL")
-    
-    # 显示生成的sitemap文件内容预览
-    print("-" * 40)
-    print("📋 sitemap.xml 内容预览:")
-    print("-" * 40)
-    
-    # 读取并显示前20行
-    try:
-        with open(output_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-            for i, line in enumerate(lines[:20]):
-                print(line.rstrip())
-            if len(lines) > 20:
-                print(f"... 还有 {len(lines) - 20} 行未显示")
-    except:
-        # 如果是二进制文件，用不同方式读取
-        try:
-            with open(output_path, 'rb') as f:
-                content = f.read().decode('utf-8')
-                lines = content.split('\n')
-                for i, line in enumerate(lines[:20]):
-                    print(line.rstrip())
-                if len(lines) > 20:
-                    print(f"... 还有 {len(lines) - 20} 行未显示")
-        except:
-            print("无法显示文件内容预览")
-    
-    print("=" * 60)
-    
-    # 询问是否打开生成的sitemap文件
-    open_file = input("是否在浏览器中打开sitemap.xml？(y/n): ").lower()
-    if open_file == 'y' or open_file == 'yes':
-        try:
-            webbrowser.open(f'file://{output_path}')
-            print("🌐 正在在浏览器中打开sitemap.xml...")
-        except:
-            print("⚠️  无法在浏览器中打开文件")
-    
-    return True
+    print("-" * 30)
+    print(f"sitemap.xml 生成成功，位于 {output_path} ，包含 {url_count} 个URL")
 
+'''
 def create_robots_txt():
     """同时创建robots.txt文件"""
     root_dir = get_current_directory()
@@ -212,13 +162,15 @@ Sitemap: /sitemap.xml
         print(f"📄 已创建 robots.txt 文件")
     else:
         print(f"📄 robots.txt 文件已存在")
+'''
 
 def main():
     """主函数 - 直接运行"""
     try:
         # 生成sitemap
         success = generate_sitemap()
-        
+
+        '''
         if success:
             # 询问是否创建robots.txt
             create_robots = input("\n是否创建robots.txt文件？(y/n): ").lower()
@@ -226,23 +178,13 @@ def main():
                 create_robots_txt()
             
             print("\n" + "🎉 完成！".center(60))
-            print("=" * 60)
-            print("💡 提示：")
-            print("  • 将sitemap.xml提交到GitHub仓库")
-            print("  • 在搜索引擎站长工具中提交sitemap")
-            print("  • 定期运行此脚本更新sitemap")
-            
+        '''
+
     except Exception as e:
-        print(f"❌ 生成过程中出错: {e}")
-        print("\n💡 可能的原因：")
-        print("  • 没有写入权限")
-        print("  • 当前目录不是网站根目录")
-        print("  • Python环境问题")
+        print(f"生成过程中出错: {e}")
         
         # 等待用户按任意键退出
         input("\n按回车键退出...")
 
 if __name__ == '__main__':
-    # 显示欢迎信息
-    print("\n" + "🌟 sitemap生成器 🌟".center(60))
     main()

@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lsqkk.github.io/404/</loc>
-    <lastmod>2026-01-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://lsqkk.github.io/auth/</loc>
-    <lastmod>2026-01-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://lsqkk.github.io//</loc>
-    <lastmod>2026-01-19</lastmod>
+    <loc>https://lsqkk.github.io/</loc>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/</loc>
-    <lastmod>2026-01-21</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -44,55 +32,55 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/ds/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/fire-alert2/dashboard/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/fire-alert2/forecast/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/fire-alert2/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/fire-alert2/report/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/fire-alert2/satellite/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/live/assistant/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/live/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/live/streamer/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -122,61 +110,61 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/oj/discussion/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/oj/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/oj/problem-list/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/oj/submission-record/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/oj/train/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/physics/</loc>
-    <lastmod>2026-01-14</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/physics/mirror/</loc>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/physics/waves/3dwaves/</loc>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/physics/waves/planewave/</loc>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/physics/waves/shearwave/</loc>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -194,13 +182,13 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/terminal/</loc>
-    <lastmod>2026-01-16</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/a/uni/</loc>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -218,7 +206,7 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/blog/</loc>
-    <lastmod>2026-01-21</lastmod>
+    <lastmod>2026-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -242,19 +230,19 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/blog/log/</loc>
-    <lastmod>2026-01-21</lastmod>
+    <lastmod>2026-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/blog/lyb/</loc>
-    <lastmod>2026-01-21</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/blog/qtv/</loc>
-    <lastmod>2026-01-15</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -266,7 +254,7 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/games/</loc>
-    <lastmod>2026-01-20</lastmod>
+    <lastmod>2026-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -332,7 +320,7 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/games/zy/</loc>
-    <lastmod>2025-12-30</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -350,7 +338,7 @@
   </url>
   <url>
     <loc>https://lsqkk.github.io/posts/</loc>
-    <lastmod>2026-01-14</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -503,30 +491,6 @@
     <lastmod>2026-01-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://lsqkk.github.io/rubbish/post/</loc>
-    <lastmod>2025-12-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://lsqkk.github.io/rubbish/deskremote/</loc>
-    <lastmod>2026-01-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://lsqkk.github.io/template/html_template/</loc>
-    <lastmod>2026-01-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://lsqkk.github.io/template/post_template/</loc>
-    <lastmod>2026-01-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://lsqkk.github.io/tool/</loc>
