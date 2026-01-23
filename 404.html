@@ -18,23 +18,23 @@
         <div class="emoji">🌌</div>
         <h1>404</h1>
         <p>你似乎来到了没有知识的荒原……</p>
-        <a href="/" class="btn">返回首页</a>
-        <a href="/games" class="btn">玩会游戏</a>
+
+        <!-- 智能搜索结果显示区域 -->
+        <div id="searchSuggestions" class="suggestions" style="display: none;">
+            <p class="suggestion-title">您要找的是不是：</p>
+            <div id="suggestionList" class="suggestion-list"></div>
+        </div>
+
+        <div class="buttons">
+            <a href="/" class="btn">返回首页</a>
+            <a href="/games" class="btn">玩会游戏</a>
+        </div>
+
         <div class="countdown" id="countdown">5 秒后自动回到首页</div>
     </div>
 
-    <script>
-        let seconds = 5;
-        const countdownEl = document.getElementById("countdown");
-        const timer = setInterval(() => {
-            seconds--;
-            countdownEl.textContent = `${seconds} 秒后自动回到首页`;
-            if (seconds <= 0) {
-                clearInterval(timer);
-                window.location.href = "/";
-            }
-        }, 1000);
-    </script>
+    <script src="/assets/js/404.js"></script>
+
     <script src="/assets/js/disable-right-click.js"></script>
 </body>
 
