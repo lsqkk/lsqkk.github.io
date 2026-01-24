@@ -205,7 +205,7 @@
                         "工具",
                         "GitHub"
                     ],
-                    "description": "摆脱遥控笔，在任何设备（手机、平板）遥控放映PPT。",
+                    "description": "摆脱遥控笔，在任何设备遥控放映PPT | 基于 Firebase Realtime Database 与 Node.js 开发的轻量级跨网络 PPT 遥控工具，允许使用手机远程控制电脑上的 PPT 翻页、黑屏、激光笔等功能，无需处于同一局域网。",
                     "link": "https://github.com/lsqkk/ppt-remote",
                     "target": "_blank"
                 },
@@ -227,6 +227,36 @@
                     ],
                     "description": "小白友好的 AI 文件管家。基于AI的智能文件分类与管理工具，通过分析文件名自动将文件分类到预设的目录结构。采用Web可视化界面，支持批量处理、手动调整和实时配置更新，让文件整理变得简单高效。",
                     "link": "https://github.com/lsqkk/FileManager",
+                    "target": "_blank"
+                },
+                {
+                    "name": "Quark API",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "Quark API 是一个模块化、可扩展的个人 API 服务集合，提供多种 API 服务。项目采用 Node.js 开发，部署于 Vercel 平台，支持通过 RESTful API 访问丰富的问答数据。",
+                    "link": "https://github.com/lsqkk/quark-api",
+                    "target": "_blank"
+                },
+                {
+                    "name": "DeepSeek Skills",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "DeepSeek 本地文件操作增强插件 | 为 DeepSeek 网页版添加本地文件操作能力，模拟 SKILLS 的CODING功能。通过浏览器插件+本地服务的架构，在保障安全的前提下实现智能文件编辑。",
+                    "link": "https://github.com/lsqkk/deepseek-skills",
+                    "target": "_blank"
+                },
+                {
+                    "name": "动物识别数据集",
+                    "categories": [
+                        "工具",
+                        "GitHub"
+                    ],
+                    "description": "A high-quality animal image dataset with 9,757+ images across 16 categories for computer vision research and CNN training. 一个用于计算机视觉研究和CNN模型训练的高质量动物图像数据集。本数据集包含9,757张经过精心筛选的动物图像，涵盖多个类别，适用于目标识别、分类和迁移学习任务。",
+                    "link": "https://github.com/lsqkk/animal-recognition-dataset",
                     "target": "_blank"
                 }
             ]
