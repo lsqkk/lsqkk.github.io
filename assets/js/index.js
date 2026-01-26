@@ -313,12 +313,12 @@ function getProvinceBanter(province) {
 async function getVisitorInfo() {
     try {
         // 第一个API：获取IP地理信息
-        const ipResponse = await fetch('https://api.lsqkk.space/api/ip-info');
+        const ipResponse = await fetch('https://ipapi.co/json/');
         const ipData = await ipResponse.json();
 
         if (ipData.code === 200) {
             const ip = ipData.ip;
-            const ipPro = ipData.pro;
+            const ipPro = ipData.region;
             const ipCity = ipData.city;
 
             // 第二个API：获取经纬度
