@@ -1,112 +1,83 @@
-
+// api/client-info-enhanced.js
 module.exports = async (req, res) => {
     // 设置CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
 
     try {
-        // 获取客户端IP
-        const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+        // 获取客户端真实IP（注意：x-forwarded-for第一个是Vercel节点IP，第二个才是客户端IP）
+        const forwardedIps = req.headers['x-forwarded-for']?.split(',') || [];
+        const clientIP = forwardedIps.length > 1
+            ? forwardedIps[1].trim()  // 第二个是真实客户端IP
+            : forwardedIps[0]?.trim() ||
             req.headers['x-real-ip'] ||
             req.connection.remoteAddress ||
             'unknown';
 
-        // 获取Vercel地理位置头信息
-        const vercelCountry = req.headers['x-vercel-ip-country'];
-        const vercelCity = req.headers['x-vercel-ip-city'];
-        const latitude = req.headers['x-vercel-ip-latitude'];
-        const longitude = req.headers['x-vercel-ip-longitude'];
+        console.log('原始IP信息:', {
+            'x-forwarded-for': req.headers['x-forwarded-for'],
+            'x-real-ip': req.headers['x-real-ip'],
+            'clientIP': clientIP
+        });
 
-        let region = '未知';
-        let city = '未知';
-        let finalLat = latitude;
-        let finalLon = longitude;
+        // 使用IP直接查询真实地理位置（不使用Vercel头信息）
+        const ipInfo = await getAccurateLocationFromIP(clientIP);
 
-        // 1. 首先使用Vercel头信息
-        if (vercelCity && vercelCity !== 'unknown') {
-            const cityParts = vercelCity.split('-');
-            if (cityParts.length > 1) {
-                region = cityParts[0];
-                city = cityParts[1];
-            } else {
-                city = vercelCity;
-                region = '未知';
+        if (ipInfo) {
+            // 计算距离（西安坐标）
+            const bloggerLat = 34.252705;
+            const bloggerLon = 108.990221;
+            let distance = '未知';
+
+            if (ipInfo.latitude && ipInfo.longitude) {
+                distance = calculateDistance(
+                    bloggerLat, bloggerLon,
+                    parseFloat(ipInfo.latitude), parseFloat(ipInfo.longitude)
+                ).toFixed(2);
             }
-        }
 
-        // 2. 如果Vercel信息不足，使用其他API查询
-        if (region === '未知' || city === '未知') {
-            try {
-                // 使用原生fetch查询IP位置
-                const locationInfo = await fetchIPLocation(clientIP);
-                if (locationInfo) {
-                    region = locationInfo.province || region;
-                    city = locationInfo.city || city;
-                    finalLat = locationInfo.latitude || finalLat;
-                    finalLon = locationInfo.longitude || finalLon;
+            // 解析User-Agent
+            const userAgent = req.headers['user-agent'] || '';
+            const deviceInfo = parseUserAgent(userAgent);
+
+            // 返回准确信息
+            const result = {
+                ip: clientIP,
+                location: {
+                    country: ipInfo.country || '中国',
+                    region: ipInfo.province || '未知',
+                    city: ipInfo.city || '未知',
+                    latitude: ipInfo.latitude,
+                    longitude: ipInfo.longitude,
+                    isp: ipInfo.isp || '未知',
+                    source: ipInfo.source || 'IP查询API'
+                },
+                distance: {
+                    value: distance,
+                    unit: '公里',
+                    bloggerLocation: {
+                        city: '西安',
+                        latitude: bloggerLat,
+                        longitude: bloggerLon
+                    }
+                },
+                userAgent: {
+                    browser: deviceInfo.browser,
+                    os: deviceInfo.os,
+                    isMobile: deviceInfo.isMobile
+                },
+                timestamp: new Date().toISOString(),
+                debug: {
+                    originalForwardedFor: req.headers['x-forwarded-for'],
+                    vercelCity: req.headers['x-vercel-ip-city'],
+                    isChina: ipInfo.country_code === 'CN'
                 }
-            } catch (error) {
-                console.warn('IP定位API查询失败:', error.message);
-            }
+            };
+
+            res.status(200).json(result);
+        } else {
+            throw new Error('无法获取地理位置信息');
         }
-
-        // 3. 如果还没有坐标，且知道省份城市，尝试获取坐标
-        if ((!finalLat || !finalLon) && region !== '未知' && city !== '未知') {
-            try {
-                const coords = await fetchCoordinates(`${region}${city}`);
-                if (coords) {
-                    finalLat = coords.lat;
-                    finalLon = coords.lon;
-                }
-            } catch (error) {
-                console.warn('坐标查询失败:', error.message);
-            }
-        }
-
-        // 4. 计算距离（西安坐标）
-        const bloggerLat = 34.252705;
-        const bloggerLon = 108.990221;
-        let distance = '未知';
-
-        if (finalLat && finalLon) {
-            distance = calculateDistance(
-                bloggerLat, bloggerLon,
-                parseFloat(finalLat), parseFloat(finalLon)
-            ).toFixed(2);
-        }
-
-        // 解析User-Agent
-        const userAgent = req.headers['user-agent'] || '';
-        const deviceInfo = parseUserAgent(userAgent);
-
-        // 返回完整信息
-        const result = {
-            ip: clientIP,
-            location: {
-                country: vercelCountry === 'CN' ? '中国' : vercelCountry || '未知',
-                region: region,
-                city: city,
-                latitude: finalLat,
-                longitude: finalLon
-            },
-            distance: {
-                value: distance,
-                unit: '公里',
-                bloggerLocation: {
-                    city: '西安',
-                    latitude: bloggerLat,
-                    longitude: bloggerLon
-                }
-            },
-            userAgent: {
-                browser: deviceInfo.browser,
-                os: deviceInfo.os,
-                isMobile: deviceInfo.isMobile
-            },
-            timestamp: new Date().toISOString()
-        };
-
-        res.status(200).json(result);
 
     } catch (error) {
         console.error('处理请求失败:', error);
@@ -118,69 +89,185 @@ module.exports = async (req, res) => {
     }
 };
 
-// 原生fetch函数
-async function fetchIPLocation(ip) {
-    const apis = [
-        `https://api.ip.sb/geoip/${ip}`,
-        `https://ipwho.is/${ip}`,
-        `https://ipapi.co/${ip}/json/`
+// 准确获取IP地理位置（不使用Vercel头信息）
+async function getAccurateLocationFromIP(ip) {
+    // 排除内网IP
+    if (isPrivateIP(ip)) {
+        return {
+            country: '中国',
+            province: '内网',
+            city: '本地网络',
+            isp: 'LAN',
+            source: '内网IP'
+        };
+    }
+
+    // 按优先级尝试多个准确的IP查询API
+    const apiPromises = [
+        queryIPSB(ip),
+        queryIPAPI(ip),
+        queryIPWhoIs(ip),
+        queryIPGeolocation(ip)
     ];
 
-    for (const apiUrl of apis) {
-        try {
-            const response = await fetchWithTimeout(apiUrl, 3000);
-            const data = JSON.parse(response);
+    // 等待所有API响应，选择最准确的结果
+    const results = await Promise.allSettled(apiPromises);
 
-            if (data && data.country_code === 'CN') {
-                return {
-                    province: data.region || data.province,
-                    city: data.city,
-                    latitude: data.latitude,
-                    longitude: data.longitude
-                };
+    for (const result of results) {
+        if (result.status === 'fulfilled' && result.value) {
+            const data = result.value;
+            // 优先选择中国地区且有城市信息的结果
+            if (data.country_code === 'CN' && data.city && data.city !== 'Unknown') {
+                console.log('选择API结果:', data.source, data.city);
+                return data;
             }
-        } catch (error) {
-            continue;
+        }
+    }
+
+    // 如果没有找到准确结果，返回第一个有效结果
+    for (const result of results) {
+        if (result.status === 'fulfilled' && result.value) {
+            return result.value;
         }
     }
 
     return null;
 }
 
-// 获取坐标
-async function fetchCoordinates(address) {
-    if (!address || address === '未知') return null;
-
+// 查询api.ip.sb（最准确的中国IP库）
+async function queryIPSB(ip) {
     try {
-        // 使用OpenStreetMap Nominatim
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-        const response = await fetchWithTimeout(url, 5000, {
-            'User-Agent': 'LSQKK-GeoService/1.0'
-        });
-
+        const response = await fetchWithTimeout(`https://api.ip.sb/geoip/${ip}`, 3000);
         const data = JSON.parse(response);
-        if (data && data.length > 0) {
+
+        if (data && data.ip) {
             return {
-                lat: data[0].lat,
-                lon: data[0].lon
+                ip: data.ip,
+                country: data.country || '未知',
+                country_code: data.country_code || '未知',
+                province: data.region || '未知',
+                city: data.city || '未知',
+                latitude: data.latitude,
+                longitude: data.longitude,
+                isp: data.isp || '未知',
+                source: 'ip.sb'
             };
         }
     } catch (error) {
-        // 静默失败
+        console.warn('ip.sb查询失败:', error.message);
     }
-
     return null;
 }
 
-// 原生fetch实现（Vercel环境支持原生fetch）
-async function fetchWithTimeout(url, timeout = 5000, headers = {}) {
+// 查询ipapi.co
+async function queryIPAPI(ip) {
+    try {
+        const response = await fetchWithTimeout(`https://ipapi.co/${ip}/json/`, 3000);
+        const data = JSON.parse(response);
+
+        if (data && data.ip) {
+            return {
+                ip: data.ip,
+                country: data.country_name || '未知',
+                country_code: data.country_code || '未知',
+                province: data.region || data.region_code || '未知',
+                city: data.city || '未知',
+                latitude: data.latitude,
+                longitude: data.longitude,
+                isp: data.org || '未知',
+                source: 'ipapi.co'
+            };
+        }
+    } catch (error) {
+        console.warn('ipapi.co查询失败:', error.message);
+    }
+    return null;
+}
+
+// 查询ipwho.is
+async function queryIPWhoIs(ip) {
+    try {
+        const response = await fetchWithTimeout(`https://ipwho.is/${ip}`, 3000);
+        const data = JSON.parse(response);
+
+        if (data && data.success) {
+            return {
+                ip: data.ip,
+                country: data.country || '未知',
+                country_code: data.country_code || '未知',
+                province: data.region || '未知',
+                city: data.city || '未知',
+                latitude: data.latitude,
+                longitude: data.longitude,
+                isp: data.connection?.isp || '未知',
+                source: 'ipwho.is'
+            };
+        }
+    } catch (error) {
+        console.warn('ipwho.is查询失败:', error.message);
+    }
+    return null;
+}
+
+// 查询ipgeolocation.io（备用）
+async function queryIPGeolocation(ip) {
+    try {
+        const response = await fetchWithTimeout(`https://api.ipgeolocation.io/ipgeo?apiKey=demo&ip=${ip}`, 3000);
+        const data = JSON.parse(response);
+
+        if (data && data.ip) {
+            return {
+                ip: data.ip,
+                country: data.country_name || '未知',
+                country_code: data.country_code2 || '未知',
+                province: data.state_prov || '未知',
+                city: data.city || '未知',
+                latitude: data.latitude,
+                longitude: data.longitude,
+                isp: data.isp || '未知',
+                source: 'ipgeolocation'
+            };
+        }
+    } catch (error) {
+        console.warn('ipgeolocation查询失败:', error.message);
+    }
+    return null;
+}
+
+// 检查是否为私有IP
+function isPrivateIP(ip) {
+    if (!ip) return false;
+
+    // IPv4私有地址范围
+    const ipParts = ip.split('.').map(Number);
+    if (ipParts.length !== 4) return false;
+
+    // 10.0.0.0/8
+    if (ipParts[0] === 10) return true;
+
+    // 172.16.0.0/12
+    if (ipParts[0] === 172 && ipParts[1] >= 16 && ipParts[1] <= 31) return true;
+
+    // 192.168.0.0/16
+    if (ipParts[0] === 192 && ipParts[1] === 168) return true;
+
+    // 127.0.0.0/8
+    if (ipParts[0] === 127) return true;
+
+    return false;
+}
+
+// 原生fetch实现
+async function fetchWithTimeout(url, timeout = 5000) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
     try {
         const response = await fetch(url, {
             signal: controller.signal,
-            headers: headers
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; LSQKK-GeoService/1.0)'
+            }
         });
 
         clearTimeout(id);
@@ -196,9 +283,9 @@ async function fetchWithTimeout(url, timeout = 5000, headers = {}) {
     }
 }
 
-// 计算两个坐标点之间的距离（公里）
+// 计算距离
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // 地球半径（公里）
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a =
