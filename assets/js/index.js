@@ -313,7 +313,7 @@ function getProvinceBanter(province) {
 async function getVisitorInfo() {
     try {
         // 第一个API：获取IP地理信息
-        const ipResponse = await fetch('https://whois.pconline.com.cn/ipJson.jsp?json=true');
+        const ipResponse = await fetch('https://api.lsqkk.space/api/ip-info');
         const ipData = await ipResponse.json();
 
         if (ipData.code === 200) {
