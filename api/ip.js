@@ -1,5 +1,3 @@
-// api/client-info-enhanced.js
-const axios = require('axios');
 
 module.exports = async (req, res) => {
     // 设置CORS
@@ -39,8 +37,8 @@ module.exports = async (req, res) => {
         // 2. 如果Vercel信息不足，使用其他API查询
         if (region === '未知' || city === '未知') {
             try {
-                // 尝试使用多个API获取位置信息
-                const locationInfo = await getLocationFromIP(clientIP);
+                // 使用原生fetch查询IP位置
+                const locationInfo = await fetchIPLocation(clientIP);
                 if (locationInfo) {
                     region = locationInfo.province || region;
                     city = locationInfo.city || city;
@@ -52,10 +50,10 @@ module.exports = async (req, res) => {
             }
         }
 
-        // 3. 如果还没有坐标，获取坐标
-        if ((!finalLat || !finalLon) && region !== '未知') {
+        // 3. 如果还没有坐标，且知道省份城市，尝试获取坐标
+        if ((!finalLat || !finalLon) && region !== '未知' && city !== '未知') {
             try {
-                const coords = await getCoordinatesFromAddress(`${region}${city}`);
+                const coords = await fetchCoordinates(`${region}${city}`);
                 if (coords) {
                     finalLat = coords.lat;
                     finalLon = coords.lon;
@@ -77,6 +75,10 @@ module.exports = async (req, res) => {
             ).toFixed(2);
         }
 
+        // 解析User-Agent
+        const userAgent = req.headers['user-agent'] || '';
+        const deviceInfo = parseUserAgent(userAgent);
+
         // 返回完整信息
         const result = {
             ip: clientIP,
@@ -97,9 +99,9 @@ module.exports = async (req, res) => {
                 }
             },
             userAgent: {
-                browser: parseUserAgent(req.headers['user-agent'] || '').browser,
-                os: parseUserAgent(req.headers['user-agent'] || '').os,
-                isMobile: parseUserAgent(req.headers['user-agent'] || '').isMobile
+                browser: deviceInfo.browser,
+                os: deviceInfo.os,
+                isMobile: deviceInfo.isMobile
             },
             timestamp: new Date().toISOString()
         };
@@ -116,85 +118,82 @@ module.exports = async (req, res) => {
     }
 };
 
-// 从IP获取地理位置（使用免费API）
-async function getLocationFromIP(ip) {
-    // 使用多个免费API，按优先级尝试
+// 原生fetch函数
+async function fetchIPLocation(ip) {
     const apis = [
-        {
-            url: `https://api.ip.sb/geoip/${ip}`,
-            parser: (data) => ({
-                province: data.region,
-                city: data.city,
-                latitude: data.latitude,
-                longitude: data.longitude
-            })
-        },
-        {
-            url: `https://ipwho.is/${ip}`,
-            parser: (data) => ({
-                province: data.region,
-                city: data.city,
-                latitude: data.latitude,
-                longitude: data.longitude
-            })
-        },
-        {
-            url: `https://ipapi.co/${ip}/json/`,
-            parser: (data) => ({
-                province: data.region,
-                city: data.city,
-                latitude: data.latitude,
-                longitude: data.longitude
-            })
-        }
+        `https://api.ip.sb/geoip/${ip}`,
+        `https://ipwho.is/${ip}`,
+        `https://ipapi.co/${ip}/json/`
     ];
 
-    for (const api of apis) {
+    for (const apiUrl of apis) {
         try {
-            const response = await axios.get(api.url, { timeout: 3000 });
-            if (response.data && response.data.country_code === 'CN') {
-                return api.parser(response.data);
+            const response = await fetchWithTimeout(apiUrl, 3000);
+            const data = JSON.parse(response);
+
+            if (data && data.country_code === 'CN') {
+                return {
+                    province: data.region || data.province,
+                    city: data.city,
+                    latitude: data.latitude,
+                    longitude: data.longitude
+                };
             }
         } catch (error) {
-            continue; // 尝试下一个API
+            continue;
         }
     }
 
     return null;
 }
 
-// 从地址获取坐标
-async function getCoordinatesFromAddress(address) {
+// 获取坐标
+async function fetchCoordinates(address) {
     if (!address || address === '未知') return null;
 
     try {
         // 使用OpenStreetMap Nominatim
-        const response = await axios.get(
-            `https://nominatim.openstreetmap.org/search`,
-            {
-                params: {
-                    q: address,
-                    format: 'json',
-                    limit: 1
-                },
-                headers: {
-                    'User-Agent': 'LSQKK-GeoService/1.0'
-                },
-                timeout: 5000
-            }
-        );
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+        const response = await fetchWithTimeout(url, 5000, {
+            'User-Agent': 'LSQKK-GeoService/1.0'
+        });
 
-        if (response.data && response.data.length > 0) {
+        const data = JSON.parse(response);
+        if (data && data.length > 0) {
             return {
-                lat: response.data[0].lat,
-                lon: response.data[0].lon
+                lat: data[0].lat,
+                lon: data[0].lon
             };
         }
     } catch (error) {
-        console.warn('地址转坐标失败:', error.message);
+        // 静默失败
     }
 
     return null;
+}
+
+// 原生fetch实现（Vercel环境支持原生fetch）
+async function fetchWithTimeout(url, timeout = 5000, headers = {}) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const response = await fetch(url, {
+            signal: controller.signal,
+            headers: headers
+        });
+
+        clearTimeout(id);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        return await response.text();
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
+    }
 }
 
 // 计算两个坐标点之间的距离（公里）
