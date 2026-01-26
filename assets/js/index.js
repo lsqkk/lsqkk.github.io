@@ -312,44 +312,56 @@ function getProvinceBanter(province) {
 
 async function getVisitorInfo() {
     try {
-        // 调用增强版API获取所有信息
-        const response = await fetch('https://api.lsqkk.space/api/ip');
+        // 使用您提供的API获取IP地理信息
+        const ipResponse = await fetch('https://api.b52m.cn/api/IP/');
+        const ipData = await ipResponse.json();
 
-        if (!response.ok) {
-            throw new Error(`API请求失败: ${response.status}`);
-        }
+        if (ipData.code === 200) {
+            const ip = ipData.data.ip;
+            const ipPro = ipData.data.region_name || ipData.data.province_name_2;
+            const ipCity = ipData.data.city_name || ipData.data.city_name_2;
+            const district = ipData.data.district_name_3 || ipData.data.district_name || "";
 
-        const data = await response.json();
+            // 获取经纬度（优先使用latitude_2/longitude_2，如果没有则使用latitude_3/longitude_3）
+            const latitude = ipData.data.latitude_2 || ipData.data.latitude_3 || 0;
+            const longitude = ipData.data.longitude_2 || ipData.data.longitude_3 || 0;
 
-        if (data && data.ip) {
+            // 站主位置（西安）
+            const bloggerLat = 34.252705;
+            const bloggerLon = 108.990221;
+
+            let distance = "未知距离";
+            if (latitude && longitude) {
+                distance = getDistance(
+                    bloggerLat, bloggerLon,
+                    latitude, longitude
+                );
+            }
+
             // 获取省份俏皮话
-            const provinceBanter = getProvinceBanter(data.location.region);
+            const provinceBanter = getProvinceBanter(ipPro);
+
+            // 显示位置信息（如果有区县信息，则显示）
+            let locationText = `${ipPro} ${ipCity}`;
+            if (district) {
+                locationText = `${ipPro} ${ipCity} ${district}`;
+            }
 
             // 显示欢迎信息
             document.getElementById('welcome-info').innerHTML = `
-                        欢迎来自 <span class="highlight">${data.location.region} ${data.location.city}</span> 的朋友<br>
-                        <span class="highlight">${provinceBanter}</span><br>
-                        您当前距站主约 <span class="highlight">${data.distance.value}</span> 公里<br>
-                        您的IP地址为: <span class="highlight">${data.ip}</span>
-                        ${data.userAgent.browser !== '未知' ? `<br>检测到您使用 <span class="highlight">${data.userAgent.browser}</span> 浏览器` : ''}
-                    `;
+                欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
+                <span class="highlight">${provinceBanter}</span><br>
+                ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
+                您的IP地址为: <span class="highlight">${ip}</span>
+            `;
         } else {
-            throw new Error('API返回数据格式错误');
+            throw new Error(`IP数据API返回错误: ${ipData.message}`);
         }
     } catch (error) {
-        console.error('获取访客信息失败:', error);
-
-        // 优雅降级显示
-        document.getElementById('welcome-info').innerHTML = `
-            <div class="fallback-welcome">
-                欢迎访问夸克博客<br>
-                <small>💡 小提示：地理位置服务暂时不可用，请稍后再试</small>
-            </div>
-        `;
+        console.error('获取IP信息失败:', error);
+        document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
     }
 }
-
-
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     updateTime();
