@@ -313,10 +313,10 @@ function getProvinceBanter(province) {
 async function getVisitorInfo() {
     try {
         // 第一个API：获取IP地理信息
-        const ipResponse = await fetch('https://ipapi.co/json/');
-        const ipData = await ipResponse.json();
+        const ipResponse = await fetch('https://api.ipapi.is/');
+        const ipData = await ipResponse;
 
-        if (ipData.code === 200) {
+        if (1) {
             const ip = ipData.ip;
             const ipPro = ipData.region;
             const ipCity = ipData.city;
