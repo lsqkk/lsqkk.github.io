@@ -313,12 +313,13 @@ function getProvinceBanter(province) {
 async function getVisitorInfo() {
     try {
         // 第一个API：获取IP地理信息
-        const ipResponse = await fetch('https://api.vore.top/api/IPdata');
+        const ipResponse = await fetch('https://whois.pconline.com.cn/ipJson.jsp?json=true');
         const ipData = await ipResponse.json();
 
         if (ipData.code === 200) {
-            const ip = ipData.ipinfo.text;
-            const locationInfo = ipData.ipdata;
+            const ip = ipData.ip;
+            const ipPro = ipData.pro;
+            const ipCity = ipData.city;
 
             // 第二个API：获取经纬度
             const geoResponse = await fetch(`https://api.ip.sb/geoip/${ip}`);
@@ -334,11 +335,11 @@ async function getVisitorInfo() {
             );
 
             // 获取省份俏皮话
-            const provinceBanter = getProvinceBanter(locationInfo.info1);
+            const provinceBanter = getProvinceBanter(ipPro);
 
             // 显示欢迎信息
             document.getElementById('welcome-info').innerHTML = `
-                        欢迎来自 <span class="highlight">${locationInfo.info1} ${locationInfo.info2} ${locationInfo.info3}</span> 的朋友<br>
+                        欢迎来自 <span class="highlight">${ipPro} ${ipCity}</span> 的朋友<br>
                         <span class="highlight">${provinceBanter}</span><br>
                         您当前距站主约 <span class="highlight">${distance}</span> 公里<br>
                         您的IP地址为: <span class="highlight">${ip}</span>
