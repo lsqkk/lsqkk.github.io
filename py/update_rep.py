@@ -71,8 +71,8 @@ def create_markdown_table(repositories):
         return "未找到任何仓库"
     
     # 创建Markdown表格
-    markdown = "| 名称 | 描述 | 地址 |\n"
-    markdown += "|------|------|------|\n"
+    markdown = "| 名称 | 描述 |\n"
+    markdown += "|------|------|\n"
     
     for repo in repositories:
         # 处理特殊字符，避免破坏Markdown格式
@@ -81,9 +81,9 @@ def create_markdown_table(repositories):
         url = repo['url']
         
         # 创建Markdown链接格式
-        link = f"[项目地址]({url})"
+        link = f"[{name}]({url})"
         
-        markdown += f"| {name} | {description} | {link} |\n"
+        markdown += f"| {link} | {description} |\n"
     
     return markdown
 
