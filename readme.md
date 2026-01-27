@@ -1,5 +1,5 @@
-<h1 align="center" style="color:#355fe9;">Quark Blog / 夸克博客</h1>
-<h3 align="center">🚀 我的个人网站</h3>
+<h1 align="center" style="color:#355fe9;">Quark Blog 夸克博客</h1>
+<h3 align="center">不只「博客」，不止「前端」</h3>
 <br>
 
 <p align="center">
@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white" alt="HTML5">
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white" alt="CSS3">
   <img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black" alt="Firebase">
+  <br>
   <img src="https://img.shields.io/badge/WebRTC-333333?style=flat&logo=webrtc&logoColor=white" alt="WebRTC">
   <img src="https://img.shields.io/badge/Canvas-000000?style=flat&logo=html5&logoColor=white" alt="Canvas">
   <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel">
@@ -17,13 +18,16 @@
 
 
 
-<h3 align="center" style="color:#355fe9;"> 不只「博客」，不止「前端」
+<h3 align="center" style="color:#355fe9;"> 
 </h3>
 
 <br>
 
 这是我的个人网站仓库，主要记录前端开发、技术实验和产品思考，**不依赖任何主流架构或模板项目**，基于原生技术栈构建，部署在 GitHub Pages 并由 Vercel + 自有域名提供 Serverless 支持。由 Firebase RTDB 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。
 
+<div align="center">
+  <img src="/assets/img/readme/demo1.png" alt="demo1" style="max-height: 400px; width: auto; border-radius:10px;">
+</div>
 
 ---
 
@@ -46,8 +50,6 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
 
 
 Quark Blog 探索了在静态站点环境下实现动态应用的技术路径，通过实时数据库和无服务架构弥补前后端分离的鸿沟。
-
----
 
 
 ## Quark Blog 功能板块
@@ -103,7 +105,6 @@ Quark Blog 网站功能页还定期更新我的其他开源项目工具（计划
 | fire-risk | 一个基于机器学习的火灾风险预测系统，包含预处理数据和模型训练。 | [项目地址](https://github.com/lsqkk/fire-risk) |
 | ZhihuCuration | 智能整理知乎收藏夹下载内容，调用大模型API实现可定制的自动分类。 | [项目地址](https://github.com/lsqkk/ZhihuCuration) |
 
----
 
 ## 支持与反馈
 
@@ -116,7 +117,7 @@ Quark Blog 网站功能页还定期更新我的其他开源项目工具（计划
 
 ---
 
-<h3 align="center" style="color:#355fe9;">「无穷的远方，无数的人们，都和我有关」</h3>
+<h3 align="center">「无穷的远方，无数的人们，都和我有关」</h3>
 
 在技术快速迭代的今天，我依然相信深入理解底层原理的价值。这个项目是对原生技术路线的探索，也是对一个静态站点能力边界的挑战。
 
