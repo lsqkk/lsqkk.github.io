@@ -6,7 +6,7 @@ let queue = [];
 // 保持存储名不变
 let historyData = JSON.parse(localStorage.getItem('study_stats_v2') || '{}');
 
-fetch('ti.json')
+fetch('sizheng.json')
     .then(res => res.json())
     .then(data => {
         db = data;
