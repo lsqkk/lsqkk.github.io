@@ -26,7 +26,7 @@
 这是我的个人网站仓库，主要记录前端开发、技术实验和产品思考，**不依赖任何主流架构或模板项目**，基于原生技术栈构建，部署在 GitHub Pages 并由 Vercel + 自有域名提供 Serverless 支持。由 Firebase RTDB 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。
 
 <div align="center">
-  <img src="/assets/img/readme/demo1.png" alt="demo1" style="max-height: 400px; width: auto; border-radius:10px;">
+  <img src="/assets/img/readme/demo1.png" alt="demo1" style="max-height: 40px; width: auto;">
 </div>
 
 ---
