@@ -4,6 +4,31 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-01-28
+新增 - `requiements.txt`及其更新脚本
+优化 - 调整 `posts.json` 位置
+优化 - 文章 `json` 自动生成，新增 `YAML` 数据
+优化 - 文章模板 `head`部分
+优化 - 修改私有文件夹名称，更新网站地图
+优化 - 项目仓库自动读取
+新增 - 单独的友链页面
+更新 - 弹窗系统抽离、换行修复
+更新 - popups.json
+更新 - 一周年弹窗
+更新 - README
+
+# 2026-01-27
+更新 - readme.md
+新增 - LICENSE
+更新 - README
+更新 - 更新 README 图
+更新 - 修改题目名称
+
+# 2026-01-26
+更新 - index.js
+更新 - ip.js
+新增 - vercel 代理 IP
+
 # 2026-01-24
 更新 - 更新仓库列表
 
