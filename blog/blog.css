@@ -174,3 +174,55 @@ body {
         padding: 25px;
     }
 }
+
+/* GitHub仓库统计信息样式 - 完全匹配玻璃UI设计 */
+.repo-stats {
+    display: flex;
+    gap: 12px;
+    margin: 12px 0 20px;
+}
+
+.repo-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.repo-stat::before {
+    display: inline-block;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* 星星和fork图标 */
+.repo-stat:first-child::before {
+    content: "⭐";
+}
+
+.repo-stat:last-child::before {
+    content: "🍴";
+}
+
+/* GitHub卡片 - 完全使用现有样式，无需特殊处理 */
+/* 注意：不再为github卡片添加特殊样式类 */
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .repo-stats {
+        gap: 8px;
+    }
+
+    .repo-stat {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+    }
+}
