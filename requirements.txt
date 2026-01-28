@@ -1,0 +1,14 @@
+argparse              # py\right_click.py
+docx                  # blog\daily\1.py
+hashlib               # py\generate_posts.py
+http                  # py\serve.py
+markdown              # py\generate_posts.py
+pandas                # blog\dt\提取动态内容到md.py
+requests              # private\update_rep.py
+socketserver          # py\serve.py
+subprocess            # blog\log\commits.py, py\update_requirements.py
+traceback             # py\generate_posts.py
+urllib                # blog\daily\1.py, py\serve.py
+webbrowser            # py\sitemap.py
+xml                   # py\sitemap.py
+yaml                  # py\generate_posts.py
