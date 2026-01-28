@@ -1,24 +1,13 @@
 [
     {
-        "id": "1120",
-        "title": "突发！站长夸克竟然……",
-        "content": "## 更新了弹窗功能！\n- 每天只显示一次\n- 可勾选不再显示\n- 定制颜色和动效\n> 解决了夸克博客没有弹窗广告的BUG ——夸克",
-        "startDate": "2025-11-20",
-        "endDate": "2025-11-23",
-        "autoClose": 0,
-        "celebration": 1,
-        "backgroundColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        "textColor": "#ffffff"
-    },
-    {
-        "id": "1128",
-        "title": "27今天17岁了！",
-        "content": "## 是的，他17岁了！\n让我们祝他生日快乐！\n> 问题不大，大不了4，4了更好 —— 27",
-        "startDate": "2025-11-28",
-        "endDate": "2025-11-28",
+        "id": "2601",
+        "title": "夸克博客一周年！",
+        "content": "## 不只「博客」，不止「前端」\n2025年1月31日是夸克博客的生日！\n那一天站主夸克上传了第一个也是唯一一个页面，当时，它长这个样子。\n👉 [首页 - 蓝色奇夸克的博客](/assets/html/first-page) 👈\n一年时间里，它发展成了现在这样一个文章工具丰富、功能较为完备、UI基本统一、动静态前后端结合的网站项目，让我们祝它越来越好……",
+        "startDate": "2026-01-28",
+        "endDate": "2026-02-01",
         "autoClose": 0,
         "celebration": true,
-        "backgroundColor": "linear-gradient(135deg, #fa709a 0%, #fee140 100%))",
+        "backgroundColor": "#222222",
         "textColor": "#ffffff"
     }
 ]
