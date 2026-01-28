@@ -55,9 +55,9 @@ def process_commits(commits, output_file='output_commits.txt'):
     # 写入文件
     with open(output_file, 'w', encoding='utf-8') as f:
         for date in sorted(grouped_results.keys(), reverse=True):
-            f.write(f"# {date}\n")
+            f.write(f"# {date}\n\n")
             for content in grouped_results[date]:
-                f.write(f"{content}\n")
+                f.write(f"{content}\n\n")
             f.write("\n")
     
     print(f"处理完成！结果已保存到 {output_file}")
