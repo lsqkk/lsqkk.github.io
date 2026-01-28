@@ -25,13 +25,15 @@ tags: 网站
 |----------|----------|----------|
 | KaTeX | 文章数学公式渲染 | [https://katex.org/](https://katex.org/) |
 | Postimages | 部分图片托管 | [https://postimages.org/](https://postimages.org/) |
-| OpenWeather API | 天气预报功能数据源 | [https://openweathermap.org/api](https://openweathermap.org/api) |
-| 声网 Agora API | 直播推流与播放 | [https://www.agora.io/](https://www.agora.io/) |
-| Bing 壁纸 API | 原生时钟项目背景图 | [https://bing.img.run/api.html](https://bing.img.run/api.html) |
 | Firebase Realtime Database | 实时数据同步（留言、游戏、协同工具） | [https://firebase.google.com/](https://firebase.google.com/) |
 | Vercel | Serverless 函数托管与域名服务 | [https://vercel.com/](https://vercel.com/) |
 | 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc/](https://www.busuanzi.cc/) |
-| uapis | 视频、热榜等数据接口 | [https://uapis.cn/](https://uapis.cn/) |
+| OpenWeather API | 天气预报功能数据源 | [https://openweathermap.org/api](https://openweathermap.org/api) |
+| 声网 Agora API | 直播推流与播放 | [https://www.agora.io/](https://www.agora.io/) |
+| Bing 壁纸 API | 原生时钟项目背景图 | [https://bing.img.run/api.html](https://bing.img.run/api.html) |
+| uapis API | 视频、热榜等数据接口 | [https://uapis.cn/](https://uapis.cn/) |
+| 北梦 API | 访客 IP 信息、热搜聚合等 | [https://api.b52m.cn](https://api.b52m.cn) |
+| 妖狐 API | 夸克数字人服务 | [https://api.yaohud.cn/](https://api.yaohud.cn/) |
 
 ## 技术架构说明
 
