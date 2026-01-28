@@ -21,19 +21,25 @@ tags: 网站
 
 本站部分功能依赖以下第三方 API 或服务，特此说明并致谢：
 
-| 服务名称 | 用途说明 | 官方网站 |
+| 服务名称 | 站内用途说明 | 官方网站 |
 |----------|----------|----------|
 | KaTeX | 文章数学公式渲染 | [https://katex.org/](https://katex.org/) |
 | Postimages | 部分图片托管 | [https://postimages.org/](https://postimages.org/) |
 | Firebase Realtime Database | 实时数据同步（留言、游戏、协同工具） | [https://firebase.google.com/](https://firebase.google.com/) |
-| Vercel | Serverless 函数托管与域名服务 | [https://vercel.com/](https://vercel.com/) |
-| 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc/](https://www.busuanzi.cc/) |
+| giscus | 文章评论系统 | [https://giscus.app/zh-CN](https://giscus.app/zh-CN) |
+| Vercel | Serverless 函数托管与域名服务 | [https://vercel.com](https://vercel.com) |
+| 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc](https://www.busuanzi.cc) |
+| ipapi | 原生时钟获取地理位置 | [https://ipapi.co](https://ipapi.co) |
+| Bing 壁纸 API | 原生时钟背景图 | [https://bing.img.run/api.html](https://bing.img.run/api.html) |
 | OpenWeather API | 天气预报功能数据源 | [https://openweathermap.org/api](https://openweathermap.org/api) |
-| 声网 Agora API | 直播推流与播放 | [https://www.agora.io/](https://www.agora.io/) |
-| Bing 壁纸 API | 原生时钟项目背景图 | [https://bing.img.run/api.html](https://bing.img.run/api.html) |
-| uapis API | 视频、热榜等数据接口 | [https://uapis.cn/](https://uapis.cn/) |
+| 声网 Agora API | 直播推流与播放 | [https://www.agora.io](https://www.agora.io) |
+| uapis API | 视频、热榜等数据接口 | [https://uapis.cn](https://uapis.cn) |
 | 北梦 API | 访客 IP 信息、热搜聚合等 | [https://api.b52m.cn](https://api.b52m.cn) |
-| 妖狐 API | 夸克数字人服务 | [https://api.yaohud.cn/](https://api.yaohud.cn/) |
+| 妖狐 API | 夸克数字人项目智能体 | [https://api.yaohud.cn](https://api.yaohud.cn) |
+| 慕名 API | 夸克数字人语音返回 | [https://api.suol.cc](https://api.suol.cc) |
+| DeepSeek API | DeepSeek WebUI 及其他 AI 项目 | [https://api.deepseek.com](https://api.deepseek.com) |
+| Github API | 展示个人仓库信息 | [https://api.github.com](https://api.github.com) |
+| 在线文本数据库 | 夸克贴吧内容存放 | [https://api.textdb.online](https://api.textdb.online) |
 
 ## 技术架构说明
 
