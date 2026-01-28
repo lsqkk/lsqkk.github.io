@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="夸克博客的友链页面，展示朋友们和博主的信息。">
+    <title>友链 Friends - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/css/nav.css">
+    <script src="/assets/js/disable-right-click.js"></script>
+    <!-- 引入页面专用样式和脚本 -->
+    <link rel="stylesheet" href="./style.css">
+    <script defer src="./app.js"></script>
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- 模板中自带的导航栏等将由nav.js自动插入 -->
+    <div class="page-content">
+        <!-- 页面标题 -->
+        <h1 class="page-title">友链 / FRIENDS</h1>
+
+
+        <!-- 友链列表 -->
+        <section class="friends-section">
+            <h2 class="section-title">
+                <i class="fas fa-user-friends"></i>
+                朋友们 / FRIENDS
+            </h2>
+            <div class="friends-container" id="friendsContainer">
+                <!-- 友链卡片将通过app.js动态加载 -->
+                <div class="loading">正在加载友链列表...</div>
+            </div>
+        </section>
+
+        <!-- 博主信息卡片 -->
+        <section class="info-section">
+            <h2 class="section-title">
+                <i class="fas fa-user-circle"></i>
+                我的信息 / MY INFO
+                <span class="copy-hint">（点击对应项即可复制）</span>
+            </h2>
+            <div class="glass-card">
+                <div class="my-info-grid">
+                    <div class="my-info-item" data-copy="夸克博客 / Quark Blog">
+                        <div class="info-label">网站名称</div>
+                        <div class="info-value">夸克博客 / Quark Blog</div>
+                        <div class="copy-icon"><i class="fas fa-copy"></i></div>
+                    </div>
+                    <div class="my-info-item" data-copy="lsqkk.github.io">
+                        <div class="info-label">网站地址</div>
+                        <div class="info-value">lsqkk.github.io</div>
+                        <div class="copy-icon"><i class="fas fa-copy"></i></div>
+                    </div>
+                    <div class="my-info-item" data-copy="lsqkk.github.io/assets/img/logo_blue.png">
+                        <div class="info-label">网站图标</div>
+                        <div class="info-value">lsqkk.github.io/assets/img/logo_blue.png</div>
+                        <div class="copy-icon"><i class="fas fa-copy"></i></div>
+                    </div>
+                    <div class="my-info-item" data-copy="蓝色奇夸克 / Quark">
+                        <div class="info-label">站主名称</div>
+                        <div class="info-value">蓝色奇夸克 / Quark</div>
+                        <div class="copy-icon"><i class="fas fa-copy"></i></div>
+                    </div>
+                    <div class="my-info-item" data-copy="lsqkk.github.io/assets/img/touxiang.png">
+                        <div class="info-label">站主头像</div>
+                        <div class="info-value">lsqkk.github.io/assets/img/touxiang.png</div>
+                        <div class="copy-icon"><i class="fas fa-copy"></i></div>
+                    </div>
+                </div>
+                <div class="my-info-note">
+                    <i class="fas fa-link"></i> 若想与我交换友链，请前往 <a href="/blog/lyb" class="notice-link">留言板</a>
+                    留言告知，我会尽快添加！
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚版权信息 -->
+        <footer class="page-footer">
+            <p>
+                © 2024 - <span id="currentYear">2026</span> 友链 / 夸克博客 All rights reserved.
+            </p>
+        </footer>
+    </div>
+
+    <!-- 复制成功提示 -->
+    <div id="copyToast" class="copy-toast">
+        <i class="fas fa-check-circle"></i> <span id="copyToastText">已复制到剪贴板</span>
+    </div>
+</body>
+
+</html>

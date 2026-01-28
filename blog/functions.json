@@ -65,6 +65,16 @@
                     "target": "_target"
                 },
                 {
+                    "name": "友链",
+                    "categories": [
+                        "朋友",
+                        "链接"
+                    ],
+                    "description": "友链信息展示区",
+                    "link": "/blog/friends",
+                    "target": "_target"
+                },
+                {
                     "name": "更新日志",
                     "categories": [
                         "系统",
