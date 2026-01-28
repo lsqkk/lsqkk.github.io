@@ -108,7 +108,7 @@ function generateTOC() {
 // 5. 侧边栏导航逻辑 (需要读取 posts.json)
 async function addPostNavigation(currentFileBaseName) {
     try {
-        const posts = await fetch('/json/posts.json').then(r => r.json());
+        const posts = await fetch('/posts/posts.json').then(r => r.json());
 
         // 查找当前文章索引
         const currentIndex = posts.findIndex(p => p.file.endsWith(currentFileBaseName));

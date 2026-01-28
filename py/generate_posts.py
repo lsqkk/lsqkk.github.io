@@ -8,7 +8,7 @@ from markdown.extensions.toc import TocExtension
 from datetime import datetime
 
 # 配置路径
-POSTS_JSON_PATH = 'json/posts.json'
+POSTS_JSON_PATH = 'posts/posts.json'
 TEMPLATE_FILE = 'template/post_template.html'
 OUTPUT_BASE_DIR = 'posts'
 MD_SOURCE_ROOT = 'posts'

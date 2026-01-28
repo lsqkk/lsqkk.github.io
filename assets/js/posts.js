@@ -40,7 +40,7 @@ function extractTagsFromPosts(posts) {
 async function loadPosts() {
     console.log('开始加载文章...');
 
-    allPosts = await fetch('/json/posts.json').then(r => r.json());
+    allPosts = await fetch('/posts/posts.json').then(r => r.json());
     console.log('获取到文章数量:', allPosts.length);
 
     // 确保所有文章都有tags数组

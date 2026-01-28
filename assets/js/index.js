@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 加载最近三篇文章
 async function loadRecentPosts() {
-    const posts = await fetch('json/posts.json').then(r => r.json());
+    const posts = await fetch('posts/posts.json').then(r => r.json());
     const recentPosts = posts.slice(0, 3);  // 取前三条
 
     const list = recentPosts.map(post => `
