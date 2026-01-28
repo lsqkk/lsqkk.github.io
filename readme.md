@@ -122,7 +122,7 @@ Quark Blog 探索了在静态站点环境下实现动态应用的技术路径，
 
 ### 其他项目列表
 
-Quark Blog 网站[功能页](https://lsqkk.github.io/blog)还定期更新我的其他开源项目工具（计划改为从 Github API 自动加载）。
+Quark Blog 网站[功能页](https://lsqkk.github.io/blog)还一并展示我的其他开源项目工具：
 
 <details><summary>点击展开其他项目列表</summary>
 
@@ -158,10 +158,11 @@ Quark Blog 网站[功能页](https://lsqkk.github.io/blog)还定期更新我的�
 
 如果你想要部署自己的版本，推荐关注以下文件路径：
 ```
-/py             - 脚本们
-/assets/img     - 站点关键图像们
-/json           - 配置文件们
-/template       - 模板文件们
+requirements.txt  - 站点所有 py 依赖列表，可直接搭建虚拟环境
+/py               - 脚本们
+/assets/img       - 站点关键图像们
+/json             - 配置文件们
+/template         - 模板文件们
 散落在各处的 json 配置和 py 脚本
 …
 ```
