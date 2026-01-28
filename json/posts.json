@@ -7,7 +7,7 @@
             "杂谈",
             "报告"
         ],
-        "wordCount": 1281
+        "wordCount": 1253
     },
     {
         "title": "新名词之争：教育理念不是话语权竞赛",
@@ -17,7 +17,17 @@
             "杂谈",
             "教育"
         ],
-        "wordCount": 3438
+        "wordCount": 3392
+    },
+    {
+        "title": "《信息哲学概论》课程论文",
+        "file": "2025/2517.md",
+        "date": "2025-12-16",
+        "tags": [
+            "哲学",
+            "论文"
+        ],
+        "wordCount": 6423
     },
     {
         "title": "WebRTC 零服务器信令技术实现",
@@ -28,17 +38,7 @@
             "前端",
             "论文"
         ],
-        "wordCount": 7391
-    },
-    {
-        "title": "《信息哲学概论》课程论文",
-        "file": "2025/2517.md",
-        "date": "2025-12-16",
-        "tags": [
-            "哲学",
-            "论文"
-        ],
-        "wordCount": 6491
+        "wordCount": 7237
     },
     {
         "title": "当代大学生后现代解构主义思潮分析",
@@ -48,7 +48,7 @@
             "哲学",
             "论文"
         ],
-        "wordCount": 3702
+        "wordCount": 3627
     },
     {
         "title": "《异见时刻》| 金斯伯格与真正的自由",
@@ -58,7 +58,7 @@
             "书评",
             "杂谈"
         ],
-        "wordCount": 4650
+        "wordCount": 4518
     },
     {
         "title": "人非NPC，世界不是独角戏",
@@ -67,7 +67,7 @@
         "tags": [
             "杂谈"
         ],
-        "wordCount": 3134
+        "wordCount": 2980
     },
     {
         "title": "未完成式美学：契诃夫的留白与不确定性的现代性",
@@ -76,16 +76,16 @@
         "tags": [
             "书评"
         ],
-        "wordCount": 2123
+        "wordCount": 2080
     },
     {
-        "title": "铁屋中的舞蹈：《傲慢与偏见》中女性的“有限主体性”及其当代回响",
+        "title": "铁屋中的舞蹈",
         "file": "2025/2509.md",
         "date": "2025-05-11",
         "tags": [
             "书评"
         ],
-        "wordCount": 4092
+        "wordCount": 4453
     },
     {
         "title": "Shor量子并行算法与Grover量子搜索算法的物理原理分析",
@@ -95,7 +95,7 @@
             "物理",
             "论文"
         ],
-        "wordCount": 4629
+        "wordCount": 4499
     },
     {
         "title": "从血与火中诞生的国际劳工节：被篡改的历史与未竟的斗争",
@@ -104,7 +104,7 @@
         "tags": [
             "史政"
         ],
-        "wordCount": 6069
+        "wordCount": 5931
     },
     {
         "title": "麦克斯韦妖，妖在哪里",
@@ -114,16 +114,16 @@
             "物理",
             "论文"
         ],
-        "wordCount": 3140
+        "wordCount": 3072
     },
     {
-        "title": "洞穴之外：当《理想国》的寓言照进后真相时代",
+        "title": "洞穴之外",
         "file": "2025/2511.md",
         "date": "2025-03-09",
         "tags": [
             "书评"
         ],
-        "wordCount": 6069
+        "wordCount": 4003
     },
     {
         "title": "这真的是个“低门槛”时代吗",
@@ -132,7 +132,7 @@
         "tags": [
             "杂谈"
         ],
-        "wordCount": 2892
+        "wordCount": 2793
     },
     {
         "title": "夸克博客全面接入DeepSeek",
@@ -142,25 +142,43 @@
             "报告",
             "前端"
         ],
-        "wordCount": 882
+        "wordCount": 831
     },
     {
-        "title": "2025西交校园大使总结",
-        "file": "2025/2505.md",
-        "date": "2025-02-06",
-        "tags": [
-            "报告"
-        ],
-        "wordCount": 2452
-    },
-    {
-        "title": "夸克博客App上线",
+        "title": "博客移动端App正式上线",
         "file": "2025/2504.md",
         "date": "2025-02-22",
         "tags": [
             "报告"
         ],
-        "wordCount": 1094
+        "wordCount": 1049
+    },
+    {
+        "title": "2025 年西交校园大使宣讲总结",
+        "file": "2025/2505.md",
+        "date": "2025-02-06",
+        "tags": [
+            "报告"
+        ],
+        "wordCount": 2415
+    },
+    {
+        "title": "关于我",
+        "file": "about.md",
+        "date": "2025-02-01",
+        "tags": [
+            "个人"
+        ],
+        "wordCount": 1172
+    },
+    {
+        "title": "关于本站 & 版权声明",
+        "file": "copyright.md",
+        "date": "2025-02-01",
+        "tags": [
+            "网站"
+        ],
+        "wordCount": 3252
     },
     {
         "title": "摘不下的面具",
@@ -169,7 +187,7 @@
         "tags": [
             "杂谈"
         ],
-        "wordCount": 6192
+        "wordCount": 5957
     },
     {
         "title": "交大之夜",
@@ -178,25 +196,25 @@
         "tags": [
             "杂谈"
         ],
-        "wordCount": 1827
+        "wordCount": 1761
     },
     {
-        "title": "当全国I卷遇到人工智能",
+        "title": "当全国I卷作文遇到人工智能",
         "file": "2024/2403.md",
-        "date": "2024-6-7",
+        "date": "2024-06-07",
         "tags": [
             "高考"
         ],
-        "wordCount": 7010
+        "wordCount": 6862
     },
     {
-        "title": "关于新定义速度的讨论",
+        "title": "关于新定义速度$\\mathbf{u}=\\frac{dt}{d\\mathbf{x}}$的讨论",
         "file": "2023/2305.md",
-        "date": "2023-12-1",
+        "date": "2023-12-01",
         "tags": [
             "物理"
         ],
-        "wordCount": 4178
+        "wordCount": 4071
     },
     {
         "title": "三山岛居民生产、劳动方式演化的调研",
@@ -205,25 +223,25 @@
         "tags": [
             "报告"
         ],
-        "wordCount": 6215
+        "wordCount": 6042
     },
     {
-        "title": "浅谈弹性与碰撞",
+        "title": "浅谈弹性与碰撞：从小球的反弹看碰撞的奥秘",
         "file": "2023/2303.md",
-        "date": "2023-11-1",
+        "date": "2023-11-01",
         "tags": [
             "物理"
         ],
-        "wordCount": 5195
+        "wordCount": 5057
     },
     {
         "title": "牛顿白光色散实验的科学原理",
         "file": "2023/2302.md",
-        "date": "2023-9-29",
+        "date": "2023-09-29",
         "tags": [
             "物理"
         ],
-        "wordCount": 6678
+        "wordCount": 6482
     },
     {
         "title": "C++输出谢尔宾斯基三角形",
@@ -232,20 +250,6 @@
         "tags": [
             "C++"
         ],
-        "wordCount": 827
-    },
-    {
-        "title": "关于我",
-        "file": "about.md",
-        "date": "2025-02-01",
-        "tags": [],
-        "wordCount": 827
-    },
-    {
-        "title": "版权信息",
-        "file": "copyright.md",
-        "date": "2025-02-01",
-        "tags": [],
-        "wordCount": 827
+        "wordCount": 782
     }
 ]
