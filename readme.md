@@ -31,7 +31,7 @@
 
 **网站地址**：[夸克博客](https://lsqkk.github.io)
 
-**更新日志**：[更新日志 - 夸克博客](https://lsqkk.github.io/blog/log)
+**更新日志**：[更新日志 - 夸克博客](/blog/log/log.md)
 
 ---
 
@@ -76,7 +76,7 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
 - **网站流量计数**：引入 [不蒜子](https://www.busuanzi.cc/) 实现无服务器网站流量计数，统计文章访问量。使用 [Bing Webmaster Tools](https://www.bing.com/webmasters) 监控网站总体情况。
   <img src="/assets/img/readme/demo9.png">
 
-- 更多技术细节及本站使用服务清单，欢迎查看 [更新日志](/blog/log.md) 及 [关于本站](/posts/copyright.md) ！
+- 更多技术细节及本站使用服务清单，欢迎查看 [更新日志](/blog/log/log.md) 及 [关于本站](/posts/copyright.md) ！
 
 
 Quark Blog 探索了在静态站点环境下实现动态应用的技术路径，通过实时数据库和无服务架构弥补前后端分离的鸿沟。
