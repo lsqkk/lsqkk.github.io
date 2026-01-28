@@ -25,7 +25,7 @@
 
 这是我的个人网站仓库，主要记录前端开发、技术实验和产品思考，**不依赖任何主流架构或模板项目**，基于原生技术栈构建，部署在 GitHub Pages 并由 Vercel + 自有域名提供 Serverless 支持。由 Firebase RTDB 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。
 
-<img src="/assets/img/readme/demo1.png" alt="demo1">
+<a href="https://lsqkk.github.io"><img src="/assets/img/readme/demo1.png" alt="demo1"></a>
 
 ---
 
@@ -40,12 +40,11 @@
 Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**基于原生技术栈的纯前端解决方案**。
 
 - **原生开发**：不依赖主流前端框架（React/Vue/Angular），使用原生 JavaScript + Canvas 实现核心功能。
+  <img src="/assets/img/readme/demo0.png">
+
+<br>
+
 - **统一 UI 设计**：规定了一套统一的 UI 设计风格。使用类似经典 Windows 7 的 Aero 模糊玻璃主题，全站使用统一的顶部导航栏、网页标题样式和格式等。
-
-  <details>
-  <summary>UI 设计图例</summary>
-
-  <p align="center">
     <table>
       <tr>
         <td align="center"><img src="/assets/img/readme/nav.png" width="90%"></td>
@@ -53,7 +52,7 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
       </tr>
       <tr>
         <td align="center">Aero 主题顶栏</td>
-        <td align="center">统一标题样式</td>
+        <td align="center">Aero 主题卡片 UI</td>
       </tr>
       <tr>
         <td align="center"><img src="/assets/img/readme/demo3.png" width="90%"></td>
@@ -61,23 +60,34 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
       </tr>
       <tr>
         <td align="center">统一网页标题名称</td>
-        <td align="center">Aero 主题卡片 UI</td>
+        <td align="center">统一标题样式</td>
       </tr>
     </table>
   </p>
-  </details>
+
+
+<br>
 
 - **实时数据协同**：集成 Firebase RTDB 实现实时数据同步，支撑博客留言、在线聊天室、实时对战游戏和协同工具。
 
   <img src="/assets/img/readme/demo5.png">
 
-- **音视频推流**：通过**声网 Agora API** 实现直播画面的[实时推流与播放](https://lsqkk.github.io/a/live)。
+<br>
+
+- **音视频推流**：通过 [声网 Agora API](https://doc.shengwang.cn/api-center) 实现直播画面的[实时推流与播放](https://lsqkk.github.io/a/live)。
   <img src="/assets/img/readme/demo6.png">
-- **无服务器 WebRTC 通信**：[Quark Share](https://lsqkk.github.io/a/share) 探索了无可用信令服务器状况下的 WebRTC 信令通信方案，实现 P2P 文件传输。
+
+<br>
+
+- **无服务器 WebRTC 通信**：[Quark Share](https://lsqkk.github.io/a/share) 实现了无可用信令服务器状况的 WebRTC 信令通信方案，提供 P2P 文件传输服务。
   <img src="/assets/img/readme/demo7.png">
+
+<br>
 
 - **Serverless 集成**：使用 **Vercel 云函数 + 自有域名** 托管敏感配置 API Key 和自有/开放 API 服务，在 GitHub Pages 纯前端托管环境下实现后端能力。
   <img src="/assets/img/readme/demo8.png">
+
+<br>
 
 - 更多技术细节，欢迎查看[更新日志](https://lsqkk.github.io/blog/log)！
 
@@ -110,17 +120,24 @@ Quark Blog 探索了在静态站点环境下实现动态应用的技术路径，
 - [夸克文档](https://lsqkk.github.io/quarkdoc)：基于 MkDocs 的文档与知识库项目，系统地整理和分享技术笔记、开源项目文档、博客文章的延伸内容以及其他值得记录的知识。目前存放着以下项目文档。
   - 【[香橙派 AI Pro 综合开发笔记：从零搭建个人AI服务器](https://lsqkk.github.io/quarkdoc/OrangePi/)】我在宿舍环境中利用香橙派AI Pro开发板从零开始搭建个人AI服务器的完整实战记录，完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，系统性地整理了四大板块、共 12 个核心实战项目。（4篇）
   - 【[Quark API - 夸克博客个人 API 服务集合](https://lsqkk.github.io/quarkdoc/QuarkAPI/)】模块化、可扩展的个人 API 服务集合，提供多种 API 服务。项目采用 Node.js 开发，部署于 Vercel 平台，支持通过 RESTful API 访问丰富的问答数据。目前包含以下几个 API 服务。（4篇）
+    <details><summary>Quark API 列表</summary>
 
     | API 名称 | 简介 | API 文档地址 |
     | :--- | :--- | :--- |
     | **Quiz API** | 提供多主题百科题库服务，支持随机题目、ID查询、范围查询和全文搜索等功能。 | [Quiz API](https://lsqkk.github.io/quarkdoc/QuarkAPI/Quiz%20API/) |
     | **Animal API** | 提供结构化动物图片数据集的访问服务，可按类别、ID获取图片，支持随机、范围查询和搜索，并包含 GitHub 原图与 CDN 加速双链接。 | [Animal API](https://lsqkk.github.io/quarkdoc/QuarkAPI/Animal%20API/) |
     | **Bili Card** | 优雅、现代的B站用户卡片生成工具，传入UID返回精美的SVG卡片，完美嵌入个人网站、GitHub Profile或任何需要展示B站身份的场景。[仓库](https://github.com/lsqkk/bili-card) | [bili-card](https://lsqkk.github.io/quarkdoc/QuarkAPI/bili-card/) |
+
+    </details>
   - 【[其他资料](https://lsqkk.github.io/quarkdoc/资料/)】包含C程序设计考试题目等，持续更新。（2篇）
+
+
 
 ### 其他项目列表
 
-Quark Blog 网站功能页还定期更新我的其他开源项目工具（计划改为从 Github API 自动加载），列表如下：
+Quark Blog 网站[功能页](https://lsqkk.github.io/blog)还定期更新我的其他开源项目工具（计划改为从 Github API 自动加载）。
+
+<details><summary>点击展开其他项目列表</summary>
 
 | 名称 | 描述 |
 |------|------|
@@ -141,6 +158,8 @@ Quark Blog 网站功能页还定期更新我的其他开源项目工具（计划
 | [academic-homepage](https://github.com/lsqkk/academic-homepage) | 我的学术主页。一个基于 Minimal Light 主题修改的学术个人主页模板，适用于本科生、研究生或研究人员展示个人信息、项目经历、竞赛获奖等内容。 |
 | [ZhihuCuration](https://github.com/lsqkk/ZhihuCuration) | 智能整理知乎收藏夹下载内容，调用大模型API实现可定制的自动分类。 |
 | [quarkdoc](https://github.com/lsqkk/quarkdoc) | 夸克博客的文档与知识库项目，系统地整理和分享技术笔记、开源项目文档、博客文章的延伸内容以及其他值得记录的知识。由MkDocs构建页面。 |
+
+</details>
 
 ## 迁移使用与部署
 
@@ -177,13 +196,13 @@ Quark Blog 网站功能页还定期更新我的其他开源项目工具（计划
 
 许可证详情见 [LICENSE](LICENSE) 。
 
-我目前正持续进行**代码重构与模板化升级**，旨在提高项目的可复用性与部署友好度，包括：
+目前本站正持续进行**代码重构与模板化升级**，旨在提高项目的可复用性与部署友好度，包括：
 
 - 逐步抽离通用模块，提供配置示例文件；
 - 统一数据接口与构建脚本，降低耦合度；
 - 完善部署文档与自动化检查工具。
 
-如果你对原生开发、静态站点增强或实时协同方案感兴趣，欢迎参考本项目思路，或通过 Issues 交流部署中遇到的问题。也期待在未来版本中提供更友好的“一键部署”体验。
+如果你对原生开发、静态站点增强或实时协同方案感兴趣，欢迎参考本项目思路，或通过 Issues 交流部署中遇到的问题。未来版本中将逐步提供更友好的“一键部署”体验。
 
 
 ## 支持与反馈
