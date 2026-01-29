@@ -276,14 +276,7 @@ button {
     margin-top: 8px;
 }
 
-/* 背景样式 */
-.main-background {
-    background: url('assets/img/bg.png') no-repeat center center fixed;
-    background-size: cover;
-    min-height: 100vh;
-    padding-top: 10px;
-    padding-bottom: 60px;
-}
+
 
 .main-layout {
     display: flex;
@@ -368,7 +361,7 @@ button {
 .footer-container {
     max-width: 1200px;
     /* 与.main-layout同宽 */
-    margin: 0 auto;
+    margin: 20px auto;
     /* 居中 */
     padding: 0 20px;
     /* 与主内容区相同的左右内边距 */

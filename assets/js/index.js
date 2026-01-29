@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 加载最近三篇文章
 async function loadRecentPosts() {
     const posts = await fetch('posts/posts.json').then(r => r.json());
-    const recentPosts = posts.slice(0, 3);  // 取前三条
+    const showPostNum = config.showPostNum;
+    const recentPosts = posts.slice(0, showPostNum);
 
     const list = recentPosts.map(post => `
                 <div class="post-item" style="transition: all 0.3s ease;">
@@ -306,7 +307,6 @@ function getProvinceBanter(province) {
 
 async function getVisitorInfo() {
     try {
-        // 使用您提供的API获取IP地理信息
         const ipResponse = await fetch('https://api.b52m.cn/api/IP/');
         const ipData = await ipResponse.json();
 
@@ -320,9 +320,9 @@ async function getVisitorInfo() {
             const latitude = ipData.data.latitude_2 || ipData.data.latitude_3 || 0;
             const longitude = ipData.data.longitude_2 || ipData.data.longitude_3 || 0;
 
-            // 站主位置（西安）
-            const bloggerLat = 34.252705;
-            const bloggerLon = 108.990221;
+            // 站主位置
+            const bloggerLat = config.bloggerLat;
+            const bloggerLon = config.bloggerLon;
 
             let distance = "未知距离";
             if (latitude && longitude) {
@@ -363,7 +363,8 @@ async function loadDynamicFeed() {
         const response = await fetch('/blog/dt/dt.md');
         const mdContent = await response.text();
         const entries = parseMdEntries(mdContent);
-        renderDynamicEntries(entries.slice(0, 5));
+        const showDynamicNum = config.showDynamicNum;
+        renderDynamicEntries(entries.slice(0, showDynamicNum));
     } catch (error) {
         console.error('加载动态失败:', error);
         document.getElementById('dynamic-entries').innerHTML =
