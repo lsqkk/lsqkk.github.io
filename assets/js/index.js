@@ -634,7 +634,9 @@ function renderHomeConfig(config) {
     `).join('');
 
     // 渲染欢迎文本
+    document.getElementById('welcome-title').textContent = config.welcomeTitle;
     document.getElementById('welcome-text').textContent = config.welcomeText;
+
 
     // 渲染功能列表
     const featuresContainer = document.getElementById('features-container');
@@ -663,8 +665,6 @@ function setDefaultContent() {
         </a>
         <!-- 其他默认社交图标 -->
     `;
-
-    document.getElementById('welcome-text').textContent = "这里记录了我的学习历程、生活感悟和技术分享。";
 
     document.getElementById('features-container').innerHTML = `
         <div class="index-feature-box"><a href="tool/weather.html">天气查询</a></div>
