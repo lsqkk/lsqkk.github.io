@@ -100,6 +100,26 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         }
 
+        .morenpost a {
+            /* 基础颜色和下划线 */
+            color: #2563eb;
+            text-decoration: none;
+            border-bottom: 1px solid #2563eb;
+
+            /* 平滑过渡效果 */
+            transition: all 0.2s ease;
+
+            /* 内边距保持美观 */
+            padding-bottom: 1px;
+        }
+
+        .morenpost a:hover {
+            /* 悬停效果：颜色变深，虚线效果 */
+            color: #1d4ed8;
+            border-bottom: 2px dashed #1d4ed8;
+            padding-bottom: 0;
+            /* 补偿线宽变化 */
+        }
 
         img {
             width: 100%;

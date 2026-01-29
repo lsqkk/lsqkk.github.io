@@ -353,7 +353,7 @@ async function getVisitorInfo() {
         }
     } catch (error) {
         console.error('获取IP信息失败:', error);
-        document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
+        document.getElementById('welcome-info').textContent = '';
     }
 }
 

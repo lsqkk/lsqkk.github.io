@@ -1,116 +1,92 @@
-/* 仅对非触摸设备应用自定义光标 */
-@media (hover: hover) and (pointer: fine) {
+/* 光标样式定义层 - 仅样式，不控制显示/隐藏 */
 
-  /* 隐藏系统光标 - 扩展选择器确保覆盖所有情况 */
-  html *,
-  body *,
-  a,
-  button,
-  input,
-  textarea,
-  select,
-  [role="button"],
-  [onclick],
-  [tabindex],
-  a:hover,
-  button:hover,
-  input:hover,
-  textarea:hover,
-  select:hover,
-  a:active,
-  button:active,
-  input:active,
-  textarea:active,
-  select:active,
-  a:focus,
-  button:focus,
-  input:focus,
-  textarea:focus,
-  select:focus,
-  a:visited,
-  button:visited,
-  input:visited {
-    cursor: none !important;
-  }
+/* 自定义光标基础样式 */
+.custom-cursor {
+  width: 16px;
+  height: 16px;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  background: rgba(128, 128, 128, 0.8);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  display: none;
+  /* 初始隐藏，由JS控制显示 */
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
 
-  /* 自定义光标 - 基础样式 */
-  .custom-cursor {
-    width: 16px;
-    height: 16px;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    background: rgba(128, 128, 128, 0.5);
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    display: block;
-    transform: translate(-50%, -50%);
-    transition: all 0.5s ease-out;
-  }
+/* 延迟跟随光标样式 */
+.cursor-follower {
+  width: 32px;
+  height: 32px;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  background: rgba(100, 100, 255, 0.3);
+  border-radius: 50%;
+  border: 1px solid rgba(100, 150, 255, 0.5);
+  display: none;
+  /* 初始隐藏，由JS控制显示 */
+  transform: translate(-50%, -50%);
+  transition: left 0.2s ease-out, top 0.2s ease-out, opacity 0.3s ease;
+}
 
-  /* 可点击元素上的光标样式 */
-  .custom-cursor.clickable {
-    width: 24px;
-    height: 24px;
-    background: rgba(180, 180, 180, 0.7);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-  }
+/* 可点击元素上的光标样式 */
+.custom-cursor.clickable {
+  width: 25px;
+  height: 25px;
+  background: rgba(100, 150, 255, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 12px rgba(100, 150, 255, 0.5);
+}
 
-  /* 当鼠标离开视窗时隐藏自定义光标 */
-  body:hover .custom-cursor {
+/* 粒子样式 */
+.cursor-particle {
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9997;
+  animation: particle-flow 1.2s ease-out forwards;
+  display: block;
+}
+
+@keyframes particle-flow {
+  0% {
+    transform: scale(1) translate(0, 0);
     opacity: 1;
-    transition: opacity 0.1s;
   }
 
-  body:not(:hover) .custom-cursor {
+  70% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(0.1) translate(var(--tx), var(--ty));
     opacity: 0;
-    transition: opacity 0.1s;
-  }
-
-  /* 光粒样式 */
-  .cursor-particle {
-    width: 8px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
-    animation: particle-flow 0.6s ease-out forwards;
-  }
-
-  @keyframes particle-flow {
-    0% {
-      transform: scale(1) translate(0, 0);
-      opacity: 1;
-    }
-
-    100% {
-      transform: scale(0.2) translate(var(--tx), var(--ty));
-      opacity: 0;
-      filter: blur(2px);
-    }
+    filter: blur(1px);
   }
 }
 
-/* 对触摸设备隐藏自定义光标 */
+/* 触摸设备隐藏光标 */
 @media (hover: none) and (pointer: coarse) {
 
   .custom-cursor,
+  .cursor-follower,
   .cursor-particle {
     display: none !important;
   }
 }
 
-/* 确保弹窗内元素使用系统光标 */
-.popup-overlay,
-.popup-overlay *,
-.popup-overlay *:hover {
+/* 弹窗样式保持不变 */
+.popup-overlay * {
   cursor: auto !important;
 }
 
-/* 弹窗链接样式 - 仅需5个样式 */
 .popup-link {
   color: #3498db;
   text-decoration: none;
