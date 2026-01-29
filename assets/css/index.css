@@ -241,8 +241,14 @@
             /* 使图片填充整个容器 */
             height: auto;
             border-radius: 5px;
-            margin: 5px 0px;
-            /* 高度自适应 */
+        }
+
+        .dynamic-feed img {
+            margin: 6px 0px;
+            width: 400px;
+            height: 400px;
+            border-radius: 15px;
+            object-fit: cover;
         }
 
         .social-icons {

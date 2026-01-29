@@ -43,7 +43,7 @@ document.write(`
                 </ul>
             </div>
             <div class="header-search">
-                <input type="text" id="searchInput" placeholder="搜索博客...">
+                <input type="text" id="searchInput" placeholder="搜索文章...">
                 <button onclick="handleGlobalSearch()">搜索</button>
             </div>
         </div>
@@ -69,7 +69,7 @@ document.write(`
                 </ul>
             </div>
             <div class="navsidebar-search">
-                <input type="text" id="mobileSearchInput" placeholder="搜索博客...">
+                <input type="text" id="mobileSearchInput" placeholder="搜索文章...">
                 <button onclick="handleMobileSearch()">搜索</button>
             </div>
             <div class="navsidebar-controls">
