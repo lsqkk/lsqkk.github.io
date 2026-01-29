@@ -1,130 +1,130 @@
-        body {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+body {
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-        .post-content {
-            line-height: 1.8;
-            /* 建议调整为 1.6-1.8 */
-        }
+.post-content {
+    line-height: 1.8;
+    /* 建议调整为 1.6-1.8 */
+}
 
-        /* 添加段落间距 */
-        .post-content p {
-            margin-bottom: 1.2em;
-        }
+/* 添加段落间距 */
+.post-content p {
+    margin-bottom: 1.2em;
+}
 
-        /* 可选：修复标题间距 */
-        .post-content h1,
-        .post-content h2,
-        .post-content h3 {
-            margin: 1.5em 0 0.8em 0;
-        }
+/* 可选：修复标题间距 */
+.post-content h1,
+.post-content h2,
+.post-content h3 {
+    margin: 1.5em 0 0.8em 0;
+}
 
-        code {
-            background-color: #f6f8fa;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
+code {
+    background-color: #f6f8fa;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
 
-        pre {
-            background-color: #f6f8fa;
-            padding: 16px;
-            overflow: auto;
-            border-radius: 6px;
-            line-height: 1.45;
-        }
+pre {
+    background-color: #f6f8fa;
+    padding: 16px;
+    overflow: auto;
+    border-radius: 6px;
+    line-height: 1.45;
+}
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-        }
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+}
 
-        .share-button {
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
-        }
+.share-button {
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+}
 
-        .share-button:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
-        }
+.share-button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
 
-        .mode-toggle {
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 24px;
-        }
+.mode-toggle {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 24px;
+}
 
-        /* 文章标签容器样式 */
-        .post-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 10px;
-        }
+/* 文章标签容器样式 */
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
 
-        /* 单个标签样式 */
-        .post-tag {
-            padding: 4px 10px;
-            border-radius: 10px;
-            background: rgba(93, 208, 255, 0.2);
-            color: #007bff;
-            font-size: 0.75em;
-            font-weight: 500;
-            white-space: nowrap;
-            margin: 2px;
-        }
+/* 单个标签样式 */
+.post-tag {
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: rgba(93, 208, 255, 0.2);
+    color: #007bff;
+    font-size: 0.75em;
+    font-weight: 500;
+    white-space: nowrap;
+    margin: 2px;
+}
 
-        /* 阅读时长标签特殊样式 */
-        .post-tag.read-time {
-            background: rgba(255, 193, 7, 0.2) !important;
-            color: #ff9800 !important;
-            border: 1px solid rgba(255, 193, 7, 0.3);
-        }
+/* 阅读时长标签特殊样式 */
+.post-tag.read-time {
+    background: rgba(255, 193, 7, 0.2) !important;
+    color: #ff9800 !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
 
-        .morenpost {
-            line-height: 1.3em;
-            margin-bottom: 1.3em;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.4) !important;
-            backdrop-filter: blur(8px) saturate(100%) !important;
-            -webkit-backdrop-filter: blur(8px) saturate(100%) !important;
-            padding: 40px;
-            margin: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-        }
+.morenpost {
+    line-height: 1.3em;
+    margin-bottom: 1.3em;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px) saturate(100%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(100%) !important;
+    padding: 40px;
+    margin: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
 
-        .morenpost a {
-            /* 基础颜色和下划线 */
-            color: #2563eb;
-            text-decoration: none;
-            border-bottom: 1px solid #2563eb;
+.morenpost a {
+    /* 基础颜色和下划线 */
+    color: #2563eb;
+    text-decoration: none;
+    border-bottom: 1px solid #2563eb;
 
-            /* 平滑过渡效果 */
-            transition: all 0.2s ease;
+    /* 平滑过渡效果 */
+    transition: all 0.2s ease;
 
-            /* 内边距保持美观 */
-            padding-bottom: 1px;
-        }
+    /* 内边距保持美观 */
+    padding-bottom: 1px;
+}
 
-        .morenpost a:hover {
-            /* 悬停效果：颜色变深，虚线效果 */
-            color: #1d4ed8;
-            border-bottom: 2px dashed #1d4ed8;
-            padding-bottom: 0;
-            /* 补偿线宽变化 */
-        }
+.morenpost a:hover {
+    /* 悬停效果：颜色变深，虚线效果 */
+    color: #1d4ed8;
+    border-bottom: 2px dashed #1d4ed8;
+    padding-bottom: 0;
+    /* 补偿线宽变化 */
+}
 
-        img {
-            width: 100%;
-            /* 使图片填充整个容器 */
-            height: auto;
-            border-radius: 5px;
-            /* 高度自适应 */
-        }
+img {
+    width: 100%;
+    /* 使图片填充整个容器 */
+    height: auto;
+    border-radius: 5px;
+    /* 高度自适应 */
+}

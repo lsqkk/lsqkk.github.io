@@ -1,0 +1,198 @@
+/* 代码高亮样式 */
+.post-content pre {
+    position: relative;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 1.2em 1em 1em 1em;
+    overflow: auto;
+    margin: 1.5em 0;
+    border: 1px solid #3a3a3a;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.post-content code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.95em;
+}
+
+.post-content pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* 代码块标题栏 */
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #252525;
+    padding: 0.5em 1em;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin: -1.2em -1em 1em -1em;
+    border-bottom: 1px solid #3a3a3a;
+    font-size: 0.85em;
+}
+
+.code-language {
+    color: #ccc;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.code-language::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #f0db4f;
+    /* JavaScript 颜色，会根据语言变化 */
+}
+
+/* 复制按钮样式 */
+.copy-code-btn {
+    background-color: #3a3a3a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.3em 0.8em;
+    font-size: 0.85em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    transition: all 0.2s ease;
+}
+
+.copy-code-btn:hover {
+    background-color: #4a4a4a;
+    transform: translateY(-1px);
+}
+
+.copy-code-btn:active {
+    transform: translateY(0);
+}
+
+.copy-code-btn::before {
+    content: '📋';
+    font-size: 0.9em;
+}
+
+.copy-code-btn.copied {
+    background-color: #2d7d46;
+}
+
+.copy-code-btn.copied::before {
+    content: '✓';
+}
+
+/* 行号样式（如果需要显示行号） */
+.hljs-ln-numbers {
+    text-align: right;
+    color: #666;
+    border-right: 1px solid #3a3a3a;
+    padding-right: 1em;
+    margin-right: 1em;
+    user-select: none;
+}
+
+/* 滚动条样式 */
+.post-content pre::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.post-content pre::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border-radius: 4px;
+}
+
+.post-content pre::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.post-content pre::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* 特定语言指示器颜色 */
+.code-language[data-language="python"]::before {
+    background-color: #3572A5;
+}
+
+.code-language[data-language="javascript"]::before,
+.code-language[data-language="js"]::before {
+    background-color: #f0db4f;
+}
+
+.code-language[data-language="typescript"]::before,
+.code-language[data-language="ts"]::before {
+    background-color: #3178c6;
+}
+
+.code-language[data-language="html"]::before {
+    background-color: #e34c26;
+}
+
+.code-language[data-language="css"]::before {
+    background-color: #563d7c;
+}
+
+.code-language[data-language="java"]::before {
+    background-color: #b07219;
+}
+
+.code-language[data-language="c"]::before {
+    background-color: #555555;
+}
+
+.code-language[data-language="cpp"]::before {
+    background-color: #f34b7d;
+}
+
+.code-language[data-language="csharp"]::before,
+.code-language[data-language="cs"]::before {
+    background-color: #178600;
+}
+
+.code-language[data-language="go"]::before {
+    background-color: #00ADD8;
+}
+
+.code-language[data-language="rust"]::before {
+    background-color: #dea584;
+}
+
+.code-language[data-language="php"]::before {
+    background-color: #4F5D95;
+}
+
+.code-language[data-language="bash"]::before,
+.code-language[data-language="shell"]::before {
+    background-color: #89e051;
+}
+
+.code-language[data-language="sql"]::before {
+    background-color: #e38c00;
+}
+
+.code-language[data-language="json"]::before {
+    background-color: #d4d4d4;
+}
+
+.code-language[data-language="yaml"]::before,
+.code-language[data-language="yml"]::before {
+    background-color: #cb171e;
+}
+
+.code-language[data-language="markdown"]::before,
+.code-language[data-language="md"]::before {
+    background-color: #083fa1;
+}
