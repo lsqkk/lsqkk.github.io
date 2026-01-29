@@ -21,14 +21,22 @@ tags: 网站
 
 本站部分功能依赖以下第三方 API 或服务，特此说明并致谢：
 
-| 服务名称 | 站内用途说明 | 官方网站 |
+### 服务列表
+
+| 项目名称 | 站内用途说明 | 官方网站 |
 |----------|----------|----------|
-| KaTeX | 文章数学公式渲染 | [https://katex.org/](https://katex.org/) |
-| Postimages | 部分图片托管 | [https://postimages.org/](https://postimages.org/) |
-| Firebase Realtime Database | 实时数据同步（留言、游戏、协同工具） | [https://firebase.google.com/](https://firebase.google.com/) |
+| KaTeX | 文章数学公式渲染 | [https://katex.org](https://katex.org) |
+| Postimages | 部分图片托管 | [https://postimages.org](https://postimages.org) |
+| Firebase Realtime Database | 实时数据同步（留言、游戏、协同工具） | [https://firebase.google.com](https://firebase.google.com) |
 | giscus | 文章评论系统 | [https://giscus.app/zh-CN](https://giscus.app/zh-CN) |
 | Vercel | Serverless 函数托管与域名服务 | [https://vercel.com](https://vercel.com) |
 | 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc](https://www.busuanzi.cc) |
+| HYTangMeiRen55W | 网站默认字体 | [https://hanyi.com.cn](https://hanyi.com.cn) |
+
+### API 列表
+
+| API 名称 | 站内用途说明 | 官方网站 |
+|----------|----------|----------|
 | ipapi | 原生时钟获取地理位置 | [https://ipapi.co](https://ipapi.co) |
 | Bing 壁纸 API | 原生时钟背景图 | [https://bing.img.run/api.html](https://bing.img.run/api.html) |
 | OpenWeather API | 天气预报功能数据源 | [https://openweathermap.org/api](https://openweathermap.org/api) |
