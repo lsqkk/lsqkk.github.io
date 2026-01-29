@@ -1,7 +1,15 @@
-document.addEventListener('DOMContentLoaded', () => {
+var config = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector('.main-content').style.opacity = '1';
+
+    await loadHomeConfig();
     loadRecentPosts(); // 加载文章
-    loadHomeConfig();
+    updateTime();
+    updateGreeting();
+    getVisitorInfo();
+    setInterval(updateTime, 1000);
+    setInterval(updateGreeting, 60000);
 
     // 为导航盒子添加悬停效果
     document.querySelectorAll('.index-feature-box').forEach(box => {
@@ -85,90 +93,88 @@ if (isLoggedIn) {
     document.getElementById('mobile-login-button').style.display = 'block';
 }
 
+async function loadHomeConfig() {
+    try {
+        const response = await fetch('/json/index.json');
+        config = await response.json(); // 直接赋值给全局变量 config
+        renderHomeConfig(config);
+    } catch (error) {
+        console.error('加载主页配置失败:', error);
+        setDefaultContent();
+    }
+}
+
+// 修改打字机效果代码 - 添加等待机制
 document.addEventListener('DOMContentLoaded', function () {
     const typewriterElement = document.getElementById('typewriter');
-    const phrases = [
-        "无穷的远方，无数的人们，都和我有关。",
-        "Idealists Need Timeless Journeys",
-        "比金钱更珍贵是知识，比知识更珍贵的是无休止的好奇心，而比好奇心更珍贵的，是我们头上的星空。",
-        "哲学家们只是用不同的方式解释世界，而问题在于改变世界。",
-        "人民，只有人民，才是创造世界历史的动力。",
-        "在黑暗里点灯的人，终将照亮整个时代。",
-        "如果风只吹向一个方向，那就改变风的轨迹。",
-        "理想不会老去，它只会等待新的战士。",
-        "你要成为改变世界的火焰，而非被世界熄灭的火星。",
-        "黑暗不能驱除黑暗，只有光明可以；仇恨不能驱除仇恨，只有爱可以。",
-        "理想不是终点，而是让现实变得更好的方向。",
-        "真正的乌托邦不在远方，而在我们此刻的选择里。",
-        "不要害怕理想太高，要害怕自己蹲得太低。",
-        "当一个人开始为他人点亮蜡烛，黑夜便有了裂缝。",
-        "理想主义者的力量，在于他们拒绝接受'不可能'的判决。",
-        "文明的进步，始于有人坚持'本该如此'。",
-        "即使翅膀被现实打湿，也要记得天空的存在。"
-    ];
-    let phraseIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-    let isWaiting = false;
 
-    function typeWriter() {
-        const currentPhrase = phrases[phraseIndex];
-        let displayText = currentPhrase.substring(0, charIndex);
+    // 等待 config 加载完成
+    const waitForConfig = setInterval(() => {
+        if (config && config.phrases) {
+            clearInterval(waitForConfig);
+            initTypewriter();
+        }
+    }, 100);
 
-        // 更新显示文本（保留空格防止布局塌陷）
-        typewriterElement.innerHTML = displayText || '&nbsp;';
+    function initTypewriter() {
+        const phrases = config.phrases; // 现在可以正常访问
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isWaiting = false;
 
-        if (isDeleting) {
-            // 删除字符
-            charIndex--;
+        function typeWriter() {
+            const currentPhrase = phrases[phraseIndex];
+            let displayText = currentPhrase.substring(0, charIndex);
 
-            if (charIndex <= 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                setTimeout(typeWriter, 500); // 转到下一句前的暂停
+            typewriterElement.innerHTML = displayText || '&nbsp;';
+
+            if (isDeleting) {
+                charIndex--;
+                if (charIndex <= 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    setTimeout(typeWriter, 500);
+                } else {
+                    setTimeout(typeWriter, 50);
+                }
+            } else if (isWaiting) {
+                if (charIndex < currentPhrase.length) {
+                    charIndex++;
+                    setTimeout(typeWriter, 100);
+                } else {
+                    isWaiting = false;
+                    isDeleting = true;
+                    setTimeout(typeWriter, 1500);
+                }
             } else {
-                setTimeout(typeWriter, 50); // 更快的删除速度
-            }
-        } else if (isWaiting) {
-            // 关键修改：等待状态结束后先显示完整句子，再开始删除
-            if (charIndex < currentPhrase.length) {
-                // 如果还没显示完，继续显示
                 charIndex++;
-                setTimeout(typeWriter, 100);
-            } else {
-                // 完整显示后才进入删除模式
-                isWaiting = false;
-                isDeleting = true;
-                setTimeout(typeWriter, 1500); // 完整显示1.5秒后再开始删除
-            }
-        } else {
-            // 添加字符
-            charIndex++;
-
-            if (charIndex >= currentPhrase.length) {
-                isWaiting = true; // 标记为等待状态
-                setTimeout(typeWriter, 100); // 立即继续执行（会进入上面的isWaiting分支）
-            } else {
-                setTimeout(typeWriter, 100 + Math.random() * 50);
+                if (charIndex >= currentPhrase.length) {
+                    isWaiting = true;
+                    setTimeout(typeWriter, 100);
+                } else {
+                    setTimeout(typeWriter, 100 + Math.random() * 50);
+                }
             }
         }
+
+        // 初始化光标样式
+        const style = document.createElement('style');
+        style.innerHTML = `
+            #typewriter::after {
+                content: "|";
+                animation: blink 0.7s infinite;
+                position: relative;
+                left: -0.1em;
+            }
+            @keyframes blink { 0%,100% {opacity:1;} 50% {opacity:0;} }
+        `;
+        document.head.appendChild(style);
+
+        setTimeout(typeWriter, 1000);
     }
-
-    // 初始化光标样式（保持不变）
-    const style = document.createElement('style');
-    style.innerHTML = `
-        #typewriter::after {
-            content: "|";
-            animation: blink 0.7s infinite;
-            position: relative;
-            left: -0.1em;
-        }
-        @keyframes blink { 0%,100% {opacity:1;} 50% {opacity:0;} }
-    `;
-    document.head.appendChild(style);
-
-    setTimeout(typeWriter, 1000);
 });
+
 // 更新时间
 function updateTime() {
     const now = new Date();
@@ -185,12 +191,12 @@ function updateGreeting() {
     const hour = new Date().getHours();
     let greeting = '';
 
-    if (hour < 6) greeting = '凌晨好';
-    else if (hour < 9) greeting = '早上好';
-    else if (hour < 12) greeting = '上午好';
-    else if (hour < 14) greeting = '中午好';
-    else if (hour < 18) greeting = '下午好';
-    else greeting = '晚上好';
+    if (hour < 6) greeting = '凌晨好~';
+    else if (hour < 9) greeting = '早上好~';
+    else if (hour < 12) greeting = '上午好~';
+    else if (hour < 14) greeting = '中午好~';
+    else if (hour < 18) greeting = '下午好~';
+    else greeting = '晚上好~';
 
     document.getElementById('greeting').textContent = greeting;
     document.getElementById('tip').textContent = getRandomTip();
@@ -198,19 +204,7 @@ function updateGreeting() {
 
 // 随机提示语
 function getRandomTip() {
-    const tips = [
-        '欢迎来到这片绿洲。愿这里的文字能像星光一样，为你照亮未知的路径',
-        '在这里，我们谈论星辰、泥土，以及如何用双手构建乌托邦',
-        '愿你始终保有追问的勇气，像一棵树那样生长——向下扎根，向上触摸天空',
-        '世界或许不够完美，但改变始于每一个不肯沉默的灵魂。很高兴遇见你',
-        '这里没有答案，只有真诚的提问与探索。欢迎加入这场思想的冒险',
-        '如果语言是种子，愿这些文字能在你心里开出一朵小小的、倔强的花',
-        '理想主义者是现实的建筑师——我们承认阴影，但永远面向光',
-        '欢迎来到这个角落。让我们一起保持‘天真’的力量：相信改变，相信微小事物的伟大',
-        '这里记录着对自由的注解、对爱的实验，以及永不熄灭的好奇心',
-        '你并非独自在深夜思考人类与宇宙。看，我们留下了这些灯火'
-
-    ];
+    const tips = config.tips;
     return tips[Math.floor(Math.random() * tips.length)];
 }
 
@@ -362,15 +356,7 @@ async function getVisitorInfo() {
         document.getElementById('welcome-info').textContent = '欢迎访问夸克博客';
     }
 }
-// 初始化
-document.addEventListener('DOMContentLoaded', () => {
-    updateTime();
-    updateGreeting();
-    getVisitorInfo();
 
-    setInterval(updateTime, 1000);
-    setInterval(updateGreeting, 60000);
-});
 
 async function loadDynamicFeed() {
     try {
@@ -613,7 +599,7 @@ function displayFriendLinks(friends) {
 async function loadHomeConfig() {
     try {
         const response = await fetch('/json/index.json');
-        const config = await response.json();
+        config = await response.json();
         renderHomeConfig(config);
     } catch (error) {
         console.error('加载主页配置失败:', error);
@@ -633,10 +619,9 @@ function renderHomeConfig(config) {
         </a>
     `).join('');
 
-    // 渲染欢迎文本
+    document.getElementById('Nickname').textContent = config.Nickname;
     document.getElementById('welcome-title').textContent = config.welcomeTitle;
     document.getElementById('welcome-text').textContent = config.welcomeText;
-
 
     // 渲染功能列表
     const featuresContainer = document.getElementById('features-container');
