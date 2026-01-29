@@ -570,92 +570,6 @@ function formatVideoTime(timestamp) {
     }
 }
 
-// 加载最近留言
-async function loadRecentMessages() {
-    try {
-        // 检查配置是否已加载
-        if (typeof firebaseConfig === 'undefined') {
-            console.error('Firebase配置未加载，请确保firebase-config.js已加载');
-            document.getElementById('recent-messages').innerHTML =
-                '<div class="index-announcement"><p style="margin: 0;">留言功能初始化失败</p></div>';
-            return;
-        }
-
-        // 动态加载Firebase（如果尚未加载）
-        if (typeof firebase === 'undefined') {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js';
-                script.onload = () => {
-                    const script2 = document.createElement('script');
-                    script2.src = 'https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js';
-                    script2.onload = resolve;
-                    script2.onerror = reject;
-                    document.head.appendChild(script2);
-                };
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        // 初始化Firebase - 使用全局的firebaseConfig
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);  // 使用全局配置
-        }
-
-        const messagesRef = firebase.database().ref('chatrooms/lsqkk-lyb/messages');
-
-        messagesRef.orderByChild('timestamp').limitToLast(3).once('value').then(snapshot => {
-            const messages = [];
-            snapshot.forEach(childSnapshot => {
-                const message = childSnapshot.val();
-                messages.push(message);
-            });
-
-            // 按时间倒序排列
-            messages.reverse();
-            displayRecentMessages(messages);
-        }).catch(error => {
-            console.error('加载留言失败:', error);
-            document.getElementById('recent-messages').innerHTML =
-                '<div class="index-announcement"><p style="margin: 0;">留言加载失败</p></div>';
-        });
-
-    } catch (error) {
-        console.error('初始化Firebase失败:', error);
-        document.getElementById('recent-messages').innerHTML =
-            '<div class="index-announcement"><p style="margin: 0;">留言功能暂不可用</p></div>';
-    }
-}
-
-// 显示最近留言
-function displayRecentMessages(messages) {
-    const container = document.getElementById('recent-messages');
-
-    if (messages.length === 0) {
-        container.innerHTML = '<div class="index-announcement"><p style="margin: 0;">暂无留言</p></div>';
-        return;
-    }
-
-    let html = '';
-    messages.forEach(message => {
-        const date = new Date(message.timestamp);
-        const dateStr = `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-        // 截取内容前30个字符
-        const content = message.text.length > 30 ? message.text.substring(0, 30) + '...' : message.text;
-
-        html += `
-            <div class="index-announcement" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.03);">
-                <div style="font-weight: bold; margin-bottom: 5px;">${message.nickname}</div>
-                <div style="font-size: 0.9em; color: #666;">${content}</div>
-                <div style="font-size: 0.8em; color: #999; margin-top: 5px;">${dateStr}</div>
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-}
-
 // 加载友链
 async function loadFriendLinks() {
     try {
@@ -781,7 +695,6 @@ function addEventListenersToDynamicContent() {
 
 document.addEventListener('DOMContentLoaded', function () {
     loadDynamicFeed();
-    loadRecentMessages();
     loadFriendLinks();
     loadLatestVideo();
     checkAndShowPopup();
