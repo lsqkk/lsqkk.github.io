@@ -12,3 +12,4 @@ urllib                # blog\daily\1.py, py\serve.py
 webbrowser            # py\sitemap.py
 xml                   # py\sitemap.py
 yaml                  # py\generate_posts.py
+click>=8.0.0

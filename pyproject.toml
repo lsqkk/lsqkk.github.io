@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quark-blog"
+version = "0.1.0"
+authors = [
+    {name = "蓝色奇夸克", email = "jsxzznz@163.com"},
+]
+description = "夸克博客管理命令行工具"
+readme = "readme.md"
+requires-python = ">=3.7"
+dependencies = [
+    "click>=8.0.0",
+]
+
+[project.scripts]
+quark = "quark.cli:cli"

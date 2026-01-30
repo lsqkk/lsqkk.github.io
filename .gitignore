@@ -2,3 +2,5 @@ private
 .env
 .env.local
 .env.*.local
+quark_blog.egg-info
+__pycache__
