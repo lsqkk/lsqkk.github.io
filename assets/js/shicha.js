@@ -203,13 +203,6 @@ class TrueParallax {
             maxScrollDistance * this.parallaxSpeed,
             this.maxBgMoveDistance
         );
-
-        console.log('图片尺寸:', { newWidth, newHeight });
-        console.log('窗口尺寸:', { windowWidth, windowHeight });
-        console.log('最大滚动距离:', maxScrollDistance);
-        console.log('背景最大移动距离:', this.maxBgMoveDistance);
-        console.log('滚动到底时背景移动距离:', this.bgMoveAtBottom);
-
         // 应用尺寸
         this.parallaxImage.style.width = `${newWidth}px`;
         this.parallaxImage.style.height = `${newHeight}px`;
@@ -282,9 +275,6 @@ class TrueParallax {
         if (this.maxBgMoveDistance !== undefined) {
             bgMoveY = Math.max(-this.maxBgMoveDistance, bgMoveY);
         }
-
-        console.log('滚动位置:', scrollY, '背景移动:', bgMoveY, '最大滚动距离:', maxScrollDistance);
-
         // 应用变换
         this.parallaxImage.style.transform = `translate(-50%, ${bgMoveY}px)`;
 
