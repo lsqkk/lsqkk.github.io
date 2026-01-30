@@ -330,7 +330,7 @@ button {
 
 .date {
     text-align: center;
-    color: #6c757d;
+    color: #7bacd7;
     margin-bottom: 15px;
 }
 
@@ -347,8 +347,8 @@ button {
 
 .tip {
     font-style: italic;
-    color: #6c757d;
-    border-left: 3px solid #6c757d;
+    color: #9dcef9;
+    border-left: 3px solid #1e4f7a;
     padding-left: 10px;
 }
 
@@ -375,7 +375,7 @@ button {
     padding: 20px;
     margin-top: 20px;
     text-align: center;
-    color: #666;
+    color: #AAA;
     font-size: 0.9em;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }

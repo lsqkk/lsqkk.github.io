@@ -3,12 +3,9 @@ class TrueParallax {
         this.parallaxBg = document.getElementById('parallaxBg');
         this.parallaxSpeed = 0.5; // 0.5x速度
         this.bgImage = null;
-        this.parallaxImage = null;
         this.isImageLoaded = false;
         this.lastScrollY = 0;
         this.rafId = null;
-        this.isDarkMode = false;
-        this.darkModeOverlay = null;
 
         this.init();
     }
@@ -17,64 +14,19 @@ class TrueParallax {
         // 1. 创建并加载图片
         this.loadImage();
 
-        // 2. 创建黑暗模式覆盖层
-        this.createDarkModeOverlay();
-
-        // 3. 设置初始样式和事件监听
+        // 2. 设置初始样式和事件监听
         this.setupEvents();
 
-        // 4. 检测黑暗模式
-        this.checkDarkMode();
-
-        // 5. 初始更新
+        // 3. 初始更新
         this.update();
 
-        // 6. 确保图片加载后重新计算
+        // 4. 确保图片加载后重新计算
         window.addEventListener('load', () => {
             setTimeout(() => {
                 this.updateImageSize();
                 this.update();
             }, 100);
         });
-    }
-
-    createDarkModeOverlay() {
-        // 创建深蓝色覆盖层
-        this.darkModeOverlay = document.createElement('div');
-        this.darkModeOverlay.className = 'parallax-overlay';
-        this.parallaxBg.appendChild(this.darkModeOverlay);
-    }
-
-    checkDarkMode() {
-        // 检查系统颜色主题偏好
-        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-        // 设置初始状态
-        this.isDarkMode = darkModeMediaQuery.matches;
-        this.applyDarkModeStyles();
-
-        // 监听主题变化
-        darkModeMediaQuery.addEventListener('change', (e) => {
-            this.isDarkMode = e.matches;
-            this.applyDarkModeStyles();
-            console.log(`系统主题已切换为: ${this.isDarkMode ? '黑暗模式' : '正常模式'}`);
-        });
-    }
-
-    applyDarkModeStyles() {
-        if (this.isDarkMode) {
-            // 应用黑暗模式样式
-            this.darkModeOverlay.classList.add('dark-mode');
-            if (this.parallaxImage) {
-                this.parallaxImage.style.filter = 'blur(10px)';
-            }
-        } else {
-            // 恢复正常模式样式
-            this.darkModeOverlay.classList.remove('dark-mode');
-            if (this.parallaxImage) {
-                this.parallaxImage.style.filter = 'none';
-            }
-        }
     }
 
     loadImage() {
@@ -90,34 +42,20 @@ class TrueParallax {
             this.parallaxBg.innerHTML = '';
             this.parallaxBg.style.backgroundColor = '#2c3e50';
             this.isImageLoaded = true;
-
-            // 移除覆盖层（如果有的话）
-            if (this.darkModeOverlay && this.darkModeOverlay.parentNode) {
-                this.darkModeOverlay.remove();
-            }
         };
 
         this.bgImage.onload = () => {
             console.log('背景图片加载成功');
             this.setupImage();
             this.isImageLoaded = true;
-            // 确保黑暗模式样式应用
-            this.applyDarkModeStyles();
         };
 
         this.bgImage.src = imagePath;
     }
 
     setupImage() {
-        // 清空容器（保留覆盖层）
-        const overlay = this.darkModeOverlay;
+        // 清空容器
         this.parallaxBg.innerHTML = '';
-
-        // 重新添加覆盖层
-        if (overlay) {
-            this.parallaxBg.appendChild(overlay);
-            this.darkModeOverlay = overlay;
-        }
 
         // 克隆图片（避免原始图片被修改）
         const imgClone = this.bgImage.cloneNode();
@@ -133,7 +71,6 @@ class TrueParallax {
             object-fit: cover;
             transform: translateY(0);
             will-change: transform;
-            transition: filter 0.3s ease;
         `;
 
         // 添加到容器
@@ -142,9 +79,6 @@ class TrueParallax {
 
         // 更新图片尺寸
         this.updateImageSize();
-
-        // 应用当前的黑暗模式状态
-        this.applyDarkModeStyles();
     }
 
     updateImageSize() {

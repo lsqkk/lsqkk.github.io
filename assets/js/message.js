@@ -262,7 +262,7 @@ function displayRecentMessages(messages) {
             <div class="index-announcement" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.03);">
                 <div style="font-weight: bold; margin-bottom: 5px;">${nickname}</div>
                 <div style="font-size: 0.9em; color: #666;">${content}</div>
-                <div style="font-size: 0.8em; color: #999; margin-top: 5px;">${timeStr}</div>
+                <div style="font-size: 0.8em; color: #dcdcdc; margin-top: 5px;">${timeStr}</div>
             </div>
         `;
     });
