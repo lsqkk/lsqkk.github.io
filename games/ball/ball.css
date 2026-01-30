@@ -7,7 +7,6 @@
         body {
             overflow: hidden;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         #gameContainer {

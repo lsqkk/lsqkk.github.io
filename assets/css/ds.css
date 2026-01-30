@@ -30,7 +30,6 @@
 }
 
 body {
-  font-family: -apple-system, system-ui, "Segoe UI", Roboto;
   background: var(--bg-main);
   color: var(--text-main);
   height: 100vh;
