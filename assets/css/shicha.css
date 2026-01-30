@@ -30,7 +30,6 @@ body {
     transform: translateY(0);
     will-change: transform;
     transition: filter 0.3s ease;
-    filter: blur(10px);
 }
 
 /* 深蓝色覆盖层 */

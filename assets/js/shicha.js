@@ -63,16 +63,16 @@ class TrueParallax {
 
     applyDarkModeStyles() {
         if (this.isDarkMode) {
-            // 应用黑暗模式样式
+            // 黑暗模式：深蓝色覆盖层 + blur
             this.darkModeOverlay.classList.add('dark-mode');
             if (this.parallaxImage) {
                 this.parallaxImage.style.filter = 'blur(10px)';
             }
         } else {
-            // 恢复正常模式样式
+            // 白天模式：无覆盖层，但保持 blur（或不同强度的 blur）
             this.darkModeOverlay.classList.remove('dark-mode');
             if (this.parallaxImage) {
-                this.parallaxImage.style.filter = 'none';
+                this.parallaxImage.style.filter = 'blur(5px)'; // 白天用较小的 blur
             }
         }
     }
