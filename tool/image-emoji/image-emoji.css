@@ -3,13 +3,21 @@
     --primary-hover: #3a56d4;
     --secondary-color: #3f37c9;
     --success-color: #4cc9f0;
-    --text-color: #2b2d42;
-    --light-gray: #bebebe;
-    --medium-gray: #e9ecef;
-    --dark-gray: #6c757d;
-    --white: #ffffff57;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --border-radius: 8px;
+    --text-color: rgba(255, 255, 255, 0.9);
+    /* 浅色文字 */
+    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* 深色阴影 */
+    --light-gray: rgba(255, 255, 255, 0.1);
+    --medium-gray: rgba(255, 255, 255, 0.15);
+    --dark-gray: rgba(255, 255, 255, 0.7);
+    --white: rgba(255, 255, 255, 0.2);
+    /* 低透明度白 */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    /* 毛玻璃背景 */
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    /* 增强阴影深度 */
+    --border-radius: 16px;
+    /* 增加圆角增强液态感 */
 }
 
 * {
@@ -25,12 +33,28 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    text-shadow: var(--text-shadow);
+    /* 为所有文字添加阴影 */
+}
+
+/* 毛玻璃效果类 */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(100%);
+    /* 高模糊 + 饱和度增强 */
+    -webkit-backdrop-filter: blur(20px) saturate(100%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    /* 微妙的边框增强层次 */
+    box-shadow: var(--shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        /* 内发光增强液态感 */
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--text-color);
     text-decoration: none;
 }
 
@@ -43,11 +67,12 @@ body {
     color: var(--text-color);
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.3s;
 }
 
 .nav-links a:hover {
-    color: var(--primary-color);
+    color: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
 }
 
 main {
@@ -67,6 +92,8 @@ main {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     color: var(--text-color);
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    /* 增强标题阴影 */
 }
 
 .hero p {
@@ -74,14 +101,28 @@ main {
     color: var(--dark-gray);
     max-width: 700px;
     margin: 0 auto 1.5rem;
+    text-shadow: var(--text-shadow);
 }
 
+/* 容器应用毛玻璃效果 */
 .container {
-    background-color: var(--white);
+    background: var(--white);
+    backdrop-filter: blur(25px) saturate(100%);
+    /* 更高的模糊度 */
+    -webkit-backdrop-filter: blur(25px) saturate(100%);
     border-radius: var(--border-radius);
     padding: 2rem;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.container:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 .upload-area {
@@ -93,32 +134,40 @@ main {
     transition: all 0.3s;
     cursor: pointer;
     position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
 .upload-area:hover {
-    border-color: var(--primary-color);
-    background-color: rgba(67, 97, 238, 0.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
 }
 
 .upload-area.active {
     border-color: var(--primary-color);
-    background-color: rgba(67, 97, 238, 0.1);
+    background: rgba(67, 97, 238, 0.15);
 }
 
 .upload-icon {
     font-size: 3rem;
-    color: var(--primary-color);
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 1rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .upload-text {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
+    color: var(--text-color);
+    text-shadow: var(--text-shadow);
 }
 
 .upload-hint {
     color: var(--dark-gray);
     font-size: 0.9rem;
+    text-shadow: var(--text-shadow);
 }
 
 .controls {
@@ -137,6 +186,8 @@ main {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
+    color: var(--text-color);
+    text-shadow: var(--text-shadow);
 }
 
 .slider-container {
@@ -150,29 +201,37 @@ input[type="range"] {
     -webkit-appearance: none;
     height: 8px;
     background: var(--medium-gray);
-    border-radius: 4px;
+    border-radius: 10px;
     outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: var(--primary-color);
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 1);
 }
 
 .value-display {
     min-width: 40px;
     text-align: center;
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--text-color);
+    text-shadow: var(--text-shadow);
 }
 
 .preview-container {
@@ -189,6 +248,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: none;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #gridOverlay {
@@ -202,11 +262,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .result-container {
     margin-top: 2rem;
-    background-color: var(--light-gray);
+    background: var(--light-gray);
     padding: 1.5rem;
     border-radius: var(--border-radius);
-    border: 1px solid var(--medium-gray);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 #emojiResult {
@@ -215,10 +277,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     overflow-x: auto;
     max-height: 500px;
     overflow-y: auto;
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.08);
     padding: 1rem;
-    border-radius: calc(var(--border-radius) - 2px);
-    border: 1px solid var(--medium-gray);
+    border-radius: calc(var(--border-radius) - 4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    text-shadow: var(--text-shadow);
+    font-family: 'Courier New', monospace;
 }
 
 .button-group {
@@ -234,49 +299,75 @@ input[type="range"]::-webkit-slider-thumb:hover {
     justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
+    border-radius: 50px;
+    /* 胶囊按钮增强液态感 */
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     border: none;
     font-size: 1rem;
+    text-shadow: var(--text-shadow);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
-    color: var(--white);
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(63, 55, 201, 0.9));
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, rgba(67, 97, 238, 1), rgba(63, 55, 201, 1));
 }
 
 .btn-secondary {
-    background-color: var(--medium-gray);
+    background: rgba(255, 255, 255, 0.15);
     color: var(--text-color);
 }
 
 .btn-secondary:hover {
-    background-color: #d1d7dc;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .btn-success {
-    background-color: var(--success-color);
-    color: var(--white);
+    background: linear-gradient(135deg, rgba(76, 201, 240, 0.9), rgba(64, 180, 220, 0.9));
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-success:hover {
-    background-color: #3ab8dd;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(76, 201, 240, 1), rgba(64, 180, 220, 1));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
 .btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
@@ -297,14 +388,23 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin: 1.5rem 0;
     justify-content: center;
     align-items: center;
-    background-color: var(--light-gray);
+    background: rgba(255, 255, 255, 0.08);
     padding: 1rem;
     border-radius: var(--border-radius);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .emoji-palette span {
     font-size: 1.5rem;
     line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s;
+}
+
+.emoji-palette span:hover {
+    transform: scale(1.2);
 }
 
 .emoji-palette-title {
@@ -313,14 +413,18 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--dark-gray);
+    text-shadow: var(--text-shadow);
 }
 
 footer {
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.1);
     padding: 1.5rem 0;
     text-align: center;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
     margin-top: auto;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .footer-container {
@@ -340,16 +444,19 @@ footer {
 .footer-links a {
     color: var(--dark-gray);
     text-decoration: none;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.3s;
+    text-shadow: var(--text-shadow);
 }
 
 .footer-links a:hover {
-    color: var(--primary-color);
+    color: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
 }
 
 .copyright {
     color: var(--dark-gray);
     font-size: 0.9rem;
+    text-shadow: var(--text-shadow);
 }
 
 .file-input {
@@ -365,12 +472,14 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(67, 97, 238, 0.2);
+    background: rgba(67, 97, 238, 0.25);
     border-radius: var(--border-radius);
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
     z-index: 10;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
 .drag-drop-hint.active {
@@ -378,11 +487,15 @@ footer {
 }
 
 .drag-drop-text {
-    background-color: var(--primary-color);
+    background: rgba(67, 97, 238, 0.9);
     color: white;
     padding: 1rem 2rem;
     border-radius: var(--border-radius);
     font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -405,5 +518,10 @@ footer {
 
     .btn {
         width: 100%;
+    }
+
+    .container {
+        padding: 1.5rem;
+        border-radius: 12px;
     }
 }

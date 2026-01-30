@@ -23,6 +23,30 @@ const saveFolderBtn = document.getElementById('save-folder');
 let isEditing = false;
 let editingElement = null;
 
+// 检查系统主题偏好
+function checkSystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> 明亮模式';
+    } else {
+        document.body.classList.remove('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> 暗黑模式';
+    }
+}
+
+// 监听系统主题变化
+function setupThemeListener() {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // 使用事件监听器而不是 addListener（为了更好的兼容性）
+    if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', checkSystemTheme);
+    } else {
+        // 兼容旧版本浏览器
+        mediaQuery.addListener(checkSystemTheme);
+    }
+}
+
 // 切换视图模式
 gridViewBtn.addEventListener('click', () => {
     gridViewBtn.classList.add('active');
@@ -65,13 +89,22 @@ addBookmarkModal.addEventListener('click', (e) => {
     }
 });
 
-// 切换暗黑模式
+// 切换主题模式 - 现在会覆盖系统设置
 themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i> 明亮模式';
-    } else {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+
+    if (isDarkMode) {
+        // 如果当前是暗黑模式，切换到明亮模式
+        document.body.classList.remove('dark-mode');
         themeToggle.innerHTML = '<i class="fas fa-moon"></i> 暗黑模式';
+        // 保存用户选择到本地存储
+        localStorage.setItem('theme-preference', 'light');
+    } else {
+        // 如果当前是明亮模式，切换到暗黑模式
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> 明亮模式';
+        // 保存用户选择到本地存储
+        localStorage.setItem('theme-preference', 'dark');
     }
 });
 
@@ -333,6 +366,24 @@ window.deleteBookmark = function (event, element) {
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
+    // 检查是否有用户保存的主题偏好
+    const savedTheme = localStorage.getItem('theme-preference');
+
+    if (savedTheme) {
+        // 如果用户有保存的主题偏好，使用它
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i> 明亮模式';
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i> 暗黑模式';
+        }
+    } else {
+        // 如果没有保存的偏好，根据系统设置初始化
+        checkSystemTheme();
+        setupThemeListener();
+    }
+
     // 默认显示网格视图
     bookmarksGrid.style.display = 'grid';
     bookmarksList.style.display = 'none';
