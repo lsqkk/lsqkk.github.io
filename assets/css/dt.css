@@ -1,7 +1,7 @@
        :root {
            --primary-color: rgba(52, 152, 219, 0.8);
-           --glass-bg: rgba(255, 255, 255, 0.612);
-           --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+           --glass-bg: rgba(255, 255, 255, 0.2);
+           --shadow: 0 8px 32px 0 rgba(5, 7, 26, 0.2);
        }
 
        body {
@@ -41,7 +41,7 @@
        }
 
        .dynamic-date {
-           color: #7f8c8d;
+           color: #c5cdcd;
            font-size: 0.9rem;
            margin-bottom: 1rem;
        }
