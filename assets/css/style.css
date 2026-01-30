@@ -80,7 +80,7 @@ button {
 
 /* 侧栏内容容器 */
 .sidebar-content {
-    background: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(5px) saturate(100%) !important;
     -webkit-backdrop-filter: blur(5px) saturate(100%) !important;
     height: 100%;
@@ -102,7 +102,7 @@ button {
 .sidebar-footer {
     padding: 15px 20px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.4);
 }
 
 /* 侧栏切换按钮 */

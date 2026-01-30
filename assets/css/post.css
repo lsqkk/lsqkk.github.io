@@ -91,7 +91,7 @@ pre {
     line-height: 1.3em;
     margin-bottom: 1.3em;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
     backdrop-filter: blur(8px) saturate(100%) !important;
     -webkit-backdrop-filter: blur(8px) saturate(100%) !important;
     padding: 40px;
