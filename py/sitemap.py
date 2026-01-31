@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-一键生成sitemap.xml脚本
-注意生成后替换左右斜杠
-"""
 
 import os
 import xml.etree.ElementTree as ET
@@ -139,11 +135,10 @@ def generate_sitemap():
         f.write(pretty_xml)
     
     print("-" * 30)
-    print(f"sitemap.xml 生成成功，位于 {output_path} ，包含 {url_count} 个URL")
+    print(f"✅ sitemap.xml 生成成功，位于 {output_path} ，包含 {url_count} 个URL")
     
     # 返回输出路径供后续处理使用
     return output_path
-
 
 def post_generation_replace(file_path):
     """
@@ -154,21 +149,13 @@ def post_generation_replace(file_path):
     Args:
         file_path: 要处理的文件路径
     """
-    print("\n" + "=" * 60)
+
     print("开始执行生成后替换功能...")
     
     try:
         # 读取文件内容
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
-        # 统计原始内容中的斜杠数量
-        original_backslashes = content.count('\\')
-        original_double_slashes = content.count('io//')
-        
-        print(f"原始内容统计:")
-        print(f"  - 右斜杠(\\)数量: {original_backslashes}")
-        print(f"  - 'io//'出现次数: {original_double_slashes}")
         
         # 执行替换
         # 1. 将所有右斜杠替换为左斜杠
@@ -177,43 +164,17 @@ def post_generation_replace(file_path):
         # 2. 将"io//"替换为"io/"
         content = content.replace('io//', 'io/')
         
-        # 统计替换后的斜杠数量
-        new_backslashes = content.count('\\')
-        new_double_slashes = content.count('io//')
-        
-        print(f"\n替换后内容统计:")
-        print(f"  - 右斜杠(\\)数量: {new_backslashes}")
-        print(f"  - 'io//'出现次数: {new_double_slashes}")
-        
-        # 计算替换数量
-        replaced_backslashes = original_backslashes - new_backslashes
-        replaced_double_slashes = original_double_slashes - new_double_slashes
-        
         # 保存替换后的内容
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
         
-        print(f"\n✅ 替换完成:")
-        print(f"  - 替换右斜杠数量: {replaced_backslashes}")
-        print(f"  - 替换'io//'数量: {replaced_double_slashes}")
-        print(f"  - 文件已更新: {file_path}")
-        
-        # 显示替换示例（如果有替换的话）
-        if replaced_backslashes > 0 or replaced_double_slashes > 0:
-            print(f"\n📝 替换示例:")
-            
-            # 查找替换后的示例
-            lines = content.split('\n')
-            for i, line in enumerate(lines[:5]):  # 显示前5行中的示例
-                if 'io/' in line and 'loc' in line:
-                    print(f"  第{i+1}行: {line.strip()[:80]}...")
+        print(f"\n✅ 生成后替换完成")
         
         return True
         
     except Exception as e:
         print(f"❌ 替换过程中出错: {e}")
         return False
-
 
 def main():
     """主函数 - 直接运行"""
@@ -235,9 +196,6 @@ def main():
 
     except Exception as e:
         print(f"生成过程中出错: {e}")
-    
-    # 等待用户按任意键退出
-    input("\n按回车键退出...")
 
 if __name__ == '__main__':
     main()
