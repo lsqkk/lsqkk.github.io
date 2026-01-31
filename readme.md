@@ -40,6 +40,7 @@
 Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**基于原生技术栈的纯前端解决方案**。
 
 - **原生开发**：不依赖主流前端框架（React/Vue/Angular），使用原生 JavaScript + Canvas 实现核心功能。
+  
   <img src="/assets/img/readme/demo0.png">
 
 - **统一 UI 设计**：规定了一套统一的 UI 设计风格。使用类似经典 Windows 7 的 Aero 模糊玻璃主题，全站使用统一的顶部导航栏、网页标题样式和格式，深色模式自动跟随系统，优雅的视差滚动效果等。
@@ -64,24 +65,31 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
   </p>
 
 - **实时数据协同**：集成 Firebase RTDB 实现实时数据同步，支撑博客留言、在线聊天室、实时对战游戏和协同工具。
+  
   <img src="/assets/img/readme/demo5.png">
 
 - **音视频推流**：通过 [声网 Agora API](https://doc.shengwang.cn/api-center) 实现直播画面的[实时推流与播放](https://lsqkk.github.io/a/live)。
+  
   <img src="/assets/img/readme/demo6.png">
 
 - **无服务器 WebRTC 通信**：[Quark Share](https://lsqkk.github.io/a/share) 实现了无可用信令服务器状况的 WebRTC 信令通信方案，提供 P2P 文件传输服务。
+  
   <img src="/assets/img/readme/demo7.png">
 
 - **Serverless 集成**：使用 **Vercel 云函数 + 自有域名** 托管敏感配置 API Key 和自有/开放 API 服务，在 GitHub Pages 纯前端托管环境下实现后端能力。
+  
   <img src="/assets/img/readme/demo8.png">
 
 - **网站流量计数**：引入 [不蒜子](https://www.busuanzi.cc/) 实现无服务器网站流量计数，统计文章访问量。使用 [Bing Webmaster Tools](https://www.bing.com/webmasters) 监控网站总体情况。
+  
   <img src="/assets/img/readme/demo9.png">
 
 - **PWA 网站应用支持**：通过 PWA 实现应用化体验，支持快速安装到设备桌面，提供离线访问、推送通知等原生应用功能。
+  
   <img src="/assets/img/readme/demo10.png">
 
 - **自定义网站管理工具**：开发了 **Quark 命令行工具**，通过 Python 包形式封装博客管理操作，实现了类似 `quark serve`、`quark push` 等简洁命令，支持动态命令加载和扩展，提升本地管理效率。
+  
   <img src="/assets/img/readme/demo11.png">
 
 - 更多技术细节及本站使用服务清单，欢迎查看 [更新日志](/blog/log/log.md) 及 [关于本站](/posts/copyright.md) ！
