@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     container.innerHTML = '<div class="loading">正在加载工具箱数据...</div>';
 
     // 读取配置文件
-    fetch('/json/tool.json')
+    fetch('/tool/tool.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP错误! 状态码: ${response.status}`);
