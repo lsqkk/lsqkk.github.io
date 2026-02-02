@@ -10,8 +10,8 @@
     /* 警告红色 */
     --bg-light: #f0f2f5;
     /* 极浅背景色 */
-    --card-bg-opacity: 0.8;
-    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --card-bg-opacity: 0.2;
+    --card-shadow: 0 8px 32px 0 rgba(11, 13, 48, 0.3);
     --card-border: 1px solid rgba(255, 255, 255, 0.3);
     --control-bg: rgba(255, 255, 255, 0.1);
     /* 控制区半透明背景 */
