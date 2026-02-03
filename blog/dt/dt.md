@@ -10,9 +10,6 @@
 
 ![](https://raw.githubusercontent.com/lsqkk/image/main/20260203180823104.png)
 
-# 今日更新
-
-
 
 # 期末考试结束
 
@@ -104,9 +101,11 @@
 ![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEMWj6a8kw2Vjt.dQXhmefgnJkkwrEshVVu806cVm0ITVZebKFpFAPl0YmEhRWTytU2QTRsnwmYKi.1NMfonj7nY!/b&bo=QAZVCEAGVQgWECA!)
 ![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEMWj6a8kw2Vjt.dQXhmefgnR6VAFGWZ4k1gC1iNgRC*RdUXRUW013b9WdqA*NkDShFASfcLtLhwxZwd6.vflmC0!/b&bo=VQhABlUIQAYWECA!)
 
-# 少年班40周年[em]e10318[/em]
+# 少年班40周年
 
 ## 日期：2025-11-29
+
+少年班40周年[em]e10318[/em]
 
 依然少年，依然热爱
 
@@ -123,11 +122,11 @@
 
 ![少年班](https://raw.githubusercontent.com/lsqkk/image/main/20251130220456859.jpg)
 
-# 今日更新
+# 27生日
 
 ## 日期：2025-11-29
 
-昨天是@______ 的生日，让我们祝他17又1/365岁快乐[em]e400408[/em]
+昨天是27的生日，让我们祝他17又1/365岁快乐[em]e400408[/em]
 朱尼好好嗑啊啊啊啊
 已严肃期待疯3
 
@@ -159,7 +158,7 @@
 ![img_8](http://photonjmaz.photo.store.qq.com/psc?/V52OFQu31xjx5W1uSwUp25IyFv3rXjsc/TmEUgtj9EK6.7V8ajmQrEPIZXMi05yY3aIah1kGTc8on9FL7uDmh*JnWt732L2WgXXvnJTow05Bs6zDqh080GJeOMjbBW6GvUbEboQ3oS*8!/b&bo=VQhABlUIQAYWECA!)
 ![img_9](http://photonjmaz.photo.store.qq.com/psc?/V52OFQu31xjx5W1uSwUp25IyFv3rXjsc/TmEUgtj9EK6.7V8ajmQrEPIZXMi05yY3aIah1kGTc8poO2fFgeF30sJGQXilS9dSxc4GTgj865c3iRGxRaPzT11KXvXCopYa7jAMneHIy3A!/b&bo=QAZVCEAGVQgWECA!)
 
-# 今日更新
+# 梧桐节
 
 ## 日期：2025-11-23
 
@@ -171,12 +170,9 @@
 ![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEHVSC1O.L79emBst5F83broHRpfw2Y08bFZi0h7atWxfOiQjCfL*1WLKQ.KmvWjQZOp7DgrAuGzf2q0v*1luKck!/b&bo=VQhABlUIQAYWECA!)
 ![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJK29BbPLH4vyhx.5qu2PMdObHiOL46LXHLrNwUto7y9Ax181v4rfQuQoogmvhHue9fPvqvklnqCI1Ay*9xepGg!/b&bo=egjFBHoIxQQWECA!)
 
-# 今日更新
+# 故城重游之安康瀛湖
 
 ## 日期：2025-11-22
-
-故城重游之安康瀛湖
-
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBzD0dJPQzyvhhMQFlGqvwJ1QMbFeQQelr7UtjyTKZFM9vas.ZLS1Bs2a71uaByM7DWJNGzd*cOaIu9*kAxoZUE!/b&bo=QAZVCEAGVQgWECA!)
 ![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBzD0dJPQzyvhhMQFlGqvwI1YwpAiyIs8fzM*l2UAX0cOt5oaP.NPrbE5UpPnNrWRsB7tSH5pcpYmUdSVIQMaCM!/b&bo=QAZVCEAGVQgWECA!)
@@ -206,14 +202,12 @@
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBzD0dJPQzyvhhMQFlGqvwKI7wKhMLkQ*e.atv9HoQsNOYBBH1fpi844LtsBu4ED1qJ5LadUPcqwC0uMcPCxQ8c!/b&bo=DAHsAAwB7AAWECA!)
 
-# 今日更新
+# 高数考完我belike
 
 ## 日期：2025-11-09
 
-高数考完我belike
-
-
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEK0R*LZ9LuD7KfZ8zkpCZAJCTuGM*U2F7Fc8T7z8UfBPVe7N2E1BDWP.LiAY.f6NcDm5py4fUunRGL9irEVkGgw!/b&bo=3wHQAN8B0AAWECA!)
+
 
 # 明天高数期中考
 
@@ -275,11 +269,10 @@
 以及最佳团日我们有可能进校赛。。还得忙不知道多久。
 嗯就这样，随便水水反正0个人看
 
-# 今日更新
+# KanekoAyano西安
 
 ## 日期：2025-10-20
 
-【KanekoAyano西安】
 好乐队 好摇滚 好厂牌 好灯光[em]e400408[/em]（语言贫瘠这一块）
 当进场的那一刻，现代性便被留在门外。摇滚的声浪盖过所有眼前的琐碎，此刻只有音乐，与从日常中短暂叛逃的我——
 『いじけてる楽しくて
@@ -296,22 +289,11 @@
 ![img_8](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBDxvBkcXLHcgkhOQXfj3ftofuwrdoH0QHEhMpEkBFZglbT0E1W9NMbybkdzsWBMf*4hk478a8hTf.rVzHBZbFc!/b&bo=Ugg*BlIIPwYWECA!)
 ![img_9](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEDfivhWJ5Nhd5ZA63kbZ6EqZ0QZp8my0Cqi*wPGYgcK2r6TU7OE7EnthAV6.VRoW6CwkwqW4SigrVAUWv8Cxyaw!/b&bo=Ugg*BlIIPwYWECA!)
 
-# 今日更新
 
-## 日期：2025-10-15
-
-没加我wx的欢迎加我[em]e10324[/em]
-快快帮我朋友圈第一条点赞，70赞对孩子来说太难了[em]e400867[/em][em]e400867[/em][em]e400867[/em]
-感觉朋友圈已经成为无情的转发集赞机器了[em]e10338[/em][em]e10338[/em]
-
-
-![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEGHPVmOJf4x9bMVfZrZeWp2XSlXE*qcM*DjUwmLOk.KJOymUjFiXJGwAGCNoWlFZW83VFv39u17qmYoy1QbFTqc!/b&bo=tgMPBbYDDwUDEDU!)
-
-# 今日更新
+# 记录一个难绷的bug
 
 ## 日期：2025-10-12
 
-记录一个难绷的bug
 昨天傍晚笔记本突然发癫，每秒弹出虚空USB设备，已致右排两个USB插口都用不了，经排查是某个触点短路导致的。虽然当时已经排除了积灰原因（主播笔记本非常干净），但还是没太敢往雨天受潮方面想。由于不是啥大问题，先把烦人的通知和提示音关了打算有空再送去修（之前电脑蓝屏跑过一趟西安惠普算是轻车熟路）
 然后 刚才随手一试 竟然好了
 自己恢复了。。。
@@ -384,7 +366,7 @@
 那我这个大创0个 论文0篇 国家级竞赛0个 六级真·擦线 软著0技术含量 除校园大使0个社会实践 自媒体0个人看 然后还忙得不行的[em]e10268[/em][em]e10268[/em][em]e10268[/em]
 人类啥时候进化成这样了 不带我吗[em]e10349[/em]
 
-# 今日更新
+# 《南京照相馆》观影
 
 ## 日期：2025-09-21
 
@@ -399,21 +381,17 @@
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrELOQ*jTasjXWgG2qgw9eAznmi0HFMIFUkUBcMAhl*htVyWdqvDNZHxAfhSS0bJItwSfKC2pHksmganpP0O2FRqY!/b&bo=qgb*BKoG*wQWECA!)
 ![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrELOQ*jTasjXWgG2qgw9eAzmUEg4Vv6eMhd9sfkVWzkk0IW8naC.QKCK9EU01.DaX*mVPYgZTMUV3EudinfNgjYs!/b&bo=qgb*BKoG*wQWECA!)
 
-# 今日更新
+# 曲江创意谷圣地巡礼
 
 ## 日期：2025-09-20
-
-曲江创意谷圣地巡礼
-
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEOzaLLEY.QtquJZ.iAz5pwu5d72eAHTBuvQMDPGeDtJOAGwdE.PvNJgjG64fFLWn6aee4ikl*y134avvqXD1Dak!/b&bo=Ugg*BlIIPwYWECA!)
 ![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEOzaLLEY.QtquJZ.iAz5pws0B6IXpN2d7ph7O.xB*C5MXWCRjayen8Y4JfnBboLgiScLKdrjs*nZRE8MtpSiT78!/b&bo=Ugg*BlIIPwYWECA!)
 
-# 今日更新
+# 野星WildStar新专辑巡演·西安站
 
 ## 日期：2025-09-19
 
-【野星WildStar新专辑巡演·西安站】
 曾以为世界上最孤独的事情莫过于一个人去看演唱会，直到我真的这么做了。
 小小的酒馆，没有宪梓堂大的舞台，0个座位的场地，却聚集着我所听过的最好的独立音乐和最会捧场的一群年轻人，而我也在其中。
 我们必须想象野星他们是孤独的。西安站是他们的第二站，上一站据说亏了几万，乐队和场地都没赚，也不知道他们1元早鸟票和20的正式票价是靠什么撑住的。
@@ -466,12 +444,9 @@
 ![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJ1MU.wUZd6v6Pj1WmZODj2*0Oi25kN5GD1Wp8vetTzF*U7TGVhr9ZA6hRdwaDxnsKrlQ0TRKSyF885.OU7.9pg!/b&bo=Ugg*BlIIPwYWECA!)
 ![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJ1MU.wUZd6v6Pj1WmZODj24uyYj9nlZeLKn8zkiucCeQf.rEXuhKc.KcwoTAcj7NSTzuC3AaP3OAqWBB5UiWmE!/b&bo=VQhABlUIQAYWECA!)
 
-# 今日更新
+# 工作的时候称植物
 
 ## 日期：2025-09-07
-
-工作的时候称植物
-
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJ1MU.wUZd6v6Pj1WmZODj1qDxkt62z0cMkPTFb44eYYe3EQ1y5yvupiJBWwCYsN8dDKJHxfCbExWrmoG*occRk!/b&bo=Ugg*BlIIPwYWECA!)
 ![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJ1MU.wUZd6v6Pj1WmZODj2rNHHuE.0wRAVIV*6riTU6jbdTQTT5fIzHVudhiJAmX6UOvNhIqshZIMy6mxBaf8M!/b&bo=QAZVCEAGVQgWECA!)
@@ -483,7 +458,7 @@
 ![img_8](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEPVQJmqdwnVv56O9MLHjhSpXKaPg0PYeqAGGDM9ENXSHH.2l1Y5GjCgOyPMXe3JIDGVAGirdY4ozJ59s8471XKY!/b&bo=Ugg*BlIIPwYWECA!)
 ![img_9](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEPVQJmqdwnVv56O9MLHjhSpVWPybULL6zFzX*9yzypKjQWy198QHkCR8gDfTU7NwsxB5**fPC.vk9eJiP3V12Rc!/b&bo=Ugg*BlIIPwYWECA!)
 
-# 今日更新
+# 军训结束
 
 ## 日期：2025-09-05
 
