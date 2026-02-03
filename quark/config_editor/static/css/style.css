@@ -1,0 +1,722 @@
+/* 重置和基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+}
+
+#app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 容器 */
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 标题栏 */
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.header-left h1 {
+    color: #4a5568;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.header-left h1 i {
+    color: #667eea;
+    margin-right: 12px;
+}
+
+.subtitle {
+    color: #718096;
+    font-size: 14px;
+}
+
+.header-right {
+    display: flex;
+    gap: 12px;
+}
+
+/* 主内容区布局 */
+.main-content {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    min-height: 0;
+}
+
+/* 侧边栏 */
+.sidebar {
+    width: 320px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sidebar-header h3 {
+    color: #4a5568;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-count {
+    background: #667eea;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+.search-box {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 36px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+}
+
+.file-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.file-item {
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    border-color: #c3dafe;
+}
+
+.file-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.file-item.active .file-name {
+    color: white;
+}
+
+.file-item.active .file-meta {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-name i {
+    font-size: 12px;
+}
+
+.file-meta {
+    font-size: 12px;
+    color: #a0aec0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.file-item:hover .file-actions {
+    opacity: 1;
+}
+
+.file-action-btn {
+    background: none;
+    border: none;
+    color: #a0aec0;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.file-action-btn:hover {
+    background: #f7fafc;
+    color: #667eea;
+}
+
+.file-item.active .file-action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0aec0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0aec0;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #e2e8f0;
+    background: #f7fafc;
+}
+
+.directory-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #718096;
+}
+
+/* 编辑器容器 */
+.editor-container {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.editor-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editor-header h2 {
+    color: #4a5568;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.editor-toolbar {
+    padding: 16px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f7fafc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mode-selector {
+    display: flex;
+    gap: 4px;
+    background: white;
+    padding: 4px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+}
+
+.mode-btn {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-btn:hover {
+    color: #4a5568;
+    background: #edf2f7;
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: #718096;
+}
+
+.status-unknown {
+    color: #a0aec0;
+}
+
+.status-clean {
+    color: #48bb78;
+}
+
+.status-modified {
+    color: #ed8936;
+}
+
+.status-error {
+    color: #f56565;
+}
+
+/* JSON编辑器 */
+.jsoneditor {
+    flex: 1;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+.jsoneditor-menu {
+    display: none !important;
+}
+
+.editor-footer {
+    padding: 12px 30px;
+    border-top: 1px solid #e2e8f0;
+    background: #f7fafc;
+}
+
+.status-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #718096;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: white;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f56565 0%, #ed64a6 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
+}
+
+.btn-icon {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+}
+
+.btn-icon:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+/* 模态框 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 24px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    color: #4a5568;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #a0aec0;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #4a5568;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #f7fafc;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-hint {
+    font-size: 12px;
+    color: #a0aec0;
+    margin-top: 6px;
+}
+
+.warning-text {
+    color: #ed8936;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+/* 通知 */
+.notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid #667eea;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    max-width: 400px;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.success {
+    border-left-color: #48bb78;
+}
+
+.notification.error {
+    border-left-color: #f56565;
+}
+
+.notification.warning {
+    border-left-color: #ed8936;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-icon {
+    font-size: 20px;
+}
+
+.notification.success .notification-icon {
+    color: #48bb78;
+}
+
+.notification.error .notification-icon {
+    color: #f56565;
+}
+
+.notification.warning .notification-icon {
+    color: #ed8936;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #4a5568;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .header-right {
+        justify-content: flex-end;
+    }
+
+    .editor-header {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .editor-actions {
+        justify-content: flex-end;
+    }
+}

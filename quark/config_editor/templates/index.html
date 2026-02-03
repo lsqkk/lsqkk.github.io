@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- 标题栏 -->
+    <header class="header">
+        <div class="header-left">
+            <h1><i class="fas fa-cogs"></i> JSON 配置编辑器</h1>
+            <p class="subtitle">编辑和管理博客的JSON配置文件</p>
+        </div>
+        <div class="header-right">
+            <button id="refreshBtn" class="btn btn-icon" title="刷新">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button id="createBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i> 新建文件
+            </button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <!-- 侧边栏 - 文件列表 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-folder-open"></i> JSON 文件</h3>
+                <div class="file-count">
+                    <span id="fileCount">0</span> 个文件
+                </div>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="搜索文件...">
+            </div>
+
+            <div class="file-list" id="fileList">
+                <!-- 文件列表将通过JavaScript动态加载 -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> 加载中...
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="directory-info">
+                    <i class="fas fa-folder"></i>
+                    <span id="directoryPath">/json/</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 - JSON编辑器 -->
+        <main class="editor-container">
+            <div class="editor-header">
+                <h2 id="currentFile">选择文件开始编辑</h2>
+                <div class="editor-actions">
+                    <button id="validateBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-check-circle"></i> 验证
+                    </button>
+                    <button id="saveBtn" class="btn btn-primary" disabled>
+                        <i class="fas fa-save"></i> 保存
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-toolbar">
+                <div class="toolbar-left">
+                    <div class="mode-selector">
+                        <button class="mode-btn active" data-mode="tree">树形视图</button>
+                        <button class="mode-btn" data-mode="code">代码视图</button>
+                        <button class="mode-btn" data-mode="preview">预览</button>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="file-info">
+                        <span id="fileSize">0 bytes</span>
+                        <span id="fileStatus" class="status-unknown">未修改</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="jsoneditor" class="jsoneditor"></div>
+
+            <div class="editor-footer">
+                <div class="status-message" id="statusMessage">
+                    <i class="fas fa-info-circle"></i> 选择一个JSON文件开始编辑
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模态框 - 新建文件 -->
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> 新建JSON文件</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="fileName">文件名</label>
+                    <input type="text" id="fileName" placeholder="例如: config.json" autocomplete="off">
+                    <div class="form-hint">不需要输入.json后缀，会自动添加</div>
+                </div>
+                <div class="form-group">
+                    <label for="templateSelect">模板</label>
+                    <select id="templateSelect">
+                        <option value="empty">空对象</option>
+                        <option value="config">配置模板</option>
+                        <option value="settings">设置模板</option>
+                        <option value="data">数据模板</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">取消</button>
+                <button class="btn btn-primary modal-confirm">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 - 删除确认 -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash-alt"></i> 确认删除</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除文件 <strong id="deleteFileName"></strong> 吗？</p>
+                <p class="warning-text"><i class="fas fa-exclamation-triangle"></i> 文件将被移动到回收站，可以恢复</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-cancel">取消</button>
+                <button class="btn btn-danger modal-confirm">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知 -->
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <i class="notification-icon"></i>
+            <span class="notification-message"></span>
+        </div>
+    </div>
+</div>
+{% endblock %}

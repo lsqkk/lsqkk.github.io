@@ -65,7 +65,7 @@ def generate_simple_requirements():
             if len(package_files[pkg]) > 3:
                 file_list += f", ...等{len(package_files[pkg])}个文件"
             f.write(f"{pkg:<20}  # {file_list}\n")
-        f.write("click>=8.0.0\n")
+        f.write("click>=8.0.0\nflask>=2.0.0\n")
 
 if __name__ == '__main__':
     generate_simple_requirements()
