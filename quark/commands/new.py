@@ -79,7 +79,7 @@ def cli(title, date, tags, draft, no_open, force):  # 参数名改为 open_edito
             f.write(file_content)
         
         # 显示成功信息
-        click.echo(f"✅ 已创建文章: {file_path.relative_to(blog_root)}")
+        click.echo(f"√ 已创建文章: {file_path.relative_to(blog_root)}")
         click.echo(f"📅 日期: {article_date.strftime('%Y-%m-%d')}")
         click.echo(f"📝 标题: {title if title else '文章标题（请修改）'}")
         if tags:

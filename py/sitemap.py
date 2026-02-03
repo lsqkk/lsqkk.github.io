@@ -50,7 +50,7 @@ def generate_sitemap():
                 file_path = os.path.join(root, file)
                 html_files.append(file_path)
     
-    print(f"✅ 找到 {len(html_files)} 个HTML文件")
+    print(f"√ 找到 {len(html_files)} 个HTML文件")
     print("-" * 40)
     
     if len(html_files) == 0:
@@ -135,7 +135,7 @@ def generate_sitemap():
         f.write(pretty_xml)
     
     print("-" * 30)
-    print(f"✅ sitemap.xml 生成成功，位于 {output_path} ，包含 {url_count} 个URL")
+    print(f"√ sitemap.xml 生成成功，位于 {output_path} ，包含 {url_count} 个URL")
     
     # 返回输出路径供后续处理使用
     return output_path
@@ -168,7 +168,7 @@ def post_generation_replace(file_path):
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
         
-        print(f"\n✅ 生成后替换完成")
+        print(f"\n√ 生成后替换完成")
         
         return True
         

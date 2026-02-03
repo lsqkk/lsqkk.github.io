@@ -406,7 +406,7 @@ class MarkdownRenderer:
             styled_text = self._apply_style('info', styled_text)
         elif '⚠️' in text or '注意' in text:
             styled_text = self._apply_style('warning', styled_text)
-        elif '✅' in text or '正确' in text:
+        elif '√' in text or '正确' in text:
             styled_text = self._apply_style('success', styled_text)
         elif '❌' in text or '错误' in text:
             styled_text = self._apply_style('error', styled_text)

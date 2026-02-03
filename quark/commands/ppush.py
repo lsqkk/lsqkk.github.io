@@ -71,7 +71,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
         click.echo(f"  {i}. {description}: quark {' '.join(cmd)}")
     
     if dry_run:
-        click.echo("\n✅ 干跑模式完成，没有实际执行命令")
+        click.echo("\n√ 干跑模式完成，没有实际执行命令")
         return
     
     # 询问确认
@@ -141,7 +141,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                         click.echo("操作中止")
                         return
             
-            click.echo(f"✅ {description} 完成")
+            click.echo(f"√ {description} 完成")
             
         except FileNotFoundError:
             # 如果quark命令找不到，尝试使用python -m的方式
@@ -167,7 +167,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                     click.echo(stderr_text.strip())
                 
                 if result.returncode == 0:
-                    click.echo(f"✅ {description} 完成")
+                    click.echo(f"√ {description} 完成")
                 else:
                     click.echo(f"❌ {description} 执行失败")
                     if not click.confirm("是否继续执行后续步骤？"):
@@ -189,9 +189,9 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     
     # 总结
     click.echo("\n📊 操作总结:")
-    click.echo(f"  文章更新: {'✅' if not no_update else '❌ 跳过'}")
-    click.echo(f"  网站地图: {'✅' if not no_map else '❌ 跳过'}")
-    click.echo(f"  Git推送: {'✅' if not no_push else '❌ 跳过'}")
+    click.echo(f"  文章更新: {'√' if not no_update else '❌ 跳过'}")
+    click.echo(f"  网站地图: {'√' if not no_map else '❌ 跳过'}")
+    click.echo(f"  Git推送: {'√' if not no_push else '❌ 跳过'}")
     if not no_push:
         click.echo(f"  提交消息: {message}")
 
@@ -233,7 +233,7 @@ def check(verbose):
             timeout=5
         )
         if result.returncode == 0:
-            click.echo("✅ quark命令可用")
+            click.echo("√ quark命令可用")
             if verbose:
                 lines = result.stdout.split('\n')
                 commands = []
@@ -251,7 +251,7 @@ def check(verbose):
     
     # 检查系统编码
     encoding = get_system_encoding()
-    click.echo(f"✅ 系统编码: {encoding}")
+    click.echo(f"√ 系统编码: {encoding}")
     
     click.echo("\n💡 建议:")
     click.echo("  1. 使用 'quark ppush --dry-run' 测试命令")

@@ -56,7 +56,7 @@ def cli(query, session, new_session, list_sessions, skill, list_skills,
     if set_key:
         try:
             client.set_api_key(set_key)
-            click.echo("✅ API密钥已设置")
+            click.echo("√ API密钥已设置")
         except Exception as e:
             click.echo(f"设置API密钥失败: {e}", err=True)
         return
@@ -175,22 +175,22 @@ def cli(query, session, new_session, list_sessions, skill, list_skills,
                     if mode in ['on', 'true', '1']:
                         client.set_stream(True)
                         use_stream = True
-                        click.echo("✅ 已启用流式输出")
+                        click.echo("√ 已启用流式输出")
                     elif mode in ['off', 'false', '0']:
                         client.set_stream(False)
                         use_stream = False
-                        click.echo("✅ 已禁用流式输出")
+                        click.echo("√ 已禁用流式输出")
                     continue
                 elif user_input.lower().startswith('markdown '):
                     mode = user_input[9:].strip().lower()
                     if mode in ['on', 'true', '1']:
                         client.set_markdown(True)
                         use_markdown = True
-                        click.echo("✅ 已启用Markdown渲染")
+                        click.echo("√ 已启用Markdown渲染")
                     elif mode in ['off', 'false', '0']:
                         client.set_markdown(False)
                         use_markdown = False
-                        click.echo("✅ 已禁用Markdown渲染")
+                        click.echo("√ 已禁用Markdown渲染")
                     continue
                 
                 # 处理用户输入

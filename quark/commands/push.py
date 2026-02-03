@@ -121,7 +121,7 @@ def cli(message, remote, branch, force):
         if result.stdout:
             click.echo(result.stdout.strip())
             
-        click.echo("✅ 推送完成!")
+        click.echo("√ 推送完成!")
         
         if commit_success and "Everything up-to-date" in result.stdout:
             click.echo("已提交本地更改，但远程已是最新状态")
