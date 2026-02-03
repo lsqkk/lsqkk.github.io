@@ -3,6 +3,20 @@ import subprocess
 import sys
 import os
 from pathlib import Path
+import locale
+
+# 获取系统编码
+def get_system_encoding():
+    """获取系统编码，处理Windows中文编码问题"""
+    try:
+        # Windows常用编码：GBK, GB2312, UTF-8
+        # 尝试获取系统locale
+        encoding = locale.getpreferredencoding()
+        if not encoding:
+            encoding = 'gbk'  # Windows中文默认
+        return encoding.lower().replace('-', '')
+    except:
+        return 'gbk'
 
 @click.command()
 @click.argument('message', required=False)
@@ -27,13 +41,8 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     if not message:
         message = "更新 - 更新了文章"
     
-    # 获取quark命令的路径
-    # 这里我们使用当前Python解释器执行quark模块
-    python_executable = sys.executable
-    
-    # 由于我们是通过pip安装的，可以直接调用'quark'命令
-    # 但为了兼容性，我们使用模块调用的方式
-    quark_cmd = [python_executable, '-m', 'quark.cli']
+    # 获取系统编码
+    system_encoding = get_system_encoding()
     
     commands = []
     
@@ -79,36 +88,52 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
         click.echo("-" * 40)
         
         try:
-            # 构建完整命令
-            full_cmd = quark_cmd + cmd_args
+            # 直接调用quark命令（通过pip安装的）
+            full_cmd = ['quark'] + cmd_args
             
-            # 执行命令
+            # 执行命令，使用系统编码
             result = subprocess.run(
                 full_cmd,
-                capture_output=True,
-                text=True,
-                encoding='utf-8'
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=True  # 在Windows上使用shell=True确保正确执行
             )
             
-            # 输出结果
-            if result.stdout:
-                click.echo(result.stdout)
+            # 解码输出，尝试多种编码
+            stdout_text = decode_output(result.stdout, system_encoding)
+            stderr_text = decode_output(result.stderr, system_encoding)
             
-            if result.stderr:
+            # 输出结果
+            if stdout_text and stdout_text.strip():
+                click.echo(stdout_text.strip())
+            
+            if stderr_text and stderr_text.strip():
                 # 检查是否是警告信息而不是错误
-                stderr_lines = result.stderr.strip().split('\n')
+                stderr_lines = stderr_text.strip().split('\n')
                 for line in stderr_lines:
-                    if line.startswith('警告:') or 'warning' in line.lower():
-                        click.echo(f"⚠️  {line}")
-                    elif line:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    # 判断是否为错误
+                    if ('错误:' in line or 'error' in line.lower() or 
+                        'failed' in line.lower() or 'fatal' in line.lower()):
                         click.echo(f"❌ {line}")
+                    elif '警告:' in line or 'warning' in line.lower():
+                        click.echo(f"⚠️  {line}")
+                    else:
+                        # 其他信息正常输出
+                        click.echo(line)
             
             # 检查执行结果
             if result.returncode != 0:
                 # 检查是否是"没有更改可提交"这类可以忽略的错误
-                if (cmd_args[0] == 'push' and 
-                    ("nothing to commit" in result.stdout or 
-                     "nothing to commit" in result.stderr)):
+                push_cmd_error = (cmd_args[0] == 'push' and 
+                                 ("nothing to commit" in stdout_text or 
+                                  "nothing to commit" in stderr_text or
+                                  "没有更改可提交" in stdout_text or
+                                  "没有更改可提交" in stderr_text))
+                
+                if push_cmd_error:
                     click.echo("ℹ️  没有新的更改可提交，继续执行下一个步骤")
                 else:
                     click.echo(f"❌ {description} 执行失败 (返回码: {result.returncode})")
@@ -119,8 +144,40 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
             click.echo(f"✅ {description} 完成")
             
         except FileNotFoundError:
-            click.echo(f"❌ 无法找到quark命令，请确保已正确安装")
-            return
+            # 如果quark命令找不到，尝试使用python -m的方式
+            try:
+                python_executable = sys.executable
+                full_cmd = [python_executable, '-m', 'quark.cli'] + cmd_args
+                
+                result = subprocess.run(
+                    full_cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=True
+                )
+                
+                # 解码输出
+                stdout_text = decode_output(result.stdout, system_encoding)
+                stderr_text = decode_output(result.stderr, system_encoding)
+                
+                if stdout_text and stdout_text.strip():
+                    click.echo(stdout_text.strip())
+                
+                if stderr_text and stderr_text.strip():
+                    click.echo(stderr_text.strip())
+                
+                if result.returncode == 0:
+                    click.echo(f"✅ {description} 完成")
+                else:
+                    click.echo(f"❌ {description} 执行失败")
+                    if not click.confirm("是否继续执行后续步骤？"):
+                        return
+                        
+            except Exception as e:
+                click.echo(f"❌ 执行命令时出错: {e}")
+                if not click.confirm("是否继续执行后续步骤？"):
+                    click.echo("操作中止")
+                    return
         except Exception as e:
             click.echo(f"❌ 执行命令时出错: {e}")
             if not click.confirm("是否继续执行后续步骤？"):
@@ -138,7 +195,27 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     if not no_push:
         click.echo(f"  提交消息: {message}")
 
-# 可选：添加一个检查命令，验证所有步骤是否可以正常执行
+def decode_output(data: bytes, default_encoding: str = 'gbk') -> str:
+    """解码输出，尝试多种编码"""
+    if not data:
+        return ""
+    
+    # 尝试的编码顺序
+    encodings = ['utf-8', default_encoding, 'gb2312', 'gbk', 'utf-16', 'ascii']
+    
+    for encoding in encodings:
+        try:
+            return data.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    
+    # 如果所有编码都失败，使用错误忽略模式
+    try:
+        return data.decode('utf-8', errors='ignore')
+    except:
+        return "无法解码的输出"
+
+# 可选：添加一个检查命令
 @click.command()
 @click.option('--verbose', '-v', is_flag=True, help='显示详细信息')
 def check(verbose):
@@ -147,78 +224,35 @@ def check(verbose):
     click.echo("🔍 检查ppush命令的依赖项...")
     
     # 检查quark命令
-    python_executable = sys.executable
     try:
         result = subprocess.run(
-            [python_executable, '-m', 'quark.cli', '--help'],
+            ['quark', '--help'],
             capture_output=True,
             text=True,
+            shell=True,
             timeout=5
         )
         if result.returncode == 0:
             click.echo("✅ quark命令可用")
             if verbose:
-                # 提取支持的子命令
                 lines = result.stdout.split('\n')
                 commands = []
-                in_commands_section = False
                 for line in lines:
-                    if 'Commands:' in line:
-                        in_commands_section = True
-                        continue
-                    if in_commands_section and line.strip() and not line.startswith('  '):
-                        break
-                    if in_commands_section and line.strip():
-                        cmd_name = line.strip().split()[0]
-                        commands.append(cmd_name)
-                
-                click.echo(f"   支持的子命令: {', '.join(commands)}")
-                
-                # 检查需要的子命令是否存在
-                required_cmds = ['updateposts', 'map', 'push']
-                missing_cmds = [cmd for cmd in required_cmds if cmd not in commands]
-                if missing_cmds:
-                    click.echo(f"❌ 缺少必要的子命令: {', '.join(missing_cmds)}")
-                else:
-                    click.echo("✅ 所有必要的子命令都存在")
+                    if line.strip() and not line.startswith('  ') and not line.startswith('Usage:'):
+                        cmd_match = re.search(r'^\s*(\w+)\s+', line)
+                        if cmd_match:
+                            commands.append(cmd_match.group(1))
+                if commands:
+                    click.echo(f"   支持的子命令: {', '.join(commands[:10])}")
         else:
             click.echo("❌ quark命令不可用")
     except Exception as e:
         click.echo(f"❌ 检查quark命令时出错: {e}")
     
-    # 检查Git
-    try:
-        result = subprocess.run(
-            ['git', '--version'],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        if result.returncode == 0:
-            click.echo("✅ Git可用")
-            if verbose:
-                click.echo(f"   版本: {result.stdout.strip()}")
-        else:
-            click.echo("❌ Git不可用")
-    except FileNotFoundError:
-        click.echo("❌ Git未安装")
-    
-    # 检查当前目录是否是Git仓库
-    try:
-        result = subprocess.run(
-            ['git', 'rev-parse', '--git-dir'],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
-        if result.returncode == 0:
-            click.echo("✅ 当前目录是Git仓库")
-        else:
-            click.echo("❌ 当前目录不是Git仓库")
-    except Exception:
-        click.echo("❌ 无法确定当前目录是否是Git仓库")
+    # 检查系统编码
+    encoding = get_system_encoding()
+    click.echo(f"✅ 系统编码: {encoding}")
     
     click.echo("\n💡 建议:")
-    click.echo("  1. 确保所有依赖项都通过检查")
-    click.echo("  2. 使用 'quark ppush --dry-run' 测试命令")
-    click.echo("  3. 使用 'quark ppush --help' 查看所有选项")
+    click.echo("  1. 使用 'quark ppush --dry-run' 测试命令")
+    click.echo("  2. 如果仍有编码问题，请检查系统区域设置")
