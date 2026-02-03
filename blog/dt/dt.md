@@ -1,4 +1,20 @@
+# 美赛已提交
+
+## 日期：2026-02-02
+
+第三问建模、代码+全文论文+全文排版。已严肃解放。
+
+今年选择了更具挑战性的B题。怀疑是马斯克出的，月球殖民什么鬼。。
+
+疑似唯一收获是小红书随手发了一条美赛抽象帖子竟然火了，目前七百赞。
+
+![](https://raw.githubusercontent.com/lsqkk/image/main/20260203180823104.png)
+
 # 今日更新
+
+
+
+# 期末考试结束
 
 ## 日期：2026-01-15
 
@@ -7,25 +23,21 @@
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBG201rT9ns3p7HdvehYNy2TUk5dsMoIkljDeIoZFd0cQxpGbLN2FCWxbbK2AmdPTXHoEqONNY84qJs2vSFBeoI!/b&bo=AAXUCgAF1AoWECA!)
 
-# 今日更新
+# 梅开二度
 
 ## 日期：2026-01-09
 
-
-
-
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEK0R*LZ9LuD7KfZ8zkpCZAJCTuGM*U2F7Fc8T7z8UfBPVe7N2E1BDWP.LiAY.f6NcDm5py4fUunRGL9irEVkGgw!/b&bo=3wHQAN8B0AAWECA!)
 
-# 今日更新
+# 新年快乐
 
 ## 日期：2026-01-01
 
 2026[em]e402399[/em]
 
-
 ![img_1](https://m.qpic.cn/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrELOQ*jTasjXWgG2qgw9eAzlUxlmCJWvDyE3jTKhJt1vfDU9bB.3a5j20L2fiDpjD1aAEbqmlAcaUKFDxy27b9DU!/c&bo=OASABzgEgAcBFzA!)
 
-# 今日更新
+# 毛主席诞辰
 
 ## 日期：2025-12-26
 
@@ -34,7 +46,7 @@
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V11MrppS1O0Wow/TmEUgtj9EK6.7V8ajmQrEOU69bWt0R5z2.gtM*CGrpdr5pVHQ4zwYOAbMjTuzMSLZqyZZ9HhB*p2*pXJAF5kfnhEros3IRmryGS0WBfiQnA!/b&bo=Rwc4BEcHOAQRECc!)
 
-# 今日更新
+# B站年度报告
 
 ## 日期：2025-12-19
 
@@ -52,7 +64,7 @@
 ![img_8](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEKZdNdj*kxIZfGE*HLO2Y98zPlEb1D70uEkhmaQcfOsxBmCHkaeCECR6dA2Mk*N32zG6elKSiZSDLyVMF9r0Pmo!/b&bo=AAXUCgAF1AoWECA!)
 ![img_9](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEKZdNdj*kxIZfGE*HLO2Y9.MnPVDjrYiur4s5yuZiI3aMUfF8FGcO3VnDG3cywfOocr*pYLRW*ayr2SEmzkrwRQ!/b&bo=AAXUCgAF1AoWECA!)
 
-# 今日更新
+# 连上了香橙派
 
 ## 日期：2025-12-15
 
@@ -69,12 +81,9 @@
 ![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEKbglQnjsWoQKyqio1Bk4*8McFQ9NxeG4FxtiFfZBeBHzZpm9DlmTkHMLHS1QCWf6I7N45r8a3YnD3nYK7HVe*E!/b&bo=AAUWAwAFFgMWECA!)
 ![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEKbglQnjsWoQKyqio1Bk4*8DDMj9nUVl.oHw4mGcqAnLBSK0jqUcbWbq8td2NG5qU8rYZ5zAm9OMIU05dV0dkEk!/b&bo=VQhABlUIQAYWECA!)
 
-# 今日更新
+# 泓理楼深度游
 
 ## 日期：2025-12-06
-
-泓理楼深度游
-
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrECIPZ0TlUMFuXCDPXzVL4WaOBB4LG5xsno0OccSmgOCm5JjDKtsqb10c3ktF3e8sbar8ZdGMhrdMvnx.WcprpBQ!/b&bo=PwZVCD8GVQgWECA!)
 ![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEAu2SPvBh.9NUQXqMphZJHXb1fsWwhZNe6V.rEXS.p.7.TUFa.VCFEK7dTTyY.kYFJmNWqdSuhEHK2bIGIMEXX0!/b&bo=VQhABlUIQAYWECA!)
@@ -86,23 +95,19 @@
 ![img_8](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEGiZdgJe3Ql.EKr1TMR9q9ROuUnssO8Z5ojMNdZ8ujcUYZU94Ngn4sfvLPEMg*pkPKyaK2M4Hoxo4mFJC9t.Lzw!/b&bo=VQhABlUIQAYWECA!)
 ![img_9](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEGiZdgJe3Ql.EKr1TMR9q9TPIzu0SV.6gRz4qTKsEnIVxBhCNzduQX2YtOFWeDnLGr4M.h8l6otAGF78zzoBSKU!/b&bo=VQhABlUIQAYWECA!)
 
-# 今日更新
+# Grissini Project格里西尼2025中国首巡·西安
 
 ## 日期：2025-12-05
-
-Grissini Project格里西尼2025中国首巡·西安
-
 
 ![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEPDlSzZj2osa1BJ2EIy0k5FdQ63xJ3H2cGCL*5OUmSvQFPQGNZ9.FoQao1YpxZuHBqbWbX8FR**wrWx1cvE1k1o!/b&bo=VQhABlUIQAYWECA!)
 ![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEPDlSzZj2osa1BJ2EIy0k5EBJ5bCEDUlP1mnL0JnKXpE*jIYhTol1KWtxFKUZye3obsMnMWwf6fvBe2oY0NKE2Q!/b&bo=VQhABlUIQAYWECA!)
 ![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEMWj6a8kw2Vjt.dQXhmefgnJkkwrEshVVu806cVm0ITVZebKFpFAPl0YmEhRWTytU2QTRsnwmYKi.1NMfonj7nY!/b&bo=QAZVCEAGVQgWECA!)
 ![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEMWj6a8kw2Vjt.dQXhmefgnR6VAFGWZ4k1gC1iNgRC*RdUXRUW013b9WdqA*NkDShFASfcLtLhwxZwd6.vflmC0!/b&bo=VQhABlUIQAYWECA!)
 
-# 今日更新
+# 少年班40周年[em]e10318[/em]
 
 ## 日期：2025-11-29
 
-少年班40周年[em]e10318[/em]
 依然少年，依然热爱
 
 
