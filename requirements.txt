@@ -1,12 +1,18 @@
-argparse              # py\right_click.py
+base64                # quark\utils\file_processor.py
+click                 # quark\cli.py, quark\commands\ds.py, quark\commands\git-diff.py, ...等13个文件
 docx                  # blog\daily\1.py
-hashlib               # py\generate_posts.py
+hashlib               # py\generate_posts.py, quark\utils\context_manager.py
 http                  # py\serve.py
+importlib             # quark\cli.py
 markdown              # py\generate_posts.py
 pandas                # blog\dt\提取动态内容到md.py
-requests              # private\update_rep.py
+quark                 # quark\commands\ds.py
+requests              # private\update_rep.py, quark\utils\deepseek_client.py
+setuptools            # setup.py
 socketserver          # py\serve.py
-subprocess            # blog\log\commits.py, py\update_requirements.py
+subprocess            # blog\log\commits.py, py\update_requirements.py, quark\utils.py, ...等9个文件
+textwrap              # quark\utils\markdown_renderer.py
+threading             # quark\utils\stream_handler.py
 traceback             # py\generate_posts.py
 urllib                # blog\daily\1.py, py\serve.py
 webbrowser            # py\sitemap.py
