@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+  <channel>
+    <title>Quark Blog</title>
+    <description>夸克博客</description>
+    <link>https://lsqkk.github.io/</link>
+    <language>cn</language>
+    <lastBuildDate>Thu, 05 Feb 2026 15:53:36 +0800</lastBuildDate>
+    <item>
+      <title>Quark 命令行工具测试文章</title>
+      <link>https://lsqkk.github.io/posts/2026/2601.html</link>
+      <guid>https://lsqkk.github.io/posts/2026/2601.html</guid>
+      <pubDate>Tue, 03 Feb 2026 12:00:00 +0800</pubDate>
+      <description>无标签</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>文章标题</title>
+      <link>https://lsqkk.github.io/posts/2026/2602.html</link>
+      <guid>https://lsqkk.github.io/posts/2026/2602.html</guid>
+      <pubDate>Tue, 03 Feb 2026 12:00:00 +0800</pubDate>
+      <description>无标签</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>2025 年终总结</title>
+      <link>https://lsqkk.github.io/posts/2025/2520.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2520.html</guid>
+      <pubDate>Wed, 31 Dec 2025 12:00:00 +0800</pubDate>
+      <description>杂谈, 报告</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>新名词之争：教育理念不是话语权竞赛</title>
+      <link>https://lsqkk.github.io/posts/2025/2519.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2519.html</guid>
+      <pubDate>Sun, 28 Dec 2025 12:00:00 +0800</pubDate>
+      <description>杂谈, 教育</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>《信息哲学概论》课程论文</title>
+      <link>https://lsqkk.github.io/posts/2025/2517.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2517.html</guid>
+      <pubDate>Tue, 16 Dec 2025 12:00:00 +0800</pubDate>
+      <description>哲学, 论文</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>WebRTC 零服务器信令技术实现</title>
+      <link>https://lsqkk.github.io/posts/2025/2518.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2518.html</guid>
+      <pubDate>Tue, 16 Dec 2025 12:00:00 +0800</pubDate>
+      <description>WebRTC, 前端, 论文</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>当代大学生后现代解构主义思潮分析</title>
+      <link>https://lsqkk.github.io/posts/2025/2516.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2516.html</guid>
+      <pubDate>Mon, 13 Oct 2025 12:00:00 +0800</pubDate>
+      <description>哲学, 论文</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>《异见时刻》| 金斯伯格与真正的自由</title>
+      <link>https://lsqkk.github.io/posts/2025/2515.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2515.html</guid>
+      <pubDate>Sat, 21 Jun 2025 12:00:00 +0800</pubDate>
+      <description>书评, 杂谈</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>人非NPC，世界不是独角戏</title>
+      <link>https://lsqkk.github.io/posts/2025/2514.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2514.html</guid>
+      <pubDate>Fri, 13 Jun 2025 12:00:00 +0800</pubDate>
+      <description>杂谈</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>未完成式美学：契诃夫的留白与不确定性的现代性</title>
+      <link>https://lsqkk.github.io/posts/2025/2513.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2513.html</guid>
+      <pubDate>Sun, 01 Jun 2025 12:00:00 +0800</pubDate>
+      <description>书评</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>铁屋中的舞蹈</title>
+      <link>https://lsqkk.github.io/posts/2025/2509.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2509.html</guid>
+      <pubDate>Sun, 11 May 2025 12:00:00 +0800</pubDate>
+      <description>书评</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>Shor量子并行算法与Grover量子搜索算法的物理原理分析</title>
+      <link>https://lsqkk.github.io/posts/2025/2510.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2510.html</guid>
+      <pubDate>Fri, 09 May 2025 12:00:00 +0800</pubDate>
+      <description>物理, 论文</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>从血与火中诞生的国际劳工节：被篡改的历史与未竟的斗争</title>
+      <link>https://lsqkk.github.io/posts/2025/2508.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2508.html</guid>
+      <pubDate>Thu, 01 May 2025 12:00:00 +0800</pubDate>
+      <description>史政</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>麦克斯韦妖，妖在哪里</title>
+      <link>https://lsqkk.github.io/posts/2025/2512.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2512.html</guid>
+      <pubDate>Tue, 01 Apr 2025 12:00:00 +0800</pubDate>
+      <description>物理, 论文</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>洞穴之外</title>
+      <link>https://lsqkk.github.io/posts/2025/2511.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2511.html</guid>
+      <pubDate>Sun, 09 Mar 2025 12:00:00 +0800</pubDate>
+      <description>书评</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>这真的是个“低门槛”时代吗</title>
+      <link>https://lsqkk.github.io/posts/2025/2507.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2507.html</guid>
+      <pubDate>Sat, 08 Mar 2025 12:00:00 +0800</pubDate>
+      <description>杂谈</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>夸克博客全面接入DeepSeek</title>
+      <link>https://lsqkk.github.io/posts/2025/2506.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2506.html</guid>
+      <pubDate>Fri, 28 Feb 2025 12:00:00 +0800</pubDate>
+      <description>报告, 前端</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>博客移动端App正式上线</title>
+      <link>https://lsqkk.github.io/posts/2025/2504.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2504.html</guid>
+      <pubDate>Sat, 22 Feb 2025 12:00:00 +0800</pubDate>
+      <description>报告</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>2025 年西交校园大使宣讲总结</title>
+      <link>https://lsqkk.github.io/posts/2025/2505.html</link>
+      <guid>https://lsqkk.github.io/posts/2025/2505.html</guid>
+      <pubDate>Thu, 06 Feb 2025 12:00:00 +0800</pubDate>
+      <description>报告</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+    <item>
+      <title>关于我</title>
+      <link>https://lsqkk.github.io/posts/about.html</link>
+      <guid>https://lsqkk.github.io/posts/about.html</guid>
+      <pubDate>Sat, 01 Feb 2025 12:00:00 +0800</pubDate>
+      <description>个人</description>
+      <dc:creator>QuarkBlog</dc:creator>
+    </item>
+  </channel>
+</rss>

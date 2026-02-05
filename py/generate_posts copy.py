@@ -4,8 +4,6 @@ import hashlib
 import re
 import markdown
 import yaml
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
 from markdown.extensions.toc import TocExtension
 from datetime import datetime
 
@@ -15,7 +13,6 @@ TEMPLATE_FILE = 'template/post_template.html'
 OUTPUT_BASE_DIR = 'posts'
 MD_SOURCE_ROOT = 'posts'
 HASH_STORAGE_FILE = 'private/file_hashes.json'
-RSS_OUTPUT_PATH = 'posts/rss.xml'
 
 def ensure_private_dir():
     """确保private目录存在"""
@@ -129,15 +126,6 @@ def normalize_date(date_value):
     
     # 其他类型，转换为字符串
     return str(date_value)
-
-def format_rfc822_date(date_str):
-    """将YYYY-MM-DD格式的日期转换为RFC822格式（用于RSS）"""
-    try:
-        dt = datetime.strptime(date_str, "%Y-%m-%d")
-        return dt.strftime("%a, %d %b %Y 12:00:00 +0800")
-    except ValueError:
-        # 如果日期格式有问题，使用当前时间
-        return datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0800")
 
 def process_md_file(md_file_path):
     """处理单个md文件，提取元数据和内容"""
@@ -280,85 +268,6 @@ def generate_html_file(post_data, template_content):
         print(f"保存文件失败: {e}")
         return False
 
-def generate_rss_feed(posts_data):
-    """生成RSS feed"""
-    print("正在生成RSS feed...")
-    
-    # 创建根元素
-    rss = ET.Element('rss')
-    rss.set('version', '2.0')
-    rss.set('xmlns:dc', 'http://purl.org/dc/elements/1.1/')
-    rss.set('xmlns:content', 'http://purl.org/rss/1.0/modules/content/')
-    
-    # 创建channel
-    channel = ET.SubElement(rss, 'channel')
-    
-    # 添加channel元信息
-    title_elem = ET.SubElement(channel, 'title')
-    title_elem.text = 'Quark Blog'
-    
-    description_elem = ET.SubElement(channel, 'description')
-    description_elem.text = '夸克博客'
-    
-    link_elem = ET.SubElement(channel, 'link')
-    link_elem.text = 'https://lsqkk.github.io/'
-    
-    language_elem = ET.SubElement(channel, 'language')
-    language_elem.text = 'cn'
-    
-    # 添加lastBuildDate
-    last_build_date = ET.SubElement(channel, 'lastBuildDate')
-    last_build_date.text = datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0800")
-    
-    # 为每篇文章添加item
-    for post in posts_data[:20]:  # 限制最多20篇文章，避免RSS过大
-        item = ET.SubElement(channel, 'item')
-        
-        # 标题
-        title = ET.SubElement(item, 'title')
-        title.text = post['title']
-        
-        # 链接 - 使用基础链接 + posts/ + 文件名.html
-        base_name = os.path.splitext(post['file'])[0]
-        post_url = f"https://lsqkk.github.io/posts/{base_name}.html"
-        
-        link = ET.SubElement(item, 'link')
-        link.text = post_url
-        
-        # GUID (使用链接作为唯一标识)
-        guid = ET.SubElement(item, 'guid')
-        guid.text = post_url
-        
-        # 发布日期
-        pub_date = ET.SubElement(item, 'pubDate')
-        pub_date.text = format_rfc822_date(post['date'])
-        
-        # 描述 (对应tags)
-        description = ET.SubElement(item, 'description')
-        description.text = ', '.join(post['tags']) if post['tags'] else '无标签'
-        
-        # 创建者
-        creator = ET.SubElement(item, 'dc:creator')
-        creator.text = 'QuarkBlog'
-    
-    # 生成XML字符串
-    xml_string = ET.tostring(rss, encoding='utf-8')
-    
-    # 使用minidom美化输出
-    dom = minidom.parseString(xml_string)
-    pretty_xml = dom.toprettyxml(indent='  ', encoding='utf-8')
-    
-    # 保存RSS文件
-    try:
-        os.makedirs(os.path.dirname(RSS_OUTPUT_PATH), exist_ok=True)
-        with open(RSS_OUTPUT_PATH, 'wb') as f:
-            f.write(pretty_xml)
-        print(f"RSS feed已生成: {RSS_OUTPUT_PATH}")
-        return True
-    except Exception as e:
-        print(f"生成RSS feed失败: {e}")
-        return False
-
 def main():
     print("开始检查文件变动...")
     
@@ -449,9 +358,6 @@ def main():
         if post_data:
             if generate_html_file(post_data, template_content):
                 generated_count += 1
-    
-    # 生成RSS feed
-    generate_rss_feed(posts_data)
     
     # 保存新的hash值
     save_hashes(new_hashes)

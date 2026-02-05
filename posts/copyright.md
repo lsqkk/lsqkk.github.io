@@ -15,6 +15,7 @@ tags: 网站
 - **托管平台**：[GitHub Pages](https://pages.github.com/)
 - **背景图片来源**：动画电影《云之彼端，约定的地方》（云のむこう、约束の场所）海报，源自 [bilibili 番剧页](https://www.bilibili.com/bangumi/play/ss2545)
 - **文章版权**：本站所有博客文章均由站主 **蓝色奇夸克** 原创撰写，未经授权禁止转载或用于商业用途。
+- **RSS订阅**：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
 - **版权期限**：Copyright © 2024 – 2026 蓝色奇夸克 All rights reserved. 
 
 ## 第三方服务声明
