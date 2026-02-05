@@ -8,7 +8,7 @@
 
 疑似唯一收获是小红书随手发了一条美赛抽象帖子竟然火了，目前七百赞。
 
-![](https://raw.githubusercontent.com/lsqkk/image/main/20260203180823104.png)
+![](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20260203180823104.png)
 
 
 # 期末考试结束

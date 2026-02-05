@@ -153,7 +153,7 @@ function sendFileChunk(file) {
     sendNextChunk();
 }
 </code></pre>
-<p><img alt="" src="https://raw.githubusercontent.com/lsqkk/image/main/20260101025735466.png" /></p>
+<p><img alt="" src="https://cdn.jsdelivr.net/gh/lsqkk/image@main/20260101025735466.png" /></p>
 <p><a href="https://lsqkk.github.io/a/share">夸克闪传项目主页</a></p>
 <h3 id="32-ppt">3.2 网页桥接程序与首创性的PPT控制逻辑</h3>
 <p>在完成文件传输项目后，我思考如何将这一套“零服务器”架构迁移到更具交互性的场景中。由此诞生的“夸克PPT遥控器”项目，试图解决手机控制电脑PPT放映的痛点。然而，浏览器环境的安全沙箱限制了网页直接模拟系统级按键的能力，这是前端技术的“天花板”。为了突破这一限制，我提出了“网页桥接（Web Bridge）”的开创性构想。我编写了一个极简的本地Node.js程序，作为浏览器的“执行体”。该程序通过WebSocket与前端页面保持通信。当用户在手机端点击“下一页”时，指令经过Firebase中转至电脑端页面，页面再将指令转发给本地桥接程序，由桥接程序调用VBScript模拟底层的右箭头按键。这种“手机-云端-页面-本地”的四维联动逻辑，在无需用户扫码或配置繁琐网络的前提下，实现了极致的交互体验，真正做到了行业内的应用首创。</p>
@@ -193,7 +193,7 @@ function listenToFirebase(roomCode) {
 <h2 id="_3">四、 实践应用、成果验证与技术迁移</h2>
 <h3 id="41">4.1 社会实践中的实战应用验证</h3>
 <p>技术的价值最终需在实际应用中接受检验。在2025年西安交通大学社会实践指导中心年会中，我有幸将这两项技术应用于实战环境。当时分会场2的主控电脑因无法读取部分同学的U盘，还有一些同学赛前拷贝PPT时间无法到场更换。我迅速访问部署在GitHub Pages上的“夸克闪传”网址，通过手机上传PPT，主控端迅速完成了接收。这次实战不仅证明了系统的稳定性，更向师生展示了再创式学习如何将“玩具代码”转化为“实用利器”。 </p>
-<p><img alt="" src="https://raw.githubusercontent.com/lsqkk/image/main/20260101025829109.png" /></p>
+<p><img alt="" src="https://cdn.jsdelivr.net/gh/lsqkk/image@main/20260101025829109.png" /></p>
 <blockquote>
 <p>项目用于年会传输PPT等文件</p>
 </blockquote>
