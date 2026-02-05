@@ -120,7 +120,7 @@
 ![img_8](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBQQUFbAmNTD1NpPeeO2DnzAaBT18GnzAFzVm8ll2lkZ9dOZT0.INu*T2N5zmCQWPx2qAVXxm.0OYpLmiEN5Pck!/b&bo=VQhABlUIQAYWECA!)
 ![img_9](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEBQQUFbAmNTD1NpPeeO2DnzzNUiDzXp.KBFsHsvgPlD9h1m3OM6kAhGKP*kOz2IiuDPXwDfBVnJcrGJEELMn3Kk!/b&bo=VQhABlUIQAYWECA!)
 
-![少年班](https://raw.githubusercontent.com/lsqkk/image/main/20251130220456859.jpg)
+![少年班](https://cdn.jsdelivr.net/gh/lsqkk/image@main/20251130220456859.jpg)
 
 # 27生日
 
