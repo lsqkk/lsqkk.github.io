@@ -22,17 +22,6 @@ body {
     min-height: calc(100vh - 60px);
 }
 
-/* 页面标题 */
-.page-title {
-    color: #fff;
-    text-align: center;
-    margin-bottom: 50px;
-    font-size: 2.8rem;
-    font-weight: 300;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    letter-spacing: 1px;
-}
-
 /* 区域标题 */
 .section-title {
     color: rgba(255, 255, 255, 0.9);
@@ -323,11 +312,6 @@ body {
         padding: 20px 15px 60px;
     }
 
-    .page-title {
-        font-size: 2.2rem;
-        margin-bottom: 40px;
-    }
-
     .section-title {
         font-size: 1.4rem;
         flex-direction: column;
@@ -371,10 +355,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .page-title {
-        font-size: 1.8rem;
-    }
-
     .friend-icon {
         width: 45px;
         height: 45px;

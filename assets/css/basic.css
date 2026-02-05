@@ -1,19 +1,64 @@
-/* 定义字体 */
 @font-face {
     font-family: 'HYTangMeiRen';
     src: url('/assets/fonts/HYTangMeiRen55W.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
-    /* 可选：确保文本在字体加载期间可见 */
 }
 
-/* 应用到全局元素 */
 * {
     font-family: 'HYTangMeiRen', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
-/* 或者更精确地应用到body */
 body {
     font-family: 'HYTangMeiRen', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+.page-title {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2.8rem;
+    font-weight: 300;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    margin-bottom: 60px;
+    font-size: 1.2rem;
+    font-weight: 300;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.page-subtitle a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+    padding-bottom: 1px;
+}
+
+.page-subtitle a:hover {
+    color: rgba(230, 230, 230, 0.8);
+    border-bottom: 1px dashed rgba(230, 230, 230, 0.8);
+    padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+        margin-bottom: 40px;
+        padding: 0 15px;
+    }
 }
