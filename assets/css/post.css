@@ -116,7 +116,7 @@ pre {
 .morenpost a:hover {
     /* 悬停效果：颜色变深，虚线效果 */
     color: #1d4ed8;
-    border-bottom: 2px dashed #1d4ed8;
+    border-bottom: 1px dashed #1d4ed8;
     padding-bottom: 0;
     /* 补偿线宽变化 */
 }
