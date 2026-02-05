@@ -4,10 +4,10 @@ import hashlib
 import re
 import markdown
 import yaml
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
 from markdown.extensions.toc import TocExtension
 from datetime import datetime
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 # 配置路径
 POSTS_JSON_PATH = 'posts/posts.json'
@@ -15,7 +15,7 @@ TEMPLATE_FILE = 'template/post_template.html'
 OUTPUT_BASE_DIR = 'posts'
 MD_SOURCE_ROOT = 'posts'
 HASH_STORAGE_FILE = 'private/file_hashes.json'
-RSS_OUTPUT_PATH = 'posts/rss.xml'
+RSS_FILE_PATH = 'posts/rss.xml'
 
 def ensure_private_dir():
     """确保private目录存在"""
@@ -29,7 +29,7 @@ def load_hashes():
     if os.path.exists(HASH_STORAGE_FILE):
         with open(HASH_STORAGE_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    return {"template": "", "md_files": {}, "json": ""}
+    return {"template": "", "md_files": {}, "json": "", "rss": ""}
 
 def save_hashes(hashes):
     """保存文件hash值"""
@@ -129,15 +129,6 @@ def normalize_date(date_value):
     
     # 其他类型，转换为字符串
     return str(date_value)
-
-def format_rfc822_date(date_str):
-    """将YYYY-MM-DD格式的日期转换为RFC822格式（用于RSS）"""
-    try:
-        dt = datetime.strptime(date_str, "%Y-%m-%d")
-        return dt.strftime("%a, %d %b %Y 12:00:00 +0800")
-    except ValueError:
-        # 如果日期格式有问题，使用当前时间
-        return datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0800")
 
 def process_md_file(md_file_path):
     """处理单个md文件，提取元数据和内容"""
@@ -240,6 +231,35 @@ def get_rendered_content(md_relative_path):
     ])
     return html
 
+def get_rendered_content_with_title(md_relative_path):
+    """读取MD文件并渲染为HTML，包含标题"""
+    md_full_path = os.path.join(MD_SOURCE_ROOT, md_relative_path)
+    if not os.path.exists(md_full_path):
+        print(f"警告：找不到MD文件 {md_full_path}")
+        return "<p>文章内容文件丢失。</p>"
+    
+    with open(md_full_path, 'r', encoding='utf-8-sig') as f:
+        text = f.read()
+    
+    # 提取标题
+    title = extract_title_from_markdown(text)
+    if not title:
+        base_name = os.path.splitext(os.path.basename(md_relative_path))[0]
+        title = base_name.replace('-', ' ').replace('_', ' ').title()
+    
+    # 移除YAML frontmatter（如果存在）
+    text_without_yaml = re.sub(r'^---\s*\n.*?\n---\s*\n', '', text, flags=re.DOTALL)
+    
+    # 渲染Markdown
+    html = markdown.markdown(text_without_yaml, extensions=[
+        'extra',
+        'nl2br',
+        'sane_lists',
+        TocExtension(),
+    ])
+    
+    return title, html
+
 def generate_html_file(post_data, template_content):
     """生成单个HTML文件"""
     title = post_data.get('title', '无标题文章')
@@ -252,7 +272,7 @@ def generate_html_file(post_data, template_content):
     article_html = get_rendered_content(file_path)
     
     base_name = os.path.splitext(file_path)[0]
-    output_path = os.path.join(OUTPUT_BASE_DIR, base_name)
+    output_path = os.path.join(OUTPUT_BASE_DIR, base_name + '.html')
     
     html_content = template_content
     html_content = html_content.replace('POST_TITLE_PLACEHOLDER', f'{title} - 夸克博客')
@@ -280,104 +300,101 @@ def generate_html_file(post_data, template_content):
         print(f"保存文件失败: {e}")
         return False
 
-def generate_rss_feed(posts_data):
-    """生成RSS feed"""
-    print("正在生成RSS feed...")
+def generate_rss(posts_data):
+    """生成RSS文件，只包含最新10篇文章"""
+    print("正在生成RSS文件...")
     
-    # 创建根元素
-    rss = ET.Element('rss')
-    rss.set('version', '2.0')
-    rss.set('xmlns:dc', 'http://purl.org/dc/elements/1.1/')
-    rss.set('xmlns:content', 'http://purl.org/rss/1.0/modules/content/')
+    # 只取最新10篇文章
+    latest_posts = posts_data[:10]
     
-    # 创建channel
+    # 创建RSS根元素
+    rss = ET.Element('rss', {
+        'version': '2.0',
+        'xmlns:content': 'http://purl.org/rss/1.0/modules/content/',
+        'xmlns:dc': 'http://purl.org/dc/elements/1.1/'
+    })
+    
+    # 创建channel元素
     channel = ET.SubElement(rss, 'channel')
     
     # 添加channel元信息
-    title_elem = ET.SubElement(channel, 'title')
-    title_elem.text = 'Quark Blog'
+    ET.SubElement(channel, 'title').text = 'Quark Blog'
+    ET.SubElement(channel, 'description').text = '夸克博客'
+    ET.SubElement(channel, 'link').text = 'https://lsqkk.github.io/'
+    ET.SubElement(channel, 'language').text = 'cn'
     
-    description_elem = ET.SubElement(channel, 'description')
-    description_elem.text = '夸克博客'
-    
-    link_elem = ET.SubElement(channel, 'link')
-    link_elem.text = 'https://lsqkk.github.io/'
-    
-    language_elem = ET.SubElement(channel, 'language')
-    language_elem.text = 'cn'
-    
-    # 添加lastBuildDate
-    last_build_date = ET.SubElement(channel, 'lastBuildDate')
-    last_build_date.text = datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0800")
-    
-    # 为每篇文章添加item，只生成最近10条
-    for post in posts_data[:10]:  # 限制最多10篇文章
+    # 添加每篇文章的item
+    for post in latest_posts:
         item = ET.SubElement(channel, 'item')
         
-        # 标题
-        title = ET.SubElement(item, 'title')
-        title.text = post['title']
+        # 文章标题
+        ET.SubElement(item, 'title').text = post['title']
         
-        # 链接 - 使用基础链接 + posts/ + 文件名.html
-        base_name = os.path.splitext(post['file'])[0]
-        post_url = f"https://lsqkk.github.io/posts/{base_name}.html"
+        # 文章链接（使用基础链接+文件名，去掉.md后缀）
+        post_slug = os.path.splitext(post['file'])[0]
+        post_url = f"https://lsqkk.github.io/posts/{post_slug}"
+        ET.SubElement(item, 'link').text = post_url
         
-        link = ET.SubElement(item, 'link')
-        link.text = post_url
-        
-        # GUID (使用链接作为唯一标识，设置isPermaLink为true)
-        guid = ET.SubElement(item, 'guid')
-        guid.set('isPermaLink', 'true')
+        # GUID（永久链接）
+        guid = ET.SubElement(item, 'guid', {'isPermaLink': 'true'})
         guid.text = post_url
         
-        # 描述 (对应tags)
-        description = ET.SubElement(item, 'description')
-        description.text = ', '.join(post['tags']) if post['tags'] else '无标签'
+        # 描述（使用tags）
+        tags_str = ', '.join(post['tags']) if post['tags'] else ''
+        ET.SubElement(item, 'description').text = tags_str
         
-        # 内容 (包含提示信息和文章正文)
+        # 获取文章内容
+        title, article_html = get_rendered_content_with_title(post['file'])
+        
+        # 创建内容（包含引用和文章正文）
+        content_with_note = f"""<blockquote>This rendering was automatically generated by QuarkBlog and may have formatting issues. For the best experience, please visit: <a href="{post_url}">{post_url}</a></blockquote> <h1>{title}</h1>{article_html}"""
+        
+        # 添加encoded内容
         content_encoded = ET.SubElement(item, 'content:encoded')
-        
-        # 获取文章正文HTML
-        article_html = get_rendered_content(post['file'])
-        
-        # 构建完整内容，包含提示信息
-        content_text = f'''<blockquote>This rendering was automatically generated by QuarkBlog and may have formatting issues. For the best experience, please visit: <a href="{post_url}">{post_url}</a></blockquote> <h1>{post['title']}</h1>{article_html}'''
-        
-        # 使用CDATA包装HTML内容，避免转义问题
-        content_encoded.text = f'<![CDATA[{content_text}]]>'
+        content_encoded.text = content_with_note
         
         # 创建者
-        creator = ET.SubElement(item, 'dc:creator')
-        creator.text = 'QuarkBlog'
+        ET.SubElement(item, 'dc:creator').text = 'QuarkBlog'
         
-        # 发布日期
-        pub_date = ET.SubElement(item, 'pubDate')
-        pub_date.text = format_rfc822_date(post['date'])
+        # 发布日期（转换为RFC 822格式）
+        try:
+            # 尝试解析日期
+            post_date = datetime.strptime(post['date'], "%Y-%m-%d")
+            # 格式化为RFC 822格式（RSS标准日期格式）
+            pub_date = post_date.strftime("%a, %d %b %Y 00:00:00 GMT")
+            ET.SubElement(item, 'pubDate').text = pub_date
+        except ValueError:
+            # 如果日期格式无法解析，使用默认值
+            ET.SubElement(item, 'pubDate').text = 'Mon, 01 Jan 1970 00:00:00 GMT'
+            print(f"警告：无法解析文章 '{post['title']}' 的日期: {post['date']}")
     
-    # 生成XML字符串
-    xml_string = ET.tostring(rss, encoding='utf-8')
+    # 将XML树转换为字符串
+    rough_string = ET.tostring(rss, encoding='utf-8')
     
-    # 使用minidom美化输出
-    dom = minidom.parseString(xml_string)
-    pretty_xml = dom.toprettyxml(indent='  ', encoding='utf-8')
+    # 使用minidom美化XML输出
+    reparsed = minidom.parseString(rough_string)
+    pretty_xml = reparsed.toprettyxml(indent="  ", encoding='utf-8')
     
-    # 保存RSS文件
+    # 写入RSS文件
     try:
-        os.makedirs(os.path.dirname(RSS_OUTPUT_PATH), exist_ok=True)
-        with open(RSS_OUTPUT_PATH, 'wb') as f:
+        os.makedirs(os.path.dirname(RSS_FILE_PATH), exist_ok=True)
+        with open(RSS_FILE_PATH, 'wb') as f:
             f.write(pretty_xml)
-        print(f"RSS feed已生成: {RSS_OUTPUT_PATH}")
-        return True
+        print(f"已生成RSS文件: {RSS_FILE_PATH}")
+        
+        # 计算并返回RSS文件的hash
+        rss_hash = hashlib.md5(pretty_xml).hexdigest()
+        return rss_hash
     except Exception as e:
-        print(f"生成RSS feed失败: {e}")
-        return False
-     
+        print(f"保存RSS文件失败: {e}")
+        return None
+
 def main():
     print("开始检查文件变动...")
     
     # 加载之前的hash值
     old_hashes = load_hashes()
-    new_hashes = {"template": "", "md_files": {}, "json": ""}
+    new_hashes = {"template": "", "md_files": {}, "json": "", "rss": ""}
     
     # 计算当前hash值
     # 1. 检查模板文件
@@ -463,8 +480,14 @@ def main():
             if generate_html_file(post_data, template_content):
                 generated_count += 1
     
-    # 生成RSS feed
-    generate_rss_feed(posts_data)
+    # 生成RSS文件（如果有文章更新或模板更新）
+    if template_changed or changed_md_files:
+        rss_hash = generate_rss(posts_data)
+        if rss_hash:
+            new_hashes["rss"] = rss_hash
+    else:
+        # 如果没有文章或模板更新，保持原来的RSS hash
+        new_hashes["rss"] = old_hashes.get("rss", "")
     
     # 保存新的hash值
     save_hashes(new_hashes)
