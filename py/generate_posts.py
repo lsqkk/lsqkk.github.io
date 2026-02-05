@@ -310,17 +310,17 @@ def generate_rss_feed(posts_data):
     last_build_date = ET.SubElement(channel, 'lastBuildDate')
     last_build_date.text = datetime.now().strftime("%a, %d %b %Y %H:%M:%S +0800")
     
-    # 为每篇文章添加item
-    for post in posts_data[:20]:  # 限制最多20篇文章，避免RSS过大
+    # 为每篇文章添加item，只生成最近10条
+    for post in posts_data[:10]:  # 限制最多10篇文章
         item = ET.SubElement(channel, 'item')
         
         # 标题
         title = ET.SubElement(item, 'title')
         title.text = post['title']
         
-        # 链接 - 使用基础链接 + posts
+        # 链接 - 使用基础链接 + posts/ + 文件名.html
         base_name = os.path.splitext(post['file'])[0]
-        post_url = f"https://lsqkk.github.io/posts/{base_name}"
+        post_url = f"https://lsqkk.github.io/posts/{base_name}.html"
         
         link = ET.SubElement(item, 'link')
         link.text = post_url
@@ -371,7 +371,7 @@ def generate_rss_feed(posts_data):
     except Exception as e:
         print(f"生成RSS feed失败: {e}")
         return False
-    
+     
 def main():
     print("开始检查文件变动...")
     
