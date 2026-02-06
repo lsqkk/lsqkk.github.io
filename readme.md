@@ -23,7 +23,7 @@
 
 <br>
 
-这是我的个人网站仓库，主要记录前端开发、技术实验和产品思考，**不依赖任何主流架构或模板项目**，基于原生技术栈构建，部署在 GitHub Pages 并由 Vercel + 自有域名提供 Serverless 支持。由 Firebase RTDB 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。
+[@lsqkk](https://github.com/lsqkk) 的个人网站仓库，主要记录前端开发、技术实验和产品思考，**不依赖任何主流架构或模板项目**，基于原生技术栈构建，部署在 GitHub Pages 并由 Vercel + 自有域名提供 Serverless 支持。由 Firebase RTDB 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。
 
 <a href="https://lsqkk.github.io"><img src="/assets/img/readme/demo1.png" alt="demo1"></a>
 
@@ -43,7 +43,7 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
   
   <img src="/assets/img/readme/demo0.png">
 
-- **统一 UI 设计**：规定了一套统一的 UI 设计风格。使用类似经典 Windows 7 的 Aero 模糊玻璃主题，全站使用统一的顶部导航栏、网页标题样式和格式，深色模式自动跟随系统，优雅的视差滚动效果等。
+- **统一 UI 设计**：规定了一套统一的 UI 设计风格。使用类似经典 Windows 7 的 Aero 模糊玻璃主题，全站使用统一的顶部导航、字体、标题样式，深浅色切换跟随系统，优雅的视差滚动效果等。
     <table>
       <tr>
         <td align="center"><img src="/assets/img/readme/nav.png" width="90%"></td>
@@ -91,6 +91,11 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
 - **自定义网站管理工具**：开发了 **Quark 命令行工具**，通过 Python 包形式封装博客管理操作，实现了类似 `quark serve`、`quark push` 等简洁命令，支持动态命令加载和扩展，提升本地管理效率。
   
   <img src="/assets/img/readme/demo11.png">
+
+**博客文章 RSS 订阅支持**：内置符合标准协议的 RSS 订阅源，可通过主流阅读器实时获取博客更新，支持全文或摘要输出，保障内容同步的及时性与跨平台阅读体验。RSS 订阅地址：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
+
+<img src="https://cdn.jsdelivr.net/gh/lsqkk/image@main/1770365755714.jpg">
+
 
 - 更多技术细节及本站使用服务清单，欢迎查看 [更新日志](/blog/log/log.md) 及 [关于本站](/posts/copyright.md) ！
 
