@@ -1,0 +1,51 @@
+{
+    "logo": {
+        "url": "/assets/img/logo_blue.png",
+        "alt": "网站logo",
+        "style": "width: 27px; border-radius: 50%; margin: 3px 7px 0px 0px; overflow: hidden;"
+    },
+    "title": {
+        "text": "夸克博客",
+        "link": "/"
+    },
+    "navItems": [
+        {
+            "name": "文章",
+            "link": "/posts",
+            "target": "blank"
+        },
+        {
+            "name": "工具",
+            "link": "/tool",
+            "target": "blank"
+        },
+        {
+            "name": "游戏",
+            "link": "/games",
+            "target": "blank"
+        },
+        {
+            "name": "实验室",
+            "link": "/a",
+            "target": "blank"
+        },
+        {
+            "name": "视频",
+            "link": "/blog/qtv",
+            "target": "blank"
+        },
+        {
+            "name": "留言",
+            "link": "/blog/lyb",
+            "target": "blank"
+        },
+        {
+            "name": "更多",
+            "link": "/blog",
+            "target": "blank"
+        }
+    ],
+    "login": {
+        "url": "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user"
+    }
+}

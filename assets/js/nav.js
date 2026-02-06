@@ -4,15 +4,58 @@ link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
 
-document.write(`
+// 默认配置
+const defaultNavConfig = {
+    logo: {
+        url: "/assets/img/logo_blue.png",
+        alt: "网站logo",
+        style: "width: 27px; border-radius: 50%; margin: 3px 7px 0px 0px; overflow: hidden;"
+    },
+    title: {
+        text: "夸克博客",
+        link: "/"
+    },
+    navItems: [
+        { name: "文章", link: "/posts", target: "blank" },
+        { name: "工具", link: "/tool", target: "blank" },
+        { name: "游戏", link: "/games", target: "blank" },
+        { name: "实验室", link: "/a", target: "blank" },
+        { name: "视频", link: "/blog/qtv", target: "blank" },
+        { name: "留言", link: "/blog/lyb", target: "blank" },
+        { name: "更多", link: "/blog", target: "blank" }
+    ],
+    login: {
+        url: "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user",
+    }
+};
+
+// 获取导航配置（同步XHR方式）
+function getNavConfigSync() {
+    try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/json/nav.json', false); // 同步请求
+        xhr.send();
+
+        if (xhr.status === 200) {
+            return JSON.parse(xhr.responseText);
+        }
+    } catch (error) {
+        console.warn('无法加载导航配置，使用默认值:', error);
+    }
+    return defaultNavConfig;
+}
+
+// 生成导航HTML
+function generateNavHTML(config) {
+    return `
     <div class="header-placeholder"></div>
     <div class="header">
         <div class="header-content">
             <div class="header-left">
-                <img src="/assets/img/logo_blue.png" alt="头像"
-                style="width: 27px; border-radius: 50%; margin: 4px 7px 0px 0px; overflow: hidden; ">
-                <a href="/" style="color: white; text-decoration: none;">
-                    <h1>夸克博客</h1>
+                <img src="${config.logo.url}" alt="${config.logo.alt}"
+                style="${config.logo.style}">
+                <a href="${config.title.link}" style="color: white; text-decoration: none;">
+                    <h1>${config.title.text}</h1>
                 </a>
                 <!-- 移动端汉堡菜单按钮 -->
                 <button class="hamburger-menu" id="hamburgerMenu">
@@ -23,13 +66,9 @@ document.write(`
             </div>
             <div class="header-nav-container">
                 <ul class="header-nav">
-                    <li><a href="/posts" target="blank">文章</a></li>
-                    <li><a href="/tool" target="blank">工具</a></li>
-                    <li><a href="/games" target="blank">游戏</a></li>
-                    <li><a href="/a" target="blank">实验室</a></li>
-                    <li><a href="/blog/qtv" target="blank">视频</a></li>
-                    <li><a href="/blog/lyb" target="blank">留言</a></li>
-                    <li><a href="/blog" target="blank">更多</a></li>
+                    ${config.navItems.map(item =>
+        `<li><a href="${item.link}" target="${item.target || 'blank'}">${item.name}</a></li>`
+    ).join('')}
                     <!-- 语言切换器 - 不会被翻译 -->
                     <li class="ignore">
                         <select id="languageSelector" class="language-selector">
@@ -37,9 +76,7 @@ document.write(`
                             <option value="english">English</option>
                         </select>
                     </li>
-                    <li id="login-button"><a
-                            href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user">登录</a>
-                    </li>
+                    <li id="login-button"><a href="${config.login.url}">登录</a></li>
                 </ul>
             </div>
             <div class="header-search">
@@ -59,13 +96,9 @@ document.write(`
             </div>
             <div class="navsidebar-nav">
                 <ul>
-                    <li><a href="/posts" target="blank">文章</a></li>
-                    <li><a href="/tool" target="blank">工具</a></li>
-                    <li><a href="/games" target="blank">游戏</a></li>
-                    <li><a href="/a" target="blank">实验室</a></li>
-                    <li><a href="/blog/qtv" target="blank">视频</a></li>
-                    <li><a href="/blog/lyb" target="blank">留言</a></li>
-                    <li><a href="/blog" target="blank">更多</a></li>
+                    ${config.navItems.map(item =>
+        `<li><a href="${item.link}" target="${item.target || 'blank'}">${item.name}</a></li>`
+    ).join('')}
                 </ul>
             </div>
             <div class="navsidebar-search">
@@ -80,12 +113,17 @@ document.write(`
                     </select>
                 </div>
                 <div class="navsidebar-login" id="mobile-login-button">
-                    <a href="https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=/auth.html&scope=user">登录</a>
+                    <a href="${config.login.url}">登录</a>
                 </div>
             </div>
         </div>
     </div>
-`);
+  `;
+}
+
+// 获取配置并写入导航栏
+const navConfig = getNavConfigSync();
+document.write(generateNavHTML(navConfig));
 
 // 全局搜索处理函数
 function handleGlobalSearch() {
