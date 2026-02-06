@@ -92,9 +92,9 @@ Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**�
   
   <img src="/assets/img/readme/demo11.png">
 
-**博客文章 RSS 订阅支持**：内置符合标准协议的 RSS 订阅源，可通过主流阅读器实时获取博客更新，支持全文或摘要输出，保障内容同步的及时性与跨平台阅读体验。RSS 订阅地址：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
+- **博客文章 RSS 订阅支持**：内置符合标准协议的 RSS 订阅源，可通过主流阅读器实时获取博客更新，支持全文或摘要输出，保障内容同步的及时性与跨平台阅读体验。RSS 订阅地址：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
 
-<img src="https://cdn.jsdelivr.net/gh/lsqkk/image@main/1770365755714.jpg">
+  <img src="https://cdn.jsdelivr.net/gh/lsqkk/image@main/1770365755714.jpg">
 
 
 - 更多技术细节及本站使用服务清单，欢迎查看 [更新日志](/blog/log/log.md) 及 [关于本站](/posts/copyright.md) ！

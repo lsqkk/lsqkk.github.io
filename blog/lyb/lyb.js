@@ -15,7 +15,7 @@ let replyingTo = null; // 当前回复的留言ID
 
 // DOM加载完成后初始化
 document.addEventListener('DOMContentLoaded', function () {
-    // 初始化主题
+    // 初始化主题（自动跟随系统）
     initTheme();
 
     // 初始化头像切换
@@ -41,32 +41,73 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// 初始化主题
+// 初始化主题 - 自动跟随系统
 function initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.className = savedTheme + '-mode';
-    updateThemeIcon(savedTheme);
+    // 检查是否已保存主题
+    const savedTheme = localStorage.getItem('theme');
+    let theme;
 
-    // 添加主题切换事件
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    if (savedTheme) {
+        theme = savedTheme;
+    } else {
+        // 自动检测系统主题
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        localStorage.setItem('theme', theme);
+    }
+
+    document.body.className = theme + '-mode';
+
+    // 监听系统主题变化
+    if (window.matchMedia) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', function (e) {
+            // 只有在没有手动设置过主题时才跟随系统
+            if (!localStorage.getItem('theme')) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                document.body.className = newTheme + '-mode';
+                localStorage.setItem('theme', newTheme);
+            }
+        });
+    }
 }
 
-// 切换主题
-function toggleTheme() {
-    const isLight = document.body.classList.contains('light-mode');
-    const newTheme = isLight ? 'dark' : 'light';
+// 提交留言
+function submitMessage() {
+    const nicknameInput = document.getElementById('nickname');
+    const contentInput = document.getElementById('messageContent');
 
-    document.body.classList.remove(isLight ? 'light-mode' : 'dark-mode');
-    document.body.classList.add(newTheme + '-mode');
-    localStorage.setItem('theme', newTheme);
+    const nickname = nicknameInput.value.trim();
+    const content = contentInput.value.trim();
+    const useMarkdown = document.getElementById('useMarkdown').checked;
 
-    updateThemeIcon(newTheme);
-}
+    if (!nickname || !content) {
+        alert('请填写昵称和留言内容');
+        return;
+    }
 
-// 更新主题图标
-function updateThemeIcon(theme) {
-    const icon = document.getElementById('themeToggle').querySelector('i');
-    icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    // 保存昵称到本地存储
+    localStorage.setItem('nickname', nickname);
+
+    const message = {
+        text: content,
+        nickname: nickname,
+        avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
+        avatarType: userAvatarType,
+        timestamp: Date.now(),
+        isMarkdown: useMarkdown,
+        likes: 0
+    };
+
+    // 确保messagesRef已初始化
+    if (!messagesRef) {
+        messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
+    }
+
+    messagesRef.push(message);
+    contentInput.value = '';
+
+    // 重新加载留言
+    loadMessages();
 }
 
 // 初始化头像切换
@@ -132,6 +173,11 @@ function updateAvatarPreview() {
 // 加载留言
 function loadMessages() {
     const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    // 确保messagesRef已初始化
+    if (!messagesRef) {
+        messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
+    }
 
     messagesRef.once('value').then(snapshot => {
         const messages = [];
@@ -322,40 +368,6 @@ function renderPagination() {
         });
         pagination.appendChild(nextBtn);
     }
-}
-
-// 提交留言
-function submitMessage() {
-    const nicknameInput = document.getElementById('nickname');
-    const contentInput = document.getElementById('messageContent');
-
-    const nickname = nicknameInput.value.trim();
-    const content = contentInput.value.trim();
-    const useMarkdown = document.getElementById('useMarkdown').checked;
-
-    if (!nickname || !content) {
-        alert('请填写昵称和留言内容');
-        return;
-    }
-
-    // 保存昵称到本地存储
-    localStorage.setItem('nickname', nickname);
-
-    const message = {
-        text: content,
-        nickname: nickname,
-        avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
-        avatarType: userAvatarType,
-        timestamp: Date.now(),
-        isMarkdown: useMarkdown,
-        likes: 0
-    };
-
-    messagesRef.push(message);
-    contentInput.value = '';
-
-    // 重新加载留言
-    loadMessages();
 }
 
 // 点赞留言
@@ -552,34 +564,4 @@ function sha256(message) {
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
     });
-}
-
-// 由于简化版SHA256实现需要异步处理，我们修改adminLogin函数
-async function adminLogin() {
-    const passwordInput = document.getElementById('adminPassword');
-    const password = passwordInput.value.trim();
-
-    if (!password) {
-        alert('请输入管理员密码');
-        return;
-    }
-
-    try {
-        // 计算SHA256哈希
-        const hash = await sha256(password);
-        const expectedHash = '936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af'; // 密码的SHA256
-
-        if (hash === expectedHash) {
-            isAdmin = true;
-            localStorage.setItem('isAdmin', 'true');
-            updateAdminUI();
-            passwordInput.value = '';
-            alert('管理员登录成功');
-        } else {
-            alert('密码错误');
-        }
-    } catch (error) {
-        console.error('哈希计算错误:', error);
-        alert('登录过程中出现错误');
-    }
 }
