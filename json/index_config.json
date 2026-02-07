@@ -1,0 +1,27 @@
+{
+    "main_content": {
+        "avatar_nickname": true,
+        "social_links": true,
+        "welcome_section": true,
+        "typewriter": true,
+        "recent_articles": true,
+        "dynamic_feed": true
+    },
+    "sidebar": {
+        "datetime_display": true,
+        "ip_greeting": true,
+        "greeting_tip": true,
+        "github_promo": true,
+        "latest_features": true,
+        "announcement": true,
+        "latest_video": true,
+        "comments": true,
+        "friend_links": true
+    },
+    "footer": {
+        "visitor_stats": true,
+        "copyright_info": true,
+        "icp_record": true
+    },
+    "note": "修改此配置以调整主页各板块显示与否与显示顺序。修改此配置后，需运行 /py/generate_index.py 或安装 quark 工具后执行 quark index 以更新主页。"
+}

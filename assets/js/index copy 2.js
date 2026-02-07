@@ -4,10 +4,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector('.main-content').style.opacity = '1';
 
     await loadHomeConfig();
-    loadRecentPosts(); // 加载文章
+
+    // 先加载市级俏皮话数据
+    await loadCityBanterData();
+
+    // 然后加载其他内容
+    loadRecentPosts();
     updateTime();
     updateGreeting();
-    getVisitorInfo();
+    getVisitorInfo(); // 此时cityBanterData应该已经加载完成
     setInterval(updateTime, 1000);
     setInterval(updateGreeting, 60000);
 
@@ -221,9 +226,39 @@ function getDistance(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return Math.round(R * c);
 }
+// 修改省份俏皮话为市级优先，省级备用
+function getBanter(province, city) {
+    console.log('获取俏皮话，省份:', province, '城市:', city);
+    console.log('cityBanterData 状态:', window.cityBanterData ? '已加载' : '未加载');
 
-// 根据省份返回俏皮话
-function getProvinceBanter(province) {
+    // 首先尝试加载并匹配市级俏皮话
+    if (window.cityBanterData) {
+        console.log('cityBanterData 内容:', window.cityBanterData);
+
+        // 先尝试匹配完整的城市名（如"徐州市"）
+        if (city && window.cityBanterData[city]) {
+            console.log('匹配到市级俏皮话:', city);
+            return window.cityBanterData[city];
+        }
+
+        // 如果城市名包含"市"字，尝试去除"市"字匹配（如"徐州"）
+        if (city && city.endsWith('市')) {
+            const cityWithoutSuffix = city.slice(0, -1);
+            console.log('尝试去除"市"字匹配:', cityWithoutSuffix);
+            if (window.cityBanterData[cityWithoutSuffix]) {
+                console.log('匹配到市级俏皮话(无市字):', cityWithoutSuffix);
+                return window.cityBanterData[cityWithoutSuffix];
+            }
+        }
+
+        console.log('未找到市级俏皮话，回退到省级');
+    }
+
+    // 如果没有市级俏皮话，回退到省级俏皮话（使用现有逻辑）
+    return getProvinceBanterFallback(province);
+}
+// 保留原有的省级俏皮话作为后备（当JSON未加载或加载失败时使用）
+function getProvinceBanterFallback(province) {
     // 创建一个映射，将不包含后缀的省份名称映射到完整的省份名称
     const provinceMapping = {
         '北京': '北京市',
@@ -305,6 +340,51 @@ function getProvinceBanter(province) {
     return banterMap[fullProvinceName] || '欢迎来玩！';
 }
 
+function loadCityBanterData() {
+    return fetch('/json/city-banter.json')
+        .then(response => response.json())
+        .then(data => {
+            window.cityBanterData = data;
+            console.log('市级俏皮话数据加载成功');
+            console.log('数据包含城市:', Object.keys(data).filter(key => key.includes('州')));
+
+            // 数据加载成功后，重新显示欢迎信息（如果已经显示过）
+            if (window.visitorInfoDisplayed) {
+                console.log('重新显示欢迎信息');
+                showVisitorInfo(window.cachedVisitorInfo);
+            }
+        })
+        .catch(error => {
+            console.log('市级俏皮话数据加载失败，使用省级备用:', error);
+            window.cityBanterData = null;
+        });
+}
+function showVisitorInfo(info) {
+    const { ip, province, city, district, latitude, longitude, distance } = info;
+
+    // 获取俏皮话（使用新函数，传入省份和城市）
+    const banter = getBanter(province, city);
+    console.log('最终使用的俏皮话:', banter);
+
+    // 显示位置信息
+    let locationText = `${province} ${city}`;
+    if (district) {
+        locationText = `${province} ${city} ${district}`;
+    }
+
+    // 显示欢迎信息
+    document.getElementById('welcome-info').innerHTML = `
+        欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
+        <span class="highlight">${banter}</span><br>
+        ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
+        您的IP地址为: <span class="highlight">${ip}</span>
+    `;
+
+    // 标记已经显示过
+    window.visitorInfoDisplayed = true;
+}
+
+// 修改getVisitorInfo函数
 async function getVisitorInfo() {
     try {
         const ipResponse = await fetch('https://api.b52m.cn/api/IP/');
@@ -316,7 +396,7 @@ async function getVisitorInfo() {
             const ipCity = ipData.data.city_name || ipData.data.city_name_2;
             const district = ipData.data.district_name_3 || ipData.data.district_name || "";
 
-            // 获取经纬度（优先使用latitude_2/longitude_2，如果没有则使用latitude_3/longitude_3）
+            // 获取经纬度
             const latitude = ipData.data.latitude_2 || ipData.data.latitude_3 || 0;
             const longitude = ipData.data.longitude_2 || ipData.data.longitude_3 || 0;
 
@@ -332,22 +412,48 @@ async function getVisitorInfo() {
                 );
             }
 
-            // 获取省份俏皮话
-            const provinceBanter = getProvinceBanter(ipPro);
+            // 缓存访客信息
+            window.cachedVisitorInfo = {
+                ip,
+                province: ipPro,
+                city: ipCity,
+                district,
+                latitude,
+                longitude,
+                distance
+            };
 
-            // 显示位置信息（如果有区县信息，则显示）
-            let locationText = `${ipPro} ${ipCity}`;
-            if (district) {
-                locationText = `${ipPro} ${ipCity} ${district}`;
+            // 如果市级数据已加载，立即显示
+            if (window.cityBanterData) {
+                showVisitorInfo(window.cachedVisitorInfo);
+            } else {
+                // 否则先显示省级备用，等数据加载后再更新
+                const fallbackBanter = getProvinceBanterFallback(ipPro);
+
+                let locationText = `${ipPro} ${ipCity}`;
+                if (district) {
+                    locationText = `${ipPro} ${ipCity} ${district}`;
+                }
+
+                document.getElementById('welcome-info').innerHTML = `
+                    欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
+                    <span class="highlight">${fallbackBanter}</span><br>
+                    ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
+                    您的IP地址为: <span class="highlight">${ip}</span>
+                `;
+
+                // 标记为已显示
+                window.visitorInfoDisplayed = true;
+
+                // 设置一个检查，等数据加载后重新显示
+                const checkInterval = setInterval(() => {
+                    if (window.cityBanterData && window.visitorInfoDisplayed) {
+                        clearInterval(checkInterval);
+                        console.log('数据已加载，重新显示欢迎信息');
+                        showVisitorInfo(window.cachedVisitorInfo);
+                    }
+                }, 100);
             }
-
-            // 显示欢迎信息
-            document.getElementById('welcome-info').innerHTML = `
-                欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
-                <span class="highlight">${provinceBanter}</span><br>
-                ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
-                您的IP地址为: <span class="highlight">${ip}</span>
-            `;
         } else {
             throw new Error(`IP数据API返回错误: ${ipData.message}`);
         }
@@ -356,7 +462,6 @@ async function getVisitorInfo() {
         document.getElementById('welcome-info').textContent = '';
     }
 }
-
 
 async function loadDynamicFeed() {
     try {
@@ -685,5 +790,3 @@ document.addEventListener('DOMContentLoaded', function () {
     loadLatestVideo();
     checkAndShowPopup();
 });
-
-

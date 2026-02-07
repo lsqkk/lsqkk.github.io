@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 | 蓝色奇夸克のBlog - 夸克博客</title>
+    <link rel="manifest" href="/json/manifest.json">
+    <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <link rel="stylesheet" href="/assets/css/index.css">
+    <script src="/assets/js/nav.js"></script>
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="referrer" content="never">
+</head>
+
+<body>
+    <link rel="stylesheet" href="/assets/css/shicha.css">
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script src="/assets/js/shicha.js"></script>
+
+    <div class="main-layout">
+        <div class="main-content">
+            <!-- MAIN_CONTENT_PLACEHOLDER -->
+        </div>
+
+        <div class="sidebar-index">
+            <!-- SIDEBAR_CONTENT_PLACEHOLDER -->
+        </div>
+    </div>
+    <div class="footer-container">
+        <div class="footer-content">
+            <!-- FOOTER_CONTENT_PLACEHOLDER -->
+        </div>
+    </div>
+    <br><br>
+
+    <!-- 弹窗系统 -->
+    <div id="popup-overlay" class="popup-overlay" style="display: none;">
+        <div id="popup-container" class="popup-container">
+            <div class="popup-header">
+                <h3 id="popup-title"></h3>
+                <button id="popup-close" class="popup-close-btn">&times;</button>
+            </div>
+            <div id="popup-content" class="popup-content"></div>
+            <div class="popup-footer">
+                <label class="popup-option">
+                    <input type="checkbox" id="popup-never-show"> 不再显示
+                </label>
+                <button id="popup-confirm" class="popup-confirm-btn">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 庆祝动效容器 -->
+    <div id="celebration-container"></div>
+
+    <script src="/assets/js/qq-emotion-parser.min.js"></script>
+    <script src="/assets/js/index.js"></script>
+    <script src="/assets/js/popup.js"></script>
+
+    <script src="https://api.lsqkk.space/api/firebase-config?v=1"></script>
+    <script src="/assets/js/message.js"></script>
+
+    <script>
+        // 检查浏览器是否支持Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                // 注册Service Worker文件
+                navigator.serviceWorker.register('/assets/js/sw.js')
+                    .then(function (registration) {
+                        console.log('Service Worker 注册成功: ', registration);
+                    })
+                    .catch(function (error) {
+                        console.log('Service Worker 注册失败: ', error);
+                    });
+            });
+        }
+    </script>
+
+    <script src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

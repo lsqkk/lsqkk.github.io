@@ -1,4 +1,5 @@
 {
+  "note": "修改此配置以更新主页信息。",
   "Nickname": "蓝色奇夸克",
   "welcomeTitle": "Hello World",
   "welcomeText": "学习历程 | 生活感悟 | 技术分享",
@@ -7,8 +8,8 @@
   "bloggerLat": 34.252705,
   "bloggerLon": 108.990221,
   "announcement": {
-    "content": "欢迎<a href=\"/assets/apk/QuarkBlog.apk\" style=\"color: #007bff; font-weight: bold;\">下载『夸克博客』APP</a>！",
-    "title": "想要更方便的阅读博文、移动端获得更好的阅读体验？"
+    "content": "<a href=\"https://lsqkk.github.io/posts/rss.xml\" target=\"_blank\" style=\"color: #007bff; font-weight: bold;\">点此</a>访问RSS订阅链接",
+    "title": "夸克博客支持RSS订阅"
   },
   "features": [
     {

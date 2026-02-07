@@ -29,145 +29,132 @@
     <div class="main-layout">
         <div class="main-content">
             <a href="posts/about"><img src="assets/img/touxiang.png" alt="头像"
-                    style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:60px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
-            <br><br><br><br><br><br>
-            <h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;"
-                id="Nickname"><!-- 昵称动态生成 --></h1>
-            <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"
-                id="social-icons-container"><!-- 社交链接动态生成 --></div>
-            <h2 style="color: #333; text-align: center; margin-bottom: 20px;" id="welcome-title"></h2>
-            <p style="text-align: center; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;"
-                id="welcome-text"> <!-- 欢迎文本动态生成 --> </p>
-            <div class="typewriter-container">
-                <div id="typewriter" class="typewriter" style="width: 100%; overflow: hidden;"></div>
-                <!-- 打字机动态生成 -->
-            </div>
-            <h2 class="recent-header"><a href="/posts">文章 Articles</a> <a href="/posts/rss.xml"><img
-                        src="/assets/img/rss.svg" style="height: 20px;"></a></h2>
-            <div class="recent-posts" style="margin-top: 30px;">
-                <div id="recent-posts"></div>
-                <a href="/posts" class="more-link">更多</a>
-            </div>
-
-            <div class="dynamic-feed">
-                <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
-                <div id="dynamic-entries"></div>
-                <a href="/blog/dt" class="more-link">更多</a>
-            </div>
-
+        style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:60px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
+<br><br><br><br><br><br>
+<h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;"
+    id="Nickname"><!-- 昵称动态生成 --></h1>
+<div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"
+    id="social-icons-container"><!-- 社交链接动态生成 --></div>
+<h2 style="color: #333; text-align: center; margin-bottom: 20px;" id="welcome-title"></h2>
+<p style="text-align: center; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;" id="welcome-text">
+    <!-- 欢迎文本动态生成 --> </p>
+<div class="typewriter-container">
+    <div id="typewriter" class="typewriter" style="width: 100%; overflow: hidden;"></div>
+    <!-- 打字机动态生成 -->
+</div>
+<h2 class="recent-header"><a href="/posts">文章 Articles</a> <a href="/posts/rss.xml"><img src="/assets/img/rss.svg"
+            style="height: 20px;"></a></h2>
+<div class="recent-posts" style="margin-top: 30px;">
+    <div id="recent-posts"></div>
+    <a href="/posts" class="more-link">更多</a>
+</div>
+<div class="dynamic-feed">
+    <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
+    <div id="dynamic-entries"></div>
+    <a href="/blog/dt" class="more-link">更多</a>
+</div>
         </div>
 
         <div class="sidebar-index">
             <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
-            </div>
-            <div class="date" id="date">2025年5月14日星期三</div>
-            <div class="info" id="welcome-info"></div>
-            <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
-            <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
-            <div class="index-divider"></div>
+</div>
+<div class="date" id="date">2025年5月14日星期三</div>
+<div class="index-divider"></div>
+<div class="info" id="welcome-info"></div>
+<div class="index-divider"></div>
+<div class="greeting" id="greeting">祝你早安 午安 晚安</div>
+<div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
+<div class="index-divider"></div>
+<div class="index-sidebar-section">
+    <div class="github-promo"
+        style="text-align: center; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px;">
+        <p style="margin: 0; font-size: 0.85em; color: #555; line-height: 1.4;">这不是模板生成的项目<br>
+            <a href="https://github.com/lsqkk/lsqkk.github.io" target="_blank"
+                style="color: #0366d6; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
+                <i class="fab fa-github" style="font-size: 1.1em;"></i>
+                前往 Github 仓库
+            </a><br>
+            <span style="font-size: 0.8em; color: #888;">欢迎 Star 和 Fork 🌟</span>
+        </p>
+    </div>
+</div>
+<div class="index-divider"></div>
+<div class="index-sidebar-section">
+    <h3>新功能 Latest Features</h3>
+    <div class="index-feature-boxes" id="features-container">
+        <!-- 内容将由JS动态生成 -->
+    </div>
+    <div style="text-align: center; margin: 15px 0;"> <a href="/blog/log"
+            style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a></div>
+</div>
+<div class="index-divider"></div>
+<div class="index-sidebar-section">
+    <h3>公告 Announcement</h3>
+    <div class="index-announcement" id="announcement-container">
+        <!-- 内容将由JS动态生成 -->
+    </div>
+</div>
+<div class="index-divider"></div>
+<div class="index-sidebar-section">
+    <h3>新视频 Latest Video</h3>
+    <div id="latest-video-container"
+        style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        <div style="text-align: center; padding: 20px; color: #AAA;">
+            视频加载中...
+        </div>
+    </div>
+    <div style="text-align: center; margin: 10px 0;">
+        <a href="qtv" style="text-decoration: none; color: #007bff; font-size: 0.9em;">
+            查看更多
+        </a>
+    </div>
+</div>
+<div class="index-divider"></div>
+<div class="index-sidebar-section">
+    <h3>留言 Comment</h3>
+    <div id="recent-messages">
+        <div class="index-announcement">
+            <p style="margin: 0;">留言加载中...</p>
+        </div>
+    </div>
+    <div style="text-align: center; margin: 15px 0;">
+        <a href="/blog/lyb" style="text-decoration: none; color: #007bff; font-size: 0.9em;">查看更多 /
+            写留言</a>
+    </div>
+</div>
+<div class="index-divider"></div>
+<div class="index-sidebar-section">
+    <h3>友链 Friends</h3>
+    <div id="friend-links">
+        <div class="index-announcement">
+            <p style="margin: 0;">友链加载中...</p>
+        </div>
+    </div>
 
-            <div class="index-sidebar-section">
-                <div class="github-promo"
-                    style="text-align: center; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px;">
-                    <p style="margin: 0; font-size: 0.85em; color: #555; line-height: 1.4;">这不是模板生成的项目<br>
-                        <a href="https://github.com/lsqkk/lsqkk.github.io" target="_blank"
-                            style="color: #0366d6; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
-                            <i class="fab fa-github" style="font-size: 1.1em;"></i>
-                            前往 Github 仓库
-                        </a><br>
-                        <span style="font-size: 0.8em; color: #888;">欢迎 Star 和 Fork 🌟</span>
-                    </p>
-                </div>
-            </div>
-
-            <div class="index-divider"></div>
-
-            <div class="index-sidebar-section">
-                <h3>新功能 Latest Features</h3>
-                <div class="index-feature-boxes" id="features-container">
-                    <!-- 内容将由JS动态生成 -->
-                </div>
-                <div style="text-align: center; margin: 15px 0;"> <a href="/blog/log"
-                        style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a></div>
-            </div>
-
-            <div class="index-divider"></div>
-
-            <div class="index-sidebar-section">
-                <h3>公告 Announcement</h3>
-                <div class="index-announcement" id="announcement-container">
-                    <!-- 内容将由JS动态生成 -->
-                </div>
-            </div>
-
-            <div class="index-divider"></div>
-
-            <div class="index-sidebar-section">
-                <h3>新视频 Latest Video</h3>
-                <div id="latest-video-container"
-                    style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <div style="text-align: center; padding: 20px; color: #AAA;">
-                        视频加载中...
-                    </div>
-                </div>
-                <div style="text-align: center; margin: 10px 0;">
-                    <a href="qtv" style="text-decoration: none; color: #007bff; font-size: 0.9em;">
-                        查看更多
-                    </a>
-                </div>
-            </div>
-
-            <div class="index-divider"></div>
-
-            <div class="index-sidebar-section">
-                <h3>留言 Comment</h3>
-                <div id="recent-messages">
-                    <div class="index-announcement">
-                        <p style="margin: 0;">留言加载中...</p>
-                    </div>
-                </div>
-                <div style="text-align: center; margin: 15px 0;">
-                    <a href="/blog/lyb" style="text-decoration: none; color: #007bff; font-size: 0.9em;">查看更多 /
-                        写留言</a>
-                </div>
-            </div>
-
-            <div class="index-divider"></div>
-
-            <div class="index-sidebar-section">
-                <h3>友链 Friends</h3>
-                <div id="friend-links">
-                    <div class="index-announcement">
-                        <p style="margin: 0;">友链加载中...</p>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin: 15px 0;font-size: 0.8em;"><a href="/blog/friends"
-                        style="text-decoration: none; color: #007bff; ">查看更多</a>
-                    / 添加友链请
-                    <a href="/blog/lyb" style="text-decoration: none; color: #007bff; ">在留言板留言</a>
-                </div>
-            </div>
-
+    <div style="text-align: center; margin: 15px 0;font-size: 0.8em;"><a href="/blog/friends"
+            style="text-decoration: none; color: #007bff; ">查看更多</a>
+        / 添加友链请
+        <a href="/blog/lyb" style="text-decoration: none; color: #007bff; ">在留言板留言</a>
+    </div>
+</div>
         </div>
     </div>
     <div class="footer-container">
         <div class="footer-content">
             <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-            共 <span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold; font-size: 1.1em;"></span>
-            位小伙伴来过 <span id="busuanzi_value_site_pv"
-                style="color: #007bff; font-weight: bold; font-size: 1.1em;"></span> 次
-            <br><br>
-            <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;"
-                href="/posts/copyright">© 2024 - 2026 蓝色奇夸克 | 夸克博客 All rights
-                reserved.</a>
-            <br><br>
-            <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;"
-                href="https://icp.gov.moe/?keyword=20250234" target="_blank">
-                <img src="assets/img/moe.png" alt="萌ICP备案图标"
-                    style="vertical-align: middle; width: 16px; height: 16px; margin-right: 5px;">萌ICP备20250234号
-            </a>
+共 <span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold; font-size: 1.1em;"></span>
+位小伙伴来过 <span id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold; font-size: 1.1em;"></span> 次
+<br><br>
+<a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="/posts/copyright">© 2024 -
+    2026 蓝色奇夸克 | 夸克博客 All rights
+    reserved.</a>
+<br><br>
+<a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;"
+    href="https://icp.gov.moe/?keyword=20250234" target="_blank">
+    <img src="assets/img/moe.png" alt="萌ICP备案图标"
+        style="vertical-align: middle; width: 16px; height: 16px; margin-right: 5px;">萌ICP备20250234号
+</a>
         </div>
     </div>
     <br><br>
@@ -192,12 +179,9 @@
     <!-- 庆祝动效容器 -->
     <div id="celebration-container"></div>
 
-
-
     <script src="/assets/js/qq-emotion-parser.min.js"></script>
     <script src="/assets/js/index.js"></script>
     <script src="/assets/js/popup.js"></script>
-
 
     <script src="https://api.lsqkk.space/api/firebase-config?v=1"></script>
     <script src="/assets/js/message.js"></script>

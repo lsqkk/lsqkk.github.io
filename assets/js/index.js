@@ -8,15 +8,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 先加载市级俏皮话数据
     await loadCityBanterData();
 
-    // 然后加载其他内容
-    loadRecentPosts();
+    // 然后加载其他内容 - 添加存在性检查
+    if (document.getElementById('recent-posts')) {
+        loadRecentPosts();
+    }
+
     updateTime();
     updateGreeting();
-    getVisitorInfo(); // 此时cityBanterData应该已经加载完成
+
+    if (document.getElementById('welcome-info')) {
+        getVisitorInfo(); // 此时cityBanterData应该已经加载完成
+    }
+
     setInterval(updateTime, 1000);
     setInterval(updateGreeting, 60000);
 
-    // 为导航盒子添加悬停效果
+    // 为导航盒子添加悬停效果 - 添加存在性检查
     document.querySelectorAll('.index-feature-box').forEach(box => {
         box.addEventListener('mouseover', () => {
             box.style.transform = 'translateY(-3px)';
@@ -31,73 +38,100 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // 加载最近三篇文章
 async function loadRecentPosts() {
-    const posts = await fetch('posts/posts.json').then(r => r.json());
-    const showPostNum = config.showPostNum;
-    const recentPosts = posts.slice(0, showPostNum);
+    try {
+        const posts = await fetch('posts/posts.json').then(r => r.json());
+        const showPostNum = config.showPostNum;
+        const recentPosts = posts.slice(0, showPostNum);
 
-    const list = recentPosts.map(post => `
-                <div class="post-item" style="transition: all 0.3s ease;">
-                    <a class="post-title" href=\"/posts/${post.file.replace('.md', '')}\" style="color: #0366d6; text-decoration: none; font-weight: 500;">
-                        ${post.title}
-                    </a>
-                    <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
-                </div>
-            `).join('');
+        const list = recentPosts.map(post => `
+                    <div class="post-item" style="transition: all 0.3s ease;">
+                        <a class="post-title" href="/posts/${post.file.replace('.md', '')}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
+                            ${post.title}
+                        </a>
+                        <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
+                    </div>
+                `).join('');
 
-    document.getElementById('recent-posts').innerHTML = list;
+        const recentPostsElement = document.getElementById('recent-posts');
+        if (recentPostsElement) {
+            recentPostsElement.innerHTML = list;
 
-    // 为文章项添加悬停效果
-    document.querySelectorAll('.post-item').forEach(item => {
-        item.addEventListener('mouseover', () => {
-            item.style.transform = 'translateX(5px)';
-            item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
-        });
-        item.addEventListener('mouseout', () => {
-            item.style.transform = 'none';
-            item.style.boxShadow = 'none';
-        });
-    });
+            // 为文章项添加悬停效果
+            document.querySelectorAll('.post-item').forEach(item => {
+                item.addEventListener('mouseover', () => {
+                    item.style.transform = 'translateX(5px)';
+                    item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+                });
+                item.addEventListener('mouseout', () => {
+                    item.style.transform = 'none';
+                    item.style.boxShadow = 'none';
+                });
+            });
+        }
+    } catch (error) {
+        console.error('加载最近文章失败:', error);
+        const recentPostsElement = document.getElementById('recent-posts');
+        if (recentPostsElement) {
+            recentPostsElement.innerHTML = '<div class="post-item">文章加载失败</div>';
+        }
+    }
 }
 
 // 新增PV/UV存储功能
 function storeStatistics() {
-    const pv = document.getElementById('busuanzi_value_site_pv').innerText;
-    const uv = document.getElementById('busuanzi_value_site_uv').innerText;
+    const pvElement = document.getElementById('busuanzi_value_site_pv');
+    const uvElement = document.getElementById('busuanzi_value_site_uv');
+
+    if (!pvElement || !uvElement) return;
+
+    const pv = pvElement.innerText;
+    const uv = uvElement.innerText;
     const today = new Date();
     // 格式化为 YYYY-MM-DD（本地时区）
     const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     localStorage.setItem(dateKey, JSON.stringify({
-        pv: parseInt(document.getElementById('busuanzi_value_site_pv').innerText),
-        uv: parseInt(document.getElementById('busuanzi_value_site_uv').innerText),
+        pv: parseInt(pvElement.innerText),
+        uv: parseInt(uvElement.innerText),
         timestamp: today.getTime()
     }));
 }
 
-// 监听不蒜子数据变化
-new MutationObserver(() => {
-    if (document.getElementById('busuanzi_value_site_pv').innerText &&
-        document.getElementById('busuanzi_value_site_uv').innerText) {
-        storeStatistics();
-    }
-}).observe(document.getElementById('busuanzi_value_site_pv'), {
-    childList: true,
-    subtree: true
-});
-
-
-// 检查是否已登录
-const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
-
-if (isLoggedIn) {
-    // 隐藏电脑端和移动端的登录按钮
-    document.getElementById('login-button').style.display = 'none';
-    document.getElementById('mobile-login-button').style.display = 'none';
-} else {
-    // 确保登录按钮显示（可能在之前被隐藏了）
-    document.getElementById('login-button').style.display = 'block';
-    document.getElementById('mobile-login-button').style.display = 'block';
+// 监听不蒜子数据变化 - 添加存在性检查
+const pvElement = document.getElementById('busuanzi_value_site_pv');
+if (pvElement) {
+    new MutationObserver(() => {
+        const pvElement = document.getElementById('busuanzi_value_site_pv');
+        const uvElement = document.getElementById('busuanzi_value_site_uv');
+        if (pvElement && uvElement &&
+            pvElement.innerText && uvElement.innerText) {
+            storeStatistics();
+        }
+    }).observe(pvElement, {
+        childList: true,
+        subtree: true
+    });
 }
+
+// 检查是否已登录 - 添加存在性检查
+function checkLoginStatus() {
+    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+    const loginButton = document.getElementById('login-button');
+    const mobileLoginButton = document.getElementById('mobile-login-button');
+
+    if (isLoggedIn) {
+        // 隐藏电脑端和移动端的登录按钮
+        if (loginButton) loginButton.style.display = 'none';
+        if (mobileLoginButton) mobileLoginButton.style.display = 'none';
+    } else {
+        // 确保登录按钮显示（可能在之前被隐藏了）
+        if (loginButton) loginButton.style.display = 'block';
+        if (mobileLoginButton) mobileLoginButton.style.display = 'block';
+    }
+}
+
+// 在DOM加载完成后检查登录状态
+document.addEventListener('DOMContentLoaded', checkLoginStatus);
 
 async function loadHomeConfig() {
     try {
@@ -110,9 +144,10 @@ async function loadHomeConfig() {
     }
 }
 
-// 修改打字机效果代码 - 添加等待机制
+// 修改打字机效果代码 - 添加等待机制和存在性检查
 document.addEventListener('DOMContentLoaded', function () {
     const typewriterElement = document.getElementById('typewriter');
+    if (!typewriterElement) return;
 
     // 等待 config 加载完成
     const waitForConfig = setInterval(() => {
@@ -181,19 +216,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// 更新时间
+// 更新时间 - 添加存在性检查
 function updateTime() {
     const now = new Date();
-    document.getElementById('hours').textContent = now.getHours().toString().padStart(2, '0');
-    document.getElementById('minutes').textContent = now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('seconds').textContent = now.getSeconds().toString().padStart(2, '0');
-    document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
+
+    const hoursElement = document.getElementById('hours');
+    const minutesElement = document.getElementById('minutes');
+    const secondsElement = document.getElementById('seconds');
+    const dateElement = document.getElementById('date');
+
+    if (hoursElement) hoursElement.textContent = now.getHours().toString().padStart(2, '0');
+    if (minutesElement) minutesElement.textContent = now.getMinutes().toString().padStart(2, '0');
+    if (secondsElement) secondsElement.textContent = now.getSeconds().toString().padStart(2, '0');
+    if (dateElement) {
+        dateElement.textContent = now.toLocaleDateString('zh-CN', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+    }
 }
 
-// 更新问候语
+// 更新问候语 - 添加存在性检查
 function updateGreeting() {
+    const greetingElement = document.getElementById('greeting');
+    const tipElement = document.getElementById('tip');
+
+    if (!greetingElement || !tipElement) return;
+
     const hour = new Date().getHours();
     let greeting = '';
 
@@ -204,12 +252,13 @@ function updateGreeting() {
     else if (hour < 18) greeting = '下午好~';
     else greeting = '晚上好~';
 
-    document.getElementById('greeting').textContent = greeting;
-    document.getElementById('tip').textContent = getRandomTip();
+    greetingElement.textContent = greeting;
+    tipElement.textContent = getRandomTip();
 }
 
-// 随机提示语
+// 随机提示语 - 添加存在性检查
 function getRandomTip() {
+    if (!config || !config.tips) return '欢迎访问 Quark Blog ~';
     const tips = config.tips;
     return tips[Math.floor(Math.random() * tips.length)];
 }
@@ -226,6 +275,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return Math.round(R * c);
 }
+
 // 修改省份俏皮话为市级优先，省级备用
 function getBanter(province, city) {
     console.log('获取俏皮话，省份:', province, '城市:', city);
@@ -257,6 +307,7 @@ function getBanter(province, city) {
     // 如果没有市级俏皮话，回退到省级俏皮话（使用现有逻辑）
     return getProvinceBanterFallback(province);
 }
+
 // 保留原有的省级俏皮话作为后备（当JSON未加载或加载失败时使用）
 function getProvinceBanterFallback(province) {
     // 创建一个映射，将不包含后缀的省份名称映射到完整的省份名称
@@ -359,7 +410,11 @@ function loadCityBanterData() {
             window.cityBanterData = null;
         });
 }
+
 function showVisitorInfo(info) {
+    const welcomeInfoElement = document.getElementById('welcome-info');
+    if (!welcomeInfoElement) return;
+
     const { ip, province, city, district, latitude, longitude, distance } = info;
 
     // 获取俏皮话（使用新函数，传入省份和城市）
@@ -373,7 +428,7 @@ function showVisitorInfo(info) {
     }
 
     // 显示欢迎信息
-    document.getElementById('welcome-info').innerHTML = `
+    welcomeInfoElement.innerHTML = `
         欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
         <span class="highlight">${banter}</span><br>
         ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
@@ -435,31 +490,37 @@ async function getVisitorInfo() {
                     locationText = `${ipPro} ${ipCity} ${district}`;
                 }
 
-                document.getElementById('welcome-info').innerHTML = `
-                    欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
-                    <span class="highlight">${fallbackBanter}</span><br>
-                    ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
-                    您的IP地址为: <span class="highlight">${ip}</span>
-                `;
+                const welcomeInfoElement = document.getElementById('welcome-info');
+                if (welcomeInfoElement) {
+                    welcomeInfoElement.innerHTML = `
+                        欢迎来自 <span class="highlight">${locationText}</span> 的朋友<br>
+                        <span class="highlight">${fallbackBanter}</span><br>
+                        ${distance !== "未知距离" ? `您当前距站主约 <span class="highlight">${distance}</span> 公里<br>` : ""}
+                        您的IP地址为: <span class="highlight">${ip}</span>
+                    `;
 
-                // 标记为已显示
-                window.visitorInfoDisplayed = true;
+                    // 标记为已显示
+                    window.visitorInfoDisplayed = true;
 
-                // 设置一个检查，等数据加载后重新显示
-                const checkInterval = setInterval(() => {
-                    if (window.cityBanterData && window.visitorInfoDisplayed) {
-                        clearInterval(checkInterval);
-                        console.log('数据已加载，重新显示欢迎信息');
-                        showVisitorInfo(window.cachedVisitorInfo);
-                    }
-                }, 100);
+                    // 设置一个检查，等数据加载后重新显示
+                    const checkInterval = setInterval(() => {
+                        if (window.cityBanterData && window.visitorInfoDisplayed) {
+                            clearInterval(checkInterval);
+                            console.log('数据已加载，重新显示欢迎信息');
+                            showVisitorInfo(window.cachedVisitorInfo);
+                        }
+                    }, 100);
+                }
             }
         } else {
             throw new Error(`IP数据API返回错误: ${ipData.message}`);
         }
     } catch (error) {
         console.error('获取IP信息失败:', error);
-        document.getElementById('welcome-info').textContent = '';
+        const welcomeInfoElement = document.getElementById('welcome-info');
+        if (welcomeInfoElement) {
+            welcomeInfoElement.textContent = '';
+        }
     }
 }
 
@@ -472,8 +533,11 @@ async function loadDynamicFeed() {
         renderDynamicEntries(entries.slice(0, showDynamicNum));
     } catch (error) {
         console.error('加载动态失败:', error);
-        document.getElementById('dynamic-entries').innerHTML =
-            '<div class="dynamic-card">动态加载中...</div>';
+        const dynamicEntriesElement = document.getElementById('dynamic-entries');
+        if (dynamicEntriesElement) {
+            dynamicEntriesElement.innerHTML =
+                '<div class="dynamic-card">动态加载中...</div>';
+        }
     }
 }
 
@@ -505,6 +569,8 @@ function parseMdEntries(content) {
 
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-entries');
+    if (!container) return;
+
     const emotionParser = new QQEmotionParser();
 
     container.innerHTML = entries.map(entry => {
@@ -566,17 +632,21 @@ async function loadLatestVideo() {
         }
     } catch (error) {
         console.error('加载最新视频失败:', error);
-        document.getElementById('latest-video-container').innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #999;">
-                视频加载失败
-            </div>
-        `;
+        const videoContainer = document.getElementById('latest-video-container');
+        if (videoContainer) {
+            videoContainer.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #999;">
+                    视频加载失败
+                </div>
+            `;
+        }
     }
 }
 
 // 渲染最新视频
 function renderLatestVideo(video) {
     const container = document.getElementById('latest-video-container');
+    if (!container) return;
 
     // 使用图片代理服务解决防盗链问题
     const proxyCoverUrl = `https://images.weserv.nl/?url=${encodeURIComponent(video.cover)}&w=320&h=180`;
@@ -610,20 +680,22 @@ function renderLatestVideo(video) {
     `;
 
     // 添加点击事件，跳转到B站视频页面
-    container.querySelector('.latest-video-card').addEventListener('click', () => {
-        window.open(`https://www.bilibili.com/video/${video.bvid}`, '_blank');
-    });
-
-    // 添加悬停效果
     const videoCard = container.querySelector('.latest-video-card');
-    videoCard.addEventListener('mouseover', () => {
-        videoCard.style.transform = 'translateY(-3px)';
-        videoCard.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
-    });
-    videoCard.addEventListener('mouseout', () => {
-        videoCard.style.transform = 'none';
-        videoCard.style.boxShadow = 'none';
-    });
+    if (videoCard) {
+        videoCard.addEventListener('click', () => {
+            window.open(`https://www.bilibili.com/video/${video.bvid}`, '_blank');
+        });
+
+        // 添加悬停效果
+        videoCard.addEventListener('mouseover', () => {
+            videoCard.style.transform = 'translateY(-3px)';
+            videoCard.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+        });
+        videoCard.addEventListener('mouseout', () => {
+            videoCard.style.transform = 'none';
+            videoCard.style.boxShadow = 'none';
+        });
+    }
 }
 
 // 格式化视频时长（秒 -> MM:SS）
@@ -670,14 +742,18 @@ async function loadFriendLinks() {
         displayFriendLinks(friends);
     } catch (error) {
         console.error('加载友链失败:', error);
-        document.getElementById('friend-links').innerHTML =
-            '<div class="index-announcement"><p style="margin: 0;">友链加载失败</p></div>';
+        const friendLinksElement = document.getElementById('friend-links');
+        if (friendLinksElement) {
+            friendLinksElement.innerHTML =
+                '<div class="index-announcement"><p style="margin: 0;">友链加载失败</p></div>';
+        }
     }
 }
 
 // 显示友链
 function displayFriendLinks(friends) {
     const container = document.getElementById('friend-links');
+    if (!container) return;
 
     if (!friends || friends.length === 0) {
         container.innerHTML = '<div class="index-announcement"><p style="margin: 0;">暂无友链</p></div>';
@@ -700,48 +776,45 @@ function displayFriendLinks(friends) {
     container.innerHTML = html;
 }
 
-
-// 加载主页配置数据
-async function loadHomeConfig() {
-    try {
-        const response = await fetch('/json/index.json');
-        config = await response.json();
-        renderHomeConfig(config);
-    } catch (error) {
-        console.error('加载主页配置失败:', error);
-        // 设置默认内容
-        setDefaultContent();
-    }
-}
-
 // 渲染主页配置
 function renderHomeConfig(config) {
-    // 渲染社交链接
+    // 渲染社交链接 - 添加存在性检查
     const socialContainer = document.getElementById('social-icons-container');
-    socialContainer.innerHTML = config.socialLinks.map(link => `
-        <a href="${link.url}" target="_blank">
-            <img src="${link.icon}" alt="${link.alt}" 
-                 style="height:30px; width:30px; border-radius: 50%;">
-        </a>
-    `).join('');
+    if (socialContainer && config.socialLinks) {
+        socialContainer.innerHTML = config.socialLinks.map(link => `
+            <a href="${link.url}" target="_blank">
+                <img src="${link.icon}" alt="${link.alt}" 
+                     style="height:30px; width:30px; border-radius: 50%;">
+            </a>
+        `).join('');
+    }
 
-    document.getElementById('Nickname').textContent = config.Nickname;
-    document.getElementById('welcome-title').textContent = config.welcomeTitle;
-    document.getElementById('welcome-text').textContent = config.welcomeText;
+    const nicknameElement = document.getElementById('Nickname');
+    if (nicknameElement) nicknameElement.textContent = config.Nickname;
 
-    // 渲染功能列表
+    const welcomeTitleElement = document.getElementById('welcome-title');
+    if (welcomeTitleElement) welcomeTitleElement.textContent = config.welcomeTitle;
+
+    const welcomeTextElement = document.getElementById('welcome-text');
+    if (welcomeTextElement) welcomeTextElement.textContent = config.welcomeText;
+
+    // 渲染功能列表 - 添加存在性检查
     const featuresContainer = document.getElementById('features-container');
-    featuresContainer.innerHTML = config.features.map(feature => `
-        <div class="index-feature-box">
-            <a href="${feature.url}">${feature.name}</a>
-        </div>
-    `).join('');
+    if (featuresContainer && config.features) {
+        featuresContainer.innerHTML = config.features.map(feature => `
+            <div class="index-feature-box">
+                <a href="${feature.url}">${feature.name}</a>
+            </div>
+        `).join('');
+    }
 
-    // 渲染公告
+    // 渲染公告 - 添加存在性检查
     const announcementContainer = document.getElementById('announcement-container');
-    announcementContainer.innerHTML = `
-        <p style="margin: 0;">${config.announcement.title}<br>${config.announcement.content}</p>
-    `;
+    if (announcementContainer && config.announcement) {
+        announcementContainer.innerHTML = `
+            <p style="margin: 0;">${config.announcement.title}<br>${config.announcement.content}</p>
+        `;
+    }
 
     // 为动态生成的内容添加事件监听
     addEventListenersToDynamicContent();
@@ -749,30 +822,39 @@ function renderHomeConfig(config) {
 
 // 设置默认内容（备用）
 function setDefaultContent() {
-    document.getElementById('social-icons-container').innerHTML = `
-        <a href="https://github.com/lsqkk" target="_blank">
-            <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" 
-                 style="height:30px; width:30px; border-radius: 50%;">
-        </a>
-        <!-- 其他默认社交图标 -->
-    `;
+    const socialContainer = document.getElementById('social-icons-container');
+    if (socialContainer) {
+        socialContainer.innerHTML = `
+            <a href="https://github.com/lsqkk" target="_blank">
+                <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" 
+                     style="height:30px; width:30px; border-radius: 50%;">
+            </a>
+            <!-- 其他默认社交图标 -->
+        `;
+    }
 
-    document.getElementById('features-container').innerHTML = `
-        <div class="index-feature-box"><a href="tool/weather.html">天气查询</a></div>
-        <!-- 其他默认功能 -->
-    `;
+    const featuresContainer = document.getElementById('features-container');
+    if (featuresContainer) {
+        featuresContainer.innerHTML = `
+            <div class="index-feature-box"><a href="tool/weather.html">天气查询</a></div>
+            <!-- 其他默认功能 -->
+        `;
+    }
 
-    document.getElementById('announcement-container').innerHTML = `
-        <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>
-        欢迎<a href="/assets/apk/QuarkBlog.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
-    `;
+    const announcementContainer = document.getElementById('announcement-container');
+    if (announcementContainer) {
+        announcementContainer.innerHTML = `
+            <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>
+            欢迎<a href="/assets/apk/QuarkBlog.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
+        `;
+    }
 }
 
 // 为动态生成的内容添加事件监听
 function addEventListenersToDynamicContent() {
-
-    // 功能盒子悬停效果
-    document.querySelectorAll('#features-container .index-feature-box').forEach(box => {
+    // 功能盒子悬停效果 - 添加存在性检查
+    const featureBoxes = document.querySelectorAll('#features-container .index-feature-box');
+    featureBoxes.forEach(box => {
         box.addEventListener('mouseover', () => {
             box.style.transform = 'translateY(-3px)';
             box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
@@ -785,8 +867,22 @@ function addEventListenersToDynamicContent() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    loadDynamicFeed();
-    loadFriendLinks();
-    loadLatestVideo();
+    // 动态加载内容 - 添加存在性检查
+    const dynamicEntriesElement = document.getElementById('dynamic-entries');
+    if (dynamicEntriesElement) {
+        loadDynamicFeed();
+    }
+
+    const friendLinksElement = document.getElementById('friend-links');
+    if (friendLinksElement) {
+        loadFriendLinks();
+    }
+
+    const latestVideoContainer = document.getElementById('latest-video-container');
+    if (latestVideoContainer) {
+        loadLatestVideo();
+    }
+
+    // 检查并显示弹窗
     checkAndShowPopup();
 });
