@@ -1,10 +1,13 @@
 [
     {
-        "title": "Quark 命令行工具测试文章",
+        "title": "从Namecheap到Cloudflare：一个域名“韭菜”的技术自救实录",
         "file": "2026/2601.md",
-        "date": "2026-02-03",
-        "tags": [],
-        "wordCount": 22
+        "date": "2026-02-09",
+        "tags": [
+            "网站",
+            "域名"
+        ],
+        "wordCount": 3621
     },
     {
         "title": "2025 年终总结",
@@ -45,7 +48,7 @@
             "前端",
             "论文"
         ],
-        "wordCount": 7237
+        "wordCount": 7225
     },
     {
         "title": "当代大学生后现代解构主义思潮分析",
@@ -121,7 +124,7 @@
             "物理",
             "论文"
         ],
-        "wordCount": 3072
+        "wordCount": 3066
     },
     {
         "title": "洞穴之外",

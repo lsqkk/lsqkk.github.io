@@ -78,25 +78,25 @@
 
         <div id="content" class="post-content">
             <h1 id="c">C++输出谢尔宾斯基三角形</h1>
-            <p>2022年11月28日</p>
-            <p><strong>谢尔宾斯基三角形</strong>（Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。</p>
-            <p>我们可以这样做一个谢尔宾斯基三角形：</p>
-            <ol>
-                <li>
-                    <p>取一个实心的三角形。（最好是等边三角形）</p>
-                </li>
-                <li>
-                    <p>沿三边中点的连线，将它分成四个小三角形。</p>
-                </li>
-                <li>
-                    <p>去掉中间的那一个小三角形。</p>
-                </li>
-                <li>
-                    <p>对其余三个小三角形重复1。</p>
-                </li>
-            </ol>
-            <p>下面是用C++代码模拟的过程：</p>
-            <pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+<p>2022年11月28日</p>
+<p><strong>谢尔宾斯基三角形</strong>（Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。</p>
+<p>我们可以这样做一个谢尔宾斯基三角形：</p>
+<ol>
+<li>
+<p>取一个实心的三角形。（最好是等边三角形）</p>
+</li>
+<li>
+<p>沿三边中点的连线，将它分成四个小三角形。</p>
+</li>
+<li>
+<p>去掉中间的那一个小三角形。</p>
+</li>
+<li>
+<p>对其余三个小三角形重复1。</p>
+</li>
+</ol>
+<p>下面是用C++代码模拟的过程：</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
 using namespace std;
 int main(){
     bool a[300][300]; //开一个数组
