@@ -442,7 +442,7 @@ async function verifyPassword() {
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
         // 2. 调用Vercel安全API进行验证
-        const response = await fetch('https://api.lsqkk.space/api/admin-auth', {
+        const response = await fetch('https://api.130923.xyz/api/admin-auth', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

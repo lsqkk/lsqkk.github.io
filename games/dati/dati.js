@@ -318,7 +318,7 @@ function updateTimer() {
 async function getBattleQuestion() {
     try {
         // 需要 include_answers=true 来获取正确答案
-        const response = await fetch('https://quark-api.lsqkk.space/api/quiz/random?count=1&include_answers=true');
+        const response = await fetch('https://quark-api.130923.xyz/api/quiz/random?count=1&include_answers=true');
         const data = await response.json();
 
         if (data.success && data.data.questions) {
@@ -530,7 +530,7 @@ function saveStats() {
 async function getQuestion() {
     try {
         // 同样需要 include_answers=true
-        const response = await fetch('https://quark-api.lsqkk.space/api/quiz/random?count=1&include_answers=true');
+        const response = await fetch('https://quark-api.130923.xyz/api/quiz/random?count=1&include_answers=true');
         const data = await response.json();
 
         if (data.success && data.data.questions) {

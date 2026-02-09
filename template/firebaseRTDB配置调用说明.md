@@ -1,9 +1,9 @@
 # firebase realtime database 配置调用说明
 
-当遇到firebase RTDB存储/读写实时数据时，需要引入`api.lsqkk.space/api/firebase-config`脚本及相关功能：
+当遇到firebase RTDB存储/读写实时数据时，需要引入`api.130923.xyz/api/firebase-config`脚本及相关功能：
 
 ### 功能概述
-通过调用部署在 `api.lsqkk.space` 的安全接口，动态获取 Firebase 实时数据库（RTDB）的完整配置，并完成初始化。所有敏感配置信息已托管于 Vercel 环境变量中。
+通过调用部署在 `api.130923.xyz` 的安全接口，动态获取 Firebase 实时数据库（RTDB）的完整配置，并完成初始化。所有敏感配置信息已托管于 Vercel 环境变量中。
 需要确保加载的 Firebase SDK（如 `firebase-app.js`, `firebase-database.js`）已正确引入。（需在新项目html中引入）
 
 ### 引入步骤与样例代码
@@ -15,7 +15,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 2. 引入动态配置
-<script src="https://api.lsqkk.space/api/firebase-config"></script>
+<script src="https://api.130923.xyz/api/firebase-config"></script>
 
 3. 初始化并使用Firebase
 <script>
@@ -43,7 +43,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     2. 引入动态配置
-    <script src="https://api.lsqkk.space/api/firebase-config"></script>
+    <script src="https://api.130923.xyz/api/firebase-config"></script>
 </head>
 <body>
     3. 引入你的业务JS文件（此时firebaseConfig已就绪）

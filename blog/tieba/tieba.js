@@ -468,7 +468,7 @@ async function adminLogin(passwordInputId = 'adminPassword') {
         const passwordHash = await sha256(password);
 
         // 4. 调用安全验证API
-        const response = await fetch('https://api.lsqkk.space/api/admin-auth', {
+        const response = await fetch('https://api.130923.xyz/api/admin-auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ passwordHash })

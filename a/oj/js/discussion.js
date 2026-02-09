@@ -198,7 +198,7 @@ window.adminLogin = async function () {
         const userInputHash = await sha256(password);
 
         // 2. 调用 Vercel 安全API进行验证
-        const response = await fetch('https://api.lsqkk.space/api/admin-auth', {
+        const response = await fetch('https://api.130923.xyz/api/admin-auth', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
