@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="夸克图床，上传图片到 GitHub 仓库并生成可访问链接">
+    <title>夸克图床 - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="/assets/js/cursor-trail.js"></script>
+    <script src="/assets/js/nav.js"></script>
+    <script src="/assets/js/disable-right-click.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script src="https://api.130923.xyz/api/github-api-key?v=1"></script>
+</head>
+
+<body>
+    <link rel="stylesheet" href="/assets/css/shicha.css">
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script src="/assets/js/shicha.js"></script>
+
+    <main class="pic-shell">
+        <h1 class="page-title">夸克图床 / Pic</h1>
+
+        <section class="pic-panel">
+            <div class="pic-top-row">
+                <a class="pic-back-link" href="/a/">返回实验室</a>
+                <div class="pic-limit-text" id="limitText">上传额度读取中...</div>
+            </div>
+
+            <label class="pic-picker" for="fileInput">
+                <span>选择图片（支持批量）</span>
+                <input id="fileInput" type="file" accept="image/*" multiple>
+            </label>
+
+            <div class="pic-actions">
+                <button id="uploadBtn" type="button">开始上传</button>
+                <button id="clearBtn" type="button">清空结果</button>
+            </div>
+
+            <div class="pic-status" id="statusText">等待上传</div>
+            <div class="pic-progress-wrap">
+                <div class="pic-progress" id="progressBar"></div>
+            </div>
+
+            <ul class="pic-file-list" id="fileList"></ul>
+        </section>
+
+        <section class="pic-panel">
+            <h2 class="pic-section-title">上传结果</h2>
+            <div class="pic-copy-actions">
+                <button id="copyMarkdownBtn" type="button">复制 Markdown</button>
+                <button id="copyHtmlBtn" type="button">复制 HTML</button>
+            </div>
+            <div class="pic-result" id="resultBox"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

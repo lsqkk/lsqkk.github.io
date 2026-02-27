@@ -1,0 +1,156 @@
+.pic-shell {
+    width: min(980px, 92vw);
+    margin: 34px auto 48px;
+}
+
+.pic-panel {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    color: #f4f8ff;
+}
+
+.pic-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.pic-back-link {
+    text-decoration: none;
+    color: #d8ebff;
+    border: 1px solid rgba(216, 235, 255, 0.5);
+    padding: 7px 12px;
+    border-radius: 8px;
+}
+
+.pic-back-link:hover {
+    background: rgba(216, 235, 255, 0.15);
+}
+
+.pic-limit-text {
+    font-size: 14px;
+    color: #dfeeff;
+}
+
+.pic-picker {
+    display: block;
+    border: 1px dashed rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(0, 18, 35, 0.35);
+}
+
+.pic-picker input {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    color: #dfeeff;
+}
+
+.pic-actions,
+.pic-copy-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.pic-actions button,
+.pic-copy-actions button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #2f6fa2;
+    color: #fff;
+    cursor: pointer;
+}
+
+.pic-actions button:hover,
+.pic-copy-actions button:hover {
+    filter: brightness(1.08);
+}
+
+.pic-status {
+    margin-top: 14px;
+    font-size: 14px;
+    color: #e2f0ff;
+}
+
+.pic-progress-wrap {
+    width: 100%;
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.pic-progress {
+    width: 0%;
+    height: 100%;
+    background: #67b7ff;
+    transition: width 0.2s ease;
+}
+
+.pic-file-list {
+    margin: 12px 0 0;
+    padding-left: 20px;
+    color: #ebf5ff;
+}
+
+.pic-section-title {
+    margin: 0 0 10px;
+    font-weight: 500;
+}
+
+.pic-result {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+}
+
+.pic-item {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(4, 25, 45, 0.45);
+}
+
+.pic-item p {
+    margin: 6px 0;
+    word-break: break-all;
+}
+
+.pic-item a {
+    color: #95d3ff;
+    text-decoration: none;
+}
+
+.pic-item a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .pic-shell {
+        width: min(980px, 95vw);
+    }
+
+    .pic-top-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pic-panel {
+        padding: 16px;
+    }
+}
