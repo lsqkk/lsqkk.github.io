@@ -1,86 +1,120 @@
-[
+{
+  "categories": [
     {
-        "name": "360°全景交大",
-        "link": "360",
-        "description": "沉浸式体验交大校园全景，使用WebGL技术实现360度全景浏览",
-        "icon": "fa-globe-americas"
+      "name": "空间与可视化",
+      "projects": [
+        {
+          "name": "360°全景交大",
+          "link": "360",
+          "description": "沉浸式体验交大校园全景，使用 WebGL 实现 360 度浏览",
+          "icon": "fa-globe-americas"
+        },
+        {
+          "name": "夸克地图",
+          "link": "map",
+          "description": "基于地理位置的可视化地图应用，支持路径规划和位置标记",
+          "icon": "fa-map-marked-alt"
+        },
+        {
+          "name": "Physics 项目",
+          "link": "physics",
+          "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测",
+          "icon": "fa-atom"
+        },
+        {
+          "name": "山火预警监测",
+          "link": "fire-alert2",
+          "description": "基于卫星数据和气象信息的山火风险预警与监测系统",
+          "icon": "fa-fire"
+        },
+        {
+          "name": "音乐可视化",
+          "link": "music-visualizer",
+          "description": "结合粒子系统和 3D 场景的音频可视化实验",
+          "icon": "fa-music"
+        }
+      ]
     },
     {
-        "name": "夸克地图",
-        "link": "map",
-        "description": "基于地理位置的可视化地图应用，支持路径规划和位置标记(developing)",
-        "icon": "fa-map-marked-alt"
+      "name": "实时协同与通信",
+      "projects": [
+        {
+          "name": "夸克LIVE直播间",
+          "link": "live",
+          "description": "夸克博客实时互动直播平台",
+          "icon": "fa-broadcast-tower"
+        },
+        {
+          "name": "夸克闪传",
+          "link": "share",
+          "description": "基于 Firebase RTDB 和 STUN 的 P2P 文件闪传",
+          "icon": "fa-exchange"
+        },
+        {
+          "name": "夸克会议(双人)",
+          "link": "meet",
+          "description": "基于 WebRTC 和 Firebase 信令服务器的双人在线会议",
+          "icon": "fa-video-camera"
+        },
+        {
+          "name": "夸克聊天室",
+          "link": "chat-room",
+          "description": "轻量实时聊天室实验，支持多人消息同步",
+          "icon": "fa-comments"
+        }
+      ]
     },
     {
-        "name": "夸克博客留言板",
-        "link": "/blog/lyb",
-        "description": "用户互动与留言交流平台，支持实时评论和消息通知",
-        "icon": "fa-comments"
+      "name": "AI 与开发实验",
+      "projects": [
+        {
+          "name": "夸克数字人",
+          "link": "quarkchat",
+          "description": "支持语音/文字可视化对话的数字人交互平台",
+          "icon": "fa-robot"
+        },
+        {
+          "name": "QuarkOJ",
+          "link": "oj",
+          "description": "题库 + 在线判题 + 讨论系统的一体化实验平台",
+          "icon": "fa-gavel"
+        },
+        {
+          "name": "夸克终端",
+          "link": "terminal",
+          "description": "纯前端网页模拟终端，支持自定义指令",
+          "icon": "fa-terminal"
+        }
+      ]
     },
     {
-        "name": "Physics 项目",
-        "link": "physics",
-        "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测",
-        "icon": "fa-atom"
-    },
-    {
-        "name": "夸克大学",
-        "link": "uni",
-        "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪",
-        "icon": "fa-graduation-cap"
-    },
-    {
-        "name": "夸克自控平台",
-        "link": "zk",
-        "description": "个人成长与自我管理系统",
-        "icon": "fa-cogs"
-    },
-    {
-        "name": "山火预警监测",
-        "link": "fire-alert2",
-        "description": "基于卫星数据和气象信息的山火风险预警与监测系统",
-        "icon": "fa-fire"
-    },
-    {
-        "name": "夸克LIVE直播间",
-        "link": "live",
-        "description": "夸克博客实时互动直播平台",
-        "icon": "fa-broadcast-tower"
-    },
-    {
-        "name": "夸克数字人",
-        "link": "quarkchat",
-        "description": "支持语音/文字可视化对话聊天的数字人交互平台",
-        "icon": "fa-robot"
-    },
-    {
-        "name": "夸克终端",
-        "link": "terminal",
-        "description": "纯前端网页模拟终端，支持自定义指令",
-        "icon": "fa-terminal"
-    },
-    {
-        "name": "夸克闪传",
-        "link": "share",
-        "description": "基于Firebase RTDB和免费STUN的P2P文件闪传",
-        "icon": "fa-exchange"
-    },
-    {
-        "name": "QuarkOJ",
-        "link": "oj",
-        "description": "Genimi赋能 | 题库丰富 | judge0API 秒级判题",
-        "icon": "fa-gavel"
-    },
-    {
-        "name": "夸克会议(双人)",
-        "link": "meet",
-        "description": "基于WebRTC和Firebase信令服务器的双人在线会议",
-        "icon": "fa-video-camera"
-    },
-    {
-        "name": "音乐可视化",
-        "link": "music-visualizer",
-        "description": "粒子和 3d.js 的充分利用",
-        "icon": "fa-music"
+      "name": "内容与创作",
+      "projects": [
+        {
+          "name": "夸克图床",
+          "link": "pic",
+          "description": "批量上传图片到 GitHub 图床，自动生成加速链接和 Raw 直链",
+          "icon": "fa-image"
+        },
+        {
+          "name": "夸克博客留言板",
+          "link": "/blog/lyb",
+          "description": "用户互动与留言交流平台，支持实时评论和消息通知",
+          "icon": "fa-comments"
+        },
+        {
+          "name": "夸克大学",
+          "link": "uni",
+          "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪",
+          "icon": "fa-graduation-cap"
+        },
+        {
+          "name": "夸克自控平台",
+          "link": "zk",
+          "description": "个人成长与自我管理系统",
+          "icon": "fa-cogs"
+        }
+      ]
     }
-]
+  ]
+}
