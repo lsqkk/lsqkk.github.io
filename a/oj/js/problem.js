@@ -27,6 +27,16 @@ const $resultError = document.getElementById('result-error');
 let problemData = null; // 存储加载的题目数据
 
 /**
+ * 规范化样例文本中的转义换行符
+ * @param {string} text
+ * @returns {string}
+ */
+function normalizeSampleText(text) {
+    if (typeof text !== 'string') return '';
+    return text.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\r/g, '\r');
+}
+
+/**
  * 渲染 Markdown 内容并启用 LaTeX 渲染
  * @param {string} markdownText - Markdown 文本
  * @param {HTMLElement} element - 要渲染到的元素
@@ -108,8 +118,8 @@ function renderProblemUI(data) {
     renderMarkdownWithLatex(data.output_format, $outputFormat);
 
     // 示例输入输出保持原样（代码块）
-    $sampleInput.textContent = data.sample_input;
-    $sampleOutput.textContent = data.sample_output;
+    $sampleInput.textContent = normalizeSampleText(data.sample_input);
+    $sampleOutput.textContent = normalizeSampleText(data.sample_output);
 
     const currentLink = document.querySelector(`.oj-nav-link[href="train.html"]`);
     if (currentLink) {
