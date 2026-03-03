@@ -1,0 +1,31 @@
+{
+    "logo": {
+        "url": "/assets/img/logo_blue.png",
+        "alt": "网站logo",
+        "style": "width: 27px; border-radius: 50%; margin: 3px 7px 0px 0px; overflow: hidden;"
+    },
+    "title": {
+        "text": "网站名称",
+        "link": "/"
+    },
+    "navItems": [
+        {
+            "name": "文章",
+            "link": "/posts",
+            "target": "blank"
+        },
+        {
+            "name": "友链",
+            "link": "/blog/friends",
+            "target": "blank"
+        },
+        {
+            "name": "更多",
+            "link": "/blog",
+            "target": "blank"
+        }
+    ],
+    "login": {
+        "url": "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user"
+    }
+}

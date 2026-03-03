@@ -1,0 +1,13 @@
+[
+    {
+        "id": "2604",
+        "title": "首页弹窗标题（弹窗可以设置多条）",
+        "content": "弹窗内容",
+        "startDate": "2026-01-28",
+        "endDate": "2026-02-01",
+        "autoClose": 0,
+        "celebration": true,
+        "backgroundColor": "#222222",
+        "textColor": "#ffffff"
+    }
+]
