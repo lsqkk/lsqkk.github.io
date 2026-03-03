@@ -25,7 +25,61 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 显示侧边栏内容
     document.getElementById('sidebarContent').style.opacity = 1;
+
+    // 初始化段落划线点赞评论
+    await initPostAnnotationFeature();
 });
+
+async function initPostAnnotationFeature() {
+    ensureStyle('/assets/css/post-annotation.css', 'post-annotation-style');
+    await ensureScript('/assets/js/post-annotation.js', 'post-annotation-script');
+    if (typeof window.initPostAnnotations === 'function') {
+        window.initPostAnnotations();
+    }
+}
+
+function ensureStyle(href, id) {
+    if (id && document.getElementById(id)) {
+        return;
+    }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    if (id) {
+        link.id = id;
+    }
+    document.head.appendChild(link);
+}
+
+function ensureScript(src, id) {
+    return new Promise((resolve, reject) => {
+        if (id) {
+            const exists = document.getElementById(id);
+            if (exists) {
+                if (exists.dataset.loaded === 'true' || typeof window.initPostAnnotations === 'function') {
+                    resolve();
+                    return;
+                }
+                exists.addEventListener('load', () => resolve(), { once: true });
+                exists.addEventListener('error', () => reject(new Error(`script load failed: ${src}`)), { once: true });
+                return;
+            }
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.defer = true;
+        if (id) {
+            script.id = id;
+        }
+        script.onload = () => {
+            script.dataset.loaded = 'true';
+            resolve();
+        };
+        script.onerror = () => reject(new Error(`script load failed: ${src}`));
+        document.body.appendChild(script);
+    });
+}
 
 // 2. 渲染元数据和基础 UI
 function initPostUI() {

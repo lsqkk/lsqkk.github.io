@@ -1,0 +1,277 @@
+.post-annotation-highlight {
+    border-bottom: 2px dashed rgba(255, 153, 0, 0.9);
+    background: rgba(255, 224, 130, 0.25);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.post-annotation-highlight:hover {
+    background: rgba(255, 193, 7, 0.32);
+    border-bottom-color: rgba(255, 120, 0, 0.95);
+}
+
+.post-annotation-popover {
+    position: fixed;
+    z-index: 2200;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(8px);
+}
+
+.post-annotation-popover button {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #2563eb;
+    color: #fff;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.post-annotation-popover button:last-child {
+    background: #0f766e;
+}
+
+.post-annotation-popover button:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
+.post-annotation-tooltip {
+    position: fixed;
+    z-index: 2300;
+    display: none;
+    max-width: 280px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
+    padding: 10px 12px;
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    white-space: pre-wrap;
+}
+
+.post-annotation-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2400;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(2, 6, 23, 0.45);
+}
+
+.post-annotation-modal-panel {
+    width: min(760px, 100%);
+    max-height: 88vh;
+    overflow: auto;
+    border-radius: 16px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.93);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 24px 45px rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(12px);
+}
+
+.post-annotation-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.post-annotation-modal-title {
+    font-size: 18px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.post-annotation-close {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 24px;
+    color: #64748b;
+}
+
+.post-annotation-quote {
+    font-size: 14px;
+    color: #334155;
+    background: rgba(241, 245, 249, 0.9);
+    border-left: 3px solid #60a5fa;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+
+.post-annotation-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.post-annotation-btn {
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 10px;
+}
+
+.post-annotation-profile {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 14px;
+    background: rgba(248, 250, 252, 0.85);
+}
+
+.post-annotation-profile-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.post-annotation-profile-row input[type="text"] {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 13px;
+    min-width: 150px;
+}
+
+.post-annotation-avatar-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    background-size: cover;
+    background-position: center;
+}
+
+.post-annotation-color {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.post-annotation-color.active {
+    border-color: #0f172a;
+}
+
+.post-annotation-comments {
+    margin-top: 6px;
+}
+
+.post-annotation-comment {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.post-annotation-comment-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.post-annotation-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #1e293b;
+    font-size: 13px;
+}
+
+.post-annotation-comment-time {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.post-annotation-comment-text {
+    color: #0f172a;
+    font-size: 14px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.post-annotation-comment-actions {
+    margin-top: 8px;
+}
+
+.post-annotation-comment-actions button {
+    border: none;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #334155;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 8px;
+}
+
+.post-annotation-form {
+    margin-top: 14px;
+}
+
+.post-annotation-form textarea {
+    width: 100%;
+    min-height: 86px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.post-annotation-form-footer {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.post-annotation-empty {
+    color: #64748b;
+    font-size: 13px;
+    padding: 8px 0;
+}
+
+@media (max-width: 768px) {
+    .post-annotation-modal-panel {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .post-annotation-profile-row input[type="text"] {
+        min-width: 110px;
+        flex: 1;
+    }
+}
