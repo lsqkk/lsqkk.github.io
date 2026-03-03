@@ -10,6 +10,7 @@ Quark 博客管理工具 - 帮助
   quark serve [--port PORT]      启动本地服务器
   quark updateposts              更新博客文章
   quark checkassets              检查未被 HTML 引用的 CSS/JS
+  quark initrepo [--apply]       按 template/init 初始化仓库（默认模拟）
   quark map                      生成网站地图
   quark push MESSAGE [--remote REMOTE] [--branch BRANCH]
   quark ds [QUERY]               与DeepSeek对话
