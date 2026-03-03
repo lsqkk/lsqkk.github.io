@@ -2,7 +2,7 @@
   "note": "修改此配置以更新主页信息。Modify this configuration to update the homepage information.",
   "Nickname": "您的昵称",
   "welcomeTitle": "Hello World",
-  "welcomeText": "学习历程 | 生活感悟 | 技术分享",
+  "welcomeText": "您能看到此页面，说明网站已经初始化成功。请继续根据提示修改相关配置，距离成功只有一步之遥。",
   "showDynamicNum": 4,
   "showPostNum": 5,
   "bloggerLat": 34,

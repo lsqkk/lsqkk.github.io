@@ -15,8 +15,18 @@
             "target": "blank"
         },
         {
+            "name": "动态",
+            "link": "/blog/dt",
+            "target": "blank"
+        },
+        {
             "name": "友链",
             "link": "/blog/friends",
+            "target": "blank"
+        },
+        {
+            "name": "更新日志",
+            "link": "/blog/log",
             "target": "blank"
         },
         {
@@ -26,6 +36,6 @@
         }
     ],
     "login": {
-        "url": "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user"
+        "url": "https://github.com/login/oauth/authorize?client_id=请获取ID&redirect_uri=您的网站名/auth.html&scope=user"
     }
 }
