@@ -30,7 +30,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     一键更新博客并推送
     
     执行顺序：
-    1. quark updateposts    (更新文章，除非使用 --no-update)
+    1. quark build          (构建站点，除非使用 --no-update)
     2. quark map            (生成网站地图，除非使用 --no-map)
     3. quark push MESSAGE   (推送更改，除非使用 --no-push)
     
@@ -46,9 +46,9 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     
     commands = []
     
-    # 1. 更新文章
+    # 1. 构建站点
     if not no_update:
-        commands.append(('更新文章', ['updateposts']))
+        commands.append(('构建站点', ['build']))
     
     # 2. 生成网站地图
     if not no_map:
@@ -62,11 +62,11 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
         commands.append(('推送更改', push_cmd))
     
     if not commands:
-        click.echo("⚠️  没有要执行的命令，所有步骤都被跳过了")
+        click.echo("警告: 没有要执行的命令，所有步骤都被跳过了")
         return
     
     # 显示将要执行的操作
-    click.echo("🚀 准备执行以下操作:")
+    click.echo("准备执行以下操作:")
     for i, (description, cmd) in enumerate(commands, 1):
         click.echo(f"  {i}. {description}: quark {' '.join(cmd)}")
     
@@ -83,7 +83,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     click.echo("\n" + "="*50)
     
     for description, cmd_args in commands:
-        click.echo(f"\n▶️  开始: {description}")
+        click.echo(f"\n开始: {description}")
         click.echo(f"   命令: quark {' '.join(cmd_args)}")
         click.echo("-" * 40)
         
@@ -117,9 +117,9 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                     # 判断是否为错误
                     if ('错误:' in line or 'error' in line.lower() or 
                         'failed' in line.lower() or 'fatal' in line.lower()):
-                        click.echo(f"❌ {line}")
+                        click.echo(f"错误: {line}")
                     elif '警告:' in line or 'warning' in line.lower():
-                        click.echo(f"⚠️  {line}")
+                        click.echo(f"警告: {line}")
                     else:
                         # 其他信息正常输出
                         click.echo(line)
@@ -134,9 +134,9 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                                   "没有更改可提交" in stderr_text))
                 
                 if push_cmd_error:
-                    click.echo("ℹ️  没有新的更改可提交，继续执行下一个步骤")
+                    click.echo("提示: 没有新的更改可提交，继续执行下一个步骤")
                 else:
-                    click.echo(f"❌ {description} 执行失败 (返回码: {result.returncode})")
+                    click.echo(f"错误: {description} 执行失败 (返回码: {result.returncode})")
                     if not click.confirm("是否继续执行后续步骤？"):
                         click.echo("操作中止")
                         return
@@ -169,27 +169,27 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                 if result.returncode == 0:
                     click.echo(f"√ {description} 完成")
                 else:
-                    click.echo(f"❌ {description} 执行失败")
+                    click.echo(f"错误: {description} 执行失败")
                     if not click.confirm("是否继续执行后续步骤？"):
                         return
                         
             except Exception as e:
-                click.echo(f"❌ 执行命令时出错: {e}")
+                click.echo(f"错误: 执行命令时出错: {e}")
                 if not click.confirm("是否继续执行后续步骤？"):
                     click.echo("操作中止")
                     return
         except Exception as e:
-            click.echo(f"❌ 执行命令时出错: {e}")
+            click.echo(f"错误: 执行命令时出错: {e}")
             if not click.confirm("是否继续执行后续步骤？"):
                 click.echo("操作中止")
                 return
     
     click.echo("\n" + "="*50)
-    click.echo("🎉 所有操作已完成！")
+    click.echo("所有操作已完成！")
     
     # 总结
     click.echo("\n📊 操作总结:")
-    click.echo(f"  文章更新: {'√' if not no_update else '❌ 跳过'}")
+    click.echo(f"  站点构建: {'√' if not no_update else '❌ 跳过'}")
     click.echo(f"  网站地图: {'√' if not no_map else '❌ 跳过'}")
     click.echo(f"  Git推送: {'√' if not no_push else '❌ 跳过'}")
     if not no_push:

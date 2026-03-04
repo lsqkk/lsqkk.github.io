@@ -1,0 +1,263 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const PROJECT_ROOT = process.cwd();
+const TEMPLATE_DIR = path.join(PROJECT_ROOT, "template", "index");
+
+const indexConfigPath = path.join(PROJECT_ROOT, "json", "index_config.json");
+const homeConfigPath = path.join(PROJECT_ROOT, "json", "index.json");
+const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const popupsPath = path.join(PROJECT_ROOT, "json", "popups.json");
+const friendsPath = path.join(PROJECT_ROOT, "json", "friends.json");
+const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
+const dynamicMdPath = path.join(PROJECT_ROOT, "blog", "dt", "dt.md");
+
+const indexConfig = JSON.parse(await fs.readFile(indexConfigPath, "utf8"));
+const homeConfig = JSON.parse(await fs.readFile(homeConfigPath, "utf8"));
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const popups = JSON.parse(await fs.readFile(popupsPath, "utf8"));
+const friends = JSON.parse(await fs.readFile(friendsPath, "utf8"));
+const posts = JSON.parse(await fs.readFile(postsPath, "utf8"));
+const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
+
+const mainTemplateMapping = {
+  avatar_nickname: "main_avatar_nickname.html",
+  social_links: "main_social_links.html",
+  welcome_section: "main_welcome.html",
+  typewriter: "main_typewriter.html",
+  recent_articles: "main_articles.html",
+  dynamic_feed: "main_dynamic.html",
+};
+
+const sidebarTemplateMapping = {
+  datetime_display: "sidebar_datetime.html",
+  ip_greeting: "sidebar_ip_greeting.html",
+  greeting_tip: "sidebar_greeting_tip.html",
+  github_promo: "sidebar_github_promo.html",
+  latest_features: "sidebar_features.html",
+  announcement: "sidebar_announcement.html",
+  latest_video: "sidebar_video.html",
+  comments: "sidebar_messages.html",
+  friend_links: "sidebar_friends.html",
+};
+
+const footerTemplateMapping = {
+  visitor_stats: "footer_visitor_stats.html",
+  copyright_info: "footer_copyright.html",
+  icp_record: "footer_icp.html",
+};
+
+async function loadTemplate(templateName: string): Promise<string> {
+  return fs.readFile(path.join(TEMPLATE_DIR, templateName), "utf8");
+}
+
+async function assembleMainContent(config: Record<string, boolean>): Promise<string> {
+  const parts: string[] = [];
+  for (const key of Object.keys(config)) {
+    if (!config[key]) continue;
+    const template = mainTemplateMapping[key as keyof typeof mainTemplateMapping];
+    if (!template) continue;
+    parts.push(await loadTemplate(template));
+  }
+  return parts.join("\n");
+}
+
+async function assembleSidebarContent(config: Record<string, boolean>): Promise<string> {
+  const displayed: string[] = [];
+  for (const key of Object.keys(config)) {
+    if (!config[key]) continue;
+    const template = sidebarTemplateMapping[key as keyof typeof sidebarTemplateMapping];
+    if (!template) continue;
+    const content = (await loadTemplate(template)).trim();
+    if (content) displayed.push(content);
+  }
+  const parts: string[] = [];
+  displayed.forEach((content, idx) => {
+    parts.push(content);
+    if (idx < displayed.length - 1) {
+      parts.push('<div class="index-divider"></div>');
+    }
+  });
+  return parts.join("\n");
+}
+
+async function assembleFooterContent(config: Record<string, boolean>): Promise<string> {
+  const parts: string[] = [];
+  for (const key of Object.keys(config)) {
+    if (!config[key]) continue;
+    const template = footerTemplateMapping[key as keyof typeof footerTemplateMapping];
+    if (!template) continue;
+    const content = (await loadTemplate(template)).trim();
+    if (content) parts.push(content);
+  }
+  return parts.join("\n");
+}
+
+function escapeHtml(text: unknown): string {
+  return String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function replaceElementInner(html: string, id: string, innerHtml: string): string {
+  const pattern = new RegExp(`(<([a-zA-Z0-9]+)[^>]*id=["']${id}["'][^>]*>)([\\s\\S]*?)(</\\2>)`, "m");
+  return html.replace(pattern, `$1${innerHtml}$4`);
+}
+
+function renderSocialLinks(config: any): string {
+  const links = Array.isArray(config?.socialLinks) ? config.socialLinks : [];
+  return links
+    .map(
+      (item: any) =>
+        `<a href="${escapeHtml(item.url)}" target="_blank"><img src="${escapeHtml(item.icon)}" alt="${escapeHtml(item.alt)}" style="height:30px; width:30px; border-radius: 50%;"></a>`
+    )
+    .join("");
+}
+
+function renderFeatures(config: any): string {
+  const features = Array.isArray(config?.features) ? config.features : [];
+  return features
+    .map((item: any) => `<div class="index-feature-box"><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></div>`)
+    .join("");
+}
+
+function renderAnnouncement(config: any): string {
+  const title = config?.announcement?.title || "";
+  const content = config?.announcement?.content || "";
+  return `<p style="margin: 0;">${escapeHtml(title)}<br>${content}</p>`;
+}
+
+function parseMdEntries(content: string) {
+  const lines = content.split(/\r?\n/);
+  const entries: Array<{ title: string; content: string[]; date: string }> = [];
+  let current: { title: string; content: string[]; date: string } | null = null;
+
+  for (const line of lines) {
+    if (line.startsWith("# ")) {
+      if (current) entries.push(current);
+      current = { title: line.replace("# ", "").trim(), content: [], date: "" };
+      continue;
+    }
+    if (!current) continue;
+    if (line.startsWith("## 日期：")) {
+      current.date = line.replace("## 日期：", "").trim();
+      continue;
+    }
+    if (!line.startsWith("#") && line.trim()) {
+      current.content.push(line.trim());
+    }
+  }
+  if (current) entries.push(current);
+  return entries;
+}
+
+const mainContent = await assembleMainContent(indexConfig.main_content);
+const sidebarContent = await assembleSidebarContent(indexConfig.sidebar);
+const footerContent = await assembleFooterContent(indexConfig.footer);
+
+const mainContentHydrated = [
+  ["Nickname", escapeHtml(homeConfig.Nickname || "")],
+  ["welcome-title", escapeHtml(homeConfig.welcomeTitle || "")],
+  ["welcome-text", escapeHtml(homeConfig.welcomeText || "")],
+  ["social-icons-container", renderSocialLinks(homeConfig)],
+].reduce((acc, [id, value]) => replaceElementInner(acc, id, value as string), mainContent);
+
+const sidebarContentHydrated = [
+  ["features-container", renderFeatures(homeConfig)],
+  ["announcement-container", renderAnnouncement(homeConfig)],
+].reduce((acc, [id, value]) => replaceElementInner(acc, id, value as string), sidebarContent);
+
+const showDynamicNum = typeof homeConfig.showDynamicNum === "number" ? homeConfig.showDynamicNum : 3;
+const dynamicEntries = parseMdEntries(dynamicMd).slice(0, showDynamicNum);
+const homePreloaded = {
+  homeConfig,
+  posts,
+  friends,
+  dynamicEntries,
+};
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>首页 | 蓝色奇夸克のBlog - 夸克博客</title>
+    <link rel="manifest" href="/json/manifest.json" />
+    <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="/assets/css/index.css" />
+    <script is:inline define:vars={{ navConfig, homePreloaded, popups }}>
+      window.__NAV_CONFIG__ = navConfig;
+      window.__HOME_PRELOADED__ = homePreloaded;
+      window.__POPUPS_DATA__ = popups;
+    </script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <meta name="referrer" content="never" />
+  </head>
+
+  <body>
+    <link rel="stylesheet" href="/assets/css/shicha.css" />
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+
+    <div class="main-layout">
+      <div class="main-content" set:html={mainContentHydrated}></div>
+      <div class="sidebar-index" set:html={sidebarContentHydrated}></div>
+    </div>
+    <div class="footer-container">
+      <div class="footer-content" set:html={footerContent}></div>
+    </div>
+    <br /><br />
+
+    <div id="popup-overlay" class="popup-overlay" style="display: none;">
+      <div id="popup-container" class="popup-container">
+        <div class="popup-header">
+          <h3 id="popup-title"></h3>
+          <button id="popup-close" class="popup-close-btn">&times;</button>
+        </div>
+        <div id="popup-content" class="popup-content"></div>
+        <div class="popup-footer">
+          <label class="popup-option">
+            <input type="checkbox" id="popup-never-show" /> 不再显示
+          </label>
+          <button id="popup-confirm" class="popup-confirm-btn">知道了</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="celebration-container"></div>
+
+    <script is:inline src="/assets/js/qq-emotion-parser.min.js"></script>
+    <script is:inline src="/assets/js/index.js"></script>
+    <script is:inline src="/assets/js/popup.js"></script>
+
+    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/js/message.js"></script>
+
+    <script is:inline>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/assets/js/sw.js").then(function (registration) {
+            console.log("Service Worker 注册成功: ", registration);
+          }).catch(function (error) {
+            console.log("Service Worker 注册失败: ", error);
+          });
+        });
+      }
+    </script>
+
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

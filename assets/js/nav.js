@@ -31,6 +31,10 @@ const defaultNavConfig = {
 
 // 获取导航配置（同步XHR方式）
 function getNavConfigSync() {
+    if (window.__NAV_CONFIG__) {
+        return window.__NAV_CONFIG__;
+    }
+
     try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', '/json/nav.json', false); // 同步请求

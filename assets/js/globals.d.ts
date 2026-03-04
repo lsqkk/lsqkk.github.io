@@ -9,6 +9,9 @@ interface Window {
   _firebaseConfig?: FirebaseConfig;
   __firebaseConfigLoaded?: (config: FirebaseConfig) => void;
   cityBanterData?: Record<string, string> | null;
+  __HOME_PRELOADED__?: unknown;
+  __NAV_CONFIG__?: unknown;
+  __POPUPS_DATA__?: unknown;
   visitorInfoDisplayed?: boolean;
   cachedVisitorInfo?: unknown;
   initPostAnnotations?: () => void;

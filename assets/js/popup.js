@@ -22,9 +22,14 @@ const isLocalhost = window.location.hostname === 'localhost' ||
 // 检查并显示弹窗
 async function checkAndShowPopup() {
     try {
-        const response = await fetch('json/popups.json');
         /** @type {PopupConfig[]} */
-        const popups = await response.json();
+        let popups = [];
+        if (Array.isArray(window.__POPUPS_DATA__)) {
+            popups = window.__POPUPS_DATA__;
+        } else {
+            const response = await fetch('json/popups.json');
+            popups = await response.json();
+        }
 
         const today = new Date().toISOString().split('T')[0];
 

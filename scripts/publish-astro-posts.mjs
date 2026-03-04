@@ -38,7 +38,20 @@ async function publishPostsHtml() {
     copied += 1;
   }
 
-  console.log(`已发布 Astro 文章页到根目录 posts/: ${copied} 个 HTML 文件`);
+  const distIndex = path.join(ROOT, "dist", "index.html");
+  const rootIndex = path.join(ROOT, "index.html");
+  let indexCopied = false;
+  try {
+    await fs.access(distIndex);
+    await fs.copyFile(distIndex, rootIndex);
+    indexCopied = true;
+  } catch {
+    indexCopied = false;
+  }
+
+  console.log(
+    `已发布 Astro 页面: posts HTML ${copied} 个${indexCopied ? "，并更新根目录 index.html" : ""}`
+  );
 }
 
 publishPostsHtml().catch((err) => {

@@ -1,23 +1,12 @@
 import click
-import subprocess
-from pathlib import Path
-from ..utils import get_blog_root
+from .build import run_build_pipeline
 
 @click.command()
 def cli():
-    """更新博客文章"""
+    """兼容命令：请改用 quark build"""
     try:
-        blog_root = Path(get_blog_root())
-        commands = [
-            "npm run gen:posts-json",
-            "npm run build",
-            "npm run publish:astro-posts",
-        ]
-
-        for cmd in commands:
-            click.echo(f"执行命令: {cmd}")
-            subprocess.run(cmd, cwd=blog_root, check=True, shell=True)
-
-        click.echo("√ 文章更新完成（已生成 posts.json、执行 Astro build 并发布到根目录 posts）")
+        click.echo("提示: `quark updateposts` 已升级为 `quark build`，正在执行构建流程...")
+        run_build_pipeline()
+        click.echo("√ 构建完成")
     except Exception as e:
         click.echo(f"更新文章失败: {e}", err=True)

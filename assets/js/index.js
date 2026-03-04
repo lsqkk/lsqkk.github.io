@@ -23,10 +23,24 @@
  *   features?: FeatureItem[],
  *   announcement?: AnnouncementConfig
  * }} HomeConfig
+ * @typedef {{
+ *   homeConfig?: HomeConfig,
+ *   posts?: PostItem[],
+ *   friends?: FriendLink[],
+ *   cityBanter?: Record<string, string>,
+ *   dynamicEntries?: DynamicEntry[]
+ * }} HomePreloadedData
  */
 
 /** @type {HomeConfig | null} */
 var config = null;
+
+/**
+ * @returns {HomePreloadedData}
+ */
+function getPreloadedHomeData() {
+    return /** @type {HomePreloadedData} */ (window.__HOME_PRELOADED__ || {});
+}
 
 /**
  * @returns {HomeConfig}
@@ -78,8 +92,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 加载最近三篇文章
 async function loadRecentPosts() {
     try {
+        const preload = getPreloadedHomeData();
         /** @type {PostItem[]} */
-        const posts = await fetch('posts/posts.json').then(r => r.json());
+        const posts = Array.isArray(preload.posts) ? preload.posts : [];
+        if (posts.length === 0) {
+            throw new Error('缺少预注入 posts 数据');
+        }
         const showPostNum = getHomeConfig().showPostNum || 3;
         const recentPosts = posts.slice(0, showPostNum);
 
@@ -176,9 +194,12 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
 
 async function loadHomeConfig() {
     try {
-        const response = await fetch('/json/index.json');
+        const preload = getPreloadedHomeData();
         /** @type {HomeConfig} */
-        const loadedConfig = await response.json();
+        const loadedConfig = preload.homeConfig || {};
+        if (!loadedConfig || Object.keys(loadedConfig).length === 0) {
+            throw new Error('缺少预注入 homeConfig 数据');
+        }
         config = loadedConfig;
         renderHomeConfig(loadedConfig);
     } catch (error) {
@@ -454,6 +475,12 @@ function getProvinceBanterFallback(province) {
 }
 
 function loadCityBanterData() {
+    const preload = getPreloadedHomeData();
+    if (preload.cityBanter) {
+        window.cityBanterData = preload.cityBanter;
+        return Promise.resolve();
+    }
+
     return fetch('/json/city-banter.json')
         .then(response => response.json())
         .then(data => {
@@ -595,9 +622,11 @@ async function getVisitorInfo() {
 
 async function loadDynamicFeed() {
     try {
-        const response = await fetch('/blog/dt/dt.md');
-        const mdContent = await response.text();
-        const entries = parseMdEntries(mdContent);
+        const preload = getPreloadedHomeData();
+        const entries = Array.isArray(preload.dynamicEntries) ? preload.dynamicEntries : [];
+        if (entries.length === 0) {
+            throw new Error('缺少预注入 dynamicEntries 数据');
+        }
         const showDynamicNum = getHomeConfig().showDynamicNum || 3;
         renderDynamicEntries(entries.slice(0, showDynamicNum));
     } catch (error) {
@@ -830,9 +859,12 @@ function formatVideoTime(timestamp) {
 // 加载友链
 async function loadFriendLinks() {
     try {
-        const response = await fetch('json/friends.json');
+        const preload = getPreloadedHomeData();
         /** @type {FriendLink[]} */
-        const friends = await response.json();
+        const friends = Array.isArray(preload.friends) ? preload.friends : [];
+        if (friends.length === 0) {
+            throw new Error('缺少预注入 friends 数据');
+        }
         displayFriendLinks(friends);
     } catch (error) {
         console.error('加载友链失败:', error);
