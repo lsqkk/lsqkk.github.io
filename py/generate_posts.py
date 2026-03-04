@@ -11,7 +11,7 @@ from xml.dom import minidom
 
 # 配置路径
 POSTS_JSON_PATH = 'posts/posts.json'
-TEMPLATE_FILE = 'template/post_template.html'
+TEMPLATE_FILE = 'template/html/post_template.html'
 OUTPUT_BASE_DIR = 'posts'
 MD_SOURCE_ROOT = 'posts'
 HASH_STORAGE_FILE = 'private/file_hashes.json'

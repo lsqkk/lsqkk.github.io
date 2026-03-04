@@ -1,4 +1,4 @@
-# 网页模板说明
+# 网页模板说明：/template/html/html_template.html的配套说明
 
 ## 整体要求
 
