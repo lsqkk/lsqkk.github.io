@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM"],
+    "allowJs": true,
+    "checkJs": true,
+    "strict": false,
+    "noEmit": true
+  },
+  "include": [
+    "assets/js/index.js",
+    "assets/js/post-annotation.js",
+    "assets/js/post-standalone.js",
+    "assets/js/popup.js",
+    "assets/js/message.js",
+    "blog/lyb/lyb.js",
+    "assets/js/**/*.d.ts"
+  ],
+  "exclude": [
+    "**/*.min.js",
+    "assets/js/three.min.js",
+    "assets/js/OrbitControls.js",
+    "assets/js/katex.min.js",
+    "assets/js/auto-render.min.js",
+    "assets/js/marked.min.js"
+  ]
+}

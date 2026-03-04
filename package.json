@@ -1,0 +1,12 @@
+{
+  "name": "lsqkk-github-io",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "typecheck": "tsc -p jsconfig.json --noEmit",
+    "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check blog/lyb/lyb.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -2,6 +2,11 @@
  * post-standalone.js 
  * 修改说明：移除 fetch/parse 逻辑，仅保留 DOM 处理和 UI 增强。
  */
+// @ts-check
+
+/**
+ * @typedef {{ file: string, title: string }} NavPost
+ */
 
 // 1. 初始化入口
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,13 +23,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateTOC();
 
     const tagsContainer = document.getElementById('post-tags-container');
-    const filename = tagsContainer.getAttribute('data-md-file');
+    const filename = tagsContainer ? tagsContainer.getAttribute('data-md-file') : null;
     if (filename) {
         await addPostNavigation(filename);
     }
 
     // 显示侧边栏内容
-    document.getElementById('sidebarContent').style.opacity = 1;
+    const sidebarContent = document.getElementById('sidebarContent');
+    if (sidebarContent instanceof HTMLElement) {
+        sidebarContent.style.opacity = '1';
+    }
 
     // 初始化段落划线点赞评论
     await initPostAnnotationFeature();
@@ -38,6 +46,10 @@ async function initPostAnnotationFeature() {
     }
 }
 
+/**
+ * @param {string} href
+ * @param {string} id
+ */
 function ensureStyle(href, id) {
     if (id && document.getElementById(id)) {
         return;
@@ -51,6 +63,11 @@ function ensureStyle(href, id) {
     document.head.appendChild(link);
 }
 
+/**
+ * @param {string} src
+ * @param {string} id
+ * @returns {Promise<void>}
+ */
 function ensureScript(src, id) {
     return new Promise((resolve, reject) => {
         if (id) {
@@ -84,25 +101,33 @@ function ensureScript(src, id) {
 // 2. 渲染元数据和基础 UI
 function initPostUI() {
     const tagsContainer = document.getElementById('post-tags-container');
+    if (!(tagsContainer instanceof HTMLElement)) return;
     const date = tagsContainer.getAttribute('data-date');
     const wordCount = parseInt(tagsContainer.getAttribute('data-word-count') || '0', 10);
     const tagsJson = tagsContainer.getAttribute('data-tags');
 
     // 显示日期
     if (date) {
-        document.getElementById('post-date').textContent = `发表于 ${date}`;
+        const postDate = document.getElementById('post-date');
+        if (postDate) {
+            postDate.textContent = `发表于 ${date}`;
+        }
     }
 
     // 显示字数和预计阅读时间
     const readTime = Math.ceil(wordCount / 400);
-    document.getElementById('post-wordcount').textContent = `${wordCount}字 · ${readTime}min`;
+    const postWordcount = document.getElementById('post-wordcount');
+    if (postWordcount) {
+        postWordcount.textContent = `${wordCount}字 · ${readTime}min`;
+    }
 
     // 显示标签
     if (tagsJson) {
         try {
+            /** @type {string[]} */
             const tags = JSON.parse(tagsJson);
             if (tags && tags.length > 0) {
-                tagsContainer.innerHTML = tags.map(tag =>
+                tagsContainer.innerHTML = tags.map((tag) =>
                     `<span class="post-tag">${tag}</span>`
                 ).join('');
             }
@@ -115,7 +140,7 @@ function renderMath() {
     const content = document.getElementById('content');
     if (!content || !window.renderMathInElement) return;
 
-    renderMathInElement(content, {
+    window.renderMathInElement(content, {
         delimiters: [
             { left: '$$', right: '$$', display: true },
             { left: '$', right: '$', display: false },
@@ -160,12 +185,16 @@ function generateTOC() {
 }
 
 // 5. 侧边栏导航逻辑 (需要读取 posts.json)
+/**
+ * @param {string} currentFileBaseName
+ */
 async function addPostNavigation(currentFileBaseName) {
     try {
+        /** @type {NavPost[]} */
         const posts = await fetch('/posts/posts.json').then(r => r.json());
 
         // 查找当前文章索引
-        const currentIndex = posts.findIndex(p => p.file.endsWith(currentFileBaseName));
+        const currentIndex = posts.findIndex((p) => p.file.endsWith(currentFileBaseName));
         if (currentIndex === -1) return;
 
         // 注意：posts.json 通常是倒序排列（最新的在前面）
@@ -174,6 +203,9 @@ async function addPostNavigation(currentFileBaseName) {
 
         const prevBtn = document.getElementById('prevPost');
         const nextBtn = document.getElementById('nextPost');
+        if (!(prevBtn instanceof HTMLAnchorElement) || !(nextBtn instanceof HTMLAnchorElement)) {
+            return;
+        }
 
         if (prevPost) {
             prevBtn.innerHTML = `← ${prevPost.title}`;
@@ -195,7 +227,10 @@ async function addPostNavigation(currentFileBaseName) {
 
 // 侧栏切换
 function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('active');
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar instanceof HTMLElement) {
+        sidebar.classList.toggle('active');
+    }
 }
 
 // 复制链接

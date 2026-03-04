@@ -1,5 +1,13 @@
+// @ts-check
+
 (function () {
     'use strict';
+
+    /**
+     * @typedef {{ uid: string, nickname: string, avatarType: 'color' | 'image', avatarColor: string, avatarUrl: string }} AnnotationProfile
+     * @typedef {{ id: string, text?: string, timestamp?: number, nickname?: string, avatarType?: 'color' | 'image', avatarColor?: string, avatarUrl?: string, likesBy?: Record<string, boolean> }} AnnotationComment
+     * @typedef {{ exactText?: string, prefix?: string, suffix?: string, startHint?: number, createdAt?: number, likesBy?: Record<string, boolean>, comments?: Record<string, AnnotationComment>, [key: string]: unknown }} AnnotationHighlight
+     */
 
     const STORAGE_KEYS = {
         uid: 'postAnnoUid',
@@ -12,6 +20,17 @@
     const BLOCK_SELECTOR = 'p,li,blockquote,pre,h1,h2,h3,h4,h5,h6,td,th';
     const COLOR_OPTIONS = ['#2563eb', '#dc2626', '#16a34a', '#ca8a04', '#7c3aed'];
 
+    /** @type {{
+     * initialized: boolean,
+     * contentEl: HTMLElement | null,
+     * dbRef: any,
+     * safePostKey: string,
+     * highlights: Record<string, AnnotationHighlight>,
+     * pendingRange: Range | null,
+     * pendingText: string,
+     * activeHighlightId: string,
+     * profile: AnnotationProfile | null
+     * }} */
     const state = {
         initialized: false,
         contentEl: null,
@@ -24,8 +43,10 @@
         profile: null
     };
 
+    /** @type {any} */
     const ui = {};
 
+    /** @param {unknown} text */
     function escapeHtml(text) {
         return String(text || '')
             .replace(/&/g, '&amp;')
@@ -44,9 +65,12 @@
         return uid;
     }
 
+    /** @returns {AnnotationProfile} */
     function loadProfile() {
         const nickname = (localStorage.getItem(STORAGE_KEYS.nickname) || '').trim();
-        const avatarType = localStorage.getItem(STORAGE_KEYS.avatarType) || 'color';
+        const rawAvatarType = localStorage.getItem(STORAGE_KEYS.avatarType) || 'color';
+        /** @type {'color' | 'image'} */
+        const avatarType = rawAvatarType === 'image' ? 'image' : 'color';
         const avatarColor = localStorage.getItem(STORAGE_KEYS.avatarColor) || COLOR_OPTIONS[0];
         const avatarUrl = (localStorage.getItem(STORAGE_KEYS.avatarUrl) || '').trim();
         return {
@@ -58,6 +82,7 @@
         };
     }
 
+    /** @param {AnnotationProfile} profile */
     function saveProfile(profile) {
         localStorage.setItem(STORAGE_KEYS.nickname, profile.nickname);
         localStorage.setItem(STORAGE_KEYS.avatarType, profile.avatarType);
@@ -65,6 +90,7 @@
         localStorage.setItem(STORAGE_KEYS.avatarUrl, profile.avatarUrl);
     }
 
+    /** @param {string} input */
     function toSafeKey(input) {
         try {
             const utf8 = encodeURIComponent(input).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16)));
@@ -74,6 +100,11 @@
         }
     }
 
+    /**
+     * @param {string} src
+     * @param {string} id
+     * @returns {Promise<void>}
+     */
     function loadScript(src, id) {
         return new Promise((resolve, reject) => {
             if (id) {
@@ -104,6 +135,11 @@
         });
     }
 
+    /**
+     * @param {() => boolean} checkFn
+     * @param {number} timeoutMs
+     * @returns {Promise<void>}
+     */
     function waitFor(checkFn, timeoutMs) {
         return new Promise((resolve, reject) => {
             const started = Date.now();
@@ -148,6 +184,7 @@
     }
 
     function clearRenderedHighlights() {
+        if (!state.contentEl) return;
         state.contentEl.querySelectorAll('.post-annotation-highlight').forEach(unwrapElement);
     }
 
@@ -331,11 +368,16 @@
     }
 
     function collectProfileFromUI() {
+        if (!state.profile) {
+            state.profile = loadProfile();
+        }
         const nickname = (ui.nicknameInput.value.trim() || '访客').slice(0, 24);
+        /** @type {'color' | 'image'} */
         const avatarType = ui.avatarTypeSelect.value === 'image' ? 'image' : 'color';
         const avatarColor = ui.colorPicker.querySelector('.post-annotation-color.active')?.dataset.color || COLOR_OPTIONS[0];
         const avatarUrl = ui.avatarUrlInput.value.trim().slice(0, 500);
 
+        /** @type {AnnotationProfile} */
         const profile = {
             uid: state.profile.uid,
             nickname,
@@ -672,7 +714,9 @@
                 const endHighlight = (selection.focusNode?.parentElement || null)?.closest('.post-annotation-highlight');
                 if (startHighlight && endHighlight && startHighlight === endHighlight) {
                     hidePopover();
-                    openModal(startHighlight.dataset.highlightId);
+                    if (startHighlight instanceof HTMLElement && startHighlight.dataset.highlightId) {
+                        openModal(startHighlight.dataset.highlightId);
+                    }
                     selection.removeAllRanges();
                     return;
                 }
@@ -847,6 +891,7 @@
 
     function subscribeHighlights() {
         state.dbRef.on('value', (snapshot) => {
+            /** @type {Record<string, AnnotationHighlight>} */
             const next = {};
             snapshot.forEach((child) => {
                 next[child.key] = child.val();

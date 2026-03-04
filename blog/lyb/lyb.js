@@ -1,17 +1,35 @@
+// @ts-check
+
+/**
+ * @typedef {{ id?: string, text: string, nickname: string, avatar: string, avatarType: 'color' | 'image', timestamp: number, isMarkdown?: boolean, likes?: number, replies?: Record<string, ReplyItem> }} MessageItem
+ * @typedef {{ id: string, text: string, nickname: string, avatar: string, avatarType: 'color' | 'image', timestamp: number, isMarkdown?: boolean }} ReplyItem
+ */
+
 firebase.initializeApp(firebaseConfig);
 
 // 全局变量
 const BOARD_NAME = 'lsqkk-lyb';
+/** @type {any} */
 let messagesRef = null;
 let currentPage = 1;
 const PAGE_SIZE = 20;
 let totalMessages = 0;
 let isAdmin = localStorage.getItem('isAdmin') === 'true';
+/** @type {'color' | 'image'} */
 let userAvatarType = 'color'; // 'color' 或 'image'
 let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '';
+/** @type {string | null} */
 let replyingTo = null; // 当前回复的留言ID
+
+/**
+ * @param {string} id
+ * @returns {HTMLElement | null}
+ */
+function byId(id) {
+    return document.getElementById(id);
+}
 
 // DOM加载完成后初始化
 document.addEventListener('DOMContentLoaded', function () {
@@ -31,13 +49,19 @@ document.addEventListener('DOMContentLoaded', function () {
     updateAdminUI();
 
     // 监听搜索框输入
-    document.getElementById('searchInput').addEventListener('input', function () {
-        loadMessages();
-    });
+    const searchInput = byId('searchInput');
+    if (searchInput instanceof HTMLInputElement) {
+        searchInput.addEventListener('input', function () {
+            loadMessages();
+        });
+    }
 
     // 如果已有昵称，填充昵称输入框
     if (nickname) {
-        document.getElementById('nickname').value = nickname;
+        const nicknameInput = byId('nickname');
+        if (nicknameInput instanceof HTMLInputElement) {
+            nicknameInput.value = nickname;
+        }
     }
 });
 
@@ -73,12 +97,18 @@ function initTheme() {
 
 // 提交留言
 function submitMessage() {
-    const nicknameInput = document.getElementById('nickname');
-    const contentInput = document.getElementById('messageContent');
+    const nicknameInput = byId('nickname');
+    const contentInput = byId('messageContent');
+    const markdownInput = byId('useMarkdown');
+    if (!(nicknameInput instanceof HTMLInputElement) ||
+        !(contentInput instanceof HTMLTextAreaElement) ||
+        !(markdownInput instanceof HTMLInputElement)) {
+        return;
+    }
 
     const nickname = nicknameInput.value.trim();
     const content = contentInput.value.trim();
-    const useMarkdown = document.getElementById('useMarkdown').checked;
+    const useMarkdown = markdownInput.checked;
 
     if (!nickname || !content) {
         alert('请填写昵称和留言内容');
@@ -112,10 +142,16 @@ function submitMessage() {
 
 // 初始化头像切换
 function initAvatarToggle() {
-    const colorToggle = document.getElementById('colorToggle');
-    const imageToggle = document.getElementById('imageToggle');
-    const colorPicker = document.getElementById('colorPicker');
-    const avatarUrl = document.getElementById('avatarUrl');
+    const colorToggle = byId('colorToggle');
+    const imageToggle = byId('imageToggle');
+    const colorPicker = byId('colorPicker');
+    const avatarUrl = byId('avatarUrl');
+    if (!(colorToggle instanceof HTMLElement) ||
+        !(imageToggle instanceof HTMLElement) ||
+        !(colorPicker instanceof HTMLElement) ||
+        !(avatarUrl instanceof HTMLInputElement)) {
+        return;
+    }
 
     colorToggle.addEventListener('click', function () {
         userAvatarType = 'color';
@@ -150,14 +186,18 @@ function selectColor(element) {
 
 // 更新头像预览
 function updateAvatarPreview() {
-    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarPreview = byId('avatarPreview');
+    if (!(avatarPreview instanceof HTMLElement)) {
+        return;
+    }
 
     if (userAvatarType === 'color') {
         avatarPreview.style.background = userColor;
         avatarPreview.style.backgroundImage = 'none';
         avatarPreview.textContent = nickname ? nickname[0].toUpperCase() : 'A';
     } else {
-        const url = document.getElementById('avatarUrl').value.trim();
+        const avatarUrlInput = byId('avatarUrl');
+        const url = avatarUrlInput instanceof HTMLInputElement ? avatarUrlInput.value.trim() : '';
         if (url && (url.endsWith('.jpg') || url.endsWith('.png') || url.endsWith('.webp'))) {
             avatarPreview.style.backgroundImage = `url(${url})`;
             avatarPreview.textContent = '';
@@ -172,16 +212,18 @@ function updateAvatarPreview() {
 
 // 加载留言
 function loadMessages() {
-    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    const searchInput = byId('searchInput');
+    const searchTerm = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : '';
 
     // 确保messagesRef已初始化
     if (!messagesRef) {
         messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
     }
 
-    messagesRef.once('value').then(snapshot => {
+    messagesRef.once('value').then((snapshot) => {
+        /** @type {MessageItem[]} */
         const messages = [];
-        snapshot.forEach(childSnapshot => {
+        snapshot.forEach((childSnapshot) => {
             const message = childSnapshot.val();
             message.id = childSnapshot.key;
 
@@ -205,8 +247,12 @@ function loadMessages() {
 }
 
 // 渲染留言
+/**
+ * @param {MessageItem[]} messages
+ */
 function renderMessages(messages) {
-    const container = document.getElementById('messagesContainer');
+    const container = byId('messagesContainer');
+    if (!(container instanceof HTMLElement)) return;
     const startIndex = (currentPage - 1) * PAGE_SIZE;
     const endIndex = Math.min(startIndex + PAGE_SIZE, messages.length);
     const pageMessages = messages.slice(startIndex, endIndex);
@@ -230,6 +276,10 @@ function renderMessages(messages) {
 }
 
 // 创建留言元素
+/**
+ * @param {MessageItem} message
+ * @returns {HTMLDivElement}
+ */
 function createMessageElement(message) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message-card';
@@ -292,6 +342,10 @@ function createMessageElement(message) {
 }
 
 // 创建回复元素
+/**
+ * @param {ReplyItem} reply
+ * @returns {string}
+ */
 function createReplyElement(reply) {
     const date = new Date(reply.timestamp);
     const dateStr = date.toLocaleDateString();
@@ -327,7 +381,8 @@ function createReplyElement(reply) {
 // 渲染分页
 function renderPagination() {
     const totalPages = Math.ceil(totalMessages / PAGE_SIZE);
-    const pagination = document.getElementById('pagination');
+    const pagination = byId('pagination');
+    if (!(pagination instanceof HTMLElement)) return;
 
     pagination.innerHTML = '';
 
@@ -349,7 +404,7 @@ function renderPagination() {
     for (let i = 1; i <= totalPages; i++) {
         const pageBtn = document.createElement('button');
         pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-        pageBtn.textContent = i;
+        pageBtn.textContent = String(i);
         pageBtn.addEventListener('click', () => {
             currentPage = i;
             loadMessages();
@@ -388,23 +443,40 @@ function likeMessage(messageId) {
 // 打开回复模态框
 function openReplyModal(messageId) {
     replyingTo = messageId;
-    document.getElementById('replyModal').style.display = 'flex';
+    const replyModal = byId('replyModal');
+    if (replyModal instanceof HTMLElement) {
+        replyModal.style.display = 'flex';
+    }
 }
 
 // 关闭回复模态框
 function closeReplyModal() {
     replyingTo = null;
-    document.getElementById('replyModal').style.display = 'none';
-    document.getElementById('replyContent').value = '';
+    const replyModal = byId('replyModal');
+    const replyContent = byId('replyContent');
+    if (replyModal instanceof HTMLElement) {
+        replyModal.style.display = 'none';
+    }
+    if (replyContent instanceof HTMLTextAreaElement) {
+        replyContent.value = '';
+    }
 }
 
 // 提交回复
 function submitReply() {
     if (!replyingTo) return;
 
-    const nickname = document.getElementById('nickname').value.trim();
-    const content = document.getElementById('replyContent').value.trim();
-    const useMarkdown = document.getElementById('replyUseMarkdown').checked;
+    const nicknameInput = byId('nickname');
+    const replyContentInput = byId('replyContent');
+    const replyMarkdownInput = byId('replyUseMarkdown');
+    if (!(nicknameInput instanceof HTMLInputElement) ||
+        !(replyContentInput instanceof HTMLTextAreaElement) ||
+        !(replyMarkdownInput instanceof HTMLInputElement)) {
+        return;
+    }
+    const nickname = nicknameInput.value.trim();
+    const content = replyContentInput.value.trim();
+    const useMarkdown = replyMarkdownInput.checked;
 
     if (!nickname || !content) {
         alert('请填写昵称和回复内容');
@@ -432,9 +504,13 @@ function submitReply() {
 
 // 管理员登录 (安全API版本)
 async function adminLogin() {
-    const passwordInput = document.getElementById('adminPassword');
+    const passwordInput = byId('adminPassword');
+    if (!(passwordInput instanceof HTMLInputElement)) {
+        return;
+    }
     const password = passwordInput.value.trim();
-    const submitBtn = document.querySelector('button[onclick="adminLogin()"]'); // 获取触发登录的按钮
+    /** @type {HTMLButtonElement | null} */
+    const submitBtn = document.querySelector('button[onclick="adminLogin()"]');
 
     if (!password) {
         alert('请输入管理员密码');
@@ -442,16 +518,16 @@ async function adminLogin() {
     }
 
     // 可选：添加防重复提交和加载状态
-    let originalBtnText = '登录'; // 默认按钮文字
+    let originalBtnText = '登录';
     if (submitBtn) {
-        originalBtnText = submitBtn.textContent;
+        originalBtnText = submitBtn.textContent || '登录';
         submitBtn.disabled = true;
         submitBtn.textContent = '验证中...';
     }
 
     try {
-        // 1. 计算用户输入密码的SHA-256哈希 (保持同步计算方式)
-        const hash = sha256(password); // 注意：这里假设 sha256 是同步函数
+        // 1. 计算用户输入密码的SHA-256哈希
+        const hash = await sha256(password);
 
         // 2. 调用Vercel安全API进行验证
         const response = await fetch('https://api.130923.xyz/api/admin-auth', {
@@ -499,8 +575,11 @@ function logoutAdmin() {
 
 // 更新管理员UI
 function updateAdminUI() {
-    const loginForm = document.getElementById('adminLoginForm');
-    const adminActions = document.getElementById('adminActions');
+    const loginForm = byId('adminLoginForm');
+    const adminActions = byId('adminActions');
+    if (!(loginForm instanceof HTMLElement) || !(adminActions instanceof HTMLElement)) {
+        return;
+    }
 
     if (isAdmin) {
         loginForm.style.display = 'none';
@@ -552,10 +631,14 @@ function deleteReply(replyId) {
 }
 
 // SHA256哈希函数
+/**
+ * @param {string} message
+ * @returns {Promise<string>}
+ */
 function sha256(message) {
     // 简化版SHA256实现（实际项目中应使用更完整的实现或库）
     // 这里仅用于演示，实际使用时建议使用成熟的加密库
-    const crypto = window.crypto || window.msCrypto;
+    const crypto = window.crypto;
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
 

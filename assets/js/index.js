@@ -1,7 +1,45 @@
+// @ts-check
+
+/**
+ * @typedef {{url: string, icon: string, alt: string}} SocialLink
+ * @typedef {{url: string, name: string}} FeatureItem
+ * @typedef {{title: string, content: string}} AnnouncementConfig
+ * @typedef {{file: string, title: string, date: string}} PostItem
+ * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
+ * @typedef {{title: string, content: string[], date: string}} DynamicEntry
+ * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
+ * @typedef {{ip: string, province: string, city: string, district: string, latitude: number, longitude: number, distance: number | string}} VisitorInfo
+ * @typedef {{
+ *   showPostNum?: number,
+ *   showDynamicNum?: number,
+ *   phrases?: string[],
+ *   tips?: string[],
+ *   bloggerLat?: number,
+ *   bloggerLon?: number,
+ *   socialLinks?: SocialLink[],
+ *   Nickname?: string,
+ *   welcomeTitle?: string,
+ *   welcomeText?: string,
+ *   features?: FeatureItem[],
+ *   announcement?: AnnouncementConfig
+ * }} HomeConfig
+ */
+
+/** @type {HomeConfig | null} */
 var config = null;
 
+/**
+ * @returns {HomeConfig}
+ */
+function getHomeConfig() {
+    return config || {};
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    document.querySelector('.main-content').style.opacity = '1';
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent instanceof HTMLElement) {
+        mainContent.style.opacity = '1';
+    }
 
     await loadHomeConfig();
 
@@ -25,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 为导航盒子添加悬停效果 - 添加存在性检查
     document.querySelectorAll('.index-feature-box').forEach(box => {
+        if (!(box instanceof HTMLElement)) return;
         box.addEventListener('mouseover', () => {
             box.style.transform = 'translateY(-3px)';
             box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
@@ -39,8 +78,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 加载最近三篇文章
 async function loadRecentPosts() {
     try {
+        /** @type {PostItem[]} */
         const posts = await fetch('posts/posts.json').then(r => r.json());
-        const showPostNum = config.showPostNum;
+        const showPostNum = getHomeConfig().showPostNum || 3;
         const recentPosts = posts.slice(0, showPostNum);
 
         const list = recentPosts.map(post => `
@@ -58,6 +98,7 @@ async function loadRecentPosts() {
 
             // 为文章项添加悬停效果
             document.querySelectorAll('.post-item').forEach(item => {
+                if (!(item instanceof HTMLElement)) return;
                 item.addEventListener('mouseover', () => {
                     item.style.transform = 'translateX(5px)';
                     item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
@@ -136,8 +177,10 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
 async function loadHomeConfig() {
     try {
         const response = await fetch('/json/index.json');
-        config = await response.json(); // 直接赋值给全局变量 config
-        renderHomeConfig(config);
+        /** @type {HomeConfig} */
+        const loadedConfig = await response.json();
+        config = loadedConfig;
+        renderHomeConfig(loadedConfig);
     } catch (error) {
         console.error('加载主页配置失败:', error);
         setDefaultContent();
@@ -158,7 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 100);
 
     function initTypewriter() {
-        const phrases = config.phrases; // 现在可以正常访问
+        const phrases = getHomeConfig().phrases || ['欢迎访问 Quark Blog ~'];
+        const safeTypewriterElement = /** @type {HTMLElement} */ (typewriterElement);
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
@@ -168,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const currentPhrase = phrases[phraseIndex];
             let displayText = currentPhrase.substring(0, charIndex);
 
-            typewriterElement.innerHTML = displayText || '&nbsp;';
+            safeTypewriterElement.innerHTML = displayText || '&nbsp;';
 
             if (isDeleting) {
                 charIndex--;
@@ -258,12 +302,19 @@ function updateGreeting() {
 
 // 随机提示语 - 添加存在性检查
 function getRandomTip() {
-    if (!config || !config.tips) return '欢迎访问 Quark Blog ~';
-    const tips = config.tips;
+    const tips = getHomeConfig().tips;
+    if (!tips || tips.length === 0) return '欢迎访问 Quark Blog ~';
     return tips[Math.floor(Math.random() * tips.length)];
 }
 
 // 计算距离
+/**
+ * @param {number} lat1
+ * @param {number} lon1
+ * @param {number} lat2
+ * @param {number} lon2
+ * @returns {number}
+ */
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // 地球半径(km)
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -277,6 +328,11 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 // 修改省份俏皮话为市级优先，省级备用
+/**
+ * @param {string} province
+ * @param {string} city
+ * @returns {string}
+ */
 function getBanter(province, city) {
     console.log('获取俏皮话，省份:', province, '城市:', city);
     console.log('cityBanterData 状态:', window.cityBanterData ? '已加载' : '未加载');
@@ -309,8 +365,13 @@ function getBanter(province, city) {
 }
 
 // 保留原有的省级俏皮话作为后备（当JSON未加载或加载失败时使用）
+/**
+ * @param {string} province
+ * @returns {string}
+ */
 function getProvinceBanterFallback(province) {
     // 创建一个映射，将不包含后缀的省份名称映射到完整的省份名称
+    /** @type {Record<string, string>} */
     const provinceMapping = {
         '北京': '北京市',
         '上海': '上海市',
@@ -348,6 +409,7 @@ function getProvinceBanterFallback(province) {
         '澳门': '澳门'
     };
 
+    /** @type {Record<string, string>} */
     const banterMap = {
         '北京市': '来碗豆汁儿配焦圈？',
         '上海市': '侬好呀！要尝尝小笼包伐？',
@@ -395,14 +457,16 @@ function loadCityBanterData() {
     return fetch('/json/city-banter.json')
         .then(response => response.json())
         .then(data => {
-            window.cityBanterData = data;
+            /** @type {Record<string, string>} */
+            const cityBanterData = data;
+            window.cityBanterData = cityBanterData;
             console.log('市级俏皮话数据加载成功');
-            console.log('数据包含城市:', Object.keys(data).filter(key => key.includes('州')));
+            console.log('数据包含城市:', Object.keys(cityBanterData).filter(key => key.includes('州')));
 
             // 数据加载成功后，重新显示欢迎信息（如果已经显示过）
             if (window.visitorInfoDisplayed) {
                 console.log('重新显示欢迎信息');
-                showVisitorInfo(window.cachedVisitorInfo);
+                showVisitorInfo(/** @type {VisitorInfo} */ (window.cachedVisitorInfo));
             }
         })
         .catch(error => {
@@ -411,6 +475,9 @@ function loadCityBanterData() {
         });
 }
 
+/**
+ * @param {VisitorInfo} info
+ */
 function showVisitorInfo(info) {
     const welcomeInfoElement = document.getElementById('welcome-info');
     if (!welcomeInfoElement) return;
@@ -456,9 +523,11 @@ async function getVisitorInfo() {
             const longitude = ipData.data.longitude_2 || ipData.data.longitude_3 || 0;
 
             // 站主位置
-            const bloggerLat = config.bloggerLat;
-            const bloggerLon = config.bloggerLon;
+            const cfg = getHomeConfig();
+            const bloggerLat = typeof cfg.bloggerLat === 'number' ? cfg.bloggerLat : 0;
+            const bloggerLon = typeof cfg.bloggerLon === 'number' ? cfg.bloggerLon : 0;
 
+            /** @type {number | string} */
             let distance = "未知距离";
             if (latitude && longitude) {
                 distance = getDistance(
@@ -468,7 +537,7 @@ async function getVisitorInfo() {
             }
 
             // 缓存访客信息
-            window.cachedVisitorInfo = {
+            window.cachedVisitorInfo = /** @type {VisitorInfo} */ ({
                 ip,
                 province: ipPro,
                 city: ipCity,
@@ -476,11 +545,11 @@ async function getVisitorInfo() {
                 latitude,
                 longitude,
                 distance
-            };
+            });
 
             // 如果市级数据已加载，立即显示
             if (window.cityBanterData) {
-                showVisitorInfo(window.cachedVisitorInfo);
+                showVisitorInfo(/** @type {VisitorInfo} */ (window.cachedVisitorInfo));
             } else {
                 // 否则先显示省级备用，等数据加载后再更新
                 const fallbackBanter = getProvinceBanterFallback(ipPro);
@@ -507,7 +576,7 @@ async function getVisitorInfo() {
                         if (window.cityBanterData && window.visitorInfoDisplayed) {
                             clearInterval(checkInterval);
                             console.log('数据已加载，重新显示欢迎信息');
-                            showVisitorInfo(window.cachedVisitorInfo);
+                            showVisitorInfo(/** @type {VisitorInfo} */ (window.cachedVisitorInfo));
                         }
                     }, 100);
                 }
@@ -529,7 +598,7 @@ async function loadDynamicFeed() {
         const response = await fetch('/blog/dt/dt.md');
         const mdContent = await response.text();
         const entries = parseMdEntries(mdContent);
-        const showDynamicNum = config.showDynamicNum;
+        const showDynamicNum = getHomeConfig().showDynamicNum || 3;
         renderDynamicEntries(entries.slice(0, showDynamicNum));
     } catch (error) {
         console.error('加载动态失败:', error);
@@ -541,9 +610,15 @@ async function loadDynamicFeed() {
     }
 }
 
+/**
+ * @param {string} content
+ * @returns {DynamicEntry[]}
+ */
 function parseMdEntries(content) {
+    /** @type {DynamicEntry[]} */
     const entries = [];
     const lines = content.split('\n');
+    /** @type {DynamicEntry | null} */
     let currentEntry = null;
 
     lines.forEach(line => {
@@ -567,6 +642,9 @@ function parseMdEntries(content) {
     return entries;
 }
 
+/**
+ * @param {DynamicEntry[]} entries
+ */
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-entries');
     if (!container) return;
@@ -625,7 +703,7 @@ async function loadLatestVideo() {
         const data = await response.json();
 
         if (data.videos && data.videos.length > 0) {
-            const latestVideo = data.videos[0];
+            const latestVideo = /** @type {VideoItem} */ (data.videos[0]);
             renderLatestVideo(latestVideo);
         } else {
             throw new Error('No videos found');
@@ -644,6 +722,9 @@ async function loadLatestVideo() {
 }
 
 // 渲染最新视频
+/**
+ * @param {VideoItem} video
+ */
 function renderLatestVideo(video) {
     const container = document.getElementById('latest-video-container');
     if (!container) return;
@@ -681,7 +762,7 @@ function renderLatestVideo(video) {
 
     // 添加点击事件，跳转到B站视频页面
     const videoCard = container.querySelector('.latest-video-card');
-    if (videoCard) {
+    if (videoCard instanceof HTMLElement) {
         videoCard.addEventListener('click', () => {
             window.open(`https://www.bilibili.com/video/${video.bvid}`, '_blank');
         });
@@ -699,6 +780,10 @@ function renderLatestVideo(video) {
 }
 
 // 格式化视频时长（秒 -> MM:SS）
+/**
+ * @param {number} seconds
+ * @returns {string}
+ */
 function formatVideoDuration(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -706,20 +791,28 @@ function formatVideoDuration(seconds) {
 }
 
 // 格式化视频播放量
+/**
+ * @param {number} count
+ * @returns {string}
+ */
 function formatVideoCount(count) {
     if (count >= 100000000) {
         return (count / 100000000).toFixed(1) + '亿';
     } else if (count >= 10000) {
         return (count / 10000).toFixed(1) + '万';
     }
-    return count;
+    return String(count);
 }
 
 // 格式化视频发布时间
+/**
+ * @param {number} timestamp
+ * @returns {string}
+ */
 function formatVideoTime(timestamp) {
     const date = new Date(timestamp * 1000);
     const now = new Date();
-    const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    const diff = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
 
     if (diff === 0) {
         return '今天';
@@ -738,6 +831,7 @@ function formatVideoTime(timestamp) {
 async function loadFriendLinks() {
     try {
         const response = await fetch('json/friends.json');
+        /** @type {FriendLink[]} */
         const friends = await response.json();
         displayFriendLinks(friends);
     } catch (error) {
@@ -751,6 +845,9 @@ async function loadFriendLinks() {
 }
 
 // 显示友链
+/**
+ * @param {FriendLink[]} friends
+ */
 function displayFriendLinks(friends) {
     const container = document.getElementById('friend-links');
     if (!container) return;
@@ -777,6 +874,9 @@ function displayFriendLinks(friends) {
 }
 
 // 渲染主页配置
+/**
+ * @param {HomeConfig} config
+ */
 function renderHomeConfig(config) {
     // 渲染社交链接 - 添加存在性检查
     const socialContainer = document.getElementById('social-icons-container');
@@ -790,13 +890,13 @@ function renderHomeConfig(config) {
     }
 
     const nicknameElement = document.getElementById('Nickname');
-    if (nicknameElement) nicknameElement.textContent = config.Nickname;
+    if (nicknameElement) nicknameElement.textContent = config.Nickname || '';
 
     const welcomeTitleElement = document.getElementById('welcome-title');
-    if (welcomeTitleElement) welcomeTitleElement.textContent = config.welcomeTitle;
+    if (welcomeTitleElement) welcomeTitleElement.textContent = config.welcomeTitle || '';
 
     const welcomeTextElement = document.getElementById('welcome-text');
-    if (welcomeTextElement) welcomeTextElement.textContent = config.welcomeText;
+    if (welcomeTextElement) welcomeTextElement.textContent = config.welcomeText || '';
 
     // 渲染功能列表 - 添加存在性检查
     const featuresContainer = document.getElementById('features-container');
@@ -855,6 +955,7 @@ function addEventListenersToDynamicContent() {
     // 功能盒子悬停效果 - 添加存在性检查
     const featureBoxes = document.querySelectorAll('#features-container .index-feature-box');
     featureBoxes.forEach(box => {
+        if (!(box instanceof HTMLElement)) return;
         box.addEventListener('mouseover', () => {
             box.style.transform = 'translateY(-3px)';
             box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';

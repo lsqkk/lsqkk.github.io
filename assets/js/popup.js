@@ -1,12 +1,29 @@
+// @ts-check
+
+/**
+ * @typedef {Object} PopupConfig
+ * @property {string | number} id
+ * @property {string} title
+ * @property {string} content
+ * @property {string} startDate
+ * @property {string} endDate
+ * @property {string=} backgroundColor
+ * @property {string=} textColor
+ * @property {boolean=} autoClose
+ * @property {boolean=} celebration
+ */
+
 // 弹窗系统
+/** @type {PopupConfig | null} */
 let currentPopup = null;
-let isLocalhost = window.location.hostname === 'localhost' ||
+const isLocalhost = window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1';
 
 // 检查并显示弹窗
 async function checkAndShowPopup() {
     try {
         const response = await fetch('json/popups.json');
+        /** @type {PopupConfig[]} */
         const popups = await response.json();
 
         const today = new Date().toISOString().split('T')[0];
@@ -23,6 +40,10 @@ async function checkAndShowPopup() {
 }
 
 // 判断是否应该显示弹窗
+/**
+ * @param {PopupConfig} popup
+ * @param {string} today
+ */
 function shouldShowPopup(popup, today) {
     // 检查日期范围
     if (today < popup.startDate || today > popup.endDate) {
@@ -50,14 +71,23 @@ function shouldShowPopup(popup, today) {
 }
 
 // 显示弹窗
+/**
+ * @param {PopupConfig} popup
+ */
 function showPopup(popup) {
-    document.body.style.cursor = 'auto';
-    currentPopup = popup;
-
     const overlay = document.getElementById('popup-overlay');
     const container = document.getElementById('popup-container');
     const title = document.getElementById('popup-title');
     const content = document.getElementById('popup-content');
+    if (!(overlay instanceof HTMLElement) ||
+        !(container instanceof HTMLElement) ||
+        !(title instanceof HTMLElement) ||
+        !(content instanceof HTMLElement)) {
+        return;
+    }
+
+    document.body.style.cursor = 'auto';
+    currentPopup = popup;
 
     title.textContent = popup.title;
 
@@ -120,6 +150,12 @@ function setupPopupEvents() {
     const closeBtn = document.getElementById('popup-close');
     const confirmBtn = document.getElementById('popup-confirm');
     const neverShowCheckbox = document.getElementById('popup-never-show');
+    if (!(overlay instanceof HTMLElement) ||
+        !(closeBtn instanceof HTMLElement) ||
+        !(confirmBtn instanceof HTMLElement) ||
+        !(neverShowCheckbox instanceof HTMLInputElement)) {
+        return;
+    }
 
     // 关闭按钮
     closeBtn.onclick = closePopup;
@@ -143,7 +179,8 @@ function setupPopupEvents() {
 
     // 不再显示选项
     neverShowCheckbox.onchange = (e) => {
-        if (e.target.checked && currentPopup) {
+        const target = e.target;
+        if (target instanceof HTMLInputElement && target.checked && currentPopup) {
             localStorage.setItem(`popup_never_${currentPopup.id}`, 'true');
         }
     };
@@ -151,9 +188,13 @@ function setupPopupEvents() {
 
 // 关闭弹窗
 function closePopup() {
-    document.body.style.cursor = 'none';
     const overlay = document.getElementById('popup-overlay');
     const neverShowCheckbox = document.getElementById('popup-never-show');
+    if (!(overlay instanceof HTMLElement) || !(neverShowCheckbox instanceof HTMLInputElement)) {
+        return;
+    }
+
+    document.body.style.cursor = 'none';
 
     overlay.style.display = 'none';
     neverShowCheckbox.checked = false;
@@ -164,6 +205,9 @@ function closePopup() {
 // 庆祝动效
 function startCelebration() {
     const container = document.getElementById('celebration-container');
+    if (!(container instanceof HTMLElement)) {
+        return;
+    }
     container.innerHTML = '';
 
     // 创建彩色纸屑效果
@@ -172,6 +216,9 @@ function startCelebration() {
     }
 }
 
+/**
+ * @param {HTMLElement} container
+ */
 function createConfetti(container) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti';
@@ -198,5 +245,8 @@ function getRandomColor() {
 
 function stopCelebration() {
     const container = document.getElementById('celebration-container');
+    if (!(container instanceof HTMLElement)) {
+        return;
+    }
     container.innerHTML = '';
 }
