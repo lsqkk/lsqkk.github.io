@@ -1,0 +1,79 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import PostLayout from "../../layouts/PostLayout.astro";
+
+type PostEntry = CollectionEntry<"posts">;
+
+function normalizeDate(date: unknown): string {
+  if (!date) return "1970-01-01";
+  if (date instanceof Date) return date.toISOString().slice(0, 10);
+  const str = String(date).trim();
+  const hit = str.match(/^(\d{4})[-/年](\d{1,2})[-/月](\d{1,2})/);
+  if (hit) return `${hit[1]}-${hit[2].padStart(2, "0")}-${hit[3].padStart(2, "0")}`;
+  return str;
+}
+
+function normalizeTags(tags: unknown): string[] {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags.map((tag) => String(tag).trim()).filter(Boolean);
+  return String(tags)
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function extractTitle(entry: PostEntry): string {
+  const match = entry.body.match(/^#\s+(.+)$/m);
+  if (match) return match[1].trim();
+  const slugPart = entry.id.replace(/\.md$/i, "").split("/").pop() || "untitled";
+  return slugPart;
+}
+
+function getWordCount(entry: PostEntry): number {
+  return entry.body.trim().length;
+}
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/\.md$/i, "") },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: PostEntry };
+const title = extractTitle(post);
+const date = normalizeDate(post.data.date);
+const tags = normalizeTags(post.data.tags);
+const wordCount = getWordCount(post);
+const mdFile = post.id.split("/").pop() || post.id;
+const currentPostPath = post.id.replace(/\.md$/i, "");
+
+const allPosts = await getCollection("posts");
+const sortedPosts = [...allPosts].sort((a, b) => {
+  const dateCmp = normalizeDate(b.data.date).localeCompare(normalizeDate(a.data.date));
+  if (dateCmp !== 0) return dateCmp;
+  return b.id.localeCompare(a.id);
+});
+
+const currentIndex = sortedPosts.findIndex((item) => item.id === post.id);
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+const prevPost = currentIndex >= 0 && currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+
+const { Content } = await render(post);
+const pageTitle = `${title} - 夸克博客`;
+---
+<PostLayout
+  pageTitle={pageTitle}
+  date={date}
+  tags={tags}
+  wordCount={wordCount}
+  mdFile={mdFile}
+  currentPostPath={currentPostPath}
+  prevPostTitle={prevPost ? extractTitle(prevPost) : ""}
+  prevPostUrl={prevPost ? `/posts/${prevPost.id.replace(/\.md$/i, "")}` : ""}
+  nextPostTitle={nextPost ? extractTitle(nextPost) : ""}
+  nextPostUrl={nextPost ? `/posts/${nextPost.id.replace(/\.md$/i, "")}` : ""}
+>
+  <Content />
+</PostLayout>

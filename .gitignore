@@ -5,3 +5,5 @@ private
 quark_blog.egg-info
 __pycache__
 node_modules
+.astro
+dist

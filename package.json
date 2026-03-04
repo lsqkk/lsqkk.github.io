@@ -3,10 +3,19 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "gen:posts-json": "node scripts/generate-posts-json.mjs",
+    "publish:astro-posts": "node scripts/publish-astro-posts.mjs",
     "typecheck": "tsc -p jsconfig.json --noEmit",
     "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check blog/lyb/lyb.js"
   },
   "devDependencies": {
+    "astro": "^5.18.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0"
   }
 }

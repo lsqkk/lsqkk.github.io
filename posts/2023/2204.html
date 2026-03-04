@@ -1,84 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <meta charset="UTF-8">
-    <title>C++输出谢尔宾斯基三角形 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/post.css">
-    <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css">
-    <link rel="stylesheet" href="/assets/css/code.css">
-    <script src="/assets/js/nav.js"></script>
-    <script src="/assets/js/copyright-injector.js"></script>
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <!-- highlight.js 代码高亮 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <!-- 支持的语言 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
-</head>
-
-<body
-    style="background: url('/assets/img/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script src="/assets/js/shicha.js"></script>
-    <script src="/assets/js/cursor-trail.js" defer></script>
-    <div class="sidebar">
-        <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-        <div class="sidebar-content" id="sidebarContent">
-            <div id="toc-loading" style="display: none;">目录加载中...</div>
-            <div class="sidebar-main-content"></div>
-            <div class="sidebar-footer">
-                <a href="/index.html" style="text-decoration: none;">博客主页</a>
-                <a href="/posts" style="text-decoration: none;">文章</a>
-                <a href="/games" style="text-decoration: none;">夸克游戏</a>
-                <a href="/a/ds" style="text-decoration: none;">DeepSeek</a>
-                <a href="/tool" style="text-decoration: none;">更多工具</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="morenpost">
-        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">作者： <a
-                href="/posts/about"><img src="/assets/img/touxiang.png" alt="头像"
-                    style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; ">
-                蓝色奇夸克</a>
-        </div>
-        <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
-        <img src="/assets/img/view.png" alt="view" style="width: 15px; display: inline;">
-        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"><span
-                id="busuanzi_value_page_pv"></span> 浏览 / </div>
-        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
-            <span id="post-wordcount" style="display: inline;"></span>
-        </div>
-
-        <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;"
-            data-md-file="2204.md" data-date="2022-11-28" data-word-count="782" data-tags='["C++"]'>
-        </div>
-
-        <div id="content" class="post-content">
-            <h1 id="c">C++输出谢尔宾斯基三角形</h1>
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><title>C++输出谢尔宾斯基三角形 - 夸克博客</title><link rel="icon" href="/assets/img/logo_blue.png" type="image/png"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/assets/css/cursor.css"><link rel="stylesheet" href="/assets/css/basic.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="/assets/css/post.css"><link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css"><link rel="stylesheet" href="/assets/css/code.css"><script src="/assets/js/nav.js"></script><script src="/assets/js/copyright-injector.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script></head> <body style="background: url('/assets/img/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;"> <link rel="stylesheet" href="/assets/css/shicha.css"> <div class="parallax-bg" id="parallaxBg"></div> <script src="/assets/js/shicha.js"></script> <script src="/assets/js/cursor-trail.js" defer></script> <div class="sidebar"> <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div> <div class="sidebar-content" id="sidebarContent"> <div id="toc-loading" style="display: none;">目录加载中...</div> <div class="sidebar-main-content"></div> <div class="sidebar-footer"> <a href="/index.html" style="text-decoration: none;">博客主页</a> <a href="/posts" style="text-decoration: none;">文章</a> <a href="/games" style="text-decoration: none;">夸克游戏</a> <a href="/a/ds" style="text-decoration: none;">DeepSeek</a> <a href="/tool" style="text-decoration: none;">更多工具</a> </div> </div> </div> <div class="morenpost"> <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
+作者：
+<a href="/posts/about"><img src="/assets/img/touxiang.png" alt="头像" style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; ">
+蓝色奇夸克</a> </div> <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">发表于 2022-11-28</div> <img src="/assets/img/view.png" alt="view" style="width: 15px; display: inline;"> <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"> <span id="busuanzi_value_page_pv"></span> 浏览 /
+</div> <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"> <span id="post-wordcount" style="display: inline;">825字 · 3min</span> </div> <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;" data-md-file="2204" data-post-path="2023/2204" data-date="2022-11-28" data-word-count="825" data-tags="[&#34;C++&#34;]" data-prev-title data-prev-url data-next-title="牛顿白光色散实验的科学原理" data-next-url="/posts/2023/2302"> <span class="post-tag">C++</span> </div> <div id="content" class="post-content">  <h1 id="c输出谢尔宾斯基三角形">C++输出谢尔宾斯基三角形</h1>
 <p>2022年11月28日</p>
 <p><strong>谢尔宾斯基三角形</strong>（Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。</p>
 <p>我们可以这样做一个谢尔宾斯基三角形：</p>
@@ -97,72 +21,30 @@
 </li>
 </ol>
 <p>下面是用C++代码模拟的过程：</p>
-<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
-using namespace std;
-int main(){
-    bool a[300][300]; //开一个数组
-    a[1][1] = 1,a[2][1] = 1,a[2][2] = 1; //构造初始的三角块
-    int t = 2, n;
-    cin&gt;&gt;n;
-    if(n&gt;7) n=7; //防止数组越界、爆int
-    while(t&lt;=pow(2,n)){
-        for(int i = 1; i&lt;=t; i++)
-            for(int j = 1; j &lt;= i; j++)
-                if(a[i][j] == 1) a[t+i][j] = 1, a[t+i][t+j] = 1;//分别在左下角、右下角复制同样的三角块
-        t*=2;
-    }
-    for(int i = 1;i&lt;=pow(2,n);i++){ //输出
-        for(int s = 0; s&lt;=pow(2,n)-i;s++) cout&lt;&lt;&quot; &quot;;
-        for(int j = 1; j&lt;=i; j++){
-            if(a[i][j]==1) cout&lt;&lt;&quot;△&quot;;
-            else cout&lt;&lt;&quot;  &quot;; 
-        }
-        cout&lt;&lt;endl;
-    }
-    return 0; //PERFECT!
-}
-</code></pre>
-        </div>
-
-        <hr>
-
-        <div>
-            <center>
-                <div style="margin: 20px;">
-                    <button class="share-button" onclick="copyLink()">复制本文链接</button>
-                </div>
-                <link rel="stylesheet"
-                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
-                <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div>
-
-            </center>
-        </div>
-    </div>
-
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-    <script id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script>
-    <script src="/assets/js/post-standalone.js"></script>
-
-    <div class="morenpost">
-        <div class="giscus"></div>
-    </div>
-
-    <div style="text-align: center; padding: 50px;">
-        <a href="/posts/copyright"
-            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">© 2024
-            - 2026 夸克博客 All rights reserved.</a>
-    </div>
-
-    <script src="/assets/js/code.js"></script>
-    <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
-    <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ"
-        data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0"
-        data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme"
-        data-lang="zh-CN" crossorigin="anonymous" async>
-        </script>
-
-</body>
-
-</html>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="cpp"><code><span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF">&#x3C;bits/stdc++.h></span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#F97583"> namespace</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">(){</span></span>
+<span class="line"><span style="color:#F97583">	bool</span><span style="color:#E1E4E8"> a[</span><span style="color:#79B8FF">300</span><span style="color:#E1E4E8">][</span><span style="color:#79B8FF">300</span><span style="color:#E1E4E8">];</span><span style="color:#6A737D"> //开一个数组</span></span>
+<span class="line"><span style="color:#E1E4E8">	a[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">][</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">,a[</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">][</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">,a[</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">][</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span><span style="color:#6A737D"> //构造初始的三角块</span></span>
+<span class="line"><span style="color:#F97583">	int</span><span style="color:#E1E4E8"> t </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">, n;</span></span>
+<span class="line"><span style="color:#E1E4E8">	cin</span><span style="color:#F97583">>></span><span style="color:#E1E4E8">n;</span></span>
+<span class="line"><span style="color:#F97583">	if</span><span style="color:#E1E4E8">(n</span><span style="color:#F97583">></span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">) n</span><span style="color:#F97583">=</span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">;</span><span style="color:#6A737D"> //防止数组越界、爆int</span></span>
+<span class="line"><span style="color:#F97583">	while</span><span style="color:#E1E4E8">(t</span><span style="color:#F97583">&#x3C;=</span><span style="color:#B392F0">pow</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,n)){</span></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">&#x3C;=</span><span style="color:#E1E4E8">t; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">			for</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">; j </span><span style="color:#F97583">&#x3C;=</span><span style="color:#E1E4E8"> i; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">				if</span><span style="color:#E1E4E8">(a[i][j] </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">) a[t</span><span style="color:#F97583">+</span><span style="color:#E1E4E8">i][j] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">, a[t</span><span style="color:#F97583">+</span><span style="color:#E1E4E8">i][t</span><span style="color:#F97583">+</span><span style="color:#E1E4E8">j] </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span><span style="color:#6A737D">//分别在左下角、右下角复制同样的三角块</span></span>
+<span class="line"><span style="color:#E1E4E8">		t</span><span style="color:#F97583">*=</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"><span style="color:#F97583">	for</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;i</span><span style="color:#F97583">&#x3C;=</span><span style="color:#B392F0">pow</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,n);i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">){</span><span style="color:#6A737D"> //输出</span></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> s </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; s</span><span style="color:#F97583">&#x3C;=</span><span style="color:#B392F0">pow</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,n)</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">i;s</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) cout</span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF">" "</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">		for</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">; j</span><span style="color:#F97583">&#x3C;=</span><span style="color:#E1E4E8">i; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">){</span></span>
+<span class="line"><span style="color:#F97583">			if</span><span style="color:#E1E4E8">(a[i][j]</span><span style="color:#F97583">==</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">) cout</span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF">"△"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">			else</span><span style="color:#E1E4E8"> cout</span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF">"  "</span><span style="color:#E1E4E8">; </span></span>
+<span class="line"><span style="color:#E1E4E8">		}</span></span>
+<span class="line"><span style="color:#E1E4E8">		cout</span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#E1E4E8">endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">	}</span></span>
+<span class="line"><span style="color:#F97583">	return</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span><span style="color:#6A737D"> //PERFECT!</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>  </div> <hr> <div> <center> <div style="margin: 20px;"> <button class="share-button" onclick="copyLink()">复制本文链接</button> </div> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css"> <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div> </center> </div> </div> <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script> <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script> <script id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script> <script src="/assets/js/post-standalone.js"></script> <div class="morenpost"> <div class="giscus"></div> </div> <div style="text-align: center; padding: 50px;"> <a href="/posts/copyright" style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">
+© 2024 - 2026 夸克博客 All rights reserved.
+</a> </div> <script src="/assets/js/code.js"></script> <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script> <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ" data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+    </script> </body> </html>

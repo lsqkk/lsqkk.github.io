@@ -1,98 +1,22 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <meta charset="UTF-8">
-    <title>摘不下的面具 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/post.css">
-    <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css">
-    <link rel="stylesheet" href="/assets/css/code.css">
-    <script src="/assets/js/nav.js"></script>
-    <script src="/assets/js/copyright-injector.js"></script>
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <!-- highlight.js 代码高亮 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <!-- 支持的语言 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
-</head>
-
-<body
-    style="background: url('/assets/img/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;">
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script src="/assets/js/shicha.js"></script>
-    <script src="/assets/js/cursor-trail.js" defer></script>
-    <div class="sidebar">
-        <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-        <div class="sidebar-content" id="sidebarContent">
-            <div id="toc-loading" style="display: none;">目录加载中...</div>
-            <div class="sidebar-main-content"></div>
-            <div class="sidebar-footer">
-                <a href="/index.html" style="text-decoration: none;">博客主页</a>
-                <a href="/posts" style="text-decoration: none;">文章</a>
-                <a href="/games" style="text-decoration: none;">夸克游戏</a>
-                <a href="/a/ds" style="text-decoration: none;">DeepSeek</a>
-                <a href="/tool" style="text-decoration: none;">更多工具</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="morenpost">
-        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">作者： <a
-                href="/posts/about"><img src="/assets/img/touxiang.png" alt="头像"
-                    style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; ">
-                蓝色奇夸克</a>
-        </div>
-        <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"></div>
-        <img src="/assets/img/view.png" alt="view" style="width: 15px; display: inline;">
-        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"><span
-                id="busuanzi_value_page_pv"></span> 浏览 / </div>
-        <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
-            <span id="post-wordcount" style="display: inline;"></span>
-        </div>
-
-        <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;"
-            data-md-file="2503.md" data-date="2024-11-26" data-word-count="5957" data-tags='["杂谈"]'>
-        </div>
-
-        <div id="content" class="post-content">
-            <h1 id="_1">摘不下的面具</h1>
-<h2 id="_2">【时间地点】</h2>
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><title>摘不下的面具 - 夸克博客</title><link rel="icon" href="/assets/img/logo_blue.png" type="image/png"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="/assets/css/cursor.css"><link rel="stylesheet" href="/assets/css/basic.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="/assets/css/post.css"><link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css"><link rel="stylesheet" href="/assets/css/code.css"><script src="/assets/js/nav.js"></script><script src="/assets/js/copyright-injector.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script></head> <body style="background: url('/assets/img/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;"> <link rel="stylesheet" href="/assets/css/shicha.css"> <div class="parallax-bg" id="parallaxBg"></div> <script src="/assets/js/shicha.js"></script> <script src="/assets/js/cursor-trail.js" defer></script> <div class="sidebar"> <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div> <div class="sidebar-content" id="sidebarContent"> <div id="toc-loading" style="display: none;">目录加载中...</div> <div class="sidebar-main-content"></div> <div class="sidebar-footer"> <a href="/index.html" style="text-decoration: none;">博客主页</a> <a href="/posts" style="text-decoration: none;">文章</a> <a href="/games" style="text-decoration: none;">夸克游戏</a> <a href="/a/ds" style="text-decoration: none;">DeepSeek</a> <a href="/tool" style="text-decoration: none;">更多工具</a> </div> </div> </div> <div class="morenpost"> <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
+作者：
+<a href="/posts/about"><img src="/assets/img/touxiang.png" alt="头像" style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; ">
+蓝色奇夸克</a> </div> <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">发表于 2024-11-26</div> <img src="/assets/img/view.png" alt="view" style="width: 15px; display: inline;"> <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"> <span id="busuanzi_value_page_pv"></span> 浏览 /
+</div> <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;"> <span id="post-wordcount" style="display: inline;">6190字 · 16min</span> </div> <div id="post-tags-container" class="post-tags" style="display: inline; margin-left: 10px;" data-md-file="2503" data-post-path="2025/2503" data-date="2024-11-26" data-word-count="6190" data-tags="[&#34;杂谈&#34;]" data-prev-title="交大之夜" data-prev-url="/posts/2025/2502" data-next-title="关于我" data-next-url="/posts/about"> <span class="post-tag">杂谈</span> </div> <div id="content" class="post-content">  <h1 id="摘不下的面具">摘不下的面具</h1>
+<h2 id="时间地点">【时间地点】</h2>
 <p>现代，2021年某月，某市中心大剧场。</p>
-<h2 id="_3">【内容提要】</h2>
+<h2 id="内容提要">【内容提要】</h2>
 <p>话剧演员金予言在舞台上某个情节入戏太深，试图对观众吐露心声，摘下其沉重的面具，但被误以为是剧的一部分，面具已然无从摘下。</p>
-<h2 id="_4">【人物】</h2>
-<p><strong>金予言</strong>：知名话剧演员，在即将上演的职场剧中扮演一名职场人小金。<br />
-<strong>林 晓</strong>：金予言的搭档，在同一剧中饰演金予言的上司，林总。<br />
-<strong>王小朔</strong>：这个剧的导演。<br />
-<strong>赵 龙</strong>：也是金予言的搭档，在同一剧中饰演他上司，赵总。<br />
+<h2 id="人物">【人物】</h2>
+<p><strong>金予言</strong>：知名话剧演员，在即将上演的职场剧中扮演一名职场人小金。
+<strong>林 晓</strong>：金予言的搭档，在同一剧中饰演金予言的上司，林总。
+<strong>王小朔</strong>：这个剧的导演。
+<strong>赵 龙</strong>：也是金予言的搭档，在同一剧中饰演他上司，赵总。
 <strong>观众甲、观众乙</strong>，以及剧内另外配办公室职员若干。</p>
 <p>【舞台设计】舞台分为三个部分。左侧是观众席(注意这是独幕剧中的一部分，并非观众席设置在舞台上，因此象征性地留两排座位即可，观众甲、乙以及导演王小朔坐在这里)，朝向右侧；右侧是剧场后台(注意也是独幕剧中的设置)，与主舞台连通。舞台正中间的大部分，是金予言等人即将进行表演的舞台，墙上挂着大字“保持微笑”。</p>
-<hr />
-<p>全部黑灯。  </p>
-<h1 id="_5">【幕启】</h1>
+<hr>
+<p>全部黑灯。</p>
+<h1 id="幕启">【幕启】</h1>
 <p><em>金予言、林晓上右侧台，在剧场后台里排练。他们手里拿着即将登台演出的剧本，默演。剧场后台亮灯。</em></p>
 <p>金予言：(默演，轻声地)林总，您看，这市场报告完成得差不多了……</p>
 <p>林 晓：得了吧，以你的水平现在还背词呢。我看你早就背完了吧！(把自己的剧本扔在桌子上)我都不用看。</p>
@@ -189,7 +113,7 @@
 <p>金予言：我…根…本……摘…不…下……</p>
 <p>全场黑灯。</p>
 <p>【闭幕】</p>
-<hr />
+<hr>
 <p><strong>写在最后</strong></p>
 <p>这是预科二语文的第一次作业，要求完成一部2000字以上的现代独幕剧。</p>
 <p>我在预科一曾写过心理剧、表演过数学剧、翻译过物理剧，但从头原创地完成一部文学性质的剧本，这真的是第一次。这一次作业的要求是现代独幕剧，首先是现代，这是规定了剧本的写作手法、剧本格式；然后是独幕，独幕意味着无法合上幕布再拉开，无法进行稍大规模的时间、情节和地点的转换，这要求这部剧将是一个连贯的整体，而且它的叙事是受到非常大的限制的。有什么有意思的、故事性的事件是发生在同一时间呢？</p>
@@ -197,48 +121,7 @@
 <p>随后我不仅普遍的想到，这种身份的错位，扮演非己的现象，并不仅仅出现在喜剧的舞台里，更出现在人类社会每个出现等级、需要应酬的场合下。而这种行为，有个更加形象的说法，“戴上面具”。于是将演员的身份错位这个特殊的事件，意外的延伸到了更普遍的社会现实中。“摘不下面具”，则是小人物在宏大的社会背景下必然出现的悲剧。这就逐渐有了独幕剧的内容。</p>
 <p>主角名叫金予言，坦白说这是我唯一仔细设计过的名字。姓氏致敬了刚刚提到的演员金凯瑞，这位宝藏演员为这部剧提供了一部分原始灵感。而予言，直白的翻译，就是“我说”，台上的他从某一时刻向观众吐露心声（就是从台词角色由金予言(小金)变成金予言的时候），观众以为是剧情的一部分，台上的其他人忙着为他的即兴而临场发挥，根本没有人真正的听他在说什么，没有人真正理解他。予言、我说，这是金予言一个人的独白。</p>
 <p>剧中剧的名字叫做《面具之下》，原本我打算效仿《苏菲的世界》，给这部独幕剧也取名《面具之下》，但是又想到，台上台下所有人，确实没有人在意“金予言”面具之下到底藏着怎样的灵魂，他们最多关注到“小金”这一角色，而金予言也因此确实没能摘下自己的面具，思来想去，还是觉得《摘不下的面具》更能体现独幕剧的主旨，于是就有了这个剧名。</p>
-<p><em>（完）</em></p>
-        </div>
-
-        <hr>
-
-        <div>
-            <center>
-                <div style="margin: 20px;">
-                    <button class="share-button" onclick="copyLink()">复制本文链接</button>
-                </div>
-                <link rel="stylesheet"
-                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
-                <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div>
-
-            </center>
-        </div>
-    </div>
-
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-    <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-    <script id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script>
-    <script src="/assets/js/post-standalone.js"></script>
-
-    <div class="morenpost">
-        <div class="giscus"></div>
-    </div>
-
-    <div style="text-align: center; padding: 50px;">
-        <a href="/posts/copyright"
-            style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">© 2024
-            - 2026 夸克博客 All rights reserved.</a>
-    </div>
-
-    <script src="/assets/js/code.js"></script>
-    <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
-    <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ"
-        data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0"
-        data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme"
-        data-lang="zh-CN" crossorigin="anonymous" async>
-        </script>
-
-</body>
-
-</html>
+<p><em>（完）</em></p>  </div> <hr> <div> <center> <div style="margin: 20px;"> <button class="share-button" onclick="copyLink()">复制本文链接</button> </div> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css"> <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div> </center> </div> </div> <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script> <script defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script> <script id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script> <script src="/assets/js/post-standalone.js"></script> <div class="morenpost"> <div class="giscus"></div> </div> <div style="text-align: center; padding: 50px;"> <a href="/posts/copyright" style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">
+© 2024 - 2026 夸克博客 All rights reserved.
+</a> </div> <script src="/assets/js/code.js"></script> <script src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script> <script src="https://giscus.app/client.js" data-repo="lsqkk/lsqkk.github.io" data-repo-id="R_kgDONya5nQ" data-category="Announcements" data-category-id="DIC_kwDONya5nc4CnVr4" data-mapping="url" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
+    </script> </body> </html>

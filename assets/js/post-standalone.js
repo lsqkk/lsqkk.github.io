@@ -4,10 +4,6 @@
  */
 // @ts-check
 
-/**
- * @typedef {{ file: string, title: string }} NavPost
- */
-
 // 1. 初始化入口
 document.addEventListener('DOMContentLoaded', async () => {
     initPostUI();
@@ -21,12 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 生成目录并添加导航
     generateTOC();
-
-    const tagsContainer = document.getElementById('post-tags-container');
-    const filename = tagsContainer ? tagsContainer.getAttribute('data-md-file') : null;
-    if (filename) {
-        await addPostNavigation(filename);
-    }
+    addPostNavigationFromData();
 
     // 显示侧边栏内容
     const sidebarContent = document.getElementById('sidebarContent');
@@ -184,44 +175,35 @@ function generateTOC() {
     tocContainer.innerHTML = html;
 }
 
-// 5. 侧边栏导航逻辑 (需要读取 posts.json)
-/**
- * @param {string} currentFileBaseName
- */
-async function addPostNavigation(currentFileBaseName) {
-    try {
-        /** @type {NavPost[]} */
-        const posts = await fetch('/posts/posts.json').then(r => r.json());
+// 5. 侧边栏导航逻辑（使用构建期注入的数据，不再请求 posts.json）
+function addPostNavigationFromData() {
+    const tagsContainer = document.getElementById('post-tags-container');
+    const prevBtn = document.getElementById('prevPost');
+    const nextBtn = document.getElementById('nextPost');
 
-        // 查找当前文章索引
-        const currentIndex = posts.findIndex((p) => p.file.endsWith(currentFileBaseName));
-        if (currentIndex === -1) return;
+    if (!(tagsContainer instanceof HTMLElement) ||
+        !(prevBtn instanceof HTMLAnchorElement) ||
+        !(nextBtn instanceof HTMLAnchorElement)) {
+        return;
+    }
 
-        // 注意：posts.json 通常是倒序排列（最新的在前面）
-        const nextPost = posts[currentIndex - 1]; // 时间更晚的
-        const prevPost = posts[currentIndex + 1]; // 时间更早的
+    const prevTitle = tagsContainer.getAttribute('data-prev-title') || '';
+    const prevUrl = tagsContainer.getAttribute('data-prev-url') || '';
+    const nextTitle = tagsContainer.getAttribute('data-next-title') || '';
+    const nextUrl = tagsContainer.getAttribute('data-next-url') || '';
 
-        const prevBtn = document.getElementById('prevPost');
-        const nextBtn = document.getElementById('nextPost');
-        if (!(prevBtn instanceof HTMLAnchorElement) || !(nextBtn instanceof HTMLAnchorElement)) {
-            return;
-        }
+    if (prevTitle && prevUrl) {
+        prevBtn.innerHTML = `← ${prevTitle}`;
+        prevBtn.href = prevUrl;
+    } else {
+        prevBtn.style.display = 'none';
+    }
 
-        if (prevPost) {
-            prevBtn.innerHTML = `← ${prevPost.title}`;
-            prevBtn.onclick = () => window.location.href = `/posts/${prevPost.file.replace('.md', '')}`;
-        } else {
-            prevBtn.style.display = 'none';
-        }
-
-        if (nextPost) {
-            nextBtn.innerHTML = `${nextPost.title} →`;
-            nextBtn.onclick = () => window.location.href = `/posts/${nextPost.file.replace('.md', '')}`;
-        } else {
-            nextBtn.style.display = 'none';
-        }
-    } catch (e) {
-        console.error("加载导航失败:", e);
+    if (nextTitle && nextUrl) {
+        nextBtn.innerHTML = `${nextTitle} →`;
+        nextBtn.href = nextUrl;
+    } else {
+        nextBtn.style.display = 'none';
     }
 }
 
