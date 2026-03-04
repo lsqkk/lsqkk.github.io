@@ -1,5 +1,5 @@
 {
-    "note": "修改此配置以调整主页各板块显示与否与显示顺序。修改此配置后，需运行 /py/generate_index.py 或安装 quark 工具后执行 quark index 以更新主页。",
+    "note": "修改此配置以调整主页各板块显示与否与显示顺序。修改后请执行 quark build（或 npm run build 并发布）以重新生成首页。",
     "main_content": {
         "avatar_nickname": true,
         "social_links": true,

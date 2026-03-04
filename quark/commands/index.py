@@ -1,11 +1,13 @@
 import click
-from ..utils import run_python_script
+from .build import run_build_pipeline
+
 
 @click.command()
 def cli():
-    """更新博客主页组成"""
+    """兼容命令：请改用 quark build"""
     try:
-        run_python_script('generate_index.py')
-        click.echo("√ 主页更新完成")
+        click.echo("提示: `quark index` 已并入 `quark build`，正在执行构建流程...")
+        run_build_pipeline()
+        click.echo("√ 构建完成")
     except Exception as e:
         click.echo(f"更新失败: {e}", err=True)

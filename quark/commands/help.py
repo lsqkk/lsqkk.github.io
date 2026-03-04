@@ -8,10 +8,12 @@ Quark 博客管理工具 - 帮助
 
 基本命令:
   quark serve [--port PORT]      启动本地服务器
-  quark updateposts              更新博客文章
+  quark build                    构建站点（posts.json + Astro + 发布到根目录）
+  quark updateposts              兼容命令（等效 quark build）
   quark checkassets              检查未被 HTML 引用的 CSS/JS
   quark initrepo [--apply]       按 template/init 初始化仓库（默认模拟）
   quark map                      生成网站地图
+  quark ppush [MESSAGE]          一键构建 + 地图 + 推送
   quark push MESSAGE [--remote REMOTE] [--branch BRANCH]
   quark ds [QUERY]               与DeepSeek对话
 
