@@ -430,14 +430,18 @@
 
         clearRenderedHighlights();
         const fullText = state.contentEl.textContent || '';
-        const entries = Object.keys(state.highlights).map((id) => ({ id, ...state.highlights[id] }));
-        entries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        const positioned = Object.keys(state.highlights).map((id) => {
+            const item = { id, ...state.highlights[id] };
+            return {
+                item,
+                idx: chooseBestIndex(fullText, item)
+            };
+        }).filter((x) => x.idx >= 0);
 
-        entries.forEach((item) => {
-            const idx = chooseBestIndex(fullText, item);
-            if (idx < 0) {
-                return;
-            }
+        // 从后往前渲染，避免先渲染前文导致后文偏移
+        positioned.sort((a, b) => b.idx - a.idx);
+
+        positioned.forEach(({ item, idx }) => {
             const range = createRangeFromOffsets(state.contentEl, idx, idx + item.exactText.length);
             if (!range) {
                 return;
