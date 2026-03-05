@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克会议 | WebRTC 在线视频与屏幕共享 - 夸克博客</title>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+    <link rel="stylesheet" href="meet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+</head>
+
+<body>
+    <link rel="stylesheet" href="/assets/css/shicha.css">
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+    <div class="meeting-wrapper">
+
+        <div class="meeting-container">
+
+            <div class="control-card">
+                <h2>加入/创建会议</h2>
+                <div class="meeting-input-group">
+                    <input type="text" id="room-code-input" class="meeting-input" placeholder="输入三位会议码 (如 XYZ)"
+                        maxlength="3" style="text-transform: uppercase;">
+                    <button id="create-room-btn" class="meeting-action-button">生成会议码并主持</button>
+                    <button id="join-room-btn" class="meeting-action-button">加入房间并参会</button>
+                </div>
+
+                <div id="controls-section" style="display: none;">
+                    <h2>设备控制</h2>
+                    <div class="device-controls">
+                        <button id="camera-btn" class="device-btn">
+                            <i class="fas fa-video-slash"></i>
+                            <span>打开摄像头</span>
+                        </button>
+                        <button id="mic-btn" class="device-btn">
+                            <i class="fas fa-microphone"></i>
+                            <span>启用麦克风</span>
+                        </button>
+                        <button id="screen-share-btn" class="device-btn">
+                            <i class="fas fa-desktop"></i>
+                            <span>共享屏幕</span>
+                        </button>
+                        <button id="hangup-btn" class="meeting-action-button red-btn" style="margin-top: 15px;">
+                            <i class="fas fa-phone-slash"></i>
+                            结束会议
+                        </button>
+                    </div>
+                </div>
+
+                <h2>状态日志</h2>
+                <pre id="status-log" class="status-log">状态：未连接</pre>
+            </div>
+
+            <div class="video-display-area">
+                <h1 id="meeting-title" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">夸克会议 Quark Meet
+                </h1>
+                <div class="video-player-container">
+                    <div class="video-card" id="local-video-card">
+                        <video id="local-video" autoplay muted playsinline></video>
+                        <span class="video-label">我的视频</span>
+                    </div>
+
+                    <div class="video-card" id="remote-video-card" style="display: none;">
+                        <video id="remote-video" autoplay playsinline></video>
+                        <span class="video-label">对方视频</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script is:inline src="meet.js"></script>
+</body>
+
+</html>

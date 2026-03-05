@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夸克直播助手 - 夸克博客</title>
+    <link rel="stylesheet" href="css/assistant.css">
+
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png"></head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-broadcast-tower"></i> 直播助手</h1>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3><i class="fas fa-comments"></i> 实时聊天</h3>
+                <div class="message-count">消息: <span id="chat-count">0</span></div>
+            </div>
+            <div class="messages" id="messages">
+                <div class="message">
+                    <div class="message-header">
+                        <div class="message-avatar" style="background: #4a6cf7">系</div>
+                        <span class="user">系统</span>
+                        <span class="time" id="current-time"></span>
+                    </div>
+                    <div class="message-content">直播助手已启动</div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-message-input" placeholder="输入消息...">
+                <button id="chat-send-btn">发送</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="viewer-count">0</div>
+                <div class="stat-label">在线观众</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="like-count">0</div>
+                <div class="stat-label">总点赞数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="message-count">0</div>
+                <div class="stat-label">聊天消息</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stream-duration">00:00</div>
+                <div class="stat-label">直播时长</div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="control-buttons">
+                <button class="control-btn" id="stop-stream-btn">
+                    <i class="fas fa-stop"></i>
+                    停止直播
+                </button>
+                <button class="control-btn copy-btn" id="copy-url-btn">
+                    <i class="fas fa-copy"></i>
+                    复制观看地址
+                </button>
+                <button class="control-btn copy-btn" id="copy-channel-btn">
+                    <i class="fas fa-hashtag"></i>
+                    复制频道名
+                </button>
+            </div>
+        </div>
+
+        <div class="stream-info">
+            <div class="info-item">
+                <div class="info-label">直播标题</div>
+                <div class="info-value" id="stream-title">夸克博客直播</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">频道名称</div>
+                <div class="info-value" id="channel-name">lsqkk</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">观看地址</div>
+                <div class="info-value" id="viewer-url">/a/live/</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <!-- Font Awesome -->
+    <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script is:inline src="js/assistant.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>
