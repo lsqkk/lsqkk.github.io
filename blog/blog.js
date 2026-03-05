@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 加载本地配置文件
     function fetchLocalFunctions() {
+        if (window.__BLOG_FUNCTIONS__) {
+            return Promise.resolve(window.__BLOG_FUNCTIONS__);
+        }
         return fetch('functions.json')
             .then(response => {
                 if (!response.ok) {

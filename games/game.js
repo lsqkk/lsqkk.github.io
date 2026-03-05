@@ -1,6 +1,5 @@
 async function loadGames() {
-    const response = await fetch('game.json');
-    const data = await response.json();
+    const data = window.__GAMES_DATA__ || await fetch('game.json').then((response) => response.json());
     const gameContainer = document.getElementById('game-container');
 
     // 创建对战专区

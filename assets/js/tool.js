@@ -4,14 +4,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // 显示加载状态
     container.innerHTML = '<div class="loading">正在加载工具箱数据...</div>';
 
-    // 读取配置文件
-    fetch('/tool/tool.json')
+    // 读取配置文件（优先使用构建期注入）
+    const loadPromise = window.__TOOLS_DATA__
+        ? Promise.resolve(window.__TOOLS_DATA__)
+        : fetch('/tool/tool.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP错误! 状态码: ${response.status}`);
             }
             return response.json();
-        })
+        });
+
+    loadPromise
         .then(data => {
             // 移除emoji并处理数据
             const processedData = processToolsData(data);

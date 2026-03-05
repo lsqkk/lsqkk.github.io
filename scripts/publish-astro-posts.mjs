@@ -4,6 +4,12 @@ import path from "node:path";
 const ROOT = process.cwd();
 const DIST_POSTS = path.join(ROOT, "dist", "posts");
 const ROOT_POSTS = path.join(ROOT, "posts");
+const DIST_BLOG = path.join(ROOT, "dist", "blog");
+const ROOT_BLOG = path.join(ROOT, "blog");
+const DIST_TOOL = path.join(ROOT, "dist", "tool");
+const ROOT_TOOL = path.join(ROOT, "tool");
+const DIST_GAMES = path.join(ROOT, "dist", "games");
+const ROOT_GAMES = path.join(ROOT, "games");
 
 async function walk(dir) {
   const out = [];
@@ -20,22 +26,37 @@ async function walk(dir) {
 }
 
 async function publishPostsHtml() {
-  try {
-    await fs.access(DIST_POSTS);
-  } catch {
-    throw new Error("未找到 dist/posts，请先执行 npm run build");
+  const publishDirs = [
+    { distDir: DIST_POSTS, rootDir: ROOT_POSTS, label: "posts" },
+    { distDir: DIST_BLOG, rootDir: ROOT_BLOG, label: "blog" },
+    { distDir: DIST_TOOL, rootDir: ROOT_TOOL, label: "tool" },
+    { distDir: DIST_GAMES, rootDir: ROOT_GAMES, label: "games" },
+  ];
+
+  let hasBuildOutput = false;
+  const publishStats = [];
+  for (const { distDir, rootDir, label } of publishDirs) {
+    try {
+      await fs.access(distDir);
+    } catch {
+      continue;
+    }
+    hasBuildOutput = true;
+    const dirFiles = await walk(distDir);
+    const dirHtmlFiles = dirFiles.filter((file) => file.toLowerCase().endsWith(".html"));
+    let dirCopied = 0;
+    for (const src of dirHtmlFiles) {
+      const rel = path.relative(distDir, src);
+      const dest = path.join(rootDir, rel);
+      await fs.mkdir(path.dirname(dest), { recursive: true });
+      await fs.copyFile(src, dest);
+      dirCopied += 1;
+    }
+    publishStats.push(`${label} HTML ${dirCopied} 个`);
   }
 
-  const files = await walk(DIST_POSTS);
-  const htmlFiles = files.filter((file) => file.toLowerCase().endsWith(".html"));
-
-  let copied = 0;
-  for (const src of htmlFiles) {
-    const rel = path.relative(DIST_POSTS, src);
-    const dest = path.join(ROOT_POSTS, rel);
-    await fs.mkdir(path.dirname(dest), { recursive: true });
-    await fs.copyFile(src, dest);
-    copied += 1;
+  if (!hasBuildOutput) {
+    throw new Error("未找到 dist/posts、dist/blog、dist/tool、dist/games，请先执行 npm run build");
   }
 
   const distIndex = path.join(ROOT, "dist", "index.html");
@@ -49,9 +70,8 @@ async function publishPostsHtml() {
     indexCopied = false;
   }
 
-  console.log(
-    `已发布 Astro 页面: posts HTML ${copied} 个${indexCopied ? "，并更新根目录 index.html" : ""}`
-  );
+  const statsText = publishStats.join("，");
+  console.log(`已发布 Astro 页面: ${statsText}${indexCopied ? "，并更新根目录 index.html" : ""}`);
 }
 
 publishPostsHtml().catch((err) => {

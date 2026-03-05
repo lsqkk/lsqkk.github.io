@@ -1,0 +1,43 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const PROJECT_ROOT = process.cwd();
+const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const toolsPath = path.join(PROJECT_ROOT, "tool", "tool.json");
+
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const toolsData = JSON.parse(await fs.readFile(toolsPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>工具箱 - 夸克博客</title>
+    <meta name="description" content="夸克博客的实用工具集合，涵盖生活、学术、文本处理、实时协同等多个领域，提供丰富的在线工具。" />
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/tool.css" />
+    <script is:inline define:vars={{ navConfig, toolsData }}>
+      window.__NAV_CONFIG__ = navConfig;
+      window.__TOOLS_DATA__ = toolsData;
+    </script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+  </head>
+
+  <body>
+    <link rel="stylesheet" href="/assets/css/shicha.css" />
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+    <div class="container">
+      <h1 class="page-title">工具箱 / TOOLS</h1>
+      <div id="tools-container"></div>
+    </div>
+
+    <script is:inline src="/assets/js/tool.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

@@ -1,50 +1,7 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>文章 / POSTS - 夸克博客</title><link rel="icon" href="/assets/img/logo_blue.png" type="image/png"><link rel="stylesheet" href="/assets/css/basic.css"><link rel="stylesheet" href="/assets/css/cursor.css"><link rel="stylesheet" href="/assets/css/posts.css"><script>(function(){const navConfig = {"logo":{"url":"/assets/img/logo_blue.png","alt":"网站logo","style":"width: 27px; border-radius: 50%; margin: 3px 7px 0px 0px; overflow: hidden;"},"title":{"text":"夸克博客","link":"/"},"navItems":[{"name":"文章","link":"/posts","target":"blank"},{"name":"工具","link":"/tool","target":"blank"},{"name":"游戏","link":"/games","target":"blank"},{"name":"实验室","link":"/a","target":"blank"},{"name":"视频","link":"/blog/qtv","target":"blank"},{"name":"留言","link":"/blog/lyb","target":"blank"},{"name":"更多","link":"/blog","target":"blank"}],"login":{"url":"https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user"}};
+const postsData = [{"title":"从Namecheap到Cloudflare：一个域名“韭菜”的技术自救实录","file":"2026/2601.md","date":"2026-02-09","tags":["网站","域名"],"wordCount":3661},{"title":"2025 年终总结","file":"2025/2520.md","date":"2025-12-31","tags":["杂谈","报告"],"wordCount":1281},{"title":"新名词之争：教育理念不是话语权竞赛","file":"2025/2519.md","date":"2025-12-28","tags":["杂谈","教育"],"wordCount":3438},{"title":"《信息哲学概论》课程论文","file":"2025/2517.md","date":"2025-12-16","tags":["哲学","论文"],"wordCount":6489},{"title":"WebRTC 零服务器信令技术实现","file":"2025/2518.md","date":"2025-12-16","tags":["WebRTC","前端","论文"],"wordCount":7379},{"title":"当代大学生后现代解构主义思潮分析","file":"2025/2516.md","date":"2025-10-13","tags":["哲学","论文"],"wordCount":3702},{"title":"《异见时刻》| 金斯伯格与真正的自由","file":"2025/2515.md","date":"2025-06-21","tags":["书评","杂谈"],"wordCount":4650},{"title":"人非NPC，世界不是独角戏","file":"2025/2514.md","date":"2025-06-13","tags":["杂谈"],"wordCount":3132},{"title":"未完成式美学：契诃夫的留白与不确定性的现代性","file":"2025/2513.md","date":"2025-06-01","tags":["书评"],"wordCount":2117},{"title":"铁屋中的舞蹈","file":"2025/2509.md","date":"2025-05-11","tags":["书评"],"wordCount":4530},{"title":"Shor量子并行算法与Grover量子搜索算法的物理原理分析","file":"2025/2510.md","date":"2025-05-09","tags":["物理","论文"],"wordCount":4627},{"title":"从血与火中诞生的国际劳工节：被篡改的历史与未竟的斗争","file":"2025/2508.md","date":"2025-05-01","tags":["史政"],"wordCount":6067},{"title":"麦克斯韦妖，妖在哪里","file":"2025/2512.md","date":"2025-04-01","tags":["物理","论文"],"wordCount":3132},{"title":"洞穴之外","file":"2025/2511.md","date":"2025-03-09","tags":["书评"],"wordCount":4090},{"title":"这真的是个“低门槛”时代吗","file":"2025/2507.md","date":"2025-03-08","tags":["杂谈"],"wordCount":2890},{"title":"夸克博客全面接入DeepSeek","file":"2025/2506.md","date":"2025-02-28","tags":["报告","前端"],"wordCount":859},{"title":"博客移动端App正式上线","file":"2025/2504.md","date":"2025-02-22","tags":["报告"],"wordCount":1076},{"title":"2025 年西交校园大使宣讲总结","file":"2025/2505.md","date":"2025-02-06","tags":["报告"],"wordCount":2448},{"title":"关于我","file":"about.md","date":"2025-02-01","tags":["个人"],"wordCount":1238},{"title":"关于本站 & 版权声明","file":"copyright.md","date":"2025-02-01","tags":["网站"],"wordCount":4085},{"title":"摘不下的面具","file":"2025/2503.md","date":"2024-11-26","tags":["杂谈"],"wordCount":6190},{"title":"交大之夜","file":"2025/2502.md","date":"2024-10-01","tags":["杂谈"],"wordCount":1825},{"title":"当全国I卷作文遇到人工智能","file":"2024/2403.md","date":"2024-06-07","tags":["高考"],"wordCount":7008},{"title":"关于新定义速度$\\mathbf{u}=\\frac{dt}{d\\mathbf{x}}$的讨论","file":"2023/2305.md","date":"2023-12-01","tags":["物理"],"wordCount":4176},{"title":"三山岛居民生产、劳动方式演化的调研","file":"2023/2304.md","date":"2023-11-20","tags":["报告"],"wordCount":6197},{"title":"浅谈弹性与碰撞：从小球的反弹看碰撞的奥秘","file":"2023/2303.md","date":"2023-11-01","tags":["物理"],"wordCount":5193},{"title":"牛顿白光色散实验的科学原理","file":"2023/2302.md","date":"2023-09-29","tags":["物理"],"wordCount":6674},{"title":"C++输出谢尔宾斯基三角形","file":"2023/2204.md","date":"2022-11-28","tags":["C++"],"wordCount":825}];
 
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>文章 / POSTS - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script src="/assets/js/cursor-trail.js"></script>
-    <link rel="stylesheet" href="/assets/css/posts.css">
-</head>
-
-<body>
-
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script src="/assets/js/shicha.js"></script>
-
-
-    <script src="/assets/js/nav.js"></script>
-
-    <div class="posts-container">
-        <h1 class="page-title">文章 / POSTS</h1>
-        <h2 class="page-subtitle">RSS订阅链接: <a href="https://lsqkk.github.io/posts/rss.xml"
-                target="_blank">https://lsqkk.github.io/posts/rss.xml</a></h2>
-        <div id="searchResults" class="search-results"></div>
-
-        <div id="tagFilter" class="tag-filter"></div>
-
-        <div id="posts"></div>
-
-        <div class="pagination" id="pagination">
-            <button class="page-btn prev-btn" onclick="prevPage()">上一页</button>
-            <div class="page-numbers" id="pageNumbers"></div>
-            <button class="page-btn next-btn" onclick="nextPage()">下一页</button>
-        </div>
-    </div>
-
-    <div class="copyright">
-        © 2024 - 2026 蓝色奇夸克 / 夸克博客 All rights reserved
-    </div>
-    <script src="/assets/js/posts.js"></script>
-    <script src="/assets/js/disable-right-click.js"></script>
-</body>
-
-</html>
+      window.__NAV_CONFIG__ = navConfig;
+      window.__POSTS_DATA__ = postsData;
+    })();</script><script src="/assets/js/cursor-trail.js"></script></head> <body> <link rel="stylesheet" href="/assets/css/shicha.css"> <div class="parallax-bg" id="parallaxBg"></div> <script src="/assets/js/shicha.js"></script> <script src="/assets/js/nav.js"></script> <div class="posts-container"> <h1 class="page-title">文章 / POSTS</h1> <h2 class="page-subtitle">
+RSS订阅链接: <a href="https://lsqkk.github.io/posts/rss.xml" target="_blank">https://lsqkk.github.io/posts/rss.xml</a> </h2> <div id="searchResults" class="search-results"></div> <div id="tagFilter" class="tag-filter"></div> <div id="posts"></div> <div class="pagination" id="pagination"> <button class="page-btn prev-btn" onclick="prevPage()">上一页</button> <div class="page-numbers" id="pageNumbers"></div> <button class="page-btn next-btn" onclick="nextPage()">下一页</button> </div> </div> <div class="copyright">© 2024 - 2026 蓝色奇夸克 / 夸克博客 All rights reserved</div> <script src="/assets/js/posts.js"></script> <script src="/assets/js/disable-right-click.js"></script> </body> </html>
