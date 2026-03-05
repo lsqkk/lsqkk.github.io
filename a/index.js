@@ -2,13 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const projectsContainer = document.getElementById('projects-container');
     const footerProjects = document.getElementById('footer-projects');
 
-    fetch('./projects.json')
+    const loadPromise = window.__A_PROJECTS__
+        ? Promise.resolve(window.__A_PROJECTS__)
+        : fetch('./projects.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error('网络响应不正常');
             }
             return response.json();
-        })
+        });
+
+    loadPromise
         .then(data => {
             const categories = normalizeCategories(data);
 

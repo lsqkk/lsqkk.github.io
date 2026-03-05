@@ -1,0 +1,49 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const PROJECT_ROOT = process.cwd();
+const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>动态 - 夸克博客</title>
+    <link rel="stylesheet" href="/assets/css/dt.css" />
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <meta name="referrer" content="never" />
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+    </script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="/assets/js/qq-emotion-parser.min.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+  </head>
+  <style>
+    body { background: url('/assets/img/bg.png') no-repeat center center fixed; background-size: cover; }
+  </style>
+  <body>
+    <link rel="stylesheet" href="/assets/css/shicha.css" />
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+    <div class="dynamic-container">
+      <div class="dynamic-header"><h1 class="page-title">动态 / Life Updates</h1></div>
+      <div class="dynamic-layout">
+        <aside class="dynamic-sidebar" id="calendar-sidebar"></aside>
+        <main class="dynamic-main">
+          <div id="dynamic-content"></div>
+          <div id="pagination-container" class="pagination-container"></div>
+        </main>
+      </div>
+      <a href="/" class="back-home">← 返回主页</a>
+    </div>
+    <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
+    <script is:inline src="/blog/dt/dt.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

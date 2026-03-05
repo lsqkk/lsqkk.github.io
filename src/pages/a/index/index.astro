@@ -1,0 +1,80 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const PROJECT_ROOT = process.cwd();
+const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const projectsPath = path.join(PROJECT_ROOT, "a", "projects.json");
+
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const projectsData = JSON.parse(await fs.readFile(projectsPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>前端实验室 - 夸克博客</title>
+    <meta name="description" content="夸克博客前端实验室,探索前沿 Web 技术,实践创新交互体验,汇集各类有趣的项目和实验" />
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/a/style.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <script is:inline define:vars={{ navConfig, projectsData }}>
+      window.__NAV_CONFIG__ = navConfig;
+      window.__A_PROJECTS__ = projectsData;
+    </script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+  </head>
+  <body>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <main>
+      <div class="container">
+        <section class="hero">
+          <h1>前端实验室</h1>
+          <p>探索前沿 Web 技术 | 实践创新交互体验 | 各类有趣的项目和实验</p>
+          <a href="#projects" class="cta-button">探索项目</a>
+        </section>
+        <section id="projects" class="projects-section">
+          <h2 class="section-title">实验室项目</h2>
+          <div id="projects-container"><div class="loading"><div class="spinner"></div></div></div>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>关于我们</h3>
+            <p>无穷的远方，无数的人们，都和我有关</p>
+          </div>
+          <div class="footer-column">
+            <h3>快速链接</h3>
+            <ul class="footer-links">
+              <li><a href="/">首页</a></li>
+              <li><a href="/posts">技术文章</a></li>
+              <li><a href="/games">趣味游戏</a></li>
+              <li><a href="/tool">实用工具</a></li>
+              <li><a href="/blog/daily">夸克日报</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>实验室项目</h3>
+            <ul class="footer-links" id="footer-projects"></ul>
+          </div>
+          <div class="footer-column">
+            <h3>联系我们</h3>
+            <ul class="footer-links">
+              <li><a href="/blog/lyb">留言板</a></li>
+              <li><a href="jsxzznz@163.com">邮箱联系</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="copyright"><p>© 2024 - 2026 夸克博客 All rights reserved.</p></div>
+      </div>
+    </footer>
+    <script is:inline src="/a/index.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

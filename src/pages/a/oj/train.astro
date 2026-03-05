@@ -1,0 +1,147 @@
+---
+import OjLayout from "../../../layouts/OjLayout.astro";
+---
+<OjLayout
+  title="在线练习 - Quark OJ - 夸克博客"
+  extraStyles={[
+    "/a/oj/nav.css",
+    "/a/oj/style.css",
+    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css",
+  ]}
+  extraHeadScripts={[
+    "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
+    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js",
+    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js",
+    "/assets/js/nav.js",
+  ]}
+>
+  <script is:inline slot="head">
+    function handleSearch() {
+      const searchInput = document.getElementById("oj-search-input");
+      const searchValue = searchInput.value.trim();
+      if (searchValue) {
+        window.location.href = `problem-list.html?search=${encodeURIComponent(searchValue)}`;
+      } else {
+        window.location.href = `problem-list.html`;
+      }
+    }
+  </script>
+  <style slot="head">
+    .markdown-body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; font-size: 16px; line-height: 1.6; word-wrap: break-word; padding: 20px; }
+    .markdown-body h1,.markdown-body h2,.markdown-body h3 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
+    .markdown-body h1 { font-size: 2em; } .markdown-body h2 { font-size: 1.5em; } .markdown-body h3 { font-size: 1.25em; }
+    .markdown-body p { margin-top: 0; margin-bottom: 16px; }
+    .markdown-body pre { background-color: #f6f8fa; border-radius: 6px; padding: 16px; overflow: auto; margin-bottom: 16px; }
+    .markdown-body code { font-family: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace; font-size: 85%; background-color: rgba(27,31,35,0.05); border-radius: 3px; padding: 0.2em 0.4em; }
+    .markdown-body pre code { background-color: transparent; padding: 0; }
+    .markdown-body blockquote { border-left: 0.25em solid #dfe2e5; color: #6a737d; padding: 0 1em; margin: 0 0 16px 0; }
+    .markdown-body ul,.markdown-body ol { padding-left: 2em; margin-bottom: 16px; }
+    .markdown-body table { border-collapse: collapse; margin-bottom: 16px; width: 100%; }
+    .markdown-body table th,.markdown-body table td { border: 1px solid #dfe2e5; padding: 6px 13px; }
+    .markdown-body table th { font-weight: 600; background-color: #f6f8fa; }
+    .katex-display { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
+    .math-container { text-align: center; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid #2196f3; }
+    .katex { font-size: 1.1em; }
+  </style>
+
+  <div class="oj-app-wrapper">
+    <aside class="oj-sidebar-panel glass-card">
+      <h2 class="oj-sidebar-title">QUARK OJ</h2>
+      <nav class="oj-sidebar-nav">
+        <ul>
+          <li><a href="index.html" class="oj-nav-link">首页</a></li>
+          <li><a href="train.html" class="oj-nav-link active">刷题</a></li>
+          <li><a href="problem-list.html" class="oj-nav-link">题库</a></li>
+          <li><a href="discussion.html" class="oj-nav-link">讨论区</a></li>
+          <li><a href="submission-record.html" class="oj-nav-link">提交记录</a></li>
+        </ul>
+      </nav>
+      <hr class="oj-sidebar-divider" />
+      <div class="oj-sidebar-controls">
+        <div class="oj-search-group">
+          <input type="text" id="oj-search-input" class="oj-search-input" placeholder="搜索题目 ID/名称" />
+          <button class="oj-search-button" onclick="handleSearch()">🔍</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="oj-main-content">
+      <section class="oj-problem-panel glass-card">
+        <h2 class="oj-problem-title" id="problem-title">加载中...</h2>
+        <div class="oj-problem-info">
+          <span class="oj-time-limit">时间限制: <strong id="time-limit">1000ms</strong></span>
+          <span class="oj-memory-limit">内存限制: <strong id="memory-limit">64MB</strong></span>
+        </div>
+        <div class="oj-description-section"><h3>题目描述</h3><div id="problem-description" class="markdown-body"></div></div>
+        <div class="oj-description-section"><h3>输入格式</h3><div id="problem-input-format" class="markdown-body"></div></div>
+        <div class="oj-description-section"><h3>输出格式</h3><div id="problem-output-format" class="markdown-body"></div></div>
+        <div class="oj-description-section">
+          <h3>输入/输出示例</h3>
+          <div class="oj-sample-io">
+            <div class="oj-sample-block"><h4>输入示例</h4><pre id="sample-input"></pre></div>
+            <div class="oj-sample-block"><h4>输出示例</h4><pre id="sample-output"></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="oj-editor-panel glass-card">
+        <div class="oj-editor-tools">
+          <label for="language-select" class="oj-control-label">提交语言:</label>
+          <select id="language-select" class="oj-code-language-select">
+            <option value="71">Python 3 (ID: 71)</option>
+            <option value="54" selected>C++ (GCC 9.2.0) (ID: 54)</option>
+            <option value="62">Java (OpenJDK 13.0.1) (ID: 62)</option>
+          </select>
+          <button id="submit-button" class="oj-submit-button">提交代码</button>
+        </div>
+        <div id="editor-container" class="oj-editor-container"></div>
+        <div id="result-panel" class="oj-result-panel" style="display: none;">
+          <h3>判题结果</h3>
+          <p>状态: <strong id="result-status">等待提交...</strong></p>
+          <p>运行时间: <span id="result-time">--</span></p>
+          <p>内存占用: <span id="result-memory">--</span></p>
+          <pre id="result-output" class="oj-result-output"></pre>
+          <pre id="result-error" class="oj-result-error"></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
+  <script is:inline>
+    marked.setOptions({ highlight: function (code) { return code; }, breaks: true, gfm: true, pedantic: false, smartypants: true });
+    function renderMarkdown(markdown) { if (!markdown) return ""; return marked.parse(markdown); }
+    require.config({ paths: { "vs": "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs" } });
+    let editor;
+    require(["vs/editor/editor.main"], function () {
+      editor = monaco.editor.create(document.getElementById("editor-container"), {
+        value: ["//your code here"].join("\n"),
+        language: "cpp",
+        theme: "vs-dark",
+        automaticLayout: true,
+      });
+      document.getElementById("language-select").addEventListener("change", (e) => {
+        const langId = e.target.value;
+        let monacoLang = "cpp";
+        if (langId == "71") monacoLang = "python";
+        if (langId == "62") monacoLang = "java";
+        if (langId == "54") monacoLang = "cpp";
+        monaco.editor.setModelLanguage(editor.getModel(), monacoLang);
+      });
+      const scriptUtils = document.createElement("script");
+      scriptUtils.src = "./js/utils.js";
+      document.body.appendChild(scriptUtils);
+      scriptUtils.onload = function () {
+        const scriptProblem = document.createElement("script");
+        scriptProblem.src = "./js/problem.js";
+        document.body.appendChild(scriptProblem);
+        scriptProblem.onload = function () {
+          if (typeof initializeProblemPage !== "undefined") {
+            initializeProblemPage();
+          }
+        };
+      };
+    });
+  </script>
+</OjLayout>
