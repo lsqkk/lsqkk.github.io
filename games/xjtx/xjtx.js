@@ -7,8 +7,7 @@ let stats = {
 };
 
 async function loadQuestion() {
-    const response = await fetch('data.json');
-    const data = await response.json();
+    const data = Array.isArray(window.__XJTX_DATA__) ? window.__XJTX_DATA__ : await fetch('data.json').then((response) => response.json());
     currentQuestion = data[Math.floor(Math.random() * data.length)];
 
     document.getElementById('question-image').innerHTML = `

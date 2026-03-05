@@ -92,15 +92,20 @@ function showCopyToast(message) {
  */
 function loadFriendsList() {
     const friendsContainer = document.getElementById('friendsContainer');
+    const preloadedFriends = Array.isArray(window.__FRIENDS_DATA__) ? window.__FRIENDS_DATA__ : null;
 
-    // 从指定的JSON文件读取数据
-    fetch('/json/friends.json')
+    // 从构建期注入数据读取，注入不存在时回退请求 JSON
+    const dataPromise = preloadedFriends
+        ? Promise.resolve(preloadedFriends)
+        : fetch('/json/friends.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
-        })
+        });
+
+    dataPromise
         .then(friends => {
             // 清空加载提示
             friendsContainer.innerHTML = '';

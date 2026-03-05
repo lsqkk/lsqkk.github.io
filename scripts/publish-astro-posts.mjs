@@ -10,6 +10,8 @@ const DIST_TOOL = path.join(ROOT, "dist", "tool");
 const ROOT_TOOL = path.join(ROOT, "tool");
 const DIST_GAMES = path.join(ROOT, "dist", "games");
 const ROOT_GAMES = path.join(ROOT, "games");
+const DIST_A = path.join(ROOT, "dist", "a");
+const ROOT_A = path.join(ROOT, "a");
 
 async function walk(dir) {
   const out = [];
@@ -31,6 +33,7 @@ async function publishPostsHtml() {
     { distDir: DIST_BLOG, rootDir: ROOT_BLOG, label: "blog" },
     { distDir: DIST_TOOL, rootDir: ROOT_TOOL, label: "tool" },
     { distDir: DIST_GAMES, rootDir: ROOT_GAMES, label: "games" },
+    { distDir: DIST_A, rootDir: ROOT_A, label: "a" },
   ];
 
   let hasBuildOutput = false;
@@ -56,7 +59,7 @@ async function publishPostsHtml() {
   }
 
   if (!hasBuildOutput) {
-    throw new Error("未找到 dist/posts、dist/blog、dist/tool、dist/games，请先执行 npm run build");
+    throw new Error("未找到 dist/posts、dist/blog、dist/tool、dist/games、dist/a，请先执行 npm run build");
   }
 
   const distIndex = path.join(ROOT, "dist", "index.html");
