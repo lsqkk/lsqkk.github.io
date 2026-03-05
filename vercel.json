@@ -1,5 +1,6 @@
 {
   "framework": null,
   "installCommand": "npm install --no-audit --no-fund",
-  "buildCommand": "echo \"Skip Vercel static build (GitHub Pages handles site build)\""
+  "buildCommand": "echo \"Skip Vercel static build (GitHub Pages handles site build)\"",
+  "outputDirectory": "."
 }
