@@ -1,0 +1,11 @@
+{
+  "framework": null,
+  "installCommand": "npm install --no-audit --no-fund",
+  "buildCommand": "echo \"Skip Vercel static build (GitHub Pages handles site build)\"",
+  "outputDirectory": ".",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}
