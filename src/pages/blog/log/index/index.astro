@@ -14,7 +14,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <title>更新日志 - 夸克博客</title>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
-    <link rel="stylesheet" href="/blog/log/log.css" />
+    <link rel="stylesheet" href="/assets/pages/blog/log/log.css" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <script is:inline define:vars={{ navConfig }}>
       window.__NAV_CONFIG__ = navConfig;
@@ -32,7 +32,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
       <div id="pagination-container" class="pagination-container"></div>
     </div>
     <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
-    <script is:inline src="/blog/log/log.js"></script>
+    <script is:inline src="/assets/pages/blog/log/log.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>

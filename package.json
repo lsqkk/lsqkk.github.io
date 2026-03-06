@@ -4,9 +4,11 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "npm run gen:posts-json && npm run sync:public",
     "build": "astro build",
     "preview": "astro preview",
     "gen:posts-json": "node scripts/generate-posts-json.mjs",
+    "sync:public": "node scripts/sync-public.mjs",
     "publish:astro-posts": "node scripts/publish-astro-posts.mjs",
     "typecheck": "tsc -p jsconfig.json --noEmit",
     "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check blog/lyb/lyb.js"

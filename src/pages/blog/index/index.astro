@@ -18,7 +18,7 @@ const blogFunctions = JSON.parse(await fs.readFile(functionsPath, "utf8"));
     <meta name="description" content="夸克博客网站功能导航页面，提供功能指引" />
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
-    <link rel="stylesheet" href="/blog/blog.css" />
+    <link rel="stylesheet" href="/assets/pages/blog/blog.css" />
     <script is:inline define:vars={{ navConfig, blogFunctions }}>
       window.__NAV_CONFIG__ = navConfig;
       window.__BLOG_FUNCTIONS__ = blogFunctions;
@@ -34,6 +34,6 @@ const blogFunctions = JSON.parse(await fs.readFile(functionsPath, "utf8"));
       <h1 class="page-title">功能导航</h1>
       <div id="functions-container"></div>
     </div>
-    <script is:inline src="/blog/blog.js"></script>
+    <script is:inline src="/assets/pages/blog/blog.js"></script>
   </body>
 </html>

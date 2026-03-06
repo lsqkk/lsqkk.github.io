@@ -11,7 +11,7 @@ async function loadQuestion() {
     currentQuestion = data[Math.floor(Math.random() * data.length)];
 
     document.getElementById('question-image').innerHTML = `
-                <img src="/games/xjtx/images/${currentQuestion.image}" alt="题目图片">
+                <img src="/assets/pages/games/xjtx/images/${currentQuestion.image}" alt="题目图片">
             `;
 }
 

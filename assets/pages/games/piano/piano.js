@@ -35,7 +35,7 @@ async function loadMusicList() {
 
 // 加载并解析MIDI文件
 async function loadMIDI(filename) {
-    const response = await fetch(`music/${filename}`);
+    const response = await fetch(`/assets/pages/games/piano/music/${filename}`);
     const arrayBuffer = await response.arrayBuffer();
     const midi = await new Midi(arrayBuffer);
     return midi;
@@ -121,7 +121,7 @@ async function loadAudio(note) {
 
     if (!audioCache.has(note)) {
         console.log(`加载音频文件: ${note}`); // 调试信息
-        const response = await fetch(`sounds/piano_key_${note + 3}.ogg`);
+        const response = await fetch(`/assets/pages/games/piano/sounds/piano_key_${note + 3}.ogg`);
         if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer); // 使用全局 audioContext

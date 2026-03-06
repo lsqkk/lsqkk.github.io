@@ -3,7 +3,7 @@
  * 依赖于 ./utils.js (utils.js 必须先加载)
  */
 
-const PROBLEM_INDEX_URL = '/assets/pages/a/oj/js/problems/index.json';
+const PROBLEM_INDEX_URL = '/assets/pages/a/oj/problems/index.json';
 const $problemListTableBody = document.getElementById('oj-problem-list-body');
 const $searchQueryDisplay = document.getElementById('search-query-display');
 // 🏆 新增：分页控件 DOM 元素

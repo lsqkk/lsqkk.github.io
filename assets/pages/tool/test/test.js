@@ -32,7 +32,7 @@ function loadIndex() {
 
 // 加载特定问卷
 function loadTest(id) {
-    fetch(`${id}.json`)
+    fetch(`/assets/pages/tool/test/${id}.json`)
         .then(res => res.json())
         .then(data => {
             currentTestData = data;

@@ -169,7 +169,7 @@ function setupFortuneFeature() {
  */
 async function loadProblemStats() {
     try {
-        const response = await fetch('/assets/pages/a/oj/js/problems/index.json');
+        const response = await fetch('/assets/pages/a/oj/problems/index.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

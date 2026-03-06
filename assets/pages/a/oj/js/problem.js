@@ -77,11 +77,11 @@ function renderMarkdownWithLatex(markdownText, element) {
  */
 async function loadProblemData(id) {
     try {
-        const response = await fetch(`problems/${id}.json`);
+        const response = await fetch(`/assets/pages/a/oj/problems/${id}.json`);
 
         if (!response.ok) {
             // 增强错误信息，提示文件路径
-            throw new Error(`题目文件加载失败 (Status: ${response.status})。请检查路径: problems/${id}.json`);
+            throw new Error(`题目文件加载失败 (Status: ${response.status})。请检查路径: /assets/pages/a/oj/problems/${id}.json`);
         }
         problemData = await response.json();
         renderProblemUI(problemData);
