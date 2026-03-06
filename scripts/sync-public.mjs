@@ -7,7 +7,6 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const COPY_DIRS = [
   "assets",
   "json",
-  "blog",
 ];
 
 const COPY_FILES = [

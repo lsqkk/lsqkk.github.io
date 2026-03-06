@@ -11,7 +11,7 @@
     "sync:public": "node scripts/sync-public.mjs",
     "publish:astro-posts": "node scripts/publish-astro-posts.mjs",
     "typecheck": "tsc -p jsconfig.json --noEmit",
-    "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check blog/lyb/lyb.js"
+    "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check assets/pages/blog/lyb/lyb.js"
   },
   "devDependencies": {
     "astro": "^5.18.0",
