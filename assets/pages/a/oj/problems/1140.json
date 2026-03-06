@@ -1,0 +1,18 @@
+{
+    "id": 1140,
+    "title": "暴力枚举 - 百钱买百鸡",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "经典的“百钱买百鸡”问题：公鸡 5 文钱一只，母鸡 3 文钱一只，小鸡 1 文钱三只。用 $N$ 文钱买 $N$ 只鸡，问**所有可能的购买方案**。",
+    "input_format": "输入包含一行，一个整数 $N$ ($10 \\le N \\le 100$)。",
+    "output_format": "输出若干行，每行一个方案：公鸡数 $\\text{cock}$，母鸡数 $\\text{hen}$，小鸡数 $\\text{chick}$，用空格分隔。按照 $\\text{cock}$ 从小到大，$\\text{hen}$ 从小到大的顺序输出。",
+    "sample_input": "100",
+    "sample_output": "0 25 75\\n4 18 78\\n8 11 81\\n12 4 84",
+    "hidden_tests": [
+        {
+            "input": "30",
+            "expected_output": "0 10 20\\n4 3 23"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "id": 1146,
+    "title": "暴力枚举 - 最多 K 次交换的最大数",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定一个由数字组成的字符串 $S$ 和一个整数 $K$。你最多可以进行 $K$ 次**任意两个位置数字的交换**，目的是使最终得到的数字**最大**。请输出这个最大数。",
+    "input_format": "第一行是一个字符串 $S$（长度不超过 5）。第二行是一个整数 $K$ ($1 \\le K \\le 2$)。",
+    "output_format": "输出包含一行，即能得到的最大数。",
+    "sample_input": "132 1",
+    "sample_output": "312",
+    "hidden_tests": [
+        {
+            "input": "4321 1",
+            "expected_output": "4321"
+        },
+        {
+            "input": "12345 2",
+            "expected_output": "54321"
+        }
+    ]
+}

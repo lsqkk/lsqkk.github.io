@@ -1,0 +1,660 @@
+// 初始化变量
+let scene, camera, renderer, controls;
+let audioContext, analyser, audioSource, audioData;
+let particles, particleSystem;
+let rings = [];
+let waves = [];
+let spectrumBars = [];
+let currentVizMode = 'particles';
+let colorScheme = 'neon';
+let clock = new THREE.Clock();
+
+// 初始化Three.js场景
+function init() {
+    // 创建场景
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a16);
+    scene.fog = new THREE.Fog(0x0a0a16, 15, 50);
+
+    // 创建相机
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 15);
+
+    // 创建渲染器
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    // 添加轨道控制
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
+
+    // 添加光源
+    const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7);
+    scene.add(directionalLight);
+
+    // 添加点光源
+    const pointLight = new THREE.PointLight(0x4a90e2, 1, 100);
+    pointLight.position.set(0, 5, 0);
+    scene.add(pointLight);
+
+    // 初始化可视化元素
+    initParticleSystem();
+    initRings();
+    initWaves();
+    initSpectrum();
+    initAudioAnalyser();
+
+    // 设置事件监听
+    window.addEventListener('resize', onWindowResize);
+    document.getElementById('playBtn').addEventListener('click', playDefaultAudio);
+    document.getElementById('audioInput').addEventListener('change', handleAudioUpload);
+    document.getElementById('changeMode').addEventListener('click', toggleVizMode);
+
+    // 可视化模式按钮
+    document.querySelectorAll('.viz-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.viz-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentVizMode = this.getAttribute('data-viz');
+            updateVizMode();
+        });
+    });
+
+    // 颜色选择
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', function () {
+            document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+            colorScheme = this.getAttribute('data-color');
+            updateColorScheme();
+        });
+    });
+
+    // 开始动画循环
+    animate();
+}
+
+// 初始化粒子系统
+function initParticleSystem() {
+    const particleCount = 1500;
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    const sizes = new Float32Array(particleCount);
+
+    // 创建球形粒子分布
+    for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+
+        // 球坐标
+        const radius = 8 + Math.random() * 5;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+
+        positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i3 + 2] = radius * Math.cos(phi);
+
+        // 初始颜色 - 霓虹色调
+        colors[i3] = 0.8 + Math.random() * 0.2;
+        colors[i3 + 1] = 0.2 + Math.random() * 0.3;
+        colors[i3 + 2] = 0.8 + Math.random() * 0.2;
+
+        // 随机大小
+        sizes[i] = 0.5 + Math.random() * 1.0;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    // 粒子材质
+    const material = new THREE.PointsMaterial({
+        size: 0.3,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+    });
+
+    particleSystem = new THREE.Points(geometry, material);
+    scene.add(particleSystem);
+}
+
+// 初始化光环
+function initRings() {
+    const ringCount = 5;
+    const ringGeometry = new THREE.RingGeometry(3, 3.2, 64);
+
+    for (let i = 0; i < ringCount; i++) {
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color().setHSL(i / ringCount, 1, 0.5),
+            transparent: true,
+            opacity: 0.3,
+            side: THREE.DoubleSide
+        });
+
+        const ring = new THREE.Mesh(ringGeometry, material);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = i * 1.5 - 3;
+
+        scene.add(ring);
+        rings.push({
+            mesh: ring,
+            baseRadius: 3 + i * 0.5,
+            baseY: i * 1.5 - 3
+        });
+    }
+}
+
+// 初始化波形
+function initWaves() {
+    const waveCount = 3;
+    const wavePoints = 64;
+
+    for (let i = 0; i < waveCount; i++) {
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(wavePoints * 3);
+
+        for (let j = 0; j < wavePoints; j++) {
+            const j3 = j * 3;
+            const angle = (j / wavePoints) * Math.PI * 2;
+            const radius = 5 + i * 1.5;
+
+            positions[j3] = Math.cos(angle) * radius;
+            positions[j3 + 1] = 0;
+            positions[j3 + 2] = Math.sin(angle) * radius;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.LineBasicMaterial({
+            color: new THREE.Color().setHSL(0.7 - i * 0.1, 1, 0.6),
+            transparent: true,
+            opacity: 0.5
+        });
+
+        const wave = new THREE.Line(geometry, material);
+        scene.add(wave);
+        waves.push({
+            mesh: wave,
+            baseRadius: 5 + i * 1.5,
+            baseY: -2 + i * 0.5
+        });
+    }
+}
+
+// 初始化频谱
+function initSpectrum() {
+    const barCount = 32;
+    const barWidth = 0.2;
+    const barSpacing = 0.3;
+    const totalWidth = barCount * (barWidth + barSpacing) - barSpacing;
+
+    for (let i = 0; i < barCount; i++) {
+        const geometry = new THREE.BoxGeometry(barWidth, 1, barWidth);
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color().setHSL(i / barCount, 1, 0.5),
+            transparent: true,
+            opacity: 0.7
+        });
+
+        const bar = new THREE.Mesh(geometry, material);
+        bar.position.x = i * (barWidth + barSpacing) - totalWidth / 2;
+        bar.position.y = 0.5;
+        bar.position.z = -10;
+
+        scene.add(bar);
+        spectrumBars.push(bar);
+    }
+}
+
+// 初始化音频分析器
+function initAudioAnalyser() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    audioData = new Uint8Array(analyser.frequencyBinCount);
+}
+
+// 播放默认音频
+function playDefaultAudio() {
+    if (audioSource) return;
+
+    // 创建振荡器作为默认音频源
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    // 创建多个振荡器产生更丰富的音色
+    const oscillators = [];
+    const frequencies = [220, 277.18, 329.63, 440, 554.37, 659.25]; // 和弦
+
+    frequencies.forEach(freq => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc.type = ['sine', 'triangle', 'sawtooth'][Math.floor(Math.random() * 3)];
+        osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+
+        // 随机增益值
+        gain.gain.setValueAtTime(0.05 + Math.random() * 0.1, audioContext.currentTime);
+
+        osc.connect(gain);
+        gain.connect(analyser);
+
+        osc.start();
+        oscillators.push({ osc, gain });
+    });
+
+    // 创建低频振荡器用于频率调制
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.2, audioContext.currentTime);
+    lfoGain.gain.setValueAtTime(10, audioContext.currentTime);
+    lfo.connect(lfoGain);
+
+    // 将LFO应用到第一个振荡器
+    lfoGain.connect(oscillators[0].osc.frequency);
+
+    // 开始播放
+    lfo.start();
+
+    analyser.connect(audioContext.destination);
+    audioSource = oscillators;
+
+    // 更新按钮状态
+    document.getElementById('playBtn').classList.add('active');
+    document.getElementById('playBtn').innerHTML = `
+                <svg class="icon" viewBox="0 0 24 24" fill="white">
+                    <path d="M6 6h4v12H6zm8 0h4v12h-4z"/>
+                </svg>
+                播放中
+            `;
+}
+
+// 处理音频上传
+function handleAudioUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        if (audioSource) {
+            // 停止之前的音频
+            if (Array.isArray(audioSource)) {
+                audioSource.forEach(({ osc }) => osc.stop());
+            } else {
+                audioSource.stop();
+            }
+        }
+
+        audioContext.decodeAudioData(e.target.result, function (buffer) {
+            audioSource = audioContext.createBufferSource();
+            audioSource.buffer = buffer;
+            audioSource.connect(analyser);
+            analyser.connect(audioContext.destination);
+            audioSource.start();
+
+            // 更新UI
+            document.getElementById('playBtn').classList.add('active');
+            document.getElementById('playBtn').innerHTML = `
+                        <svg class="icon" viewBox="0 0 24 24" fill="white">
+                            <path d="M6 6h4v12H6zm8 0h4v12h-4z"/>
+                        </svg>
+                        播放中
+                    `;
+        });
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// 切换可视化模式
+function toggleVizMode() {
+    const modes = ['particles', 'waves', 'spectrum', 'rings'];
+    const currentIndex = modes.indexOf(currentVizMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    currentVizMode = modes[nextIndex];
+
+    // 更新UI
+    document.querySelectorAll('.viz-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-viz') === currentVizMode) {
+            btn.classList.add('active');
+        }
+    });
+
+    updateVizMode();
+}
+
+// 更新可视化模式
+function updateVizMode() {
+    // 更新显示
+    document.getElementById('modeDisplay').textContent =
+        currentVizMode === 'particles' ? '粒子' :
+            currentVizMode === 'waves' ? '波形' :
+                currentVizMode === 'spectrum' ? '频谱' : '光环';
+
+    // 根据模式调整自动旋转
+    controls.autoRotate = currentVizMode !== 'spectrum';
+
+    // 调整相机位置
+    if (currentVizMode === 'spectrum') {
+        camera.position.set(0, 5, 15);
+        controls.target.set(0, 0, -10);
+    } else {
+        camera.position.set(0, 5, 15);
+        controls.target.set(0, 0, 0);
+    }
+}
+
+// 更新颜色方案
+function updateColorScheme() {
+    // 更新显示
+    document.getElementById('colorDisplay').textContent =
+        colorScheme === 'neon' ? '霓虹' :
+            colorScheme === 'ocean' ? '海洋' :
+                colorScheme === 'sunset' ? '日落' : '森林';
+}
+
+// 窗口大小调整
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// 动画循环
+function animate() {
+    requestAnimationFrame(animate);
+
+    const time = clock.getElapsedTime();
+    const delta = clock.getDelta();
+
+    // 更新音频可视化
+    if (analyser && audioSource) {
+        updateVisualization(time, delta);
+    }
+
+    // 持续旋转
+    if (controls.autoRotate) {
+        controls.update();
+    }
+
+    renderer.render(scene, camera);
+}
+
+// 更新可视化效果
+function updateVisualization(time, delta) {
+    analyser.getByteFrequencyData(audioData);
+
+    // 计算平均频率和峰值
+    let sum = 0;
+    let peak = 0;
+    for (let i = 0; i < audioData.length; i++) {
+        sum += audioData[i];
+        if (audioData[i] > peak) peak = audioData[i];
+    }
+    const average = sum / audioData.length;
+    const normalizedAverage = average / 256;
+    const normalizedPeak = peak / 256;
+
+    // 根据当前模式更新可视化
+    switch (currentVizMode) {
+        case 'particles':
+            updateParticles(normalizedAverage, normalizedPeak, time);
+            break;
+        case 'waves':
+            updateWaves(normalizedAverage, time);
+            break;
+        case 'spectrum':
+            updateSpectrum(normalizedAverage);
+            break;
+        case 'rings':
+            updateRings(normalizedAverage, time);
+            break;
+    }
+
+    // 更新场景背景色
+    updateBackground(normalizedAverage, time);
+}
+
+// 更新粒子
+function updateParticles(average, peak, time) {
+    if (!particleSystem) return;
+
+    const positions = particleSystem.geometry.attributes.position.array;
+    const colors = particleSystem.geometry.attributes.color.array;
+    const basePositions = particleSystem.geometry.attributes.position.originalArray;
+
+    if (!basePositions) {
+        // 保存原始位置
+        particleSystem.geometry.attributes.position.originalArray = positions.slice();
+        return;
+    }
+
+    for (let i = 0; i < positions.length; i += 3) {
+        const particleIndex = i / 3;
+        const frequencyIndex = Math.floor(particleIndex / positions.length * 3 * audioData.length) % audioData.length;
+        const amplitude = audioData[frequencyIndex] / 256;
+
+        // 根据音频数据调整粒子位置
+        const waveEffect = Math.sin(time * 3 + particleIndex * 0.05) * amplitude * 1.5;
+
+        positions[i] = basePositions[i] * (1 + amplitude * 0.2 + waveEffect * 0.1);
+        positions[i + 1] = basePositions[i + 1] * (1 + amplitude * 0.2 + waveEffect * 0.1);
+        positions[i + 2] = basePositions[i + 2] * (1 + amplitude * 0.2 + waveEffect * 0.1);
+
+        // 根据色彩方案更新颜色
+        updateParticleColor(colors, i, particleIndex, amplitude, time);
+    }
+
+    particleSystem.geometry.attributes.position.needsUpdate = true;
+    particleSystem.geometry.attributes.color.needsUpdate = true;
+}
+
+// 更新粒子颜色
+function updateParticleColor(colors, index, particleIndex, amplitude, time) {
+    let hue, saturation, lightness;
+
+    switch (colorScheme) {
+        case 'neon': // 霓虹
+            hue = (particleIndex * 0.001 + time * 0.1) % 1;
+            saturation = 1;
+            lightness = 0.5 + amplitude * 0.3;
+            break;
+
+        case 'ocean': // 海洋
+            hue = 0.55 + particleIndex * 0.0005;
+            saturation = 0.8;
+            lightness = 0.4 + amplitude * 0.4;
+            break;
+
+        case 'sunset': // 日落
+            hue = 0.05 + particleIndex * 0.0003;
+            saturation = 0.9;
+            lightness = 0.5 + amplitude * 0.3;
+            break;
+
+        case 'forest': // 森林
+            hue = 0.3 + particleIndex * 0.0002;
+            saturation = 0.7;
+            lightness = 0.4 + amplitude * 0.4;
+            break;
+    }
+
+    const color = new THREE.Color().setHSL(hue, saturation, lightness);
+    colors[index] = color.r;
+    colors[index + 1] = color.g;
+    colors[index + 2] = color.b;
+}
+
+// 更新光环
+function updateRings(average, time) {
+    rings.forEach((ring, index) => {
+        const amplitude = audioData[Math.floor(index / rings.length * audioData.length)] / 256;
+
+        // 调整光环半径
+        ring.mesh.scale.setScalar(1 + amplitude * 0.5);
+
+        // 调整光环不透明度
+        ring.mesh.material.opacity = 0.3 + amplitude * 0.5;
+
+        // 上下浮动
+        ring.mesh.position.y = ring.baseY + Math.sin(time * 2 + index) * 0.5;
+
+        // 根据色彩方案调整颜色
+        updateRingColor(ring.mesh.material, index, time);
+    });
+}
+
+// 更新光环颜色
+function updateRingColor(material, index, time) {
+    let hue;
+
+    switch (colorScheme) {
+        case 'neon':
+            hue = (time * 0.05 + index * 0.1) % 1;
+            break;
+        case 'ocean':
+            hue = 0.55 + index * 0.05;
+            break;
+        case 'sunset':
+            hue = 0.05 + index * 0.05;
+            break;
+        case 'forest':
+            hue = 0.3 + index * 0.05;
+            break;
+    }
+
+    material.color.setHSL(hue, 1, 0.5);
+}
+
+// 更新波形
+function updateWaves(average, time) {
+    waves.forEach((wave, index) => {
+        const positions = wave.mesh.geometry.attributes.position.array;
+        const pointCount = positions.length / 3;
+
+        for (let i = 0; i < pointCount; i++) {
+            const i3 = i * 3;
+            const angle = (i / pointCount) * Math.PI * 2;
+            const radius = wave.baseRadius;
+
+            const amplitude = audioData[Math.floor(i / pointCount * audioData.length)] / 256;
+            const waveHeight = Math.sin(angle * 3 + time * 5) * amplitude * 2;
+
+            positions[i3] = Math.cos(angle) * radius;
+            positions[i3 + 1] = wave.baseY + waveHeight;
+            positions[i3 + 2] = Math.sin(angle) * radius;
+        }
+
+        wave.mesh.geometry.attributes.position.needsUpdate = true;
+
+        // 根据色彩方案调整颜色
+        updateWaveColor(wave.mesh.material, index, time);
+    });
+}
+
+// 更新波形颜色
+function updateWaveColor(material, index, time) {
+    let hue;
+
+    switch (colorScheme) {
+        case 'neon':
+            hue = (time * 0.1 + index * 0.2) % 1;
+            break;
+        case 'ocean':
+            hue = 0.6 - index * 0.1;
+            break;
+        case 'sunset':
+            hue = 0.1 + index * 0.1;
+            break;
+        case 'forest':
+            hue = 0.35 - index * 0.05;
+            break;
+    }
+
+    material.color.setHSL(hue, 1, 0.6);
+}
+
+// 更新频谱
+function updateSpectrum(average) {
+    spectrumBars.forEach((bar, index) => {
+        const amplitude = audioData[Math.floor(index / spectrumBars.length * audioData.length)] / 256;
+
+        // 调整柱状高度
+        bar.scale.y = 0.1 + amplitude * 5;
+        bar.position.y = bar.scale.y / 2;
+
+        // 根据色彩方案调整颜色
+        updateBarColor(bar.material, index);
+    });
+}
+
+// 更新频谱柱颜色
+function updateBarColor(material, index) {
+    let hue;
+
+    switch (colorScheme) {
+        case 'neon':
+            hue = index / spectrumBars.length;
+            break;
+        case 'ocean':
+            hue = 0.55 + index / spectrumBars.length * 0.2;
+            break;
+        case 'sunset':
+            hue = 0.05 + index / spectrumBars.length * 0.2;
+            break;
+        case 'forest':
+            hue = 0.3 + index / spectrumBars.length * 0.2;
+            break;
+    }
+
+    material.color.setHSL(hue, 1, 0.5);
+}
+
+// 更新背景
+function updateBackground(average, time) {
+    let r, g, b;
+
+    switch (colorScheme) {
+        case 'neon':
+            r = 0.04 + Math.sin(time * 0.5) * 0.01;
+            g = 0.04;
+            b = 0.1 + average * 0.1;
+            break;
+        case 'ocean':
+            r = 0.02;
+            g = 0.05 + average * 0.05;
+            b = 0.1 + average * 0.1;
+            break;
+        case 'sunset':
+            r = 0.08 + average * 0.05;
+            g = 0.04;
+            b = 0.02;
+            break;
+        case 'forest':
+            r = 0.02;
+            g = 0.07 + average * 0.05;
+            b = 0.04;
+            break;
+    }
+
+    scene.background.setRGB(r, g, b);
+    scene.fog.color.setRGB(r, g, b);
+}
+
+// 初始化应用
+init();

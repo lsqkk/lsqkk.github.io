@@ -1,0 +1,22 @@
+{
+    "id": 1028,
+    "title": "简易计算器",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个整数 $A, B$ 和一个字符运算符 $O$ (只能是 $+, -, \\times, /$)，计算 $A \\ O \\ B$ 的结果。除法结果保留两位小数。",
+    "input_format": "输入包含一行，三个输入，依次为 $A$ (整数), $O$ (字符), $B$ (整数)。",
+    "output_format": "输出包含一行，即计算结果。",
+    "sample_input": "10 + 5",
+    "sample_output": "15",
+    "hidden_tests": [
+        {
+            "input": "10 / 3",
+            "expected_output": "3.33"
+        },
+        {
+            "input": "8 * 9",
+            "expected_output": "72"
+        }
+    ]
+}

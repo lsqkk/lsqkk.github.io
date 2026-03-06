@@ -1,0 +1,18 @@
+{
+    "id": 1139,
+    "title": "暴力枚举 - 猜数字游戏",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "有一个秘密的三位数字（$100 \\sim 999$）。给定你 $N$ 次猜测，每次猜测是一个三位数 $G$ 和反馈（A：位置对数字也对，B：位置错数字对）。请找出**符合所有 $N$ 次反馈**的秘密数字，保证有唯一解。",
+    "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 2$)。接下来 $N$ 行，每行包含一个猜测的三位数 $G$ 和两个非负整数 $A, B$，用空格分隔。",
+    "output_format": "输出包含一行，即秘密的三位数。",
+    "sample_input": "1\\n123 1 1",
+    "sample_output": "312",
+    "hidden_tests": [
+        {
+            "input": "2\\n123 0 0\\n456 0 0",
+            "expected_output": "789"
+        }
+    ]
+}

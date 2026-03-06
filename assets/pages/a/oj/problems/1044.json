@@ -1,0 +1,22 @@
+{
+    "id": 1044,
+    "title": "斐波那契数列第 $N$ 项",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "计算斐波那契数列的第 $N$ 项。斐波那契数列定义为 $F_0=0, F_1=1$，且 $F_n = F_{n-1} + F_{n-2}$ ($n \\ge 2$)",
+    "input_format": "输入包含一行，一个整数 $N$ ($0 \\le N \\le 40$)",
+    "output_format": "输出包含一行，即 $F_N$ 的值。",
+    "sample_input": "6",
+    "sample_output": "8",
+    "hidden_tests": [
+        {
+            "input": "0",
+            "expected_output": "0"
+        },
+        {
+            "input": "10",
+            "expected_output": "55"
+        }
+    ]
+}

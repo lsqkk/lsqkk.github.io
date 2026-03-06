@@ -1,0 +1,19 @@
+{
+    "id": 1046,
+    "title": "打印空心矩形",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个整数 $R$（行数）和 $C$（列数），用星号 '*' 打印一个 $R \\times C$ 的空心矩形。即只打印边框，内部用空格代替。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $R$ 和 $C$ ($3 \\le R, C \\le 10$)",
+    "output_format": "输出 $R$ 行，打印空心矩形。",
+    "sample_input": "4 5",
+    "sample_output": "*****\n* *\n* *\n*****",
+    "hidden_tests": [
+        {
+            "input": "3 3",
+            "expected_output": "***\n* *\n***",
+            "description": "3x3 矩形"
+        }
+    ]
+}

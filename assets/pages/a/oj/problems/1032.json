@@ -1,0 +1,22 @@
+{
+    "id": 1032,
+    "title": "字符大小写转换",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个英文字母 $C$。如果它是大写字母，转换为小写；如果它是小写字母，转换为大写；否则输出原字符。",
+    "input_format": "输入包含一行，一个字符 $C$。",
+    "output_format": "输出包含一行，即转换后的字符。",
+    "sample_input": "B",
+    "sample_output": "b",
+    "hidden_tests": [
+        {
+            "input": "a",
+            "expected_output": "A"
+        },
+        {
+            "input": "9",
+            "expected_output": "9"
+        }
+    ]
+}

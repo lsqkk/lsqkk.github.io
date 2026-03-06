@@ -1,0 +1,22 @@
+{
+    "id": 1043,
+    "title": "最大公约数和最小公倍数",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个正整数 $A$ 和 $B$，计算它们的最大公约数 (GCD) 和最小公倍数 (LCM)。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $A$ 和 $B$ ($1 \\le A, B \\le 1000$)",
+    "output_format": "输出包含两行，第一行是 GCD，第二行是 LCM。",
+    "sample_input": "12 18",
+    "sample_output": "6\n36",
+    "hidden_tests": [
+        {
+            "input": "7 5",
+            "expected_output": "1\n35"
+        },
+        {
+            "input": "100 10",
+            "expected_output": "10\n100"
+        }
+    ]
+}

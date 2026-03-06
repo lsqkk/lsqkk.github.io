@@ -1,0 +1,22 @@
+{
+    "id": 1136,
+    "title": "排序 - 最大数拼接",
+    "difficulty": "极难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定 $N$ 个非负整数，将它们**拼接**起来组成一个最大的数。例如：$[3, 30, 34, 5, 9]$ 拼接后最大的数为 $9534330$。",
+    "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。第二行是 $N$ 个由空格分隔的非负整数 $A_i$ ($0 \\le A_i \\le 100$)。",
+    "output_format": "输出包含一行，即拼接成的最大数。",
+    "sample_input": "5\\n3 30 34 5 9",
+    "sample_output": "9534330",
+    "hidden_tests": [
+        {
+            "input": "3\\n10 2 1",
+            "expected_output": "2110"
+        },
+        {
+            "input": "2\\n1 1",
+            "expected_output": "11"
+        }
+    ]
+}

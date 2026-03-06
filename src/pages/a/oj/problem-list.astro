@@ -1,9 +1,10 @@
 ---
 import OjLayout from "../../../layouts/OjLayout.astro";
+import OjSidebar from "../../../components/OjSidebar.astro";
 ---
 <OjLayout
   title="题库列表 - Quark OJ - 夸克博客"
-  extraStyles={["/a/oj/style.css"]}
+  extraStyles={["/assets/pages/a/oj/style.css"]}
   extraHeadScripts={["/assets/js/nav.js"]}
 >
   <script is:inline slot="head">
@@ -22,25 +23,7 @@ import OjLayout from "../../../layouts/OjLayout.astro";
   </script>
 
   <div class="oj-app-wrapper">
-    <aside class="oj-sidebar-panel glass-card">
-      <h2 class="oj-sidebar-title">QUARK OJ</h2>
-      <nav class="oj-sidebar-nav">
-        <ul>
-          <li><a href="index.html" class="oj-nav-link">首页</a></li>
-          <li><a href="train.html" class="oj-nav-link">刷题</a></li>
-          <li><a href="problem-list.html" class="oj-nav-link active">题库</a></li>
-          <li><a href="discussion.html" class="oj-nav-link">讨论区</a></li>
-          <li><a href="submission-record.html" class="oj-nav-link">提交记录</a></li>
-        </ul>
-      </nav>
-      <hr class="oj-sidebar-divider" />
-      <div class="oj-sidebar-controls">
-        <div class="oj-search-group">
-          <input type="text" id="oj-search-input" class="oj-search-input" placeholder="搜索题目 ID/名称" />
-          <button class="oj-search-button" onclick="handleSearch()">🔍</button>
-        </div>
-      </div>
-    </aside>
+    <OjSidebar active="list" />
 
     <main class="oj-main-content">
       <section class="oj-problem-list-panel glass-card">
@@ -79,6 +62,6 @@ import OjLayout from "../../../layouts/OjLayout.astro";
     </main>
   </div>
 
-  <script is:inline src="/a/oj/js/utils.js"></script>
-  <script is:inline src="/a/oj/js/list.js"></script>
+  <script is:inline src="/assets/pages/a/oj/js/utils.js"></script>
+  <script is:inline src="/assets/pages/a/oj/js/list.js"></script>
 </OjLayout>

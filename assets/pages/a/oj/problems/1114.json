@@ -1,0 +1,22 @@
+{
+    "id": 1114,
+    "title": "模拟与高精度 - 字符串大整数减法",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定两个**不超过 100 位**的正整数 $A$ 和 $B$ ($A \\ge B$)。请计算 $A-B$ 的结果。你需要使用字符串来模拟减法运算。",
+    "input_format": "输入包含两行，每行一个正整数 $A$ 和 $B$。",
+    "output_format": "输出包含一行，即 $A-B$ 的结果。如果结果为 0，则输出 0。",
+    "sample_input": "1000000000\\n1",
+    "sample_output": "999999999",
+    "hidden_tests": [
+        {
+            "input": "12345\\n12345",
+            "expected_output": "0"
+        },
+        {
+            "input": "100\\n5",
+            "expected_output": "95"
+        }
+    ]
+}

@@ -1,0 +1,249 @@
+const FRUITS = [
+    { name: '🍒', color: '#FF0000', radius: 20, score: 1 },
+    { name: '🍓', color: '#FF1493', radius: 25, score: 3 },
+    { name: '🍇', color: '#9370DB', radius: 30, score: 6 },
+    { name: '🍊', color: '#FFA500', radius: 35, score: 10 },
+    { name: '🥝', color: '#9ACD32', radius: 40, score: 15 },
+    { name: '🍅', color: '#FF4500', radius: 45, score: 21 },
+    { name: '🍑', color: '#FFB6C1', radius: 50, score: 28 },
+    { name: '🍍', color: '#FFD700', radius: 55, score: 36 },
+    { name: '🥥', color: '#8B4513', radius: 60, score: 45 },
+    { name: '🍉', color: '#228B22', radius: 65, score: 55 }
+];
+
+class PhysicsGame {
+    constructor() {
+        this.engine = Matter.Engine.create();
+        this.world = this.engine.world;
+        this.render = Matter.Render.create({
+            element: document.body,
+            engine: this.engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: 'transparent',
+                hasBounds: true
+            }
+        });
+
+        // 添加自定义渲染逻辑
+        Matter.Events.on(this.render, 'afterRender', () => {
+            this.customRenderFruits();
+        });
+
+        this.maxFruitLevel = 0;
+        this.score = 0;
+        this.clickCount = 0;
+        this.gameOver = false;
+
+        // 初始化下一个水果的类型
+        this.nextFruitType = this.getNextFruitType();
+
+        this.initWorld();
+        this.setupEvents();
+        Matter.Runner.run(this.engine);
+        Matter.Render.run(this.render);
+
+        // 初始化统计显示
+        this.updateStats();
+
+        // 初始化预览
+        this.updatePreview();
+    }
+    customRenderFruits() {
+        const context = this.render.context;
+        const bodies = Matter.Composite.allBodies(this.world);
+
+        bodies.forEach(body => {
+            if (body.fruitType !== undefined) {
+                const fruit = FRUITS[body.fruitType];
+                const { x, y } = body.position;
+                const radius = body.circleRadius;
+
+                // 绘制圆形背景
+                context.beginPath();
+                context.arc(x, y, radius, 0, Math.PI * 2);
+                context.fillStyle = fruit.color;
+                context.fill();
+                context.closePath();
+
+                // 绘制水果图标
+                context.font = `${radius * 1.5}px Arial`;
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillStyle = '#fff';
+                context.fillText(fruit.name, x, y);
+            }
+        });
+    }
+
+    initWorld() {
+        // 创建边界
+        const ground = Matter.Bodies.rectangle(
+            window.innerWidth / 2,
+            window.innerHeight - 20,
+            window.innerWidth,
+            40,
+            { isStatic: true, render: { visible: false } }
+        );
+
+        const leftWall = Matter.Bodies.rectangle(
+            0, window.innerHeight / 2,
+            40, window.innerHeight,
+            { isStatic: true, render: { visible: false } }
+        );
+
+        const rightWall = Matter.Bodies.rectangle(
+            window.innerWidth, window.innerHeight / 2,
+            40, window.innerHeight,
+            { isStatic: true, render: { visible: false } }
+        );
+
+        const ceiling = Matter.Bodies.rectangle(
+            window.innerWidth / 2, 50,
+            window.innerWidth, 10,
+            { isStatic: true, render: { visible: false } }
+        );
+
+        Matter.World.add(this.world, [ground, leftWall, rightWall, ceiling]);
+    }
+
+    setupEvents() {
+        // 窗口大小调整
+        window.addEventListener('resize', () => {
+            this.render.canvas.width = window.innerWidth;
+            this.render.canvas.height = window.innerHeight;
+        });
+
+        // 鼠标/触摸事件
+        const canvas = this.render.canvas;
+        canvas.addEventListener('mousedown', (e) => {
+            this.clickCount++;
+            this.createFruit(e);
+            this.updateStats();
+        });
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.clickCount++;
+            this.createFruit(e.touches[0]);
+            this.updateStats();
+        });
+
+        // 碰撞事件
+        Matter.Events.on(this.engine, 'collisionStart', (event) => {
+            event.pairs.forEach((pair) => {
+                const bodyA = pair.bodyA;
+                const bodyB = pair.bodyB;
+
+                if (bodyA.fruitType !== undefined &&
+                    bodyB.fruitType !== undefined &&
+                    bodyA.fruitType === bodyB.fruitType) {
+                    this.mergeFruits(bodyA, bodyB);
+                }
+            });
+        });
+    }
+
+    updateStats() {
+        document.getElementById('score').textContent = this.score;
+        document.getElementById('clickCount').textContent = this.clickCount;
+    }
+
+    updatePreview() {
+        const fruit = FRUITS[this.nextFruitType];
+        document.getElementById('nextFruitPreview').textContent = fruit.name;
+        document.getElementById('nextFruitPreview').style.color = fruit.color;
+    }
+
+    getNextFruitType() {
+        if (this.maxFruitLevel < 3) return 0;
+        const minLevel = Math.max(0, this.maxFruitLevel - 3);
+        return Math.floor(Math.random() * (this.maxFruitLevel - minLevel + 1)) + minLevel;
+    }
+
+    createFruit(event) {
+        if (this.gameOver) return;
+
+        // 使用当前预览的水果类型生成水果
+        const type = this.nextFruitType;
+        const fruit = FRUITS[type];
+
+        const newFruit = Matter.Bodies.circle(
+            event.clientX,
+            100,
+            fruit.radius,
+            {
+                restitution: 0.2,
+                friction: 0.5,
+                render: {
+                    fillStyle: fruit.color,
+                    text: {
+                        content: fruit.name,
+                        color: '#fff',
+                        size: fruit.radius,
+                        family: 'Arial'
+                    }
+                },
+                fruitType: type
+            }
+        );
+
+        Matter.World.add(this.world, newFruit);
+
+        // 生成下一个水果的类型并更新预览
+        this.nextFruitType = this.getNextFruitType();
+        this.updatePreview();
+    }
+
+    mergeFruits(bodyA, bodyB) {
+        const type = bodyA.fruitType;
+        if (type >= FRUITS.length - 1) {
+            this.showGameOver(true);
+            return;
+        }
+
+        // 移除旧物体
+        Matter.World.remove(this.world, [bodyA, bodyB]);
+
+        // 创建新水果
+        const newType = type + 1;
+        this.maxFruitLevel = Math.max(this.maxFruitLevel, newType);
+
+        const newFruit = Matter.Bodies.circle(
+            (bodyA.position.x + bodyB.position.x) / 2,
+            (bodyA.position.y + bodyB.position.y) / 2,
+            FRUITS[newType].radius,
+            {
+                restitution: 0.2,
+                friction: 0.5,
+                render: {
+                    fillStyle: FRUITS[newType].color,
+                    text: {
+                        content: FRUITS[newType].name,
+                        color: '#fff',
+                        size: FRUITS[newType].radius,
+                        family: 'Arial'
+                    }
+                },
+                fruitType: newType
+            }
+        );
+
+        // 添加分数
+        this.score += FRUITS[newType].score;
+        this.updateStats();
+
+        Matter.World.add(this.world, newFruit);
+    }
+
+    showGameOver(success) {
+        this.gameOver = true;
+        document.getElementById('finalScore').textContent = this.score;
+        document.getElementById('finalClickCount').textContent = this.clickCount;
+        document.getElementById('gameOver').style.display = 'block';
+    }
+}
+
+// 启动游戏
+new PhysicsGame();

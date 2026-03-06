@@ -1,0 +1,207 @@
+[
+    {
+        "id": "lunch",
+        "name": "午饭吃什么",
+        "description": "每天最纠结的问题",
+        "options": [
+            {
+                "text": "米饭+炒菜",
+                "weight": 1.0,
+                "color": "#3498db"
+            },
+            {
+                "text": "面条",
+                "weight": 0.9,
+                "color": "#2ecc71"
+            },
+            {
+                "text": "饺子",
+                "weight": 0.8,
+                "color": "#e74c3c"
+            },
+            {
+                "text": "汉堡/快餐",
+                "weight": 0.7,
+                "color": "#f39c12"
+            },
+            {
+                "text": "沙拉轻食",
+                "weight": 0.6,
+                "color": "#9b59b6"
+            },
+            {
+                "text": "麻辣烫/火锅",
+                "weight": 0.9,
+                "color": "#1abc9c"
+            },
+            {
+                "text": "日料/韩餐",
+                "weight": 0.5,
+                "color": "#34495e"
+            },
+            {
+                "text": "随便",
+                "weight": 0.3,
+                "color": "#95a5a6"
+            }
+        ],
+        "drawCount": 1,
+        "drawMode": "without-replacement",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "dinner",
+        "name": "晚饭吃什么",
+        "description": "晚餐选择",
+        "options": [
+            {
+                "text": "家常菜",
+                "weight": 1.0,
+                "color": "#3498db"
+            },
+            {
+                "text": "外卖",
+                "weight": 0.8,
+                "color": "#2ecc71"
+            },
+            {
+                "text": "出去吃",
+                "weight": 0.7,
+                "color": "#e74c3c"
+            },
+            {
+                "text": "简单吃点",
+                "weight": 0.9,
+                "color": "#f39c12"
+            },
+            {
+                "text": "不吃",
+                "weight": 0.2,
+                "color": "#9b59b6"
+            }
+        ],
+        "drawCount": 1,
+        "drawMode": "without-replacement",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "weekend",
+        "name": "周末做什么",
+        "description": "周末活动选择",
+        "options": [
+            {
+                "text": "宅在家里",
+                "weight": 1.0,
+                "color": "#3498db"
+            },
+            {
+                "text": "看电影",
+                "weight": 0.9,
+                "color": "#2ecc71"
+            },
+            {
+                "text": "运动健身",
+                "weight": 0.7,
+                "color": "#e74c3c"
+            },
+            {
+                "text": "逛街购物",
+                "weight": 0.6,
+                "color": "#f39c12"
+            },
+            {
+                "text": "学习充电",
+                "weight": 0.8,
+                "color": "#9b59b6"
+            },
+            {
+                "text": "朋友聚会",
+                "weight": 0.9,
+                "color": "#1abc9c"
+            }
+        ],
+        "drawCount": 1,
+        "drawMode": "without-replacement",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "games",
+        "name": "玩什么游戏",
+        "description": "游戏类型选择",
+        "options": [
+            {
+                "text": "动作游戏",
+                "weight": 1.0,
+                "color": "#3498db"
+            },
+            {
+                "text": "角色扮演",
+                "weight": 0.9,
+                "color": "#2ecc71"
+            },
+            {
+                "text": "策略游戏",
+                "weight": 0.8,
+                "color": "#e74c3c"
+            },
+            {
+                "text": "体育游戏",
+                "weight": 0.7,
+                "color": "#f39c12"
+            },
+            {
+                "text": "休闲游戏",
+                "weight": 0.9,
+                "color": "#9b59b6"
+            },
+            {
+                "text": "模拟游戏",
+                "weight": 0.6,
+                "color": "#1abc9c"
+            }
+        ],
+        "drawCount": 1,
+        "drawMode": "without-replacement",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "movies",
+        "name": "看什么电影",
+        "description": "电影类型选择",
+        "options": [
+            {
+                "text": "科幻片",
+                "weight": 1.0,
+                "color": "#3498db"
+            },
+            {
+                "text": "喜剧片",
+                "weight": 0.9,
+                "color": "#2ecc71"
+            },
+            {
+                "text": "动作片",
+                "weight": 0.8,
+                "color": "#e74c3c"
+            },
+            {
+                "text": "爱情片",
+                "weight": 0.7,
+                "color": "#f39c12"
+            },
+            {
+                "text": "恐怖片",
+                "weight": 0.5,
+                "color": "#9b59b6"
+            },
+            {
+                "text": "纪录片",
+                "weight": 0.6,
+                "color": "#1abc9c"
+            }
+        ],
+        "drawCount": 1,
+        "drawMode": "without-replacement",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+]

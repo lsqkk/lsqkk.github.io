@@ -1,0 +1,22 @@
+{
+    "id": 1042,
+    "title": "判断质数",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "输入一个正整数 $N$，判断它是否为质数（素数）。质数是指在大于 $1$ 的自然数中，除了 $1$ 和它本身以外不再有其他因数的数。",
+    "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 10000$)",
+    "output_format": "输出包含一行，如果是质数输出 'Prime'，否则输出 'Not Prime'。",
+    "sample_input": "13",
+    "sample_output": "Prime",
+    "hidden_tests": [
+        {
+            "input": "4",
+            "expected_output": "Not Prime"
+        },
+        {
+            "input": "1",
+            "expected_output": "Not Prime"
+        }
+    ]
+}

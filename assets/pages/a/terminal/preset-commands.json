@@ -1,0 +1,14 @@
+{
+    "output": {
+        "你好": "你好啊~",
+        "早上好": "早上好啊~",
+        "lv": "bv"
+    },
+    "redirect": {
+        "大富翁": "https://richup.io",
+        "dfw": "https://richup.io",
+        "百度": "https://baidu.com",
+        "github": "https://github.com",
+        "gitee": "https://gitee.com"
+    }
+}

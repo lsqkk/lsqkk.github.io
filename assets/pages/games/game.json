@@ -1,0 +1,63 @@
+{
+    "multiplayer": [
+        {
+            "name": "五子棋对战",
+            "image": "image/9.png",
+            "link": "5ziqi"
+        },
+        {
+            "name": "每日答题",
+            "image": "image/4.png",
+            "link": "dati"
+        }
+    ],
+    "singlePlayer": [
+        {
+            "name": "手机颠球",
+            "image": "https://cdn.jsdelivr.net/gh/lsqkk/image@main/20251203160551799.jpg",
+            "link": "ball"
+        },
+        {
+            "name": "单机五子棋",
+            "image": "image/9.png",
+            "link": "5ziqi-p"
+        },
+        {
+            "name": "交大图寻（兴庆）",
+            "image": "image/8.png",
+            "link": "xjtx"
+        },
+        {
+            "name": "躲避陨石",
+            "image": "image/1.png",
+            "link": "AvoidStar"
+        },
+        {
+            "name": "戳气泡",
+            "image": "image/5.png",
+            "link": "bubble"
+        },
+        {
+            "name": "钢琴",
+            "image": "image/3.png",
+            "link": "piano"
+        },
+        {
+            "name": "ZY公式",
+            "image": "image/3.png",
+            "link": "zy"
+        }
+    ],
+    "classic": [
+        {
+            "name": "合成大西瓜",
+            "image": "image/2.png",
+            "link": "xigua"
+        },
+        {
+            "name": "2048",
+            "image": "image/10.png",
+            "link": "2048"
+        }
+    ]
+}

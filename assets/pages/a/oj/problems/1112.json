@@ -1,0 +1,22 @@
+{
+    "id": 1112,
+    "title": "模拟与高精度 - 文本格式化：去除多余空格",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定一段文本，请将其中**连续的多个空格**合并为**一个空格**，并去除**文本开头和结尾**的空格。",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 100）。",
+    "output_format": "输出包含一行，即处理后的字符串。",
+    "sample_input": "  This   is    a   test  ",
+    "sample_output": "This is a test",
+    "hidden_tests": [
+        {
+            "input": "single",
+            "expected_output": "single"
+        },
+        {
+            "input": "  a b   c  ",
+            "expected_output": "a b c"
+        }
+    ]
+}

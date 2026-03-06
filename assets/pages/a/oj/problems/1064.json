@@ -1,0 +1,22 @@
+{
+    "id": 1064,
+    "title": "数组 - 二维迷宫寻宝",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "你正在一个 $R \\times C$ 的二维迷宫中寻宝。每个格子 $M_{ij}$ 记录了该格子的宝藏数量。请计算整个迷宫中**所有宝藏的总数**。",
+    "input_format": "第一行是两个整数 $R$ ($1 \\le R \\le 5$) 和 $C$ ($1 \\le C \\le 5$)，表示迷宫的行数和列数。接下来是 $R$ 行，每行有 $C$ 个由空格分隔的整数 $M_{ij}$ ($0 \\le M_{ij} \\le 100$)。",
+    "output_format": "输出包含一行，即迷宫中的宝藏总数。",
+    "sample_input": "3 3\\n1 2 3\\n4 5 6\\n7 8 9",
+    "sample_output": "45",
+    "hidden_tests": [
+        {
+            "input": "2 2\\n10 0\\n0 20",
+            "expected_output": "30"
+        },
+        {
+            "input": "1 5\\n1 1 1 1 1",
+            "expected_output": "5"
+        }
+    ]
+}

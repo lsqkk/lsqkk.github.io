@@ -1,0 +1,22 @@
+{
+    "id": 1081,
+    "title": "字符串 - 字符计数",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "你在整理一份报告，需要统计报告中**总共有多少个字符**（包含空格）。",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+    "output_format": "输出包含一行，即字符串 $S$ 的长度。",
+    "sample_input": "Hello World!",
+    "sample_output": "12",
+    "hidden_tests": [
+        {
+            "input": "Programming Contest",
+            "expected_output": "21"
+        },
+        {
+            "input": "a",
+            "expected_output": "1"
+        }
+    ]
+}

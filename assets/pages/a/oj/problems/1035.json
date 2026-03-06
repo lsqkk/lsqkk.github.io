@@ -1,0 +1,22 @@
+{
+    "id": 1035,
+    "title": "农场收割机任务",
+    "difficulty": "中等",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "农场有 $N$ 块地需要收割。输入 $N$ 个整数，分别代表每块地的面积。请计算所有地块的总面积。",
+    "input_format": "第一行是整数 $N$ ($1 \\le N \\le 100$)，第二行是 $N$ 个由空格分隔的整数，表示每块地的面积 $A_i$ ($1 \\le A_i \\le 1000$)。",
+    "output_format": "输出包含一行，即所有地块的总面积。",
+    "sample_input": "3\n10 20 30",
+    "sample_output": "60",
+    "hidden_tests": [
+        {
+            "input": "5\n1 1 1 1 1",
+            "expected_output": "5"
+        },
+        {
+            "input": "2\n500 500",
+            "expected_output": "1000"
+        }
+    ]
+}

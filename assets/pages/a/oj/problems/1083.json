@@ -1,0 +1,22 @@
+{
+    "id": 1083,
+    "title": "字符串 - 字符大小写转换",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "你需要将输入字符串中的**所有小写字母转换为大写字母**，其他字符保持不变。",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+    "output_format": "输出包含一行，即转换后的字符串。",
+    "sample_input": "Hello World!",
+    "sample_output": "HELLO WORLD!",
+    "hidden_tests": [
+        {
+            "input": "test-123",
+            "expected_output": "TEST-123"
+        },
+        {
+            "input": "ABC",
+            "expected_output": "ABC"
+        }
+    ]
+}

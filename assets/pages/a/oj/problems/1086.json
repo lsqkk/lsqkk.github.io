@@ -1,0 +1,22 @@
+{
+    "id": 1086,
+    "title": "字符串 - 单词反转",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "将输入字符串中的所有**单词的顺序**进行**反转**，单词之间用一个空格分隔。单词本身保持不变。",
+    "input_format": "输入包含一行字符串 $S$（只包含单词和空格，长度不超过 50）。",
+    "output_format": "输出包含一行，即单词顺序反转后的字符串。",
+    "sample_input": "hello world programming",
+    "sample_output": "programming world hello",
+    "hidden_tests": [
+        {
+            "input": "one",
+            "expected_output": "one"
+        },
+        {
+            "input": "a b c d",
+            "expected_output": "d c b a"
+        }
+    ]
+}

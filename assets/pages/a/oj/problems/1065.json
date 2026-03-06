@@ -1,0 +1,22 @@
+{
+    "id": 1065,
+    "title": "数组 - 二维矩阵转置",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "在处理一张 $R \\times C$ 的图像数据时，有时需要进行**转置**操作，即将矩阵的行和列互换。请输出转置后的矩阵。",
+    "input_format": "第一行是两个整数 $R$ ($1 \\le R \\le 5$) 和 $C$ ($1 \\le C \\le 5$)。接下来是 $R$ 行，每行有 $C$ 个由空格分隔的整数 $M_{ij}$ ($0 \\le M_{ij} \\le 100$)。",
+    "output_format": "输出 $C$ 行，每行有 $R$ 个整数，表示转置后的矩阵。每行元素之间用一个空格分隔。",
+    "sample_input": "2 3\\n1 2 3\\n4 5 6",
+    "sample_output": "1 4\\n2 5\\n3 6",
+    "hidden_tests": [
+        {
+            "input": "3 1\\n10\\n20\\n30",
+            "expected_output": "10 20 30"
+        },
+        {
+            "input": "2 2\\n1 2\\n3 4",
+            "expected_output": "1 3\\n2 4"
+        }
+    ]
+}

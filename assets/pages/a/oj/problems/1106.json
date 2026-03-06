@@ -1,0 +1,22 @@
+{
+    "id": 1106,
+    "title": "函数 - 快速幂（递归）",
+    "difficulty": "极难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "编写一个**递归函数** $\\text{power}(base, exp)$，使用**快速幂**（二分法求幂）算法计算 $base^{exp}$ 的值。结果对 $M=1000$ 取模。",
+    "input_format": "输入包含一行，两个整数 $base$ 和 $exp$ ($1 \\le base \\le 100, 0 \\le exp \\le 10^{18}$)。",
+    "output_format": "输出包含一行，即 $base^{exp} \\pmod{1000}$ 的结果。",
+    "sample_input": "2 10",
+    "sample_output": "24",
+    "hidden_tests": [
+        {
+            "input": "3 3",
+            "expected_output": "27"
+        },
+        {
+            "input": "100 1000000000000000000",
+            "expected_output": "0"
+        }
+    ]
+}

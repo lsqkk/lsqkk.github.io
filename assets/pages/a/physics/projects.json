@@ -1,0 +1,30 @@
+{
+    "optics": [
+        {
+            "name": "光的反射演示",
+            "link": "mirror",
+            "description": "交互式展示光线在不同表面的反射规律，包括镜面反射和漫反射现象。",
+            "icon": "fa-lightbulb"
+        }
+    ],
+    "waves": [
+        {
+            "name": "球面波三维演示",
+            "link": "waves/3dwaves",
+            "description": "展示球面波在三维空间中的传播特性，可调整波源位置和观察角度。",
+            "icon": "fa-globe-americas"
+        },
+        {
+            "name": "平面点波源演示",
+            "link": "waves/planewave",
+            "description": "模拟平面波和点波源的传播特性，展示波的干涉和衍射现象。",
+            "icon": "fa-wave-square"
+        },
+        {
+            "name": "横波演示",
+            "link": "waves/shearwave",
+            "description": "展示横波的传播特性，包括偏振方向和振动模式的交互式控制。",
+            "icon": "fa-sliders-h"
+        }
+    ]
+}

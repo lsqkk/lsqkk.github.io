@@ -1,0 +1,22 @@
+{
+    "id": 1027,
+    "title": "判断两数符号",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个整数 $A$ 和 $B$ ($A, B \\ne 0$)，判断它们的乘积是正数、负数还是零。$A$ 和 $B$ 符号相同则乘积为正，不同则为负。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $A$ 和 $B$。",
+    "output_format": "输出包含一行，如果乘积为正输出 'Positive'，为负输出 'Negative'。",
+    "sample_input": "-5 10",
+    "sample_output": "Negative",
+    "hidden_tests": [
+        {
+            "input": "5 10",
+            "expected_output": "Positive"
+        },
+        {
+            "input": "-5 -10",
+            "expected_output": "Positive"
+        }
+    ]
+}

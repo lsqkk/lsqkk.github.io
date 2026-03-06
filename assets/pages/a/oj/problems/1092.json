@@ -1,0 +1,22 @@
+{
+    "id": 1092,
+    "title": "字符串 - 最小窗口子串",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "给定两个字符串 $S$ 和 $T$，要求在 $S$ 中找到包含 $T$ 中所有字符的**最小窗口子串**。如果不存在，则输出空字符串。",
+    "input_format": "输入包含两行。第一行是字符串 $S$（长度不超过 1000）。第二行是字符串 $T$（长度不超过 50）。",
+    "output_format": "输出包含一行，即最小窗口子串。",
+    "sample_input": "ADOBECODEBANC\\nABC",
+    "sample_output": "BANC",
+    "hidden_tests": [
+        {
+            "input": "a\\na",
+            "expected_output": "a"
+        },
+        {
+            "input": "a\\nb",
+            "expected_output": ""
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "id": 1039,
+    "title": "倒序数字",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个正整数 $N$，将它的各位数字倒序输出。",
+    "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 10^9$)",
+    "output_format": "输出包含一行，即倒序后的数字。",
+    "sample_input": "12345",
+    "sample_output": "54321",
+    "hidden_tests": [
+        {
+            "input": "100",
+            "expected_output": "1"
+        },
+        {
+            "input": "9876",
+            "expected_output": "6789"
+        }
+    ]
+}

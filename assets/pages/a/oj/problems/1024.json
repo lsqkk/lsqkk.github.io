@@ -1,0 +1,22 @@
+{
+    "id": 1024,
+    "title": "判断字母类型",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个字符 $C$，判断它是否为小写字母（'a' 到 'z'）。",
+    "input_format": "输入包含一行，一个字符 $C$。",
+    "output_format": "输出包含一行，如果是小写字母输出 'Lowercase'，否则输出 'Not Lowercase'。",
+    "sample_input": "h",
+    "sample_output": "Lowercase",
+    "hidden_tests": [
+        {
+            "input": "A",
+            "expected_output": "Not Lowercase"
+        },
+        {
+            "input": "9",
+            "expected_output": "Not Lowercase"
+        }
+    ]
+}

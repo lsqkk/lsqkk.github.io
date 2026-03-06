@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 读取配置文件（优先使用构建期注入）
     const loadPromise = window.__TOOLS_DATA__
         ? Promise.resolve(window.__TOOLS_DATA__)
-        : fetch('/tool/tool.json')
+        : fetch('/assets/pages/tool/tool.json')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP错误! 状态码: ${response.status}`);

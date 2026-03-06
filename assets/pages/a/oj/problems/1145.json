@@ -1,0 +1,18 @@
+{
+    "id": 1145,
+    "title": "暴力枚举 - 四则运算等式",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定四个互不相同的数字 $A, B, C, D$（$1 \\sim 9$）。请在它们之间插入 $+,-,*,/$ 四种运算符，以及必要的括号，使得最终表达式的计算结果为**目标值 $T$**。输出**任意一个**符合条件的表达式。",
+    "input_format": "输入包含一行，五个整数 $A, B, C, D$ 和 $T$ ($1 \\le A, B, C, D \\le 9$, $A, B, C, D$ 互不相同, $1 \\le T \\le 100$)。",
+    "output_format": "输出包含一行，即一个符合条件的表达式字符串。如果无解，输出 'No Solution'。运算过程中的除法只考虑整数除法，且必须能整除。",
+    "sample_input": "1 2 3 4 10",
+    "sample_output": "(1+4)*2+3",
+    "hidden_tests": [
+        {
+            "input": "1 1 1 1 4",
+            "expected_output": "No Solution"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "id": 1009,
+    "title": "单位换算：秒转分秒",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个以秒为单位的时间 $T$，将其转换为分钟和秒的形式。例如，70 秒是 1 分 10 秒。",
+    "input_format": "输入包含一行，一个整数 $T$ ($0 \\le T \\le 3600$)。",
+    "output_format": "输出包含两行，第一行是分钟数，第二行是剩余的秒数。",
+    "sample_input": "125",
+    "sample_output": "2\n5",
+    "hidden_tests": [
+        {
+            "input": "60",
+            "expected_output": "1\n0"
+        },
+        {
+            "input": "3599",
+            "expected_output": "59\n59"
+        }
+    ]
+}

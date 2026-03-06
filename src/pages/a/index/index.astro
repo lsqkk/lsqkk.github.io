@@ -4,7 +4,7 @@ import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
-const projectsPath = path.join(PROJECT_ROOT, "a", "projects.json");
+const projectsPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const projectsData = JSON.parse(await fs.readFile(projectsPath, "utf8"));
@@ -18,7 +18,7 @@ const projectsData = JSON.parse(await fs.readFile(projectsPath, "utf8"));
     <meta name="description" content="夸克博客前端实验室,探索前沿 Web 技术,实践创新交互体验,汇集各类有趣的项目和实验" />
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="/a/style.css" />
+    <link rel="stylesheet" href="/assets/pages/a/style.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <script is:inline define:vars={{ navConfig, projectsData }}>
@@ -74,7 +74,7 @@ const projectsData = JSON.parse(await fs.readFile(projectsPath, "utf8"));
         <div class="copyright"><p>© 2024 - 2026 夸克博客 All rights reserved.</p></div>
       </div>
     </footer>
-    <script is:inline src="/a/index.js"></script>
+    <script is:inline src="/assets/pages/a/index.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>

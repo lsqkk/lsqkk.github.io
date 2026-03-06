@@ -1,0 +1,22 @@
+{
+    "id": 1085,
+    "title": "字符串 - 密码检查",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "你需要编写一个密码检查程序。一个密码是**安全**的，如果它**不包含**任何**空格**。请判断输入的字符串是否是一个安全密码，输出 'SAFE' 或 'UNSAFE'。",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+    "output_format": "输出包含一行，即判断结果 ('SAFE' 或 'UNSAFE')。",
+    "sample_input": "MyPassword123",
+    "sample_output": "SAFE",
+    "hidden_tests": [
+        {
+            "input": "My Password 123",
+            "expected_output": "UNSAFE"
+        },
+        {
+            "input": "123",
+            "expected_output": "SAFE"
+        }
+    ]
+}

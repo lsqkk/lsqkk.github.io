@@ -1,0 +1,22 @@
+{
+    "id": 1048,
+    "title": "循环小数：判断 $A/B$ 是否为有限小数",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入两个正整数 $A$ 和 $B$，判断分数 $A/B$ 的小数形式是否为有限小数。一个最简分数 $p/q$ 是有限小数当且仅当 $q$ 的质因子只有 $2$ 和 $5$。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $A$ 和 $B$ ($1 \\le A, B \\le 1000$)",
+    "output_format": "输出包含一行，如果是有限小数输出 'Finite'，否则输出 'Infinite'。",
+    "sample_input": "1 8",
+    "sample_output": "Finite",
+    "hidden_tests": [
+        {
+            "input": "1 3",
+            "expected_output": "Infinite"
+        },
+        {
+            "input": "1 10",
+            "expected_output": "Finite"
+        }
+    ]
+}

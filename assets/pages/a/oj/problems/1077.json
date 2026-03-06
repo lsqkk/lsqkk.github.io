@@ -1,0 +1,18 @@
+{
+    "id": 1077,
+    "title": "数组 - 二维数组差分矩阵",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "给定一个 $N \\times M$ 的二维矩阵 $A$，以及 $Q$ 次操作。每次操作给定一个矩形区域 $(x_1, y_1)$ 到 $(x_2, y_2)$ 和一个值 $c$，要求将该区域内所有元素的值都增加 $c$。最后输出**所有操作完成后的矩阵**。",
+    "input_format": "第一行是三个整数 $N, M, Q$ ($1 \\le N, M \\le 10, 1 \\le Q \\le 5$)。接下来 $N$ 行是初始矩阵 $A$ ($0 \\le A_{ij} \\le 100$)。接下来 $Q$ 行，每行是五个整数 $x_1, y_1, x_2, y_2, c$ ($1 \\le x_1 \\le x_2 \\le N, 1 \\le y_1 \\le y_2 \\le M, 1 \\le c \\le 100$)。",
+    "output_format": "输出 $N$ 行，每行 $M$ 个整数，表示最终的矩阵 $A$。",
+    "sample_input": "3 3 1\\n1 1 1\\n1 1 1\\n1 1 1\\n1 1 2 2 10",
+    "sample_output": "11 11 1\\n11 11 1\\n1 1 1",
+    "hidden_tests": [
+        {
+            "input": "2 2 2\\n0 0\\n0 0\\n1 1 1 1 5\\n2 2 2 2 3",
+            "expected_output": "5 0\\n0 3"
+        }
+    ]
+}

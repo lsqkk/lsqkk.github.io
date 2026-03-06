@@ -1,0 +1,22 @@
+{
+    "id": 1089,
+    "title": "字符串 - 字符串压缩",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "实现一种基本的字符串压缩算法，方法是统计连续重复出现的字符。例如，字符串 $aaabbc$ 会被压缩成 $a3b2c1$。如果压缩后的长度**大于或等于**原字符串长度，则输出原字符串。",
+    "input_format": "输入包含一行字符串 $S$（只包含大小写字母，长度不超过 30）。",
+    "output_format": "输出包含一行，即压缩后的字符串或原字符串。",
+    "sample_input": "aaabbcccc",
+    "sample_output": "a3b2c4",
+    "hidden_tests": [
+        {
+            "input": "abc",
+            "expected_output": "abc"
+        },
+        {
+            "input": "aaaaaa",
+            "expected_output": "a6"
+        }
+    ]
+}

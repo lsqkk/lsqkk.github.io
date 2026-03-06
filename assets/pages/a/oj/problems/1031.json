@@ -1,0 +1,22 @@
+{
+    "id": 1031,
+    "title": "分数判断",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个浮点数 $F$，判断它是否在 $(0, 1)$ 范围内，即大于 $0$ 且小于 $1$。",
+    "input_format": "输入包含一行，一个浮点数 $F$。",
+    "output_format": "输出包含一行，如果满足条件输出 'Yes'，否则输出 'No'。",
+    "sample_input": "0.5",
+    "sample_output": "Yes",
+    "hidden_tests": [
+        {
+            "input": "1.0",
+            "expected_output": "No"
+        },
+        {
+            "input": "0",
+            "expected_output": "No"
+        }
+    ]
+}

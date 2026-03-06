@@ -4,7 +4,7 @@ import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
-const dataPath = path.join(PROJECT_ROOT, "games", "xjtx", "data.json");
+const dataPath = path.join(PROJECT_ROOT, "assets", "pages", "games", "xjtx", "data.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const xjtxData = JSON.parse(await fs.readFile(dataPath, "utf8"));
@@ -16,7 +16,7 @@ const xjtxData = JSON.parse(await fs.readFile(dataPath, "utf8"));
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>交大图寻 - 夸克博客</title>
-    <link rel="stylesheet" href="/games/xjtx/xjtx.css" />
+    <link rel="stylesheet" href="/assets/pages/games/xjtx/xjtx.css" />
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <script is:inline define:vars={{ navConfig, xjtxData }}>
@@ -58,7 +58,7 @@ const xjtxData = JSON.parse(await fs.readFile(dataPath, "utf8"));
       <button id="submit-btn" onclick="submitAnswer()">确定</button>
     </div>
 
-    <script is:inline src="/games/xjtx/xjtx.js"></script>
+    <script is:inline src="/assets/pages/games/xjtx/xjtx.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>

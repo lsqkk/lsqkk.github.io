@@ -1,0 +1,22 @@
+{
+    "id": 1093,
+    "title": "函数 - 绝对值函数",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "编写一个函数 $\\text{abs\\_value}(x)$，计算输入整数 $x$ 的**绝对值**。",
+    "input_format": "输入包含一行，一个整数 $X$ ($-1000 \\le X \\le 1000$)。",
+    "output_format": "输出包含一行，即 $X$ 的绝对值。",
+    "sample_input": "-10",
+    "sample_output": "10",
+    "hidden_tests": [
+        {
+            "input": "5",
+            "expected_output": "5"
+        },
+        {
+            "input": "0",
+            "expected_output": "0"
+        }
+    ]
+}

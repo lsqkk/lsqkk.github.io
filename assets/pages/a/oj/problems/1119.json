@@ -1,0 +1,22 @@
+{
+    "id": 1119,
+    "title": "模拟与高精度 - 表达式求值（含括号和加减乘）",
+    "difficulty": "困难",
+    "time_limit": "2000ms",
+    "memory_limit": "128MB",
+    "description": "给定一个包含整数、加号 $(+)$, 减号 $(-)$, 乘号 $(*)$ 和括号 ((), )) 的表达式字符串。请计算该表达式的值。**所有运算结果在标准整数范围内**。",
+    "input_format": "输入包含一行字符串 $E$（长度不超过 50）。",
+    "output_format": "输出包含一行，即表达式的计算结果。",
+    "sample_input": "3 * (2 - 1) + 4",
+    "sample_output": "7",
+    "hidden_tests": [
+        {
+            "input": "(1+2)*3",
+            "expected_output": "9"
+        },
+        {
+            "input": "10 - (5 + 2)",
+            "expected_output": "3"
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+---
+interface Props {
+  active: "home" | "train" | "list" | "discussion" | "record";
+  includeAdminLogin?: boolean;
+}
+
+const { active, includeAdminLogin = false } = Astro.props as Props;
+---
+<aside class="oj-sidebar-panel glass-card">
+  <h2 class="oj-sidebar-title">QUARK OJ</h2>
+  <nav class="oj-sidebar-nav">
+    <ul>
+      <li><a href="index.html" class={`oj-nav-link ${active === "home" ? "active" : ""}`}>首页</a></li>
+      <li><a href="train.html" class={`oj-nav-link ${active === "train" ? "active" : ""}`}>刷题</a></li>
+      <li><a href="problem-list.html" class={`oj-nav-link ${active === "list" ? "active" : ""}`}>题库</a></li>
+      <li><a href="discussion.html" class={`oj-nav-link ${active === "discussion" ? "active" : ""}`}>讨论区</a></li>
+      <li><a href="submission-record.html" class={`oj-nav-link ${active === "record" ? "active" : ""}`}>提交记录</a></li>
+    </ul>
+  </nav>
+  <hr class="oj-sidebar-divider" />
+  <div class="oj-sidebar-controls">
+    <div class="oj-search-group">
+      <input type="text" id="oj-search-input" class="oj-search-input" placeholder="搜索题目 ID/名称" />
+      <button class="oj-search-button" onclick="handleSearch()">🔍</button>
+    </div>
+  </div>
+  {
+    includeAdminLogin ? (
+      <>
+        <br />
+        <div class="oj-sidebar-controls" id="admin-login-area">
+          <input type="password" id="adminPassword" class="oj-search-input" placeholder="管理员密码" />
+          <button class="submit-btn" onclick="adminLogin()">登录</button>
+        </div>
+      </>
+    ) : null
+  }
+</aside>

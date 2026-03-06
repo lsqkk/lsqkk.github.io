@@ -1,0 +1,18 @@
+{
+    "id": 1124,
+    "title": "模拟与高精度 - 迷宫寻路：最远可达（DFS 模拟）",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "在一个 $R \\times R$ 的迷宫中，'S' 是起点，'#' 是障碍物，'.' 是可通过的空地。你只能上下左右移动。请找到从 'S' 出发**最远可以到达的空地**的**最大距离**（移动步数）。",
+    "input_format": "第一行是一个整数 $R$ ($3 \\le R \\le 5$)。接下来 $R$ 行，每行 $R$ 个字符，表示迷宫地图。",
+    "output_format": "输出包含一行，即最大距离。",
+    "sample_input": "4\\nS#..\\n..#.\\n.#..\\n.#..",
+    "sample_output": "7",
+    "hidden_tests": [
+        {
+            "input": "3\\nS..\\n.#.\\n...",
+            "expected_output": "4"
+        }
+    ]
+}

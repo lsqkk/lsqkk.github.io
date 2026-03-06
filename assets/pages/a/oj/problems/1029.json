@@ -1,0 +1,22 @@
+{
+    "id": 1029,
+    "title": "时间段判断",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个小时 $H$ ($0 \\le H < 24$)，判断当前时间属于上午（$6 \\le H < 12$）、下午（$12 \\le H < 18$）还是晚上（其他）。",
+    "input_format": "输入包含一行，一个整数 $H$。",
+    "output_format": "输出包含一行，即 'Morning', 'Afternoon' 或 'Evening'。",
+    "sample_input": "14",
+    "sample_output": "Afternoon",
+    "hidden_tests": [
+        {
+            "input": "8",
+            "expected_output": "Morning"
+        },
+        {
+            "input": "23",
+            "expected_output": "Evening"
+        }
+    ]
+}

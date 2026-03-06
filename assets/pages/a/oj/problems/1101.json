@@ -1,0 +1,18 @@
+{
+    "id": 1101,
+    "title": "函数与结构体 - 复杂数加法",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "定义一个**结构体** $\\text{Complex}$ 包含复数的 $\\text{real}$ (实部) 和 $\\text{imag}$ (虚部，均为整数)。编写一个函数 $\\text{add\\_complex}(C_1, C_2)$，计算两个复数 $C_1$ 和 $C_2$ 的**和**，并返回新的复数。",
+    "input_format": "输入包含两行。第一行是复数 $C_1$ 的 $\\text{real}$ 和 $\\text{imag}$。第二行是复数 $C_2$ 的 $\\text{real}$ 和 $\\text{imag}$ ($-10 \\le \\text{real}, \\text{imag} \\le 10$)。",
+    "output_format": "输出包含一行，即和复数的 $\\text{real}$ 和 $\\text{imag}$，用空格分隔。",
+    "sample_input": "3 2\\n1 -5",
+    "sample_output": "4 -3",
+    "hidden_tests": [
+        {
+            "input": "0 0\\n10 10",
+            "expected_output": "10 10"
+        }
+    ]
+}

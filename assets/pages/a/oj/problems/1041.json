@@ -1,0 +1,22 @@
+{
+    "id": 1041,
+    "title": "几何级数求和",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入整数 $a$ 和 $n$，计算几何级数 $a + a^2 + a^3 + \\dots + a^n$ 的和。",
+    "input_format": "输入包含一行，两个由空格分隔的整数 $a$ 和 $n$ ($1 \\le a \\le 10, 1 \\le n \\le 10$)",
+    "output_format": "输出包含一行，即级数的和。",
+    "sample_input": "2 3",
+    "sample_output": "14",
+    "hidden_tests": [
+        {
+            "input": "3 2",
+            "expected_output": "12"
+        },
+        {
+            "input": "1 5",
+            "expected_output": "5"
+        }
+    ]
+}

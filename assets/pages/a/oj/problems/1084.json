@@ -1,0 +1,22 @@
+{
+    "id": 1084,
+    "title": "字符串 - 统计元音字母",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "统计输入字符串中**元音字母** ('a', 'e', 'i', 'o', 'u' 及其大写形式) 出现的**总次数**。",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+    "output_format": "输出包含一行，即元音字母的个数。",
+    "sample_input": "Programming Contest",
+    "sample_output": "5",
+    "hidden_tests": [
+        {
+            "input": "AEIOUaeiou",
+            "expected_output": "10"
+        },
+        {
+            "input": "Rhythm",
+            "expected_output": "0"
+        }
+    ]
+}

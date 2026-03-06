@@ -1,0 +1,22 @@
+{
+    "id": 1123,
+    "title": "模拟与高精度 - 大整数除法（高精度除以低精度）",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "计算一个**不超过 100 位**的非负整数 $A$ 与一个**单精度整数** $B$ ($1 \\le B \\le 9$) 的商（整数部分）和余数。",
+    "input_format": "输入包含两行。第一行是一个大整数 $A$。第二行是一个单精度整数 $B$。",
+    "output_format": "输出包含一行，先是商，后是余数，用一个空格分隔。",
+    "sample_input": "123456789\\n7",
+    "sample_output": "17636684 1",
+    "hidden_tests": [
+        {
+            "input": "100\\n10",
+            "expected_output": "10 0"
+        },
+        {
+            "input": "99\\n5",
+            "expected_output": "19 4"
+        }
+    ]
+}

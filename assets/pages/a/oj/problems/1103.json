@@ -1,0 +1,22 @@
+{
+    "id": 1103,
+    "title": "函数 - 字符串反转（指针）",
+    "difficulty": "困难",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "编写一个函数 $\\text{reverse\\_string}(s)$，使用**指针**作为参数，将输入的字符串 $s$ 进行**原地反转**（即直接修改原字符串）。",
+    "input_format": "输入包含一行字符串 $S$（只包含字母，长度不超过 20）。",
+    "output_format": "输出包含一行，即反转后的字符串。",
+    "sample_input": "hello",
+    "sample_output": "olleh",
+    "hidden_tests": [
+        {
+            "input": "programming",
+            "expected_output": "gnimmargorp"
+        },
+        {
+            "input": "a",
+            "expected_output": "a"
+        }
+    ]
+}

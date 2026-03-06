@@ -1,0 +1,22 @@
+{
+    "id": 1018,
+    "title": "判断闰年",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个年份 $Y$，判断该年份是否为闰年。闰年的条件是：能被 $4$ 整除但不能被 $100$ 整除，或者能被 $400$ 整除。",
+    "input_format": "输入包含一行，一个整数 $Y$ ($1900 \\le Y \\le 2100$)",
+    "output_format": "输出包含一行，如果是闰年输出 'Yes'，否则输出 'No'。",
+    "sample_input": "2000",
+    "sample_output": "Yes",
+    "hidden_tests": [
+        {
+            "input": "2004",
+            "expected_output": "Yes"
+        },
+        {
+            "input": "1900",
+            "expected_output": "No"
+        }
+    ]
+}

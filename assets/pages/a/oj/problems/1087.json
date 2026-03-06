@@ -1,0 +1,22 @@
+{
+    "id": 1087,
+    "title": "字符串 - 回文判断",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "一个字符串被称为**回文**，如果它正着读和倒着读都一样（忽略大小写和非字母字符）。请判断输入的字符串是否为回文，输出 'YES' 或 'NO'。（在本题中，**只考虑字母字符**，并忽略大小写）",
+    "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+    "output_format": "输出包含一行，即判断结果 ('YES' 或 'NO')。",
+    "sample_input": "A man, a plan, a canal: Panama",
+    "sample_output": "YES",
+    "hidden_tests": [
+        {
+            "input": "racecar",
+            "expected_output": "YES"
+        },
+        {
+            "input": "notapalindrome",
+            "expected_output": "NO"
+        }
+    ]
+}

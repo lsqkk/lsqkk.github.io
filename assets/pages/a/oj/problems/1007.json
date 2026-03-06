@@ -1,0 +1,22 @@
+{
+    "id": 1007,
+    "title": "三位数反转求和",
+    "difficulty": "入门",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个三位数 $N$，请将这个数的百位、十位和个位数字提取出来，然后求这三个数字的和。",
+    "input_format": "输入包含一行，一个三位正整数 $N$ ($100 \\le N \\le 999$)。",
+    "output_format": "输出包含一行，即三个数字的和。",
+    "sample_input": "123",
+    "sample_output": "6",
+    "hidden_tests": [
+        {
+            "input": "901",
+            "expected_output": "10"
+        },
+        {
+            "input": "777",
+            "expected_output": "21"
+        }
+    ]
+}

@@ -1,12 +1,13 @@
 ---
 import OjLayout from "../../../layouts/OjLayout.astro";
+import OjSidebar from "../../../components/OjSidebar.astro";
 ---
 <OjLayout
   title="讨论区 - Quark OJ - 夸克博客"
   extraStyles={[
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
-    "/a/oj/style.css",
-    "/a/oj/discussion.css",
+    "/assets/pages/a/oj/style.css",
+    "/assets/pages/a/oj/discussion.css",
   ]}
   extraHeadScripts={[
     "https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js",
@@ -29,30 +30,7 @@ import OjLayout from "../../../layouts/OjLayout.astro";
 
   <div class="header-placeholder"></div>
   <div class="oj-app-wrapper">
-    <aside class="oj-sidebar-panel glass-card">
-      <h2 class="oj-sidebar-title">QUARK OJ</h2>
-      <nav class="oj-sidebar-nav">
-        <ul>
-          <li><a href="index.html" class="oj-nav-link">首页</a></li>
-          <li><a href="index.html" class="oj-nav-link">刷题</a></li>
-          <li><a href="problem-list.html" class="oj-nav-link">题库</a></li>
-          <li><a href="discussion.html" class="oj-nav-link active">讨论区</a></li>
-          <li><a href="submission-record.html" class="oj-nav-link">提交记录</a></li>
-        </ul>
-      </nav>
-      <hr class="oj-sidebar-divider" />
-      <div class="oj-sidebar-controls">
-        <div class="oj-search-group">
-          <input type="text" id="oj-search-input" class="oj-search-input" placeholder="搜索题目 ID/名称" />
-          <button class="oj-search-button" onclick="handleSearch()">🔍</button>
-        </div>
-      </div>
-      <br />
-      <div class="oj-sidebar-controls" id="admin-login-area">
-        <input type="password" id="adminPassword" class="oj-search-input" placeholder="管理员密码" />
-        <button class="submit-btn" onclick="adminLogin()">登录</button>
-      </div>
-    </aside>
+    <OjSidebar active="discussion" includeAdminLogin={true} />
 
     <main class="oj-main-content">
       <div id="listView" class="view active">
@@ -125,5 +103,5 @@ import OjLayout from "../../../layouts/OjLayout.astro";
 
   <script is:inline src="/assets/js/nav.js"></script>
   <script is:inline src="https://api.130923.xyz/api/admin-auth?v=1"></script>
-  <script is:inline src="/a/oj/js/discussion.js"></script>
+  <script is:inline src="/assets/pages/a/oj/js/discussion.js"></script>
 </OjLayout>

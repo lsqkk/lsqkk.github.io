@@ -1,0 +1,18 @@
+{
+    "id": 1130,
+    "title": "排序 - 字符串按长度排序",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "给定 $N$ 个单词，请将它们按照**长度从小到大**排序。如果长度相同，则保持输入的**相对顺序不变**（稳定排序）。",
+    "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行一个单词 $W_i$（只包含字母，长度不超过 10）。",
+    "output_format": "输出 $N$ 行，每行一个排序后的单词。",
+    "sample_input": "3\\napple\\nbana\\ncat",
+    "sample_output": "cat\\nbana\\napple",
+    "hidden_tests": [
+        {
+            "input": "4\\none\\ntwo\\nthree\\nfour",
+            "expected_output": "one\\ntwo\\nfour\\nthree"
+        }
+    ]
+}

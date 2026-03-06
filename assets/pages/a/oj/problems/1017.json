@@ -1,0 +1,22 @@
+{
+    "id": 1017,
+    "title": "餐厅点餐折扣",
+    "difficulty": "简单",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "某餐厅折扣规则：消费金额低于 $100$ 元无折扣；$[100, 500)$ 之间打 $9$ 折；$\\ge 500$ 元打 $8$ 折。输入原价，计算实付金额。",
+    "input_format": "输入包含一行，一个浮点数 $P$ (原价, $0 < P \\le 1000$)",
+    "output_format": "输出包含一行，即实付金额，保留两位小数。",
+    "sample_input": "120.50",
+    "sample_output": "108.45",
+    "hidden_tests": [
+        {
+            "input": "80",
+            "expected_output": "80.00"
+        },
+        {
+            "input": "600",
+            "expected_output": "480.00"
+        }
+    ]
+}

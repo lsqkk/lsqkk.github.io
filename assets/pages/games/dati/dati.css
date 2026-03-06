@@ -1,0 +1,113 @@
+        .card {
+            background: var(--message-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            margin: 15px 0;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-color);
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .selected {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        #stats {
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #submitBtn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        #resultMessage {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background: var(--input-bg);
+            border-radius: 5px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .score {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .question-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
+            background: var(--message-bg);
+            border-radius: 10px;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 10px 0;
+            color: var(--primary-color);
+        }

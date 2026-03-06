@@ -1,0 +1,874 @@
+[
+    {
+        "id": 1108,
+        "title": "模拟与高精度 - 时钟同步",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定一个 24 小时制的时间，格式为 $HH:MM$。请将这个时间转换为 12 小时制，格式为 $hh:MM \\ A.M./P.M.$。",
+        "input_format": "输入包含一行，一个表示 24 小时制时间的字符串 $HH:MM$ ($00 \\le HH \\le 23, 00 \\le MM \\le 59$)。",
+        "output_format": "输出包含一行，即转换后的 12 小时制时间。",
+        "sample_input": "14:30",
+        "sample_output": "02:30 P.M.",
+        "hidden_tests": [
+            {
+                "input": "00:05",
+                "expected_output": "12:05 A.M."
+            },
+            {
+                "input": "12:00",
+                "expected_output": "12:00 P.M."
+            },
+            {
+                "input": "23:59",
+                "expected_output": "11:59 P.M."
+            }
+        ]
+    },
+    {
+        "id": 1109,
+        "title": "模拟与高精度 - 日期格式标准化",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定一个日期 $YYYY-MM-DD$ 的字符串，请将其格式转换为 $DD/MM/YYYY$。",
+        "input_format": "输入包含一行，一个日期字符串 $YYYY-MM-DD$。",
+        "output_format": "输出包含一行，即转换后的日期格式 $DD/MM/YYYY$。",
+        "sample_input": "2024-03-15",
+        "sample_output": "15/03/2024",
+        "hidden_tests": [
+            {
+                "input": "1999-12-01",
+                "expected_output": "01/12/1999"
+            }
+        ]
+    },
+    {
+        "id": 1110,
+        "title": "模拟与高精度 - 停车场计费",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "某停车场收费标准：前 3 小时每小时 5 元，之后每小时 3 元（不足一小时按一小时计算）。给定停车时长（分钟），计算总费用。",
+        "input_format": "输入包含一行，一个整数 $M$ ($1 \\le M \\le 600$)，表示停车时长（分钟）。",
+        "output_format": "输出包含一行，即总费用（元）。",
+        "sample_input": "210",
+        "sample_output": "15",
+        "hidden_tests": [
+            {
+                "input": "181",
+                "expected_output": "18"
+            },
+            {
+                "input": "59",
+                "expected_output": "5"
+            }
+        ]
+    },
+    {
+        "id": 1111,
+        "title": "模拟与高精度 - 大整数加法",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "计算两个**不超过 100 位**的非负整数 $A$ 和 $B$ 的和。你需要使用字符串来模拟加法运算。",
+        "input_format": "输入包含两行，每行一个非负整数 $A$ 和 $B$。",
+        "output_format": "输出包含一行，即 $A+B$ 的结果。",
+        "sample_input": "123456789\\n987654321",
+        "sample_output": "1111111110",
+        "hidden_tests": [
+            {
+                "input": "1\\n999",
+                "expected_output": "1000"
+            },
+            {
+                "input": "99999999999999999999999999999999999999999999999999\\n1",
+                "expected_output": "100000000000000000000000000000000000000000000000000"
+            }
+        ]
+    },
+    {
+        "id": 1112,
+        "title": "模拟与高精度 - 文本格式化：去除多余空格",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定一段文本，请将其中**连续的多个空格**合并为**一个空格**，并去除**文本开头和结尾**的空格。",
+        "input_format": "输入包含一行字符串 $S$（长度不超过 100）。",
+        "output_format": "输出包含一行，即处理后的字符串。",
+        "sample_input": "  This   is    a   test  ",
+        "sample_output": "This is a test",
+        "hidden_tests": [
+            {
+                "input": "single",
+                "expected_output": "single"
+            },
+            {
+                "input": "  a b   c  ",
+                "expected_output": "a b c"
+            }
+        ]
+    },
+    {
+        "id": 1113,
+        "title": "模拟与高精度 - 考试分数排名",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个学生的分数，请为每个学生计算他们的**排名**。分数相同时，排名相同，且下一个学生跳过相应的名次。（例如：100, 90, 90, 80，排名为 1, 2, 2, 4）。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数，表示学生分数 ($0 \\le S_i \\le 100$)。",
+        "output_format": "输出包含一行，即 $N$ 个学生对应的排名，元素之间用一个空格分隔。",
+        "sample_input": "5\\n100 80 90 80 90",
+        "sample_output": "1 4 2 4 2",
+        "hidden_tests": [
+            {
+                "input": "4\\n60 60 60 60",
+                "expected_output": "1 1 1 1"
+            },
+            {
+                "input": "3\\n10 20 30",
+                "expected_output": "3 2 1"
+            }
+        ]
+    },
+    {
+        "id": 1114,
+        "title": "模拟与高精度 - 字符串大整数减法",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定两个**不超过 100 位**的正整数 $A$ 和 $B$ ($A \\ge B$)。请计算 $A-B$ 的结果。你需要使用字符串来模拟减法运算。",
+        "input_format": "输入包含两行，每行一个正整数 $A$ 和 $B$。",
+        "output_format": "输出包含一行，即 $A-B$ 的结果。如果结果为 0，则输出 0。",
+        "sample_input": "1000000000\\n1",
+        "sample_output": "999999999",
+        "hidden_tests": [
+            {
+                "input": "12345\\n12345",
+                "expected_output": "0"
+            },
+            {
+                "input": "100\\n5",
+                "expected_output": "95"
+            }
+        ]
+    },
+    {
+        "id": 1115,
+        "title": "模拟与高精度 - 约瑟夫环模拟",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": " $N$ 个人围成一圈，从 1 号开始报数，数到 $M$ 的人出列。出列后，从下一个人重新从 1 开始报数。请输出**最后出列**的人的编号。",
+        "input_format": "输入包含一行，两个整数 $N$ ($1 \\le N \\le 10$) 和 $M$ ($1 \\le M \\le 10$)。",
+        "output_format": "输出包含一行，即最后出列的人的编号。",
+        "sample_input": "5 3",
+        "sample_output": "4",
+        "hidden_tests": [
+            {
+                "input": "4 2",
+                "expected_output": "1"
+            },
+            {
+                "input": "1 1",
+                "expected_output": "1"
+            }
+        ]
+    },
+    {
+        "id": 1116,
+        "title": "模拟与高精度 - 矩阵边界求和",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定一个 $N \\times M$ 的矩阵，请计算其**最外层一圈元素**（边界元素）的**和**。",
+        "input_format": "第一行是两个整数 $N$ ($1 \\le N \\le 5$) 和 $M$ ($1 \\le M \\le 5$)。接下来 $N$ 行是矩阵元素 $M_{ij}$ ($0 \\le M_{ij} \\le 100$)。",
+        "output_format": "输出包含一行，即边界元素的和。",
+        "sample_input": "3 3\\n1 2 3\\n4 5 6\\n7 8 9",
+        "sample_output": "40",
+        "hidden_tests": [
+            {
+                "input": "1 5\\n1 2 3 4 5",
+                "expected_output": "15"
+            },
+            {
+                "input": "4 1\\n10\\n20\\n30\\n40",
+                "expected_output": "100"
+            }
+        ]
+    },
+    {
+        "id": 1117,
+        "title": "模拟与高精度 - R 行 R 列迷宫中的最短路径（BFS 模拟）",
+        "difficulty": "中等",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "在一个 $R \\times R$ 的迷宫中，'S' 是起点，'E' 是终点，'#' 是障碍物，'.' 是可通过的空地。你只能上下左右移动。请找到从 'S' 到 'E' 的**最少移动步数**。如果无法到达，输出 -1。",
+        "input_format": "第一行是一个整数 $R$ ($3 \\le R \\le 5$)。接下来 $R$ 行，每行 $R$ 个字符，表示迷宫地图。",
+        "output_format": "输出包含一行，即最少移动步数。",
+        "sample_input": "4\\nS#..\\n..#.\\n.#..\\n.#.E",
+        "sample_output": "5",
+        "hidden_tests": [
+            {
+                "input": "3\\nS..\\n.#.\\n..E",
+                "expected_output": "4"
+            },
+            {
+                "input": "3\\nS#.\\n#E.\\n...",
+                "expected_output": "-1"
+            }
+        ]
+    },
+    {
+        "id": 1118,
+        "title": "模拟与高精度 - 大整数乘法（单精度乘高精度）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "计算一个**不超过 100 位**的非负整数 $A$ 与一个**单精度整数** $B$ ($0 \\le B \\le 9$) 的乘积。",
+        "input_format": "输入包含两行。第一行是一个大整数 $A$。第二行是一个单精度整数 $B$。",
+        "output_format": "输出包含一行，即 $A \\times B$ 的结果。",
+        "sample_input": "123456789\\n9",
+        "sample_output": "1111111101",
+        "hidden_tests": [
+            {
+                "input": "100\\n0",
+                "expected_output": "0"
+            },
+            {
+                "input": "99999\\n5",
+                "expected_output": "499995"
+            }
+        ]
+    },
+    {
+        "id": 1119,
+        "title": "模拟与高精度 - 表达式求值（含括号和加减乘）",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定一个包含整数、加号 $(+)$, 减号 $(-)$, 乘号 $(*)$ 和括号 ((), )) 的表达式字符串。请计算该表达式的值。**所有运算结果在标准整数范围内**。",
+        "input_format": "输入包含一行字符串 $E$（长度不超过 50）。",
+        "output_format": "输出包含一行，即表达式的计算结果。",
+        "sample_input": "3 * (2 - 1) + 4",
+        "sample_output": "7",
+        "hidden_tests": [
+            {
+                "input": "(1+2)*3",
+                "expected_output": "9"
+            },
+            {
+                "input": "10 - (5 + 2)",
+                "expected_output": "3"
+            }
+        ]
+    },
+    {
+        "id": 1120,
+        "title": "模拟与高精度 - 大整数乘法（高精度乘高精度）",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "计算两个**不超过 50 位**的非负整数 $A$ 和 $B$ 的乘积。你需要使用字符串来模拟乘法运算。",
+        "input_format": "输入包含两行，每行一个非负整数 $A$ 和 $B$。",
+        "output_format": "输出包含一行，即 $A \\times B$ 的结果。",
+        "sample_input": "123\\n456",
+        "sample_output": "56088",
+        "hidden_tests": [
+            {
+                "input": "1000\\n1000",
+                "expected_output": "1000000"
+            },
+            {
+                "input": "9999999999999999999999999999999999999999999999999\\n9999999999999999999999999999999999999999999999999",
+                "expected_output": "999999999999999999999999999999999999999999999999800000000000000000000000000000000000000000000000001"
+            }
+        ]
+    },
+    {
+        "id": 1121,
+        "title": "模拟与高精度 - 俄罗斯方块消除",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定一个 $R \\times C$ 的二维矩阵，表示一个俄罗斯方块游戏界面（1 代表方块，0 代表空）。请**模拟一次消除过程**：如果某一行**全部为 1**，则消除该行，并将所有上方的行向下移动一行，被消除的行用 0 填充。",
+        "input_format": "第一行是两个整数 $R$ ($3 \\le R \\le 5$) 和 $C$ ($3 \\le C \\le 5$)。接下来 $R$ 行，每行 $C$ 个由空格分隔的 0 或 1。",
+        "output_format": "输出 $R$ 行，每行 $C$ 个整数，表示消除后的矩阵。",
+        "sample_input": "4 4\\n1 0 1 0\\n1 1 1 1\\n0 1 0 1\\n1 1 1 1",
+        "sample_output": "0 0 0 0\\n0 0 0 0\\n1 0 1 0\\n0 1 0 1",
+        "hidden_tests": [
+            {
+                "input": "3 3\\n1 1 1\\n0 0 0\\n1 1 1",
+                "expected_output": "0 0 0\\n0 0 0\\n0 0 0"
+            }
+        ]
+    },
+    {
+        "id": 1122,
+        "title": "模拟与高精度 - 信用卡号校验（Luhn 算法）",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定一个信用卡号（由数字组成的字符串），使用 **Luhn 算法**对其进行校验。规则：从右往左，奇数位数字不变，偶数位数字乘以 2（如果结果大于 9 则减去 9），将所有数字求和，如果总和能被 10 整除，则校验通过 (VALID)，否则不通过 (INVALID)。",
+        "input_format": "输入包含一行字符串 $S$（信用卡号，长度不超过 20）。",
+        "output_format": "输出包含一行，即校验结果 ('VALID' 或 'INVALID')。",
+        "sample_input": "79927398713",
+        "sample_output": "VALID",
+        "hidden_tests": [
+            {
+                "input": "79927398715",
+                "expected_output": "INVALID"
+            }
+        ]
+    },
+    {
+        "id": 1123,
+        "title": "模拟与高精度 - 大整数除法（高精度除以低精度）",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB",
+        "description": "计算一个**不超过 100 位**的非负整数 $A$ 与一个**单精度整数** $B$ ($1 \\le B \\le 9$) 的商（整数部分）和余数。",
+        "input_format": "输入包含两行。第一行是一个大整数 $A$。第二行是一个单精度整数 $B$。",
+        "output_format": "输出包含一行，先是商，后是余数，用一个空格分隔。",
+        "sample_input": "123456789\\n7",
+        "sample_output": "17636684 1",
+        "hidden_tests": [
+            {
+                "input": "100\\n10",
+                "expected_output": "10 0"
+            },
+            {
+                "input": "99\\n5",
+                "expected_output": "19 4"
+            }
+        ]
+    },
+    {
+        "id": 1124,
+        "title": "模拟与高精度 - 迷宫寻路：最远可达（DFS 模拟）",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB",
+        "description": "在一个 $R \\times R$ 的迷宫中，'S' 是起点，'#' 是障碍物，'.' 是可通过的空地。你只能上下左右移动。请找到从 'S' 出发**最远可以到达的空地**的**最大距离**（移动步数）。",
+        "input_format": "第一行是一个整数 $R$ ($3 \\le R \\le 5$)。接下来 $R$ 行，每行 $R$ 个字符，表示迷宫地图。",
+        "output_format": "输出包含一行，即最大距离。",
+        "sample_input": "4\\nS#..\\n..#.\\n.#..\\n.#..",
+        "sample_output": "7",
+        "hidden_tests": [
+            {
+                "input": "3\\nS..\\n.#.\\n...",
+                "expected_output": "4"
+            }
+        ]
+    },
+    {
+        "id": 1125,
+        "title": "模拟与高精度 - 括号匹配检查（栈模拟）",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定一个只包含 '(', ')', '[', ']', '{', '}' 六种括号的字符串，请判断括号是否**有效匹配**。有效匹配需满足：左括号必须用相同类型的右括号闭合，且左括号必须以正确的顺序闭合。",
+        "input_format": "输入包含一行字符串 $S$（长度不超过 50）。",
+        "output_format": "输出包含一行，如果有效输出 'TRUE'，否则输出 'FALSE'。",
+        "sample_input": "([{}])",
+        "sample_output": "TRUE",
+        "hidden_tests": [
+            {
+                "input": "(]",
+                "expected_output": "FALSE"
+            },
+            {
+                "input": "{[]}",
+                "expected_output": "TRUE"
+            }
+        ]
+    },
+    {
+        "id": 1126,
+        "title": "排序 - 简单数字排序",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个整数，请将它们按**从小到大**的顺序排列并输出。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数 $A_i$ ($-100 \\le A_i \\le 100$)。",
+        "output_format": "输出包含一行，即排序后的 $N$ 个整数，元素之间用一个空格分隔。",
+        "sample_input": "5\\n5 2 8 1 9",
+        "sample_output": "1 2 5 8 9",
+        "hidden_tests": [
+            {
+                "input": "4\\n-5 10 0 3",
+                "expected_output": "-5 0 3 10"
+            }
+        ]
+    },
+    {
+        "id": 1127,
+        "title": "排序 - 冒泡排序过程",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个整数，请使用**冒泡排序**的方法，完成**一趟**（从头到尾遍历一次）排序操作，并输出操作后的数组。",
+        "input_format": "第一行是一个整数 $N$ ($2 \\le N \\le 5$)。第二行是 $N$ 个由空格分隔的整数 $A_i$。",
+        "output_format": "输出包含一行，即一趟冒泡排序后的数组，元素之间用一个空格分隔。",
+        "sample_input": "5\\n5 1 4 2 8",
+        "sample_output": "1 4 2 5 8",
+        "hidden_tests": [
+            {
+                "input": "3\\n3 2 1",
+                "expected_output": "2 1 3"
+            }
+        ]
+    },
+    {
+        "id": 1128,
+        "title": "排序 - 插入排序：第 K 步结果",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个整数，使用**插入排序**进行排序。请输出**第 $K$ 步**（即将第 $K+1$ 个元素插入到前 $K$ 个有序元素中）完成后的数组状态。",
+        "input_format": "第一行是两个整数 $N$ ($2 \\le N \\le 5$) 和 $K$ ($1 \\le K < N$)。第二行是 $N$ 个由空格分隔的整数 $A_i$。",
+        "output_format": "输出包含一行，即第 $K$ 步插入排序后的数组，元素之间用一个空格分隔。",
+        "sample_input": "5 2\\n5 1 4 2 8",
+        "sample_output": "1 4 5 2 8",
+        "hidden_tests": [
+            {
+                "input": "4 1\\n3 1 4 2",
+                "expected_output": "1 3 4 2"
+            }
+        ]
+    },
+    {
+        "id": 1129,
+        "title": "排序 - 优先安排工作",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "有 $N$ 个任务，每个任务有一个耗时 $T_i$。为了尽快完成所有任务，你需要将它们按照**耗时从小到大**排序。请输出排序后的耗时序列。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数 $T_i$ (耗时， $1 \\le T_i \\le 100$)。",
+        "output_format": "输出包含一行，即排序后的耗时序列，元素之间用一个空格分隔。",
+        "sample_input": "4\\n15 8 30 12",
+        "sample_output": "8 12 15 30",
+        "hidden_tests": [
+            {
+                "input": "3\\n5 5 5",
+                "expected_output": "5 5 5"
+            }
+        ]
+    },
+    {
+        "id": 1130,
+        "title": "排序 - 字符串按长度排序",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个单词，请将它们按照**长度从小到大**排序。如果长度相同，则保持输入的**相对顺序不变**（稳定排序）。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行一个单词 $W_i$（只包含字母，长度不超过 10）。",
+        "output_format": "输出 $N$ 行，每行一个排序后的单词。",
+        "sample_input": "3\\napple\\nbana\\ncat",
+        "sample_output": "cat\\nbana\\napple",
+        "hidden_tests": [
+            {
+                "input": "4\\none\\ntwo\\nthree\\nfour",
+                "expected_output": "one\\ntwo\\nfour\\nthree"
+            }
+        ]
+    },
+    {
+        "id": 1131,
+        "title": "排序 - 快速排序分区（一趟）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个整数，选择**第一个元素**作为**枢轴 (pivot)**，进行**一趟快速排序**分区操作，并输出操作后的数组。",
+        "input_format": "第一行是一个整数 $N$ ($2 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数 $A_i$。",
+        "output_format": "输出包含一行，即一趟快速排序后的数组，枢轴位于最终位置，其左侧元素均小于等于它，右侧元素均大于等于它，元素之间用一个空格分隔。",
+        "sample_input": "5\\n3 1 4 2 5",
+        "sample_output": "2 1 3 4 5",
+        "hidden_tests": [
+            {
+                "input": "4\\n10 20 5 30",
+                "expected_output": "5 10 20 30"
+            }
+        ]
+    },
+    {
+        "id": 1132,
+        "title": "排序 - 合并排序的归并过程",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定两个已经**有序**的序列 $A$ 和 $B$，请使用**归并排序**中的归并操作，将它们合并成一个**新的有序序列** $C$。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。第二行是 $N$ 个由空格分隔的整数，表示有序序列 $A$。第三行是一个整数 $M$ ($1 \\le M \\le 5$)。第四行是 $M$ 个由空格分隔的整数，表示有序序列 $B$。",
+        "output_format": "输出包含一行，即合并后的有序序列 $C$，元素之间用一个空格分隔。",
+        "sample_input": "3\\n1 5 9\\n4\\n2 4 6 8",
+        "sample_output": "1 2 4 5 6 8 9",
+        "hidden_tests": [
+            {
+                "input": "2\\n10 20\\n3\\n5 15 25",
+                "expected_output": "5 10 15 20 25"
+            }
+        ]
+    },
+    {
+        "id": 1133,
+        "title": "排序 - 优先队列（K 个最大元素）",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个整数，请找出其中**最大的 $K$ 个元素**。按**从大到小**的顺序输出。",
+        "input_format": "第一行是两个整数 $N$ ($K \\le N \\le 10$) 和 $K$ ($1 \\le K \\le 5$)。第二行是 $N$ 个由空格分隔的整数 $A_i$。",
+        "output_format": "输出包含一行，即最大的 $K$ 个元素，元素之间用一个空格分隔。",
+        "sample_input": "7 3\\n5 2 8 1 9 4 7",
+        "sample_output": "9 8 7",
+        "hidden_tests": [
+            {
+                "input": "5 5\\n1 2 3 4 5",
+                "expected_output": "5 4 3 2 1"
+            }
+        ]
+    },
+    {
+        "id": 1134,
+        "title": "排序 - 计数排序",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个只包含 $0 \\sim 9$ 范围内数字的整数，请使用**计数排序**的思想对其进行排序。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数 $A_i$ ($0 \\le A_i \\le 9$)。",
+        "output_format": "输出包含一行，即排序后的 $N$ 个整数，元素之间用一个空格分隔。",
+        "sample_input": "5\\n3 1 4 1 5",
+        "sample_output": "1 1 3 4 5",
+        "hidden_tests": [
+            {
+                "input": "4\\n9 0 0 9",
+                "expected_output": "0 0 9 9"
+            }
+        ]
+    },
+    {
+        "id": 1135,
+        "title": "排序 - 字典序排序",
+        "difficulty": "困难",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个由小写字母组成的字符串，请将它们按照**字典序**（从小到大）排序并输出。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行一个字符串 $S_i$（长度不超过 10）。",
+        "output_format": "输出 $N$ 行，每行一个排序后的字符串。",
+        "sample_input": "3\\napple\\ncat\\nbanana",
+        "sample_output": "apple\\nbanana\\ncat",
+        "hidden_tests": [
+            {
+                "input": "2\\nxyz\\nxya",
+                "expected_output": "xya\\nxyz"
+            }
+        ]
+    },
+    {
+        "id": 1136,
+        "title": "排序 - 最大数拼接",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定 $N$ 个非负整数，将它们**拼接**起来组成一个最大的数。例如：$[3, 30, 34, 5, 9]$ 拼接后最大的数为 $9534330$。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 5$)。第二行是 $N$ 个由空格分隔的非负整数 $A_i$ ($0 \\le A_i \\le 100$)。",
+        "output_format": "输出包含一行，即拼接成的最大数。",
+        "sample_input": "5\\n3 30 34 5 9",
+        "sample_output": "9534330",
+        "hidden_tests": [
+            {
+                "input": "3\\n10 2 1",
+                "expected_output": "2110"
+            },
+            {
+                "input": "2\\n1 1",
+                "expected_output": "11"
+            }
+        ]
+    },
+    {
+        "id": 1137,
+        "title": "排序 - 桶排序：数据分组",
+        "difficulty": "极难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定 $N$ 个范围在 $[0, 99]$ 之间的整数。使用**桶排序**的思想，将这些数分成 10 个桶（桶 0 存放 $0 \\sim 9$，桶 1 存放 $10 \\sim 19$，以此类推）。请输出**每个桶中元素的数量**，以及**按桶顺序连接**后的所有元素序列。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数 $A_i$ ($0 \\le A_i \\le 99$)。",
+        "output_format": "输出两行。第一行是 10 个整数，表示每个桶中的元素数量（用空格分隔）。第二行是按桶顺序连接后的所有元素序列（用空格分隔）。",
+        "sample_input": "5\\n45 12 3 70 42",
+        "sample_output": "1 1 0 0 2 0 0 0 0 0\\n3 12 45 42 70",
+        "hidden_tests": [
+            {
+                "input": "4\\n99 0 55 50",
+                "expected_output": "1 0 0 0 0 2 0 0 0 1\\n0 55 50 99"
+            }
+        ]
+    },
+    {
+        "id": 1138,
+        "title": "暴力枚举 - 两数之和（下标）",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定一个整数数组 $A$ 和一个目标值 $T$。请在数组中找出两个数，使得它们的和等于 $T$，并返回它们的**下标**（从 0 开始）。假设只有唯一解。",
+        "input_format": "第一行是一个整数 $N$ ($2 \\le N \\le 10$)。第二行是 $N$ 个由空格分隔的整数 $A_i$。第三行是一个整数 $T$ (目标和)。",
+        "output_format": "输出包含一行，即两个数的下标，用空格分隔（先输出较小的下标）。",
+        "sample_input": "4\\n2 7 11 15\\n9",
+        "sample_output": "0 1",
+        "hidden_tests": [
+            {
+                "input": "3\\n3 2 4\\n6",
+                "expected_output": "1 2"
+            }
+        ]
+    },
+    {
+        "id": 1139,
+        "title": "暴力枚举 - 猜数字游戏",
+        "difficulty": "入门",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "有一个秘密的三位数字（$100 \\sim 999$）。给定你 $N$ 次猜测，每次猜测是一个三位数 $G$ 和反馈（A：位置对数字也对，B：位置错数字对）。请找出**符合所有 $N$ 次反馈**的秘密数字，保证有唯一解。",
+        "input_format": "第一行是一个整数 $N$ ($1 \\le N \\le 2$)。接下来 $N$ 行，每行包含一个猜测的三位数 $G$ 和两个非负整数 $A, B$，用空格分隔。",
+        "output_format": "输出包含一行，即秘密的三位数。",
+        "sample_input": "1\\n123 1 1",
+        "sample_output": "312",
+        "hidden_tests": [
+            {
+                "input": "2\\n123 0 0\\n456 0 0",
+                "expected_output": "789"
+            }
+        ]
+    },
+    {
+        "id": 1140,
+        "title": "暴力枚举 - 百钱买百鸡",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "经典的“百钱买百鸡”问题：公鸡 5 文钱一只，母鸡 3 文钱一只，小鸡 1 文钱三只。用 $N$ 文钱买 $N$ 只鸡，问**所有可能的购买方案**。",
+        "input_format": "输入包含一行，一个整数 $N$ ($10 \\le N \\le 100$)。",
+        "output_format": "输出若干行，每行一个方案：公鸡数 $\\text{cock}$，母鸡数 $\\text{hen}$，小鸡数 $\\text{chick}$，用空格分隔。按照 $\\text{cock}$ 从小到大，$\\text{hen}$ 从小到大的顺序输出。",
+        "sample_input": "100",
+        "sample_output": "0 25 75\\n4 18 78\\n8 11 81\\n12 4 84",
+        "hidden_tests": [
+            {
+                "input": "30",
+                "expected_output": "0 10 20\\n4 3 23"
+            }
+        ]
+    },
+    {
+        "id": 1141,
+        "title": "暴力枚举 - 找出完全平方数",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定一个整数范围 $[A, B]$，请找出该范围内所有**完全平方数**（即 $K^2$ 形式的数）。",
+        "input_format": "输入包含一行，两个整数 $A$ 和 $B$ ($1 \\le A \\le B \\le 100$)。",
+        "output_format": "输出包含一行，即所有完全平方数，用空格分隔。",
+        "sample_input": "10 50",
+        "sample_output": "16 25 36 49",
+        "hidden_tests": [
+            {
+                "input": "1 5",
+                "expected_output": "1 4"
+            }
+        ]
+    },
+    {
+        "id": 1142,
+        "title": "暴力枚举 - N 个元素的排列",
+        "difficulty": "简单",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个互不相同的数字（$1$ 到 $N$），请**枚举并输出**它们所有可能的**全排列**。",
+        "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 3$)。",
+        "output_format": "输出所有全排列，每个排列占一行，数字之间用空格分隔。按字典序输出。",
+        "sample_input": "3",
+        "sample_output": "1 2 3\\n1 3 2\\n2 1 3\\n2 3 1\\n3 1 2\\n3 2 1",
+        "hidden_tests": [
+            {
+                "input": "2",
+                "expected_output": "1 2\\n2 1"
+            }
+        ]
+    },
+    {
+        "id": 1143,
+        "title": "暴力枚举 - 组合：从 N 中选 K",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定 $N$ 个互不相同的数字（$1$ 到 $N$），请**枚举并输出**所有从这 $N$ 个数字中**选择 $K$ 个数字**的**组合**。",
+        "input_format": "输入包含一行，两个整数 $N$ ($1 \\le N \\le 5$) 和 $K$ ($1 \\le K \\le N$)。",
+        "output_format": "输出所有组合，每个组合占一行，数字之间用空格分隔。组合内的数字按升序排列，组合之间按字典序输出。",
+        "sample_input": "4 2",
+        "sample_output": "1 2\\n1 3\\n1 4\\n2 3\\n2 4\\n3 4",
+        "hidden_tests": [
+            {
+                "input": "3 1",
+                "expected_output": "1\\n2\\n3"
+            }
+        ]
+    },
+    {
+        "id": 1144,
+        "title": "暴力枚举 - 简单背包问题",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "有 $N$ 个物品，每个物品有一个重量 $W_i$ 和价值 $V_i$。有一个容量为 $C$ 的背包。请通过**枚举**所有可能的物品组合，找出在**不超过背包容量**的情况下，能获得的最大**总价值**。",
+        "input_format": "第一行是两个整数 $N$ ($1 \\le N \\le 5$) 和 $C$ (背包容量，$1 \\le C \\le 50$)。接下来 $N$ 行，每行两个整数 $W_i$ 和 $V_i$ ($1 \\le W_i \\le 10, 1 \\le V_i \\le 10$)。",
+        "output_format": "输出包含一行，即能获得的最大总价值。",
+        "sample_input": "3 5\\n1 6\\n2 10\\n3 12",
+        "sample_output": "22",
+        "hidden_tests": [
+            {
+                "input": "3 4\\n1 1\\n2 2\\n3 3",
+                "expected_output": "3"
+            }
+        ]
+    },
+    {
+        "id": 1145,
+        "title": "暴力枚举 - 四则运算等式",
+        "difficulty": "中等",
+        "time_limit": "1000ms",
+        "memory_limit": "64MB",
+        "description": "给定四个互不相同的数字 $A, B, C, D$（$1 \\sim 9$）。请在它们之间插入 $+,-,*,/$ 四种运算符，以及必要的括号，使得最终表达式的计算结果为**目标值 $T$**。输出**任意一个**符合条件的表达式。",
+        "input_format": "输入包含一行，五个整数 $A, B, C, D$ 和 $T$ ($1 \\le A, B, C, D \\le 9$, $A, B, C, D$ 互不相同, $1 \\le T \\le 100$)。",
+        "output_format": "输出包含一行，即一个符合条件的表达式字符串。如果无解，输出 'No Solution'。运算过程中的除法只考虑整数除法，且必须能整除。",
+        "sample_input": "1 2 3 4 10",
+        "sample_output": "(1+4)*2+3",
+        "hidden_tests": [
+            {
+                "input": "1 1 1 1 4",
+                "expected_output": "No Solution"
+            }
+        ]
+    },
+    {
+        "id": 1146,
+        "title": "暴力枚举 - 最多 K 次交换的最大数",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "给定一个由数字组成的字符串 $S$ 和一个整数 $K$。你最多可以进行 $K$ 次**任意两个位置数字的交换**，目的是使最终得到的数字**最大**。请输出这个最大数。",
+        "input_format": "第一行是一个字符串 $S$（长度不超过 5）。第二行是一个整数 $K$ ($1 \\le K \\le 2$)。",
+        "output_format": "输出包含一行，即能得到的最大数。",
+        "sample_input": "132 1",
+        "sample_output": "312",
+        "hidden_tests": [
+            {
+                "input": "4321 1",
+                "expected_output": "4321"
+            },
+            {
+                "input": "12345 2",
+                "expected_output": "54321"
+            }
+        ]
+    },
+    {
+        "id": 1147,
+        "title": "暴力枚举 - N 皇后问题",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "经典的**N 皇后问题**：在一个 $N \\times N$ 的棋盘上放置 $N$ 个皇后，使得它们之间**两两不能互相攻击**（即不能在同一行、同一列或同一对角线上）。请输出所有可能的**放置方案的总数**。",
+        "input_format": "输入包含一行，一个整数 $N$ ($1 \\le N \\le 4$)。",
+        "output_format": "输出包含一行，即总的放置方案数。",
+        "sample_input": "4",
+        "sample_output": "2",
+        "hidden_tests": [
+            {
+                "input": "1",
+                "expected_output": "1"
+            },
+            {
+                "input": "2",
+                "expected_output": "0"
+            },
+            {
+                "input": "3",
+                "expected_output": "0"
+            }
+        ]
+    },
+    {
+        "id": 1148,
+        "title": "暴力枚举 - 农场牛棚分配",
+        "difficulty": "困难",
+        "time_limit": "2000ms",
+        "memory_limit": "128MB",
+        "description": "农场有 $N$ 头牛，需要分配到 $K$ 个牛棚。已知 $N$ 头牛的坐标 $C_i$。为了让牛们舒适，分配的原则是：使**最远的两头牛**之间的距离**最小**。请通过枚举找出这个最小的最大距离。",
+        "input_format": "第一行是两个整数 $N$ ($2 \\le N \\le 10$) 和 $K$ ($1 \\le K \\le N$)。第二行是 $N$ 个由空格分隔的整数 $C_i$ (牛的坐标)。",
+        "output_format": "输出包含一行，即最小的最大距离。",
+        "sample_input": "5 3\\n1 2 8 4 9",
+        "sample_output": "3",
+        "hidden_tests": [
+            {
+                "input": "4 2\\n1 2 3 10",
+                "expected_output": "9"
+            }
+        ]
+    },
+    {
+        "id": 1149,
+        "title": "暴力枚举 - 完美立方",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB",
+        "description": "完美立方定义为：$a^3 = b^3 + c^3 + d^3$，其中 $a, b, c, d$ 都是大于 1 且小于等于 $N$ 的整数。请**枚举**出所有满足条件的 $a, b, c, d$ 的组合。",
+        "input_format": "输入包含一行，一个整数 $N$ ($2 \\le N \\le 20$)。",
+        "output_format": "输出若干行，每行一个完美立方的等式，格式为 $\\text{Cube} = a, \\text{Triple} = (b, c, d)$。其中 $b \\le c \\le d$，且所有解按 $a$ 的升序排列，若 $a$ 相同，则按 $b, c, d$ 的字典序排列。",
+        "sample_input": "25",
+        "sample_output": "Cube = 6, Triple = (3, 4, 5)\\nCube = 12, Triple = (6, 8, 10)\\nCube = 18, Triple = (9, 12, 15)\\nCube = 19, Triple = (3, 10, 18)\\nCube = 20, Triple = (7, 14, 17)\\nCube = 24, Triple = (12, 16, 20)",
+        "hidden_tests": [
+            {
+                "input": "5",
+                "expected_output": ""
+            }
+        ]
+    },
+    {
+        "id": 1150,
+        "title": "暴力枚举 - 走迷宫：K 步路径计数",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB",
+        "description": "在一个 $R \\times R$ 的迷宫中，给定起点 'S'，终点 'E'，障碍物 '#'，空地 '.'。你只能上下左右移动。请**枚举**并计算从 'S' 到 'E' 恰好走**$K$ 步**的路径**总数**。",
+        "input_format": "第一行是两个整数 $R$ ($3 \\le R \\le 4$) 和 $K$ ($1 \\le K \\le 10$)。接下来 $R$ 行，每行 $R$ 个字符，表示迷宫地图。",
+        "output_format": "输出包含一行，即恰好 $K$ 步的路径总数。",
+        "sample_input": "3 4\\nS..\\n...\\n..E",
+        "sample_output": "6",
+        "hidden_tests": [
+            {
+                "input": "3 1\\nS..\\n...\\n..E",
+                "expected_output": "0"
+            }
+        ]
+    },
+    {
+        "id": 1151,
+        "title": "暴力枚举 - 单词拆分",
+        "difficulty": "极难",
+        "time_limit": "3000ms",
+        "memory_limit": "256MB",
+        "description": "给定一个字符串 $S$ 和一个单词字典 $D$。请判断 $S$ 是否可以被拆分成一个或多个在字典中出现的**单词的组合**。你需要**枚举**所有可能的拆分方式。",
+        "input_format": "第一行是字符串 $S$（长度不超过 10）。第二行是一个整数 $N$ ($1 \\le N \\le 5$)。接下来 $N$ 行，每行一个单词 $W_i$（字典单词）。",
+        "output_format": "输出包含一行，如果可以拆分输出 'YES'，否则输出 'NO'。",
+        "sample_input": "applepie\\n3\\napple\\npie\\napp",
+        "sample_output": "YES",
+        "hidden_tests": [
+            {
+                "input": "catsandog\\n4\\ncat\\nsand\\ndog\\ncats",
+                "expected_output": "NO"
+            },
+            {
+                "input": "leetcode\\n2\\nleet\\ncode",
+                "expected_output": "YES"
+            }
+        ]
+    }
+]

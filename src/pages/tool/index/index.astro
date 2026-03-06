@@ -4,7 +4,7 @@ import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
-const toolsPath = path.join(PROJECT_ROOT, "tool", "tool.json");
+const toolsPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "tool.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const toolsData = JSON.parse(await fs.readFile(toolsPath, "utf8"));

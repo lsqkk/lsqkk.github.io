@@ -1,0 +1,18 @@
+{
+    "id": 1150,
+    "title": "暴力枚举 - 走迷宫：K 步路径计数",
+    "difficulty": "极难",
+    "time_limit": "3000ms",
+    "memory_limit": "256MB",
+    "description": "在一个 $R \\times R$ 的迷宫中，给定起点 'S'，终点 'E'，障碍物 '#'，空地 '.'。你只能上下左右移动。请**枚举**并计算从 'S' 到 'E' 恰好走**$K$ 步**的路径**总数**。",
+    "input_format": "第一行是两个整数 $R$ ($3 \\le R \\le 4$) 和 $K$ ($1 \\le K \\le 10$)。接下来 $R$ 行，每行 $R$ 个字符，表示迷宫地图。",
+    "output_format": "输出包含一行，即恰好 $K$ 步的路径总数。",
+    "sample_input": "3 4\\nS..\\n...\\n..E",
+    "sample_output": "6",
+    "hidden_tests": [
+        {
+            "input": "3 1\\nS..\\n...\\n..E",
+            "expected_output": "0"
+        }
+    ]
+}

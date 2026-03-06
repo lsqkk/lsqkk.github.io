@@ -4,7 +4,7 @@ import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
-const gamesPath = path.join(PROJECT_ROOT, "games", "game.json");
+const gamesPath = path.join(PROJECT_ROOT, "assets", "pages", "games", "game.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const gamesData = JSON.parse(await fs.readFile(gamesPath, "utf8"));
@@ -20,7 +20,7 @@ const gamesData = JSON.parse(await fs.readFile(gamesPath, "utf8"));
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
-    <link rel="stylesheet" href="/games/style.css" />
+    <link rel="stylesheet" href="/assets/pages/games/style.css" />
     <script is:inline define:vars={{ navConfig, gamesData }}>
       window.__NAV_CONFIG__ = navConfig;
       window.__GAMES_DATA__ = gamesData;
@@ -39,7 +39,7 @@ const gamesData = JSON.parse(await fs.readFile(gamesPath, "utf8"));
       <h1 class="page-title">游戏 / GAMES</h1>
     </div>
 
-    <script is:inline src="/games/game.js"></script>
+    <script is:inline src="/assets/pages/games/game.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>

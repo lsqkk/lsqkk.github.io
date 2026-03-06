@@ -1,0 +1,22 @@
+{
+    "id": 1049,
+    "title": "阶乘计算",
+    "difficulty": "中等",
+    "time_limit": "1000ms",
+    "memory_limit": "64MB",
+    "description": "输入一个非负整数 $N$，计算 $N$ 的阶乘 $N!$。",
+    "input_format": "输入包含一行，一个整数 $N$ ($0 \\le N \\le 12$)",
+    "output_format": "输出包含一行，即 $N!$ 的值。",
+    "sample_input": "5",
+    "sample_output": "120",
+    "hidden_tests": [
+        {
+            "input": "0",
+            "expected_output": "1"
+        },
+        {
+            "input": "10",
+            "expected_output": "3628800"
+        }
+    ]
+}
