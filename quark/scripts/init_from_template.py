@@ -105,7 +105,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parent.parent
+    root = Path(__file__).resolve().parents[2]
     template_init_dir = root / "template" / "init"
     delete_file = template_init_dir / "delete.txt"
 

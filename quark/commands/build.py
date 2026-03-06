@@ -21,7 +21,7 @@ def run_build_pipeline(mode: str) -> None:
 @click.option(
     "--mode",
     type=click.Choice(["source", "artifact"], case_sensitive=False),
-    default="artifact",
+    default="source",
     show_default=True,
     help="构建模式：source 仅生成 dist，artifact 额外发布到根目录。",
 )

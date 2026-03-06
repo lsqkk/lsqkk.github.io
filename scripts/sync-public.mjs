@@ -13,7 +13,11 @@ const COPY_FILES = [
   ".nojekyll",
   "robots.txt",
   "BingSiteAuth.xml",
-  "sitemap.xml",
+];
+
+const COMPAT_IMAGE_ALIASES = [
+  { source: path.join("assets", "img", "logo_blue.png"), target: path.join("image", "logo_blue.png") },
+  { source: path.join("assets", "img", "touxiang.png"), target: path.join("image", "touxiang.png") },
 ];
 
 async function exists(p) {
@@ -83,6 +87,7 @@ async function main() {
   for (const file of COPY_FILES) {
     await rmIfExists(path.join(PUBLIC_DIR, file));
   }
+  await rmIfExists(path.join(PUBLIC_DIR, "image"));
 
   for (const dir of COPY_DIRS) {
     await copyTree(dir, path.join("public", dir));
@@ -92,6 +97,14 @@ async function main() {
     const src = path.join(ROOT, file);
     if (!(await exists(src))) continue;
     const dest = path.join(PUBLIC_DIR, file);
+    await fs.mkdir(path.dirname(dest), { recursive: true });
+    await fs.copyFile(src, dest);
+  }
+
+  for (const alias of COMPAT_IMAGE_ALIASES) {
+    const src = path.join(ROOT, alias.source);
+    if (!(await exists(src))) continue;
+    const dest = path.join(PUBLIC_DIR, alias.target);
     await fs.mkdir(path.dirname(dest), { recursive: true });
     await fs.copyFile(src, dest);
   }

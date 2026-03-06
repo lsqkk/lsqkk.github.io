@@ -21,7 +21,7 @@ def get_system_encoding():
 @click.command()
 @click.argument('message', required=False)
 @click.option('--no-update', is_flag=True, help='跳过更新文章步骤')
-@click.option('--no-map', is_flag=True, help='跳过分步网站地图步骤')
+@click.option('--no-map', is_flag=True, help='兼容参数（已无独立网站地图步骤）')
 @click.option('--no-push', is_flag=True, help='跳过Git推送步骤')
 @click.option('--dry-run', '-n', is_flag=True, help='只显示将要执行的命令，不实际执行')
 @click.option('--force', '-f', is_flag=True, help='强制推送（添加--force参数）')
@@ -31,8 +31,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     
     执行顺序：
     1. quark build          (构建站点，除非使用 --no-update)
-    2. quark map            (生成网站地图，除非使用 --no-map)
-    3. quark push MESSAGE   (推送更改，除非使用 --no-push)
+    2. quark push MESSAGE   (推送更改，除非使用 --no-push)
     
     如果未提供MESSAGE，则使用默认消息"更新 - 更新了文章"
     """
@@ -50,11 +49,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     if not no_update:
         commands.append(('构建站点', ['build']))
     
-    # 2. 生成网站地图
-    if not no_map:
-        commands.append(('生成网站地图', ['map']))
-    
-    # 3. 推送更改
+    # 2. 推送更改
     if not no_push:
         push_cmd = ['push', message]
         if force:
@@ -190,7 +185,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     # 总结
     click.echo("\n📊 操作总结:")
     click.echo(f"  站点构建: {'√' if not no_update else '❌ 跳过'}")
-    click.echo(f"  网站地图: {'√' if not no_map else '❌ 跳过'}")
+    click.echo("  网站地图: 自动（由 Astro build 生成）")
     click.echo(f"  Git推送: {'√' if not no_push else '❌ 跳过'}")
     if not no_push:
         click.echo(f"  提交消息: {message}")

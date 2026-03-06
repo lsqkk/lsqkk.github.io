@@ -5,8 +5,8 @@ import re
 from pathlib import Path
 
 
-CSS_ATTR_RE = re.compile(r'<link\b[^>]*\bhref=["\']([^"\']+)["\']', re.IGNORECASE)
-JS_ATTR_RE = re.compile(r'<script\b[^>]*\bsrc=["\']([^"\']+)["\']', re.IGNORECASE)
+CSS_ATTR_RE = re.compile(r'(?:href|@import)\s*=\s*["\']([^"\']+\.css[^"\']*)["\']', re.IGNORECASE)
+JS_ATTR_RE = re.compile(r'(?:src)\s*=\s*["\']([^"\']+\.js[^"\']*)["\']', re.IGNORECASE)
 
 
 def is_external_url(raw: str) -> bool:
@@ -20,33 +20,38 @@ def is_external_url(raw: str) -> bool:
     )
 
 
-def normalize_asset_ref(html_file: Path, raw_ref: str, root: Path) -> Path | None:
+def normalize_asset_ref(doc_file: Path, raw_ref: str, root: Path) -> Path | None:
     cleaned = raw_ref.split("?", 1)[0].split("#", 1)[0].strip()
     if not cleaned or is_external_url(cleaned):
         return None
 
     if cleaned.startswith("/"):
         return (root / cleaned.lstrip("/")).resolve()
-    return (html_file.parent / cleaned).resolve()
+    return (doc_file.parent / cleaned).resolve()
 
 
-def collect_html_refs(root: Path) -> tuple[set[Path], set[Path]]:
+def iter_source_docs(root: Path):
+    for ext in ("*.html", "*.astro"):
+        yield from root.rglob(ext)
+
+
+def collect_refs(root: Path) -> tuple[set[Path], set[Path]]:
     css_refs: set[Path] = set()
     js_refs: set[Path] = set()
 
-    for html_file in root.rglob("*.html"):
+    for doc_file in iter_source_docs(root):
         try:
-            content = html_file.read_text(encoding="utf-8")
+            content = doc_file.read_text(encoding="utf-8")
         except UnicodeDecodeError:
-            content = html_file.read_text(encoding="utf-8", errors="ignore")
+            content = doc_file.read_text(encoding="utf-8", errors="ignore")
 
         for raw in CSS_ATTR_RE.findall(content):
-            ref = normalize_asset_ref(html_file, raw, root)
+            ref = normalize_asset_ref(doc_file, raw, root)
             if ref is not None:
                 css_refs.add(ref)
 
         for raw in JS_ATTR_RE.findall(content):
-            ref = normalize_asset_ref(html_file, raw, root)
+            ref = normalize_asset_ref(doc_file, raw, root)
             if ref is not None:
                 js_refs.add(ref)
 
@@ -80,7 +85,7 @@ def print_result(kind: str, used: list[Path], unused: list[Path], root: Path) ->
 
 
 def main() -> int:
-    root = Path(__file__).resolve().parent.parent
+    root = Path(__file__).resolve().parents[2]
     css_dir = root / "assets" / "css"
     js_dir = root / "assets" / "js"
 
@@ -91,14 +96,13 @@ def main() -> int:
         print(f"Missing directory: {js_dir}")
         return 1
 
-    css_refs, js_refs = collect_html_refs(root)
+    css_refs, js_refs = collect_refs(root)
 
     css_used, css_unused = find_usage(css_dir, css_refs, ".css")
     js_used, js_unused = find_usage(js_dir, js_refs, ".js")
 
     print_result("CSS", css_used, css_unused, root)
     print_result("JS", js_used, js_unused, root)
-
     return 0
 
 

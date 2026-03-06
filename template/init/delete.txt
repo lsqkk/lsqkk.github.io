@@ -13,4 +13,5 @@ games
 image
 posts
 BingSiteAuth.xml
+sitemap.xml
 tool

@@ -2,7 +2,7 @@
 
 ## 日期：2026-02-02
 
-您可以在 /blog/dt/dt.md 中编辑动态内容。
+您可以在 /assets/pages/blog/dt/dt.md 中编辑动态内容。
 
 可以放图。
 
