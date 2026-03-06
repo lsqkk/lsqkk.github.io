@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <title>高级科学计算器 - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.min.js"></script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/numeric@1.2.6/numeric.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <script is:inline src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="calculator.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="tou">
+            <h1>高级科学计算器</h1>
+            <div class="subtitle">夸克博客 - 专业数学工具</div>
+            <a href="/tool">更多工具 →</a>
+        </div>
+
+        <div class="calculator">
+            <select class="mode-select" id="modeSelect">
+                <option value="basic">基本计算</option>
+                <option value="equation">方程求解</option>
+                <option value="integral">积分计算</option>
+                <option value="derivative">导数计算</option>
+                <option value="series">级数求和</option>
+                <option value="matrix">矩阵运算</option>
+            </select>
+
+            <div class="display">
+                <input type="text" id="main-input" placeholder="输入表达式">
+                <div class="cursor-indicator" id="cursorPos">位置: 0</div>
+            </div>
+
+            <!-- 基本计算按钮 -->
+            <div class="button-grid" id="basicButtons">
+                <button onclick="insertAtCursor('7')">7</button>
+                <button onclick="insertAtCursor('8')">8</button>
+                <button onclick="insertAtCursor('9')">9</button>
+                <button onclick="insertAtCursor('(')">(</button>
+                <button onclick="insertAtCursor(')')">)</button>
+
+                <button onclick="insertAtCursor('4')">4</button>
+                <button onclick="insertAtCursor('5')">5</button>
+                <button onclick="insertAtCursor('6')">6</button>
+                <button onclick="insertAtCursor('+')">+</button>
+                <button onclick="insertAtCursor('-')">-</button>
+
+                <button onclick="insertAtCursor('1')">1</button>
+                <button onclick="insertAtCursor('2')">2</button>
+                <button onclick="insertAtCursor('3')">3</button>
+                <button onclick="insertAtCursor('*')">×</button>
+                <button onclick="insertAtCursor('/')">/</button>
+
+                <button onclick="insertAtCursor('0')">0</button>
+                <button onclick="insertAtCursor('.')">.</button>
+                <button onclick="insertAtCursor('^')">^</button>
+                <button onclick="insertAtCursor('pi')">π</button>
+                <button onclick="insertAtCursor('e')">e</button>
+
+                <button class="sci-btn" onclick="insertAtCursor('sqrt()',true)">√</button>
+                <button class="sci-btn" onclick="insertAtCursor('log(10,)',true)">log</button>
+                <button class="sci-btn" onclick="insertAtCursor('log()',true)">ln</button>
+                <button class="sci-btn" onclick="insertAtCursor('sin()',true)">sin</button>
+                <button class="sci-btn" onclick="insertAtCursor('cos()',true)">cos</button>
+
+                <button class="special-btn" onclick="calculate()">=</button>
+                <button onclick="clearInput()">C</button>
+                <button onclick="backspace()">⌫</button>
+                <button class="sci-btn" onclick="insertAtCursor('tan()',true)">tan</button>
+                <button class="sci-btn" onclick="insertAtCursor('abs()',true)">|x|</button>
+
+                <button class="fn-btn" onclick="insertAtCursor('factorial()',true)">n!</button>
+                <button class="fn-btn" onclick="insertAtCursor('exp()',true)">exp</button>
+                <button class="fn-btn" onclick="insertAtCursor('mod()',true)">mod</button>
+                <button class="fn-btn" onclick="insertAtCursor('ceil()',true)">ceil</button>
+                <button class="fn-btn" onclick="insertAtCursor('floor()',true)">floor</button>
+            </div>
+
+            <!-- 方程求解面板 -->
+            <div class="function-panel" id="equationPanel">
+                <div class="input-group">
+                    <label for="equationInput">方程表达式</label>
+                    <input type="text" id="equationInput" placeholder="例如: x^2 + 2x + 1 = 0, sin(x) = 0.5">
+                </div>
+                <div class="input-group">
+                    <label for="equationVar">求解变量</label>
+                    <input type="text" id="equationVar" placeholder="例如: x" value="x">
+                </div>
+                <div class="input-group">
+                    <label for="equationGuess">初始猜测值 (可选)</label>
+                    <input type="text" id="equationGuess" placeholder="例如: 1">
+                </div>
+                <button class="special-btn" onclick="solveEquation()">求解方程</button>
+            </div>
+
+            <!-- 积分计算面板 -->
+            <div class="function-panel" id="integralPanel">
+                <div class="input-group">
+                    <label for="integralExpr">被积表达式</label>
+                    <input type="text" id="integralExpr" placeholder="例如: x^2, sin(x)*cos(x)">
+                </div>
+                <div class="input-group">
+                    <label for="integralVar">积分变量</label>
+                    <input type="text" id="integralVar" placeholder="例如: x" value="x">
+                </div>
+                <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label for="lowerLimit">下限 (可选)</label>
+                        <input type="text" id="lowerLimit" placeholder="例如: 0">
+                    </div>
+                    <div>
+                        <label for="upperLimit">上限 (可选)</label>
+                        <input type="text" id="upperLimit" placeholder="例如: 1">
+                    </div>
+                </div>
+                <button class="special-btn" onclick="calculateIntegral()">计算积分</button>
+            </div>
+
+            <!-- 导数计算面板 -->
+            <div class="function-panel" id="derivativePanel">
+                <div class="input-group">
+                    <label for="derivativeExpr">函数表达式</label>
+                    <input type="text" id="derivativeExpr" placeholder="例如: x^3 + 2x, sin(x^2)">
+                </div>
+                <div class="input-group">
+                    <label for="derivativeVar">求导变量</label>
+                    <input type="text" id="derivativeVar" placeholder="例如: x" value="x">
+                </div>
+                <div class="input-group">
+                    <label for="derivativeOrder">导数阶数</label>
+                    <input type="text" id="derivativeOrder" placeholder="例如: 1 (一阶导数)" value="1">
+                </div>
+                <button class="special-btn" onclick="calculateDerivative()">计算导数</button>
+            </div>
+
+            <!-- 级数求和面板 -->
+            <div class="function-panel" id="seriesPanel">
+                <div class="input-group">
+                    <label for="seriesExpr">通项表达式</label>
+                    <input type="text" id="seriesExpr" placeholder="例如: k^2, 1/k!">
+                </div>
+                <div class="input-group">
+                    <label for="seriesVar">求和变量</label>
+                    <input type="text" id="seriesVar" placeholder="例如: k" value="k">
+                </div>
+                <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label for="seriesStart">起始值</label>
+                        <input type="text" id="seriesStart" placeholder="例如: 1" value="1">
+                    </div>
+                    <div>
+                        <label for="seriesEnd">结束值</label>
+                        <input type="text" id="seriesEnd" placeholder="例如: 10" value="10">
+                    </div>
+                </div>
+                <button class="special-btn" onclick="calculateSeries()">计算级数</button>
+            </div>
+
+            <!-- 矩阵运算面板 -->
+            <div class="function-panel" id="matrixPanel">
+                <div class="input-group">
+                    <label>选择矩阵运算</label>
+                    <select class="mode-select" id="matrixOperation">
+                        <option value="det">行列式</option>
+                        <option value="inv">逆矩阵</option>
+                        <option value="transpose">转置</option>
+                        <option value="multiply">矩阵乘法</option>
+                        <option value="add">矩阵加法</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="matrixInputA">矩阵A (例如: [[1,2],[3,4]])</label>
+                    <input type="text" id="matrixInputA" placeholder="输入矩阵A">
+                </div>
+                <div class="input-group" id="matrixInputBGroup" style="display: none;">
+                    <label for="matrixInputB">矩阵B (例如: [[5,6],[7,8]])</label>
+                    <input type="text" id="matrixInputB" placeholder="输入矩阵B">
+                </div>
+                <button class="special-btn" onclick="calculateMatrix()">计算</button>
+            </div>
+
+            <div id="result"></div>
+        </div>
+
+        <div class="footer">
+            <a href="/posts/copyright">© 2024 - 2026 夸克博客 All rights reserved.</a>
+        </div>
+    </div>
+    <script is:inline src="calculator.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

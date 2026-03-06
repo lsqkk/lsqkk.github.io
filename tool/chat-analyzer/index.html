@@ -1,258 +1,28 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Analyzer 聊天记录高频词&词云 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <script src="/assets/js/nav.js"></script>
-    <link rel="stylesheet" href="chat-analyzer.css">
-</head>
-
-<body>
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script src="/assets/js/shicha.js"></script>
-    <div class="container">
-        <!-- 主标题 -->
-        <h1 class="page-title">Chat Analyzer</h1>
-        <p class="page-subtitle">聊天记录高频词&词云生成 · 数据安全 · 支持词云生成与结果导出</p>
-
-        <!-- 安全提示 -->
-        <div class="glass-card security-banner">
-            <div class="security-icon">
-                <i class="fas fa-shield-alt"></i>
-            </div>
-            <div class="security-content">
-                <h3>100% 隐私保护</h3>
-                <p>
-                    <strong>本工具完全在您的浏览器中运行</strong>，所有数据处理都在本地进行，不会上传到任何服务器。
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Chat Analyzer 聊天记录高频词&词云 - 夸克博客</title><link rel="icon" href="/assets/img/logo_blue.png" type="image/png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="/assets/css/basic.css"><script src="/assets/js/nav.js"></script><link rel="stylesheet" href="chat-analyzer.css"></head> <body> <link rel="stylesheet" href="/assets/css/shicha.css"> <div class="parallax-bg" id="parallaxBg"></div> <script src="/assets/js/shicha.js"></script> <div class="container"> <!-- 主标题 --> <h1 class="page-title">Chat Analyzer</h1> <p class="page-subtitle">聊天记录高频词&词云生成 · 数据安全 · 支持词云生成与结果导出</p> <!-- 安全提示 --> <div class="glass-card security-banner"> <div class="security-icon"> <i class="fas fa-shield-alt"></i> </div> <div class="security-content"> <h3>100% 隐私保护</h3> <p> <strong>本工具完全在您的浏览器中运行</strong>，所有数据处理都在本地进行，不会上传到任何服务器。
                     您可以右键查看网页源代码验证，或断开网络连接后使用。您的聊天记录数据绝对安全。
-                </p>
-            </div>
-        </div>
-
-        <!-- 配置区域 -->
-        <div class="glass-card config-section">
-            <div class="section-title">
-                <i class="fas fa-sliders-h"></i>
-                <span>分析配置</span>
-            </div>
-
-            <div class="config-grid">
-                <div class="config-group">
-                    <label for="minFrequency">最小出现次数阈值</label>
-                    <input type="number" id="minFrequency" min="1" max="1000" value="20">
-                    <span style="color: #888; font-size: 0.9rem;">仅统计出现次数超过此值的词汇</span>
-                </div>
-
-                <div class="config-group">
-                    <label for="maxWords">词云最大词汇数</label>
-                    <input type="number" id="maxWords" min="10" max="500" value="200">
-                    <span style="color: #888; font-size: 0.9rem;">控制词云中显示的词汇数量</span>
-                </div>
-
-                <div class="config-group">
-                    <label for="wordcloudColor">词云配色方案</label>
-                    <select id="wordcloudColor">
-                        <option value="colorful">多彩渐变</option>
-                        <option value="rainbow">彩虹色</option>
-                        <option value="pastel">柔和色调</option>
-                        <option value="vibrant">鲜艳色调</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="punctuationStats" checked>
-                <label for="punctuationStats">统计纯标点消息（整行都是句号或问号）</label>
-            </div>
-        </div>
-
-        <!-- 文件上传区域 -->
-        <div class="glass-card">
-            <div class="section-title">
-                <i class="fas fa-file-upload"></i>
-                <span>上传聊天记录文件</span>
-            </div>
-
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <div class="upload-text">
-                    <strong>点击或拖拽文件到此处</strong>
-                </div>
-                <div class="upload-hint">
-                    支持.txt格式，UTF-8编码，建议文件大小不超过10MB
-                </div>
-                <input type="file" id="fileInput" accept=".txt">
-            </div>
-
-            <div id="fileInfo"
-                style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 10px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-file-alt" style="color: #555;"></i>
-                    <div>
-                        <strong id="fileName"></strong>
-                        <div id="fileSize" style="color: #666; font-size: 0.9rem;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 进度条 -->
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-header">
-                <span>分析进度</span>
-                <span id="progressText">0%</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
-
-        <!-- 加载动画 -->
-        <div class="loader" id="loader">
-            <div class="spinner"></div>
-            <p>正在分析聊天记录，请稍候...</p>
-            <p id="loaderDetail" style="color: #666; font-size: 0.9rem; margin-top: 10px;"></p>
-        </div>
-
-        <!-- 操作按钮 -->
-        <div class="action-buttons">
-            <button class="btn btn-primary" id="analyzeBtn" disabled>
-                <i class="fas fa-chart-bar"></i>
-                开始分析
-            </button>
-            <button class="btn btn-secondary" id="resetBtn">
-                <i class="fas fa-redo"></i>
-                重置
-            </button>
-        </div>
-
-        <!-- 结果展示区域 -->
-        <div class="results-section" id="resultsSection">
-            <div class="glass-card">
-                <div class="results-header">
-                    <div>
-                        <h2 style="color: #333; margin-bottom: 5px;">分析结果</h2>
-                        <p style="color: #666;" id="resultsSummary"></p>
-                    </div>
-                    <div style="color: #666; font-size: 0.9rem;">
-                        <i class="far fa-clock"></i>
-                        分析完成时间: <span id="analysisTime"></span>
-                    </div>
-                </div>
-
-                <!-- 统计卡片 -->
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <div class="stat-label">高频词数量</div>
-                        <div class="stat-value" id="statWordCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">纯句号消息</div>
-                        <div class="stat-value" id="statPeriodCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">纯问号消息</div>
-                        <div class="stat-value" id="statQuestionCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">总行数</div>
-                        <div class="stat-value" id="statTotalLines">0</div>
-                    </div>
-                </div>
-
-                <!-- 词云展示 -->
-                <div class="wordcloud-container">
-                    <h3 style="color: #333; margin-bottom: 20px; text-align: center;">
-                        <i class="fas fa-cloud" style="margin-right: 10px;"></i>词云图
-                    </h3>
-                    <canvas id="wordcloudCanvas" width="1000" height="600"></canvas>
-                </div>
-
-                <!-- 高频词列表 -->
-                <div class="word-list-container">
-                    <h3 style="color: #333; margin-bottom: 20px;">
-                        <i class="fas fa-list-ol" style="margin-right: 10px;"></i>高频词 Top 50
-                    </h3>
-                    <div class="word-list" id="wordList"></div>
-                </div>
-            </div>
-
-            <!-- 文件下载区域 -->
-            <div class="download-section">
-                <h3 style="color: #333; margin-bottom: 20px; text-align: center;">
-                    <i class="fas fa-download" style="margin-right: 10px;"></i>下载分析结果
-                </h3>
-
-                <div class="download-grid">
-                    <div class="download-card">
-                        <div class="download-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h4>详细分析结果</h4>
-                        <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
-                            包含高频词完整列表和统计信息
-                        </p>
-                        <button class="btn btn-secondary download-btn" id="downloadDetailed">
-                            <i class="fas fa-download"></i> 下载 (.txt)
-                        </button>
-                    </div>
-
-                    <div class="download-card">
-                        <div class="download-icon">
-                            <i class="fas fa-list"></i>
-                        </div>
-                        <h4>高频词汇表</h4>
-                        <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
-                            纯词汇列表，每行一个词
-                        </p>
-                        <button class="btn btn-secondary download-btn" id="downloadVocab">
-                            <i class="fas fa-download"></i> 下载 (.txt)
-                        </button>
-                    </div>
-
-                    <div class="download-card">
-                        <div class="download-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <h4>分析摘要</h4>
-                        <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
-                            包含统计摘要和配置信息
-                        </p>
-                        <button class="btn btn-secondary download-btn" id="downloadSummary">
-                            <i class="fas fa-download"></i> 下载 (.txt)
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 页脚 -->
-        <div class="footer">
-            <p style="margin-top: 10px;">
-                基于
-                <a href="https://github.com/timdream/wordcloud2.js" target="_blank" class="code-link">wordcloud2.js</a>
-            </p>
-            <p>
-                <a href="https://github.com/lsqkk/chat-analyzer" target="_blank" class="code-link">项目仓库</a>(欢迎star!!)
-            </p>
-            <p>
-                © 2024 - 2026
-                <a href="/" target="_blank" class="code-link">夸克博客</a> All rights reserved.
-            </p>
-
-            <!-- 引入wordcloud2.js库 -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.0/wordcloud2.min.js"></script>
-
-            <script src="chat-analyzer.js"></script>
-
-</body>
-
-</html>
+</p> </div> </div> <!-- 配置区域 --> <div class="glass-card config-section"> <div class="section-title"> <i class="fas fa-sliders-h"></i> <span>分析配置</span> </div> <div class="config-grid"> <div class="config-group"> <label for="minFrequency">最小出现次数阈值</label> <input type="number" id="minFrequency" min="1" max="1000" value="20"> <span style="color: #888; font-size: 0.9rem;">仅统计出现次数超过此值的词汇</span> </div> <div class="config-group"> <label for="maxWords">词云最大词汇数</label> <input type="number" id="maxWords" min="10" max="500" value="200"> <span style="color: #888; font-size: 0.9rem;">控制词云中显示的词汇数量</span> </div> <div class="config-group"> <label for="wordcloudColor">词云配色方案</label> <select id="wordcloudColor"> <option value="colorful">多彩渐变</option> <option value="rainbow">彩虹色</option> <option value="pastel">柔和色调</option> <option value="vibrant">鲜艳色调</option> </select> </div> </div> <div class="checkbox-group"> <input type="checkbox" id="punctuationStats" checked> <label for="punctuationStats">统计纯标点消息（整行都是句号或问号）</label> </div> </div> <!-- 文件上传区域 --> <div class="glass-card"> <div class="section-title"> <i class="fas fa-file-upload"></i> <span>上传聊天记录文件</span> </div> <div class="upload-area" id="uploadArea"> <div class="upload-icon"> <i class="fas fa-cloud-upload-alt"></i> </div> <div class="upload-text"> <strong>点击或拖拽文件到此处</strong> </div> <div class="upload-hint">
+支持.txt格式，UTF-8编码，建议文件大小不超过10MB
+</div> <input type="file" id="fileInput" accept=".txt"> </div> <div id="fileInfo" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.03); border-radius: 10px;"> <div style="display: flex; align-items: center; gap: 10px;"> <i class="fas fa-file-alt" style="color: #555;"></i> <div> <strong id="fileName"></strong> <div id="fileSize" style="color: #666; font-size: 0.9rem;"></div> </div> </div> </div> </div> <!-- 进度条 --> <div class="progress-container" id="progressContainer"> <div class="progress-header"> <span>分析进度</span> <span id="progressText">0%</span> </div> <div class="progress-bar"> <div class="progress-fill" id="progressFill"></div> </div> </div> <!-- 加载动画 --> <div class="loader" id="loader"> <div class="spinner"></div> <p>正在分析聊天记录，请稍候...</p> <p id="loaderDetail" style="color: #666; font-size: 0.9rem; margin-top: 10px;"></p> </div> <!-- 操作按钮 --> <div class="action-buttons"> <button class="btn btn-primary" id="analyzeBtn" disabled> <i class="fas fa-chart-bar"></i>
+开始分析
+</button> <button class="btn btn-secondary" id="resetBtn"> <i class="fas fa-redo"></i>
+重置
+</button> </div> <!-- 结果展示区域 --> <div class="results-section" id="resultsSection"> <div class="glass-card"> <div class="results-header"> <div> <h2 style="color: #333; margin-bottom: 5px;">分析结果</h2> <p style="color: #666;" id="resultsSummary"></p> </div> <div style="color: #666; font-size: 0.9rem;"> <i class="far fa-clock"></i>
+分析完成时间: <span id="analysisTime"></span> </div> </div> <!-- 统计卡片 --> <div class="stats-cards"> <div class="stat-card"> <div class="stat-label">高频词数量</div> <div class="stat-value" id="statWordCount">0</div> </div> <div class="stat-card"> <div class="stat-label">纯句号消息</div> <div class="stat-value" id="statPeriodCount">0</div> </div> <div class="stat-card"> <div class="stat-label">纯问号消息</div> <div class="stat-value" id="statQuestionCount">0</div> </div> <div class="stat-card"> <div class="stat-label">总行数</div> <div class="stat-value" id="statTotalLines">0</div> </div> </div> <!-- 词云展示 --> <div class="wordcloud-container"> <h3 style="color: #333; margin-bottom: 20px; text-align: center;"> <i class="fas fa-cloud" style="margin-right: 10px;"></i>词云图
+</h3> <canvas id="wordcloudCanvas" width="1000" height="600"></canvas> </div> <!-- 高频词列表 --> <div class="word-list-container"> <h3 style="color: #333; margin-bottom: 20px;"> <i class="fas fa-list-ol" style="margin-right: 10px;"></i>高频词 Top 50
+</h3> <div class="word-list" id="wordList"></div> </div> </div> <!-- 文件下载区域 --> <div class="download-section"> <h3 style="color: #333; margin-bottom: 20px; text-align: center;"> <i class="fas fa-download" style="margin-right: 10px;"></i>下载分析结果
+</h3> <div class="download-grid"> <div class="download-card"> <div class="download-icon"> <i class="fas fa-file-alt"></i> </div> <h4>详细分析结果</h4> <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+包含高频词完整列表和统计信息
+</p> <button class="btn btn-secondary download-btn" id="downloadDetailed"> <i class="fas fa-download"></i> 下载 (.txt)
+</button> </div> <div class="download-card"> <div class="download-icon"> <i class="fas fa-list"></i> </div> <h4>高频词汇表</h4> <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+纯词汇列表，每行一个词
+</p> <button class="btn btn-secondary download-btn" id="downloadVocab"> <i class="fas fa-download"></i> 下载 (.txt)
+</button> </div> <div class="download-card"> <div class="download-icon"> <i class="fas fa-chart-pie"></i> </div> <h4>分析摘要</h4> <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">
+包含统计摘要和配置信息
+</p> <button class="btn btn-secondary download-btn" id="downloadSummary"> <i class="fas fa-download"></i> 下载 (.txt)
+</button> </div> </div> </div> </div> <!-- 页脚 --> <div class="footer"> <p style="margin-top: 10px;">
+基于
+<a href="https://github.com/timdream/wordcloud2.js" target="_blank" class="code-link">wordcloud2.js</a> </p> <p> <a href="https://github.com/lsqkk/chat-analyzer" target="_blank" class="code-link">项目仓库</a>(欢迎star!!)
+</p> <p>
+© 2024 - 2026
+<a href="/" target="_blank" class="code-link">夸克博客</a> All rights reserved.
+</p> <!-- 引入wordcloud2.js库 --> <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.0/wordcloud2.min.js"></script> <script src="chat-analyzer.js"></script> </div> </div></body></html>

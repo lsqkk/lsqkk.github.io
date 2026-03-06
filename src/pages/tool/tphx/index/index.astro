@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片混淆加密 - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <script is:inline src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+</head>
+
+<body>
+    <link rel="stylesheet" href="/assets/css/shicha.css">
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+    <div class="container">
+        <h1>图片混淆加密</h1>
+        <p class="subtitle">基于空间填充曲线的图片混淆 - 仅供技术交流使用</p>
+
+        <div class="settings">
+            <div class="setting-row">
+                <label for="iterations">混淆次数:</label>
+                <input type="number" id="iterations" min="1" max="10" value="1">
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="file-upload btn btn-primary">
+                <span>选择图片</span>
+                <input type="file" accept="image/*" id="ipt">
+            </div>
+            <button id="enc" class="btn btn-primary">混淆</button>
+            <button id="dec" class="btn btn-accent">解混淆</button>
+            <button id="download" class="btn">下载结果</button>
+        </div>
+
+        <div id="drop-area" class="drop-area">
+            <div class="icon">📁</div>
+            <p>拖放图片到此处上传</p>
+        </div>
+
+        <img id="display-img" alt="处理后的图片将显示在这里">
+
+        <div class="footer">
+            <a href="lsqkk.github.io/posts/copyright" target="_blank">© 2024 - <span id="current-year"></span> 夸克博客 /
+                蓝色奇夸克 All rights reserved.</a>
+            <a href="lsqkk.github.io/tool" target="_blank">更多工具</a>
+        </div>
+    </div>
+
+    <script is:inline src="app.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

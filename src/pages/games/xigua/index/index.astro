@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <title>合成大西瓜 - 夸克博客</title>
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <link rel="stylesheet" href="xigua.css">
+</head>
+
+<body>
+    <div id="stats">
+        <div>得分: <span id="score">0</span></div>
+        <div>次数: <span id="clickCount">0</span></div>
+    </div>
+    <div id="preview">
+        <div>下一个水果:</div>
+        <div id="nextFruitPreview" style="font-size: 40px;"></div>
+    </div>
+    <div class="game-over" id="gameOver">
+        <h2>游戏结束!</h2>
+        <p>最终得分: <span id="finalScore">0</span></p>
+        <p>总次数: <span id="finalClickCount">0</span></p>
+        <button onclick="location.reload()">再玩一次</button>
+    </div>
+
+    <script is:inline src="xigua.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

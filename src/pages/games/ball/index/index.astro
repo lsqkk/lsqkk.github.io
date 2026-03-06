@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>手机平衡球 - 夸克博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="stylesheet" href="ball.css">
+</head>
+
+<body>
+    <div id="gameContainer">
+        <div id="instructions">
+            <h1>📱 手机平衡球</h1>
+            <p>倾斜手机控制小球移动，避开四角的黑洞，收集星星</p>
+            <button id="startBtn">开始游戏</button>
+        </div>
+
+        <div id="ball"></div>
+        <div id="status">
+            倾斜角度: <span id="angleDisplay">0°</span><br>
+            小球速度: <span id="speedDisplay">0</span>
+        </div>
+    </div>
+
+    <script is:inline src="ball.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 定制化导出工具 - 夸克博客</title>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* 避免与 nav.css 中的 .header 冲突，使用 .app-container 作为主容器 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f7;
+            /* 轻微背景色 */
+        }
+
+        /* ------------------- Glassmorphism 样式 ------------------- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.2);
+            /* 轻微半透明背景 */
+            backdrop-filter: blur(15px);
+            /* 较强毛玻璃效果 */
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            box-sizing: border-box;
+        }
+
+        .custom-input,
+        .custom-select,
+        .custom-textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #333;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .custom-input::placeholder,
+        .custom-textarea::placeholder {
+            color: rgba(51, 51, 51, 0.7);
+        }
+
+        .custom-input:focus,
+        .custom-select:focus,
+        .custom-textarea:focus {
+            outline: none;
+            border-color: rgba(122, 189, 154, 0.8);
+            box-shadow: 0 0 0 3px rgba(122, 189, 154, 0.3);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .custom-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.1s;
+            /* 按钮使用主题色调 */
+            background-color: rgba(122, 189, 154, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .custom-btn:hover {
+            background-color: rgba(122, 189, 154, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* ------------------- 布局样式 ------------------- */
+        .app-layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 20px;
+            padding: 20px 0;
+            min-height: calc(100vh - 40px);
+            /* 减去 margin */
+        }
+
+        .editor-section,
+        .preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customization-panel {
+            margin-bottom: 20px;
+        }
+
+        .customization-panel h3 {
+            color: #333;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .style-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .style-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Markdown 编辑区 */
+        #markdown-input {
+            min-height: 500px;
+            resize: vertical;
+            flex-grow: 1;
+            font-family: monospace;
+        }
+
+        /* 预览区 */
+        #preview {
+            flex-grow: 1;
+            overflow-y: auto;
+            /* 确保预览内容可滚动 */
+            padding: 20px;
+            color: #333;
+        }
+
+        /* 导出时的打印样式：隐藏所有 UI 元素，只打印预览内容 */
+        @media print {
+            body>* {
+                display: none !important;
+            }
+
+            #preview-container {
+                display: block !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: auto;
+                margin: 0;
+                border: none;
+                box-shadow: none;
+                background: none;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+
+            #preview {
+                overflow: visible !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+    <style id="custom-styles"></style>
+
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <div class="editor-section">
+            <div class="glass-panel" style="flex-grow: 1; padding: 15px; display: flex; flex-direction: column;">
+                <h2>✏️ Markdown 编辑</h2>
+                <textarea id="markdown-input" class="custom-textarea" placeholder="在此输入 Markdown 文本..."></textarea>
+                <div class="btn-group">
+                    <button id="save-content-btn" class="custom-btn" title="保存 Markdown 文本到浏览器">💾 保存内容</button>
+                    <button id="load-content-btn" class="custom-btn" title="加载上次保存的 Markdown 文本">📤 加载内容</button>
+                    <button id="clear-content-btn" class="custom-btn" title="清空编辑器内容">🗑️ 清空内容</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="glass-panel customization-panel">
+                <h3>🎨 样式定制</h3>
+                <div class="style-group">
+                    <label for="font-family">全局字体</label>
+                    <input type="text" id="font-family" class="custom-input" value="sans-serif">
+                </div>
+
+                <div class="style-group">
+                    <label for="base-font-size">正文基准字体大小 (px)</label>
+                    <input type="number" id="base-font-size" class="custom-input" value="16">
+                </div>
+
+                <div class="style-group">
+                    <label for="text-color">正文颜色</label>
+                    <input type="color" id="text-color" class="custom-input" value="#333333">
+                </div>
+
+                <div class="style-group">
+                    <h4>标题定制</h4>
+                    <label for="h1-size">H1 字体大小 (px)</label>
+                    <input type="number" id="h1-size" class="custom-input" value="32">
+                    <label for="h1-color">H1 颜色</label>
+                    <input type="color" id="h1-color" class="custom-input" value="#1a531a">
+                </div>
+
+                <button id="save-styles-btn" class="custom-btn" style="width: 100%; margin-bottom: 10px;">✨
+                    保存定制样式</button>
+            </div>
+
+            <div class="glass-panel export-panel">
+                <h3>📤 导出设置</h3>
+                <div class="style-group">
+                    <h4>纸张样式 (PDF)</h4>
+                    <label for="paper-size">纸张大小</label>
+                    <select id="paper-size" class="custom-select">
+                        <option value="a4">A4</option>
+                        <option value="letter">Letter</option>
+                        <option value="legal">Legal</option>
+                    </select>
+                    <label for="margin-top">上边距 (mm)</label>
+                    <input type="number" id="margin-top" class="custom-input" value="20">
+                </div>
+
+                <div class="btn-group">
+                    <button id="export-pdf-btn" class="custom-btn" style="flex: 1;">⬇️ 导出 PDF</button>
+                    <button id="export-doc-btn" class="custom-btn" style="flex: 1;">⬇️ 导出 Word (DOC)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section" id="preview-container">
+            <div class="glass-panel" style="flex-grow: 1; overflow: hidden; padding: 0;">
+                <h2>👀 预览</h2>
+                <div id="preview">
+                    <h1>欢迎使用定制化 Markdown 编辑器</h1>
+                    <p>在这里，您可以输入 **Markdown** 文本，并在右侧实时预览其效果。</p>
+                    <h2>样式定制</h2>
+                    <p>请在左侧侧边栏中调整字体、大小、颜色等样式，并点击保存。</p>
+                    <p style="color: #888;">注意：本页面的样式与您后期将使用的导航栏保持一致的**透明毛玻璃**风格。</p>
+                    <ul>
+                        <li>支持 H1-H6 标题</li>
+                        <li>支持 <strong>加粗</strong> 和 <em>斜体</em></li>
+                        <li>支持列表</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script is:inline src="export.js"></script>
+</body>
+
+</html>
