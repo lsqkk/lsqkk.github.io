@@ -207,7 +207,10 @@ quark --help
 # 初始化
 quark initrepo --apply
 
-# 运行服务器并检查
+# 先构建
+quark build
+
+# 运行 dist 预览服务器并检查
 quark serve
 ```
 如访问 `localhost:8000` 出现以下页面，则表示已经**初始化成功**。
@@ -241,7 +244,7 @@ npm install
 
 2. **创建新文章**：在 VSCode 终端中使用 `quark new` 创建新文章。如创建失败，请检查`/posts`目录下是否存在名为**当前年**的文件夹，如 `2026`。如不存在，可手动创建。
 
-3. **本地构建站点**：运行 `quark build`。该命令默认执行 source 模式，完成 `posts.json` 生成和 Astro 构建，产物位于 `dist`。如需兼容旧的根目录产物发布，可用 `quark build --mode artifact`。
+3. **本地构建站点**：运行 `quark build`。该命令默认执行 source 模式，完成 `posts.json` 生成和 Astro 构建，产物位于 `dist`。如需额外导出一份可分发产物，可用 `quark build --mode artifact`（默认导出到 `.quark-artifact`，可用 `--artifact-dir` 自定义）。
    GitHub Pages 推荐使用仓库内置工作流 `.github/workflows/deploy-pages.yml` 在远端构建并部署 `dist`。
 
 4. **推送文章**：运行 `quark ppush` 以推送文章。这会自动执行站点构建（`quark build`）并创建一个名为“更新 - 更新了文章”的提交记录。网站地图由 Astro 构建自动生成，无需单独 `quark map`。

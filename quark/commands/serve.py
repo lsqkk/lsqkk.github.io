@@ -6,7 +6,7 @@ from ..utils import run_python_script
 @click.command()
 @click.option('--port', default=8000, help='服务器端口')
 def cli(port):
-    """启动本地服务器"""
+    """启动本地预览服务器（服务 dist 目录）"""
     try:
         run_python_script('serve.py', str(port))
         click.echo(f"服务器已启动在端口 {port}")

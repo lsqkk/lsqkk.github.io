@@ -35,11 +35,16 @@ def main() -> int:
             return 1
 
     root = Path(__file__).resolve().parents[2]
-    os.chdir(root)
+    dist_dir = root / "dist"
+    if not dist_dir.exists():
+        print("未找到 dist 目录，请先执行 `quark build`。")
+        return 1
+
+    os.chdir(dist_dir)
 
     with socketserver.TCPServer(("", port), HTMLAwareHTTPRequestHandler) as httpd:
         print(f"服务器运行在 http://localhost:{port}")
-        print("支持 /a -> /a.html 自动映射")
+        print(f"当前服务目录: {dist_dir}")
         httpd.serve_forever()
     return 0
 
