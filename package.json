@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "prebuild": "npm run gen:posts-json && npm run gen:rss && npm run sync:public",
     "build": "astro build",
+    "postbuild": "node scripts/verify-dist.mjs",
     "preview": "astro preview",
     "gen:posts-json": "node scripts/generate-posts-json.mjs",
     "gen:rss": "node scripts/generate-rss.mjs",
