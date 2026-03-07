@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线五子棋 - 夸克博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <link rel="stylesheet" href="/assets/pages/games/5ziqi/5ziqi.css">
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-</head>
-
-<body class="dark-mode">
+---
+import RealtimeRoomLayout from "../../../../layouts/RealtimeRoomLayout.astro";
+---
+<RealtimeRoomLayout
+    pageTitle="在线五子棋 - 夸克博客"
+    bodyClass="dark-mode"
+    pageStyles={["/assets/pages/games/5ziqi/5ziqi.css"]}
+    headScripts={[
+        "https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js",
+        "https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js",
+    ]}
+>
     <div class="app-container">
         <!-- 侧边栏 -->
         <div class="sidebar" id="sidebar">
@@ -70,11 +66,11 @@
                         <div class="color-option" style="background: #b4532a" onclick="selectColor(this)"></div>
                     </div>
                     <div class="role-selection">
-                        <button class="role-btn" onclick="selectRole('spectator')"><i class="fas fa-eye"></i>
+                        <button class="role-btn" onclick="selectRole('spectator', event)"><i class="fas fa-eye"></i>
                             观众</button>
-                        <button class="role-btn" onclick="selectRole('black')"><i class="fas fa-chess-pawn"></i>
+                        <button class="role-btn" onclick="selectRole('black', event)"><i class="fas fa-chess-pawn"></i>
                             黑方</button>
-                        <button class="role-btn" onclick="selectRole('white')"><i class="fas fa-chess-pawn"></i>
+                        <button class="role-btn" onclick="selectRole('white', event)"><i class="fas fa-chess-pawn"></i>
                             白方</button>
                     </div>
                     <button class="profile-save-btn" onclick="saveProfile()">保存并加入</button>
@@ -255,11 +251,14 @@
         }
 
         // 选择角色
-        function selectRole(role) {
+        function selectRole(role, evt) {
             document.querySelectorAll('.role-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            event.target.classList.add('selected');
+            const target = evt && (evt.currentTarget || evt.target);
+            if (target) {
+                target.classList.add('selected');
+            }
             myRole = role;
         }
 
@@ -694,7 +693,4 @@
             sound.play();
         }
     </script>
-    <script is:inline src="/assets/js/disable-right-click.js"></script>
-</body>
-
-</html>
+</RealtimeRoomLayout>

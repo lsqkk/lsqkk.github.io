@@ -1,0 +1,39 @@
+---
+interface Props {
+  pageTitle: string;
+  bodyClass?: string;
+  pageStyles?: string[];
+  headScripts?: string[];
+  tailScripts?: string[];
+  includeCursor?: boolean;
+}
+
+const {
+  pageTitle,
+  bodyClass = "dark-mode",
+  pageStyles = [],
+  headScripts = [],
+  tailScripts = [],
+  includeCursor = false,
+} = Astro.props as Props;
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    {includeCursor ? <link rel="stylesheet" href="/assets/css/cursor.css" /> : null}
+    {pageStyles.map((href) => <link rel="stylesheet" href={href} />)}
+    {headScripts.map((src) => <script is:inline src={src}></script>)}
+    {includeCursor ? <script is:inline src="/assets/js/cursor-trail.js"></script> : null}
+  </head>
+  <body class={bodyClass}>
+    <slot />
+    {tailScripts.map((src) => <script is:inline src={src}></script>)}
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

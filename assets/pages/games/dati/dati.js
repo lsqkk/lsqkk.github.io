@@ -122,11 +122,14 @@ function addRecentRoom(room) {
 }
 
 // 选择模式
-function selectMode(mode) {
+function selectMode(mode, evt) {
     document.querySelectorAll('.role-btn').forEach(btn => {
         btn.classList.remove('selected');
     });
-    event.target.classList.add('selected');
+    const trigger = evt && (evt.currentTarget || evt.target);
+    if (trigger && trigger.classList) {
+        trigger.classList.add('selected');
+    }
     gameMode = mode;
 }
 

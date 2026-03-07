@@ -13,6 +13,7 @@ const COPY_FILES = [
   ".nojekyll",
   "robots.txt",
   "BingSiteAuth.xml",
+  "posts/rss.xml",
 ];
 
 const COMPAT_IMAGE_ALIASES = [

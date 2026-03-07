@@ -1,0 +1,81 @@
+---
+interface Props {
+  pageTitle: string;
+  pageCss: string;
+  logoIconClass: string;
+  subtitle: string;
+  activeNav?: "index" | "dashboard" | "satellite" | "forecast" | "report";
+  showNav?: boolean;
+  headStyles?: string[];
+  headScripts?: string[];
+  bodyScripts?: string[];
+}
+
+const {
+  pageTitle,
+  pageCss,
+  logoIconClass,
+  subtitle,
+  activeNav = "index",
+  showNav = true,
+  headStyles = [],
+  headScripts = [],
+  bodyScripts = [],
+} = Astro.props as Props;
+
+const navItems = [
+  { key: "index", href: "index.html", label: "首页" },
+  { key: "dashboard", href: "dashboard.html", label: "数据仪表盘" },
+  { key: "satellite", href: "satellite.html", label: "卫星监测" },
+  { key: "forecast", href: "forecast.html", label: "火险预报" },
+  { key: "report", href: "report.html", label: "灾情上报" },
+] as const;
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    {headStyles.map((href) => <link rel="stylesheet" href={href} />)}
+    <link rel="stylesheet" href={pageCss} />
+    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    {headScripts.map((src) => <script is:inline src={src}></script>)}
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <div class="logo-icon">
+            <i class={logoIconClass}></i>
+          </div>
+          <div class="logo-text">
+            <h1>山火预警防控系统</h1>
+            <p>{subtitle}</p>
+          </div>
+        </div>
+
+        {showNav ? (
+          <div class="nav-links">
+            {navItems.map((item) => (
+              <a href={item.href} class={`nav-link ${item.key === activeNav ? "active" : ""}`}>
+                {item.label}
+              </a>
+            ))}
+          </div>
+        ) : (
+          <slot name="headerRight" />
+        )}
+      </header>
+
+      <slot />
+    </div>
+
+    {bodyScripts.map((src) => <script is:inline src={src}></script>)}
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+    <script is:inline src="/assets/js/no-text.js"></script>
+  </body>
+</html>

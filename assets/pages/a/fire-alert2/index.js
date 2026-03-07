@@ -289,6 +289,7 @@ async function adminLogin() {
     const passwordInput = document.getElementById('adminPassword');
     const password = passwordInput.value.trim();
     const submitBtn = document.querySelector('button[onclick="adminLogin()"]'); // 获取登录按钮，防止重复提交
+    let originalText = '';
 
     if (!password) {
         alert('请输入管理员密码');
@@ -297,7 +298,7 @@ async function adminLogin() {
 
     // 可选：添加防重复提交和加载状态
     if (submitBtn) {
-        const originalText = submitBtn.textContent;
+        originalText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = '验证中...';
     }

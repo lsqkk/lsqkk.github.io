@@ -1,34 +1,73 @@
 // 从当前URL中提取用户尝试访问的路径
 const currentPath = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
 
-// 获取所有已知的URL路径
-async function getSiteUrls() {
+function normalizePathFromUrl(url) {
     try {
-        const response = await fetch('/sitemap.xml');
-        const xmlText = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-
-        // 提取所有loc节点中的URL
-        const locElements = xmlDoc.getElementsByTagName('loc');
-        const urls = [];
-
-        // 将URL转换为相对路径并存储
-        for (let element of locElements) {
-            const url = element.textContent;
-            // 从完整URL中提取相对路径
-            const urlObj = new URL(url);
-            const path = urlObj.pathname.replace(/^\//, '').replace(/\/$/, '');
-            if (path) {
-                urls.push(path);
-            }
-        }
-
-        return urls;
-    } catch (error) {
-        console.error('加载站点地图失败:', error);
-        return [];
+        const urlObj = new URL(url);
+        return urlObj.pathname.replace(/^\//, '').replace(/\/$/, '');
+    } catch {
+        return '';
     }
+}
+
+function parseXml(text) {
+    return new DOMParser().parseFromString(text, 'text/xml');
+}
+
+// 兼容 Astro 的 sitemap-index.xml + sitemap-N.xml
+async function getSiteUrls() {
+    const urlSet = new Set();
+    const candidates = ['/sitemap-index.xml', '/sitemap.xml'];
+
+    for (const candidate of candidates) {
+        try {
+            const response = await fetch(candidate, { cache: 'no-store' });
+            if (!response.ok) continue;
+            const xmlText = await response.text();
+            const xmlDoc = parseXml(xmlText);
+
+            // 如果是 sitemapindex，递归抓子 sitemap
+            const sitemapNodes = Array.from(xmlDoc.getElementsByTagName('sitemap'));
+            if (sitemapNodes.length > 0) {
+                const childUrls = [];
+                sitemapNodes.forEach((node) => {
+                    const loc = node.getElementsByTagName('loc')[0]?.textContent?.trim();
+                    if (loc) childUrls.push(loc);
+                });
+
+                for (const child of childUrls) {
+                    try {
+                        const childPath = normalizePathFromUrl(child);
+                        const childResp = await fetch(`/${childPath}`, { cache: 'no-store' });
+                        if (!childResp.ok) continue;
+                        const childText = await childResp.text();
+                        const childDoc = parseXml(childText);
+                        const locElements = Array.from(childDoc.getElementsByTagName('loc'));
+                        locElements.forEach((el) => {
+                            const p = normalizePathFromUrl(el.textContent || '');
+                            if (p) urlSet.add(p);
+                        });
+                    } catch (e) {
+                        console.warn('加载子 sitemap 失败:', child, e);
+                    }
+                }
+
+                if (urlSet.size > 0) return Array.from(urlSet);
+            }
+
+            // 普通 urlset
+            const locElements = Array.from(xmlDoc.getElementsByTagName('loc'));
+            locElements.forEach((el) => {
+                const p = normalizePathFromUrl(el.textContent || '');
+                if (p) urlSet.add(p);
+            });
+            if (urlSet.size > 0) return Array.from(urlSet);
+        } catch (error) {
+            console.warn('加载站点地图失败:', candidate, error);
+        }
+    }
+
+    return [];
 }
 
 // 计算字符串相似度（Levenshtein距离）

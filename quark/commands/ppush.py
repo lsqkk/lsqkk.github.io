@@ -1,9 +1,8 @@
 import click
 import subprocess
 import sys
-import os
-from pathlib import Path
 import locale
+import re
 
 # 获取系统编码
 def get_system_encoding():
@@ -17,6 +16,68 @@ def get_system_encoding():
         return encoding.lower().replace('-', '')
     except:
         return 'gbk'
+
+
+def run_quark_subcommand(cmd_args):
+    """
+    统一执行 quark 子命令，优先使用 UTF-8，失败时回退系统编码。
+    返回: (returncode, stdout, stderr)
+    """
+    encoding = get_system_encoding()
+    env = {
+        **dict(),
+    }
+    try:
+        import os
+        env = os.environ.copy()
+    except Exception:
+        pass
+
+    # 尽可能强制 UTF-8，避免 Windows 控制台乱码
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+    env["LANG"] = "C.UTF-8"
+    env["LC_ALL"] = "C.UTF-8"
+
+    candidates = [
+        ["quark"] + cmd_args,
+        [sys.executable, "-m", "quark.cli"] + cmd_args,
+    ]
+
+    for full_cmd in candidates:
+        try:
+            result = subprocess.run(
+                full_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False,
+                env=env,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+            return result.returncode, result.stdout or "", result.stderr or ""
+        except FileNotFoundError:
+            continue
+        except Exception:
+            # utf-8 强制失败时，回退系统编码再试一次
+            try:
+                result = subprocess.run(
+                    full_cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=False,
+                    env=env,
+                    text=True,
+                    encoding=encoding,
+                    errors="replace",
+                )
+                return result.returncode, result.stdout or "", result.stderr or ""
+            except FileNotFoundError:
+                continue
+
+    return 127, "", "quark 命令不可用，请确认已安装并在 PATH 中。"
+
 
 @click.command()
 @click.argument('message', required=False)
@@ -39,10 +100,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     # 确定提交消息
     if not message:
         message = "更新 - 更新了文章"
-    
-    # 获取系统编码
-    system_encoding = get_system_encoding()
-    
+
     commands = []
     
     # 1. 构建站点
@@ -83,20 +141,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
         click.echo("-" * 40)
         
         try:
-            # 直接调用quark命令（通过pip安装的）
-            full_cmd = ['quark'] + cmd_args
-            
-            # 执行命令，使用系统编码
-            result = subprocess.run(
-                full_cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=True  # 在Windows上使用shell=True确保正确执行
-            )
-            
-            # 解码输出，尝试多种编码
-            stdout_text = decode_output(result.stdout, system_encoding)
-            stderr_text = decode_output(result.stderr, system_encoding)
+            returncode, stdout_text, stderr_text = run_quark_subcommand(cmd_args)
             
             # 输出结果
             if stdout_text and stdout_text.strip():
@@ -120,7 +165,7 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                         click.echo(line)
             
             # 检查执行结果
-            if result.returncode != 0:
+            if returncode != 0:
                 # 检查是否是"没有更改可提交"这类可以忽略的错误
                 push_cmd_error = (cmd_args[0] == 'push' and 
                                  ("nothing to commit" in stdout_text or 
@@ -131,48 +176,12 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
                 if push_cmd_error:
                     click.echo("提示: 没有新的更改可提交，继续执行下一个步骤")
                 else:
-                    click.echo(f"错误: {description} 执行失败 (返回码: {result.returncode})")
+                    click.echo(f"错误: {description} 执行失败 (返回码: {returncode})")
                     if not click.confirm("是否继续执行后续步骤？"):
                         click.echo("操作中止")
                         return
             
             click.echo(f"√ {description} 完成")
-            
-        except FileNotFoundError:
-            # 如果quark命令找不到，尝试使用python -m的方式
-            try:
-                python_executable = sys.executable
-                full_cmd = [python_executable, '-m', 'quark.cli'] + cmd_args
-                
-                result = subprocess.run(
-                    full_cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    shell=True
-                )
-                
-                # 解码输出
-                stdout_text = decode_output(result.stdout, system_encoding)
-                stderr_text = decode_output(result.stderr, system_encoding)
-                
-                if stdout_text and stdout_text.strip():
-                    click.echo(stdout_text.strip())
-                
-                if stderr_text and stderr_text.strip():
-                    click.echo(stderr_text.strip())
-                
-                if result.returncode == 0:
-                    click.echo(f"√ {description} 完成")
-                else:
-                    click.echo(f"错误: {description} 执行失败")
-                    if not click.confirm("是否继续执行后续步骤？"):
-                        return
-                        
-            except Exception as e:
-                click.echo(f"错误: 执行命令时出错: {e}")
-                if not click.confirm("是否继续执行后续步骤？"):
-                    click.echo("操作中止")
-                    return
         except Exception as e:
             click.echo(f"错误: 执行命令时出错: {e}")
             if not click.confirm("是否继续执行后续步骤？"):
@@ -189,26 +198,6 @@ def cli(message, no_update, no_map, no_push, dry_run, force):
     click.echo(f"  Git推送: {'√' if not no_push else '❌ 跳过'}")
     if not no_push:
         click.echo(f"  提交消息: {message}")
-
-def decode_output(data: bytes, default_encoding: str = 'gbk') -> str:
-    """解码输出，尝试多种编码"""
-    if not data:
-        return ""
-    
-    # 尝试的编码顺序
-    encodings = ['utf-8', default_encoding, 'gb2312', 'gbk', 'utf-16', 'ascii']
-    
-    for encoding in encodings:
-        try:
-            return data.decode(encoding)
-        except UnicodeDecodeError:
-            continue
-    
-    # 如果所有编码都失败，使用错误忽略模式
-    try:
-        return data.decode('utf-8', errors='ignore')
-    except:
-        return "无法解码的输出"
 
 # 可选：添加一个检查命令
 @click.command()
