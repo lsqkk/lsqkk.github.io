@@ -15,7 +15,7 @@ interface Props {
 const { pageTitle, date, tags, wordCount, mdFile, currentPostPath, prevPostTitle, prevPostUrl, nextPostTitle, nextPostUrl } =
   Astro.props;
 const readTime = Math.ceil(wordCount / 400);
-import { SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -148,7 +148,7 @@ import { SITE_LOGO_URL } from "@siteConfig";
         href="/posts/copyright"
         style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);"
       >
-        © 2024 - 2026 夸克博客 All rights reserved.
+        © 2024 - 2026 {SITE_TITLE} All rights reserved.
       </a>
     </div>
 

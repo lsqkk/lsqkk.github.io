@@ -16,7 +16,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>前端实验室 - {SITE_TITLE}</title>
-    <meta name="description" content="夸克博客前端实验室,探索前沿 Web 技术,实践创新交互体验,汇集各类有趣的项目和实验" />
+    <meta name="description" content={`${SITE_TITLE}前端实验室,探索前沿 Web 技术,实践创新交互体验,汇集各类有趣的项目和实验`} />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="/assets/pages/a/style.css" />
@@ -72,7 +72,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             </ul>
           </div>
         </div>
-        <div class="copyright"><p>© 2024 - 2026 夸克博客 All rights reserved.</p></div>
+        <div class="copyright"><p>© 2024 - 2026 {SITE_TITLE} All rights reserved.</p></div>
       </div>
     </footer>
     <script is:inline src="/assets/pages/a/index.js"></script>
