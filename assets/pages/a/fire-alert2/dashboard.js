@@ -17,11 +17,14 @@ function getRecentDates() {
     return dates;
 }
 
-// 计算距离2025年11月11日的天数
+// 计算距离下一个 11 月 11 日的天数
 function getDaysToNov11() {
     const today = new Date();
-    const nov11 = new Date(2025, 10, 11); // 注意：月份是0-based
-    const diffTime = Math.abs(nov11 - today);
+    let nov11 = new Date(today.getFullYear(), 10, 11); // 注意：月份是0-based
+    if (today > nov11) {
+        nov11 = new Date(today.getFullYear() + 1, 10, 11);
+    }
+    const diffTime = nov11 - today;
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 

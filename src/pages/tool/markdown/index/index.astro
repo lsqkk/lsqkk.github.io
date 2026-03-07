@@ -7,60 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown编辑器 - 夸克博客</title>
     <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-    <!-- 简化后的MathJax配置 -->
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true
-            },
-            startup: {
-                pageReady: () => {
-                    return MathJax.startup.defaultPageReady().then(() => {
-                        console.log('MathJax初始化完成');
-                        if (window.markdownReady) renderAll();
-                    });
-                }
-            }
-        };
-    </script>
+    <script is:inline src="/assets/pages/tool/markdown/bootstrap.js"></script>
 
     <!-- 使用可靠的CDN源，添加备用源 -->
     <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" onerror="loadMermaidFallback()"></script>
     <script is:inline id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script is:inline src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
-
-    <script>
-        // Mermaid备用加载方案
-        function loadMermaidFallback() {
-            const fallback = document.createElement('script');
-            fallback.src = 'https://unpkg.com/mermaid@10/dist/mermaid.min.js';
-            fallback.onload = function () {
-                initMermaid();
-                console.log('Mermaid备用源加载成功');
-            };
-            document.head.appendChild(fallback);
-        }
-
-        // 初始化Mermaid
-        function initMermaid() {
-            window.mermaid = window.mermaid || {};
-            mermaid.initialize({
-                startOnLoad: false,
-                theme: 'default',
-                flowchart: {
-                    useMaxWidth: true,
-                    htmlLabels: true
-                }
-            });
-        }
-
-        // 初始化Mermaid（主加载方案）
-        if (window.mermaid) {
-            initMermaid();
-        }
-    </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/md.css">

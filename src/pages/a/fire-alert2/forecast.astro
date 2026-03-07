@@ -8,7 +8,10 @@ import FireAlertLayout from "../../../layouts/FireAlertLayout.astro";
   subtitle="火险预报 - 火险等级预测与蔓延"
   activeNav="forecast"
   headScripts={["https://cdn.jsdelivr.net/npm/chart.js"]}
-  bodyScripts={["/assets/pages/a/fire-alert2/forecast.js"]}
+  bodyScripts={[
+    "https://api.130923.xyz/api/openweather-key",
+    "/assets/pages/a/fire-alert2/forecast.js",
+  ]}
 >
   <div class="forecast-grid">
     <div class="dashboard-card card-large">

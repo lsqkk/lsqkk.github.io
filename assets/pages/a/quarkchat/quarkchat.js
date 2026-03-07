@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const idleVideo = document.getElementById('idle-video');
     const talkingVideo = document.getElementById('talking-video');
 
-    // API配置
-    const API_KEY = '9u4oGqnfwBasVwXArcW';
+    // API配置（由 /api/quarkchat-key 注入）
+    const API_KEY = window.QUARKCHAT_API_KEY || '';
     const CHAT_API_URL = 'https://api.yaohud.cn/api/v5/smartai';
     const USER_ID = 'quark';
 
@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // 初始化 - 加载对话历史
     // 在initialize函数中添加
     function initialize() {
+        if (!API_KEY) {
+            updateStatus("聊天服务未配置，请联系站点管理员");
+            sendBtn.disabled = true;
+            startVoiceBtn.disabled = true;
+        }
+
         // 检查浏览器兼容性
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             document.getElementById('start-voice-btn').style.display = 'none';
@@ -372,6 +378,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 实际的发送消息逻辑
     async function actuallySendMessage(text) {
+        if (!API_KEY) {
+            addMessage('聊天服务暂不可用（缺少 API 配置）。', false);
+            return;
+        }
         // 禁用输入和按钮
         textInput.disabled = true;
         sendBtn.disabled = true;

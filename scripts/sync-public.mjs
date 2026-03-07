@@ -60,7 +60,15 @@ function shouldCopyFile(srcAbs) {
   // Skip Python/cache tooling files.
   if (ext === ".py" || ext === ".pyc") return false;
 
-  // Keep markdown content under blog used by frontend logic.
+  // Keep only markdown files that are fetched by frontend runtime.
+  if (ext === ".md") {
+    const allowedMarkdown = new Set([
+      "assets/pages/blog/dt/dt.md",
+      "assets/pages/blog/log/log.md",
+    ]);
+    return allowedMarkdown.has(rel);
+  }
+
   return true;
 }
 

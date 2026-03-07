@@ -1,4 +1,4 @@
-const API_KEY = '271d3f7012a6dc06a07cea3d08888fb1';
+const API_KEY = window.OPENWEATHER_API_KEY || '';
 let currentLat, currentLon;
 
 // 页面加载完成后自动获取位置
@@ -25,6 +25,10 @@ window.onload = function () {
 
 async function getWeatherForecast(lat, lon) {
     try {
+        if (!API_KEY) {
+            console.error('缺少 OPENWEATHER_API_KEY，请检查 /api/openweather-key 配置');
+            return;
+        }
         const response = await fetch(
             `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=zh_cn`
         );

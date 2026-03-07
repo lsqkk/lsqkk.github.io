@@ -1,8 +1,10 @@
-// /api/admin-auth.js - 完整版本 (包含CORS和预检请求处理)
+import crypto from 'node:crypto';
+
+// /api/admin-auth.js - 返回短时管理员会话 token
 export default async function handler(req, res) {
     // ----- 1. 处理 CORS 和 OPTIONS 预检请求 -----
     // 定义允许访问的源（你的前端页面所在的域名）
-    const allowedOrigins = ['https://localhost:8000', 'https://lsqkk.github.io'];
+    const allowedOrigins = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
     const requestOrigin = req.headers.origin;
 
     // 检查请求来源是否在白名单中
@@ -83,7 +85,27 @@ export default async function handler(req, res) {
 
         // 返回验证结果
         if (isCorrect) {
-            return res.status(200).json({ success: true, message: 'Authentication successful' });
+            const sessionSecret = process.env.ADMIN_SESSION_SECRET;
+            if (!sessionSecret) {
+                return res.status(500).json({ error: 'Missing ADMIN_SESSION_SECRET' });
+            }
+
+            const exp = Date.now() + 2 * 60 * 60 * 1000; // 2小时有效
+            const payload = {
+                exp,
+                iat: Date.now(),
+                nonce: crypto.randomBytes(8).toString('hex'),
+            };
+            const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
+            const signature = crypto.createHmac('sha256', sessionSecret).update(payloadBase64).digest('hex');
+            const token = `${payloadBase64}.${signature}`;
+
+            return res.status(200).json({
+                success: true,
+                message: 'Authentication successful',
+                token,
+                expiresAt: exp,
+            });
         } else {
             return res.status(401).json({ success: false, error: 'Authentication failed' });
         }

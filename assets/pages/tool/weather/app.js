@@ -1,5 +1,5 @@
-// API配置
-const API_KEY = '271d3f7012a6dc06a07cea3d08888fb1';
+// API配置（由 /api/openweather-key 注入）
+const API_KEY = window.OPENWEATHER_API_KEY || '';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 const ICON_URL = 'https://openweathermap.org/img/wn/';
 
@@ -26,6 +26,12 @@ let savedLocations = JSON.parse(localStorage.getItem('savedLocations')) || [];
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', () => {
+    if (!API_KEY) {
+        showError('天气服务未配置：缺少 OPENWEATHER_API_KEY');
+        statusElement.style.display = 'none';
+        return;
+    }
+
     // 尝试获取当前位置
     getCurrentLocation();
 

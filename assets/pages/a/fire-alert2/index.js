@@ -1,19 +1,71 @@
-// OpenWeatherMap API配置
-const API_KEY = '271d3f7012a6dc06a07cea3d08888fb1';
+// OpenWeatherMap API配置（由 /api/openweather-key 注入）
+const API_KEY = window.OPENWEATHER_API_KEY || '';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+const TIANDITU_KEY = window.TIANDITU_KEY || '';
 
-// 管理员状态
-let isAdmin = localStorage.getItem('isAdmin') === 'true';
+if (!API_KEY) {
+    console.error('缺少 OPENWEATHER_API_KEY，请检查 /api/openweather-key 配置');
+}
+if (!TIANDITU_KEY) {
+    console.error('缺少 TIANDITU_KEY，请检查 /api/tianditu-key 配置');
+}
+
+// 管理员状态（基于服务端签名 token 校验）
+const ADMIN_TOKEN_KEY = 'fire_alert_admin_token';
+let isAdmin = false;
+
+function getAdminToken() {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
+}
+
+function setAdminToken(token) {
+    if (token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    } else {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+    }
+}
+
+async function verifyAdminSession() {
+    const token = getAdminToken();
+    if (!token) {
+        isAdmin = false;
+        updateAdminUI();
+        return false;
+    }
+
+    try {
+        const response = await fetch('https://api.130923.xyz/api/admin-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+        const result = await response.json();
+        isAdmin = !!(response.ok && result.valid);
+        if (!isAdmin) setAdminToken('');
+    } catch (e) {
+        console.error('校验管理员会话失败:', e);
+        isAdmin = false;
+    }
+
+    updateAdminUI();
+    return isAdmin;
+}
 
 // 初始化地图
 let map;
 let currentLayer = 'satellite';
 
 function initMap() {
+    if (!TIANDITU_KEY) {
+        const mapEl = document.getElementById('map');
+        if (mapEl) mapEl.innerHTML = '<div style="padding:20px;color:#fff;">地图服务未配置</div>';
+        return;
+    }
     // 创建影像底图图层
     const imgLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
+            url: 'https://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'img',
             style: 'default',
             matrixSet: 'w',
@@ -51,7 +103,7 @@ function initMap() {
     // 创建地形底图图层
     const terLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
+            url: 'https://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'ter',
             style: 'default',
             matrixSet: 'w',
@@ -122,7 +174,7 @@ function switchLayer(layerType) {
 
     if (layerType === 'satellite') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
+            url: 'https://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'img',
             style: 'default',
             matrixSet: 'w',
@@ -157,7 +209,7 @@ function switchLayer(layerType) {
         }));
     } else if (layerType === 'terrain') {
         baseLayer.setSource(new ol.source.WMTS({
-            url: 'http://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
+            url: 'https://t0.tianditu.gov.cn/ter_w/wmts?tk=' + TIANDITU_KEY,
             layer: 'ter',
             style: 'default',
             matrixSet: 'w',
@@ -196,6 +248,10 @@ function switchLayer(layerType) {
 // 获取真实天气数据
 async function getWeatherData() {
     try {
+        if (!API_KEY) {
+            document.getElementById('location').textContent = '天气服务未配置';
+            return;
+        }
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async position => {
@@ -235,6 +291,7 @@ async function getWeatherData() {
 // 通过城市名称获取天气
 async function getWeatherByCity(city) {
     try {
+        if (!API_KEY) return;
         const response = await fetch(`${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric&lang=zh_cn`);
         const data = await response.json();
 
@@ -319,10 +376,10 @@ async function adminLogin() {
         const result = await response.json();
 
         // 3. 根据API返回结果处理
-        if (response.ok && result.success) {
+        if (response.ok && result.success && result.token) {
             // 登录成功
             isAdmin = true;
-            localStorage.setItem('isAdmin', 'true');
+            setAdminToken(result.token);
             updateAdminUI();
             passwordInput.value = '';
             alert('管理员登录成功');
@@ -347,7 +404,7 @@ async function adminLogin() {
 // 管理员退出 (无需修改，可保持原样)
 function logoutAdmin() {
     isAdmin = false;
-    localStorage.setItem('isAdmin', 'false');
+    setAdminToken('');
     updateAdminUI();
 }
 
@@ -390,6 +447,11 @@ function closeAddWarningModal() {
 
 // 添加预警
 function addWarning() {
+    if (!isAdmin) {
+        alert('请先登录管理员');
+        return;
+    }
+
     const title = document.getElementById('warningTitle').value;
     const level = document.getElementById('warningLevel').value;
     const content = document.getElementById('warningContent').value;
@@ -436,16 +498,10 @@ function updateTimeAndIP() {
 // 获取访客IP信息
 async function getVisitorInfo() {
     try {
-        const response = await fetch('https://api.b52m.cn/api/IP/?key=60606913cdba7c');
+        const response = await fetch('https://api.130923.xyz/api/ip', { cache: 'no-store' });
         const data = await response.json();
-
-        if (data.code === 200) {
-            const ipInfo = data.data;
-            const ip = data.ip;
-            document.getElementById('current-ip').textContent = `IP: ${ip}`;
-        } else {
-            throw new Error('API返回错误');
-        }
+        const ip = data?.ip || data?.data?.ip || '';
+        document.getElementById('current-ip').textContent = ip ? `IP: ${ip}` : 'IP: 未知';
     } catch (error) {
         console.error('获取IP信息失败:', error);
         document.getElementById('current-ip').textContent = 'IP: 未知';
@@ -453,11 +509,11 @@ async function getVisitorInfo() {
 }
 
 // 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     initMap();
     getWeatherData();
     loadWarnings();
-    updateAdminUI();
+    await verifyAdminSession();
     updateTimeAndIP();
     getVisitorInfo();
 

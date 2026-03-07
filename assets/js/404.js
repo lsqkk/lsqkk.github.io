@@ -14,16 +14,42 @@ function parseXml(text) {
     return new DOMParser().parseFromString(text, 'text/xml');
 }
 
+async function fetchTextWithFallback(target) {
+    const tried = new Set();
+    const urls = [];
+
+    if (target) urls.push(target);
+    try {
+        const u = new URL(target, window.location.origin);
+        urls.push(u.toString());
+        urls.push(u.pathname.startsWith('/') ? u.pathname : `/${u.pathname}`);
+    } catch {
+        // ignore
+    }
+
+    for (const raw of urls) {
+        const candidate = String(raw || '').trim();
+        if (!candidate || tried.has(candidate)) continue;
+        tried.add(candidate);
+        try {
+            const resp = await fetch(candidate, { cache: 'no-store' });
+            if (resp.ok) return await resp.text();
+        } catch {
+            // try next candidate
+        }
+    }
+
+    throw new Error(`fetch failed: ${target}`);
+}
+
 // 兼容 Astro 的 sitemap-index.xml + sitemap-N.xml
 async function getSiteUrls() {
     const urlSet = new Set();
-    const candidates = ['/sitemap-index.xml', '/sitemap.xml'];
+    const candidates = ['/sitemap-index.xml', '/sitemap.xml', '/sitemap-0.xml'];
 
     for (const candidate of candidates) {
         try {
-            const response = await fetch(candidate, { cache: 'no-store' });
-            if (!response.ok) continue;
-            const xmlText = await response.text();
+            const xmlText = await fetchTextWithFallback(candidate);
             const xmlDoc = parseXml(xmlText);
 
             // 如果是 sitemapindex，递归抓子 sitemap
@@ -38,9 +64,7 @@ async function getSiteUrls() {
                 for (const child of childUrls) {
                     try {
                         const childPath = normalizePathFromUrl(child);
-                        const childResp = await fetch(`/${childPath}`, { cache: 'no-store' });
-                        if (!childResp.ok) continue;
-                        const childText = await childResp.text();
+                        const childText = await fetchTextWithFallback(childPath ? `/${childPath}` : child);
                         const childDoc = parseXml(childText);
                         const locElements = Array.from(childDoc.getElementsByTagName('loc'));
                         locElements.forEach((el) => {
