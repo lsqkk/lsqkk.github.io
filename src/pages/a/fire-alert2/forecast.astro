@@ -1,8 +1,9 @@
 ---
 import FireAlertLayout from "../../../layouts/FireAlertLayout.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <FireAlertLayout
-  pageTitle="火险预报 - 山火预警系统 - 夸克博客"
+  pageTitle={`火险预报 - 山火预警系统 - ${SITE_TITLE}`}
   pageCss="/assets/pages/a/fire-alert2/forecast.css"
   logoIconClass="fas fa-chart-line"
   subtitle="火险预报 - 火险等级预测与蔓延"

@@ -1,8 +1,9 @@
 ---
 import RealtimeRoomLayout from "../../../../layouts/RealtimeRoomLayout.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <RealtimeRoomLayout
-  pageTitle="夸克聊天室 - 夸克博客"
+  pageTitle={`夸克聊天室 - ${SITE_TITLE}`}
   includeCursor={true}
   pageStyles={["/assets/pages/a/chat-room/chat.css"]}
   headScripts={[

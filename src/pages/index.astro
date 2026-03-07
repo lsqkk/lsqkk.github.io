@@ -240,6 +240,7 @@ const homePreloaded = {
   friends,
   dynamicEntries,
 };
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -247,11 +248,11 @@ const homePreloaded = {
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>首页 | 蓝色奇夸克のBlog - 夸克博客</title>
+    <title>首页 | 蓝色奇夸克のBlog - {SITE_TITLE}</title>
     <link rel="manifest" href="/json/manifest.json" />
     <meta name="description" content="夸克博客 | 蓝色奇夸克的个人博客，分享技术、生活与思考。" />
     <link rel="stylesheet" href="/assets/css/style.css" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/index.css" />
     <script is:inline define:vars={{ navConfig, homePreloaded, popups }}>

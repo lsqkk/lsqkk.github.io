@@ -8,15 +8,16 @@ const projectsPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.j
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const projectsData = JSON.parse(await fs.readFile(projectsPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>前端实验室 - 夸克博客</title>
+    <title>前端实验室 - {SITE_TITLE}</title>
     <meta name="description" content="夸克博客前端实验室,探索前沿 Web 技术,实践创新交互体验,汇集各类有趣的项目和实验" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="/assets/pages/a/style.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />

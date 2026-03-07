@@ -1,8 +1,9 @@
 ---
 import RealtimeRoomLayout from "../../../../layouts/RealtimeRoomLayout.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <RealtimeRoomLayout
-    pageTitle="在线五子棋 - 夸克博客"
+    pageTitle={`在线五子棋 - ${SITE_TITLE}`}
     bodyClass="dark-mode"
     pageStyles={["/assets/pages/games/5ziqi/5ziqi.css"]}
     headScripts={[

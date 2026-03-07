@@ -1,3 +1,6 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -5,11 +8,11 @@
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>单机五子棋 - 夸克博客</title>
+    <title>单机五子棋 - {SITE_TITLE}</title>
     <script is:inline src="/assets/js/nav.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/pages/games/5ziqi-p/5ziqi-p.css">
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
 </head>
 
 <body class="dark-mode">

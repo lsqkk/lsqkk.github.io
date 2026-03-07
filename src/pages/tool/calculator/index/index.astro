@@ -1,11 +1,14 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh">
 
 <head>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
-    <title>高级科学计算器 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <title>高级科学计算器 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.min.js"></script>
     <script is:inline src="https://cdn.jsdelivr.net/npm/numeric@1.2.6/numeric.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">

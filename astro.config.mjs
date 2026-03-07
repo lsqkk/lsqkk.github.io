@@ -1,3 +1,4 @@
+import path from "node:path";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 
@@ -6,5 +7,12 @@ export default defineConfig({
   integrations: [sitemap()],
   build: {
     format: "file",
+  },
+  vite: {
+    resolve: {
+      alias: {
+        "@siteConfig": path.resolve("src/config/site.js"),
+      },
+    },
   },
 });

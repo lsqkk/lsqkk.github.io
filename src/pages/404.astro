@@ -1,11 +1,14 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>404 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <title>404 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/404.css" />
     <script is:inline src="/assets/js/cursor-trail.js"></script>

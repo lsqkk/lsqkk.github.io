@@ -1,11 +1,14 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>思政题库抽测 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <title>思政题库抽测 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script is:inline src="/assets/js/cursor-trail.js"></script>

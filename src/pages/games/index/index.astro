@@ -8,6 +8,7 @@ const gamesPath = path.join(PROJECT_ROOT, "assets", "pages", "games", "game.json
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const gamesData = JSON.parse(await fs.readFile(gamesPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -15,9 +16,9 @@ const gamesData = JSON.parse(await fs.readFile(gamesPath, "utf8"));
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>夸克游戏 - 夸克博客</title>
+    <title>夸克游戏 - {SITE_TITLE}</title>
     <meta name="description" content="夸克博客趣味网页游戏集合，分为对战游戏、个人游戏和经典游戏复刻。" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" href="/assets/pages/games/style.css" />

@@ -1,10 +1,13 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克会议 | WebRTC 在线视频与屏幕共享 - 夸克博客</title>
+    <title>夸克会议 | WebRTC 在线视频与屏幕共享 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -13,7 +16,7 @@
     <link rel="stylesheet" href="/assets/pages/a/meet/meet.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
 </head>
 
 <body>

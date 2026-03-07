@@ -8,6 +8,7 @@ const dataPath = path.join(PROJECT_ROOT, "assets", "pages", "games", "xjtx", "da
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const xjtxData = JSON.parse(await fs.readFile(dataPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -15,9 +16,9 @@ const xjtxData = JSON.parse(await fs.readFile(dataPath, "utf8"));
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>交大图寻 - 夸克博客</title>
+    <title>交大图寻 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/pages/games/xjtx/xjtx.css" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <script is:inline define:vars={{ navConfig, xjtxData }}>
       window.__NAV_CONFIG__ = navConfig;

@@ -1,12 +1,15 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
-    <title>躲避陨石 - 夸克博客</title>
+    <title>躲避陨石 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/pages/games/AvoidStar/star.css">
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script is:inline src="/assets/js/cursor-trail.js"></script>
 </head>

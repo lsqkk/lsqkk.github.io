@@ -1,11 +1,14 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Analyzer 聊天记录高频词&词云 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <title>Chat Analyzer 聊天记录高频词&词云 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/basic.css">
     <script is:inline src="/assets/js/nav.js"></script>

@@ -1,3 +1,6 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -7,11 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script is:inline src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
     <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
-    <title>直播间 / LIVE - 夸克博客</title>
+    <title>直播间 / LIVE - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/pages/a/live/css/index.css">
 
 
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png"></head>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png"></head>
 
 <body>
     <div class="container">

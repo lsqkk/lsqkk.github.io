@@ -1,14 +1,17 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克终端 Quark Terminal - 夸克博客</title>
+    <title>夸克终端 Quark Terminal - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/pages/a/terminal/css/style.css">
     <script is:inline src="/assets/js/disable-right-click.js"></script>
 
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png"></head>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png"></head>
 
 <body>
     <div id="terminal">

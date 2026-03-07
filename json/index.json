@@ -1,5 +1,6 @@
 {
   "note": "修改此配置以更新主页信息。",
+  "Background": "/assets/img/bg.png",
   "Nickname": "蓝色奇夸克",
   "welcomeTitle": "Hello World",
   "welcomeText": "学习历程 | 生活感悟 | 技术分享",

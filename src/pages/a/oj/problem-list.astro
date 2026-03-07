@@ -1,9 +1,10 @@
 ---
 import OjLayout from "../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../components/OjSidebar.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <OjLayout
-  title="题库列表 - Quark OJ - 夸克博客"
+  title={`题库列表 - Quark OJ - ${SITE_TITLE}`}
   extraStyles={["/assets/pages/a/oj/style.css"]}
   extraHeadScripts={["/assets/js/nav.js"]}
 >

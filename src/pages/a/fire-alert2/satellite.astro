@@ -1,8 +1,9 @@
 ---
 import FireAlertLayout from "../../../layouts/FireAlertLayout.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <FireAlertLayout
-  pageTitle="卫星监测 - 山火预警系统 - 夸克博客"
+  pageTitle={`卫星监测 - 山火预警系统 - ${SITE_TITLE}`}
   pageCss="/assets/pages/a/fire-alert2/satellite.css"
   logoIconClass="fas fa-satellite"
   subtitle="卫星监测 - 实时火点识别与追踪"

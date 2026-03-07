@@ -10,6 +10,10 @@ body {
 
 /* 视差背景层 - 关键样式 */
 .parallax-bg {
+    --parallax-bg-fallback: url("__SHICHA_BACKGROUND__");
+    background-image: var(--parallax-bg-fallback);
+    background-size: cover;
+    background-position: center;
     position: fixed;
     top: 0;
     left: 0;

@@ -16,6 +16,7 @@ const {
   tailScripts = [],
   includeCursor = false,
 } = Astro.props as Props;
+import { SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -25,7 +26,7 @@ const {
     <title>{pageTitle}</title>
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     {includeCursor ? <link rel="stylesheet" href="/assets/css/cursor.css" /> : null}
     {pageStyles.map((href) => <link rel="stylesheet" href={href} />)}
     {headScripts.map((src) => <script is:inline src={src}></script>)}

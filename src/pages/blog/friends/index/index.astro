@@ -8,6 +8,7 @@ const friendsPath = path.join(PROJECT_ROOT, "json", "friends.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const friendsData = JSON.parse(await fs.readFile(friendsPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -15,8 +16,8 @@ const friendsData = JSON.parse(await fs.readFile(friendsPath, "utf8"));
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="夸克博客的友链页面，展示朋友们和博主的信息。" />
-    <title>友链 Friends - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <title>友链 Friends - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/pages/blog/friends/style.css" />

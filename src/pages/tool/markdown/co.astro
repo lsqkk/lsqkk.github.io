@@ -1,3 +1,6 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh">
 
@@ -5,7 +8,7 @@
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多人协同Markdown编辑器 - 夸克博客</title>
+    <title>多人协同Markdown编辑器 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/md.css">
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -13,7 +16,7 @@
     <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script is:inline id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script is:inline src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <style>
         .docs-list {
             list-style: none;

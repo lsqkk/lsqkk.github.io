@@ -1,11 +1,14 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克PPT遥控 | 手机遥控电脑PPT - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <title>夸克PPT遥控 | 手机遥控电脑PPT - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <meta name="keywords" content="PPT, 遥控, 手机, 前端, firebase, 电脑, 放映, 夸克博客">
     <meta name="description" content="夸克PPT遥控，基于Firebase RTDB的免费、快捷、超轻量级的电脑PPT遥控工具。">
     <script is:inline src="/assets/js/nav.js"></script>

@@ -1,3 +1,6 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -5,8 +8,8 @@
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>时间管理 | 夸克自控 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <title>时间管理 | 夸克自控 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/pages/a/zk/css/base.css">
     <link rel="stylesheet" href="/assets/pages/a/zk/css/time-management.css">
     <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>

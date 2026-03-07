@@ -1,8 +1,9 @@
 ---
 import FireAlertLayout from "../../../../layouts/FireAlertLayout.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <FireAlertLayout
-  pageTitle="山火预警系统 - 数据与模型双驱动的智慧气象山火防控框架 - 夸克博客"
+  pageTitle={`山火预警系统 - 数据与模型双驱动的智慧气象山火防控框架 - ${SITE_TITLE}`}
   pageCss="/assets/pages/a/fire-alert2/index.css"
   logoIconClass="fas fa-fire"
   subtitle="数据与模型双驱动的智慧气象山火防控框架"

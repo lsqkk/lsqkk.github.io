@@ -1,10 +1,13 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown 定制化导出工具 - 夸克博客</title>
+    <title>Markdown 定制化导出工具 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -189,7 +192,7 @@
     </style>
     <style id="custom-styles"></style>
 
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
 </head>
 
 <body>

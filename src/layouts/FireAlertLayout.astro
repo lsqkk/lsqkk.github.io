@@ -30,6 +30,7 @@ const navItems = [
   { key: "forecast", href: "forecast.html", label: "火险预报" },
   { key: "report", href: "report.html", label: "灾情上报" },
 ] as const;
+import { SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -41,7 +42,7 @@ const navItems = [
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     {headStyles.map((href) => <link rel="stylesheet" href={href} />)}
     <link rel="stylesheet" href={pageCss} />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     {headScripts.map((src) => <script is:inline src={src}></script>)}
   </head>
 

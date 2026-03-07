@@ -61,7 +61,8 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 const prevPost = currentIndex >= 0 && currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
 const { Content } = await render(post);
-const pageTitle = `${title} - 夸克博客`;
+const pageTitle = `${title} - ${SITE_TITLE}`;
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <PostLayout
   pageTitle={pageTitle}

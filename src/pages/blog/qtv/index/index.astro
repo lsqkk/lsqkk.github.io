@@ -1,3 +1,6 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -5,11 +8,11 @@
     <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>视频 / Quark TV - 夸克博客</title>
+    <title>视频 / Quark TV - {SITE_TITLE}</title>
     <meta name="description" content="Quark TV 遇见热爱 夸克博客">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/pages/blog/qtv/style.css">
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>

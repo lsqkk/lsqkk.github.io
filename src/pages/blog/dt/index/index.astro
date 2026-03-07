@@ -5,6 +5,7 @@ import path from "node:path";
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -12,9 +13,9 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>动态 - 夸克博客</title>
+    <title>动态 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/css/dt.css" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <meta name="referrer" content="never" />
     <script is:inline define:vars={{ navConfig }}>

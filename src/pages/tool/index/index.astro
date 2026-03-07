@@ -8,15 +8,16 @@ const toolsPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "tool.json"
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const toolsData = JSON.parse(await fs.readFile(toolsPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>工具箱 - 夸克博客</title>
+    <title>工具箱 - {SITE_TITLE}</title>
     <meta name="description" content="夸克博客的实用工具集合，涵盖生活、学术、文本处理、实时协同等多个领域，提供丰富的在线工具。" />
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/tool.css" />

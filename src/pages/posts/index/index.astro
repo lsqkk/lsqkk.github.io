@@ -8,14 +8,15 @@ const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const postsData = JSON.parse(await fs.readFile(postsPath, "utf8"));
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文章 / POSTS - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <title>文章 / POSTS - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/posts.css" />

@@ -1,8 +1,9 @@
 ---
 import RealtimeRoomLayout from "../../../../layouts/RealtimeRoomLayout.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <RealtimeRoomLayout
-  pageTitle="知识答题 | 基于本站 Quiz API 的趣味答题与对战 - 夸克博客"
+  pageTitle={`知识答题 | 基于本站 Quiz API 的趣味答题与对战 - ${SITE_TITLE}`}
   bodyClass="dark-mode"
   includeCursor={true}
   pageStyles={["/assets/css/room.css", "/assets/pages/games/dati/dati.css"]}

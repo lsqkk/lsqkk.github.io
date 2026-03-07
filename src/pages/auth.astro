@@ -1,9 +1,12 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <link rel="stylesheet" href="/assets/css/basic.css" />
-    <title>登录回调 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png" />
+    <title>登录回调 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <script is:inline>
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");

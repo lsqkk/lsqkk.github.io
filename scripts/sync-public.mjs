@@ -3,6 +3,8 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const PUBLIC_DIR = path.join(ROOT, "public");
+const INDEX_JSON_PATH = path.join(ROOT, "json", "index.json");
+const SHICHA_BG_PLACEHOLDER = "__SHICHA_BACKGROUND__";
 
 const COPY_DIRS = [
   "assets",
@@ -116,6 +118,28 @@ async function main() {
     const dest = path.join(PUBLIC_DIR, alias.target);
     await fs.mkdir(path.dirname(dest), { recursive: true });
     await fs.copyFile(src, dest);
+  }
+
+  // Inject parallax background at build-time to avoid runtime JSON fetch.
+  if (await exists(INDEX_JSON_PATH)) {
+    const indexRaw = await fs.readFile(INDEX_JSON_PATH, "utf-8");
+    const indexConfig = JSON.parse(indexRaw);
+    const bgPath = typeof indexConfig?.Background === "string" && indexConfig.Background.trim()
+      ? indexConfig.Background.trim()
+      : "/assets/img/bg.png";
+
+    const shichaTargets = [
+      path.join(PUBLIC_DIR, "assets", "js", "shicha.js"),
+      path.join(PUBLIC_DIR, "assets", "css", "shicha.css"),
+    ];
+
+    for (const target of shichaTargets) {
+      if (!(await exists(target))) continue;
+      const original = await fs.readFile(target, "utf-8");
+      if (!original.includes(SHICHA_BG_PLACEHOLDER)) continue;
+      const injected = original.split(SHICHA_BG_PLACEHOLDER).join(bgPath);
+      await fs.writeFile(target, injected, "utf-8");
+    }
   }
 
   console.log("sync-public done");

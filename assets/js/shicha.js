@@ -82,7 +82,7 @@ class TrueParallax {
         this.bgImage = new Image();
 
         // 设置图片源 - 替换为你的图片路径
-        const imagePath = '/assets/img/bg.png'; // 你的图片路径
+        const imagePath = "__SHICHA_BACKGROUND__"; // build-time injected from json/index.json
 
         // 如果图片加载失败，使用一个默认图片或颜色
         this.bgImage.onerror = () => {
