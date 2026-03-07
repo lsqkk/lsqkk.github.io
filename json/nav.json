@@ -25,6 +25,11 @@
             "target": "blank"
         },
         {
+            "name": "API",
+            "link": "https://lsqkk.github.io/quarkdoc/QuarkAPI",
+            "target": "blank"
+        },
+        {
             "name": "实验室",
             "link": "/a",
             "target": "blank"
