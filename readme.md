@@ -24,7 +24,9 @@
 
 <br>
 
-[@lsqkk](https://github.com/lsqkk) 的个人网站仓库，主要记录前端开发、技术实验和产品思考。项目以原生前端为核心，并采用 **Astro 静态构建链路** 承担文章页与主页生成，减少重复模板和运行时请求。部署在 GitHub Pages，并由 Vercel + 自有域名提供 Serverless 支持。由 Firebase RTDB 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。已完成模板化与命令行封装，支持一键迁移部署，详见以下「迁移使用与部署」章节。
+[@lsqkk](https://github.com/lsqkk) 的个人网站仓库，主要记录前端开发、技术实验和个人心得。项目以原生前端为核心，使用 **Astro** 框架生成页面。部署在 **GitHub Pages** ，并由 **Vercel** + 自有域名提供 Serverless 支持。由 **Firebase RTDB** 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步。
+
+目前，本项目已完成模板化与命令行封装，支持一键迁移部署，详见以下 [迁移使用与部署](#迁移使用与部署) 章节。
 
 <a href="https://lsqkk.github.io"><img src="/assets/img/readme/demo1.png" alt="demo1"></a>
 
@@ -40,32 +42,11 @@
 
 Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**基于原生前端 + Astro 构建链路的解决方案**。
 
-- **原生开发 + Astro 构建**：业务交互依旧以原生 JavaScript + Canvas 为核心，文章与主页采用 Astro 进行静态生成，在保持轻量运行时的同时提升模板复用与构建一致性。
-  
-  <img src="/assets/img/readme/demo0.png">
+- **原生开发 + Astro 构建**：业务交互以原生 JavaScript + Canvas 等为核心，页面使用 Astro 进行静态生成，在保持轻量运行时的同时提升模板复用与构建一致性。
 
 - **渐进式 TypeScript 工程化**：采用 `@ts-check + JSDoc + globals.d.ts` 的轻量策略，在不破坏静态站点直出模式的前提下逐步引入类型约束，提升重构安全性与可维护性。
   
-- **统一 UI 设计**：规定了一套统一的 UI 设计风格。使用类似经典 Windows 7 的 Aero 模糊玻璃主题，全站使用统一的顶部导航、字体、标题样式，深浅色切换跟随系统，优雅的视差滚动效果等。
-    <table>
-      <tr>
-        <td align="center"><img src="/assets/img/readme/nav.png" width="90%"></td>
-        <td align="center"><img src="/assets/img/readme/demo2.png" width="90%"></td>
-      </tr>
-      <tr>
-        <td align="center">Aero 主题顶栏</td>
-        <td align="center">Aero 主题卡片 UI</td>
-      </tr>
-      <tr>
-        <td align="center"><img src="/assets/img/readme/demo3.png" width="90%"></td>
-        <td align="center"><img src="/assets/img/readme/demo4.png" width="90%"></td>
-      </tr>
-      <tr>
-        <td align="center">统一网页标题名称</td>
-        <td align="center">统一标题样式</td>
-      </tr>
-    </table>
-  </p>
+- **统一 UI 设计**：项目使用统一的 UI 风格。使用类似 Windows 7 的经典 Aero 模糊玻璃主题，全站使用统一的顶部导航、字体、标题样式，深浅色切换跟随系统，优雅的视差滚动效果等。
 
 - **实时数据协同**：集成 Firebase RTDB 实现实时数据同步，支撑博客留言、在线聊天室、实时对战游戏和协同工具。
   
