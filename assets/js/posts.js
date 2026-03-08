@@ -8,6 +8,48 @@ let currentPage = 1;
 const postsPerPage = 10;
 let allPosts = [];
 
+function setFilterPanelsVisible(visible) {
+    const tagPanel = document.getElementById('tagFilterPanel');
+    const columnPanel = document.getElementById('columnFilterPanel');
+    if (tagPanel) tagPanel.style.display = visible ? 'block' : 'none';
+    if (columnPanel) columnPanel.style.display = visible ? 'block' : 'none';
+}
+
+function updateFilterCounts() {
+    const tagCount = document.getElementById('tagCount');
+    const columnCount = document.getElementById('columnCount');
+    if (tagCount) tagCount.textContent = String(Math.max(0, allTags.length - 1));
+    if (columnCount) columnCount.textContent = String(Math.max(0, allColumns.length - 1));
+}
+
+function initFoldPanels() {
+    document.querySelectorAll('.posts-fold-toggle').forEach(btn => {
+        if (!(btn instanceof HTMLButtonElement)) return;
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            if (!targetId) return;
+            const panel = document.getElementById(targetId);
+            const wrapper = btn.closest('.posts-fold-panel');
+            if (!(panel instanceof HTMLElement) || !(wrapper instanceof HTMLElement)) return;
+
+            const isOpen = wrapper.classList.contains('open');
+            if (isOpen) {
+                panel.style.maxHeight = `${panel.scrollHeight}px`;
+                requestAnimationFrame(() => {
+                    panel.style.maxHeight = '0px';
+                    panel.style.opacity = '0';
+                });
+                wrapper.classList.remove('open');
+                return;
+            }
+
+            wrapper.classList.add('open');
+            panel.style.opacity = '1';
+            panel.style.maxHeight = `${panel.scrollHeight}px`;
+        });
+    });
+}
+
 // 获取URL参数
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -75,6 +117,8 @@ async function loadPosts() {
 
     renderTagFilter();
     renderColumnFilter();
+    updateFilterCounts();
+    initFoldPanels();
     renderPosts();
     renderPagination();
 
@@ -109,8 +153,7 @@ function performSearch(searchTerm) {
     if (searchTermLower === '') {
         // 如果搜索词为空，显示正常列表
         document.getElementById('searchResults').style.display = 'none';
-        document.getElementById('tagFilter').style.display = 'flex';
-        document.getElementById('columnFilter').style.display = 'flex';
+        setFilterPanelsVisible(true);
         document.getElementById('posts').style.display = 'block';
         document.getElementById('pagination').style.display = 'flex';
         return;
@@ -150,8 +193,7 @@ function performSearch(searchTerm) {
 
     // 显示搜索结果，隐藏正常列表
     document.getElementById('searchResults').style.display = 'block';
-    document.getElementById('tagFilter').style.display = 'none';
-    document.getElementById('columnFilter').style.display = 'none';
+    setFilterPanelsVisible(false);
     document.getElementById('posts').style.display = 'none';
     document.getElementById('pagination').style.display = 'none';
 
@@ -212,8 +254,7 @@ function filterByTag(tag) {
     // 清除搜索状态
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').style.display = 'none';
-    document.getElementById('tagFilter').style.display = 'flex';
-    document.getElementById('columnFilter').style.display = 'flex';
+    setFilterPanelsVisible(true);
     document.getElementById('posts').style.display = 'block';
     document.getElementById('pagination').style.display = 'flex';
 
@@ -232,8 +273,7 @@ function filterByColumn(column) {
 
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').style.display = 'none';
-    document.getElementById('tagFilter').style.display = 'flex';
-    document.getElementById('columnFilter').style.display = 'flex';
+    setFilterPanelsVisible(true);
     document.getElementById('posts').style.display = 'block';
     document.getElementById('pagination').style.display = 'flex';
 

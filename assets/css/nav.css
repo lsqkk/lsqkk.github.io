@@ -58,6 +58,7 @@
 .header-nav li {
     margin: 0 8px;
     white-space: nowrap;
+    position: relative;
 }
 .header-nav li a {
     color: white;
@@ -348,4 +349,83 @@
 }
 .header-placeholder {
     height: 60px;
+}
+
+.nav-hover-item .nav-hover-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 300px;
+    max-width: 420px;
+    max-height: 360px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    padding: 12px;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 1200;
+}
+
+.nav-hover-item.open .nav-hover-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.nav-hover-scroll {
+    max-height: 330px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.nav-hover-section {
+    margin-bottom: 10px;
+}
+
+.nav-hover-section:last-child {
+    margin-bottom: 0;
+}
+
+.nav-hover-section-title {
+    font-size: 0.78em;
+    color: #4b5563;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.nav-hover-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-hover-list li {
+    margin: 0;
+}
+
+.nav-hover-list a {
+    display: block;
+    color: #1f2937 !important;
+    text-decoration: none;
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+    font-size: 0.86em !important;
+    text-shadow: none !important;
+}
+
+.nav-hover-list a:hover {
+    background: rgba(3, 102, 214, 0.1) !important;
+    color: #0366d6 !important;
+    box-shadow: none !important;
+}
+
+.nav-hover-loading,
+.nav-hover-empty {
+    font-size: 0.86em;
+    color: #4b5563;
+    padding: 8px;
 }

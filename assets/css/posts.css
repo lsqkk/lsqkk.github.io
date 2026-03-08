@@ -74,30 +74,46 @@
             overflow: hidden;
         }
 
-        .posts-fold-panel summary {
+        .posts-fold-toggle {
+            width: 100%;
             cursor: pointer;
-            list-style: none;
             padding: 12px 14px;
             font-weight: 600;
             color: #1f2937;
+            background: transparent;
+            border: none;
+            text-align: left;
+            font-size: 1em;
         }
 
-        .posts-fold-panel summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .posts-fold-panel summary::after {
+        .posts-fold-toggle::after {
             content: "＋";
             float: right;
             color: #6b7280;
+            transition: transform 0.25s ease;
         }
 
-        .posts-fold-panel[open] summary::after {
+        .posts-fold-panel.open .posts-fold-toggle::after {
             content: "－";
         }
 
+        .posts-fold-count {
+            font-size: 0.78em;
+            color: #0366d6;
+            font-weight: 500;
+            margin-left: 4px;
+            vertical-align: baseline;
+        }
+
+        .posts-fold-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.32s ease, opacity 0.25s ease, padding-bottom 0.25s ease;
+            opacity: 0;
+        }
+
         .posts-fold-panel .tag-filter {
-            margin-bottom: 0;
+            margin-bottom: 0 !important;
             border: none;
             background: transparent !important;
             box-shadow: none;

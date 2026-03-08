@@ -3,6 +3,18 @@ const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
+const hoverRootMap = {
+    '/tool': 'tool',
+    '/games': 'games',
+    '/a': 'a',
+    '/blog': 'blog'
+};
+const hoverRootLabelMap = {
+    tool: '工具',
+    games: '游戏',
+    a: '实验室',
+    blog: '更多'
+};
 
 // 默认配置
 const defaultNavConfig = {
@@ -51,6 +63,10 @@ function getNavConfigSync() {
 
 // 生成导航HTML
 function generateNavHTML(config) {
+    const normalizeTarget = (target) => {
+        if (!target) return '_blank';
+        return target === 'blank' ? '_blank' : target;
+    };
     return `
     <div class="header-placeholder"></div>
     <div class="header">
@@ -70,9 +86,19 @@ function generateNavHTML(config) {
             </div>
             <div class="header-nav-container">
                 <ul class="header-nav">
-                    ${config.navItems.map(item =>
-        `<li><a href="${item.link}" target="${item.target || 'blank'}">${item.name}</a></li>`
-    ).join('')}
+                    ${config.navItems.map(item => {
+        const hoverKey = hoverRootMap[item.link];
+        const target = normalizeTarget(item.target);
+        if (hoverKey) {
+            return `<li class="nav-hover-item" data-hover-key="${hoverKey}">
+                        <a href="${item.link}" target="${target}">${item.name}</a>
+                        <div class="nav-hover-menu" id="nav-hover-${hoverKey}">
+                            <div class="nav-hover-loading">加载中...</div>
+                        </div>
+                    </li>`;
+        }
+        return `<li><a href="${item.link}" target="${target}">${item.name}</a></li>`;
+    }).join('')}
                     <!-- 语言切换器 - 不会被翻译 -->
                     <li class="ignore">
                         <select id="languageSelector" class="language-selector">
@@ -101,7 +127,7 @@ function generateNavHTML(config) {
             <div class="navsidebar-nav">
                 <ul>
                     ${config.navItems.map(item =>
-        `<li><a href="${item.link}" target="${item.target || 'blank'}">${item.name}</a></li>`
+        `<li><a href="${item.link}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`
     ).join('')}
                 </ul>
             </div>
@@ -200,6 +226,131 @@ function initializeSidebar() {
     }
 }
 
+const navHoverCache = {
+    tool: null,
+    games: null,
+    a: null,
+    blog: null
+};
+
+function normalizeLabLink(link) {
+    if (!link) return '#';
+    if (link.startsWith('http://') || link.startsWith('https://') || link.startsWith('/')) return link;
+    return `/a/${link}`;
+}
+
+function normalizeGamesLink(link) {
+    if (!link) return '#';
+    if (link.startsWith('http://') || link.startsWith('https://') || link.startsWith('/')) return link;
+    return `/games/${link}`;
+}
+
+async function loadHoverSections(key) {
+    if (navHoverCache[key]) return navHoverCache[key];
+
+    let sections = [];
+    if (key === 'tool') {
+        const data = await fetch('/assets/pages/tool/tool.json').then(r => r.json());
+        sections = (data.categories || []).map(cat => ({
+            title: cat.name || '工具',
+            items: (cat.tools || []).map(item => ({
+                name: item.name || '未命名',
+                link: item.url || '#',
+                target: item.target || '_blank'
+            }))
+        })).filter(section => section.items.length > 0);
+    } else if (key === 'games') {
+        const data = await fetch('/assets/pages/games/game.json').then(r => r.json());
+        const groups = [
+            { title: '多人联机', items: data.multiplayer || [] },
+            { title: '单机游戏', items: data.singlePlayer || [] },
+            { title: '经典游戏', items: data.classic || [] }
+        ];
+        sections = groups.map(group => ({
+            title: group.title,
+            items: group.items.map(item => ({
+                name: item.name || '未命名',
+                link: normalizeGamesLink(item.link || ''),
+                target: '_blank'
+            }))
+        })).filter(section => section.items.length > 0);
+    } else if (key === 'a') {
+        const data = await fetch('/assets/pages/a/projects.json').then(r => r.json());
+        sections = (data.categories || []).map(cat => ({
+            title: cat.name || '实验室',
+            items: (cat.projects || []).map(item => ({
+                name: item.name || '未命名',
+                link: normalizeLabLink(item.link || ''),
+                target: '_blank'
+            }))
+        })).filter(section => section.items.length > 0);
+    } else if (key === 'blog') {
+        const data = await fetch('/assets/pages/blog/functions.json').then(r => r.json());
+        sections = (data.categories || []).map(cat => ({
+            title: cat.name || '更多',
+            items: (cat.functions || []).map(item => ({
+                name: item.name || '未命名',
+                link: item.link || '#',
+                target: item.target === '_self' ? '_self' : '_blank'
+            }))
+        })).filter(section => section.items.length > 0);
+    }
+
+    navHoverCache[key] = sections;
+    return sections;
+}
+
+function renderHoverMenu(menuEl, key, sections) {
+    if (!menuEl) return;
+    if (!sections || sections.length === 0) {
+        menuEl.innerHTML = `<div class="nav-hover-empty">${hoverRootLabelMap[key] || '列表'}暂时为空</div>`;
+        return;
+    }
+
+    menuEl.innerHTML = `
+        <div class="nav-hover-scroll">
+            ${sections.map(section => `
+                <div class="nav-hover-section">
+                    <div class="nav-hover-section-title">${section.title}</div>
+                    <ul class="nav-hover-list">
+                        ${section.items.map(item => `<li><a href="${item.link}" target="${item.target}">${item.name}</a></li>`).join('')}
+                    </ul>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function initializeNavHoverMenus() {
+    if (window.innerWidth <= 768) return;
+
+    document.querySelectorAll('.nav-hover-item').forEach(item => {
+        if (!(item instanceof HTMLElement)) return;
+        const key = item.dataset.hoverKey;
+        if (!key) return;
+        const menuEl = item.querySelector('.nav-hover-menu');
+        if (!(menuEl instanceof HTMLElement)) return;
+
+        item.addEventListener('mouseenter', async () => {
+            item.classList.add('open');
+            if (!navHoverCache[key]) {
+                menuEl.innerHTML = '<div class="nav-hover-loading">加载中...</div>';
+                try {
+                    const sections = await loadHoverSections(key);
+                    renderHoverMenu(menuEl, key, sections);
+                } catch (error) {
+                    console.error(`加载${key}导航项失败:`, error);
+                    menuEl.innerHTML = '<div class="nav-hover-empty">加载失败</div>';
+                }
+            }
+        });
+
+        item.addEventListener('mouseleave', () => {
+            item.classList.remove('open');
+        });
+    });
+}
+
 // 多语言翻译功能
 function initializeTranslation() {
     const script = document.createElement('script');
@@ -266,6 +417,7 @@ function checkLoginStatus() {
 function initializeAll() {
     initializeTranslation();
     initializeSidebar();
+    initializeNavHoverMenus();
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
