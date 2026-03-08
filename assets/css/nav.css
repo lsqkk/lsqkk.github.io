@@ -353,10 +353,10 @@
 
 .nav-hover-item .nav-hover-menu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 2px);
     left: 0;
-    min-width: 300px;
-    max-width: 420px;
+    min-width: 160px;
+    max-width: 220px;
     max-height: 360px;
     background: rgba(255, 255, 255, 0.96);
     border-radius: 12px;
@@ -380,6 +380,13 @@
     max-height: 330px;
     overflow-y: auto;
     padding-right: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.nav-hover-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .nav-hover-section {

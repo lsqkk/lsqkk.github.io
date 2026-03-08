@@ -331,7 +331,13 @@ function initializeNavHoverMenus() {
         const menuEl = item.querySelector('.nav-hover-menu');
         if (!(menuEl instanceof HTMLElement)) return;
 
-        item.addEventListener('mouseenter', async () => {
+        let closeTimer = null;
+
+        const openMenu = async () => {
+            if (closeTimer) {
+                clearTimeout(closeTimer);
+                closeTimer = null;
+            }
             item.classList.add('open');
             if (!navHoverCache[key]) {
                 menuEl.innerHTML = '<div class="nav-hover-loading">加载中...</div>';
@@ -343,11 +349,20 @@ function initializeNavHoverMenus() {
                     menuEl.innerHTML = '<div class="nav-hover-empty">加载失败</div>';
                 }
             }
-        });
+        };
 
-        item.addEventListener('mouseleave', () => {
-            item.classList.remove('open');
-        });
+        const closeMenuWithDelay = () => {
+            if (closeTimer) clearTimeout(closeTimer);
+            closeTimer = setTimeout(() => {
+                item.classList.remove('open');
+                closeTimer = null;
+            }, 300);
+        };
+
+        item.addEventListener('mouseenter', openMenu);
+        item.addEventListener('mouseleave', closeMenuWithDelay);
+        menuEl.addEventListener('mouseenter', openMenu);
+        menuEl.addEventListener('mouseleave', closeMenuWithDelay);
     });
 }
 
