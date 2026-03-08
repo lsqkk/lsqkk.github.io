@@ -41,7 +41,14 @@ const currentYear = new Date().getFullYear();
         RSS订阅链接: <a href="https://lsqkk.github.io/posts/rss.xml" target="_blank">https://lsqkk.github.io/posts/rss.xml</a>
       </h2>
       <div id="searchResults" class="search-results"></div>
-      <div id="tagFilter" class="tag-filter"></div>
+      <details class="posts-fold-panel">
+        <summary>标签</summary>
+        <div id="tagFilter" class="tag-filter"></div>
+      </details>
+      <details class="posts-fold-panel">
+        <summary>专栏</summary>
+        <div id="columnFilter" class="tag-filter"></div>
+      </details>
       <div id="posts"></div>
       <div class="pagination" id="pagination">
         <button class="page-btn prev-btn" onclick="prevPage()">上一页</button>

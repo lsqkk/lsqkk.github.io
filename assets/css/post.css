@@ -93,6 +93,16 @@ pre {
     width: 15px;
 }
 
+.post-column-note {
+    margin: 6px 0 12px;
+    color: #4b5563;
+    font-size: 0.9em;
+}
+
+.post-column-link {
+    margin: 0 2px;
+}
+
 /* 文章标签容器样式 */
 .post-tags {
     display: flex;

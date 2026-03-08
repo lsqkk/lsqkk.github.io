@@ -1,0 +1,124 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+type PostEntry = CollectionEntry<"posts">;
+
+function normalizeDate(date: unknown): string {
+  if (!date) return "1970-01-01";
+  if (date instanceof Date) return date.toISOString().slice(0, 10);
+  const str = String(date).trim();
+  const hit = str.match(/^(\d{4})[-/年](\d{1,2})[-/月](\d{1,2})/);
+  if (hit) return `${hit[1]}-${hit[2].padStart(2, "0")}-${hit[3].padStart(2, "0")}`;
+  return str;
+}
+
+function normalizeTags(tags: unknown): string[] {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags.map((tag) => String(tag).trim()).filter(Boolean);
+  return String(tags)
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function extractTitle(entry: PostEntry): string {
+  const match = entry.body.match(/^#\s+(.+)$/m);
+  if (match) return match[1].trim();
+  return entry.id.replace(/\.md$/i, "").split("/").pop() || "untitled";
+}
+
+function wordCount(entry: PostEntry): number {
+  return entry.body.trim().length;
+}
+
+function readTime(entry: PostEntry): number {
+  return Math.ceil(wordCount(entry) / 400);
+}
+
+export async function getStaticPaths() {
+  function normalizeColumnsInPath(columns: unknown): string[] {
+    if (!columns) return [];
+    const raw = Array.isArray(columns) ? columns : String(columns).split(",");
+    return raw
+      .map((item) => String(item).trim().replace(/^["']|["']$/g, ""))
+      .map((item) => item.replace(/[\\/]/g, "").trim())
+      .filter(Boolean);
+  }
+
+  const posts = await getCollection("posts");
+  const singleLevelPostSlugs = new Set(
+    posts.map((post) => post.id.replace(/\.md$/i, "")).filter((slug) => !slug.includes("/"))
+  );
+
+  const columnMap = new Map<string, PostEntry[]>();
+  for (const post of posts) {
+    const postColumns = normalizeColumnsInPath(
+      (post.data as any).columns ?? (post.data as any).column ?? (post.data as any)["专栏"]
+    );
+    for (const column of postColumns) {
+      if (!column || singleLevelPostSlugs.has(column)) continue;
+      if (!columnMap.has(column)) columnMap.set(column, []);
+      columnMap.get(column)?.push(post);
+    }
+  }
+
+  return Array.from(columnMap.entries()).map(([column, columnPosts]) => ({
+    params: { column },
+    props: { column, columnPosts },
+  }));
+}
+
+const { column, columnPosts } = Astro.props as { column: string; columnPosts: PostEntry[] };
+const sortedPosts = [...columnPosts].sort((a, b) => normalizeDate(b.data.date).localeCompare(normalizeDate(a.data.date)));
+const currentYear = new Date().getFullYear();
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{column} 专栏 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="/assets/css/posts.css" />
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+  </head>
+  <body>
+    <link rel="stylesheet" href="/assets/css/shicha.css" />
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+
+    <div class="posts-container">
+      <h1 class="page-title">{column} 专栏</h1>
+      <h2 class="page-subtitle">本专栏共 {sortedPosts.length} 篇文章 · <a href="/posts">返回文章列表</a></h2>
+
+      <div id="posts">
+        {
+          sortedPosts.map((post) => {
+            const title = extractTitle(post);
+            const date = normalizeDate(post.data.date);
+            const tags = normalizeTags(post.data.tags);
+            const wc = wordCount(post);
+            const rt = readTime(post);
+            return (
+              <a class="post-item post-item-link column-post-item" href={`/posts/${post.id.replace(/\.md$/i, "")}`}>
+                <div class="post-title">{title}</div>
+                <div class="post-date">{date}</div>
+                <div class="post-tags">
+                  <span class="post-tag read-time">{wc}字·{rt}min</span>
+                  {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+                </div>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+
+    <div class="copyright">© 2024 - {currentYear} 蓝色奇夸克 / {SITE_TITLE} All rights reserved</div>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

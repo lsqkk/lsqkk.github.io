@@ -57,6 +57,42 @@ function parseDate(frontmatter) {
   return normalizeDate(hit ? hit[1] : "");
 }
 
+function parseColumns(frontmatter) {
+  const fm = frontmatter.replace(/\r\n/g, "\n");
+
+  const listBlock = fm.match(/(?:^|\n)(?:column|columns|专栏):\s*\n((?:[ \t]*-[^\n]*\n?)*)/);
+  if (listBlock && listBlock[1].trim()) {
+    return listBlock[1]
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.startsWith("-"))
+      .map((line) => line.slice(1).trim())
+      .map((item) => item.replace(/^["']|["']$/g, ""))
+      .map((item) => item.replace(/[\\/]/g, "").trim())
+      .filter(Boolean);
+  }
+
+  const inline = fm.match(/(?:^|\n)(?:column|columns|专栏):\s*(.+)\s*(?:\n|$)/);
+  if (!inline) return [];
+  const raw = inline[1].trim();
+  if (!raw) return [];
+
+  if (raw.startsWith("[") && raw.endsWith("]")) {
+    return raw
+      .slice(1, -1)
+      .split(",")
+      .map((item) => item.trim().replace(/^["']|["']$/g, ""))
+      .map((item) => item.replace(/[\\/]/g, "").trim())
+      .filter(Boolean);
+  }
+
+  return raw
+    .split(",")
+    .map((item) => item.trim().replace(/^["']|["']$/g, ""))
+    .map((item) => item.replace(/[\\/]/g, "").trim())
+    .filter(Boolean);
+}
+
 function stripFrontmatter(content) {
   const match = content.match(/^---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?/);
   if (!match) return { frontmatter: "", body: content };
@@ -106,6 +142,7 @@ async function buildPostsJson() {
       file: relPath,
       date: parseDate(frontmatter),
       tags: parseTags(frontmatter),
+      columns: parseColumns(frontmatter),
       wordCount: body.trim().length,
     });
   }

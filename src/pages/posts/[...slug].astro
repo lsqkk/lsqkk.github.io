@@ -22,6 +22,15 @@ function normalizeTags(tags: unknown): string[] {
     .filter(Boolean);
 }
 
+function normalizeColumns(columns: unknown): string[] {
+  if (!columns) return [];
+  const raw = Array.isArray(columns) ? columns : String(columns).split(",");
+  return raw
+    .map((item) => String(item).trim().replace(/^["']|["']$/g, ""))
+    .map((item) => item.replace(/[\\/]/g, "").trim())
+    .filter(Boolean);
+}
+
 function extractTitle(entry: PostEntry): string {
   const match = entry.body.match(/^#\s+(.+)$/m);
   if (match) return match[1].trim();
@@ -45,6 +54,7 @@ const { post } = Astro.props as { post: PostEntry };
 const title = extractTitle(post);
 const date = normalizeDate(post.data.date);
 const tags = normalizeTags(post.data.tags);
+const columns = normalizeColumns((post.data as any).columns ?? (post.data as any).column ?? (post.data as any)["专栏"]);
 const wordCount = getWordCount(post);
 const mdFile = post.id.split("/").pop() || post.id;
 const currentPostPath = post.id.replace(/\.md$/i, "");
@@ -68,6 +78,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   pageTitle={pageTitle}
   date={date}
   tags={tags}
+  columns={columns}
   wordCount={wordCount}
   mdFile={mdFile}
   currentPostPath={currentPostPath}

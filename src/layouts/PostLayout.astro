@@ -3,6 +3,7 @@ interface Props {
   pageTitle: string;
   date: string;
   tags: string[];
+  columns: string[];
   wordCount: number;
   mdFile: string;
   currentPostPath: string;
@@ -12,11 +13,27 @@ interface Props {
   nextPostUrl: string;
 }
 
-const { pageTitle, date, tags, wordCount, mdFile, currentPostPath, prevPostTitle, prevPostUrl, nextPostTitle, nextPostUrl } =
+const {
+  pageTitle,
+  date,
+  tags,
+  columns,
+  wordCount,
+  mdFile,
+  currentPostPath,
+  prevPostTitle,
+  prevPostUrl,
+  nextPostTitle,
+  nextPostUrl,
+} =
   Astro.props;
 const readTime = Math.ceil(wordCount / 400);
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 const currentYear = new Date().getFullYear();
+
+function buildColumnHref(columnName: string): string {
+  return `/posts/${encodeURIComponent(columnName)}`;
+}
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -96,6 +113,19 @@ const currentYear = new Date().getFullYear();
           <span id="post-wordcount">{wordCount}字 · {readTime}min</span>
         </div>
       </div>
+
+      {columns.length > 0 && (
+        <div class="post-column-note">
+          被
+          {columns.map((column, index) => (
+            <>
+              <a href={buildColumnHref(column)} class="post-column-link">{column}</a>
+              {index < columns.length - 1 ? "、" : ""}
+            </>
+          ))}
+          专栏收录
+        </div>
+      )}
 
       <div
         id="post-tags-container"

@@ -2,6 +2,8 @@
 // const allTags = ['全部', '技术', '杂谈', '社科'];
 let allTags = ['全部']; // 初始只包含"全部"标签
 let currentTag = '全部';
+let allColumns = ['全部'];
+let currentColumn = '全部';
 let currentPage = 1;
 const postsPerPage = 10;
 let allPosts = [];
@@ -36,6 +38,23 @@ function extractTagsFromPosts(posts) {
     return ['全部', ...tags];
 }
 
+function extractColumnsFromPosts(posts) {
+    const columnSet = new Set();
+
+    posts.forEach(post => {
+        if (post.columns && Array.isArray(post.columns)) {
+            post.columns.forEach(column => {
+                if (column && String(column).trim() !== '') {
+                    columnSet.add(String(column).trim());
+                }
+            });
+        }
+    });
+
+    const columns = Array.from(columnSet).sort();
+    return ['全部', ...columns];
+}
+
 // 加载文章列表
 async function loadPosts() {
     console.log('开始加载文章...');
@@ -46,13 +65,16 @@ async function loadPosts() {
     // 确保所有文章都有tags数组
     allPosts.forEach(post => {
         if (!post.tags) post.tags = ['未分类'];
+        if (!post.columns) post.columns = [];
     });
 
     // 从文章数据中提取标签
     allTags = extractTagsFromPosts(allPosts);
+    allColumns = extractColumnsFromPosts(allPosts);
     console.log('提取到的标签:', allTags);
 
     renderTagFilter();
+    renderColumnFilter();
     renderPosts();
     renderPagination();
 
@@ -88,6 +110,7 @@ function performSearch(searchTerm) {
         // 如果搜索词为空，显示正常列表
         document.getElementById('searchResults').style.display = 'none';
         document.getElementById('tagFilter').style.display = 'flex';
+        document.getElementById('columnFilter').style.display = 'flex';
         document.getElementById('posts').style.display = 'block';
         document.getElementById('pagination').style.display = 'flex';
         return;
@@ -95,7 +118,8 @@ function performSearch(searchTerm) {
 
     const searchResults = allPosts.filter(post =>
         post.title.toLowerCase().includes(searchTermLower) ||
-        (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTermLower)))
+        (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTermLower))) ||
+        (post.columns && post.columns.some(column => column.toLowerCase().includes(searchTermLower)))
     );
 
     const searchResultsContainer = document.getElementById('searchResults');
@@ -127,6 +151,7 @@ function performSearch(searchTerm) {
     // 显示搜索结果，隐藏正常列表
     document.getElementById('searchResults').style.display = 'block';
     document.getElementById('tagFilter').style.display = 'none';
+    document.getElementById('columnFilter').style.display = 'none';
     document.getElementById('posts').style.display = 'none';
     document.getElementById('pagination').style.display = 'none';
 
@@ -148,9 +173,7 @@ async function searchBlog() {
 
 // 获取当前页的文章
 function getCurrentPagePosts() {
-    const filteredPosts = currentTag === '全部'
-        ? allPosts
-        : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
+    const filteredPosts = getFilteredPosts();
 
     const startIndex = (currentPage - 1) * postsPerPage;
     const endIndex = startIndex + postsPerPage;
@@ -168,6 +191,16 @@ function renderTagFilter() {
             `).join('');
 }
 
+function renderColumnFilter() {
+    const columnFilter = document.getElementById('columnFilter');
+    columnFilter.innerHTML = allColumns.map(column => `
+                <button class="tag-btn ${column === currentColumn ? 'active' : ''}" 
+                        onclick="filterByColumn('${column}')">
+                    ${column}
+                </button>
+            `).join('');
+}
+
 // 按标签筛选
 function filterByTag(tag) {
     currentTag = tag;
@@ -180,6 +213,7 @@ function filterByTag(tag) {
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').style.display = 'none';
     document.getElementById('tagFilter').style.display = 'flex';
+    document.getElementById('columnFilter').style.display = 'flex';
     document.getElementById('posts').style.display = 'block';
     document.getElementById('pagination').style.display = 'flex';
 
@@ -187,6 +221,33 @@ function filterByTag(tag) {
     const url = new URL(window.location);
     url.searchParams.delete('search');
     window.history.replaceState({}, '', url);
+}
+
+function filterByColumn(column) {
+    currentColumn = column;
+    currentPage = 1;
+    renderColumnFilter();
+    renderPosts();
+    renderPagination();
+
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('tagFilter').style.display = 'flex';
+    document.getElementById('columnFilter').style.display = 'flex';
+    document.getElementById('posts').style.display = 'block';
+    document.getElementById('pagination').style.display = 'flex';
+
+    const url = new URL(window.location);
+    url.searchParams.delete('search');
+    window.history.replaceState({}, '', url);
+}
+
+function getFilteredPosts() {
+    return allPosts.filter(post => {
+        const tagPass = currentTag === '全部' || (post.tags && post.tags.includes(currentTag));
+        const columnPass = currentColumn === '全部' || (post.columns && post.columns.includes(currentColumn));
+        return tagPass && columnPass;
+    });
 }
 
 // 渲染文章列表
@@ -215,9 +276,7 @@ function renderPosts() {
 
 // 渲染分页
 function renderPagination() {
-    const filteredPosts = currentTag === '全部'
-        ? allPosts
-        : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
+    const filteredPosts = getFilteredPosts();
 
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
     const pageNumbers = document.getElementById('pageNumbers');
@@ -257,9 +316,7 @@ function prevPage() {
 
 // 下一页
 function nextPage() {
-    const filteredPosts = currentTag === '全部'
-        ? allPosts
-        : allPosts.filter(post => post.tags && post.tags.includes(currentTag));
+    const filteredPosts = getFilteredPosts();
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
     if (currentPage < totalPages) {
