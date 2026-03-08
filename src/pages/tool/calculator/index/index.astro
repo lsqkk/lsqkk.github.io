@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh">
@@ -192,7 +193,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
 
         <div class="footer">
-            <a href="/posts/copyright">© 2024 - 2026 {SITE_TITLE} All rights reserved.</a>
+            <a href="/posts/copyright">© 2024 - {currentYear} {SITE_TITLE} All rights reserved.</a>
         </div>
     </div>
     <script is:inline src="/assets/pages/tool/calculator/calculator.js"></script>

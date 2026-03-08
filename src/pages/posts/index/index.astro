@@ -9,6 +9,7 @@ const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const postsData = JSON.parse(await fs.readFile(postsPath, "utf8"));
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -49,7 +50,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
       </div>
     </div>
 
-    <div class="copyright">© 2024 - 2026 蓝色奇夸克 / {SITE_TITLE} All rights reserved</div>
+    <div class="copyright">© 2024 - {currentYear} 蓝色奇夸克 / {SITE_TITLE} All rights reserved</div>
     <script is:inline src="/assets/js/posts.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>

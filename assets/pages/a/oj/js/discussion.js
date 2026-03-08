@@ -6,7 +6,8 @@ let discussionsRef = null;
 let currentPage = 1;
 const PAGE_SIZE = 10;
 let totalDiscussions = 0;
-let isAdmin = localStorage.getItem('isAdmin') === 'true';
+const ADMIN_TOKEN_KEY = 'oj_discussion_admin_token';
+let isAdmin = false;
 
 // 用户信息 (从本地存储读取)
 let userAvatarType = localStorage.getItem('avatarType') || 'color';
@@ -181,6 +182,44 @@ async function sha256(message) {
         .join('');
 }
 
+function getAdminToken() {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
+}
+
+function setAdminToken(token) {
+    if (token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    } else {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+    }
+}
+
+async function verifyAdminSession() {
+    const token = getAdminToken();
+    if (!token) {
+        isAdmin = false;
+        updateAdminUI();
+        return false;
+    }
+
+    try {
+        const response = await fetch('https://api.130923.xyz/api/admin-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+        const result = await response.json();
+        isAdmin = !!(response.ok && result.valid);
+        if (!isAdmin) setAdminToken('');
+    } catch (e) {
+        console.error('校验管理员会话失败:', e);
+        isAdmin = false;
+    }
+
+    updateAdminUI();
+    return isAdmin;
+}
+
 /**
  * 管理员登录逻辑 (安全版本)
  */
@@ -209,9 +248,9 @@ window.adminLogin = async function () {
         const result = await response.json();
 
         // 3. 根据API返回结果处理
-        if (response.ok && result.success) {
+        if (response.ok && result.success && result.token) {
             isAdmin = true;
-            localStorage.setItem('isAdmin', 'true');
+            setAdminToken(result.token);
             alert('管理员登录成功');
             passwordInput.value = '';
             updateAdminUI();
@@ -748,6 +787,6 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.addEventListener('click', loadDiscussionsList);
     }
 
-    // 5. 更新管理员UI状态
-    updateAdminUI();
+    // 5. 校验并更新管理员UI状态
+    verifyAdminSession();
 });

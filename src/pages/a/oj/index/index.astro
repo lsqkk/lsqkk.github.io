@@ -2,6 +2,7 @@
 import OjLayout from "../../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../../components/OjSidebar.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <OjLayout
   title={`Quark OJ - ${SITE_TITLE}`}
@@ -90,7 +91,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <h3>版权信息</h3>
         <div id="announcement-list">
           <ul>
-            <li>© 2024 - 2026 {SITE_TITLE} / 蓝色奇夸克 / 夸克OJ All rights reserved.</li>
+            <li>© 2024 - {currentYear} {SITE_TITLE} / 蓝色奇夸克 / 夸克OJ All rights reserved.</li>
             <li>API by: judge0</li>
           </ul>
         </div>

@@ -16,6 +16,7 @@ const { pageTitle, date, tags, wordCount, mdFile, currentPostPath, prevPostTitle
   Astro.props;
 const readTime = Math.ceil(wordCount / 400);
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -80,30 +81,25 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </div>
 
     <div class="morenpost">
-      <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
-        作者：
-        <a href="/posts/about"
-          ><img
-            src="/assets/img/touxiang.png"
-            alt="头像"
-            style="width: 15px; border-radius: 50%; box-shadow: 0 0 3px rgba(0,0,0,0.5); overflow: hidden; "
-          />
-          蓝色奇夸克</a
-        >
-      </div>
-      <div id="post-date" style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">发表于 {date}</div>
-      <img src="/assets/img/view.png" alt="view" style="width: 15px; display: inline;" />
-      <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
-        <span id="busuanzi_value_page_pv"></span> 浏览 /
-      </div>
-      <div style="color: #333333; margin-bottom: 15px; font-size: 0.9em; display: inline;">
-        <span id="post-wordcount" style="display: inline;">{wordCount}字 · {readTime}min</span>
+      <div class="post-meta">
+        <div class="post-meta-item">
+          作者：
+          <a href="/posts/about" class="post-meta-author"
+            ><img src="/assets/img/touxiang.png" alt="头像" class="post-meta-avatar" />
+            蓝色奇夸克</a
+          >
+        </div>
+        <div id="post-date" class="post-meta-item">发表于 {date}</div>
+        <div class="post-meta-item">
+          <img src="/assets/img/view.png" alt="view" class="post-meta-view-icon" />
+          <span id="busuanzi_value_page_pv"></span> 浏览 /
+          <span id="post-wordcount">{wordCount}字 · {readTime}min</span>
+        </div>
       </div>
 
       <div
         id="post-tags-container"
         class="post-tags"
-        style="display: inline; margin-left: 10px;"
         data-md-file={mdFile}
         data-post-path={currentPostPath}
         data-date={date}
@@ -128,6 +124,10 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <div style="margin: 20px;">
             <button class="share-button" onclick="copyLink()">复制本文链接</button>
           </div>
+          <div class="donate-section">
+            <p class="donate-text">如果这篇文章对你有帮助，欢迎赞赏支持。</p>
+            <img src="/assets/img/buymeacoffee.png" alt="赞赏码" class="donate-qr" loading="lazy" />
+          </div>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css" />
           <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div>
         </center>
@@ -148,7 +148,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         href="/posts/copyright"
         style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);"
       >
-        © 2024 - 2026 {SITE_TITLE} All rights reserved.
+        © 2024 - {currentYear} {SITE_TITLE} All rights reserved.
       </a>
     </div>
 

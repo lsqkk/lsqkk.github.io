@@ -105,11 +105,13 @@ function performSearch(searchTerm) {
         searchResults.forEach(post => {
             // 计算阅读时长
             const readTime = Math.ceil((post.wordCount || 0) / 400);
+            const postUrl = `/posts/${post.file.replace('.md', '')}`;
 
-            const resultItem = document.createElement('div');
-            resultItem.className = 'search-result-item';
+            const resultItem = document.createElement('a');
+            resultItem.className = 'search-result-item post-item post-item-link';
+            resultItem.href = postUrl;
             resultItem.innerHTML = `
-                <a class="post-title" href="/posts/${post.file.replace('.md', '')}">${post.title}</a>
+                <div class="post-title">${post.title}</div>
                 <div class="post-date">${post.date}</div>
                 <div class="post-tags">
                     <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
@@ -194,16 +196,17 @@ function renderPosts() {
     const list = postsToShow.map(post => {
         // 计算阅读时长
         const readTime = Math.ceil((post.wordCount || 0) / 400);
+        const postUrl = `/posts/${post.file.replace('.md', '')}`;
 
         return `
-                <div class="post-item">
-                    <a class="post-title" href="/posts/${post.file.replace('.md', '')}">${post.title}</a>
+                <a class="post-item post-item-link" href="${postUrl}">
+                    <div class="post-title">${post.title}</div>
                     <div class="post-date">${post.date}</div>
                     <div class="post-tags">
                         <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
                         ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
                     </div>
-                </div>
+                </a>
             `;
     }).join('');
 

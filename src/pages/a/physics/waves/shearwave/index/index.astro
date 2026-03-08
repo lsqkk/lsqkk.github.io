@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -105,7 +106,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </div>
 
     <div class="footer">
-        © 2024 - 2026 {SITE_TITLE} / 蓝色奇夸克 All rights reserved.
+        © 2024 - {currentYear} {SITE_TITLE} / 蓝色奇夸克 All rights reserved.
     </div>
 
     <script is:inline src="/assets/pages/a/physics/waves/shearwave/shearwave.js"></script>

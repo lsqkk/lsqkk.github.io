@@ -60,6 +60,39 @@ pre {
     font-size: 24px;
 }
 
+.post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    align-items: center;
+    color: #333333;
+    font-size: 0.9em;
+    margin-bottom: 12px;
+}
+
+.post-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.post-meta-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.post-meta-avatar {
+    width: 15px;
+    border-radius: 50%;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.post-meta-view-icon {
+    width: 15px;
+}
+
 /* 文章标签容器样式 */
 .post-tags {
     display: flex;
@@ -121,10 +154,44 @@ pre {
     /* 补偿线宽变化 */
 }
 
+.donate-section {
+    margin: 16px auto 10px;
+    max-width: 220px;
+}
+
+.donate-text {
+    margin: 0 0 10px;
+    color: #4b5563;
+    font-size: 0.88em;
+    line-height: 1.5;
+}
+
+.donate-qr {
+    width: 160px;
+    max-width: 60vw;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
 img {
     width: 100%;
     /* 使图片填充整个容器 */
     height: auto;
     border-radius: 5px;
     /* 高度自适应 */
+}
+
+@media (max-width: 640px) {
+    .morenpost {
+        padding: 20px;
+        margin: 12px;
+    }
+
+    .post-meta {
+        gap: 8px 10px;
+    }
+
+    .post-meta-item {
+        flex: 1 1 100%;
+    }
 }

@@ -487,6 +487,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script>
         // 设置当前年份
         document.getElementById('currentYear').textContent = new Date().getFullYear();
+        const ADMIN_TOKEN_KEY = 'notes_admin_token';
 
         // 笔记管理类
         class NotesManager {
@@ -494,7 +495,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 this.notesKey = 'webNotes';
                 this.notes = this.loadNotes();
                 this.currentNoteId = null;
-                this.isAdmin = localStorage.getItem('isAdmin') === 'true';
+                this.isAdmin = false;
 
                 this.init();
             }
@@ -503,7 +504,45 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             init() {
                 this.renderNotes();
                 this.setupEventListeners();
+                this.verifyAdminSession();
+            }
+
+            getAdminToken() {
+                return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
+            }
+
+            setAdminToken(token) {
+                if (token) {
+                    localStorage.setItem(ADMIN_TOKEN_KEY, token);
+                } else {
+                    localStorage.removeItem(ADMIN_TOKEN_KEY);
+                }
+            }
+
+            async verifyAdminSession() {
+                const token = this.getAdminToken();
+                if (!token) {
+                    this.isAdmin = false;
+                    this.updateAdminUI();
+                    return false;
+                }
+
+                try {
+                    const response = await fetch('https://api.130923.xyz/api/admin-verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token }),
+                    });
+                    const result = await response.json();
+                    this.isAdmin = !!(response.ok && result.valid);
+                    if (!this.isAdmin) this.setAdminToken('');
+                } catch (error) {
+                    console.error('校验管理员会话失败:', error);
+                    this.isAdmin = false;
+                }
+
                 this.updateAdminUI();
+                return this.isAdmin;
             }
 
             // 加载笔记
@@ -742,8 +781,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
             // 更新管理员UI
             updateAdminUI() {
-                this.isAdmin = localStorage.getItem('isAdmin') === 'true';
-
                 // 更新管理员按钮
                 const adminBtn = document.getElementById('adminToggleBtn');
                 if (adminBtn) {
@@ -841,9 +878,10 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 const result = await response.json();
 
                 // 5. 处理响应
-                if (response.ok && result.success) {
+                if (response.ok && result.success && result.token) {
                     // 登录成功逻辑
-                    localStorage.setItem('isAdmin', 'true');
+                    notesManager.setAdminToken(result.token);
+                    notesManager.isAdmin = true;
                     alert('管理员登录成功');
                     passwordInput.value = '';
 
@@ -875,7 +913,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
         // 管理员登出函数
         function adminLogout() {
-            localStorage.setItem('isAdmin', 'false');
+            notesManager.setAdminToken('');
+            notesManager.isAdmin = false;
             alert('已退出管理员登录');
             notesManager.updateAdminUI();
         }

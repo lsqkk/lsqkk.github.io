@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -247,7 +248,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <a href="https://github.com/lsqkk/chat-analyzer" target="_blank" class="code-link">项目仓库</a>(欢迎star!!)
             </p>
             <p>
-                © 2024 - 2026
+                © 2024 - {currentYear}
                 <a href="/" target="_blank" class="code-link">{SITE_TITLE}</a> All rights reserved.
             </p>
 

@@ -229,6 +229,52 @@
             padding: 0 !important;
         }
 
+        .recent-posts .post-item-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px) saturate(130%);
+            -webkit-backdrop-filter: blur(10px) saturate(130%);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .recent-posts .post-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .recent-posts .post-date {
+            color: #6c757d !important;
+            margin-bottom: 8px;
+        }
+
+        .recent-posts .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .recent-posts .post-tag {
+            padding: 4px 10px;
+            border-radius: 10px;
+            background: rgba(93, 208, 255, 0.2);
+            color: #007bff;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        .recent-posts .post-tag.read-time {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ff9800;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
         .recent-header {
             color: #ffffff;
             text-shadow: 0 2px 2px #2c3e50a2;

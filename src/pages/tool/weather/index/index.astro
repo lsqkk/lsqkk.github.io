@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -56,7 +57,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <header>
             <link rel="stylesheet" href="/assets/css/basic.css">
             <a href="/posts/copyright"
-                style="text-align: center; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">© 2024 - 2026
+                style="text-align: center; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">© 2024 - {currentYear}
                 {SITE_TITLE} / 蓝色奇夸克 All rights reserved.</a>
         </header>
         <!-- 天气预报弹窗 -->

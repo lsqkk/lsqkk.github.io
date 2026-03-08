@@ -218,7 +218,7 @@ const footerSectionRenderers: Record<string, () => string> = {
   `,
   copyright_info: () => `
     <br><br>
-    <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="/posts/copyright">© 2024 - 2026 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
+    <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="/posts/copyright">© 2024 - {currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
   `,
   icp_record: () => `
     <br><br>
@@ -241,6 +241,7 @@ const homePreloaded = {
   dynamicEntries,
 };
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">

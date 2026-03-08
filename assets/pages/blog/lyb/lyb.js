@@ -14,7 +14,8 @@ let messagesRef = null;
 let currentPage = 1;
 const PAGE_SIZE = 20;
 let totalMessages = 0;
-let isAdmin = localStorage.getItem('isAdmin') === 'true';
+const ADMIN_TOKEN_KEY = 'lyb_admin_token';
+let isAdmin = false;
 /** @type {'color' | 'image'} */
 let userAvatarType = 'color'; // 'color' 或 'image'
 let userColor = '#4a6cf7';
@@ -31,8 +32,46 @@ function byId(id) {
     return document.getElementById(id);
 }
 
+function getAdminToken() {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
+}
+
+function setAdminToken(token) {
+    if (token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    } else {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+    }
+}
+
+async function verifyAdminSession() {
+    const token = getAdminToken();
+    if (!token) {
+        isAdmin = false;
+        updateAdminUI();
+        return false;
+    }
+
+    try {
+        const response = await fetch('https://api.130923.xyz/api/admin-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+        const result = await response.json();
+        isAdmin = !!(response.ok && result.valid);
+        if (!isAdmin) setAdminToken('');
+    } catch (error) {
+        console.error('校验管理员会话失败:', error);
+        isAdmin = false;
+    }
+
+    updateAdminUI();
+    return isAdmin;
+}
+
 // DOM加载完成后初始化
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     // 初始化主题（自动跟随系统）
     initTheme();
 
@@ -46,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadMessages();
 
     // 初始化管理员状态
-    updateAdminUI();
+    await verifyAdminSession();
 
     // 监听搜索框输入
     const searchInput = byId('searchInput');
@@ -541,10 +580,10 @@ async function adminLogin() {
         const result = await response.json();
 
         // 3. 根据API返回结果处理
-        if (response.ok && result.success) {
+        if (response.ok && result.success && result.token) {
             // 登录成功
             isAdmin = true;
-            localStorage.setItem('isAdmin', 'true');
+            setAdminToken(result.token);
             updateAdminUI();
             passwordInput.value = '';
             alert('管理员登录成功');
@@ -569,7 +608,7 @@ async function adminLogin() {
 // 管理员退出
 function logoutAdmin() {
     isAdmin = false;
-    localStorage.setItem('isAdmin', 'false');
+    setAdminToken('');
     updateAdminUI();
 }
 

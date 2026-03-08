@@ -4,7 +4,7 @@
  * @typedef {{url: string, icon: string, alt: string}} SocialLink
  * @typedef {{url: string, name: string}} FeatureItem
  * @typedef {{title: string, content: string}} AnnouncementConfig
- * @typedef {{file: string, title: string, date: string}} PostItem
+ * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[]}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
  * @typedef {{title: string, content: string[], date: string}} DynamicEntry
  * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
@@ -102,12 +102,16 @@ async function loadRecentPosts() {
         const recentPosts = posts.slice(0, showPostNum);
 
         const list = recentPosts.map(post => `
-                    <div class="post-item" style="transition: all 0.3s ease;">
-                        <a class="post-title" href="/posts/${post.file.replace('.md', '')}" style="color: #0366d6; text-decoration: none; font-weight: 500;">
+                    <a class="post-item post-item-link" href="/posts/${post.file.replace('.md', '')}" style="transition: all 0.3s ease;">
+                        <div class="post-title" style="color: #0366d6; text-decoration: none; font-weight: 500;">
                             ${post.title}
-                        </a>
+                        </div>
                         <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
-                    </div>
+                        <div class="post-tags">
+                            <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
+                            ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                        </div>
+                    </a>
                 `).join('');
 
         const recentPostsElement = document.getElementById('recent-posts');

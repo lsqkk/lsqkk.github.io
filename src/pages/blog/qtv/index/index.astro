@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -95,7 +96,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
     <footer>
         <div class="container">
-            <p>{SITE_TITLE} © 2024 - 2026 Quark TV | 遇见热爱 - All rights reserved.</p>
+            <p>{SITE_TITLE} © 2024 - {currentYear} Quark TV | 遇见热爱 - All rights reserved.</p>
         </div>
     </footer>
     <script is:inline src="/assets/pages/blog/qtv/qtv.js"></script>

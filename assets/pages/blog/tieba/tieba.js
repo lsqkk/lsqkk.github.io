@@ -11,6 +11,7 @@ let messages = [];
 let boards = [
     { id: 'moren', name: '默认帖子' }
 ];
+const ADMIN_TOKEN_KEY = 'tieba_admin_token';
 let isAdmin = false;
 let userData = {
     nickname: '游客',
@@ -43,11 +44,49 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
     loadUserData();
-    checkAdminStatus();
+    await verifyAdminSession();
     await loadBoards();
     await loadMessages(currentBoard);
     setupEventListeners();
     updateAdminUI();
+}
+
+function getAdminToken() {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
+}
+
+function setAdminToken(token) {
+    if (token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    } else {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+    }
+}
+
+async function verifyAdminSession() {
+    const token = getAdminToken();
+    if (!token) {
+        isAdmin = false;
+        updateAdminUI();
+        return false;
+    }
+
+    try {
+        const response = await fetch('https://api.130923.xyz/api/admin-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+        const result = await response.json();
+        isAdmin = !!(response.ok && result.valid);
+        if (!isAdmin) setAdminToken('');
+    } catch (error) {
+        console.error('校验管理员会话失败:', error);
+        isAdmin = false;
+    }
+
+    updateAdminUI();
+    return isAdmin;
 }
 
 function loadUserData() {
@@ -477,10 +516,10 @@ async function adminLogin(passwordInputId = 'adminPassword') {
         const result = await response.json();
 
         // 5. 处理响应
-        if (response.ok && result.success) {
+        if (response.ok && result.success && result.token) {
             // 登录成功逻辑
-            localStorage.setItem('isAdmin', 'true');
             isAdmin = true;
+            setAdminToken(result.token);
             showToast('管理员登录成功', 'success');
             passwordInput.value = '';
             closeModal(adminLoginModal);
@@ -515,16 +554,10 @@ async function adminLogin(passwordInputId = 'adminPassword') {
 
 // 管理员登出函数
 function adminLogout() {
-    localStorage.setItem('isAdmin', 'false');
     isAdmin = false;
+    setAdminToken('');
     showToast('已退出管理员登录', 'success');
     updateAdminUI();
-}
-
-// 检查管理员登录状态
-function checkAdminStatus() {
-    const savedStatus = localStorage.getItem('isAdmin');
-    isAdmin = savedStatus === 'true';
 }
 
 // 更新管理员UI

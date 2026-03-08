@@ -9,6 +9,7 @@ const projectsPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.j
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const projectsData = JSON.parse(await fs.readFile(projectsPath, "utf8"));
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -72,7 +73,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             </ul>
           </div>
         </div>
-        <div class="copyright"><p>© 2024 - 2026 {SITE_TITLE} All rights reserved.</p></div>
+        <div class="copyright"><p>© 2024 - {currentYear} {SITE_TITLE} All rights reserved.</p></div>
       </div>
     </footer>
     <script is:inline src="/assets/pages/a/index.js"></script>
