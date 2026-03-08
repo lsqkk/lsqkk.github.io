@@ -168,9 +168,15 @@ function renderPage(page) {
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-content');
     const emotionParser = new QQEmotionParser();
+    if (window.DynamicGallery && typeof window.DynamicGallery.reset === 'function') {
+        window.DynamicGallery.reset();
+    }
 
     container.innerHTML = entries.map((entry, index) => {
-        let contentWithoutImages = entry.content.replace(/!\[.*?\]\((.*?)\)/g, '');
+        const extracted = window.DynamicGallery
+            ? window.DynamicGallery.extractImages(entry.content)
+            : { text: entry.content.replace(/!\[.*?\]\((.*?)\)/g, ''), images: entry.images || [] };
+        let contentWithoutImages = extracted.text;
         let parsedContent = emotionParser.parse(contentWithoutImages);
         const htmlContent = marked.parse(parsedContent, {
             breaks: true,
@@ -188,13 +194,12 @@ function renderDynamicEntries(entries) {
             <div class="dynamic-content">
                 ${htmlContent}
             </div>
-            ${entry.images.length > 0 ? renderImageGallery(entry.images, globalIndex) : ''}
+            ${extracted.images.length > 0 && window.DynamicGallery
+                ? window.DynamicGallery.createGalleryHtml(extracted.images)
+                : ''}
         </div>
         `;
     }).join('');
-
-    // 初始化所有画廊
-    document.querySelectorAll('.gallery-container').forEach(initGallery);
 }
 
 // 渲染分页
@@ -275,125 +280,5 @@ function changePage(page) {
     // 渲染新页面
     renderPage(page);
 }
-
-// 以下为原有的图片画廊相关函数，保持不变
-function renderImageGallery(images, entryIndex) {
-    const totalImages = images.length;
-    let colsPerRow;
-
-    if (totalImages <= 4) {
-        colsPerRow = 2;
-    } else {
-        colsPerRow = 3;
-    }
-
-    const rows = Math.ceil(totalImages / colsPerRow);
-
-    let galleryHTML = '<div class="gallery-container">';
-
-    for (let row = 0; row < rows; row++) {
-        galleryHTML += '<div class="gallery-row">';
-        const startIdx = row * colsPerRow;
-        const endIdx = Math.min(startIdx + colsPerRow, totalImages);
-
-        for (let i = startIdx; i < endIdx; i++) {
-            galleryHTML += `
-                <div class="gallery-item" data-entry-index="${entryIndex}" data-img-index="${i}">
-                    <img src="${images[i]}" 
-                         alt="动态图片" 
-                         loading="lazy"
-                         onclick="openGallery(${entryIndex}, ${i})">
-                </div>
-            `;
-        }
-        galleryHTML += '</div>';
-    }
-
-    galleryHTML += '</div>';
-    return galleryHTML;
-}
-
-function initGallery(container) {
-    // 初始化逻辑
-}
-
-function openGallery(entryIndex, imgIndex) {
-    const entry = document.querySelector(`[data-entry-index="${entryIndex}"]`);
-    const images = entry.querySelectorAll('.gallery-item img');
-    const imageUrls = Array.from(images).map(img => img.src);
-
-    const modal = document.createElement('div');
-    modal.className = 'gallery-modal';
-    modal.innerHTML = `
-        <div class="gallery-modal-content">
-            <span class="close-btn" onclick="closeGallery()">&times;</span>
-            <div class="gallery-modal-main">
-                <img src="${imageUrls[imgIndex]}" class="current-image" alt="全屏图片">
-                <div class="gallery-nav">
-                    ${imgIndex > 0 ? `<button class="nav-btn prev-btn" onclick="changeImage(${imgIndex - 1}, ${entryIndex})">❮</button>` : ''}
-                    <span class="image-counter">${imgIndex + 1} / ${imageUrls.length}</span>
-                    ${imgIndex < imageUrls.length - 1 ? `<button class="nav-btn next-btn" onclick="changeImage(${imgIndex + 1}, ${entryIndex})">❯</button>` : ''}
-                </div>
-            </div>
-            <div class="gallery-thumbnails">
-                ${imageUrls.map((url, index) => `
-                    <img src="${url}" 
-                         class="thumbnail ${index === imgIndex ? 'active' : ''}" 
-                         onclick="changeImage(${index}, ${entryIndex})"
-                         alt="缩略图 ${index + 1}">
-                `).join('')}
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    document.body.style.overflow = 'hidden';
-}
-
-function closeGallery() {
-    const modal = document.querySelector('.gallery-modal');
-    if (modal) {
-        modal.remove();
-        document.body.style.overflow = 'auto';
-    }
-}
-
-function changeImage(newIndex, entryIndex) {
-    const entry = document.querySelector(`[data-entry-index="${entryIndex}"]`);
-    const images = entry.querySelectorAll('.gallery-item img');
-    const imageUrls = Array.from(images).map(img => img.src);
-
-    if (newIndex >= 0 && newIndex < imageUrls.length) {
-        const modal = document.querySelector('.gallery-modal');
-        if (modal) {
-            modal.querySelector('.current-image').src = imageUrls[newIndex];
-            modal.querySelector('.image-counter').textContent = `${newIndex + 1} / ${imageUrls.length}`;
-
-            modal.querySelectorAll('.thumbnail').forEach((thumb, index) => {
-                thumb.classList.toggle('active', index === newIndex);
-            });
-
-            const prevBtn = modal.querySelector('.prev-btn');
-            const nextBtn = modal.querySelector('.next-btn');
-
-            if (prevBtn) {
-                prevBtn.onclick = () => changeImage(newIndex - 1, entryIndex);
-                prevBtn.style.visibility = newIndex > 0 ? 'visible' : 'hidden';
-            }
-
-            if (nextBtn) {
-                nextBtn.onclick = () => changeImage(newIndex + 1, entryIndex);
-                nextBtn.style.visibility = newIndex < imageUrls.length - 1 ? 'visible' : 'hidden';
-            }
-        }
-    }
-}
-
-// 添加ESC键关闭功能
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeGallery();
-    }
-});
 
 loadDynamic();

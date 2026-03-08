@@ -295,14 +295,6 @@
             height: 24px;
         }
 
-        .dynamic-feed img {
-            margin: 6px 0px;
-            width: 150px;
-            height: 150px;
-            border-radius: 5px;
-            object-fit: cover;
-        }
-
         .social-icons {
             display: flex;
             justify-content: center;

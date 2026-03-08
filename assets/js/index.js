@@ -683,32 +683,27 @@ function renderDynamicEntries(entries) {
     if (!container) return;
 
     const emotionParser = new QQEmotionParser();
+    if (window.DynamicGallery && typeof window.DynamicGallery.reset === 'function') {
+        window.DynamicGallery.reset();
+    }
 
     container.innerHTML = entries.map(entry => {
-        // 将数组内容合并为字符串
         const contentString = entry.content.join('\n');
-
-        // 先用marked解析markdown
-        let htmlContent = marked.parse(contentString);
-
-        // 原有的图片处理逻辑保持不变（在处理表情之前）
-        const firstImgMatch = htmlContent.match(/<img[^>]+>/);
-        if (firstImgMatch) {
-            const firstImg = firstImgMatch[0];
-            // 移除所有图片标签
-            htmlContent = htmlContent.replace(/<img[^>]+>/g, '');
-            // 重新插入第一张图片
-            htmlContent = htmlContent + firstImg;
-        }
-
-        // 现在解析表情代码
-        htmlContent = emotionParser.parse(htmlContent);
+        const extracted = window.DynamicGallery
+            ? window.DynamicGallery.extractImages(contentString)
+            : { text: contentString.replace(/!\[.*?\]\((.*?)\)/g, ''), images: [] };
+        const parsedContent = emotionParser.parse(extracted.text);
+        const htmlContent = marked.parse(parsedContent, { breaks: true, gfm: true });
+        const galleryHtml = extracted.images.length > 0 && window.DynamicGallery
+            ? window.DynamicGallery.createGalleryHtml(extracted.images)
+            : '';
 
         return `
         <div class="dynamic-card">
             <div class="dynamic-title">${entry.title}</div>
             ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
             <div class="dynamic-content">${htmlContent}</div>
+            ${galleryHtml}
         </div>
         `;
     }).join('');
