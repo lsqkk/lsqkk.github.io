@@ -1,6 +1,7 @@
 ---
 import fs from "node:fs/promises";
 import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
 const PROJECT_ROOT = process.cwd();
 
@@ -19,6 +20,7 @@ const popups = JSON.parse(await fs.readFile(popupsPath, "utf8"));
 const friends = JSON.parse(await fs.readFile(friendsPath, "utf8"));
 const posts = JSON.parse(await fs.readFile(postsPath, "utf8"));
 const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
+const currentYear = new Date().getFullYear();
 
 function escapeHtml(text: unknown): string {
   return String(text ?? "")
@@ -218,7 +220,7 @@ const footerSectionRenderers: Record<string, () => string> = {
   `,
   copyright_info: () => `
     <br><br>
-    <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="/posts/copyright">© 2024 - {currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
+    <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="/posts/copyright">© 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
   `,
   icp_record: () => `
     <br><br>
@@ -240,8 +242,6 @@ const homePreloaded = {
   friends,
   dynamicEntries,
 };
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
