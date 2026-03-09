@@ -90,11 +90,11 @@ async function loadRecentPosts() {
         const recentPosts = posts.slice(0, showPostNum);
 
         const list = recentPosts.map(post => `
-                    <a class="post-item post-item-link" href="/posts/${post.file.replace('.md', '')}" style="transition: all 0.3s ease;">
-                        <div class="post-title" style="color: #0366d6; text-decoration: none; font-weight: 500;">
+                    <a class="post-item post-item-link" href="/posts/${post.file.replace('.md', '')}">
+                        <div class="post-title">
                             ${post.title}
                         </div>
-                        <div class="post-date" style="color: #666; font-size: 0.9em; margin-top: 5px;">${post.date}</div>
+                        <div class="post-date">${post.date}</div>
                         <div class="post-tags">
                             <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
                             ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
@@ -105,19 +105,6 @@ async function loadRecentPosts() {
         const recentPostsElement = document.getElementById('recent-posts');
         if (recentPostsElement) {
             recentPostsElement.innerHTML = list;
-
-            // 为文章项添加悬停效果
-            document.querySelectorAll('.post-item').forEach(item => {
-                if (!(item instanceof HTMLElement)) return;
-                item.addEventListener('mouseover', () => {
-                    item.style.transform = 'translateX(5px)';
-                    item.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
-                });
-                item.addEventListener('mouseout', () => {
-                    item.style.transform = 'none';
-                    item.style.boxShadow = 'none';
-                });
-            });
         }
     } catch (error) {
         console.error('加载最近文章失败:', error);
@@ -729,7 +716,7 @@ async function loadLatestVideo() {
         const videoContainer = document.getElementById('latest-video-container');
         if (videoContainer) {
             videoContainer.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #999;">
+                <div class="loading-placeholder">
                     视频加载失败
                 </div>
             `;
@@ -754,21 +741,21 @@ function renderLatestVideo(video) {
     const publishTime = formatVideoTime(video.publish_time);
 
     container.innerHTML = `
-        <div class="latest-video-card" style="cursor: pointer; transition: all 0.3s ease;">
-            <div style="position: relative;">
+        <div class="latest-video-card">
+            <div class="latest-video-cover-wrap">
                 <img src="${proxyCoverUrl}" 
                      alt="${video.title}" 
-                     style="width: 100%; height: auto; border-radius: 8px 8px 0 0;"
+                     class="latest-video-cover"
                      onerror="this.src='https://via.placeholder.com/320x180/1e88e5/ffffff?text=封面加载中'">
-                <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">
+                <div class="latest-video-duration">
                     ${formatVideoDuration(video.duration)}
                 </div>
             </div>
-            <div style="padding: 12px;  background: rgba(255, 255, 255, 0.2);backdrop-filter: blur(10px) saturate(160%);-webkit-backdrop-filter: blur(10px) saturate(160%); border-radius: 0 0 8px 8px;">
-                <h4 style="margin: 0 0 8px 0; font-size: 0.95em; line-height: 1.4; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            <div class="latest-video-body">
+                <h4 class="latest-video-title">
                     ${video.title}
                 </h4>
-                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666;">
+                <div class="latest-video-meta">
                     <span>播放: ${playCount}</span>
                     <span>${publishTime}</span>
                 </div>
@@ -781,16 +768,6 @@ function renderLatestVideo(video) {
     if (videoCard instanceof HTMLElement) {
         videoCard.addEventListener('click', () => {
             window.open(`https://www.bilibili.com/video/${video.bvid}`, '_blank');
-        });
-
-        // 添加悬停效果
-        videoCard.addEventListener('mouseover', () => {
-            videoCard.style.transform = 'translateY(-3px)';
-            videoCard.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
-        });
-        videoCard.addEventListener('mouseout', () => {
-            videoCard.style.transform = 'none';
-            videoCard.style.boxShadow = 'none';
         });
     }
 }

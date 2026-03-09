@@ -38,7 +38,9 @@ function renderSocialLinks(config: any): string {
   return links
     .map(
       (item: any) =>
-        `<a href="${escapeHtml(item.url)}" target="_blank"><img src="${escapeHtml(item.icon)}" alt="${escapeHtml(item.alt)}" style="height:30px; width:30px; border-radius: 50%;"></a>`
+        `<a class="social-link" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">
+          <img class="social-link-icon" src="${escapeHtml(item.icon)}" alt="${escapeHtml(item.alt)}">
+        </a>`
     )
     .join("");
 }
@@ -100,7 +102,7 @@ function renderContactLinks(config: any): string {
 function renderAnnouncement(config: any): string {
   const title = config?.announcement?.title || "";
   const content = config?.announcement?.content || "";
-  return `<p style="margin: 0;">${escapeHtml(title)}<br>${content}</p>`;
+  return `<p class="index-announcement-text">${escapeHtml(title)}<br>${content}</p>`;
 }
 
 function parseRecentLogs(content: string, maxItems: number) {
@@ -141,14 +143,14 @@ function renderRecentLogs(config: any): string {
   if (logs.length === 0) {
     return `
       <div class="index-sidebar-section">
-        <h3>最近更新 Recent Logs</h3>
-        <div class="index-announcement"><p style="margin: 0;">暂无更新内容</p></div>
+        <h3 class="sidebar-title">最近更新 Recent Logs</h3>
+        <div class="index-announcement"><p class="index-announcement-text">暂无更新内容</p></div>
       </div>
     `;
   }
   return `
     <div class="index-sidebar-section">
-      <h3>最近更新 Recent Logs</h3>
+      <h3 class="sidebar-title">最近更新 Recent Logs</h3>
       <div class="index-log-list">
         ${logs
           .map(
@@ -160,9 +162,7 @@ function renderRecentLogs(config: any): string {
           )
           .join("")}
       </div>
-      <div style="text-align:center; margin: 12px 0;">
-        <a href="/blog/log" style="text-decoration: none; color: #007bff; font-size: 0.9em;">查看更多</a>
-      </div>
+      <div class="sidebar-more-wrap"><a href="/blog/log" class="sidebar-more-link">查看更多</a></div>
     </div>
   `;
 }
@@ -212,53 +212,72 @@ function assembleSections(
 
 const mainSectionRenderers: Record<string, () => string> = {
   avatar_nickname: () => `
-    <a href="posts/about"><img src="assets/img/touxiang.png" alt="头像"
-        style="width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); overflow: hidden; position: absolute; top:60px; left: 50%; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,0.8);"></a>
-    <br><br><br><br><br><br>
-    <h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;"
-      id="Nickname">${escapeHtml(homeConfig.Nickname || "")}</h1>
+    <section class="home-block hero-section">
+      <a class="hero-avatar-link" href="/posts/about">
+        <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
+      </a>
+      <h1 class="hero-title" id="Nickname">${escapeHtml(homeConfig.Nickname || "")}</h1>
+    </section>
   `,
-  contact_links: () => renderContactLinks(homeConfig),
+  contact_links: () => `
+    <section class="home-block contact-section">
+      ${renderContactLinks(homeConfig)}
+    </section>
+  `,
   social_links: () => `
-    <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"
-      id="social-icons-container">${renderSocialLinks(homeConfig)}</div>
+    <section class="home-block social-section">
+      <div class="social-icons" id="social-icons-container">${renderSocialLinks(homeConfig)}</div>
+    </section>
   `,
   welcome_section: () => `
-    <h2 style="color: #333; text-align: center; margin-bottom: 20px;" id="welcome-title">${escapeHtml(homeConfig.welcomeTitle || "")}</h2>
-    <p style="text-align: center; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto 20px;"
-      id="welcome-text">${escapeHtml(homeConfig.welcomeText || "")}</p>
+    <section class="home-block intro-section">
+      <h2 class="welcome-title" id="welcome-title">${escapeHtml(homeConfig.welcomeTitle || "")}</h2>
+      <p class="welcome-text" id="welcome-text">${escapeHtml(homeConfig.welcomeText || "")}</p>
+    </section>
   `,
   typewriter: () => `
-    <div class="typewriter-container">
-      <div id="typewriter" class="typewriter" style="width: 100%; overflow: hidden;"></div>
-    </div>
+    <section class="home-block typewriter-section">
+      <div class="typewriter-container">
+        <div id="typewriter" class="typewriter"></div>
+      </div>
+    </section>
   `,
   recent_articles: () => `
-    <h2 class="recent-header"><a href="/posts">文章 Articles</a> <a href="/posts/rss.xml"><img
-      src="/assets/img/rss.svg" style="height: 20px;"></a></h2>
-    <div class="recent-posts" style="margin-top: 30px;">
-      <div id="recent-posts"></div>
-      <a href="/posts" class="more-link">更多</a>
-    </div>
+    <section class="home-block content-section">
+      <h2 class="recent-header"><a href="/posts">文章 Articles</a> <a href="/posts/rss.xml"><img class="rss-icon"
+        src="/assets/img/rss.svg" alt="RSS"></a></h2>
+      <div class="recent-posts">
+        <div id="recent-posts"></div>
+        <a href="/posts" class="more-link">更多</a>
+      </div>
+    </section>
   `,
   dynamic_feed: () => `
-    <div class="dynamic-feed">
+    <section class="home-block content-section dynamic-feed">
       <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
       <div id="dynamic-entries"></div>
       <a href="/blog/dt" class="more-link">更多</a>
-    </div>
+    </section>
   `,
 };
 
 const sidebarSectionRenderers: Record<string, () => string> = {
   datetime_display: () => `
-    <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
-    <div class="date" id="date">2025年5月14日星期三</div>
+    <div class="index-sidebar-section">
+      <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
+      <div class="date" id="date">2025年5月14日星期三</div>
+    </div>
   `,
-  ip_greeting: () => `<div class="info" id="welcome-info"></div>`,
+  ip_greeting: () => `
+    <div class="index-sidebar-section">
+      <div class="info" id="welcome-info"></div>
+    </div>
+  `,
   greeting_tip: () => `
-    <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
-    <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
+    <div class="index-sidebar-section">
+      <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
+      <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
+    </div>
   `,
   github_promo: () => `
     <div class="index-sidebar-section">
@@ -270,42 +289,37 @@ const sidebarSectionRenderers: Record<string, () => string> = {
   latest_updates: () => renderRecentLogs(homeConfig),
   announcement: () => `
     <div class="index-sidebar-section">
-      <h3>公告 Announcement</h3>
+      <h3 class="sidebar-title">公告 Announcement</h3>
       <div class="index-announcement" id="announcement-container">${renderAnnouncement(homeConfig)}</div>
     </div>
   `,
   latest_video: () => `
     <div class="index-sidebar-section">
-      <h3>新视频 Latest Video</h3>
-      <div id="latest-video-container"
-        style="border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-        <div style="text-align: center; padding: 20px; color: #AAA;">视频加载中...</div>
+      <h3 class="sidebar-title">新视频 Latest Video</h3>
+      <div id="latest-video-container" class="latest-video-container">
+        <div class="loading-placeholder">视频加载中...</div>
       </div>
-      <div style="text-align: center; margin: 10px 0;">
-        <a href="qtv" style="text-decoration: none; color: #007bff; font-size: 0.9em;">查看更多</a>
-      </div>
+      <div class="sidebar-more-wrap"><a href="qtv" class="sidebar-more-link">查看更多</a></div>
     </div>
   `,
   comments: () => `
     <div class="index-sidebar-section">
-      <h3>留言 Comment</h3>
+      <h3 class="sidebar-title">留言 Comment</h3>
       <div id="recent-messages">
-        <div class="index-announcement"><p style="margin: 0;">留言加载中...</p></div>
+        <div class="index-announcement"><p class="index-announcement-text">留言加载中...</p></div>
       </div>
-      <div style="text-align: center; margin: 15px 0;">
-        <a href="/blog/lyb" style="text-decoration: none; color: #007bff; font-size: 0.9em;">查看更多 / 写留言</a>
-      </div>
+      <div class="sidebar-more-wrap"><a href="/blog/lyb" class="sidebar-more-link">查看更多 / 写留言</a></div>
     </div>
   `,
   friend_links: () => `
     <div class="index-sidebar-section">
-      <h3>友链 Friends</h3>
+      <h3 class="sidebar-title">友链 Friends</h3>
       <div id="friend-links">
-        <div class="index-announcement"><p style="margin: 0;">友链加载中...</p></div>
+        <div class="index-announcement"><p class="index-announcement-text">友链加载中...</p></div>
       </div>
-      <div style="text-align: center; margin: 15px 0;font-size: 0.8em;"><a href="/blog/friends"
-        style="text-decoration: none; color: #007bff; ">查看更多</a> / 添加友链请
-        <a href="/blog/lyb" style="text-decoration: none; color: #007bff; ">在留言板留言</a>
+      <div class="sidebar-more-wrap sidebar-more-wrap-sm"><a href="/blog/friends"
+        class="sidebar-more-link">查看更多</a> / 添加友链请
+        <a href="/blog/lyb" class="sidebar-more-link">在留言板留言</a>
       </div>
     </div>
   `,
@@ -314,23 +328,21 @@ const sidebarSectionRenderers: Record<string, () => string> = {
 const footerSectionRenderers: Record<string, () => string> = {
   visitor_stats: () => `
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    共 <span id="busuanzi_value_site_uv" style="color: #007bff; font-weight: bold; font-size: 1.1em;"></span>
-    位小伙伴来过 <span id="busuanzi_value_site_pv" style="color: #007bff; font-weight: bold; font-size: 1.1em;"></span> 次
+    <p class="footer-stats">共 <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
+    位小伙伴来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次</p>
   `,
   copyright_info: () => `
-    <br><br>
-    <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="/posts/copyright">© 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
+    <a class="footer-link" href="/posts/copyright">© 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
   `,
   icp_record: () => `
-    <br><br>
-    <a style="text-align: center; color: #AAA; padding-top: 10px; text-decoration: none;" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
-      <img src="assets/img/moe.png" alt="萌ICP备案图标" style="vertical-align: middle; width: 16px; height: 16px; margin-right: 5px;">萌ICP备20250234号
+    <a class="footer-link" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
+      <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
     </a>
   `,
 };
 
 const mainContentHtml = assembleSections(indexConfig.main_content, mainSectionRenderers, false);
-const sidebarContentHtml = assembleSections(indexConfig.sidebar, sidebarSectionRenderers, true);
+const sidebarContentHtml = assembleSections(indexConfig.sidebar, sidebarSectionRenderers, false);
 const footerContentHtml = assembleSections(indexConfig.footer, footerSectionRenderers, false);
 
 const showDynamicNum = typeof homeConfig.showDynamicNum === "number" ? homeConfig.showDynamicNum : 3;
