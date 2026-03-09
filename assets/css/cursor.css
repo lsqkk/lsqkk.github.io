@@ -56,8 +56,8 @@
 }
 
 .cursor-burst-particle {
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   background: rgba(255, 255, 255, 0.92);
   border-radius: 50%;
   position: fixed;
@@ -66,7 +66,8 @@
   pointer-events: none;
   z-index: 9997;
   transform: translate(-50%, -50%);
-  animation: particle-burst 0.7s cubic-bezier(0.22, 0.68, 0.2, 1) forwards;
+  animation: particle-burst var(--burst-duration, 1.05s) cubic-bezier(0.24, 0.74, 0.16, 1) forwards;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
 }
 
 @keyframes particle-flow {
@@ -88,13 +89,13 @@
 
 @keyframes particle-burst {
   0% {
-    transform: translate(-50%, -50%) scale(0.7);
+    transform: translate(-50%, -50%) scale(0.66);
     opacity: 1;
   }
 
-  55% {
-    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1);
-    opacity: 0.95;
+  52% {
+    transform: translate(calc(-50% + var(--cx)), calc(-50% + var(--cy))) scale(1.02);
+    opacity: 0.96;
   }
 
   100% {

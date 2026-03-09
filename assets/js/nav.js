@@ -34,6 +34,7 @@ const defaultNavConfig = {
         { name: "工具", link: "/tool", target: "blank" },
         { name: "游戏", link: "/games", target: "blank" },
         { name: "实验室", link: "/a", target: "blank" },
+        { name: "项目", link: "/blog/project", target: "blank" },
         { name: "视频", link: "/blog/qtv", target: "blank" },
         { name: "留言", link: "/blog/lyb", target: "blank" },
         { name: "更多", link: "/blog", target: "blank" }

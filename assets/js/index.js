@@ -499,7 +499,7 @@ function loadCityBanterData() {
             // 数据加载成功后，重新显示欢迎信息（如果已经显示过）
             if (window.visitorInfoDisplayed) {
                 console.log('重新显示欢迎信息');
-                showVisitorInfo(/** @type {VisitorInfo} */ (window.cachedVisitorInfo));
+                showVisitorInfo(/** @type {VisitorInfo} */(window.cachedVisitorInfo));
             }
         })
         .catch(error => {
@@ -582,7 +582,7 @@ async function getVisitorInfo() {
 
             // 如果市级数据已加载，立即显示
             if (window.cityBanterData) {
-                showVisitorInfo(/** @type {VisitorInfo} */ (window.cachedVisitorInfo));
+                showVisitorInfo(/** @type {VisitorInfo} */(window.cachedVisitorInfo));
             } else {
                 // 否则先显示省级备用，等数据加载后再更新
                 const fallbackBanter = getProvinceBanterFallback(ipPro);
@@ -609,7 +609,7 @@ async function getVisitorInfo() {
                         if (window.cityBanterData && window.visitorInfoDisplayed) {
                             clearInterval(checkInterval);
                             console.log('数据已加载，重新显示欢迎信息');
-                            showVisitorInfo(/** @type {VisitorInfo} */ (window.cachedVisitorInfo));
+                            showVisitorInfo(/** @type {VisitorInfo} */(window.cachedVisitorInfo));
                         }
                     }, 100);
                 }
@@ -883,9 +883,9 @@ async function loadGithubRepoCard() {
                     <i class="fab fa-github"></i><span>lsqkk.github.io</span>
                 </a>
             </div>
-            <p class="github-promo-desc">欢迎 Star 和 Fork，仓库信息暂时不可用。</p>
+            <p class="github-promo-desc">夸克博客 | 基于原生技术栈的个人网站，分享笔记、工具、游戏、前端实验等。</p>
             <div class="github-promo-foot">
-                <span class="github-updated">GitHub API 请求失败</span>
+                <span class="github-updated">由 Astro 构建</span>
                 <a class="github-open-link" href="${repoUrl}" target="_blank">打开仓库</a>
             </div>
         </div>

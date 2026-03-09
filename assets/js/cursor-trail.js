@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ],
     spawnDistance: 15,
     maxDistance: 50,
-    burstCount: 22,
-    burstDistance: 95
+    burstCount: 26,
+    burstDistance: 145
   };
 
   setupClickBurstListeners();
@@ -216,20 +216,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function createClickBurst(x, y, touchLike = false) {
     if (isPopupOpen()) return;
-    const total = touchLike ? Math.max(config.burstCount, 26) : config.burstCount;
+    const total = touchLike ? Math.max(config.burstCount, 30) : config.burstCount;
 
     for (let i = 0; i < total; i++) {
       const p = document.createElement('div');
       p.className = 'cursor-burst-particle';
 
-      const size = Math.random() * config.sizeVariation + config.baseSize;
+      const size = Math.random() * (config.sizeVariation + 1.8) + (config.baseSize + 1.8);
       const color = config.colors[Math.floor(Math.random() * config.colors.length)];
       const angle = (Math.PI * 2 * i) / total + (Math.random() - 0.5) * 0.4;
       const distance = (touchLike ? 1.2 : 1) * (config.burstDistance * (0.55 + Math.random() * 0.45));
       const tx = Math.cos(angle) * distance;
       const ty = Math.sin(angle) * distance;
+      const normalX = -Math.sin(angle);
+      const normalY = Math.cos(angle);
+      const curveBend = (0.22 + Math.random() * 0.25) * distance * (Math.random() > 0.5 ? 1 : -1);
+      const cx = tx * 0.5 + normalX * curveBend;
+      const cy = ty * 0.5 + normalY * curveBend;
       const rx = tx * (0.22 + Math.random() * 0.12);
       const ry = ty * (0.22 + Math.random() * 0.12);
+      const duration = 0.95 + Math.random() * 0.35;
 
       p.style.left = `${x}px`;
       p.style.top = `${y}px`;
@@ -238,34 +244,111 @@ document.addEventListener('DOMContentLoaded', function () {
       p.style.background = color;
       p.style.setProperty('--tx', `${tx}px`);
       p.style.setProperty('--ty', `${ty}px`);
+      p.style.setProperty('--cx', `${cx}px`);
+      p.style.setProperty('--cy', `${cy}px`);
       p.style.setProperty('--rx', `${rx}px`);
       p.style.setProperty('--ry', `${ry}px`);
+      p.style.setProperty('--burst-duration', `${duration}s`);
 
       document.body.appendChild(p);
       p.addEventListener('animationend', () => p.remove());
-      setTimeout(() => p.remove(), 1600);
+      setTimeout(() => p.remove(), 2200);
     }
   }
 
   function setupClickBurstListeners() {
+    const TOUCH_MOVE_THRESHOLD = 12;
+    const TOUCH_TAP_MAX_DURATION = 360;
+    const activeTouchPoints = new Map();
+    let lastTouchBurstTime = 0;
+
     if (window.PointerEvent) {
       document.addEventListener('pointerdown', function (event) {
         if (!event.isPrimary) return;
-        if (event.pointerType === 'mouse' && event.button !== 0) return;
-        createClickBurst(event.clientX, event.clientY, event.pointerType === 'touch');
+        if (event.pointerType === 'mouse') {
+          if (event.button !== 0) return;
+          createClickBurst(event.clientX, event.clientY, false);
+          return;
+        }
+        if (event.pointerType === 'touch') {
+          activeTouchPoints.set(event.pointerId, {
+            x: event.clientX,
+            y: event.clientY,
+            time: Date.now(),
+            moved: false
+          });
+        }
+      }, { passive: true });
+
+      document.addEventListener('pointermove', function (event) {
+        if (event.pointerType !== 'touch') return;
+        const point = activeTouchPoints.get(event.pointerId);
+        if (!point || point.moved) return;
+        const dx = event.clientX - point.x;
+        const dy = event.clientY - point.y;
+        if (Math.hypot(dx, dy) > TOUCH_MOVE_THRESHOLD) {
+          point.moved = true;
+        }
+      }, { passive: true });
+
+      document.addEventListener('pointerup', function (event) {
+        if (event.pointerType !== 'touch') return;
+        const point = activeTouchPoints.get(event.pointerId);
+        if (!point) return;
+        activeTouchPoints.delete(event.pointerId);
+        const duration = Date.now() - point.time;
+        if (!point.moved && duration <= TOUCH_TAP_MAX_DURATION) {
+          createClickBurst(event.clientX, event.clientY, true);
+          lastTouchBurstTime = Date.now();
+        }
+      }, { passive: true });
+
+      document.addEventListener('pointercancel', function (event) {
+        if (event.pointerType !== 'touch') return;
+        activeTouchPoints.delete(event.pointerId);
       }, { passive: true });
       return;
     }
 
     document.addEventListener('click', function (event) {
       if (event.button !== 0) return;
+      if (Date.now() - lastTouchBurstTime < 500) return;
       createClickBurst(event.clientX, event.clientY, false);
     }, { passive: true });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartAt = 0;
+    let touchMoved = false;
 
     document.addEventListener('touchstart', function (event) {
       const touch = event.touches && event.touches[0];
       if (!touch) return;
-      createClickBurst(touch.clientX, touch.clientY, true);
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchStartAt = Date.now();
+      touchMoved = false;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function (event) {
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      if (touchMoved) return;
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      if (Math.hypot(dx, dy) > TOUCH_MOVE_THRESHOLD) {
+        touchMoved = true;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', function (event) {
+      const touch = event.changedTouches && event.changedTouches[0];
+      if (!touch) return;
+      const duration = Date.now() - touchStartAt;
+      if (!touchMoved && duration <= TOUCH_TAP_MAX_DURATION) {
+        createClickBurst(touch.clientX, touch.clientY, true);
+        lastTouchBurstTime = Date.now();
+      }
     }, { passive: true });
   }
 

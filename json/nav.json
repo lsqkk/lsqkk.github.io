@@ -35,6 +35,11 @@
             "target": "blank"
         },
         {
+            "name": "项目",
+            "link": "/blog/project",
+            "target": "blank"
+        },
+        {
             "name": "视频",
             "link": "/blog/qtv",
             "target": "blank"

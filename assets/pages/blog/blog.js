@@ -4,13 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // 显示加载状态
     container.innerHTML = '<div class="loading">正在加载功能数据...</div>';
 
-    // 同时加载本地配置和GitHub仓库数据
-    Promise.all([
-        fetchLocalFunctions(),
-        fetchGitHubRepos()
-    ])
-        .then(([localData, githubRepos]) => {
-            renderFunctions(localData, githubRepos);
+    // 仅加载本地配置，项目仓库迁移到 /blog/project 页面
+    fetchLocalFunctions()
+        .then((localData) => {
+            renderFunctions(localData);
         })
         .catch(error => {
             console.error('加载数据失败:', error);
@@ -36,23 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // 从GitHub API获取仓库数据
-    function fetchGitHubRepos() {
-        return fetch('https://api.github.com/users/lsqkk/repos')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`GitHub API错误! 状态码: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(repos => {
-                // 过滤掉要排除的仓库
-                const excludedRepos = ['lsqkk.github.io', 'lsqkk', 'image', 'quarkdoc', 'academic-homepage'];
-                return repos.filter(repo => !excludedRepos.includes(repo.name));
-            });
-    }
-
-    function renderFunctions(localData, githubRepos) {
+    function renderFunctions(localData) {
         if (!localData || !localData.categories || !Array.isArray(localData.categories)) {
             container.innerHTML = '<div class="error">配置文件格式错误</div>';
             return;
@@ -66,18 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // 跳过"其他仓库项目"类别，我们将用GitHub数据动态生成
-            if (category.name === "其他仓库项目") {
-                return;
-            }
-
             html += renderCategory(category);
         });
-
-        // 添加GitHub仓库类别
-        if (githubRepos && githubRepos.length > 0) {
-            html += renderGitHubCategory(githubRepos);
-        }
 
         container.innerHTML = html;
     }
@@ -122,45 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             </div>
         `;
-
-        return html;
-    }
-
-    function renderGitHubCategory(repos) {
-        let html = `
-        <div class="category-section">
-            <h2 class="category-title">GitHub 项目仓库</h2>
-            <div class="functions-grid">
-    `;
-
-        repos.forEach(repo => {
-            // 使用语言作为标签，保持与其他卡片一致
-            const categoriesHtml = repo.language
-                ? `<span class="function-category">${repo.language}</span>`
-                : '<span class="function-category">代码</span>';
-
-            const description = repo.description || 'GitHub 开源项目';
-
-            html += `
-            <div class="function-card" onclick="window.open('${repo.html_url}', '_blank')">
-                ${categoriesHtml}
-                <h3 class="function-name">${repo.name}</h3>
-                <p class="function-desc">${description}</p>
-                <div class="repo-stats">
-                    <span class="repo-stat">${repo.stargazers_count || 0}</span>
-                    <span class="repo-stat">${repo.forks_count || 0}</span>
-                </div>
-                <a href="${repo.html_url}" class="function-link" target="_blank">
-                    访问仓库 →
-                </a>
-            </div>
-        `;
-        });
-
-        html += `
-            </div>
-        </div>
-    `;
 
         return html;
     }

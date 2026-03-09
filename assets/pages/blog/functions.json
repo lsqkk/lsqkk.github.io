@@ -83,6 +83,16 @@
                     "description": "记录网站的功能更新和版本发布信息",
                     "link": "/blog/log",
                     "target": "_target"
+                },
+                {
+                    "name": "项目",
+                    "categories": [
+                        "代码",
+                        "开源"
+                    ],
+                    "description": "查看站主公开 GitHub 项目仓库",
+                    "link": "/blog/project",
+                    "target": "_target"
                 }
             ]
         },
