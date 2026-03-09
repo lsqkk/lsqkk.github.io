@@ -325,26 +325,183 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* GitHub 推广链接样式 只有主页用*/
+        .contact-chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 14px auto 12px;
+            max-width: 720px;
+        }
+
+        .contact-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #183153;
+            background: rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
+            box-shadow: 0 4px 12px rgba(20, 40, 80, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .contact-chip i {
+            color: #0b5ed7;
+            font-size: 0.9rem;
+        }
+
+        .contact-chip .contact-label {
+            color: #35516f;
+        }
+
+        .contact-chip .contact-value {
+            font-weight: 600;
+            color: #0f2540;
+            max-width: 190px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .contact-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(20, 40, 80, 0.16);
+            background: rgba(255, 255, 255, 0.55);
+        }
+
+        @media (max-width: 768px) {
+            .contact-chips {
+                justify-content: flex-start;
+                padding: 0 6px;
+            }
+
+            .contact-chip {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .contact-chip .contact-value {
+                max-width: none;
+            }
+        }
+
+        /* GitHub 推广链接样式 只有主页用 */
         .github-promo {
-            background: rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(10px) saturate(100%) !important;
-            -webkit-backdrop-filter: blur(10px) saturate(100%) !important;
-            border-radius: 8px !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            background: linear-gradient(140deg, rgba(255, 255, 255, 0.35), rgba(225, 238, 255, 0.35));
+            backdrop-filter: blur(12px) saturate(130%);
+            -webkit-backdrop-filter: blur(12px) saturate(130%);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 10px 30px rgba(20, 40, 80, 0.14);
+            overflow: hidden;
         }
 
-        .github-promo a {
-            transition: all 0.3s ease;
-            padding: 4px 8px;
-            border-radius: 4px;
+        .github-promo-loading {
+            padding: 20px 16px;
+            text-align: center;
+            color: #4f6278;
+            font-size: 0.9em;
         }
 
-        .github-promo a:hover {
-            background: rgba(3, 102, 214, 0.1);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(3, 102, 214, 0.2);
+        .github-promo-main {
+            padding: 14px 14px 10px;
+        }
+
+        .github-promo-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .github-promo-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #0f2540;
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+
+        .github-promo-title i {
+            font-size: 1.1em;
+        }
+
+        .github-promo-branch {
+            font-size: 0.75em;
+            color: #4d6d95;
+            background: rgba(59, 130, 246, 0.12);
+            border-radius: 999px;
+            padding: 2px 8px;
+        }
+
+        .github-promo-desc {
+            color: #324d6b;
+            font-size: 0.84em;
+            line-height: 1.45;
+            margin: 0 0 12px;
+        }
+
+        .github-promo-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .github-stat {
+            background: rgba(255, 255, 255, 0.55);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            padding: 8px 6px;
+            text-align: center;
+        }
+
+        .github-stat-label {
+            font-size: 0.72em;
+            color: #577293;
+            margin-bottom: 2px;
+        }
+
+        .github-stat-value {
+            font-size: 1em;
+            color: #0b5ed7;
+            font-weight: 700;
+        }
+
+        .github-promo-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .github-updated {
+            color: #6c7f94;
+            font-size: 0.74em;
+        }
+
+        .github-open-link {
+            color: #0b5ed7;
+            text-decoration: none;
+            font-size: 0.78em;
+            font-weight: 600;
+            background: rgba(11, 94, 215, 0.12);
+            border-radius: 8px;
+            padding: 5px 8px;
+        }
+
+        .github-open-link:hover {
+            background: rgba(11, 94, 215, 0.18);
         }
 
         /* 弹窗系统样式 */

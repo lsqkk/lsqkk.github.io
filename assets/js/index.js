@@ -17,6 +17,8 @@
  *   bloggerLat?: number,
  *   bloggerLon?: number,
  *   socialLinks?: SocialLink[],
+ *   contact?: { email?: string, phone?: string, cv?: string, academic?: string },
+ *   Contact?: { email?: string, phone?: string, cv?: string, academic?: string },
  *   Nickname?: string,
  *   welcomeTitle?: string,
  *   welcomeText?: string,
@@ -855,6 +857,82 @@ function formatVideoTime(timestamp) {
     }
 }
 
+function formatCompactNumber(value) {
+    const count = Number(value) || 0;
+    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+    if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
+    return String(count);
+}
+
+function formatDateText(dateText) {
+    if (!dateText) return '--';
+    const date = new Date(dateText);
+    if (Number.isNaN(date.getTime())) return '--';
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+async function loadGithubRepoCard() {
+    const container = document.getElementById('github-promo-card');
+    if (!container) return;
+
+    const repoUrl = 'https://github.com/lsqkk/lsqkk.github.io';
+    const fallbackHtml = `
+        <div class="github-promo-main">
+            <div class="github-promo-head">
+                <a class="github-promo-title" href="${repoUrl}" target="_blank">
+                    <i class="fab fa-github"></i><span>lsqkk.github.io</span>
+                </a>
+            </div>
+            <p class="github-promo-desc">欢迎 Star 和 Fork，仓库信息暂时不可用。</p>
+            <div class="github-promo-foot">
+                <span class="github-updated">GitHub API 请求失败</span>
+                <a class="github-open-link" href="${repoUrl}" target="_blank">打开仓库</a>
+            </div>
+        </div>
+    `;
+
+    try {
+        const response = await fetch('https://api.github.com/repos/lsqkk/lsqkk.github.io', {
+            headers: { Accept: 'application/vnd.github+json' }
+        });
+        if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
+        const repo = await response.json();
+
+        container.innerHTML = `
+            <div class="github-promo-main">
+                <div class="github-promo-head">
+                    <a class="github-promo-title" href="${repo.html_url || repoUrl}" target="_blank">
+                        <i class="fab fa-github"></i><span>${repo.full_name || 'lsqkk/lsqkk.github.io'}</span>
+                    </a>
+                    <span class="github-promo-branch">${repo.default_branch || 'main'}</span>
+                </div>
+                <p class="github-promo-desc">${repo.description || '个人博客源码仓库，欢迎访问与交流。'}</p>
+                <div class="github-promo-stats">
+                    <div class="github-stat">
+                        <div class="github-stat-label">Stars</div>
+                        <div class="github-stat-value">${formatCompactNumber(repo.watchers)}</div>
+                    </div>
+                    <div class="github-stat">
+                        <div class="github-stat-label">Forks</div>
+                        <div class="github-stat-value">${formatCompactNumber(repo.forks)}</div>
+                    </div>
+                    <div class="github-stat">
+                        <div class="github-stat-label">Issues</div>
+                        <div class="github-stat-value">${formatCompactNumber(repo.open_issues_count)}</div>
+                    </div>
+                </div>
+                <div class="github-promo-foot">
+                    <span class="github-updated">Updated ${formatDateText(repo.updated_at)}</span>
+                    <a class="github-open-link" href="${repo.html_url || repoUrl}" target="_blank">打开仓库</a>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('加载 GitHub 仓库信息失败:', error);
+        container.innerHTML = fallbackHtml;
+    }
+}
+
 // 加载友链
 async function loadFriendLinks() {
     try {
@@ -1013,6 +1091,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const latestVideoContainer = document.getElementById('latest-video-container');
     if (latestVideoContainer) {
         loadLatestVideo();
+    }
+
+    if (document.getElementById('github-promo-card')) {
+        loadGithubRepoCard();
     }
 
     // 检查并显示弹窗

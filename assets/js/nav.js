@@ -4,12 +4,14 @@ link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
 const hoverRootMap = {
+    '/posts': 'posts',
     '/tool': 'tool',
     '/games': 'games',
     '/a': 'a',
     '/blog': 'blog'
 };
 const hoverRootLabelMap = {
+    posts: '文章',
     tool: '工具',
     games: '游戏',
     a: '实验室',
@@ -227,6 +229,7 @@ function initializeSidebar() {
 }
 
 const navHoverCache = {
+    posts: null,
     tool: null,
     games: null,
     a: null,
@@ -249,7 +252,31 @@ async function loadHoverSections(key) {
     if (navHoverCache[key]) return navHoverCache[key];
 
     let sections = [];
-    if (key === 'tool') {
+    if (key === 'posts') {
+        const data = await fetch('/posts/posts.json').then(r => r.json());
+        const allColumns = new Set();
+        (data || []).forEach(post => {
+            (post.columns || []).forEach(column => {
+                if (column && String(column).trim()) {
+                    allColumns.add(String(column).trim());
+                }
+            });
+        });
+        const columnItems = Array.from(allColumns)
+            .sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'))
+            .map(name => ({
+                name,
+                link: `/posts/${encodeURIComponent(name)}`,
+                target: '_blank'
+            }));
+        sections = [{
+            title: '专栏',
+            items: [
+                { name: '查看全部文章', link: '/posts', target: '_blank' },
+                ...columnItems
+            ]
+        }];
+    } else if (key === 'tool') {
         const data = await fetch('/assets/pages/tool/tool.json').then(r => r.json());
         sections = (data.categories || []).map(cat => ({
             title: cat.name || '工具',

@@ -2,6 +2,12 @@
   "note": "修改此配置以更新主页信息。",
   "Background": "/assets/img/bg.png",
   "Nickname": "蓝色奇夸克",
+  "Contact": {
+    "email": "jsxzznz@163.com",
+    "phone": "13092344080",
+    "cv": "https://lsqkk.github.io/academic-homepage/assets/files/Zhu_Enze_s_Resume_en_.pdf",
+    "academic": "https://lsqkk.github.io/academic-homepage"
+  },
   "welcomeTitle": "Hello World",
   "welcomeText": "学习历程 | 生活感悟 | 技术分享",
   "showDynamicNum": 4,

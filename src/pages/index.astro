@@ -41,6 +41,60 @@ function renderSocialLinks(config: any): string {
     .join("");
 }
 
+function renderContactLinks(config: any): string {
+  const contact = config?.contact || config?.Contact || {};
+  const items = [
+    {
+      key: "email",
+      icon: "fas fa-envelope",
+      label: "邮箱",
+      value: contact.email,
+      href: contact.email ? `mailto:${contact.email}` : "",
+      target: "",
+    },
+    {
+      key: "phone",
+      icon: "fas fa-phone",
+      label: "电话",
+      value: contact.phone,
+      href: contact.phone ? `tel:${contact.phone}` : "",
+      target: "",
+    },
+    {
+      key: "cv",
+      icon: "fas fa-file-lines",
+      label: "简历",
+      value: "查看 CV",
+      href: contact.cv || "",
+      target: "_blank",
+    },
+    {
+      key: "academic",
+      icon: "fas fa-graduation-cap",
+      label: "学术主页",
+      value: "Academic",
+      href: contact.academic || "",
+      target: "_blank",
+    },
+  ].filter((item) => item.href);
+
+  if (items.length === 0) return "";
+
+  return `
+    <div class="contact-chips" id="contact-chips">
+      ${items
+        .map(
+          (item) => `<a class="contact-chip" href="${escapeHtml(item.href)}"${item.target ? ` target="${item.target}"` : ""}>
+            <i class="${item.icon}"></i>
+            <span class="contact-label">${escapeHtml(item.label)}</span>
+            <span class="contact-value">${escapeHtml(item.value)}</span>
+          </a>`
+        )
+        .join("")}
+    </div>
+  `;
+}
+
 function renderFeatures(config: any): string {
   const features = Array.isArray(config?.features) ? config.features : [];
   return features
@@ -105,6 +159,7 @@ const mainSectionRenderers: Record<string, () => string> = {
     <h1 style="text-align:center; color: rgba(255,255,255,0.9); text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-weight: 600; letter-spacing: 1px;"
       id="Nickname">${escapeHtml(homeConfig.Nickname || "")}</h1>
   `,
+  contact_links: () => renderContactLinks(homeConfig),
   social_links: () => `
     <div class="social-icons" style="display: flex; justify-content: center; gap: 15px; margin: 15px 0;"
       id="social-icons-container">${renderSocialLinks(homeConfig)}</div>
@@ -148,16 +203,8 @@ const sidebarSectionRenderers: Record<string, () => string> = {
   `,
   github_promo: () => `
     <div class="index-sidebar-section">
-      <div class="github-promo"
-        style="text-align: center; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px;">
-        <p style="margin: 0; font-size: 0.85em; color: #555; line-height: 1.4;">这不是模板生成的项目<br>
-          <a href="https://github.com/lsqkk/lsqkk.github.io" target="_blank"
-            style="color: #0366d6; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;">
-            <i class="fab fa-github" style="font-size: 1.1em;"></i>
-            前往 Github 仓库
-          </a><br>
-          <span style="font-size: 0.8em; color: #888;">欢迎 Star 和 Fork 🌟</span>
-        </p>
+      <div class="github-promo" id="github-promo-card">
+        <div class="github-promo-loading">GitHub 数据加载中...</div>
       </div>
     </div>
   `,

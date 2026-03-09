@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   // 检测是否为非触摸设备
   const isTouchDevice = !matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (isTouchDevice) return;
 
   // 全局变量
   let cursor, follower;
@@ -23,8 +22,13 @@ document.addEventListener('DOMContentLoaded', function () {
       'rgba(150, 255, 150, 0.7)'
     ],
     spawnDistance: 15,
-    maxDistance: 50
+    maxDistance: 50,
+    burstCount: 22,
+    burstDistance: 95
   };
+
+  setupClickBurstListeners();
+  if (isTouchDevice) return;
 
   // 初始化光标系统
   function initCursor() {
@@ -208,6 +212,61 @@ document.addEventListener('DOMContentLoaded', function () {
         p.parentNode.removeChild(p);
       }
     }, 3000);
+  }
+
+  function createClickBurst(x, y, touchLike = false) {
+    if (isPopupOpen()) return;
+    const total = touchLike ? Math.max(config.burstCount, 26) : config.burstCount;
+
+    for (let i = 0; i < total; i++) {
+      const p = document.createElement('div');
+      p.className = 'cursor-burst-particle';
+
+      const size = Math.random() * config.sizeVariation + config.baseSize;
+      const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+      const angle = (Math.PI * 2 * i) / total + (Math.random() - 0.5) * 0.4;
+      const distance = (touchLike ? 1.2 : 1) * (config.burstDistance * (0.55 + Math.random() * 0.45));
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      const rx = tx * (0.22 + Math.random() * 0.12);
+      const ry = ty * (0.22 + Math.random() * 0.12);
+
+      p.style.left = `${x}px`;
+      p.style.top = `${y}px`;
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.background = color;
+      p.style.setProperty('--tx', `${tx}px`);
+      p.style.setProperty('--ty', `${ty}px`);
+      p.style.setProperty('--rx', `${rx}px`);
+      p.style.setProperty('--ry', `${ry}px`);
+
+      document.body.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+      setTimeout(() => p.remove(), 1600);
+    }
+  }
+
+  function setupClickBurstListeners() {
+    if (window.PointerEvent) {
+      document.addEventListener('pointerdown', function (event) {
+        if (!event.isPrimary) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        createClickBurst(event.clientX, event.clientY, event.pointerType === 'touch');
+      }, { passive: true });
+      return;
+    }
+
+    document.addEventListener('click', function (event) {
+      if (event.button !== 0) return;
+      createClickBurst(event.clientX, event.clientY, false);
+    }, { passive: true });
+
+    document.addEventListener('touchstart', function (event) {
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      createClickBurst(touch.clientX, touch.clientY, true);
+    }, { passive: true });
   }
 
   // 检查弹窗状态
