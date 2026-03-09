@@ -109,53 +109,62 @@
             margin-bottom: 15px;
         }
 
-        .index-feature-box {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px) saturate(140%);
-            -webkit-backdrop-filter: blur(8px) saturate(140%);
-            border-radius: 10px;
-            padding: 15px 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            height: auto;
-            min-height: 60px;
+        .index-log-list {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            margin: 10px 0px;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
         }
 
-        .index-feature-box a {
+        .index-log-item {
             text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            font-size: 0.95rem;
-            text-align: center;
-            width: 100%;
-            height: 100%;
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .index-feature-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            background-color: rgba(255, 255, 255, 0.4);
+        .index-log-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(20, 40, 80, 0.14);
         }
 
-        /* 响应式调整 */
-        @media (max-width: 480px) {
-            .index-feature-box {
-                padding: 12px 8px;
-                min-height: 50px;
-            }
+        .index-log-tag {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 11px;
+            font-size: 0.78em;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+        }
 
-            .index-feature-box a {
-                font-size: 0.85rem;
-            }
+        .index-log-tag.update { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .index-log-tag.optimize { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .index-log-tag.add { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .index-log-tag.fix { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .index-log-tag.default { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+
+        .index-log-detail {
+            color: #2f4660;
+            font-size: 0.88em;
+            line-height: 1.45;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .index-log-date {
+            color: #6d8097;
+            font-size: 0.76em;
+            white-space: nowrap;
         }
 
         .index-announcement {

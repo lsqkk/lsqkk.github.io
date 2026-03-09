@@ -12,34 +12,13 @@
   "welcomeText": "学习历程 | 生活感悟 | 技术分享",
   "showDynamicNum": 4,
   "showPostNum": 5,
+  "showLogNum": 6,
   "bloggerLat": 34.252705,
   "bloggerLon": 108.990221,
   "announcement": {
     "content": "<a href=\"https://lsqkk.github.io/posts/rss.xml\" target=\"_blank\" style=\"color: #007bff; font-weight: bold;\">点此</a>访问RSS订阅链接",
     "title": "夸克博客支持RSS订阅"
   },
-  "features": [
-    {
-      "name": "夸克终端 QuarkTerminal",
-      "url": "a/terminal"
-    },
-    {
-      "name": "夸克闪传 QuarkShare P2P",
-      "url": "a/share"
-    },
-    {
-      "name": "手机颠球游戏（手抖者慎入）",
-      "url": "games/ball"
-    },
-    {
-      "name": "手机PPT遥控",
-      "url": "tool/pptremote"
-    },
-    {
-      "name": "QUARK OJ",
-      "url": "a/oj"
-    }
-  ],
   "socialLinks": [
     {
       "alt": "GitHub",

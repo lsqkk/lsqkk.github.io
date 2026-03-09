@@ -235,25 +235,64 @@ document.addEventListener('DOMContentLoaded', function () {
       const cy = ty * 0.5 + normalY * curveBend;
       const rx = tx * (0.22 + Math.random() * 0.12);
       const ry = ty * (0.22 + Math.random() * 0.12);
-      const duration = 0.95 + Math.random() * 0.35;
+      const duration = 1.25 + Math.random() * 0.45;
 
       p.style.left = `${x}px`;
       p.style.top = `${y}px`;
       p.style.width = `${size}px`;
       p.style.height = `${size}px`;
       p.style.background = color;
-      p.style.setProperty('--tx', `${tx}px`);
-      p.style.setProperty('--ty', `${ty}px`);
-      p.style.setProperty('--cx', `${cx}px`);
-      p.style.setProperty('--cy', `${cy}px`);
-      p.style.setProperty('--rx', `${rx}px`);
-      p.style.setProperty('--ry', `${ry}px`);
-      p.style.setProperty('--burst-duration', `${duration}s`);
+      p.style.opacity = '0.98';
+      p.style.transform = 'translate(-50%, -50%)';
 
       document.body.appendChild(p);
-      p.addEventListener('animationend', () => p.remove());
-      setTimeout(() => p.remove(), 2200);
+      animateBurstParticle(p, { tx, ty, cx, cy, rx, ry, duration });
+      setTimeout(() => p.remove(), 2600);
     }
+  }
+
+  function bezier2(a, b, c, t) {
+    const nt = 1 - t;
+    return nt * nt * a + 2 * nt * t * b + t * t * c;
+  }
+
+  function animateBurstParticle(el, path) {
+    const startAt = performance.now();
+    const outEnd = 0.68;
+    const inCurveX = path.tx * 0.52 + (Math.random() > 0.5 ? -1 : 1) * Math.abs(path.cy) * 0.12;
+    const inCurveY = path.ty * 0.52 + (Math.random() > 0.5 ? 1 : -1) * Math.abs(path.cx) * 0.12;
+
+    function frame(now) {
+      if (!el.isConnected) return;
+      const p = Math.min(1, (now - startAt) / (path.duration * 1000));
+      let x = 0;
+      let y = 0;
+      let opacity = 1;
+
+      if (p <= outEnd) {
+        const t = p / outEnd;
+        x = bezier2(0, path.cx, path.tx, t);
+        y = bezier2(0, path.cy, path.ty, t);
+        opacity = 0.98 - t * 0.12;
+      } else {
+        const t = (p - outEnd) / (1 - outEnd);
+        x = bezier2(path.tx, inCurveX, path.rx, t);
+        y = bezier2(path.ty, inCurveY, path.ry, t);
+        opacity = 0.86 * (1 - t);
+      }
+
+      const scale = p < 0.45 ? 0.68 + p * 0.85 : 1.05 - (p - 0.45) * 1.15;
+      el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${Math.max(0.1, scale).toFixed(3)})`;
+      el.style.opacity = `${Math.max(0, opacity).toFixed(3)}`;
+
+      if (p < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        el.remove();
+      }
+    }
+
+    requestAnimationFrame(frame);
   }
 
   function setupClickBurstListeners() {

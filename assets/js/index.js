@@ -2,7 +2,6 @@
 
 /**
  * @typedef {{url: string, icon: string, alt: string}} SocialLink
- * @typedef {{url: string, name: string}} FeatureItem
  * @typedef {{title: string, content: string}} AnnouncementConfig
  * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[]}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
@@ -17,12 +16,11 @@
  *   bloggerLat?: number,
  *   bloggerLon?: number,
  *   socialLinks?: SocialLink[],
- *   contact?: { email?: string, phone?: string, cv?: string, academic?: string },
- *   Contact?: { email?: string, phone?: string, cv?: string, academic?: string },
+  *   contact?: { email?: string, phone?: string, cv?: string, academic?: string },
+  *   Contact?: { email?: string, phone?: string, cv?: string, academic?: string },
  *   Nickname?: string,
  *   welcomeTitle?: string,
  *   welcomeText?: string,
- *   features?: FeatureItem[],
  *   announcement?: AnnouncementConfig
  * }} HomeConfig
  * @typedef {{
@@ -77,18 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setInterval(updateTime, 1000);
     setInterval(updateGreeting, 60000);
 
-    // 为导航盒子添加悬停效果 - 添加存在性检查
-    document.querySelectorAll('.index-feature-box').forEach(box => {
-        if (!(box instanceof HTMLElement)) return;
-        box.addEventListener('mouseover', () => {
-            box.style.transform = 'translateY(-3px)';
-            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
-        });
-        box.addEventListener('mouseout', () => {
-            box.style.transform = 'none';
-            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.5)';
-        });
-    });
 });
 
 // 加载最近三篇文章
@@ -1007,16 +993,6 @@ function renderHomeConfig(config) {
     const welcomeTextElement = document.getElementById('welcome-text');
     if (welcomeTextElement) welcomeTextElement.textContent = config.welcomeText || '';
 
-    // 渲染功能列表 - 添加存在性检查
-    const featuresContainer = document.getElementById('features-container');
-    if (featuresContainer && config.features) {
-        featuresContainer.innerHTML = config.features.map(feature => `
-            <div class="index-feature-box">
-                <a href="${feature.url}">${feature.name}</a>
-            </div>
-        `).join('');
-    }
-
     // 渲染公告 - 添加存在性检查
     const announcementContainer = document.getElementById('announcement-container');
     if (announcementContainer && config.announcement) {
@@ -1025,8 +1001,6 @@ function renderHomeConfig(config) {
         `;
     }
 
-    // 为动态生成的内容添加事件监听
-    addEventListenersToDynamicContent();
 }
 
 // 设置默认内容（备用）
@@ -1042,14 +1016,6 @@ function setDefaultContent() {
         `;
     }
 
-    const featuresContainer = document.getElementById('features-container');
-    if (featuresContainer) {
-        featuresContainer.innerHTML = `
-            <div class="index-feature-box"><a href="tool/weather.html">天气查询</a></div>
-            <!-- 其他默认功能 -->
-        `;
-    }
-
     const announcementContainer = document.getElementById('announcement-container');
     if (announcementContainer) {
         announcementContainer.innerHTML = `
@@ -1057,23 +1023,6 @@ function setDefaultContent() {
             欢迎<a href="/assets/apk/QuarkBlog.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
         `;
     }
-}
-
-// 为动态生成的内容添加事件监听
-function addEventListenersToDynamicContent() {
-    // 功能盒子悬停效果 - 添加存在性检查
-    const featureBoxes = document.querySelectorAll('#features-container .index-feature-box');
-    featureBoxes.forEach(box => {
-        if (!(box instanceof HTMLElement)) return;
-        box.addEventListener('mouseover', () => {
-            box.style.transform = 'translateY(-3px)';
-            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.7)';
-        });
-        box.addEventListener('mouseout', () => {
-            box.style.transform = 'none';
-            box.style.boxShadow = '0 0 15px rgba(255,255,255,0.5)';
-        });
-    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {

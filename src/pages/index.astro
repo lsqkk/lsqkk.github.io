@@ -12,6 +12,7 @@ const popupsPath = path.join(PROJECT_ROOT, "json", "popups.json");
 const friendsPath = path.join(PROJECT_ROOT, "json", "friends.json");
 const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
 const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "pages", "blog", "dt", "dt.md");
+const logMdPath = path.join(PROJECT_ROOT, "assets", "pages", "blog", "log", "log.md");
 
 const indexConfig = JSON.parse(await fs.readFile(indexConfigPath, "utf8"));
 const homeConfig = JSON.parse(await fs.readFile(homeConfigPath, "utf8"));
@@ -20,6 +21,7 @@ const popups = JSON.parse(await fs.readFile(popupsPath, "utf8"));
 const friends = JSON.parse(await fs.readFile(friendsPath, "utf8"));
 const posts = JSON.parse(await fs.readFile(postsPath, "utf8"));
 const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
+const logMd = await fs.readFile(logMdPath, "utf8");
 const currentYear = new Date().getFullYear();
 
 function escapeHtml(text: unknown): string {
@@ -95,17 +97,74 @@ function renderContactLinks(config: any): string {
   `;
 }
 
-function renderFeatures(config: any): string {
-  const features = Array.isArray(config?.features) ? config.features : [];
-  return features
-    .map((item: any) => `<div class="index-feature-box"><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></div>`)
-    .join("");
-}
-
 function renderAnnouncement(config: any): string {
   const title = config?.announcement?.title || "";
   const content = config?.announcement?.content || "";
   return `<p style="margin: 0;">${escapeHtml(title)}<br>${content}</p>`;
+}
+
+function parseRecentLogs(content: string, maxItems: number) {
+  const lines = content.split(/\r?\n/);
+  const items: Array<{ type: string; detail: string; date: string }> = [];
+  let currentDate = "";
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    const dateMatch = line.match(/^#\s+(\d{4}-\d{2}-\d{2})$/);
+    if (dateMatch) {
+      currentDate = dateMatch[1];
+      continue;
+    }
+    const itemMatch = line.match(/^([\u4e00-\u9fa5A-Za-z]+)\s*-\s*(.+)$/);
+    if (!itemMatch) continue;
+    items.push({
+      type: itemMatch[1].trim(),
+      detail: itemMatch[2].trim(),
+      date: currentDate,
+    });
+    if (items.length >= maxItems) break;
+  }
+  return items;
+}
+
+function getLogTagClass(type: string): string {
+  if (type === "更新") return "update";
+  if (type === "优化") return "optimize";
+  if (type === "新增") return "add";
+  if (type === "修复") return "fix";
+  return "default";
+}
+
+function renderRecentLogs(config: any): string {
+  const count = typeof config?.showLogNum === "number" ? config.showLogNum : 6;
+  const logs = parseRecentLogs(logMd, Math.max(1, count));
+  if (logs.length === 0) {
+    return `
+      <div class="index-sidebar-section">
+        <h3>最近更新 Recent Logs</h3>
+        <div class="index-announcement"><p style="margin: 0;">暂无更新内容</p></div>
+      </div>
+    `;
+  }
+  return `
+    <div class="index-sidebar-section">
+      <h3>最近更新 Recent Logs</h3>
+      <div class="index-log-list">
+        ${logs
+          .map(
+            (log) => `<a class="index-log-item" href="/blog/log">
+              <span class="index-log-tag ${getLogTagClass(log.type)}">${escapeHtml(log.type)}</span>
+              <span class="index-log-detail">${escapeHtml(log.detail)}</span>
+              <span class="index-log-date">${escapeHtml(log.date)}</span>
+            </a>`
+          )
+          .join("")}
+      </div>
+      <div style="text-align:center; margin: 12px 0;">
+        <a href="/blog/log" style="text-decoration: none; color: #007bff; font-size: 0.9em;">查看更多</a>
+      </div>
+    </div>
+  `;
 }
 
 function parseMdEntries(content: string) {
@@ -208,14 +267,7 @@ const sidebarSectionRenderers: Record<string, () => string> = {
       </div>
     </div>
   `,
-  latest_features: () => `
-    <div class="index-sidebar-section">
-      <h3>新功能 Latest Features</h3>
-      <div class="index-feature-boxes" id="features-container">${renderFeatures(homeConfig)}</div>
-      <div style="text-align: center; margin: 15px 0;"> <a href="/blog/log"
-        style="text-decoration: none; color: #007bff; font-size: 0.9em;">更新日志</a></div>
-    </div>
-  `,
+  latest_updates: () => renderRecentLogs(homeConfig),
   announcement: () => `
     <div class="index-sidebar-section">
       <h3>公告 Announcement</h3>
