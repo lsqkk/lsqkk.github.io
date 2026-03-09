@@ -4,6 +4,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const PUBLIC_DIR = path.join(ROOT, "public");
 const INDEX_JSON_PATH = path.join(ROOT, "json", "index.json");
+const POSTS_JSON_PATH = path.join(ROOT, "posts", "posts.json");
 const SHICHA_BG_PLACEHOLDER = "__SHICHA_BACKGROUND__";
 
 const COPY_DIRS = [
@@ -110,6 +111,13 @@ async function main() {
     const dest = path.join(PUBLIC_DIR, file);
     await fs.mkdir(path.dirname(dest), { recursive: true });
     await fs.copyFile(src, dest);
+  }
+
+  // Expose posts metadata for frontend hover menus (文章 -> 专栏列表).
+  if (await exists(POSTS_JSON_PATH)) {
+    const postsJsonTarget = path.join(PUBLIC_DIR, "json", "posts.json");
+    await fs.mkdir(path.dirname(postsJsonTarget), { recursive: true });
+    await fs.copyFile(POSTS_JSON_PATH, postsJsonTarget);
   }
 
   for (const alias of COMPAT_IMAGE_ALIASES) {

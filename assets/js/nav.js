@@ -253,7 +253,11 @@ async function loadHoverSections(key) {
 
     let sections = [];
     if (key === 'posts') {
-        const data = await fetch('/posts/posts.json').then(r => r.json());
+        const data = await fetch('/json/posts.json')
+            .then(r => {
+                if (r.ok) return r.json();
+                return fetch('/posts/posts.json').then(r2 => r2.json());
+            });
         const allColumns = new Set();
         (data || []).forEach(post => {
             (post.columns || []).forEach(column => {
