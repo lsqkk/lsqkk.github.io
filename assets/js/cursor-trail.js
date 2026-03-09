@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ],
     spawnDistance: 15,
     maxDistance: 50,
-    burstCount: 26,
-    burstDistance: 145
+    burstCount: 14,
+    burstDistance: 62
   };
 
   setupClickBurstListeners();
@@ -216,13 +216,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function createClickBurst(x, y, touchLike = false) {
     if (isPopupOpen()) return;
-    const total = touchLike ? Math.max(config.burstCount, 30) : config.burstCount;
+    const total = touchLike ? Math.max(config.burstCount, 16) : config.burstCount;
 
     for (let i = 0; i < total; i++) {
       const p = document.createElement('div');
       p.className = 'cursor-burst-particle';
 
-      const size = Math.random() * (config.sizeVariation + 1.8) + (config.baseSize + 1.8);
+      const size = Math.random() * 5 + 8;
       const color = config.colors[Math.floor(Math.random() * config.colors.length)];
       const angle = (Math.PI * 2 * i) / total + (Math.random() - 0.5) * 0.4;
       const distance = (touchLike ? 1.2 : 1) * (config.burstDistance * (0.55 + Math.random() * 0.45));
@@ -235,19 +235,23 @@ document.addEventListener('DOMContentLoaded', function () {
       const cy = ty * 0.5 + normalY * curveBend;
       const rx = tx * (0.22 + Math.random() * 0.12);
       const ry = ty * (0.22 + Math.random() * 0.12);
-      const duration = 1.25 + Math.random() * 0.45;
+      const duration = 0.56 + Math.random() * 0.2;
+      const alpha = 0.72 + Math.random() * 0.24;
+      const glow = Math.round(size * (1.4 + Math.random() * 1.2));
 
       p.style.left = `${x}px`;
       p.style.top = `${y}px`;
       p.style.width = `${size}px`;
       p.style.height = `${size}px`;
       p.style.background = color;
-      p.style.opacity = '0.98';
+      p.style.opacity = `${alpha.toFixed(2)}`;
+      p.style.setProperty('--burst-alpha', `${alpha.toFixed(2)}`);
+      p.style.setProperty('--burst-glow', `${glow}px`);
       p.style.transform = 'translate(-50%, -50%)';
 
       document.body.appendChild(p);
       animateBurstParticle(p, { tx, ty, cx, cy, rx, ry, duration });
-      setTimeout(() => p.remove(), 2600);
+      setTimeout(() => p.remove(), 1200);
     }
   }
 
@@ -273,15 +277,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const t = p / outEnd;
         x = bezier2(0, path.cx, path.tx, t);
         y = bezier2(0, path.cy, path.ty, t);
-        opacity = 0.98 - t * 0.12;
+        opacity = 1 - t * 0.2;
       } else {
         const t = (p - outEnd) / (1 - outEnd);
         x = bezier2(path.tx, inCurveX, path.rx, t);
         y = bezier2(path.ty, inCurveY, path.ry, t);
-        opacity = 0.86 * (1 - t);
+        opacity = 0.72 * (1 - t);
       }
 
-      const scale = p < 0.45 ? 0.68 + p * 0.85 : 1.05 - (p - 0.45) * 1.15;
+      const scale = p < 0.32
+        ? 0.45 + p * 2.0
+        : p < 0.68
+          ? 1.09 - (p - 0.32) * 0.55
+          : 0.89 - (p - 0.68) * 2.35;
       el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${Math.max(0.1, scale).toFixed(3)})`;
       el.style.opacity = `${Math.max(0, opacity).toFixed(3)}`;
 
