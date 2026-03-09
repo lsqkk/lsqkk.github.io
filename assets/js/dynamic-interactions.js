@@ -64,6 +64,12 @@
         });
     }
 
+    function sleep(ms) {
+        return new Promise((resolve) => {
+            window.setTimeout(resolve, ms);
+        });
+    }
+
     function getDeviceId() {
         let id = localStorage.getItem(DEVICE_ID_KEY);
         if (id) return id;
@@ -139,10 +145,38 @@
                 await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'dynamic-firebase-db');
             }
 
-            if (!getFirebaseConfig()) {
-                await loadScript(`https://api.130923.xyz/api/firebase-config?v=${Date.now()}`, 'dynamic-firebase-config');
+            let config = getFirebaseConfig();
+            if (!config || !config.projectId) {
+                let lastError = null;
+                const maxAttempts = 3;
+                for (let i = 1; i <= maxAttempts; i++) {
+                    try {
+                        await loadScript(
+                            `https://api.130923.xyz/api/firebase-config?v=${Date.now()}_${i}`,
+                            `dynamic-firebase-config-${i}`
+                        );
+                    } catch (error) {
+                        lastError = error;
+                    }
+
+                    try {
+                        config = await waitForFirebaseConfig(12000);
+                        break;
+                    } catch {
+                        // continue retry
+                    }
+                    await sleep(900 * i);
+                }
+
+                if (!config || !config.projectId) {
+                    try {
+                        config = await waitForFirebaseConfig(45000);
+                    } catch {
+                        if (lastError) throw lastError;
+                        throw new Error('Firebase配置加载失败');
+                    }
+                }
             }
-            const config = await waitForFirebaseConfig();
 
             if (!window.firebase.apps || !window.firebase.apps.length) {
                 window.firebase.initializeApp(config);
@@ -273,18 +307,168 @@
         const textInput = panel.querySelector('[data-dynamic-comment-text]');
         const submitBtn = panel.querySelector('[data-dynamic-comment-submit]');
         const listEl = panel.querySelector('[data-dynamic-comment-list]');
+        const replyStateEl = panel.querySelector('[data-dynamic-reply-state]');
+        const paginationEl = panel.querySelector('[data-dynamic-comment-pagination]');
         const uid = getDeviceId();
+        const COMMENT_PAGE_SIZE = 8;
+        const COMMENT_COOLDOWN_MS = 10000;
+        const ACTION_COOLDOWN_MS = 700;
+        let currentPage = 1;
+        let replyToCommentId = '';
+        let replyToNickname = '';
+        let latestComments = [];
+        let postRef = null;
 
         if (nicknameInput instanceof HTMLInputElement) {
             nicknameInput.value = localStorage.getItem(NICKNAME_KEY) || '';
         }
 
+        const setCommentsLoading = (message, isError = false) => {
+            if (listEl instanceof HTMLElement) {
+                listEl.innerHTML = `<div class="dynamic-comment-empty">${escapeHtml(message)}</div>`;
+            }
+            if (paginationEl instanceof HTMLElement) {
+                paginationEl.innerHTML = '';
+            }
+            if (submitBtn instanceof HTMLButtonElement) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = isError ? '评论不可用' : '连接中...';
+            }
+        };
+
+        const setCommentsReady = () => {
+            if (submitBtn instanceof HTMLButtonElement) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '发布评论';
+            }
+        };
+
+        setCommentsLoading('评论服务连接中，请稍候...');
+
+        function cooldownKey(suffix) {
+            return `dynamic_${suffix}_${dynamicId}_${uid}`;
+        }
+
+        function passCooldown(key, ms) {
+            const now = Date.now();
+            const last = Number(localStorage.getItem(key) || 0);
+            if (now - last < ms) {
+                return false;
+            }
+            localStorage.setItem(key, String(now));
+            return true;
+        }
+
+        function setReplyState() {
+            if (!(replyStateEl instanceof HTMLElement)) return;
+            if (!replyToCommentId) {
+                replyStateEl.innerHTML = '';
+                return;
+            }
+            replyStateEl.innerHTML = `回复 <strong>${escapeHtml(replyToNickname || '该评论')}</strong>`;
+            const cancel = document.createElement('button');
+            cancel.type = 'button';
+            cancel.textContent = '取消';
+            cancel.addEventListener('click', () => {
+                replyToCommentId = '';
+                replyToNickname = '';
+                setReplyState();
+            });
+            replyStateEl.appendChild(cancel);
+        }
+
+        function getReplyLikeCount(reply) {
+            return getLikeCount(reply.likesBy);
+        }
+
+        function getRepliesSorted(replies) {
+            if (!replies || typeof replies !== 'object') return [];
+            return Object.keys(replies)
+                .map((id) => ({ id, ...replies[id] }))
+                .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        }
+
+        function renderPagination(total) {
+            if (!(paginationEl instanceof HTMLElement)) return;
+            const totalPages = Math.max(1, Math.ceil(total / COMMENT_PAGE_SIZE));
+            currentPage = Math.min(Math.max(1, currentPage), totalPages);
+            if (totalPages <= 1) {
+                paginationEl.innerHTML = '';
+                return;
+            }
+            paginationEl.innerHTML = `
+                <button class="dynamic-page-btn" data-page-action="prev" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>
+                <span class="dynamic-page-info">第 ${currentPage} / ${totalPages} 页</span>
+                <button class="dynamic-page-btn" data-page-action="next" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>
+            `;
+        }
+
+        function renderCommentList(comments) {
+            if (!(listEl instanceof HTMLElement)) return;
+            latestComments = comments;
+            renderPagination(comments.length);
+
+            if (!comments.length) {
+                listEl.innerHTML = '<div class="dynamic-comment-empty">还没有评论，欢迎第一条留言。</div>';
+                return;
+            }
+
+            const totalPages = Math.max(1, Math.ceil(comments.length / COMMENT_PAGE_SIZE));
+            currentPage = Math.min(Math.max(1, currentPage), totalPages);
+            const start = (currentPage - 1) * COMMENT_PAGE_SIZE;
+            const pageItems = comments.slice(start, start + COMMENT_PAGE_SIZE);
+
+            listEl.innerHTML = pageItems.map((comment) => {
+                const commentLikeCount = getLikeCount(comment.likesBy);
+                const commentLiked = !!(comment.likesBy && comment.likesBy[uid]);
+                const replies = getRepliesSorted(comment.replies);
+                return `
+                    <div class="dynamic-comment-item" data-comment-id="${escapeHtml(comment.id)}">
+                        <div class="dynamic-comment-head">
+                            <strong>${escapeHtml(comment.nickname || '访客')}</strong>
+                            <span>${escapeHtml(formatTime(comment.timestamp))}</span>
+                        </div>
+                        <div class="dynamic-comment-text">${escapeHtml(comment.text || '')}</div>
+                        <div class="dynamic-comment-actions">
+                            <button type="button" class="dynamic-comment-btn" data-action="reply">回复</button>
+                            <button type="button" class="dynamic-comment-btn" data-action="like-comment">
+                                ${commentLiked ? '取消赞' : '点赞'} (${commentLikeCount})
+                            </button>
+                        </div>
+                        ${replies.length ? `
+                            <div class="dynamic-reply-list">
+                                ${replies.map((reply) => {
+                                    const replyLikeCount = getReplyLikeCount(reply);
+                                    const replyLiked = !!(reply.likesBy && reply.likesBy[uid]);
+                                    return `
+                                        <div class="dynamic-reply-item" data-reply-id="${escapeHtml(reply.id)}">
+                                            <div class="dynamic-comment-head">
+                                                <strong>${escapeHtml(reply.nickname || '访客')}</strong>
+                                                <span>${escapeHtml(formatTime(reply.timestamp))}</span>
+                                            </div>
+                                            <div class="dynamic-comment-text">${escapeHtml(reply.text || '')}</div>
+                                            <div class="dynamic-comment-actions">
+                                                <button type="button" class="dynamic-comment-btn" data-action="like-reply">
+                                                    ${replyLiked ? '取消赞' : '点赞'} (${replyLikeCount})
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
         void getRootRef().then((dbRef) => {
-            const postRef = dbRef.child(dynamicId);
+            postRef = dbRef.child(dynamicId);
+            setCommentsReady();
             postRef.on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 const likesBy = data.likesBy || {};
-                const comments = getCommentsSorted(data.comments);
+                const comments = getCommentsSorted(data.comments).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 const liked = !!likesBy[uid];
                 const likeCount = getLikeCount(likesBy);
 
@@ -295,24 +479,12 @@
                     likeBtn.textContent = `${liked ? '取消点赞' : '点赞'} (${likeCount})`;
                 }
 
-                if (!(listEl instanceof HTMLElement)) return;
-                if (!comments.length) {
-                    listEl.innerHTML = '<div class="dynamic-comment-empty">还没有评论，欢迎第一条留言。</div>';
-                    return;
-                }
-                listEl.innerHTML = comments.map((comment) => `
-                    <div class="dynamic-comment-item">
-                        <div class="dynamic-comment-head">
-                            <strong>${escapeHtml(comment.nickname || '访客')}</strong>
-                            <span>${escapeHtml(formatTime(comment.timestamp))}</span>
-                        </div>
-                        <div class="dynamic-comment-text">${escapeHtml(comment.text || '')}</div>
-                    </div>
-                `).join('');
+                renderCommentList(comments);
             });
 
             if (likeBtn instanceof HTMLElement) {
                 likeBtn.addEventListener('click', async () => {
+                    if (!passCooldown(cooldownKey('post_like_cd'), ACTION_COOLDOWN_MS)) return;
                     await postRef.child('likesBy').transaction((likesBy) => {
                         const next = likesBy || {};
                         if (next[uid]) {
@@ -327,6 +499,10 @@
 
             if (submitBtn instanceof HTMLElement && textInput instanceof HTMLTextAreaElement) {
                 submitBtn.addEventListener('click', async () => {
+                    if (!passCooldown(cooldownKey('comment_cd'), COMMENT_COOLDOWN_MS)) {
+                        alert('评论过于频繁，请稍后再试');
+                        return;
+                    }
                     const text = textInput.value.trim();
                     if (!text) {
                         alert('评论内容不能为空');
@@ -336,17 +512,100 @@
                         ? (nicknameInput.value.trim() || '访客')
                         : '访客';
                     localStorage.setItem(NICKNAME_KEY, nickname);
-
-                    await postRef.child('comments').push({
-                        nickname,
-                        text,
-                        timestamp: Date.now()
-                    });
+                    const payload = { nickname, text, timestamp: Date.now(), likesBy: {} };
+                    if (replyToCommentId) {
+                        await postRef.child('comments').child(replyToCommentId).child('replies').push(payload);
+                        replyToCommentId = '';
+                        replyToNickname = '';
+                        setReplyState();
+                    } else {
+                        await postRef.child('comments').push(payload);
+                    }
                     textInput.value = '';
+                });
+            }
+
+            if (listEl instanceof HTMLElement) {
+                listEl.addEventListener('click', async (event) => {
+                    const target = event.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    const btn = target.closest('[data-action]');
+                    if (!(btn instanceof HTMLElement) || !(postRef)) return;
+                    const action = btn.dataset.action || '';
+                    const commentEl = btn.closest('[data-comment-id]');
+                    if (!(commentEl instanceof HTMLElement)) return;
+                    const commentId = commentEl.dataset.commentId || '';
+                    if (!commentId) return;
+
+                    if (action === 'reply') {
+                        const comment = latestComments.find((item) => item.id === commentId);
+                        replyToCommentId = commentId;
+                        replyToNickname = comment?.nickname || '该评论';
+                        setReplyState();
+                        if (textInput instanceof HTMLTextAreaElement) {
+                            textInput.focus();
+                        }
+                        return;
+                    }
+
+                    if (!passCooldown(cooldownKey('comment_like_cd'), ACTION_COOLDOWN_MS)) return;
+
+                    if (action === 'like-comment') {
+                        await postRef.child('comments').child(commentId).child('likesBy').transaction((likesBy) => {
+                            const next = likesBy || {};
+                            if (next[uid]) {
+                                delete next[uid];
+                            } else {
+                                next[uid] = true;
+                            }
+                            return next;
+                        });
+                        return;
+                    }
+
+                    if (action === 'like-reply') {
+                        const replyEl = btn.closest('[data-reply-id]');
+                        if (!(replyEl instanceof HTMLElement)) return;
+                        const replyId = replyEl.dataset.replyId || '';
+                        if (!replyId) return;
+                        await postRef
+                            .child('comments')
+                            .child(commentId)
+                            .child('replies')
+                            .child(replyId)
+                            .child('likesBy')
+                            .transaction((likesBy) => {
+                                const next = likesBy || {};
+                                if (next[uid]) {
+                                    delete next[uid];
+                                } else {
+                                    next[uid] = true;
+                                }
+                                return next;
+                            });
+                    }
+                });
+            }
+
+            if (paginationEl instanceof HTMLElement) {
+                paginationEl.addEventListener('click', (event) => {
+                    const target = event.target;
+                    if (!(target instanceof HTMLElement)) return;
+                    const btn = target.closest('[data-page-action]');
+                    if (!(btn instanceof HTMLElement)) return;
+                    const action = btn.dataset.pageAction || '';
+                    const totalPages = Math.max(1, Math.ceil(latestComments.length / COMMENT_PAGE_SIZE));
+                    if (action === 'prev') {
+                        currentPage = Math.max(1, currentPage - 1);
+                    } else if (action === 'next') {
+                        currentPage = Math.min(totalPages, currentPage + 1);
+                    }
+                    renderCommentList(latestComments);
                 });
             }
         }).catch((error) => {
             console.error('动态详情交互初始化失败:', error);
+            setCommentsLoading('评论服务连接失败，请稍后刷新重试。', true);
         });
     }
 

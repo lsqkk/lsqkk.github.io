@@ -83,6 +83,79 @@
     background: rgba(255, 255, 255, 0.38);
 }
 
+.dynamic-comment-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.dynamic-comment-btn {
+    border: 1px solid rgba(52, 152, 219, 0.35);
+    background: rgba(52, 152, 219, 0.12);
+    color: #285275;
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.dynamic-comment-btn:hover {
+    background: rgba(52, 152, 219, 0.2);
+}
+
+.dynamic-reply-list {
+    margin-top: 10px;
+    border-left: 2px solid rgba(52, 152, 219, 0.25);
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dynamic-reply-item {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.32);
+}
+
+.dynamic-reply-state {
+    min-height: 20px;
+    font-size: 0.84rem;
+    color: #4a5d71;
+}
+
+.dynamic-reply-state button {
+    margin-left: 8px;
+    border: none;
+    background: transparent;
+    color: #2f6edb;
+    cursor: pointer;
+}
+
+.dynamic-comment-pagination {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dynamic-page-btn {
+    border: 1px solid rgba(52, 152, 219, 0.35);
+    background: rgba(52, 152, 219, 0.12);
+    color: #285275;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.84rem;
+    cursor: pointer;
+}
+
+.dynamic-page-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .dynamic-comment-head {
     display: flex;
     justify-content: space-between;
@@ -113,7 +186,8 @@
 @media (prefers-color-scheme: dark) {
     .dynamic-entry-stats,
     .dynamic-comment-empty,
-    .dynamic-comment-head {
+    .dynamic-comment-head,
+    .dynamic-reply-state {
         color: #bcd0e8;
     }
 
@@ -125,7 +199,8 @@
     }
 
     .dynamic-comments-panel,
-    .dynamic-comment-item {
+    .dynamic-comment-item,
+    .dynamic-reply-item {
         background: rgba(18, 30, 50, 0.66);
         border-color: rgba(138, 173, 220, 0.34);
     }
@@ -140,5 +215,16 @@
         background: rgba(30, 47, 74, 0.72);
         border-color: rgba(138, 173, 220, 0.4);
         color: #e3edff;
+    }
+
+    .dynamic-comment-btn,
+    .dynamic-page-btn {
+        background: rgba(86, 132, 196, 0.3);
+        border-color: rgba(138, 173, 220, 0.4);
+        color: #e4efff;
+    }
+
+    .dynamic-reply-list {
+        border-left-color: rgba(138, 173, 220, 0.35);
     }
 }
