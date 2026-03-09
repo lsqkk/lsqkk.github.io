@@ -1,0 +1,278 @@
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+
+    body {
+        color: #dfe9f9;
+    }
+
+    .page-title,
+    .page-subtitle,
+    .section-title,
+    .category-title {
+        color: #e3edff !important;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    }
+
+    .copyright,
+    footer,
+    .footer-content,
+    .footer-links a,
+    .footer-column p,
+    .footer-column li {
+        color: #bed0ea !important;
+    }
+
+    .posts-container .tag-filter,
+    .posts-container .posts-fold-panel,
+    .posts-container .post-item,
+    .posts-container .pagination,
+    .posts-container .search-results {
+        background: rgba(19, 31, 52, 0.62) !important;
+        border-color: rgba(138, 173, 220, 0.35) !important;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
+    }
+
+    .posts-container .posts-fold-toggle,
+    .posts-container .post-title {
+        color: #dce8fb !important;
+    }
+
+    .posts-container .post-date,
+    .posts-container .posts-fold-count {
+        color: #bad0ee !important;
+    }
+
+    .posts-container .post-tag {
+        background: rgba(87, 127, 190, 0.34) !important;
+        color: #d9e8ff !important;
+    }
+
+    .posts-container .post-tag.read-time {
+        background: rgba(190, 140, 44, 0.34) !important;
+        color: #ffe2a8 !important;
+        border-color: rgba(255, 213, 140, 0.36) !important;
+    }
+
+    .posts-container .page-btn {
+        background: rgba(31, 49, 78, 0.72);
+        color: #dce8fb;
+        border-color: rgba(138, 173, 220, 0.35);
+    }
+
+    .morenpost,
+    .sidebar-content,
+    .sidebar-footer {
+        background: rgba(17, 28, 46, 0.68) !important;
+        border-color: rgba(138, 173, 220, 0.32) !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.36);
+    }
+
+    .morenpost,
+    .morenpost p,
+    .morenpost li,
+    .post-meta,
+    .post-column-note,
+    .donate-text,
+    .sidebar-main-content,
+    .sidebar-footer a {
+        color: #d6e5fa !important;
+    }
+
+    .morenpost a,
+    .post-column-link {
+        color: #8eb9ff !important;
+        border-bottom-color: #8eb9ff !important;
+    }
+
+    .post-tag {
+        background: rgba(88, 129, 195, 0.32) !important;
+        color: #d6e6ff !important;
+    }
+
+    .post-tag.read-time {
+        background: rgba(188, 139, 45, 0.34) !important;
+        color: #ffe1a6 !important;
+        border-color: rgba(255, 213, 140, 0.35) !important;
+    }
+
+    code {
+        background: rgba(32, 47, 74, 0.66);
+        color: #dce8fb;
+    }
+
+    pre {
+        background: rgba(21, 35, 58, 0.8);
+        border: 1px solid rgba(138, 173, 220, 0.24);
+    }
+
+    .tools-grid .tool-card,
+    .functions-grid .function-card,
+    .project-grid .project-card,
+    .friends-section .glass-card,
+    .info-section .glass-card,
+    .daily-section,
+    .calendar-container,
+    .filter-status,
+    .pagination-container,
+    .update-card,
+    .project-card,
+    .video-card,
+    .controls,
+    .user-info,
+    .messages-panel,
+    .user-panel,
+    .message,
+    .modal-content,
+    .message-form,
+    .message-card,
+    .admin-panel,
+    .reply-card,
+    .search-box input,
+    .board-selector select {
+        background: rgba(18, 30, 50, 0.66) !important;
+        border-color: rgba(138, 173, 220, 0.34) !important;
+        color: #dce8fb !important;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
+    }
+
+    .tool-name,
+    .function-name,
+    .function-desc,
+    .function-category,
+    .tool-category,
+    .project-title,
+    .project-desc,
+    .project-updated,
+    .friend-name,
+    .friend-desc,
+    .my-info-item .info-label,
+    .my-info-item .info-value,
+    .daily-header,
+    .article-title,
+    .article-meta,
+    .update-card,
+    .update-card h2,
+    .update-card p,
+    .update-card li,
+    .project-head p,
+    .video-title,
+    .video-meta,
+    .video-stats .stat,
+    .logo h1,
+    .message-content,
+    .message-time,
+    .form-group label,
+    .empty-state,
+    .calendar-header h3,
+    .weekday,
+    .pagination-info {
+        color: #d8e7fb !important;
+    }
+
+    .tool-link,
+    .function-link,
+    .project-open,
+    .back-home,
+    .chat-link,
+    .notice-link,
+    .copy-hint,
+    .platform-title,
+    .update-time {
+        color: #9dc1ff !important;
+    }
+
+    .tool-link,
+    .function-link,
+    .project-open,
+    .sort-btn,
+    .pagination button,
+    .submit-btn,
+    .admin-btn,
+    .btn {
+        background: rgba(39, 67, 108, 0.62) !important;
+        border-color: rgba(138, 173, 220, 0.36) !important;
+    }
+
+    .game-section-title {
+        color: #e3edff !important;
+        border-bottom-color: rgba(138, 173, 220, 0.36);
+    }
+
+    .game-card {
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+    }
+
+    .game-card-overlay {
+        background: linear-gradient(transparent, rgba(4, 10, 20, 0.88));
+    }
+
+    .dynamic-card,
+    .calendar-widget,
+    .pagination,
+    .month-item {
+        background: rgba(18, 30, 50, 0.66) !important;
+        border-color: rgba(138, 173, 220, 0.34) !important;
+    }
+
+    .dynamic-title,
+    .calendar-title,
+    .month-item,
+    .page-btn,
+    .page-info {
+        color: #dce8fb !important;
+    }
+
+    .dynamic-date {
+        color: #bdd0ea !important;
+    }
+
+    .month-item.active,
+    .page-btn.active {
+        background: rgba(110, 168, 255, 0.34) !important;
+        color: #ffffff !important;
+    }
+
+    .main-content,
+    .category-nav,
+    .content-area,
+    .platform-header {
+        background: rgba(17, 30, 50, 0.7) !important;
+        border-color: rgba(138, 173, 220, 0.34) !important;
+        color: #dce8fb !important;
+    }
+
+    .category-item,
+    .platform-title,
+    #update-time,
+    .hot-item,
+    .hot-title,
+    .hot-meta,
+    .description {
+        color: #dce8fb !important;
+    }
+
+    .category-item:hover,
+    .category-item.active {
+        background: rgba(110, 168, 255, 0.22) !important;
+    }
+
+    .admin-panel input,
+    .message-form input,
+    .message-form textarea,
+    .search-box input,
+    .board-selector select,
+    .calendar-day,
+    .page-number {
+        background: rgba(30, 47, 74, 0.66) !important;
+        border-color: rgba(138, 173, 220, 0.36) !important;
+        color: #dce8fb !important;
+    }
+
+    .search-box input::placeholder,
+    .message-form input::placeholder,
+    .message-form textarea::placeholder {
+        color: rgba(198, 217, 244, 0.74) !important;
+    }
+}

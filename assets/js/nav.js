@@ -3,6 +3,10 @@ const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
+const darkModeLink = document.createElement('link');
+darkModeLink.rel = 'stylesheet';
+darkModeLink.href = '/assets/css/dark-mode.css';
+document.head.appendChild(darkModeLink);
 const hoverRootMap = {
     '/posts': 'posts',
     '/tool': 'tool',
@@ -465,11 +469,33 @@ function initializeAll() {
     initializeTranslation();
     initializeSidebar();
     initializeNavHoverMenus();
+    initializeNavThemeMode();
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
         checkLoginStatus();
     }, 100);
+}
+
+function initializeNavThemeMode() {
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applyTheme = () => {
+        const isDark = darkModeQuery.matches;
+        const header = document.querySelector('.header');
+        const mobileSidebar = document.getElementById('mobilenavsidebar');
+
+        if (header) header.classList.toggle('nav-dark', isDark);
+        if (mobileSidebar) mobileSidebar.classList.toggle('nav-dark', isDark);
+    };
+
+    applyTheme();
+
+    if (typeof darkModeQuery.addEventListener === 'function') {
+        darkModeQuery.addEventListener('change', applyTheme);
+    } else if (typeof darkModeQuery.addListener === 'function') {
+        darkModeQuery.addListener(applyTheme);
+    }
 }
 
 // 页面加载完成后初始化
