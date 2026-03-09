@@ -51,6 +51,28 @@
            line-height: 1.7;
        }
 
+       .dynamic-entry-footer {
+           margin-top: 12px;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           gap: 10px;
+       }
+
+       .dynamic-detail-link {
+           color: #2f6edb;
+           text-decoration: none;
+           font-weight: 600;
+           font-size: 0.9rem;
+       }
+
+       .dynamic-entry-stats {
+           display: flex;
+           gap: 10px;
+           color: #6b7d8d;
+           font-size: 0.84rem;
+       }
+
        .dynamic-content img {
            max-width: 100%;
            border-radius: 8px;

@@ -224,6 +224,29 @@ body {
     font-weight: 500;
 }
 
+.dynamic-entry-footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.dynamic-detail-link {
+    color: #1f59b9;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.84rem;
+}
+
+.dynamic-entry-stats {
+    display: flex;
+    gap: 10px;
+    color: #45658f;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
 .more-link {
     display: inline-block;
     margin-top: 2px;

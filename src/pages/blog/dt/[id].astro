@@ -1,0 +1,103 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { parseDynamicEntries } from "../../../utils/dynamic-entries";
+
+const PROJECT_ROOT = process.cwd();
+const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+
+export async function getStaticPaths() {
+  const dynamicMdPath = path.join(process.cwd(), "assets", "pages", "blog", "dt", "dt.md");
+  const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
+  const allEntries = parseDynamicEntries(dynamicMd);
+  return allEntries.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as {
+  entry: {
+    id: string;
+    title: string;
+    date: string;
+    content: string;
+  };
+};
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{entry.title} - 动态 - {SITE_TITLE}</title>
+    <link rel="stylesheet" href="/assets/css/dt.css" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/css/dt-detail.css" />
+    <link rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <meta name="referrer" content="never" />
+    <script is:inline define:vars={{ navConfig, entry }}>
+      window.__NAV_CONFIG__ = navConfig;
+      window.__DT_DETAIL__ = entry;
+    </script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="/assets/js/qq-emotion-parser.min.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  </head>
+  <style>
+    body { background: url('/assets/img/bg.png') no-repeat center center fixed; background-size: cover; }
+  </style>
+  <body>
+    <link rel="stylesheet" href="/assets/css/shicha.css" />
+    <div class="parallax-bg" id="parallaxBg"></div>
+    <script is:inline src="/assets/js/shicha.js"></script>
+
+    <div class="dynamic-container dynamic-detail-container">
+      <div class="dynamic-header"><h1 class="page-title">动态详情 / Update Detail</h1></div>
+      <article class="dynamic-card dynamic-detail-card" data-dynamic-id={entry.id}>
+        <h2 class="dynamic-title">{entry.title}</h2>
+        {entry.date && <div class="dynamic-date">📅 {entry.date}</div>}
+        <div class="dynamic-content" id="dynamic-detail-content"></div>
+        <div class="dynamic-entry-footer">
+          <button class="dynamic-action-btn" type="button" data-dynamic-like-btn>
+            点赞 (<span data-dynamic-like-count>0</span>)
+          </button>
+          <div class="dynamic-entry-stats">
+            <span>评论 <span data-dynamic-comment-count>0</span></span>
+          </div>
+        </div>
+      </article>
+
+      <section class="dynamic-comments-panel" data-dynamic-comments-panel>
+        <h3>评论</h3>
+        <div class="dynamic-comment-form">
+          <input type="text" data-dynamic-comment-nickname placeholder="昵称（可选）" maxlength="24" />
+          <textarea data-dynamic-comment-text placeholder="写下你的评论..." maxlength="600"></textarea>
+          <button type="button" class="dynamic-submit-btn" data-dynamic-comment-submit>发布评论</button>
+        </div>
+        <div class="dynamic-comment-list" data-dynamic-comment-list>
+          <div class="dynamic-comment-empty">还没有评论，欢迎第一条留言。</div>
+        </div>
+      </section>
+
+      <div class="dynamic-detail-nav">
+        <a href="/blog/dt" class="back-home">← 返回动态页</a>
+        <a href="/" class="back-home">← 返回主页</a>
+      </div>
+    </div>
+
+    <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
+    <script is:inline src="/assets/js/dynamic-gallery.js"></script>
+    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/pages/blog/dt/detail.js"></script>
+    <script is:inline src="/assets/js/dynamic-interactions.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
+</html>

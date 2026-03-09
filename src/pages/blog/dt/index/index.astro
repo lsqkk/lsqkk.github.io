@@ -1,10 +1,14 @@
 ---
 import fs from "node:fs/promises";
 import path from "node:path";
+import { parseDynamicEntries } from "../../../../utils/dynamic-entries";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "pages", "blog", "dt", "dt.md");
+const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
+const dynamicEntries = parseDynamicEntries(dynamicMd);
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
@@ -15,15 +19,19 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>动态 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/css/dt.css" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <meta name="referrer" content="never" />
-    <script is:inline define:vars={{ navConfig }}>
+    <script is:inline define:vars={{ navConfig, dynamicEntries }}>
       window.__NAV_CONFIG__ = navConfig;
+      window.__DT_PRELOADED__ = dynamicEntries;
     </script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <script is:inline src="/assets/js/qq-emotion-parser.min.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script is:inline src="/assets/js/nav.js"></script>
   </head>
   <style>
@@ -46,7 +54,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </div>
     <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
     <script is:inline src="/assets/js/dynamic-gallery.js"></script>
+    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/pages/blog/dt/dt.js"></script>
+    <script is:inline src="/assets/js/dynamic-interactions.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>

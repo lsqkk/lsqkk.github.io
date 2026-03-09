@@ -5,7 +5,7 @@
  * @typedef {{title: string, content: string}} AnnouncementConfig
  * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[]}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
- * @typedef {{title: string, content: string[], date: string}} DynamicEntry
+ * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
  * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
  * @typedef {{ip: string, province: string, city: string, district: string, latitude: number, longitude: number, distance: number | string}} VisitorInfo
  * @typedef {{
@@ -662,8 +662,9 @@ function renderDynamicEntries(entries) {
         window.DynamicGallery.reset();
     }
 
-    container.innerHTML = entries.map(entry => {
+    container.innerHTML = entries.map((entry, index) => {
         const contentString = entry.content.join('\n');
+        const dynamicId = entry.id || `${entry.date || 'undated'}-${index + 1}`;
         const extracted = window.DynamicGallery
             ? window.DynamicGallery.extractImages(contentString)
             : { text: contentString.replace(/!\[.*?\]\((.*?)\)/g, ''), images: [] };
@@ -674,11 +675,18 @@ function renderDynamicEntries(entries) {
             : '';
 
         return `
-        <div class="dynamic-card">
+        <div class="dynamic-card" data-dynamic-id="${dynamicId}" data-dynamic-link="/blog/dt/${dynamicId}">
             <div class="dynamic-title">${entry.title}</div>
             ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
             <div class="dynamic-content">${htmlContent}</div>
             ${galleryHtml}
+            <div class="dynamic-entry-footer">
+                <a class="dynamic-detail-link" href="/blog/dt/${dynamicId}">查看详情</a>
+                <div class="dynamic-entry-stats">
+                    <span>点赞 <span data-dynamic-like-count>0</span></span>
+                    <span>评论 <span data-dynamic-comment-count>0</span></span>
+                </div>
+            </div>
         </div>
         `;
     }).join('');

@@ -10,8 +10,11 @@ interface Window {
   __firebaseConfigLoaded?: (config: FirebaseConfig) => void;
   cityBanterData?: Record<string, string> | null;
   __HOME_PRELOADED__?: unknown;
+  __DT_PRELOADED__?: unknown;
+  __DT_DETAIL__?: unknown;
   __NAV_CONFIG__?: unknown;
   __POPUPS_DATA__?: unknown;
+  __dynamicInteractionsInited?: boolean;
   visitorInfoDisplayed?: boolean;
   cachedVisitorInfo?: unknown;
   initPostAnnotations?: () => void;

@@ -3,10 +3,6 @@ const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
-const darkModeLink = document.createElement('link');
-darkModeLink.rel = 'stylesheet';
-darkModeLink.href = '/assets/css/dark-mode.css';
-document.head.appendChild(darkModeLink);
 const hoverRootMap = {
     '/posts': 'posts',
     '/tool': 'tool',

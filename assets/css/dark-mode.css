@@ -97,6 +97,34 @@
         border-color: rgba(255, 213, 140, 0.35) !important;
     }
 
+    .sidebar h4,
+    .toc-item a,
+    .sidebar-footer a,
+    #toc-loading {
+        color: #e3edff !important;
+    }
+
+    .toc-item a:hover {
+        background: rgba(110, 168, 255, 0.2) !important;
+        color: #ffffff !important;
+    }
+
+    .contact-chip {
+        background: rgba(18, 30, 50, 0.66) !important;
+        border-color: rgba(138, 173, 220, 0.34) !important;
+        color: #dce8fb !important;
+    }
+
+    .latest-video-body {
+        background: rgba(18, 30, 50, 0.76) !important;
+        border-top-color: rgba(138, 173, 220, 0.34) !important;
+    }
+
+    .github-stat {
+        background: rgba(24, 38, 62, 0.72) !important;
+        border-color: rgba(138, 173, 220, 0.34) !important;
+    }
+
     code {
         background: rgba(32, 47, 74, 0.66);
         color: #dce8fb;
@@ -225,6 +253,18 @@
     }
 
     .dynamic-date {
+        color: #bdd0ea !important;
+    }
+
+    .dynamic-content {
+        color: #e3edff !important;
+    }
+
+    .dynamic-detail-link {
+        color: #9dc1ff !important;
+    }
+
+    .dynamic-entry-stats {
         color: #bdd0ea !important;
     }
 

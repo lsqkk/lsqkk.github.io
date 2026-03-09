@@ -11,40 +11,83 @@ marked.setOptions({
 
 async function loadDynamic() {
     try {
-        const response = await fetch('/assets/pages/blog/dt/dt.md');
-        const mdContent = await response.text();
-        allEntries = parseDynamicEntries(mdContent);
+        const preloaded = Array.isArray(window.__DT_PRELOADED__) ? window.__DT_PRELOADED__ : [];
+        if (preloaded.length > 0) {
+            allEntries = normalizeEntries(preloaded);
+        } else {
+            const response = await fetch('/assets/pages/blog/dt/dt.md');
+            const mdContent = await response.text();
+            allEntries = parseDynamicEntries(mdContent);
+        }
 
-        // 分析月份数据
         analyzeMonthData();
-
-        // 初始化显示
         renderCalendar();
         renderPage(1);
     } catch (error) {
-        document.getElementById('dynamic-content').innerHTML = `
-            <div class="dynamic-card">
-                <h3>动态加载失败</h3>
-                <p>${error.message}</p>
-            </div>
-        `;
+        const container = document.getElementById('dynamic-content');
+        if (container) {
+            container.innerHTML = `
+                <div class="dynamic-card">
+                    <h3>动态加载失败</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+        }
     }
 }
 
+function normalizeEntries(preloaded) {
+    return preloaded.map((entry) => {
+        const dateStr = (entry.date || '').trim();
+        let monthKey = '';
+        let year = '';
+        let month = '';
+        if (dateStr) {
+            const date = new Date(dateStr);
+            if (!Number.isNaN(date.getTime())) {
+                year = date.getFullYear();
+                month = date.getMonth() + 1;
+                monthKey = `${year}-${String(month).padStart(2, '0')}`;
+            }
+        }
+
+        const content = typeof entry.content === 'string'
+            ? entry.content
+            : Array.isArray(entry.lines)
+                ? entry.lines.join('\n')
+                : '';
+        const imageMatches = content.match(/!\[.*?\]\((.*?)\)/g);
+        const images = imageMatches ? imageMatches.map((img) => {
+            const match = img.match(/!\[.*?\]\((.*?)\)/);
+            return match ? match[1] : null;
+        }).filter(Boolean) : [];
+
+        return {
+            id: entry.id || '',
+            title: entry.title || '未命名动态',
+            date: dateStr,
+            year,
+            month,
+            monthKey,
+            content,
+            images
+        };
+    });
+}
+
 function parseDynamicEntries(content) {
+    const dateCountMap = {};
     return content.split(/\n(?=# )/g).map(entry => {
         const [header, ...body] = entry.split('\n');
         const titleMatch = header.match(/^# (.*)/);
         const dateMatch = body.join('\n').match(/## 日期：(.+)/);
 
-        // 提取图片URL
         const imageMatches = body.join('\n').match(/!\[.*?\]\((.*?)\)/g);
         const images = imageMatches ? imageMatches.map(img => {
             const match = img.match(/!\[.*?\]\((.*?)\)/);
             return match ? match[1] : null;
         }).filter(Boolean) : [];
 
-        // 解析日期
         const dateStr = dateMatch ? dateMatch[1].trim() : '';
         let monthKey = '';
         let year = '';
@@ -59,14 +102,19 @@ function parseDynamicEntries(content) {
             }
         }
 
+        const dateKey = /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? dateStr : 'undated';
+        dateCountMap[dateKey] = (dateCountMap[dateKey] || 0) + 1;
+        const id = `${dateKey}-${dateCountMap[dateKey]}`;
+
         return {
+            id,
             title: titleMatch ? titleMatch[1].trim() : '未命名动态',
             date: dateStr,
-            year: year,
-            month: month,
-            monthKey: monthKey,
+            year,
+            month,
+            monthKey,
             content: body.join('\n').replace(/## 日期：.+\n?/, '').trim(),
-            images: images
+            images
         };
     }).filter(entry => entry.title);
 }
@@ -167,6 +215,7 @@ function renderPage(page) {
 
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-content');
+    if (!container) return;
     const emotionParser = new QQEmotionParser();
     if (window.DynamicGallery && typeof window.DynamicGallery.reset === 'function') {
         window.DynamicGallery.reset();
@@ -183,12 +232,8 @@ function renderDynamicEntries(entries) {
             gfm: true
         });
 
-        const globalIndex = allEntries.findIndex(e =>
-            e.title === entry.title && e.date === entry.date
-        );
-
         return `
-        <div class="dynamic-card" data-entry-index="${globalIndex}">
+        <div class="dynamic-card" data-dynamic-id="${entry.id}" data-dynamic-link="/blog/dt/${entry.id}">
             <h2 class="dynamic-title">${entry.title}</h2>
             ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
             <div class="dynamic-content">
@@ -197,6 +242,13 @@ function renderDynamicEntries(entries) {
             ${extracted.images.length > 0 && window.DynamicGallery
                 ? window.DynamicGallery.createGalleryHtml(extracted.images)
                 : ''}
+            <div class="dynamic-entry-footer">
+                <a href="/blog/dt/${entry.id}" class="dynamic-detail-link">查看详情</a>
+                <div class="dynamic-entry-stats">
+                    <span>点赞 <span data-dynamic-like-count>0</span></span>
+                    <span>评论 <span data-dynamic-comment-count>0</span></span>
+                </div>
+            </div>
         </div>
         `;
     }).join('');

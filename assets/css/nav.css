@@ -352,6 +352,8 @@
 }
 
 .nav-hover-item .nav-hover-menu {
+    display: none;
+    visibility: hidden;
     position: absolute;
     top: calc(100% + 2px);
     left: 0;
@@ -371,6 +373,8 @@
 }
 
 .nav-hover-item.open .nav-hover-menu {
+    display: block;
+    visibility: visible;
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;

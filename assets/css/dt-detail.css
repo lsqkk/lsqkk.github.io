@@ -1,0 +1,144 @@
+.dynamic-detail-container {
+    max-width: 920px;
+}
+
+.dynamic-detail-card {
+    margin-bottom: 1rem;
+}
+
+.dynamic-entry-footer {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.dynamic-entry-stats {
+    color: #607080;
+    font-size: 0.92rem;
+}
+
+.dynamic-action-btn,
+.dynamic-submit-btn {
+    border: 1px solid rgba(52, 152, 219, 0.4);
+    background: rgba(52, 152, 219, 0.15);
+    color: #1f4f74;
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.92rem;
+}
+
+.dynamic-action-btn:hover,
+.dynamic-submit-btn:hover {
+    background: rgba(52, 152, 219, 0.25);
+}
+
+.dynamic-comments-panel {
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.dynamic-comments-panel h3 {
+    margin: 0 0 0.8rem;
+    color: #2c3e50;
+}
+
+.dynamic-comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dynamic-comment-form input,
+.dynamic-comment-form textarea {
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    color: #2c3e50;
+    font-size: 0.92rem;
+}
+
+.dynamic-comment-form textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.dynamic-comment-list {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dynamic-comment-item {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.38);
+}
+
+.dynamic-comment-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.86rem;
+    color: #5b6873;
+    margin-bottom: 6px;
+}
+
+.dynamic-comment-text {
+    color: #34495e;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.dynamic-comment-empty {
+    color: #5b6873;
+    font-size: 0.9rem;
+}
+
+.dynamic-detail-nav {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+@media (prefers-color-scheme: dark) {
+    .dynamic-entry-stats,
+    .dynamic-comment-empty,
+    .dynamic-comment-head {
+        color: #bcd0e8;
+    }
+
+    .dynamic-action-btn,
+    .dynamic-submit-btn {
+        background: rgba(86, 132, 196, 0.35);
+        border-color: rgba(138, 173, 220, 0.46);
+        color: #e4efff;
+    }
+
+    .dynamic-comments-panel,
+    .dynamic-comment-item {
+        background: rgba(18, 30, 50, 0.66);
+        border-color: rgba(138, 173, 220, 0.34);
+    }
+
+    .dynamic-comments-panel h3,
+    .dynamic-comment-text {
+        color: #e3edff;
+    }
+
+    .dynamic-comment-form input,
+    .dynamic-comment-form textarea {
+        background: rgba(30, 47, 74, 0.72);
+        border-color: rgba(138, 173, 220, 0.4);
+        color: #e3edff;
+    }
+}

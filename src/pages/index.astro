@@ -2,6 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { parseDynamicEntries } from "../utils/dynamic-entries";
 
 const PROJECT_ROOT = process.cwd();
 
@@ -167,30 +168,6 @@ function renderRecentLogs(config: any): string {
   `;
 }
 
-function parseMdEntries(content: string) {
-  const lines = content.split(/\r?\n/);
-  const entries: Array<{ title: string; content: string[]; date: string }> = [];
-  let current: { title: string; content: string[]; date: string } | null = null;
-
-  for (const line of lines) {
-    if (line.startsWith("# ")) {
-      if (current) entries.push(current);
-      current = { title: line.replace("# ", "").trim(), content: [], date: "" };
-      continue;
-    }
-    if (!current) continue;
-    if (line.startsWith("## 日期：")) {
-      current.date = line.replace("## 日期：", "").trim();
-      continue;
-    }
-    if (!line.startsWith("#") && line.trim()) {
-      current.content.push(line.trim());
-    }
-  }
-  if (current) entries.push(current);
-  return entries;
-}
-
 function assembleSections(
   config: Record<string, boolean>,
   renderers: Record<string, () => string>,
@@ -346,7 +323,12 @@ const sidebarContentHtml = assembleSections(indexConfig.sidebar, sidebarSectionR
 const footerContentHtml = assembleSections(indexConfig.footer, footerSectionRenderers, false);
 
 const showDynamicNum = typeof homeConfig.showDynamicNum === "number" ? homeConfig.showDynamicNum : 3;
-const dynamicEntries = parseMdEntries(dynamicMd).slice(0, showDynamicNum);
+const dynamicEntries = parseDynamicEntries(dynamicMd).slice(0, showDynamicNum).map((entry) => ({
+  id: entry.id,
+  title: entry.title,
+  date: entry.date,
+  content: entry.lines,
+}));
 const homePreloaded = {
   homeConfig,
   posts,
@@ -367,6 +349,7 @@ const homePreloaded = {
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/index.css" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <script is:inline define:vars={{ navConfig, homePreloaded, popups }}>
       window.__NAV_CONFIG__ = navConfig;
@@ -421,6 +404,7 @@ const homePreloaded = {
 
     <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/message.js"></script>
+    <script is:inline src="/assets/js/dynamic-interactions.js"></script>
 
     <script is:inline>
       if ("serviceWorker" in navigator) {
