@@ -19,6 +19,10 @@ html {
     width: 100%;
 }
 
+body.sidebar-open {
+    overflow: hidden;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -109,11 +113,11 @@ button {
 .sidebar-toggle {
     display: none;
     position: fixed;
-    left: 10px;
-    top: 100px;
+    right: 16px;
+    bottom: 18px;
     z-index: 1000;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(5px);
     border-radius: 50%;
@@ -187,14 +191,35 @@ button {
     color: #007bff;
 }
 
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 998;
+}
+
+.sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* 响应式设计 */
 @media (max-width: 1200px) {
     .sidebar-toggle {
         display: flex;
+        right: 16px;
+        bottom: 20px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
     }
 
     .sidebar {
         left: -300px;
+        top: 80px;
+        height: calc(100vh - 100px);
     }
 
     .sidebar.active {

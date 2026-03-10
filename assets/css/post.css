@@ -8,6 +8,32 @@ body {
     /* 建议调整为 1.6-1.8 */
 }
 
+.post-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.post-content th,
+.post-content td {
+    padding: 8px 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    text-align: left;
+}
+
+.post-content .table-scroll {
+    margin: 12px 0;
+}
+
+.post-content img.post-gallery-image {
+    cursor: zoom-in;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-content img.post-gallery-image:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+}
+
 /* 添加段落间距 */
 .post-content p {
     margin-bottom: 1.2em;
@@ -203,5 +229,30 @@ img {
 
     .post-meta-item {
         flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .post-content .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .post-content .table-scroll table {
+        min-width: 520px;
+        width: max-content;
+    }
+
+    .post-content .table-scroll th,
+    .post-content .table-scroll td {
+        white-space: nowrap;
+    }
+
+    .post-content .table-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .post-content .table-scroll {
+        scrollbar-width: none;
     }
 }

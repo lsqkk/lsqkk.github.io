@@ -7,6 +7,9 @@
 // 1. 初始化入口
 document.addEventListener('DOMContentLoaded', async () => {
     initPostUI();
+    wrapPostTables();
+    await initPostGallery();
+    initSidebarToggle();
 
     // 如果 KaTeX 已经加载，渲染公式；否则等待加载
     if (window.renderMathInElement) {
@@ -87,6 +90,61 @@ function ensureScript(src, id) {
         script.onerror = () => reject(new Error(`script load failed: ${src}`));
         document.body.appendChild(script);
     });
+}
+
+function wrapPostTables() {
+    const tables = document.querySelectorAll('.post-content table');
+    tables.forEach((table) => {
+        if (!(table instanceof HTMLTableElement)) return;
+        if (table.parentElement && table.parentElement.classList.contains('table-scroll')) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-scroll';
+        table.parentElement?.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+    });
+}
+
+async function initPostGallery() {
+    ensureStyle('/assets/css/dynamic-gallery.css', 'dynamic-gallery-style');
+    try {
+        await ensureScript('/assets/js/dynamic-gallery.js', 'dynamic-gallery-script');
+    } catch (err) {
+        console.warn('Dynamic gallery load failed', err);
+        return;
+    }
+
+    if (!window.DynamicGallery || typeof window.DynamicGallery.registerImages !== 'function') {
+        return;
+    }
+
+    const content = document.querySelector('.post-content');
+    if (!content) return;
+    const images = Array.from(content.querySelectorAll('img'));
+    if (!images.length) return;
+
+    const urls = images.map((img) => img.currentSrc || img.src).filter(Boolean);
+    if (!urls.length) return;
+    const galleryId = window.DynamicGallery.registerImages(urls);
+    if (!galleryId) return;
+
+    images.forEach((img, index) => {
+        if (!(img instanceof HTMLImageElement)) return;
+        if (img.dataset.galleryBound === 'true') return;
+        img.dataset.galleryBound = 'true';
+        img.classList.add('post-gallery-image');
+        img.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            window.DynamicGallery.open(galleryId, index);
+        });
+    });
+}
+
+function initSidebarToggle() {
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (toggle instanceof HTMLElement) {
+        toggle.setAttribute('aria-expanded', 'false');
+    }
 }
 
 // 2. 渲染元数据和基础 UI
@@ -210,8 +268,17 @@ function addPostNavigationFromData() {
 // 侧栏切换
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
-    if (sidebar instanceof HTMLElement) {
-        sidebar.classList.toggle('active');
+    const backdrop = document.querySelector('.sidebar-backdrop');
+    if (!(sidebar instanceof HTMLElement)) return;
+    const willOpen = !sidebar.classList.contains('active');
+    sidebar.classList.toggle('active', willOpen);
+    document.body.classList.toggle('sidebar-open', willOpen);
+    if (backdrop instanceof HTMLElement) {
+        backdrop.classList.toggle('active', willOpen);
+    }
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (toggle instanceof HTMLElement) {
+        toggle.setAttribute('aria-expanded', String(willOpen));
     }
 }
 

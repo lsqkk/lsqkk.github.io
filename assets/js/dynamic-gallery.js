@@ -53,6 +53,16 @@
     }
 
     /**
+     * @param {string[]} images
+     */
+    function registerImages(images) {
+        if (!Array.isArray(images) || images.length === 0) return '';
+        const galleryId = nextGalleryId();
+        galleryStore.set(galleryId, images);
+        return galleryId;
+    }
+
+    /**
      * @param {string} galleryId
      * @param {number} index
      */
@@ -137,6 +147,7 @@
     window.DynamicGallery = {
         extractImages,
         createGalleryHtml,
+        registerImages,
         open: openGallery,
         change: changeImage,
         close: closeGallery,

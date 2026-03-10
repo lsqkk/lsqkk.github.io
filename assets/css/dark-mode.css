@@ -97,6 +97,81 @@
         border-color: rgba(255, 213, 140, 0.35) !important;
     }
 
+    .post-content table {
+        color: #dce8fb;
+    }
+
+    .post-content th,
+    .post-content td {
+        border-color: rgba(148, 163, 184, 0.25);
+    }
+
+    .sidebar-toggle {
+        background: rgba(24, 36, 58, 0.82);
+        border: 1px solid rgba(138, 173, 220, 0.35);
+        color: #dce8fb;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+    }
+
+    .sidebar-toggle:hover {
+        background: rgba(36, 52, 84, 0.9);
+    }
+
+    .sidebar-backdrop {
+        background: rgba(2, 6, 23, 0.55);
+    }
+
+    .post-annotation-popover,
+    .post-annotation-tooltip,
+    .post-annotation-modal-panel {
+        background: rgba(15, 23, 42, 0.92);
+        border-color: rgba(148, 163, 184, 0.25);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        color: #dbe7fb;
+    }
+
+    .post-annotation-modal-title,
+    .post-annotation-user,
+    .post-annotation-comment-text {
+        color: #e2ecff;
+    }
+
+    .post-annotation-quote {
+        color: #dbe7fb;
+        background: rgba(30, 41, 59, 0.8);
+        border-left-color: rgba(96, 165, 250, 0.6);
+    }
+
+    .post-annotation-profile {
+        background: rgba(30, 41, 59, 0.7);
+        border-color: rgba(148, 163, 184, 0.25);
+    }
+
+    .post-annotation-comment {
+        background: rgba(15, 23, 42, 0.82);
+        border-color: rgba(148, 163, 184, 0.25);
+    }
+
+    .post-annotation-comment-time {
+        color: #a5b7d6;
+    }
+
+    .post-annotation-comment-actions button {
+        background: rgba(30, 41, 59, 0.9);
+        color: #d6e5ff;
+    }
+
+    .post-annotation-form textarea,
+    .post-annotation-profile-row input[type="text"] {
+        background: rgba(15, 23, 42, 0.9);
+        border-color: rgba(148, 163, 184, 0.35);
+        color: #e2ecff;
+    }
+
+    .post-annotation-close {
+        color: #b3c6e6;
+    }
+
     .sidebar h4,
     .toc-item a,
     .sidebar-footer a,

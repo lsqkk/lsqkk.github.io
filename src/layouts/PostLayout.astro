@@ -47,6 +47,7 @@ function buildColumnHref(columnName: string): string {
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" href="/assets/css/post.css" />
     <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link id="dynamic-gallery-style" rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css" />
     <link rel="stylesheet" href="/assets/css/code.css" />
     <script is:inline src="/assets/js/nav.js"></script>
@@ -83,8 +84,10 @@ function buildColumnHref(columnName: string): string {
     <div class="parallax-bg" id="parallaxBg"></div>
     <script is:inline src="/assets/js/shicha.js"></script>
     <script is:inline src="/assets/js/cursor-trail.js" defer></script>
+    <script id="dynamic-gallery-script" is:inline src="/assets/js/dynamic-gallery.js"></script>
+    <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
     <div class="sidebar">
-      <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+      <button class="sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="打开目录" aria-expanded="false">☰</button>
       <div class="sidebar-content" id="sidebarContent">
         <div id="toc-loading" style="display: none;">目录加载中...</div>
         <div class="sidebar-main-content"></div>
