@@ -48,6 +48,11 @@
     flex-grow: 1;
     justify-content: center;
 }
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 .header-nav {
     display: flex;
     list-style-type: none;
@@ -102,6 +107,42 @@
     display: flex;
     align-items: center;
     margin-left: 15px;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+}
+
+.user-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 0.85em;
+    text-decoration: none;
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-weight: 600;
+}
+
+.user-link {
+    text-decoration: none;
+    color: inherit;
 }
 .header-search input {
     width: 150px;
@@ -291,6 +332,11 @@
     flex-direction: column;
     gap: 15px;
 }
+
+.navsidebar-user .user-pill {
+    width: 100%;
+    justify-content: center;
+}
 .navsidebar-language .language-selector {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.2);
@@ -323,6 +369,9 @@
     .header-search {
         display: none;
     }
+    .header-right {
+        margin-left: auto;
+    }
     .hamburger-menu {
         display: flex;
     }
@@ -339,6 +388,9 @@
     }
     .mobile-navsidebar.active .navsidebar-content {
         right: 0;
+    }
+    .header-user .user-name {
+        display: none;
     }
 }
 /* PC端样式 */
@@ -470,6 +522,12 @@
     border-color: rgba(138, 173, 220, 0.38);
 }
 
+.header.nav-dark .user-pill {
+    background: rgba(32, 49, 77, 0.62);
+    border-color: rgba(138, 173, 220, 0.38);
+    color: #e4edfb;
+}
+
 .header.nav-dark .header-search input::placeholder {
     color: rgba(219, 232, 251, 0.78);
 }
@@ -534,6 +592,12 @@
 .mobile-navsidebar.nav-dark .navsidebar-login a {
     background: rgba(30, 47, 74, 0.62);
     border-color: rgba(138, 173, 220, 0.38);
+}
+
+.mobile-navsidebar.nav-dark .user-pill {
+    background: rgba(30, 47, 74, 0.62);
+    border-color: rgba(138, 173, 220, 0.38);
+    color: #e4edfb;
 }
 
 .mobile-navsidebar.nav-dark .navsidebar-search input::placeholder {
@@ -617,5 +681,17 @@
     .mobile-navsidebar:not(.nav-dark) .navsidebar-login a {
         background: rgba(30, 47, 74, 0.62);
         border-color: rgba(138, 173, 220, 0.38);
+    }
+
+    .header:not(.nav-dark) .user-pill {
+        background: rgba(32, 49, 77, 0.62);
+        border-color: rgba(138, 173, 220, 0.38);
+        color: #e4edfb;
+    }
+
+    .mobile-navsidebar:not(.nav-dark) .user-pill {
+        background: rgba(30, 47, 74, 0.62);
+        border-color: rgba(138, 173, 220, 0.38);
+        color: #e4edfb;
     }
 }

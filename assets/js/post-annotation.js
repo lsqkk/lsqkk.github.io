@@ -67,12 +67,15 @@
 
     /** @returns {AnnotationProfile} */
     function loadProfile() {
-        const nickname = (localStorage.getItem(STORAGE_KEYS.nickname) || '').trim();
-        const rawAvatarType = localStorage.getItem(STORAGE_KEYS.avatarType) || 'color';
+        const externalProfile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+            ? window.QuarkUserProfile.getProfile()
+            : null;
+        const nickname = ((externalProfile && externalProfile.nickname) || localStorage.getItem(STORAGE_KEYS.nickname) || '').trim();
+        const rawAvatarType = (externalProfile && externalProfile.avatarType) || localStorage.getItem(STORAGE_KEYS.avatarType) || 'color';
         /** @type {'color' | 'image'} */
         const avatarType = rawAvatarType === 'image' ? 'image' : 'color';
-        const avatarColor = localStorage.getItem(STORAGE_KEYS.avatarColor) || COLOR_OPTIONS[0];
-        const avatarUrl = (localStorage.getItem(STORAGE_KEYS.avatarUrl) || '').trim();
+        const avatarColor = (externalProfile && externalProfile.avatarColor) || localStorage.getItem(STORAGE_KEYS.avatarColor) || COLOR_OPTIONS[0];
+        const avatarUrl = ((externalProfile && externalProfile.avatarUrl) || localStorage.getItem(STORAGE_KEYS.avatarUrl) || '').trim();
         return {
             uid: getOrCreateUid(),
             nickname: nickname || '访客',
@@ -88,6 +91,9 @@
         localStorage.setItem(STORAGE_KEYS.avatarType, profile.avatarType);
         localStorage.setItem(STORAGE_KEYS.avatarColor, profile.avatarColor);
         localStorage.setItem(STORAGE_KEYS.avatarUrl, profile.avatarUrl);
+        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+            window.QuarkUserProfile.syncProfile(profile);
+        }
     }
 
     /** @param {string} input */

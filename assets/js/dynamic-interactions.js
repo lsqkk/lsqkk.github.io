@@ -320,7 +320,12 @@
         let postRef = null;
 
         if (nicknameInput instanceof HTMLInputElement) {
-            nicknameInput.value = localStorage.getItem(NICKNAME_KEY) || '';
+            const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+                ? window.QuarkUserProfile.getProfile()
+                : null;
+            const preferred = (profile && profile.nickname) ? profile.nickname : (localStorage.getItem(NICKNAME_KEY) || '');
+            nicknameInput.value = preferred;
+            if (preferred) localStorage.setItem(NICKNAME_KEY, preferred);
         }
 
         const setCommentsLoading = (message, isError = false) => {

@@ -75,6 +75,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 初始化主题（自动跟随系统）
     initTheme();
 
+    const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+        ? window.QuarkUserProfile.getProfile()
+        : null;
+    if (profile) {
+        if (profile.nickname) nickname = profile.nickname;
+        if (profile.avatarUrl) {
+            userAvatarType = 'image';
+            userAvatarUrl = profile.avatarUrl;
+        } else if (profile.avatarColor) {
+            userAvatarType = 'color';
+            userColor = profile.avatarColor;
+        }
+    }
+
     // 初始化头像切换
     initAvatarToggle();
 
@@ -96,12 +110,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // 如果已有昵称，填充昵称输入框
-    if (nickname) {
-        const nicknameInput = byId('nickname');
-        if (nicknameInput instanceof HTMLInputElement) {
-            nicknameInput.value = nickname;
-        }
+    const nicknameInput = byId('nickname');
+    if (nicknameInput instanceof HTMLInputElement) {
+        if (nickname) nicknameInput.value = nickname;
+        nicknameInput.addEventListener('input', () => {
+            nickname = nicknameInput.value.trim();
+            localStorage.setItem('nickname', nickname);
+            if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+                window.QuarkUserProfile.syncProfile({
+                    nickname,
+                    avatarType: userAvatarType,
+                    avatarColor: userColor,
+                    avatarUrl: userAvatarUrl
+                });
+            }
+            updateAvatarPreview();
+        });
     }
+
+    const avatarUrlInput = byId('avatarUrl');
+    if (avatarUrlInput instanceof HTMLInputElement && userAvatarUrl) {
+        avatarUrlInput.value = userAvatarUrl;
+    }
+    updateAvatarPreview();
 });
 
 // 初始化主题 - 自动跟随系统
@@ -234,6 +265,14 @@ function updateAvatarPreview() {
         avatarPreview.style.background = userColor;
         avatarPreview.style.backgroundImage = 'none';
         avatarPreview.textContent = nickname ? nickname[0].toUpperCase() : 'A';
+        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+            window.QuarkUserProfile.syncProfile({
+                nickname,
+                avatarType: 'color',
+                avatarColor: userColor,
+                avatarUrl: ''
+            });
+        }
     } else {
         const avatarUrlInput = byId('avatarUrl');
         const url = avatarUrlInput instanceof HTMLInputElement ? avatarUrlInput.value.trim() : '';
@@ -241,6 +280,14 @@ function updateAvatarPreview() {
             avatarPreview.style.backgroundImage = `url(${url})`;
             avatarPreview.textContent = '';
             userAvatarUrl = url;
+            if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+                window.QuarkUserProfile.syncProfile({
+                    nickname,
+                    avatarType: 'image',
+                    avatarColor: userColor,
+                    avatarUrl: userAvatarUrl
+                });
+            }
         } else {
             avatarPreview.style.background = userColor;
             avatarPreview.style.backgroundImage = 'none';

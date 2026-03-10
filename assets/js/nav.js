@@ -3,6 +3,10 @@ const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
+const profileScript = document.createElement('script');
+profileScript.src = '/assets/js/user-profile.js';
+profileScript.defer = true;
+document.head.appendChild(profileScript);
 const hoverRootMap = {
     '/posts': 'posts',
     '/tool': 'tool',
@@ -112,9 +116,12 @@ function generateNavHTML(config) {
                     <li id="login-button"><a href="${config.login.url}">登录</a></li>
                 </ul>
             </div>
-            <div class="header-search">
-                <input type="text" id="searchInput" placeholder="搜索文章...">
-                <button onclick="handleGlobalSearch()">搜索</button>
+            <div class="header-right">
+                <div class="header-search">
+                    <input type="text" id="searchInput" placeholder="搜索文章...">
+                    <button onclick="handleGlobalSearch()">搜索</button>
+                </div>
+                <div class="header-user" id="header-user"></div>
             </div>
         </div>
     </div>
@@ -148,6 +155,7 @@ function generateNavHTML(config) {
                 <div class="navsidebar-login" id="mobile-login-button">
                     <a href="${config.login.url}">登录</a>
                 </div>
+                <div class="navsidebar-user" id="mobile-user"></div>
             </div>
         </div>
     </div>
@@ -458,6 +466,57 @@ function checkLoginStatus() {
         if (loginButton) loginButton.style.display = 'block';
         if (mobileLoginButton) mobileLoginButton.style.display = 'block';
     }
+
+    renderUserProfile();
+}
+
+function getUserProfile() {
+    if (window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function') {
+        return window.QuarkUserProfile.getProfile();
+    }
+    return null;
+}
+
+function renderUserProfile() {
+    let profile = getUserProfile();
+    const headerUser = document.getElementById('header-user');
+    const mobileUser = document.getElementById('mobile-user');
+    if (!headerUser && !mobileUser) return;
+
+    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+    if (!profile || (!profile.nickname && !profile.avatarUrl)) {
+        if (!isLoggedIn) {
+            if (headerUser) headerUser.innerHTML = '';
+            if (mobileUser) mobileUser.innerHTML = '';
+            return;
+        }
+        profile = profile || { nickname: '', avatarUrl: '', profileUrl: '' };
+        profile.nickname = '已登录';
+    }
+
+    if (!profile) return;
+
+    if (!profile.nickname && !profile.avatarUrl) {
+        if (headerUser) headerUser.innerHTML = '';
+        if (mobileUser) mobileUser.innerHTML = '';
+        return;
+    }
+
+    const avatarUrl = profile.avatarUrl || '/assets/img/touxiang.png';
+    const nickname = profile.nickname || '已登录';
+    const profileUrl = profile.profileUrl || '';
+    const inner = `
+        <div class="user-pill">
+            <img class="user-avatar" src="${avatarUrl}" alt="avatar">
+            <span class="user-name">${nickname}</span>
+        </div>
+    `;
+    const wrapped = profileUrl
+        ? `<a class="user-link" href="${profileUrl}" target="_blank" rel="noreferrer">${inner}</a>`
+        : inner;
+
+    if (headerUser) headerUser.innerHTML = wrapped;
+    if (mobileUser) mobileUser.innerHTML = wrapped;
 }
 
 // 页面加载完成后初始化翻译和登录状态检查

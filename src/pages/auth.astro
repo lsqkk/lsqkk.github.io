@@ -10,9 +10,25 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline>
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");
+      async function fetchGithubUser(authCode) {
+        try {
+          const resp = await fetch(`__API_BASE__/api/github-user?code=${encodeURIComponent(authCode)}`, { cache: "no-store" });
+          if (!resp.ok) return null;
+          const data = await resp.json();
+          return data && typeof data === "object" ? data : null;
+        } catch {
+          return null;
+        }
+      }
       if (code) {
         localStorage.setItem("github_code", code);
-        window.location.href = "/";
+        fetchGithubUser(code).then((user) => {
+          if (user) {
+            localStorage.setItem("github_user", JSON.stringify(user));
+          }
+        }).finally(() => {
+          window.location.href = "/";
+        });
       }
     </script>
   </head>
