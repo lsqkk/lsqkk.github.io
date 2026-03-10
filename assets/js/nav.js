@@ -7,6 +7,10 @@ const profileScript = document.createElement('script');
 profileScript.src = '/assets/js/user-profile.js';
 profileScript.defer = true;
 document.head.appendChild(profileScript);
+const activityScript = document.createElement('script');
+activityScript.src = '/assets/js/user-activity.js';
+activityScript.defer = true;
+document.head.appendChild(activityScript);
 const hoverRootMap = {
     '/posts': 'posts',
     '/tool': 'tool',

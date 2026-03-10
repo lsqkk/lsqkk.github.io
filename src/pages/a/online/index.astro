@@ -1,0 +1,64 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>在线用户 | {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/pages/a/online/online.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+    </script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <meta name="referrer" content="never" />
+  </head>
+  <body class="online-body">
+    <div class="online-shell">
+      <header class="online-hero">
+        <div>
+          <p class="online-kicker">Live Presence</p>
+          <h1 class="online-title">在线用户</h1>
+          <p class="online-subtitle">每 10 分钟刷新一次心跳，展示正在浏览的访客。</p>
+        </div>
+        <div class="online-metrics">
+          <div class="metric">
+            <span class="metric-label">在线人数</span>
+            <strong class="metric-value" id="onlineCount">-</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">更新时间</span>
+            <strong class="metric-value" id="onlineUpdated">-</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="online-controls">
+        <div class="online-search">
+          <input type="text" id="onlineFilter" placeholder="搜索昵称或账号..." />
+        </div>
+        <div class="online-status" id="onlineStatus">等待数据加载...</div>
+      </section>
+
+      <main class="online-grid" id="onlineGrid"></main>
+
+      <aside class="online-detail" id="onlineDetail">
+        <h3>选中用户</h3>
+        <p class="detail-empty">点击任意用户卡片查看详情</p>
+      </aside>
+    </div>
+
+    <script is:inline src="/assets/pages/a/online/online.js"></script>
+  </body>
+</html>

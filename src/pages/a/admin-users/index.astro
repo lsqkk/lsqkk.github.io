@@ -1,0 +1,108 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用户活动管理 | {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/pages/a/admin-users/admin-users.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+    </script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <meta name="referrer" content="never" />
+  </head>
+  <body class="admin-users-body">
+    <div class="admin-users-shell">
+      <header class="admin-hero">
+        <div>
+          <p class="admin-kicker">Quark Activity Console</p>
+          <h1 class="admin-title">用户活动管理</h1>
+          <p class="admin-subtitle">查看登录用户画像、近期登录行为与访问轨迹。</p>
+        </div>
+        <div class="admin-hero-actions">
+          <button class="admin-btn ghost" id="adminRefreshBtn">刷新数据</button>
+        </div>
+      </header>
+
+      <section class="admin-login-panel" id="admin-login-panel">
+        <div class="admin-login-card">
+          <div class="admin-login-header">
+            <h2>管理员登录</h2>
+            <p>输入管理员密码后可查看完整数据。</p>
+          </div>
+          <div class="admin-login-form">
+            <input type="password" id="adminPassword" placeholder="管理员密码" />
+            <button class="admin-btn" id="adminLoginBtn">登录</button>
+          </div>
+          <div class="admin-login-tip" id="adminLoginTip">尚未登录</div>
+        </div>
+        <div class="admin-status-card" id="adminStatusCard">
+          <div class="admin-status-title">数据状态</div>
+          <div class="admin-status-item"><span>当前时间</span><strong id="adminNowTime">-</strong></div>
+          <div class="admin-status-item"><span>管理员会话</span><strong id="adminSessionState">未验证</strong></div>
+          <div class="admin-status-item"><span>Firebase</span><strong id="adminFirebaseState">待加载</strong></div>
+        </div>
+      </section>
+
+      <section class="admin-summary" id="admin-summary">
+        <div class="summary-card">
+          <div class="summary-label">登录用户</div>
+          <div class="summary-value" id="summaryUsers">-</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">在线用户</div>
+          <div class="summary-value" id="summaryOnline">-</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">近24小时登录</div>
+          <div class="summary-value" id="summaryLogins">-</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">近1小时访问</div>
+          <div class="summary-value" id="summaryViews">-</div>
+        </div>
+      </section>
+
+      <section class="admin-grid">
+        <div class="admin-card" id="admin-users-list">
+          <div class="admin-card-header">
+            <h3>用户概览</h3>
+            <span class="admin-card-hint">按最近活跃排序</span>
+          </div>
+          <div class="admin-card-body" id="adminUsersBody"></div>
+        </div>
+        <div class="admin-side-stack">
+          <div class="admin-card" id="admin-login-feed">
+            <div class="admin-card-header">
+              <h3>近期登录</h3>
+              <span class="admin-card-hint">最近 20 条</span>
+            </div>
+            <div class="admin-card-body" id="adminLoginFeed"></div>
+          </div>
+          <div class="admin-card" id="admin-activity-feed">
+            <div class="admin-card-header">
+              <h3>近期访问</h3>
+              <span class="admin-card-hint">最近 30 条</span>
+            </div>
+            <div class="admin-card-body" id="adminActivityFeed"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script is:inline src="/assets/pages/a/admin-users/admin-users.js"></script>
+  </body>
+</html>

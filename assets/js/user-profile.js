@@ -3,6 +3,7 @@
 (function () {
     const PROFILE_KEY = 'quark_user_profile';
     const GITHUB_USER_KEY = 'github_user';
+    const UID_KEY = 'quark_uid';
 
     function safeParse(raw) {
         if (!raw) return null;
@@ -18,9 +19,10 @@
         const data = safeParse(raw);
         if (!data || typeof data !== 'object') return null;
         const nickname = data.name || data.login || data.nickname || '';
+        const login = data.login || '';
         const avatarUrl = data.avatar_url || data.avatarUrl || data.avatar || '';
         const profileUrl = data.html_url || data.profileUrl || '';
-        return { nickname, avatarUrl, profileUrl };
+        return { nickname, login, avatarUrl, profileUrl };
     }
 
     function readLocalProfile() {
@@ -36,15 +38,26 @@
         const local = readLocalProfile();
         const nickname = (githubUser && githubUser.nickname) ? githubUser.nickname : (local.nickname || '');
         const avatarUrl = (githubUser && githubUser.avatarUrl) ? githubUser.avatarUrl : (local.avatarUrl || '');
+        const login = (githubUser && githubUser.login) ? githubUser.login : '';
         const avatarType = avatarUrl ? 'image' : local.avatarType;
         const avatarColor = local.avatarColor || '#2563eb';
         const profileUrl = (githubUser && githubUser.profileUrl) ? githubUser.profileUrl : '';
-        return { nickname, avatarUrl, avatarType, avatarColor, profileUrl };
+        return { nickname, login, avatarUrl, avatarType, avatarColor, profileUrl };
+    }
+
+    function getUid() {
+        let uid = localStorage.getItem(UID_KEY);
+        if (!uid) {
+            uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+            localStorage.setItem(UID_KEY, uid);
+        }
+        return uid;
     }
 
     function syncProfile(profile) {
         if (!profile || typeof profile !== 'object') return;
         if (profile.nickname) localStorage.setItem('nickname', profile.nickname);
+        if (profile.login) localStorage.setItem('github_login', profile.login);
         localStorage.setItem('postAnnoAvatarType', profile.avatarType || 'color');
         if (profile.avatarColor) localStorage.setItem('postAnnoAvatarColor', profile.avatarColor);
         if (profile.avatarUrl) localStorage.setItem('postAnnoAvatarUrl', profile.avatarUrl);
@@ -66,6 +79,7 @@
 
     window.QuarkUserProfile = {
         getProfile,
-        syncProfile
+        syncProfile,
+        getUid
     };
 })();
