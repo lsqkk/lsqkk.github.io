@@ -58,31 +58,14 @@
         return str.slice(0, 1).toUpperCase();
     }
 
-    function loadScript(src, id) {
-        return new Promise((resolve, reject) => {
-            const existing = document.getElementById(id);
-            if (existing) {
-                resolve();
-                return;
-            }
-            const script = document.createElement('script');
-            script.id = id;
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`load failed: ${src}`));
-            document.head.appendChild(script);
-        });
-    }
-
     function getFirebaseConfig() {
         return window.firebaseConfig || window._firebaseConfig || null;
     }
 
-    function waitForFirebaseConfig() {
+    function waitForFirebaseReady() {
         return new Promise((resolve) => {
             const existingConfig = getFirebaseConfig();
-            if (existingConfig && existingConfig.projectId) {
+            if (window.firebase && window.firebase.database && existingConfig && existingConfig.projectId) {
                 resolve(existingConfig);
                 return;
             }
@@ -90,15 +73,11 @@
             window.__firebaseConfigLoaded = (config) => {
                 if (typeof config === 'object' && config.projectId) {
                     window.firebaseConfig = config;
-                    resolve(config);
                 }
             };
 
             Object.defineProperty(window, 'firebaseConfig', {
                 set(value) {
-                    if (value && value.projectId) {
-                        resolve(value);
-                    }
                     this._firebaseConfig = value;
                 },
                 get() {
@@ -109,7 +88,7 @@
 
             const timer = window.setInterval(() => {
                 const config = getFirebaseConfig();
-                if (config && config.projectId) {
+                if (window.firebase && window.firebase.database && config && config.projectId) {
                     window.clearInterval(timer);
                     resolve(config);
                 }
@@ -117,34 +96,12 @@
         });
     }
 
-    function reloadFirebaseConfig() {
-        return new Promise((resolve) => {
-            const scriptId = 'admin-firebase-config';
-            const existing = document.getElementById(scriptId);
-            if (existing) existing.remove();
-
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = `${API_BASE}/api/firebase-config?v=${Date.now()}`;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-    }
-
     async function ensureFirebase() {
         if (firebaseReady) return window.firebase.database();
-        if (typeof window.firebase === 'undefined' || !window.firebase.database) {
-            await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js', 'admin-firebase-app');
-            await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'admin-firebase-db');
-        }
-        if (!window.firebaseConfig) {
-            await reloadFirebaseConfig();
-            await waitForFirebaseConfig();
-        }
+        setText(el.firebaseState, '等待中');
+        const config = await waitForFirebaseReady();
         if (!window.firebase.apps || !window.firebase.apps.length) {
-            window.firebase.initializeApp(window.firebaseConfig);
+            window.firebase.initializeApp(config);
         }
         firebaseReady = true;
         setText(el.firebaseState, '已连接');

@@ -20,6 +20,9 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <script is:inline define:vars={{ navConfig }}>
       window.__NAV_CONFIG__ = navConfig;
     </script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <meta name="referrer" content="never" />

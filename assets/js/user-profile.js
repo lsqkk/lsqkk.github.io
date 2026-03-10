@@ -54,8 +54,12 @@
         return uid;
     }
 
+    let syncing = false;
+
     function syncProfile(profile) {
         if (!profile || typeof profile !== 'object') return;
+        if (syncing) return;
+        syncing = true;
         if (profile.nickname) localStorage.setItem('nickname', profile.nickname);
         if (profile.login) localStorage.setItem('github_login', profile.login);
         localStorage.setItem('postAnnoAvatarType', profile.avatarType || 'color');
@@ -67,13 +71,11 @@
         } catch {
             // ignore
         }
+        syncing = false;
     }
 
     function getProfile() {
         const profile = buildProfile();
-        if (profile.nickname || profile.avatarUrl) {
-            syncProfile(profile);
-        }
         return profile;
     }
 
