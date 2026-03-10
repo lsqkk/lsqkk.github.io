@@ -75,9 +75,8 @@
         });
     }
 
-    function waitForFirebaseConfig(timeout = 20000) {
-        return new Promise((resolve, reject) => {
-            const start = Date.now();
+    function waitForFirebaseConfig() {
+        return new Promise((resolve) => {
             const timer = window.setInterval(() => {
                 const config = window.firebaseConfig || window._firebaseConfig;
                 if (config && config.projectId) {
@@ -85,12 +84,25 @@
                     resolve(config);
                     return;
                 }
-                if (Date.now() - start > timeout) {
-                    window.clearInterval(timer);
-                    reject(new Error('firebase config timeout'));
-                }
             }, 200);
         });
+    }
+
+    async function loadFirebaseConfigWithRetry() {
+        const scriptId = 'admin-firebase-config';
+        let attempt = 0;
+        while (!(window.firebaseConfig && window.firebaseConfig.projectId)) {
+            attempt += 1;
+            const bust = Date.now();
+            try {
+                const existing = document.getElementById(scriptId);
+                if (existing) existing.remove();
+                await loadScript(`${API_BASE}/api/firebase-config?v=${bust}_${attempt}`, scriptId);
+            } catch (error) {
+                console.warn('Firebase 配置加载失败，稍后重试:', error);
+            }
+            await new Promise((resolve) => window.setTimeout(resolve, 1500));
+        }
     }
 
     async function ensureFirebase() {
@@ -100,8 +112,8 @@
             await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'admin-firebase-db');
         }
         if (!window.firebaseConfig) {
-            await loadScript(`${API_BASE}/api/firebase-config?v=${Date.now()}`, 'admin-firebase-config');
-            await waitForFirebaseConfig(20000);
+            await loadFirebaseConfigWithRetry();
+            await waitForFirebaseConfig();
         }
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(window.firebaseConfig);
