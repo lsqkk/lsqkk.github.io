@@ -44,6 +44,29 @@ function checkAgoraLoaded() {
     return true;
 }
 
+function applyUserProfile() {
+    const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+        ? window.QuarkUserProfile.getProfile()
+        : null;
+    if (!profile) return;
+    if (profile.nickname) nickname = profile.nickname;
+    if (profile.avatarUrl) {
+        userAvatarType = 'image';
+        userAvatarUrl = profile.avatarUrl;
+    } else if (profile.avatarColor) {
+        userAvatarType = 'color';
+        userColor = profile.avatarColor;
+    }
+    if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+        window.QuarkUserProfile.syncProfile({
+            nickname,
+            avatarType: userAvatarType,
+            avatarColor: userColor,
+            avatarUrl: userAvatarUrl
+        });
+    }
+}
+
 // 初始化声网Agora客户端
 async function initializeAgoraClient() {
     try {
@@ -450,6 +473,14 @@ function initializeAvatarSystem() {
         nickname = this.value;
         localStorage.setItem('nickname', nickname);
         updateAvatarPreview();
+        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+            window.QuarkUserProfile.syncProfile({
+                nickname,
+                avatarType: userAvatarType,
+                avatarColor: userColor,
+                avatarUrl: userAvatarUrl
+            });
+        }
     });
 
     // 点击页面其他区域关闭头像选项
@@ -485,6 +516,14 @@ function saveAvatarSettings() {
     localStorage.setItem('avatarType', userAvatarType);
     localStorage.setItem('avatarColor', userColor);
     localStorage.setItem('avatarUrl', userAvatarUrl);
+    if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+        window.QuarkUserProfile.syncProfile({
+            nickname,
+            avatarType: userAvatarType,
+            avatarColor: userColor,
+            avatarUrl: userAvatarUrl
+        });
+    }
 }
 
 // Firebase实时聊天功能
@@ -757,6 +796,7 @@ function resumeAllAudioTracks() {
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function () {
+    applyUserProfile();
     updateCurrentTime();
     setInterval(updateCurrentTime, 60000);
 

@@ -11,6 +11,13 @@ let recentRooms = JSON.parse(localStorage.getItem('recentRooms') || '[]');
 
 // DOM 加载完成后初始化
 document.addEventListener('DOMContentLoaded', function () {
+    const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+        ? window.QuarkUserProfile.getProfile()
+        : null;
+    if (profile && profile.nickname) {
+        nickname = profile.nickname;
+    }
+
     // 初始化主题
     initTheme();
 
@@ -164,6 +171,14 @@ function saveProfile() {
 
     localStorage.setItem('nickname', nickname);
     localStorage.setItem('userColor', userColor);
+    if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+        window.QuarkUserProfile.syncProfile({
+            nickname,
+            avatarType: 'color',
+            avatarColor: userColor,
+            avatarUrl: ''
+        });
+    }
 
     initializeChat();
 }
