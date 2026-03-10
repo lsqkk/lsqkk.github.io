@@ -299,7 +299,7 @@ body.admin-users-body {
 
 .admin-user-meta {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
   margin-top: 10px;
   color: var(--admin-muted);
@@ -416,11 +416,17 @@ body.admin-users-body {
 @media (prefers-color-scheme: light) {
   :root {
     --admin-bg: #f5f7fb;
-    --admin-surface: rgba(255, 255, 255, 0.9);
+    --admin-surface: rgba(255, 255, 255, 0.95);
     --admin-border: rgba(148, 163, 184, 0.35);
     --admin-text: #1e293b;
     --admin-muted: rgba(71, 85, 105, 0.7);
     --admin-accent: #1d4ed8;
     --admin-accent-2: #16a34a;
+  }
+
+  body.admin-users-body {
+    background: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.12), transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.12), transparent 40%),
+      #f5f7fb;
   }
 }

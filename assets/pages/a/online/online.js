@@ -90,10 +90,12 @@
 
     function selectUser(item) {
         if (!el.detail) return;
+        const locationText = [item.province, item.city].filter(Boolean).join(' ');
         el.detail.innerHTML = `
             <h3>选中用户</h3>
-            <div class="detail-row"><span>昵称</span><strong>${item.nickname || '匿名用户'}</strong></div>
+            <div class="detail-row"><span>昵称</span><strong>${item.nickname || item.login || '访客'}</strong></div>
             <div class="detail-row"><span>账号</span><strong>${item.login || '-'}</strong></div>
+            <div class="detail-row"><span>属地</span><strong>${locationText || '-'}</strong></div>
             <div class="detail-row"><span>当前页面</span><strong>${item.title || item.path || '-'}</strong></div>
             <div class="detail-row"><span>路径</span><strong>${item.path || '-'}</strong></div>
             <div class="detail-row"><span>最后心跳</span><strong>${formatTime(item.lastSeen)}</strong></div>
@@ -120,7 +122,7 @@
         }
 
         el.grid.innerHTML = filtered.map((item, index) => {
-            const name = item.nickname || item.login || '匿名用户';
+            const name = item.nickname || item.login || '访客';
             const login = item.login ? `@${item.login}` : '';
             const avatar = item.avatarUrl
                 ? `<img src="${item.avatarUrl}" alt="${name}">`
@@ -132,7 +134,7 @@
                     <div class="online-name">${name}</div>
                     <div class="online-login">${login}</div>
                   </div>
-                  <div class="online-page">${item.title || item.path || ''}</div>
+                  <div class="online-page">${[item.province, item.city].filter(Boolean).join(' ') || (item.title || item.path || '')}</div>
                 </div>
             `;
         }).join('');
@@ -162,6 +164,9 @@
                     avatarUrl: item.avatarUrl || '',
                     path: item.path || '',
                     title: item.title || '',
+                    province: item.province || '',
+                    city: item.city || '',
+                    ip: item.ip || '',
                     lastSeen: item.lastSeen || 0
                 }))
                 .sort((a, b) => b.lastSeen - a.lastSeen);

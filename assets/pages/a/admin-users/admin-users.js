@@ -272,11 +272,14 @@
         }
 
         el.usersBody.innerHTML = filteredEntries.map((entry) => {
-            const name = entry.profile.nickname || entry.profile.login || '未命名用户';
+            const name = entry.profile.nickname || entry.profile.login || '访客';
             const login = entry.profile.login ? `@${entry.profile.login}` : '';
             const avatarUrl = entry.profile.avatarUrl || '';
             const profileUrl = entry.profile.profileUrl || '';
             const presenceItem = entry.presenceItem || {};
+            const locationText = [presenceItem.province || entry.profile.province, presenceItem.city || entry.profile.city]
+                .filter(Boolean)
+                .join(' ');
             const groups = groupEvents(entry.events).slice(0, 6);
             const avatarHtml = avatarUrl
                 ? `<img src="${avatarUrl}" alt="${name}">`
@@ -287,6 +290,8 @@
                   <span>最近登录：${formatShortTime(entry.lastLogin)}</span>
                   <span>最近访问：${formatShortTime(entry.lastEvent)}</span>
                   <span>当前页面：${presenceItem.path || '-'}</span>
+                  <span>属地：${locationText || '-'}</span>
+                  <span>IP：${presenceItem.ip || entry.profile.ip || '-'}</span>
                 </div>
             `;
 
@@ -368,7 +373,7 @@
                 items.push({
                     uid,
                     ts: login.ts || 0,
-                    nickname: login.nickname || user?.profile?.nickname || '未知用户',
+                    nickname: login.nickname || user?.profile?.nickname || '访客',
                     login: login.login || user?.profile?.login || ''
                 });
             });
@@ -400,7 +405,7 @@
                     ts: event.ts || 0,
                     path: event.path || '/',
                     title: event.title || '',
-                    nickname: event.nickname || user?.profile?.nickname || '未知用户',
+                    nickname: event.nickname || user?.profile?.nickname || '访客',
                     login: event.login || user?.profile?.login || ''
                 });
             });
@@ -425,7 +430,7 @@
     function exportUsers() {
         if (!filteredEntries.length) return;
         const rows = [
-            ['uid', 'nickname', 'login', 'avatarUrl', 'profileUrl', 'lastLogin', 'lastEvent', 'currentPath', 'lastSeen']
+            ['uid', 'nickname', 'login', 'avatarUrl', 'profileUrl', 'province', 'city', 'ip', 'lastLogin', 'lastEvent', 'currentPath', 'lastSeen']
         ];
         filteredEntries.forEach((entry) => {
             rows.push([
@@ -434,6 +439,9 @@
                 entry.profile.login || '',
                 entry.profile.avatarUrl || '',
                 entry.profile.profileUrl || '',
+                entry.profile.province || entry.presenceItem?.province || '',
+                entry.profile.city || entry.presenceItem?.city || '',
+                entry.profile.ip || entry.presenceItem?.ip || '',
                 formatTime(entry.lastLogin),
                 formatTime(entry.lastEvent),
                 entry.presenceItem?.path || '',
@@ -445,7 +453,7 @@
 
     function exportEvents() {
         const rows = [
-            ['uid', 'nickname', 'login', 'path', 'title', 'time']
+            ['uid', 'nickname', 'login', 'province', 'city', 'ip', 'path', 'title', 'time']
         ];
         Object.entries(lastData.users || {}).forEach(([uid, user]) => {
             const profile = user?.profile || {};
@@ -454,6 +462,9 @@
                     uid,
                     event.nickname || profile.nickname || '',
                     event.login || profile.login || '',
+                    profile.province || '',
+                    profile.city || '',
+                    profile.ip || '',
                     event.path || '',
                     event.title || '',
                     formatTime(event.ts)

@@ -243,4 +243,10 @@ body.online-body {
     --online-text: #1e293b;
     --online-muted: rgba(71, 85, 105, 0.7);
   }
+
+  body.online-body {
+    background: radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.12), transparent 45%),
+      radial-gradient(circle at 88% 20%, rgba(99, 102, 241, 0.12), transparent 42%),
+      #f5f7fb;
+  }
 }

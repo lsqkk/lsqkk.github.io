@@ -5,6 +5,8 @@
     const PRESENCE_ROOT = 'presence';
     const LOGIN_CACHE_KEY = 'quark_last_login_at';
     const PAGE_VIEW_CACHE_KEY = 'quark_last_page_view';
+    const IP_CACHE_KEY = 'quark_ip_info';
+    const IP_CACHE_TTL = 24 * 60 * 60 * 1000;
 
     let bootPromise = null;
     let rootRef = null;
@@ -34,6 +36,58 @@
             localStorage.setItem('quark_uid', uid);
         }
         return uid;
+    }
+
+    function readCachedIpInfo() {
+        const raw = localStorage.getItem(IP_CACHE_KEY);
+        if (!raw) return null;
+        try {
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.ts) return null;
+            if (Date.now() - parsed.ts > IP_CACHE_TTL) return null;
+            return parsed.data || null;
+        } catch {
+            return null;
+        }
+    }
+
+    function writeCachedIpInfo(data) {
+        try {
+            localStorage.setItem(IP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+        } catch {
+            // ignore
+        }
+    }
+
+    async function fetchIpInfo() {
+        const cached = readCachedIpInfo();
+        if (cached) return cached;
+        try {
+            const resp = await fetch('https://api.b52m.cn/api/IP/');
+            const json = await resp.json();
+            if (json && json.code === 200 && json.data) {
+                const data = json.data;
+                const info = {
+                    ip: data.ip || '',
+                    province: data.region_name || data.province_name_2 || '',
+                    city: data.city_name || data.city_name_2 || '',
+                    district: data.district_name_3 || data.district_name || ''
+                };
+                writeCachedIpInfo(info);
+                return info;
+            }
+        } catch {
+            // ignore
+        }
+        try {
+            const resp = await fetch('__API_BASE__/api/ip', { cache: 'no-store' });
+            const json = await resp.json();
+            const info = { ip: json.ip || '', province: '', city: '', district: '' };
+            writeCachedIpInfo(info);
+            return info;
+        } catch {
+            return null;
+        }
     }
 
     function loadScript(src, id) {
@@ -141,6 +195,7 @@
     }
 
     async function upsertProfile(uid, profile) {
+        const ipInfo = await fetchIpInfo();
         await rootRef.child(uid).child('profile').set({
             uid,
             nickname: profile.nickname || '',
@@ -149,11 +204,16 @@
             avatarType: profile.avatarType || 'color',
             avatarColor: profile.avatarColor || '',
             profileUrl: profile.profileUrl || '',
+            ip: ipInfo?.ip || '',
+            province: ipInfo?.province || '',
+            city: ipInfo?.city || '',
+            district: ipInfo?.district || '',
             updatedAt: Date.now()
         });
     }
 
     async function heartbeat(uid, profile) {
+        const ipInfo = await fetchIpInfo();
         await presenceRef.child(uid).set({
             uid,
             nickname: profile.nickname || '',
@@ -163,6 +223,10 @@
             avatarColor: profile.avatarColor || '',
             path: location.pathname,
             title: document.title || '',
+            ip: ipInfo?.ip || '',
+            province: ipInfo?.province || '',
+            city: ipInfo?.city || '',
+            district: ipInfo?.district || '',
             lastSeen: Date.now()
         });
     }
