@@ -84,6 +84,18 @@
           "link": "terminal",
           "description": "纯前端网页模拟终端，支持自定义指令",
           "icon": "fa-terminal"
+        },
+        {
+          "name": "在线用户看板",
+          "link": "online",
+          "description": "实时查看当前在线访客，展示在线轨迹与页面信息",
+          "icon": "fa-users"
+        },
+        {
+          "name": "用户活动管理",
+          "link": "admin-users",
+          "description": "管理员专用用户画像与访问日志面板",
+          "icon": "fa-user-shield"
         }
       ]
     },

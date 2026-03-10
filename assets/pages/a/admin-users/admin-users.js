@@ -13,6 +13,10 @@
         loginBtn: document.getElementById('adminLoginBtn'),
         passwordInput: document.getElementById('adminPassword'),
         refreshBtn: document.getElementById('adminRefreshBtn'),
+        searchInput: document.getElementById('adminSearchInput'),
+        exportUsersBtn: document.getElementById('exportUsersBtn'),
+        exportEventsBtn: document.getElementById('exportEventsBtn'),
+        viewFilter: document.getElementById('adminViewFilter'),
         nowTime: document.getElementById('adminNowTime'),
         sessionState: document.getElementById('adminSessionState'),
         firebaseState: document.getElementById('adminFirebaseState'),
@@ -27,6 +31,7 @@
 
     let firebaseReady = false;
     let lastData = { users: {}, presence: {} };
+    let filteredEntries = [];
 
     function setText(target, value) {
         if (target) target.textContent = value;
@@ -186,6 +191,29 @@
         return Object.values(map).filter((item) => item && typeof item === 'object');
     }
 
+    function toCsv(rows) {
+        return rows.map((row) => row.map((cell) => {
+            const value = cell === null || cell === undefined ? '' : String(cell);
+            if (value.includes('"') || value.includes(',') || value.includes('\n')) {
+                return `"${value.replace(/"/g, '""')}"`;
+            }
+            return value;
+        }).join(',')).join('\n');
+    }
+
+    function downloadCsv(filename, rows) {
+        const csv = toCsv(rows);
+        const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    }
+
     function groupEvents(events) {
         const sorted = events
             .filter((ev) => ev && ev.ts)
@@ -239,12 +267,14 @@
             return { uid, profile, logins, events, lastLogin, lastEvent, presenceItem, lastSeen };
         }).sort((a, b) => b.lastSeen - a.lastSeen);
 
-        if (entries.length === 0) {
+        filteredEntries = applyFilters(entries);
+
+        if (filteredEntries.length === 0) {
             el.usersBody.innerHTML = '<div class="feed-secondary">暂无用户数据</div>';
             return;
         }
 
-        el.usersBody.innerHTML = entries.map((entry) => {
+        el.usersBody.innerHTML = filteredEntries.map((entry) => {
             const name = entry.profile.nickname || entry.profile.login || '未命名用户';
             const login = entry.profile.login ? `@${entry.profile.login}` : '';
             const avatarUrl = entry.profile.avatarUrl || '';
@@ -305,6 +335,32 @@
                 </div>
             `;
         }).join('');
+    }
+
+    function applyFilters(entries) {
+        const keyword = (el.searchInput && el.searchInput.value || '').trim().toLowerCase();
+        const filter = el.viewFilter && el.viewFilter.value || 'all';
+        const now = Date.now();
+        return entries.filter((entry) => {
+            if (filter === 'online') {
+                const lastSeen = entry.presenceItem?.lastSeen || 0;
+                if (!lastSeen || now - lastSeen > ONLINE_WINDOW) return false;
+            }
+            if (filter === 'recent') {
+                const lastEvent = entry.lastEvent || 0;
+                const lastLogin = entry.lastLogin || 0;
+                const last = Math.max(lastEvent, lastLogin);
+                if (!last || now - last > LOGIN_WINDOW) return false;
+            }
+            if (!keyword) return true;
+            const text = [
+                entry.profile.nickname,
+                entry.profile.login,
+                entry.presenceItem?.path,
+                entry.presenceItem?.title
+            ].filter(Boolean).join(' ').toLowerCase();
+            return text.includes(keyword);
+        });
     }
 
     function renderLoginFeed(users) {
@@ -369,6 +425,48 @@
         `).join('');
     }
 
+    function exportUsers() {
+        if (!filteredEntries.length) return;
+        const rows = [
+            ['uid', 'nickname', 'login', 'avatarUrl', 'profileUrl', 'lastLogin', 'lastEvent', 'currentPath', 'lastSeen']
+        ];
+        filteredEntries.forEach((entry) => {
+            rows.push([
+                entry.uid,
+                entry.profile.nickname || '',
+                entry.profile.login || '',
+                entry.profile.avatarUrl || '',
+                entry.profile.profileUrl || '',
+                formatTime(entry.lastLogin),
+                formatTime(entry.lastEvent),
+                entry.presenceItem?.path || '',
+                formatTime(entry.presenceItem?.lastSeen || 0)
+            ]);
+        });
+        downloadCsv(`admin-users-${Date.now()}.csv`, rows);
+    }
+
+    function exportEvents() {
+        const rows = [
+            ['uid', 'nickname', 'login', 'path', 'title', 'time']
+        ];
+        Object.entries(lastData.users || {}).forEach(([uid, user]) => {
+            const profile = user?.profile || {};
+            collectItems(user?.events).forEach((event) => {
+                rows.push([
+                    uid,
+                    event.nickname || profile.nickname || '',
+                    event.login || profile.login || '',
+                    event.path || '',
+                    event.title || '',
+                    formatTime(event.ts)
+                ]);
+            });
+        });
+        if (rows.length === 1) return;
+        downloadCsv(`admin-events-${Date.now()}.csv`, rows);
+    }
+
     async function loadAllData() {
         const isAdmin = await verifyAdminSession();
         if (!isAdmin) {
@@ -411,6 +509,18 @@
                 if (event.key === 'Enter') adminLogin();
             });
         }
+        if (el.searchInput instanceof HTMLInputElement) {
+            el.searchInput.addEventListener('input', () => {
+                renderUsers(lastData.users, lastData.presence);
+            });
+        }
+        if (el.viewFilter instanceof HTMLSelectElement) {
+            el.viewFilter.addEventListener('change', () => {
+                renderUsers(lastData.users, lastData.presence);
+            });
+        }
+        if (el.exportUsersBtn) el.exportUsersBtn.addEventListener('click', () => exportUsers());
+        if (el.exportEventsBtn) el.exportEventsBtn.addEventListener('click', () => exportEvents());
     }
 
     async function init() {

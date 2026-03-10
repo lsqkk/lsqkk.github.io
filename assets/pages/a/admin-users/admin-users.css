@@ -67,6 +67,44 @@ body.admin-users-body {
   gap: 12px;
 }
 
+.admin-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-control-group {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.admin-control-group label {
+  display: block;
+  color: var(--admin-muted);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.admin-control-group input,
+.admin-control-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 145, 185, 0.3);
+  background: rgba(15, 23, 42, 0.65);
+  color: var(--admin-text);
+}
+
+.admin-control-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .admin-btn {
   border: 1px solid rgba(120, 145, 185, 0.35);
   background: rgba(110, 168, 255, 0.2);
@@ -344,6 +382,10 @@ body.admin-users-body {
 @media (max-width: 1024px) {
   .admin-login-panel,
   .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-controls {
     grid-template-columns: 1fr;
   }
 
