@@ -246,3 +246,55 @@ h2 {
         padding: 20px;
     }
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #dce8fb;
+    }
+
+    .app-title {
+        color: #e6f0ff;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+    }
+
+    .card {
+        background-color: rgba(17, 28, 46, 0.7);
+        border: 1px solid rgba(138, 173, 220, 0.35);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    h2 {
+        color: #e2ecff;
+    }
+
+    .app-input {
+        background-color: rgba(12, 20, 36, 0.92);
+        border-color: rgba(148, 163, 184, 0.35);
+        color: #e2ecff;
+    }
+
+    .app-input::placeholder {
+        color: rgba(198, 214, 235, 0.7);
+    }
+
+    #status {
+        background-color: rgba(12, 20, 36, 0.88);
+        border-color: rgba(148, 163, 184, 0.25);
+        color: #d6e6ff;
+    }
+
+    #file-list {
+        background-color: rgba(12, 20, 36, 0.82);
+        border-color: rgba(148, 163, 184, 0.25);
+        color: #d6e6ff;
+    }
+
+    #file-list li {
+        border-bottom-color: rgba(148, 163, 184, 0.18);
+    }
+
+    .download-list a {
+        background-color: rgba(46, 108, 212, 0.18);
+        color: #9ec2ff;
+    }
+}

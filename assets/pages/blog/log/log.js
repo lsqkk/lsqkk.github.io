@@ -239,7 +239,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('changelog-container');
     container.innerHTML = '<div class="loading">正在加载更新日志...</div>';
 
-    fetch('/assets/pages/blog/log/log.md')
+    fetch('/assets/md/log.md')
         .then(response => {
             if (!response.ok) throw new Error('文件加载失败');
             return response.text();

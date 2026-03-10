@@ -387,8 +387,22 @@ body {
     line-height: 1.7;
 }
 
+.index-announcement-title {
+    display: block;
+    font-weight: 700;
+    color: #153b67;
+    margin-bottom: 6px;
+}
+
+.index-announcement-body {
+    display: block;
+    color: #2f567f;
+    line-height: 1.7;
+}
+
 .index-announcement-text a {
     color: var(--accent);
+    font-weight: 700;
 }
 
 .index-log-list {

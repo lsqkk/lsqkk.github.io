@@ -152,7 +152,7 @@
                 for (let i = 1; i <= maxAttempts; i++) {
                     try {
                         await loadScript(
-                            `https://api.130923.xyz/api/firebase-config?v=${Date.now()}_${i}`,
+                            `__API_BASE__/api/firebase-config?v=${Date.now()}_${i}`,
                             `dynamic-firebase-config-${i}`
                         );
                     } catch (error) {

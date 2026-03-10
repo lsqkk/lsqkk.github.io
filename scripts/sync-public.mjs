@@ -4,8 +4,10 @@ import path from "node:path";
 const ROOT = process.cwd();
 const PUBLIC_DIR = path.join(ROOT, "public");
 const INDEX_JSON_PATH = path.join(ROOT, "json", "index.json");
+const API_JSON_PATH = path.join(ROOT, "json", "api.json");
 const POSTS_JSON_PATH = path.join(ROOT, "posts", "posts.json");
 const SHICHA_BG_PLACEHOLDER = "__SHICHA_BACKGROUND__";
+const API_BASE_PLACEHOLDER = "__API_BASE__";
 
 const COPY_DIRS = [
   "assets",
@@ -66,8 +68,8 @@ function shouldCopyFile(srcAbs) {
   // Keep only markdown files that are fetched by frontend runtime.
   if (ext === ".md") {
     const allowedMarkdown = new Set([
-      "assets/pages/blog/dt/dt.md",
-      "assets/pages/blog/log/log.md",
+      "assets/md/dt.md",
+      "assets/md/log.md",
     ]);
     return allowedMarkdown.has(rel);
   }
@@ -147,6 +149,33 @@ async function main() {
       if (!original.includes(SHICHA_BG_PLACEHOLDER)) continue;
       const injected = original.split(SHICHA_BG_PLACEHOLDER).join(bgPath);
       await fs.writeFile(target, injected, "utf-8");
+    }
+  }
+
+  // Inject API base at build-time to avoid hardcoded hostnames in source.
+  let apiBase = "https://api.130923.xyz";
+  if (await exists(API_JSON_PATH)) {
+    try {
+      const apiRaw = await fs.readFile(API_JSON_PATH, "utf-8");
+      const apiConfig = JSON.parse(apiRaw);
+      if (typeof apiConfig?.apiBase === "string" && apiConfig.apiBase.trim()) {
+        apiBase = apiConfig.apiBase.trim();
+      }
+    } catch (err) {
+      console.warn("Failed to load api.json, using default api base.", err);
+    }
+  }
+
+  if (apiBase && apiBase.includes("http")) {
+    const files = await walk(PUBLIC_DIR);
+    const textExts = new Set([".js", ".css", ".html", ".json", ".xml", ".svg"]);
+    for (const file of files) {
+      const ext = path.extname(file).toLowerCase();
+      if (!textExts.has(ext)) continue;
+      const content = await fs.readFile(file, "utf-8");
+      if (!content.includes(API_BASE_PLACEHOLDER)) continue;
+      const injected = content.split(API_BASE_PLACEHOLDER).join(apiBase);
+      await fs.writeFile(file, injected, "utf-8");
     }
   }
 

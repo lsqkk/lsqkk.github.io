@@ -53,7 +53,7 @@ async function verifyAdminSession() {
     }
 
     try {
-        const response = await fetch('https://api.130923.xyz/api/admin-verify', {
+        const response = await fetch('__API_BASE__/api/admin-verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token }),
@@ -569,7 +569,7 @@ async function adminLogin() {
         const hash = await sha256(password);
 
         // 2. 调用Vercel安全API进行验证
-        const response = await fetch('https://api.130923.xyz/api/admin-auth', {
+        const response = await fetch('__API_BASE__/api/admin-auth', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

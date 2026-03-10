@@ -982,7 +982,10 @@ function renderHomeConfig(config) {
     const announcementContainer = document.getElementById('announcement-container');
     if (announcementContainer && config.announcement) {
         announcementContainer.innerHTML = `
-            <p style="margin: 0;">${config.announcement.title}<br>${config.announcement.content}</p>
+            <div class="index-announcement-text">
+                <span class="index-announcement-title">${config.announcement.title || ''}</span>
+                <span class="index-announcement-body">${config.announcement.content || ''}</span>
+            </div>
         `;
     }
 
@@ -1004,8 +1007,10 @@ function setDefaultContent() {
     const announcementContainer = document.getElementById('announcement-container');
     if (announcementContainer) {
         announcementContainer.innerHTML = `
-            <p style="margin: 0;">想要更方便的阅读博文、移动端获得更好的阅读体验？<br>
-            欢迎<a href="/assets/apk/QuarkBlog.apk" style="color: #007bff; font-weight: bold;">下载『夸克博客』APP</a>！</p>
+            <div class="index-announcement-text">
+                <span class="index-announcement-title">想要更方便的阅读博文、移动端获得更好的阅读体验？</span>
+                <span class="index-announcement-body">欢迎<a href="/assets/apk/QuarkBlog.apk">下载『夸克博客』APP</a>！</span>
+            </div>
         `;
     }
 }

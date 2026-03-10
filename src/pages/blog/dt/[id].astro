@@ -9,7 +9,7 @@ const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 
 export async function getStaticPaths() {
-  const dynamicMdPath = path.join(process.cwd(), "assets", "pages", "blog", "dt", "dt.md");
+  const dynamicMdPath = path.join(process.cwd(), "assets", "md", "dt.md");
   const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
   const allEntries = parseDynamicEntries(dynamicMd);
   return allEntries.map((entry) => ({
@@ -97,7 +97,7 @@ const { entry } = Astro.props as {
 
     <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
     <script is:inline src="/assets/js/dynamic-gallery.js"></script>
-    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/pages/blog/dt/detail.js"></script>
     <script is:inline src="/assets/js/dynamic-interactions.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>

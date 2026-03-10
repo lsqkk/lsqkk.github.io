@@ -6,7 +6,7 @@ import { parseDynamicEntries } from "../../../../utils/dynamic-entries";
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
-const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "pages", "blog", "dt", "dt.md");
+const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
 const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
 const dynamicEntries = parseDynamicEntries(dynamicMd);
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
@@ -54,7 +54,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </div>
     <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
     <script is:inline src="/assets/js/dynamic-gallery.js"></script>
-    <script is:inline src="https://api.130923.xyz/api/firebase-config?v=1"></script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/pages/blog/dt/dt.js"></script>
     <script is:inline src="/assets/js/dynamic-interactions.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>

@@ -87,7 +87,7 @@ function reloadFirebaseConfig() {
 
         const script = document.createElement('script');
         script.id = scriptId;
-        script.src = `https://api.130923.xyz/api/firebase-config?v=${Date.now()}`;
+        script.src = `__API_BASE__/api/firebase-config?v=${Date.now()}`;
 
         script.onload = () => {
             console.log('📦 配置脚本加载完成');

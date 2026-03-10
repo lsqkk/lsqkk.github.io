@@ -15,7 +15,7 @@ async function loadDynamic() {
         if (preloaded.length > 0) {
             allEntries = normalizeEntries(preloaded);
         } else {
-            const response = await fetch('/assets/pages/blog/dt/dt.md');
+            const response = await fetch('/assets/md/dt.md');
             const mdContent = await response.text();
             allEntries = parseDynamicEntries(mdContent);
         }

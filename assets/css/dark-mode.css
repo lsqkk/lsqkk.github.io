@@ -121,55 +121,73 @@
         background: rgba(2, 6, 23, 0.55);
     }
 
+    .post-annotation-modal {
+        background: rgba(2, 6, 23, 0.68) !important;
+    }
+
     .post-annotation-popover,
     .post-annotation-tooltip,
     .post-annotation-modal-panel {
-        background: rgba(15, 23, 42, 0.92);
-        border-color: rgba(148, 163, 184, 0.25);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-        color: #dbe7fb;
+        background: rgba(15, 23, 42, 0.92) !important;
+        border-color: rgba(148, 163, 184, 0.25) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+        color: #dbe7fb !important;
     }
 
     .post-annotation-modal-title,
     .post-annotation-user,
     .post-annotation-comment-text {
-        color: #e2ecff;
+        color: #e2ecff !important;
     }
 
     .post-annotation-quote {
-        color: #dbe7fb;
-        background: rgba(30, 41, 59, 0.8);
-        border-left-color: rgba(96, 165, 250, 0.6);
+        color: #dbe7fb !important;
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-left-color: rgba(96, 165, 250, 0.6) !important;
     }
 
     .post-annotation-profile {
-        background: rgba(30, 41, 59, 0.7);
-        border-color: rgba(148, 163, 184, 0.25);
+        background: rgba(30, 41, 59, 0.7) !important;
+        border-color: rgba(148, 163, 184, 0.25) !important;
     }
 
     .post-annotation-comment {
-        background: rgba(15, 23, 42, 0.82);
-        border-color: rgba(148, 163, 184, 0.25);
+        background: rgba(15, 23, 42, 0.82) !important;
+        border-color: rgba(148, 163, 184, 0.25) !important;
     }
 
     .post-annotation-comment-time {
-        color: #a5b7d6;
+        color: #a5b7d6 !important;
     }
 
     .post-annotation-comment-actions button {
-        background: rgba(30, 41, 59, 0.9);
-        color: #d6e5ff;
+        background: rgba(30, 41, 59, 0.9) !important;
+        color: #d6e5ff !important;
     }
 
     .post-annotation-form textarea,
     .post-annotation-profile-row input[type="text"] {
-        background: rgba(15, 23, 42, 0.9);
-        border-color: rgba(148, 163, 184, 0.35);
-        color: #e2ecff;
+        background: rgba(15, 23, 42, 0.9) !important;
+        border-color: rgba(148, 163, 184, 0.35) !important;
+        color: #e2ecff !important;
+    }
+
+    .post-annotation-btn,
+    .post-annotation-comment-actions button {
+        border-color: rgba(148, 163, 184, 0.35) !important;
     }
 
     .post-annotation-close {
-        color: #b3c6e6;
+        color: #b3c6e6 !important;
+    }
+
+    .index-announcement-title,
+    .index-announcement-body {
+        color: #d8e7fb !important;
+    }
+
+    .post-annotation-empty {
+        color: #b8cbe6 !important;
     }
 
     .sidebar h4,

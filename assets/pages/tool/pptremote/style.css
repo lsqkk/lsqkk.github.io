@@ -163,3 +163,36 @@ h2 {
     max-height: 150px;
     overflow-y: auto;
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #dce8fb;
+    }
+
+    .card-remote {
+        background-color: rgba(17, 28, 46, 0.7);
+        border: 1px solid rgba(138, 173, 220, 0.35);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    h2 {
+        color: #e2ecff;
+    }
+
+    .remote-input {
+        background-color: rgba(12, 20, 36, 0.92);
+        border-color: rgba(148, 163, 184, 0.35);
+        color: #e2ecff;
+    }
+
+    #projector-status-box {
+        border-color: rgba(90, 132, 200, 0.6);
+        background-color: rgba(16, 27, 46, 0.7);
+    }
+
+    #status-remote {
+        background-color: rgba(12, 20, 36, 0.88);
+        border-color: rgba(148, 163, 184, 0.25);
+        color: #d6e6ff;
+    }
+}

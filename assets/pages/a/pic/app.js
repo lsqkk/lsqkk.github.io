@@ -197,7 +197,7 @@ async function loadExemptIps() {
 
 async function getClientIp() {
     try {
-        const resp = await fetch('https://api.130923.xyz/api/ip', { cache: 'no-store' });
+        const resp = await fetch('__API_BASE__/api/ip', { cache: 'no-store' });
         if (resp.ok) {
             const data = await resp.json();
             if (data && data.ip) {

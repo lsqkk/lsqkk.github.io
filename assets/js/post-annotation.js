@@ -163,7 +163,7 @@
             await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'firebase-db-sdk');
         }
         if (typeof window.firebaseConfig === 'undefined') {
-            await loadScript(`https://api.130923.xyz/api/firebase-config?v=${Date.now()}`, 'post-anno-firebase-config');
+            await loadScript(`__API_BASE__/api/firebase-config?v=${Date.now()}`, 'post-anno-firebase-config');
             await waitFor(() => typeof window.firebaseConfig !== 'undefined', 15000);
         }
         if (!window.firebase.apps || !window.firebase.apps.length) {
