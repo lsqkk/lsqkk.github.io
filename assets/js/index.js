@@ -166,6 +166,10 @@ function checkLoginStatus() {
         if (loginButton) loginButton.style.display = 'block';
         if (mobileLoginButton) mobileLoginButton.style.display = 'block';
     }
+
+    if (typeof window.renderNavUserProfile === 'function') {
+        window.renderNavUserProfile();
+    }
 }
 
 // 在DOM加载完成后检查登录状态

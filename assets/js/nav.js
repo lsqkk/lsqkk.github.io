@@ -542,6 +542,8 @@ function renderUserProfile() {
     if (mobileUser) mobileUser.innerHTML = wrapped;
 }
 
+window.renderNavUserProfile = renderUserProfile;
+
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
     initializeTranslation();

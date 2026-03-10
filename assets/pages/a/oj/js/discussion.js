@@ -115,6 +115,15 @@ window.updateAvatar = function (type) {
         avatarPreview.style.cssText = preview.style;
         avatarPreview.textContent = preview.content;
     }
+
+    if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+        window.QuarkUserProfile.syncProfile({
+            nickname,
+            avatarType: userAvatarType,
+            avatarColor: userColor,
+            avatarUrl: userAvatarUrl
+        });
+    }
 }
 
 /**
@@ -128,6 +137,20 @@ function initAvatarToggle() {
     const nicknameInput = document.getElementById('nickname');
 
     if (!nicknameInput || !colorToggle) return; // 确保表单元素存在
+
+    const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+        ? window.QuarkUserProfile.getProfile()
+        : null;
+    if (profile) {
+        if (profile.nickname) nickname = profile.nickname;
+        if (profile.avatarUrl) {
+            userAvatarType = 'image';
+            userAvatarUrl = profile.avatarUrl;
+        } else if (profile.avatarColor) {
+            userAvatarType = 'color';
+            userColor = profile.avatarColor;
+        }
+    }
 
     document.getElementById('colorPicker').value = userColor;
     document.getElementById('avatarUrl').value = userAvatarUrl;
