@@ -1,3 +1,68 @@
+# 今日更新
+
+## 日期：2026-03-08
+
+当年何尊的主人何，或是他手下的奴隶，在器底刻下“宅兹中国”几个字时，完全不会想到三千多年后它们会被解读出什么。对他们而言只是指这中央之地罢了。
+而从人类第一次擦出火花，到何尊诞生，用了大约三十多万年。从青铜时代进化到铁器时代，过了一千多年。
+从山顶洞人的穴居，洞里开始住人，到唐代工匠为秦王挖出长墓道，洞里可以住死人，过了几万年。从墓门合上的那一刻，到民族实业家带领职工挖窑洞纺纱救国，住在洞里是为了救人，过了将近一千年。再从那时起，到黄土高原开始被治理，洞里不再住人，不过几十年。
+从计算机雏形问世，到第一代移动通信标准诞生，花了近百年。从1G到5G，又花了四十年。而从5G诞生到现在普及，过了不到六年。
+每个时代的人都活在自己的当下。我们和那个“何”一样不知道未来会怎样，甚至，我们所能预见的未来正变得越来越短。
+就像给秦王挖坟的工匠未必知道墓道会成为风景，百年前的计算机先驱未必想到计算机会走进千家万户，我也不知道此刻拍下的照片会在手机里停留多久，我几乎什么都不知道。
+但我知道此刻风景很好，我满载而归。
+这样就够了。
+
+![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEHVSC1O.L79emBst5F83brobijFBml8q6bne8SSqAO4E4vXH4OcvOKqIVJt91otC9paFrYxDHcUwLdTHS8lE1Fw!/b&bo=VQhABlUIQAYWECA!)
+
+![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEHVSC1O.L79emBst5F83brpDxydF8BPgoHcGv1PbcFUMj2.aE3vEzuTNHtBabhLFqkWh5DNNr2dPr6uGJkKSWrA!/b&bo=QAZVCEAGVQgWECA!)
+
+![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEHVSC1O.L79emBst5F83brr36i1j4f52oBQtm*EX.rzb3foQvqBf73I08F*rlceiZUuMPKEZY0me7siHRp4rEkU!/b&bo=QAZVCEAGVQgWECA!)
+
+![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEHVSC1O.L79emBst5F83brrsqj5sq86iYXIPzX5iZr5J0Ur.ktOKD0qAMQgblGPY*GDmIDarCOWB4rmuqNOn5NE!/b&bo=QAZVCEAGVQgWECA!)
+
+![img_5](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJK29BbPLH4vyhx.5qu2PMfC8ZXWhwlkP42xU1aHCUxRP*Eo*1M1aiYbeyE1DV4..1Ype5F0srnPhriYN*SC7ss!/b&bo=VQhABlUIQAYWECA!)
+
+![img_6](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJK29BbPLH4vyhx.5qu2PMeE2*ojcSatQiuuITTB9lf5iblC7bVum72bcNfbG2Cfarfii.HNnOxsRyKtTQSeyNs!/b&bo=VQhABlUIQAYWECA!)
+
+![img_7](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJK29BbPLH4vyhx.5qu2PMeH2uAwZ.IsPJGrIv2ovcbMk2GIycOXfXHD9cCABSsRFBPMKGR5*74Ji.NpSI2K2Fc!/b&bo=QAZVCEAGVQgWECA!)
+
+![img_8](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJK29BbPLH4vyhx.5qu2PMcFdSR66GakXOhSbaYm*4r.Y1DFJQ9vsDHFR6315wPAb7iw5QUdly4FgppsmQrSF8g!/b&bo=QAZVCEAGVQgWECA!)
+
+![img_9](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEJ0UqJu6bRySHfmbYA6al03P8PUq96GOu3n.GCyKJTlJdOMWf9vWF6b7u5vXhxvt963K4oRNU40X80qWnK4XIVo!/b&bo=QAZVCEAGVQgWECA!)
+
+# 一个原神的世界，包括原神高速
+
+## 日期：2026-03-04
+
+一个原神的世界，包括原神高速
+这期神了
+这倒启发了我
+我想动员你们一起玩图寻
+
+![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEB5l9VLVPPI.rAQ6AWTj6UU*c5RP8dBPJfTfJmr4b6ADzaO5rWifkZTAy01GZvnNX5hLN68OmOSz2Rxa6XyLAGU!/b&bo=AAUXAgAFFwIWECA!)
+
+![img_2](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEB5l9VLVPPI.rAQ6AWTj6UWrcY.nGZYUczI51407IAYIALssIBM52024Bx475uhg7DSBSlLdNe4rFWttyevyZoA!/b&bo=AAXUCgAF1AoWECA!)
+
+![img_3](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEB5l9VLVPPI.rAQ6AWTj6UXoYGBlby1ShHzD0SdKIH6EA.VvN2SrNbALy*OKuN6tGEeMuCicdVlT7JgjqBpoUEs!/b&bo=AAXUCgAF1AoWECA!)
+
+![img_4](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEB5l9VLVPPI.rAQ6AWTj6UVJWi.4I0NrzWPLh21TV.tUgwN7D0rzDF*fn.ZYoubIxsLEB12YZouNxG1n2R.zXMY!/b&bo=AAXUCgAF1AoWECA!)
+
+# 今日更新
+
+## 日期：2026-03-03
+
+拍到了十年难遇的元宵月全食[em]e400096[/em]
+
+![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEOzaLLEY.QtquJZ.iAz5pwt5Yf5IFoB8OS*SOq1uHvf9OmvkaNzjYlsUaPUyw6rwJjer6MqtLeX8VpVwH8ju*Hc!/b&bo=QAb1CEAG9QgDEDU!)
+
+# 今日更新
+
+## 日期：2026-02-16
+
+迎新纳福家和美，来喜得金身康泰
+好对好对
+
+![img_1](http://photonjmaz.photo.store.qq.com/psc?/V10Kcv9Z2KOSmR/TmEUgtj9EK6.7V8ajmQrEFSPE3LqKPowTX2GBgVOAacTIVGuYqsCoIm*hw.wuXqkaOvTmNfMDjUPqDKEOmWsqhxmaJOu3*7zH3*qqDYaEhg!/b&bo=QAZVCEAGVQgWECA!)
+
 # 美赛已提交
 
 ## 日期：2026-02-02
