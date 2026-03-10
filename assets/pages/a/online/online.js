@@ -57,21 +57,61 @@
         });
     }
 
-    function waitForFirebaseConfig(timeout = 20000) {
-        return new Promise((resolve, reject) => {
-            const start = Date.now();
+    function getFirebaseConfig() {
+        return window.firebaseConfig || window._firebaseConfig || null;
+    }
+
+    function waitForFirebaseConfig() {
+        return new Promise((resolve) => {
+            const existingConfig = getFirebaseConfig();
+            if (existingConfig && existingConfig.projectId) {
+                resolve(existingConfig);
+                return;
+            }
+
+            window.__firebaseConfigLoaded = (config) => {
+                if (typeof config === 'object' && config.projectId) {
+                    window.firebaseConfig = config;
+                    resolve(config);
+                }
+            };
+
+            Object.defineProperty(window, 'firebaseConfig', {
+                set(value) {
+                    if (value && value.projectId) {
+                        resolve(value);
+                    }
+                    this._firebaseConfig = value;
+                },
+                get() {
+                    return this._firebaseConfig;
+                },
+                configurable: true
+            });
+
             const timer = window.setInterval(() => {
-                const config = window.firebaseConfig || window._firebaseConfig;
+                const config = getFirebaseConfig();
                 if (config && config.projectId) {
                     window.clearInterval(timer);
                     resolve(config);
-                    return;
                 }
-                if (Date.now() - start > timeout) {
-                    window.clearInterval(timer);
-                    reject(new Error('firebase config timeout'));
-                }
-            }, 200);
+            }, 300);
+        });
+    }
+
+    function reloadFirebaseConfig() {
+        return new Promise((resolve) => {
+            const scriptId = 'online-firebase-config';
+            const existing = document.getElementById(scriptId);
+            if (existing) existing.remove();
+
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `${API_BASE}/api/firebase-config?v=${Date.now()}`;
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.head.appendChild(script);
         });
     }
 
@@ -82,8 +122,8 @@
             await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'online-firebase-db');
         }
         if (!window.firebaseConfig) {
-            await loadScript(`${API_BASE}/api/firebase-config?v=${Date.now()}`, 'online-firebase-config');
-            await waitForFirebaseConfig(20000);
+            await reloadFirebaseConfig();
+            await waitForFirebaseConfig();
         }
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(window.firebaseConfig);

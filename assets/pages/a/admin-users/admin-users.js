@@ -75,34 +75,62 @@
         });
     }
 
+    function getFirebaseConfig() {
+        return window.firebaseConfig || window._firebaseConfig || null;
+    }
+
     function waitForFirebaseConfig() {
         return new Promise((resolve) => {
+            const existingConfig = getFirebaseConfig();
+            if (existingConfig && existingConfig.projectId) {
+                resolve(existingConfig);
+                return;
+            }
+
+            window.__firebaseConfigLoaded = (config) => {
+                if (typeof config === 'object' && config.projectId) {
+                    window.firebaseConfig = config;
+                    resolve(config);
+                }
+            };
+
+            Object.defineProperty(window, 'firebaseConfig', {
+                set(value) {
+                    if (value && value.projectId) {
+                        resolve(value);
+                    }
+                    this._firebaseConfig = value;
+                },
+                get() {
+                    return this._firebaseConfig;
+                },
+                configurable: true
+            });
+
             const timer = window.setInterval(() => {
-                const config = window.firebaseConfig || window._firebaseConfig;
+                const config = getFirebaseConfig();
                 if (config && config.projectId) {
                     window.clearInterval(timer);
                     resolve(config);
-                    return;
                 }
-            }, 200);
+            }, 300);
         });
     }
 
-    async function loadFirebaseConfigWithRetry() {
-        const scriptId = 'admin-firebase-config';
-        let attempt = 0;
-        while (!(window.firebaseConfig && window.firebaseConfig.projectId)) {
-            attempt += 1;
-            const bust = Date.now();
-            try {
-                const existing = document.getElementById(scriptId);
-                if (existing) existing.remove();
-                await loadScript(`${API_BASE}/api/firebase-config?v=${bust}_${attempt}`, scriptId);
-            } catch (error) {
-                console.warn('Firebase 配置加载失败，稍后重试:', error);
-            }
-            await new Promise((resolve) => window.setTimeout(resolve, 1500));
-        }
+    function reloadFirebaseConfig() {
+        return new Promise((resolve) => {
+            const scriptId = 'admin-firebase-config';
+            const existing = document.getElementById(scriptId);
+            if (existing) existing.remove();
+
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `${API_BASE}/api/firebase-config?v=${Date.now()}`;
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.head.appendChild(script);
+        });
     }
 
     async function ensureFirebase() {
@@ -112,7 +140,7 @@
             await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'admin-firebase-db');
         }
         if (!window.firebaseConfig) {
-            await loadFirebaseConfigWithRetry();
+            await reloadFirebaseConfig();
             await waitForFirebaseConfig();
         }
         if (!window.firebase.apps || !window.firebase.apps.length) {
