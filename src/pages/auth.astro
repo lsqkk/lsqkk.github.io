@@ -25,7 +25,18 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         fetchGithubUser(code).then((user) => {
           if (user) {
             localStorage.setItem("github_user", JSON.stringify(user));
+            localStorage.removeItem("github_user_error");
+          } else {
+            localStorage.setItem("github_user_error", JSON.stringify({
+              time: Date.now(),
+              message: "github-user fetch failed"
+            }));
           }
+        }).catch((err) => {
+          localStorage.setItem("github_user_error", JSON.stringify({
+            time: Date.now(),
+            message: String(err || "unknown")
+          }));
         }).finally(() => {
           window.location.href = "/";
         });

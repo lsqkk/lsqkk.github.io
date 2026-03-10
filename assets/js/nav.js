@@ -477,6 +477,22 @@ function getUserProfile() {
     return null;
 }
 
+function readGithubUserFallback() {
+    const raw = localStorage.getItem('github_user');
+    if (!raw) return null;
+    try {
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== 'object') return null;
+        return {
+            nickname: data.name || data.login || data.nickname || '',
+            avatarUrl: data.avatar_url || data.avatarUrl || data.avatar || '',
+            profileUrl: data.html_url || data.profileUrl || ''
+        };
+    } catch {
+        return null;
+    }
+}
+
 function renderUserProfile() {
     let profile = getUserProfile();
     const headerUser = document.getElementById('header-user');
@@ -484,6 +500,13 @@ function renderUserProfile() {
     if (!headerUser && !mobileUser) return;
 
     const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+    if (!profile || (!profile.nickname && !profile.avatarUrl)) {
+        const fallback = readGithubUserFallback();
+        if (fallback && (fallback.nickname || fallback.avatarUrl)) {
+            profile = fallback;
+        }
+    }
+
     if (!profile || (!profile.nickname && !profile.avatarUrl)) {
         if (!isLoggedIn) {
             if (headerUser) headerUser.innerHTML = '';
@@ -530,6 +553,17 @@ function initializeAll() {
     setTimeout(() => {
         checkLoginStatus();
     }, 100);
+
+    window.addEventListener('storage', (event) => {
+        if (!event || !event.key) return;
+        if (event.key === 'github_user' || event.key === 'github_code' || event.key === 'quark_user_profile') {
+            checkLoginStatus();
+        }
+    });
+
+    window.addEventListener('quark-user-updated', () => {
+        checkLoginStatus();
+    });
 }
 
 function initializeNavThemeMode() {

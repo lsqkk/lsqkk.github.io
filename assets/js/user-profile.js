@@ -49,6 +49,11 @@
         if (profile.avatarColor) localStorage.setItem('postAnnoAvatarColor', profile.avatarColor);
         if (profile.avatarUrl) localStorage.setItem('postAnnoAvatarUrl', profile.avatarUrl);
         localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+        try {
+            window.dispatchEvent(new CustomEvent('quark-user-updated', { detail: profile }));
+        } catch {
+            // ignore
+        }
     }
 
     function getProfile() {
