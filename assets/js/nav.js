@@ -121,7 +121,7 @@ function generateNavHTML(config) {
             </div>
             <div class="header-right">
                 <div class="header-search">
-                    <input type="text" id="searchInput" placeholder="搜索文章...">
+                    <input type="text" id="searchInput" placeholder="搜索站内...">
                     <button onclick="handleGlobalSearch()">搜索</button>
                 </div>
                 <div class="header-login" id="header-login"><a href="${config.login.url}">登录</a></div>
@@ -146,7 +146,7 @@ function generateNavHTML(config) {
                 </ul>
             </div>
             <div class="navsidebar-search">
-                <input type="text" id="mobileSearchInput" placeholder="搜索文章...">
+                <input type="text" id="mobileSearchInput" placeholder="搜索站内...">
                 <button onclick="handleMobileSearch()">搜索</button>
             </div>
             <div class="navsidebar-controls">
@@ -189,10 +189,10 @@ function handleGlobalSearch() {
             window.searchBlog();
         }
     } else {
-        // 如果在其他页面，跳转到文章列表页并传递搜索参数
+        // 如果在其他页面，跳转到全站搜索页
         const searchParams = new URLSearchParams();
-        searchParams.set('search', searchTerm);
-        window.location.href = `/posts?${searchParams.toString()}`;
+        searchParams.set('q', searchTerm);
+        window.location.href = `/search?${searchParams.toString()}`;
     }
 }
 
@@ -207,10 +207,10 @@ function handleMobileSearch() {
     // 关闭侧边栏
     closeSidebar();
 
-    // 跳转到搜索页面
+    // 跳转到全站搜索页面
     const searchParams = new URLSearchParams();
-    searchParams.set('search', searchTerm);
-    window.location.href = `/posts?${searchParams.toString()}`;
+    searchParams.set('q', searchTerm);
+    window.location.href = `/search?${searchParams.toString()}`;
 }
 
 // 侧边栏控制函数

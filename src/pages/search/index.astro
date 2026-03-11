@@ -1,0 +1,37 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+const pageTitle = `站内搜索 - ${SITE_TITLE}`;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{pageTitle}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/css/site-search.css" />
+    <script is:inline src="/assets/js/nav.js"></script>
+  </head>
+  <body>
+    <div class="search-shell">
+      <div class="search-header">
+        <h1>站内搜索</h1>
+        <p>支持文章与站点页面，来源于站点地图。</p>
+      </div>
+      <div class="search-box">
+        <input type="text" id="siteSearchInput" placeholder="输入关键词，按回车搜索..." />
+        <button id="siteSearchBtn">搜索</button>
+      </div>
+      <div class="search-actions">
+        <a id="bingSearchLink" class="bing-link" href="https://cn.bing.com/search?q=site%3Alsqkk.github.io" target="_blank" rel="noreferrer">使用必应全站搜索</a>
+      </div>
+      <div id="siteSearchStatus" class="search-status">请输入关键词开始搜索</div>
+      <div id="siteSearchResults" class="search-results"></div>
+    </div>
+
+    <script is:inline src="/assets/js/site-search.js"></script>
+  </body>
+</html>
