@@ -892,6 +892,7 @@ body {
     }
 }
 
+
 @media (prefers-color-scheme: dark) {
     :root {
         --bg-tint: rgba(5, 10, 22, 0.72);

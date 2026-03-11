@@ -63,7 +63,7 @@
 }
 
 .header-login {
-    display: none;
+    display: flex;
 }
 
 .header-login a {
@@ -426,9 +426,6 @@
 /* PC端样式 */
 @media (min-width: 769px) {
     .mobile-navsidebar {
-        display: none;
-    }
-    .header-login {
         display: none;
     }
 }
