@@ -31,6 +31,38 @@
       <content:encoded><![CDATA[新名词之争：教育理念不是话语权竞赛 近期在教育领域出现了一种值得警惕的观点：将那些对层出不穷的教学新概念提出质疑的声音，简单粗暴地贴上“固步自封”、“输给时代”的标签。这种观点往往以一种不容置疑的姿态出现，好像宣称： 只要批评诸如“项目式学习”、“大单元教学”、“AI赋能课堂”等新名词，便意味着批判者已经陷入了某种认知上的失败！ 实际上，将复杂教育讨论简化为二元对立的叙事，不仅无助于教育实践的真正进步，反而可能掩盖了更为深刻的结构性问题]]></content:encoded>
     </item>
     <item>
+      <title>香橙派AI Pro综合开发笔记 - 1</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/1</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/1</guid>
+      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+      <description>香橙派, 开发, 后端</description>
+      <content:encoded><![CDATA[香橙派AI Pro综合开发笔记 1 0. 系统初始化与基础连接 0.1 硬件连接与首次启动 1. 硬件准备 ：将存储有官方Ubuntu系统镜像的TF卡插入香橙派卡槽，通过HDMI线连接显示器，连接USB键盘鼠标，最后连接电源适配器。 2. 系统启动 ：上电后，系统将自动启动。首次启动可能需完成新用户创建、语言时区设置等初始化配置。默认用户通常为 ，部分镜像可能为 。 3. 网络连接（桌面环境） ： 点击桌面右上角网络图标，选择可用的Wi]]></content:encoded>
+    </item>
+    <item>
+      <title>香橙派AI Pro综合开发笔记 - 2</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/2</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/2</guid>
+      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+      <description>香橙派, 开发, 后端</description>
+      <content:encoded><![CDATA[香橙派AI Pro综合开发笔记 2 4. Docker容器化环境配置与管理 4.1 Docker引擎安装与验证 1. 安装Docker CE ：通过官方仓库安装稳定版本。 2. 验证安装 ： 成功运行将看到“Hello from Docker!”的欢迎信息。 4.2 解决Docker权限与网络问题 权限拒绝错误（Permission Denied） ：默认情况下，需 执行Docker命令。 解决方案 ：将当前用户加入 组，使其无需 。 ]]></content:encoded>
+    </item>
+    <item>
+      <title>香橙派AI Pro综合开发笔记 - 3</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/3</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/3</guid>
+      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+      <description>香橙派, 开发, 后端</description>
+      <content:encoded><![CDATA[香橙派AI Pro综合开发笔记 3 8. OLLAMA本地AI模型服务部署 概述 Ollama是一个用于在本地运行、管理和部署大型语言模型（LLM）的开源工具。它通过容器化部署，将模型的下载、加载和推理服务封装成简单的API，使得在边缘设备（如香橙派AI Pro）上运行LLM成为可能。本部分将详细阐述在CasaOS系统中部署Ollama的完整流程、配置细节、以及排查各类问题的系统化方法。 详细部署流程 1. 前期准备与环境确认 在开始部]]></content:encoded>
+    </item>
+    <item>
+      <title>香橙派AI Pro综合开发笔记 - 4</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/4</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/4</guid>
+      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+      <description>香橙派, 开发, 后端</description>
+      <content:encoded><![CDATA[香橙派AI Pro综合开发笔记 4 10. 服务器Nginx配置与管理 10.1 概述 Nginx是一个高性能的HTTP和反向代理服务器，在本项目中承担了托管网站（WordPress）的核心任务。在基于ARM架构的香橙派上部署Nginx，需要特别注意其与现有服务（如CasaOS网关）的兼容性与资源协调。 10.2 安装与基础配置 通过包管理器安装Nginx是最佳实践： 安装后，关键目录结构如下： : 主配置目录。 : 主配置文件。 : ]]></content:encoded>
+    </item>
+    <item>
       <title>《信息哲学概论》课程论文</title>
       <link>https://lsqkk.github.io/posts/2025/2517</link>
       <guid isPermaLink="true">https://lsqkk.github.io/posts/2025/2517</guid>
@@ -229,6 +261,14 @@
       <pubDate>Sun, 27 Nov 2022 16:00:00 GMT</pubDate>
       <description>C++</description>
       <content:encoded><![CDATA[C++输出谢尔宾斯基三角形 2022年11月28日 谢尔宾斯基三角形 （Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。 我们可以这样做一个谢尔宾斯基三角形： 1. 取一个实心的三角形。（最好是等边三角形） 2. 沿三边中点的连线，将它分成四个小三角形。 3. 去掉中间的那一个小三角形。 4. 对其余三个小三角形重复1。 下面是用C++代码模拟的过程：]]></content:encoded>
+    </item>
+    <item>
+      <title>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/index</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/index</guid>
+      <pubDate>Wed, 31 Dec 1969 16:00:00 GMT</pubDate>
+      <description>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的</description>
+      <content:encoded><![CDATA[香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的]]></content:encoded>
     </item>
   </channel>
 </rss>
