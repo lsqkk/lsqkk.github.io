@@ -65,8 +65,8 @@ def process_commits(commits, output_file='output_commits.txt'):
 
 def main():
     # 设置日期范围（可以修改这里的时间）
-    since_date = "2026-02-06"
-    until_date = "2026-03-08"
+    since_date = "2026-03-09"
+    until_date = "2026-03-11"
     
     # 或者使用命令行参数（如果提供了的话）
     if len(sys.argv) > 2:
@@ -84,7 +84,7 @@ def main():
     
     if commits:
         # 处理提交记录
-        output_file = f'assets\pages\\blog\log\commits_{since_date}_to_{until_date}.txt'
+        output_file = f'assets\md\commits_{since_date}_to_{until_date}.txt'
         process_commits(commits, output_file)
         
         # 可选：在控制台显示结果
