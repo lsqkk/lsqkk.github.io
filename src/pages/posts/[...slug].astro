@@ -1,8 +1,10 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import PostLayout from "../../layouts/PostLayout.astro";
+import { buildPostCaseMap, resolveCaseSlug } from "../../utils/post-case-map";
 
 type PostEntry = CollectionEntry<"posts">;
+
 
 function normalizeDate(date: unknown): string {
   if (!date) return "1970-01-01";
@@ -43,9 +45,9 @@ function getWordCount(entry: PostEntry): number {
 }
 
 export async function getStaticPaths() {
-  const posts = await getCollection("posts");
+  const [posts, caseMap] = await Promise.all([getCollection("posts"), buildPostCaseMap()]);
   return posts.map((post) => ({
-    params: { slug: post.id.replace(/\.md$/i, "") },
+    params: { slug: resolveCaseSlug(post.id.replace(/\.md$/i, ""), caseMap) },
     props: { post },
   }));
 }
@@ -57,7 +59,8 @@ const tags = normalizeTags(post.data.tags);
 const columns = normalizeColumns((post.data as any).columns ?? (post.data as any).column ?? (post.data as any)["专栏"]);
 const wordCount = getWordCount(post);
 const mdFile = post.id.split("/").pop() || post.id;
-const currentPostPath = post.id.replace(/\.md$/i, "");
+const caseMap = await buildPostCaseMap();
+const currentPostPath = resolveCaseSlug(post.id.replace(/\.md$/i, ""), caseMap);
 
 const allPosts = await getCollection("posts");
 const sortedPosts = [...allPosts].sort((a, b) => {
@@ -84,9 +87,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   mdFile={mdFile}
   currentPostPath={currentPostPath}
   prevPostTitle={prevPost ? extractTitle(prevPost) : ""}
-  prevPostUrl={prevPost ? `/posts/${prevPost.id.replace(/\.md$/i, "")}` : ""}
+  prevPostUrl={prevPost ? `/posts/${resolveCaseSlug(prevPost.id.replace(/\.md$/i, ""), caseMap)}` : ""}
   nextPostTitle={nextPost ? extractTitle(nextPost) : ""}
-  nextPostUrl={nextPost ? `/posts/${nextPost.id.replace(/\.md$/i, "")}` : ""}
+  nextPostUrl={nextPost ? `/posts/${resolveCaseSlug(nextPost.id.replace(/\.md$/i, ""), caseMap)}` : ""}
 >
   <Content />
 </PostLayout>

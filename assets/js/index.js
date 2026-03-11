@@ -167,15 +167,18 @@ function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
     const loginButton = document.getElementById('login-button');
     const mobileLoginButton = document.getElementById('mobile-login-button');
+    const headerLoginButton = document.getElementById('header-login');
 
     if (isLoggedIn) {
         // 隐藏电脑端和移动端的登录按钮
         if (loginButton) loginButton.style.display = 'none';
         if (mobileLoginButton) mobileLoginButton.style.display = 'none';
+        if (headerLoginButton) headerLoginButton.style.display = 'none';
     } else {
         // 确保登录按钮显示（可能在之前被隐藏了）
         if (loginButton) loginButton.style.display = 'block';
         if (mobileLoginButton) mobileLoginButton.style.display = 'block';
+        if (headerLoginButton) headerLoginButton.style.display = 'flex';
     }
 
     if (typeof window.renderNavUserProfile === 'function') {

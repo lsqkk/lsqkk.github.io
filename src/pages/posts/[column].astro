@@ -1,8 +1,11 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { buildPostCaseMap, resolveCaseSlug } from "../../utils/post-case-map";
 
 type PostEntry = CollectionEntry<"posts">;
+
+
 
 function normalizeDate(date: unknown): string {
   if (!date) return "1970-01-01";
@@ -69,6 +72,7 @@ export async function getStaticPaths() {
   }));
 }
 
+const caseMap = await buildPostCaseMap();
 const { column, columnPosts } = Astro.props as { column: string; columnPosts: PostEntry[] };
 const sortedPosts = [...columnPosts].sort((a, b) => normalizeDate(b.data.date).localeCompare(normalizeDate(a.data.date)));
 const currentYear = new Date().getFullYear();
@@ -104,7 +108,10 @@ const currentYear = new Date().getFullYear();
             const wc = wordCount(post);
             const rt = readTime(post);
             return (
-              <a class="post-item post-item-link column-post-item" href={`/posts/${post.id.replace(/\.md$/i, "")}`}>
+              <a
+                class="post-item post-item-link column-post-item"
+                href={`/posts/${resolveCaseSlug(post.id.replace(/\.md$/i, ""), caseMap)}`}
+              >
                 <div class="post-title">{title}</div>
                 <div class="post-date">{date}</div>
                 <div class="post-tags">
