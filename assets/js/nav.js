@@ -534,7 +534,7 @@ function renderUserProfile() {
 
     const avatarUrl = profile.avatarUrl || '/assets/img/touxiang.png';
     const nickname = profile.nickname || '已登录';
-    const profileUrl = profile.profileUrl || '';
+    const profileUrl = isLoggedIn ? '/a/account' : (profile.profileUrl || '');
     const inner = `
         <div class="user-pill">
             <img class="user-avatar" src="${avatarUrl}" alt="avatar">
@@ -542,7 +542,9 @@ function renderUserProfile() {
         </div>
     `;
     const wrapped = profileUrl
-        ? `<a class="user-link" href="${profileUrl}" target="_blank" rel="noreferrer">${inner}</a>`
+        ? (profileUrl.startsWith('/a/')
+            ? `<a class="user-link" href="${profileUrl}">${inner}</a>`
+            : `<a class="user-link" href="${profileUrl}" target="_blank" rel="noreferrer">${inner}</a>`)
         : inner;
 
     if (headerUser) headerUser.innerHTML = wrapped;

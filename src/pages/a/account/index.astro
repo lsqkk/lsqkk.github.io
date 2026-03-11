@@ -1,0 +1,139 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>账号中心 | {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/pages/a/account/account.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+    </script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/js/user-profile.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <meta name="referrer" content="never" />
+  </head>
+  <body class="account-body">
+    <div class="account-shell">
+      <header class="account-hero">
+        <div>
+          <p class="account-kicker">Account Center</p>
+          <h1 class="account-title">账号中心</h1>
+          <p class="account-subtitle">管理你的昵称、头像与资料，同步到全站评论与展示。</p>
+        </div>
+        <div class="account-metrics">
+          <div class="metric">
+            <span class="metric-label">注册时间</span>
+            <strong class="metric-value" id="accountCreatedAt">-</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">已加入</span>
+            <strong class="metric-value" id="accountAge">-</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="account-grid">
+        <section class="account-card">
+          <div class="card-header">
+            <h2>基础资料</h2>
+            <p>这些信息将同步到评论、动态与在线展示。</p>
+          </div>
+          <div class="profile-row">
+            <div class="avatar-panel">
+              <div class="avatar-preview" id="avatarPreview">
+                <img id="avatarImage" alt="avatar" />
+                <span id="avatarFallback">Q</span>
+              </div>
+              <div class="avatar-actions">
+                <label class="btn primary">
+                  上传头像
+                  <input type="file" id="avatarFile" accept="image/*" hidden />
+                </label>
+                <button class="btn ghost" id="avatarClear">清除头像</button>
+                <button class="btn ghost" id="avatarFromPic">使用图床 /a/pic</button>
+              </div>
+              <div class="field">
+                <label for="avatarUrl">头像链接</label>
+                <input type="url" id="avatarUrl" placeholder="https://..." />
+                <div class="helper">支持粘贴链接，上传后将自动裁剪为正方形。</div>
+              </div>
+            </div>
+            <div class="info-panel">
+              <div class="field">
+                <label>GitHub 账号</label>
+                <input type="text" id="githubLogin" disabled />
+              </div>
+              <div class="field">
+                <label for="nicknameInput">昵称</label>
+                <input type="text" id="nicknameInput" placeholder="输入昵称" />
+              </div>
+              <div class="field">
+                <label>账户标识</label>
+                <input type="text" id="accountUid" disabled />
+                <div class="helper">同一 GitHub 账号在不同设备会合并为同一身份。</div>
+              </div>
+              <div class="field">
+                <label>本地同步</label>
+                <div class="toggle-row">
+                  <input type="checkbox" id="localSyncToggle" checked />
+                  <span>保存到本地，以便下次自动填充</span>
+                </div>
+              </div>
+              <div class="action-row">
+                <button class="btn primary" id="saveProfile">保存资料</button>
+                <button class="btn ghost" id="refreshProfile">从云端刷新</button>
+              </div>
+              <div class="status-row" id="saveStatus">等待操作</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="account-card">
+          <div class="card-header">
+            <h2>账号记录</h2>
+            <p>最近的同步与活动信息。</p>
+          </div>
+          <div class="record-grid">
+            <div class="record-item">
+              <span>最近同步</span>
+              <strong id="lastSyncAt">-</strong>
+            </div>
+            <div class="record-item">
+              <span>当前页面</span>
+              <strong id="currentPage">-</strong>
+            </div>
+            <div class="record-item">
+              <span>IP 属地</span>
+              <strong id="accountLocation">-</strong>
+            </div>
+            <div class="record-item">
+              <span>头像状态</span>
+              <strong id="avatarState">-</strong>
+            </div>
+          </div>
+          <div class="tips">
+            <p>建议使用图床上传头像，避免外链失效。你也可以在评论中继续使用此昵称与头像。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script is:inline src="/assets/pages/a/account/account.js"></script>
+  </body>
+</html>

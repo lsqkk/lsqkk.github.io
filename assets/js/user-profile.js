@@ -14,6 +14,12 @@
         }
     }
 
+    function readStoredProfile() {
+        const data = safeParse(localStorage.getItem(PROFILE_KEY));
+        if (!data || typeof data !== 'object') return null;
+        return data;
+    }
+
     function readGithubUser() {
         const raw = localStorage.getItem(GITHUB_USER_KEY);
         const data = safeParse(raw);
@@ -30,22 +36,29 @@
         const avatarUrl = (localStorage.getItem('postAnnoAvatarUrl') || '').trim();
         const avatarColor = localStorage.getItem('postAnnoAvatarColor') || '#2563eb';
         const avatarType = avatarUrl ? 'image' : (localStorage.getItem('postAnnoAvatarType') === 'image' ? 'image' : 'color');
-        return { nickname, avatarUrl, avatarColor, avatarType };
+        const stored = readStoredProfile();
+        const updatedAt = stored && typeof stored.updatedAt === 'number' ? stored.updatedAt : 0;
+        return { nickname, avatarUrl, avatarColor, avatarType, updatedAt };
     }
 
     function buildProfile() {
         const githubUser = readGithubUser();
         const local = readLocalProfile();
-        const nickname = (githubUser && githubUser.nickname) ? githubUser.nickname : (local.nickname || '');
-        const avatarUrl = (githubUser && githubUser.avatarUrl) ? githubUser.avatarUrl : (local.avatarUrl || '');
+        const nickname = local.nickname || ((githubUser && githubUser.nickname) ? githubUser.nickname : '');
+        const avatarUrl = local.avatarUrl || ((githubUser && githubUser.avatarUrl) ? githubUser.avatarUrl : '');
         const login = (githubUser && githubUser.login) ? githubUser.login : '';
         const avatarType = avatarUrl ? 'image' : local.avatarType;
         const avatarColor = local.avatarColor || '#2563eb';
         const profileUrl = (githubUser && githubUser.profileUrl) ? githubUser.profileUrl : '';
-        return { nickname, login, avatarUrl, avatarType, avatarColor, profileUrl };
+        const updatedAt = local.updatedAt || 0;
+        return { nickname, login, avatarUrl, avatarType, avatarColor, profileUrl, updatedAt };
     }
 
     function getUid() {
+        const githubUser = readGithubUser();
+        if (githubUser && githubUser.login) {
+            return `gh_${String(githubUser.login).toLowerCase()}`;
+        }
         let uid = localStorage.getItem(UID_KEY);
         if (!uid) {
             uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -60,14 +73,22 @@
         if (!profile || typeof profile !== 'object') return;
         if (syncing) return;
         syncing = true;
-        if (profile.nickname) localStorage.setItem('nickname', profile.nickname);
+        const updatedAt = typeof profile.updatedAt === 'number' ? profile.updatedAt : Date.now();
+        if (typeof profile.nickname === 'string') {
+            const nickname = profile.nickname.trim();
+            if (nickname) localStorage.setItem('nickname', nickname);
+            else localStorage.removeItem('nickname');
+        }
         if (profile.login) localStorage.setItem('github_login', profile.login);
         localStorage.setItem('postAnnoAvatarType', profile.avatarType || 'color');
         if (profile.avatarColor) localStorage.setItem('postAnnoAvatarColor', profile.avatarColor);
-        if (profile.avatarUrl) localStorage.setItem('postAnnoAvatarUrl', profile.avatarUrl);
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+        if (typeof profile.avatarUrl === 'string') {
+            if (profile.avatarUrl) localStorage.setItem('postAnnoAvatarUrl', profile.avatarUrl);
+            else localStorage.removeItem('postAnnoAvatarUrl');
+        }
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({ ...profile, updatedAt }));
         try {
-            window.dispatchEvent(new CustomEvent('quark-user-updated', { detail: profile }));
+            window.dispatchEvent(new CustomEvent('quark-user-updated', { detail: { ...profile, updatedAt } }));
         } catch {
             // ignore
         }
@@ -82,6 +103,7 @@
     window.QuarkUserProfile = {
         getProfile,
         syncProfile,
-        getUid
+        getUid,
+        getStoredProfile: readStoredProfile
     };
 })();

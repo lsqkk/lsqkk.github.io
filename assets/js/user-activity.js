@@ -22,7 +22,8 @@
             avatarUrl: '',
             avatarType: 'color',
             avatarColor: '#2563eb',
-            profileUrl: ''
+            profileUrl: '',
+            updatedAt: 0
         };
     }
 
@@ -194,7 +195,26 @@
         });
     }
 
-    async function upsertProfile(uid, profile) {
+    async function getRemoteProfile(uid) {
+        const snap = await rootRef.child(uid).child('profile').once('value');
+        return snap.val() || null;
+    }
+
+    function getLocalProfileMeta() {
+        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.getStoredProfile === 'function') {
+            return window.QuarkUserProfile.getStoredProfile();
+        }
+        return null;
+    }
+
+    function applyRemoteProfile(remote) {
+        if (!remote || typeof remote !== 'object') return false;
+        if (!window.QuarkUserProfile || typeof window.QuarkUserProfile.syncProfile !== 'function') return false;
+        window.QuarkUserProfile.syncProfile(remote);
+        return true;
+    }
+
+    async function upsertProfile(uid, profile, createdAt) {
         const ipInfo = await fetchIpInfo();
         await rootRef.child(uid).child('profile').set({
             uid,
@@ -208,6 +228,7 @@
             province: ipInfo?.province || '',
             city: ipInfo?.city || '',
             district: ipInfo?.district || '',
+            createdAt: createdAt || Date.now(),
             updatedAt: Date.now()
         });
     }
@@ -234,8 +255,21 @@
     async function run() {
         await ensureFirebaseReady();
         const uid = getUid();
-        const profile = getProfile();
-        await upsertProfile(uid, profile);
+        let profile = getProfile();
+
+        const localMeta = getLocalProfileMeta();
+        const remoteProfile = await getRemoteProfile(uid);
+        const remoteUpdatedAt = remoteProfile && typeof remoteProfile.updatedAt === 'number' ? remoteProfile.updatedAt : 0;
+        const localUpdatedAt = localMeta && typeof localMeta.updatedAt === 'number' ? localMeta.updatedAt : 0;
+        if (remoteUpdatedAt > localUpdatedAt) {
+            const applied = applyRemoteProfile(remoteProfile);
+            if (applied) {
+                profile = getProfile();
+            }
+        }
+
+        const createdAt = remoteProfile && typeof remoteProfile.createdAt === 'number' ? remoteProfile.createdAt : 0;
+        await upsertProfile(uid, profile, createdAt);
 
         if (localStorage.getItem('github_user')) {
             await recordLogin(uid, profile);
