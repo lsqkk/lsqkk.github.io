@@ -203,20 +203,21 @@ function performSearch(searchTerm) {
             const readTime = Math.ceil((post.wordCount || 0) / 400);
             const postUrl = `/posts/${post.file.replace('.md', '')}`;
 
-            const resultItem = document.createElement('a');
+            const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item post-item post-item-link';
-            resultItem.href = postUrl;
+            resultItem.setAttribute('data-href', postUrl);
             resultItem.innerHTML = `
                 <div class="post-title">${post.title}</div>
                 <div class="post-date">${post.date}</div>
                 <div class="post-tags">
                     <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
-                    ${(post.columns || []).map(column => `<span class="post-tag post-tag-column"><i class="fa-solid fa-folder"></i>${column}</span>`).join('')}
-                    ${(post.tags || ['未分类']).map(tag => `<span class="post-tag"><i class="fa-solid fa-tag"></i>${tag}</span>`).join('')}
+                    ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                    ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
                 </div>
             `;
             searchResultsContainer.appendChild(resultItem);
         });
+        bindPostCardLinks(searchResultsContainer);
     } else {
         searchResultsContainer.innerHTML = '<div style="color: #666; text-align: center;">未找到相关文章</div>';
     }
@@ -261,6 +262,31 @@ function renderTagFilter() {
                     ${tag}
                 </button>
             `).join('');
+}
+
+function bindPostCardLinks(container) {
+    if (!(container instanceof HTMLElement)) return;
+    container.querySelectorAll('.post-item-link').forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+        if (item.dataset.bound === 'true') return;
+        const href = item.getAttribute('data-href');
+        if (!href) return;
+        item.dataset.bound = 'true';
+        item.setAttribute('role', 'link');
+        item.setAttribute('tabindex', '0');
+        item.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target instanceof HTMLElement && target.closest('.tag-link')) {
+                return;
+            }
+            window.location.href = href;
+        });
+        item.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                window.location.href = href;
+            }
+        });
+    });
 }
 
 function renderColumnFilter() {
@@ -340,19 +366,23 @@ function renderPosts() {
         const postUrl = `/posts/${post.file.replace('.md', '')}`;
 
         return `
-                <a class="post-item post-item-link" href="${postUrl}">
+                <div class="post-item post-item-link" data-href="${postUrl}">
                     <div class="post-title">${post.title}</div>
                     <div class="post-date">${post.date}</div>
                     <div class="post-tags">
                         <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
-                        ${(post.columns || []).map(column => `<span class="post-tag post-tag-column"><i class="fa-solid fa-folder"></i>${column}</span>`).join('')}
-                        ${(post.tags || ['未分类']).map(tag => `<span class="post-tag"><i class="fa-solid fa-tag"></i>${tag}</span>`).join('')}
+                        ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                        ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
                     </div>
-                </a>
+                </div>
             `;
     }).join('');
 
-    document.getElementById('posts').innerHTML = list;
+    const postsContainer = document.getElementById('posts');
+    if (postsContainer) {
+        postsContainer.innerHTML = list;
+        bindPostCardLinks(postsContainer);
+    }
 }
 
 // 渲染分页

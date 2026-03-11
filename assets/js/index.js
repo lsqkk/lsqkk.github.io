@@ -90,22 +90,23 @@ async function loadRecentPosts() {
         const recentPosts = posts.slice(0, showPostNum);
 
         const list = recentPosts.map(post => `
-                    <a class="post-item post-item-link" href="/posts/${post.file.replace('.md', '')}">
+                    <div class="post-item post-item-link" data-href="/posts/${post.file.replace('.md', '')}">
                         <div class="post-title">
                             ${post.title}
                         </div>
                         <div class="post-date">${post.date}</div>
                         <div class="post-tags">
                             <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
-                            ${(post.columns || []).map(column => `<span class="post-tag post-tag-col"><i class="fa-solid fa-folder"></i>${column}</span>`).join('')}
-                            ${(post.tags || ['未分类']).map(tag => `<span class="post-tag"><i class="fa-solid fa-tag"></i>${tag}</span>`).join('')}
+                            ${(post.columns || []).map(column => `<a class="post-tag post-tag-col tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                            ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
                         </div>
-                    </a>
+                    </div>
                 `).join('');
 
         const recentPostsElement = document.getElementById('recent-posts');
         if (recentPostsElement) {
             recentPostsElement.innerHTML = list;
+            bindHomePostLinks(recentPostsElement);
         }
     } catch (error) {
         console.error('加载最近文章失败:', error);
@@ -310,6 +311,31 @@ function getRandomTip() {
     const tips = getHomeConfig().tips;
     if (!tips || tips.length === 0) return '欢迎访问 Quark Blog ~';
     return tips[Math.floor(Math.random() * tips.length)];
+}
+
+function bindHomePostLinks(container) {
+    if (!(container instanceof HTMLElement)) return;
+    container.querySelectorAll('.post-item-link').forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+        if (item.dataset.bound === 'true') return;
+        const href = item.getAttribute('data-href');
+        if (!href) return;
+        item.dataset.bound = 'true';
+        item.setAttribute('role', 'link');
+        item.setAttribute('tabindex', '0');
+        item.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target instanceof HTMLElement && target.closest('.tag-link')) {
+                return;
+            }
+            window.location.href = href;
+        });
+        item.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                window.location.href = href;
+            }
+        });
+    });
 }
 
 // 计算距离

@@ -124,6 +124,7 @@
             display: block;
             color: inherit;
             text-decoration: none;
+            cursor: pointer;
         }
 
         .column-post-item {
@@ -183,6 +184,18 @@
         .post-tag-column {
             background: rgba(120, 89, 203, 0.16);
             color: #6346b5;
+        }
+
+        .post-tags .tag-link {
+            display: inline-flex;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            color: inherit;
+        }
+
+        .post-tags .tag-link:hover {
+            text-decoration: none !important;
+            border-bottom: none !important;
         }
 
         /* 分页样式 */

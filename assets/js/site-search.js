@@ -230,10 +230,10 @@ async function runSearch(keyword) {
         const wordCount = meta?.wordCount || 0;
         const readTime = wordCount ? Math.ceil(wordCount / 400) : 0;
         const tagHtml = tags.slice(0, 6)
-            .map((tag) => `<span class="search-tag"><i class="fa-solid fa-tag"></i>${tag}</span>`)
+            .map((tag) => `<a class="search-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`)
             .join('');
         const columnHtml = columns.slice(0, 3)
-            .map((col) => `<span class="search-tag search-tag-col"><i class="fa-solid fa-folder"></i>${col}</span>`)
+            .map((col) => `<a class="search-tag search-tag-col tag-link" href="/posts?columns=${encodeURIComponent(col)}"><i class="fa-solid fa-folder"></i>${col}</a>`)
             .join('');
         const metaHtml = meta ? `
             <div class="search-result-tags">
@@ -244,13 +244,15 @@ async function runSearch(keyword) {
             </div>
         ` : '';
         return `
-            <a class="search-result" href="/${item.path}">
+            <div class="search-result" data-href="/${item.path}">
                 <div class="search-result-title">${item.title}</div>
                 <div class="search-result-meta">/${item.path}</div>
                 ${metaHtml}
-            </a>
+            </div>
         `;
     }).join('');
+
+    bindSearchResultLinks(resultsEl);
 }
 
 function initSearchPage() {
@@ -281,6 +283,31 @@ function initSearchPage() {
         if (event.key === 'Enter') {
             btn.click();
         }
+    });
+}
+
+function bindSearchResultLinks(container) {
+    if (!(container instanceof HTMLElement)) return;
+    container.querySelectorAll('.search-result').forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+        if (item.dataset.bound === 'true') return;
+        const href = item.getAttribute('data-href');
+        if (!href) return;
+        item.dataset.bound = 'true';
+        item.setAttribute('role', 'link');
+        item.setAttribute('tabindex', '0');
+        item.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target instanceof HTMLElement && target.closest('.tag-link')) {
+                return;
+            }
+            window.location.href = href;
+        });
+        item.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                window.location.href = href;
+            }
+        });
     });
 }
 

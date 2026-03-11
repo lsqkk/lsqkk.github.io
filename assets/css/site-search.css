@@ -91,6 +91,13 @@ body {
     background: var(--search-card);
     text-decoration: none;
     color: inherit;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--search-shadow);
+}
+
+.search-result:hover {
+    transform: translateY(-1px);
 }
 
 .search-result-title {
@@ -125,6 +132,18 @@ body {
 
 .search-tag i {
     font-size: 0.82em;
+}
+
+.search-tag.tag-link {
+    display: inline-flex;
+    text-decoration: none !important;
+    border-bottom: none !important;
+    color: inherit;
+}
+
+.search-tag.tag-link:hover {
+    text-decoration: none !important;
+    border-bottom: none !important;
 }
 
 .search-tag-date {
