@@ -6,33 +6,36 @@
     const API_BASE = '__API_BASE__';
     const LOGIN_URL = (window.__NAV_CONFIG__ && window.__NAV_CONFIG__.login && window.__NAV_CONFIG__.login.url) || '/auth.html';
 
-    const el = {
-        nickname: document.getElementById('nicknameInput'),
-        githubLogin: document.getElementById('githubLogin'),
-        accountUid: document.getElementById('accountUid'),
-        avatarFile: document.getElementById('avatarFile'),
-        avatarUrl: document.getElementById('avatarUrl'),
-        avatarImage: document.getElementById('avatarImage'),
-        avatarFallback: document.getElementById('avatarFallback'),
-        avatarClear: document.getElementById('avatarClear'),
-        avatarFromPic: document.getElementById('avatarFromPic'),
-        cropperModal: document.getElementById('cropperModal'),
-        cropperCanvas: document.getElementById('cropperCanvas'),
-        cropperZoom: document.getElementById('cropperZoom'),
-        cropperApply: document.getElementById('cropperApply'),
-        cropperReset: document.getElementById('cropperReset'),
-        cropperClose: document.getElementById('cropperClose'),
-        saveBtn: document.getElementById('saveProfile'),
-        refreshBtn: document.getElementById('refreshProfile'),
-        status: document.getElementById('saveStatus'),
-        createdAt: document.getElementById('accountCreatedAt'),
-        accountAge: document.getElementById('accountAge'),
-        lastSyncAt: document.getElementById('lastSyncAt'),
-        currentPage: document.getElementById('currentPage'),
-        accountLocation: document.getElementById('accountLocation'),
-        avatarState: document.getElementById('avatarState'),
-        localSyncToggle: document.getElementById('localSyncToggle')
-    };
+    /** @type {Record<string, any>} */
+    const el = {};
+
+    function cacheElements() {
+        el.nickname = document.getElementById('nicknameInput');
+        el.githubLogin = document.getElementById('githubLogin');
+        el.accountUid = document.getElementById('accountUid');
+        el.avatarFile = document.getElementById('avatarFile');
+        el.avatarUrl = document.getElementById('avatarUrl');
+        el.avatarImage = document.getElementById('avatarImage');
+        el.avatarFallback = document.getElementById('avatarFallback');
+        el.avatarClear = document.getElementById('avatarClear');
+        el.avatarFromPic = document.getElementById('avatarFromPic');
+        el.cropperModal = document.getElementById('cropperModal');
+        el.cropperCanvas = document.getElementById('cropperCanvas');
+        el.cropperZoom = document.getElementById('cropperZoom');
+        el.cropperApply = document.getElementById('cropperApply');
+        el.cropperReset = document.getElementById('cropperReset');
+        el.cropperClose = document.getElementById('cropperClose');
+        el.saveBtn = document.getElementById('saveProfile');
+        el.refreshBtn = document.getElementById('refreshProfile');
+        el.status = document.getElementById('saveStatus');
+        el.createdAt = document.getElementById('accountCreatedAt');
+        el.accountAge = document.getElementById('accountAge');
+        el.lastSyncAt = document.getElementById('lastSyncAt');
+        el.currentPage = document.getElementById('currentPage');
+        el.accountLocation = document.getElementById('accountLocation');
+        el.avatarState = document.getElementById('avatarState');
+        el.localSyncToggle = document.getElementById('localSyncToggle');
+    }
 
     let firebaseReady = false;
     let cachedRemote = null;
@@ -555,6 +558,7 @@
 
     async function init() {
         initThemeSync();
+        cacheElements();
         fillStaticInfo();
         bindEvents();
         await migrateLegacyUid();
