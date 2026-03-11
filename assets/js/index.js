@@ -391,39 +391,50 @@ async function loadOpenSourceCount() {
     }
 }
 
+function formatCstDate(date) {
+    const cst = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+    const y = cst.getUTCFullYear();
+    const m = String(cst.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(cst.getUTCDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 function getCstDayRange() {
     const now = new Date();
-    const local = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
-    const startLocal = new Date(local.getFullYear(), local.getMonth(), local.getDate(), 0, 0, 0);
-    const endLocal = new Date(local.getFullYear(), local.getMonth(), local.getDate(), 23, 59, 59);
-    const startUtc = new Date(startLocal.getTime() - 8 * 60 * 60 * 1000);
-    const endUtc = new Date(endLocal.getTime() - 8 * 60 * 60 * 1000);
-    return { startUtc, endUtc, localDate: local };
+    const localDateStr = formatCstDate(now);
+    const [year, month, day] = localDateStr.split('-').map((part) => Number(part));
+    const startUtc = new Date(Date.UTC(year, month - 1, day, 0, 0, 0) - 8 * 60 * 60 * 1000);
+    const endUtc = new Date(Date.UTC(year, month - 1, day, 23, 59, 59) - 8 * 60 * 60 * 1000);
+    return { startUtc, endUtc, localDateStr };
 }
 
 async function loadTodayCommitCount() {
     const el = document.getElementById('footer-commit-total');
     if (!el) return;
-    const { startUtc, endUtc, localDate } = getCstDayRange();
+    const { startUtc, endUtc, localDateStr } = getCstDayRange();
     const since = startUtc.toISOString();
     const until = endUtc.toISOString();
 
     try {
-        const url = `https://api.github.com/repos/lsqkk/lsqkk.github.io/commits?since=${encodeURIComponent(since)}&until=${encodeURIComponent(until)}&per_page=100`;
-        const resp = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
-        if (!resp.ok) throw new Error(`GitHub API ${resp.status}`);
-        const commits = await resp.json();
-        if (!Array.isArray(commits)) {
+        const allCommits = [];
+        for (let page = 1; page <= 5; page += 1) {
+            const url = `https://api.github.com/repos/lsqkk/lsqkk.github.io/commits?since=${encodeURIComponent(since)}&until=${encodeURIComponent(until)}&per_page=100&page=${page}`;
+            const resp = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
+            if (!resp.ok) throw new Error(`GitHub API ${resp.status}`);
+            const commits = await resp.json();
+            if (!Array.isArray(commits) || commits.length === 0) break;
+            allCommits.push(...commits);
+            if (commits.length < 100) break;
+        }
+        if (allCommits.length === 0) {
             el.textContent = '0';
             return;
         }
-        const localDateStr = localDate.toISOString().slice(0, 10);
-        const count = commits.filter((item) => {
-            const dateText = item?.commit?.author?.date || item?.commit?.committer?.date;
+        const count = allCommits.filter((item) => {
+            const dateText = item?.commit?.committer?.date || item?.commit?.author?.date;
             if (!dateText) return false;
             const dt = new Date(dateText);
-            const cst = new Date(dt.getTime() + 8 * 60 * 60 * 1000);
-            return cst.toISOString().slice(0, 10) === localDateStr;
+            return formatCstDate(dt) === localDateStr;
         }).length;
         el.textContent = String(count);
     } catch (error) {
