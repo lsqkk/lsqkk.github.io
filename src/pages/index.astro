@@ -14,6 +14,9 @@ const friendsPath = path.join(PROJECT_ROOT, "json", "friends.json");
 const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
 const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
 const logMdPath = path.join(PROJECT_ROOT, "assets", "md", "log.md");
+const toolPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "tool.json");
+const gamePath = path.join(PROJECT_ROOT, "assets", "pages", "games", "game.json");
+const projectPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.json");
 
 const indexConfig = JSON.parse(await fs.readFile(indexConfigPath, "utf8"));
 const homeConfig = JSON.parse(await fs.readFile(homeConfigPath, "utf8"));
@@ -23,6 +26,9 @@ const friends = JSON.parse(await fs.readFile(friendsPath, "utf8"));
 const posts = JSON.parse(await fs.readFile(postsPath, "utf8"));
 const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
 const logMd = await fs.readFile(logMdPath, "utf8");
+const toolData = JSON.parse(await fs.readFile(toolPath, "utf8"));
+const gameData = JSON.parse(await fs.readFile(gamePath, "utf8"));
+const projectData = JSON.parse(await fs.readFile(projectPath, "utf8"));
 const currentYear = new Date().getFullYear();
 
 function escapeHtml(text: unknown): string {
@@ -319,22 +325,47 @@ const sidebarSectionRenderers: Record<string, () => string> = {
 const footerSectionRenderers: Record<string, () => string> = {
   visitor_stats: () => `
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <p class="footer-stats">共 <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
-    位小伙伴来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次</p>
+    <div class="footer-stat-card">
+      <div class="footer-stat-label">访问数据</div>
+      <div class="footer-stat-value">
+        <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
+        <span class="footer-stat-unit">访客</span>
+      </div>
+      <div class="footer-stat-meta">
+        来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次
+      </div>
+    </div>
   `,
   copyright_info: () => `
-    <a class="footer-link" href="/posts/copyright">© 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
+    <div class="footer-legal">
+      <a class="footer-link" href="/posts/copyright">© 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
+    </div>
   `,
   icp_record: () => `
-    <a class="footer-link" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
-      <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
-    </a>
+    <div class="footer-legal">
+      <a class="footer-link" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
+        <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
+      </a>
+    </div>
   `,
 };
 
 const mainContentHtml = assembleSections(indexConfig.main_content, mainSectionRenderers, false);
 const sidebarContentHtml = assembleSections(indexConfig.sidebar, sidebarSectionRenderers, false);
 const footerContentHtml = assembleSections(indexConfig.footer, footerSectionRenderers, false);
+
+const postsTotal = Array.isArray(posts) ? posts.length : 0;
+const dynamicTotal = parseDynamicEntries(dynamicMd).length;
+const toolsTotal = Array.isArray(toolData?.categories)
+  ? toolData.categories.reduce((sum: number, cat: any) => sum + (cat.tools?.length || 0), 0)
+  : 0;
+const gamesTotal = ["multiplayer", "singlePlayer", "classic"].reduce((sum, key) => {
+  const list = Array.isArray(gameData?.[key]) ? gameData[key] : [];
+  return sum + list.length;
+}, 0);
+const projectsTotal = Array.isArray(projectData?.categories)
+  ? projectData.categories.reduce((sum: number, cat: any) => sum + (cat.projects?.length || 0), 0)
+  : 0;
 
 const showDynamicNum = typeof homeConfig.showDynamicNum === "number" ? homeConfig.showDynamicNum : 3;
 const dynamicEntries = parseDynamicEntries(dynamicMd).slice(0, showDynamicNum).map((entry) => ({
@@ -348,6 +379,13 @@ const homePreloaded = {
   posts,
   friends,
   dynamicEntries,
+  footerStats: {
+    postsTotal,
+    dynamicTotal,
+    toolsTotal,
+    projectsTotal,
+    gamesTotal,
+  },
 };
 ---
 <!DOCTYPE html>
@@ -390,7 +428,46 @@ const homePreloaded = {
       <div class="sidebar-index" set:html={sidebarContentHtml}></div>
     </div>
     <div class="footer-container">
-      <div class="footer-content" set:html={footerContentHtml}></div>
+      <div class="footer-card">
+        <div class="footer-head">
+          <div>
+            <div class="footer-kicker">Site Overview</div>
+            <div class="footer-title">站点概览</div>
+          </div>
+          <div class="footer-meta" set:html={footerContentHtml}></div>
+        </div>
+        <div class="footer-stats-grid" id="footer-static-stats">
+          <div class="footer-stat">
+            <div class="footer-stat-label">文章总数</div>
+            <div class="footer-stat-value" id="footer-post-total">0</div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-label">动态总数</div>
+            <div class="footer-stat-value" id="footer-dynamic-total">0</div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-label">工具 / 实验</div>
+            <div class="footer-stat-value" id="footer-tool-total">0</div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-label">游戏总数</div>
+            <div class="footer-stat-value" id="footer-game-total">0</div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-label">注册用户</div>
+            <div class="footer-stat-value" id="footer-user-total">--</div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-label">今日 Commit</div>
+            <div class="footer-stat-value" id="footer-commit-total">--</div>
+          </div>
+          <div class="footer-stat">
+            <div class="footer-stat-label">安全运行</div>
+            <div class="footer-stat-value" id="footer-running-days">--</div>
+            <div class="footer-stat-meta">自 2025-01-31 起</div>
+          </div>
+        </div>
+      </div>
     </div>
     <br /><br />
 

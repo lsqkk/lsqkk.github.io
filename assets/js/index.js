@@ -49,6 +49,14 @@ function getHomeConfig() {
     return config || {};
 }
 
+/**
+ * @returns {{postsTotal?: number, dynamicTotal?: number, toolsTotal?: number, projectsTotal?: number, gamesTotal?: number}}
+ */
+function getFooterStatsConfig() {
+    const preload = getPreloadedHomeData();
+    return preload.footerStats || {};
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const mainContent = document.querySelector('.main-content');
     if (mainContent instanceof HTMLElement) {
@@ -75,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setInterval(updateTime, 1000);
     setInterval(updateGreeting, 60000);
 
+    initFooterStats();
 });
 
 // 加载最近三篇文章
@@ -311,6 +320,87 @@ function getRandomTip() {
     const tips = getHomeConfig().tips;
     if (!tips || tips.length === 0) return '欢迎访问 Quark Blog ~';
     return tips[Math.floor(Math.random() * tips.length)];
+}
+
+function setTextSafe(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function initFooterStats() {
+    const stats = getFooterStatsConfig();
+    setTextSafe('footer-post-total', String(stats.postsTotal || 0));
+    setTextSafe('footer-dynamic-total', String(stats.dynamicTotal || 0));
+    setTextSafe('footer-tool-total', String((stats.toolsTotal || 0) + (stats.projectsTotal || 0)));
+    setTextSafe('footer-game-total', String(stats.gamesTotal || 0));
+
+    const start = new Date('2025-01-31T00:00:00+08:00');
+    const now = new Date();
+    const days = Math.max(0, Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+    setTextSafe('footer-running-days', String(days));
+
+    void loadFooterUserCount();
+    void loadTodayCommitCount();
+
+    window.addEventListener('firebase-config-loaded', () => {
+        void loadFooterUserCount();
+    });
+}
+
+async function loadFooterUserCount() {
+    const el = document.getElementById('footer-user-total');
+    if (!el) return;
+    try {
+        const db = await ensureOnlineFirebaseDatabase();
+        const snap = await db.ref('user_activity').once('value');
+        const raw = snap.val() || {};
+        const count = Object.keys(raw).length;
+        el.textContent = String(count);
+    } catch (error) {
+        console.warn('加载注册用户失败:', error);
+        el.textContent = '--';
+    }
+}
+
+function getCstDayRange() {
+    const now = new Date();
+    const local = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+    const startLocal = new Date(local.getFullYear(), local.getMonth(), local.getDate(), 0, 0, 0);
+    const endLocal = new Date(local.getFullYear(), local.getMonth(), local.getDate(), 23, 59, 59);
+    const startUtc = new Date(startLocal.getTime() - 8 * 60 * 60 * 1000);
+    const endUtc = new Date(endLocal.getTime() - 8 * 60 * 60 * 1000);
+    return { startUtc, endUtc, localDate: local };
+}
+
+async function loadTodayCommitCount() {
+    const el = document.getElementById('footer-commit-total');
+    if (!el) return;
+    const { startUtc, endUtc, localDate } = getCstDayRange();
+    const since = startUtc.toISOString();
+    const until = endUtc.toISOString();
+
+    try {
+        const url = `https://api.github.com/repos/lsqkk/lsqkk.github.io/commits?since=${encodeURIComponent(since)}&until=${encodeURIComponent(until)}&per_page=100`;
+        const resp = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
+        if (!resp.ok) throw new Error(`GitHub API ${resp.status}`);
+        const commits = await resp.json();
+        if (!Array.isArray(commits)) {
+            el.textContent = '0';
+            return;
+        }
+        const localDateStr = localDate.toISOString().slice(0, 10);
+        const count = commits.filter((item) => {
+            const dateText = item?.commit?.author?.date || item?.commit?.committer?.date;
+            if (!dateText) return false;
+            const dt = new Date(dateText);
+            const cst = new Date(dt.getTime() + 8 * 60 * 60 * 1000);
+            return cst.toISOString().slice(0, 10) === localDateStr;
+        }).length;
+        el.textContent = String(count);
+    } catch (error) {
+        console.warn('加载今日 commit 失败:', error);
+        el.textContent = '--';
+    }
 }
 
 function bindHomePostLinks(container) {
