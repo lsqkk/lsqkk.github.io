@@ -17,26 +17,28 @@ function addCodeBlockHeaders() {
     const codeBlocks = document.querySelectorAll('.post-content pre');
 
     codeBlocks.forEach((pre, index) => {
+        if (pre.querySelector('.code-header')) {
+            return;
+        }
         // 查找code标签中的语言类
         const codeElement = pre.querySelector('code');
-        let language = 'text';
+        let language = (pre.getAttribute('data-language') || '').toLowerCase();
 
-        if (codeElement) {
-            // 提取语言类型
-            const classList = codeElement.className.split(' ');
-            for (const className of classList) {
+        if (!language && codeElement) {
+            // 提取语言类型（支持 highlight.js / markdown 常见类名）
+            for (const className of codeElement.classList) {
                 if (className.startsWith('language-')) {
                     language = className.replace('language-', '').toLowerCase();
                     break;
-                } else if (className.startsWith('hljs language-')) {
-                    // 处理 highlight.js 的类名
-                    const match = className.match(/language-(\w+)/);
-                    if (match) {
-                        language = match[1].toLowerCase();
-                    }
+                }
+                if (className.startsWith('lang-')) {
+                    language = className.replace('lang-', '').toLowerCase();
                     break;
                 }
             }
+        }
+        if (!language) {
+            language = 'text';
         }
 
         // 语言名称映射
