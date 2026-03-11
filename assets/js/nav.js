@@ -125,6 +125,7 @@ function generateNavHTML(config) {
                     <input type="text" id="searchInput" placeholder="搜索文章...">
                     <button onclick="handleGlobalSearch()">搜索</button>
                 </div>
+                <div class="header-login" id="header-login"><a href="${config.login.url}">登录</a></div>
                 <div class="header-user" id="header-user"></div>
             </div>
         </div>
@@ -460,15 +461,18 @@ function checkLoginStatus() {
 
     const loginButton = document.getElementById('login-button');
     const mobileLoginButton = document.getElementById('mobile-login-button');
+    const headerLoginButton = document.getElementById('header-login');
 
     if (isLoggedIn) {
         // 隐藏电脑端和移动端的登录按钮
         if (loginButton) loginButton.style.display = 'none';
         if (mobileLoginButton) mobileLoginButton.style.display = 'none';
+        if (headerLoginButton) headerLoginButton.style.display = 'none';
     } else {
         // 确保登录按钮显示（可能在之前被隐藏了）
         if (loginButton) loginButton.style.display = 'block';
         if (mobileLoginButton) mobileLoginButton.style.display = 'block';
+        if (headerLoginButton) headerLoginButton.style.display = 'flex';
     }
 
     renderUserProfile();
@@ -554,6 +558,7 @@ function initializeAll() {
     initializeSidebar();
     initializeNavHoverMenus();
     initializeNavThemeMode();
+    initializeNavScrollBehavior();
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
@@ -591,6 +596,35 @@ function initializeNavThemeMode() {
     } else if (typeof darkModeQuery.addListener === 'function') {
         darkModeQuery.addListener(applyTheme);
     }
+}
+
+function initializeNavScrollBehavior() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    let lastY = window.scrollY;
+    let ticking = false;
+    const threshold = 8;
+
+    const update = () => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastY;
+        if (Math.abs(delta) > threshold) {
+            if (currentY > 120 && delta > 0) {
+                header.classList.add('header-hidden');
+            } else if (delta < 0) {
+                header.classList.remove('header-hidden');
+            }
+            lastY = currentY;
+        }
+        ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            ticking = true;
+            window.requestAnimationFrame(update);
+        }
+    }, { passive: true });
 }
 
 // 页面加载完成后初始化

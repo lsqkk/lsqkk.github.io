@@ -429,4 +429,47 @@ body.admin-users-body {
       radial-gradient(circle at 85% 10%, rgba(16, 185, 129, 0.12), transparent 40%),
       #f5f7fb;
   }
+
+  body.admin-users-body .admin-hero,
+  body.admin-users-body .admin-control-group,
+  body.admin-users-body .admin-login-card,
+  body.admin-users-body .admin-status-card,
+  body.admin-users-body .summary-card,
+  body.admin-users-body .admin-card,
+  body.admin-users-body .admin-user,
+  body.admin-users-body .event-group {
+    background: var(--admin-surface) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text) !important;
+  }
+
+  body.admin-users-body .admin-control-group input,
+  body.admin-users-body .admin-control-group select,
+  body.admin-users-body .admin-login-form input {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--admin-text) !important;
+    border-color: var(--admin-border) !important;
+  }
+
+  body.admin-users-body .admin-btn {
+    background: rgba(37, 99, 235, 0.12) !important;
+    border-color: rgba(59, 130, 246, 0.35) !important;
+    color: var(--admin-text) !important;
+  }
+
+  body.admin-users-body .admin-btn.ghost {
+    background: rgba(15, 23, 42, 0.06) !important;
+  }
+
+  body.admin-users-body .admin-kicker,
+  body.admin-users-body .admin-subtitle,
+  body.admin-users-body .admin-control-group label,
+  body.admin-users-body .admin-card-hint,
+  body.admin-users-body .admin-user-login,
+  body.admin-users-body .admin-user-meta,
+  body.admin-users-body .event-meta,
+  body.admin-users-body .event-items,
+  body.admin-users-body .feed-secondary {
+    color: var(--admin-muted) !important;
+  }
 }

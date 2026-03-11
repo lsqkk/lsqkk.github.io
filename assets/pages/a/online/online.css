@@ -249,4 +249,28 @@ body.online-body {
       radial-gradient(circle at 88% 20%, rgba(99, 102, 241, 0.12), transparent 42%),
       #f5f7fb;
   }
+
+  body.online-body .online-hero,
+  body.online-body .online-card,
+  body.online-body .online-detail,
+  body.online-body .metric {
+    background: var(--online-card) !important;
+    border-color: var(--online-border) !important;
+    color: var(--online-text) !important;
+  }
+
+  body.online-body .online-search input {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--online-text) !important;
+    border-color: var(--online-border) !important;
+  }
+
+  body.online-body .online-kicker,
+  body.online-body .online-subtitle,
+  body.online-body .metric-label,
+  body.online-body .online-login,
+  body.online-body .online-page,
+  body.online-body .detail-row {
+    color: var(--online-muted) !important;
+  }
 }
