@@ -40,6 +40,17 @@
         return str.slice(0, 1).toUpperCase();
     }
 
+    function getGuestName(uid) {
+        const suffix = uid ? String(uid).slice(-4) : '0000';
+        return `访客${suffix}`;
+    }
+
+    function getDisplayName(nickname, login, uid) {
+        if (nickname && String(nickname).trim()) return String(nickname).trim();
+        if (login && String(login).trim()) return String(login).trim();
+        return getGuestName(uid);
+    }
+
     function getFirebaseConfig() {
         return window.firebaseConfig || window._firebaseConfig || null;
     }
@@ -91,9 +102,10 @@
     function selectUser(item) {
         if (!el.detail) return;
         const locationText = [item.province, item.city].filter(Boolean).join(' ');
+        const name = getDisplayName(item.nickname, item.login, item.uid);
         el.detail.innerHTML = `
             <h3>选中用户</h3>
-            <div class="detail-row"><span>昵称</span><strong>${item.nickname || item.login || '访客'}</strong></div>
+            <div class="detail-row"><span>昵称</span><strong>${name}</strong></div>
             <div class="detail-row"><span>账号</span><strong>${item.login || '-'}</strong></div>
             <div class="detail-row"><span>属地</span><strong>${locationText || '-'}</strong></div>
             <div class="detail-row"><span>当前页面</span><strong>${item.title || item.path || '-'}</strong></div>
@@ -122,7 +134,7 @@
         }
 
         el.grid.innerHTML = filtered.map((item, index) => {
-            const name = item.nickname || item.login || '访客';
+            const name = getDisplayName(item.nickname, item.login, item.uid);
             const login = item.login ? `@${item.login}` : '';
             const avatar = item.avatarUrl
                 ? `<img src="${item.avatarUrl}" alt="${name}">`

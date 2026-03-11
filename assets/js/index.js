@@ -886,6 +886,17 @@ function getOnlineInitial(name) {
     return value.slice(0, 1).toUpperCase();
 }
 
+function getGuestName(uid) {
+    const suffix = uid ? String(uid).slice(-4) : '0000';
+    return `访客${suffix}`;
+}
+
+function getDisplayName(nickname, login, uid) {
+    if (nickname && String(nickname).trim()) return String(nickname).trim();
+    if (login && String(login).trim()) return String(login).trim();
+    return getGuestName(uid);
+}
+
 function setOnlineCount(value) {
     const countEl = document.getElementById('online-preview-count');
     if (countEl) {
@@ -904,6 +915,7 @@ async function loadOnlinePreview() {
         const allItems = Object.values(raw)
             .filter((item) => item && item.lastSeen && now - item.lastSeen <= ONLINE_WINDOW)
             .map((item) => ({
+                uid: item.uid || '',
                 nickname: item.nickname || '',
                 login: item.login || '',
                 avatarUrl: item.avatarUrl || '',
@@ -923,12 +935,12 @@ async function loadOnlinePreview() {
         container.innerHTML = `
             <div class="online-preview-grid">
                 ${items.map((item) => {
-            const name = item.nickname || item.login || '访客';
-            const location = [item.province, item.city].filter(Boolean).join(' ');
-            const avatar = item.avatarUrl
-                ? `<img src="${item.avatarUrl}" alt="${name}">`
-                : `<span>${getOnlineInitial(name)}</span>`;
-            return `
+        const name = getDisplayName(item.nickname, item.login, item.uid);
+        const location = [item.province, item.city].filter(Boolean).join(' ');
+        const avatar = item.avatarUrl
+            ? `<img src="${item.avatarUrl}" alt="${name}">`
+            : `<span>${getOnlineInitial(name)}</span>`;
+        return `
                         <a class="online-preview-card" href="/a/online">
                             <div class="online-preview-avatar">${avatar}</div>
                             <div>

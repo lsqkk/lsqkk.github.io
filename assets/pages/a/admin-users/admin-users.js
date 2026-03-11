@@ -58,6 +58,17 @@
         return str.slice(0, 1).toUpperCase();
     }
 
+    function getGuestName(uid) {
+        const suffix = uid ? String(uid).slice(-4) : '0000';
+        return `访客${suffix}`;
+    }
+
+    function getDisplayName(nickname, login, uid) {
+        if (nickname && String(nickname).trim()) return String(nickname).trim();
+        if (login && String(login).trim()) return String(login).trim();
+        return getGuestName(uid);
+    }
+
     function getFirebaseConfig() {
         return window.firebaseConfig || window._firebaseConfig || null;
     }
@@ -272,7 +283,7 @@
         }
 
         el.usersBody.innerHTML = filteredEntries.map((entry) => {
-            const name = entry.profile.nickname || entry.profile.login || '访客';
+            const name = getDisplayName(entry.profile.nickname, entry.profile.login, entry.uid);
             const login = entry.profile.login ? `@${entry.profile.login}` : '';
             const avatarUrl = entry.profile.avatarUrl || '';
             const profileUrl = entry.profile.profileUrl || '';
@@ -370,10 +381,11 @@
         const items = [];
         Object.entries(users || {}).forEach(([uid, user]) => {
             collectItems(user?.logins).forEach((login) => {
+                const fallbackName = getDisplayName(user?.profile?.nickname, user?.profile?.login, uid);
                 items.push({
                     uid,
                     ts: login.ts || 0,
-                    nickname: login.nickname || user?.profile?.nickname || '访客',
+                    nickname: login.nickname || user?.profile?.nickname || fallbackName,
                     login: login.login || user?.profile?.login || ''
                 });
             });
@@ -400,12 +412,13 @@
         const items = [];
         Object.entries(users || {}).forEach(([uid, user]) => {
             collectItems(user?.events).forEach((event) => {
+                const fallbackName = getDisplayName(user?.profile?.nickname, user?.profile?.login, uid);
                 items.push({
                     uid,
                     ts: event.ts || 0,
                     path: event.path || '/',
                     title: event.title || '',
-                    nickname: event.nickname || user?.profile?.nickname || '访客',
+                    nickname: event.nickname || user?.profile?.nickname || fallbackName,
                     login: event.login || user?.profile?.login || ''
                 });
             });
