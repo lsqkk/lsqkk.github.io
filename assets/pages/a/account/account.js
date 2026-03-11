@@ -14,6 +14,12 @@
         avatarFallback: document.getElementById('avatarFallback'),
         avatarClear: document.getElementById('avatarClear'),
         avatarFromPic: document.getElementById('avatarFromPic'),
+        cropperModal: document.getElementById('cropperModal'),
+        cropperCanvas: document.getElementById('cropperCanvas'),
+        cropperZoom: document.getElementById('cropperZoom'),
+        cropperApply: document.getElementById('cropperApply'),
+        cropperReset: document.getElementById('cropperReset'),
+        cropperClose: document.getElementById('cropperClose'),
         saveBtn: document.getElementById('saveProfile'),
         refreshBtn: document.getElementById('refreshProfile'),
         status: document.getElementById('saveStatus'),
@@ -28,6 +34,7 @@
 
     let firebaseReady = false;
     let cachedRemote = null;
+    let cropper = null;
 
     function getGithubUser() {
         const raw = localStorage.getItem('github_user');
@@ -39,8 +46,13 @@
         }
     }
 
+    function getStoredLoginFallback() {
+        const login = localStorage.getItem('github_login');
+        return login ? { login } : null;
+    }
+
     function ensureLogin() {
-        const user = getGithubUser();
+        const user = getGithubUser() || getStoredLoginFallback();
         if (user && user.login) return user;
         window.location.href = LOGIN_URL;
         return null;
@@ -71,6 +83,11 @@
         const user = getGithubUser();
         if (user && user.login) return `gh_${String(user.login).toLowerCase()}`;
         return localStorage.getItem('quark_uid') || '';
+    }
+
+    function getLegacyUid() {
+        const uid = localStorage.getItem('quark_uid');
+        return uid && uid.startsWith('q_') ? uid : '';
     }
 
     function updateAvatarPreview(url, name) {
@@ -107,32 +124,112 @@
         setText(el.status, text);
     }
 
-    function cropToSquare(image) {
-        const canvas = document.createElement('canvas');
-        const size = Math.min(image.width, image.height);
+    function initCropper(image) {
+        if (!(el.cropperCanvas instanceof HTMLCanvasElement) || !(el.cropperZoom instanceof HTMLInputElement)) return;
+        const canvas = el.cropperCanvas;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const size = 360;
         canvas.width = size;
         canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return '';
-        const sx = (image.width - size) / 2;
-        const sy = (image.height - size) / 2;
-        ctx.drawImage(image, sx, sy, size, size, 0, 0, size, size);
-        return canvas.toDataURL('image/png', 0.92);
+        cropper = {
+            image,
+            scale: 1,
+            offsetX: 0,
+            offsetY: 0,
+            dragging: false,
+            startX: 0,
+            startY: 0,
+            baseScale: 1,
+            render: () => {}
+        };
+
+        const baseScale = Math.max(size / image.width, size / image.height);
+        cropper.baseScale = baseScale;
+        cropper.scale = baseScale;
+        el.cropperZoom.value = '1';
+
+        const render = () => {
+            ctx.clearRect(0, 0, size, size);
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, size, size);
+            const drawWidth = image.width * cropper.scale;
+            const drawHeight = image.height * cropper.scale;
+            const dx = (size - drawWidth) / 2 + cropper.offsetX;
+            const dy = (size - drawHeight) / 2 + cropper.offsetY;
+            ctx.drawImage(image, dx, dy, drawWidth, drawHeight);
+            ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, 0, size, size);
+        };
+        cropper.render = render;
+
+        const applyZoom = (value) => {
+            const zoom = Math.max(1, Math.min(3, Number(value)));
+            cropper.scale = baseScale * zoom;
+            render();
+        };
+
+        const startDrag = (x, y) => {
+            cropper.dragging = true;
+            cropper.startX = x;
+            cropper.startY = y;
+        };
+
+        const moveDrag = (x, y) => {
+            if (!cropper.dragging) return;
+            cropper.offsetX += x - cropper.startX;
+            cropper.offsetY += y - cropper.startY;
+            cropper.startX = x;
+            cropper.startY = y;
+            render();
+        };
+
+        const endDrag = () => {
+            cropper.dragging = false;
+        };
+
+        canvas.onpointerdown = (event) => {
+            canvas.setPointerCapture(event.pointerId);
+            startDrag(event.clientX, event.clientY);
+        };
+        canvas.onpointermove = (event) => moveDrag(event.clientX, event.clientY);
+        canvas.onpointerup = endDrag;
+        canvas.onpointerleave = endDrag;
+
+        el.cropperZoom.oninput = () => applyZoom(el.cropperZoom.value);
+        render();
     }
 
-    function handleAvatarFile(file) {
+    function openCropper(file) {
         if (!file) return;
         const reader = new FileReader();
         reader.onload = () => {
             const img = new Image();
             img.onload = () => {
-                const dataUrl = cropToSquare(img);
-                if (el.avatarUrl) el.avatarUrl.value = dataUrl;
-                updateAvatarPreview(dataUrl, el.nickname && el.nickname.value);
+                initCropper(img);
+                if (el.cropperModal) el.cropperModal.classList.add('active');
             };
             img.src = String(reader.result || '');
         };
         reader.readAsDataURL(file);
+    }
+
+    function applyCropper() {
+        if (!(el.cropperCanvas instanceof HTMLCanvasElement)) return;
+        const dataUrl = el.cropperCanvas.toDataURL('image/png', 0.92);
+        if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = dataUrl;
+        updateAvatarPreview(dataUrl, el.nickname && el.nickname.value);
+        if (el.cropperModal) el.cropperModal.classList.remove('active');
+    }
+
+    function closeCropper() {
+        if (el.cropperModal) el.cropperModal.classList.remove('active');
+    }
+
+    function handleAvatarFile(file) {
+        if (!file) return;
+        openCropper(file);
     }
 
     function bindEvents() {
@@ -158,6 +255,18 @@
                 window.open('/a/pic', '_blank');
             });
         }
+        if (el.cropperApply) el.cropperApply.addEventListener('click', () => applyCropper());
+        if (el.cropperReset instanceof HTMLButtonElement && el.cropperZoom instanceof HTMLInputElement) {
+            el.cropperReset.addEventListener('click', () => {
+                if (!cropper) return;
+                el.cropperZoom.value = '1';
+                cropper.offsetX = 0;
+                cropper.offsetY = 0;
+                cropper.scale = cropper.baseScale;
+                cropper.render();
+            });
+        }
+        if (el.cropperClose) el.cropperClose.addEventListener('click', () => closeCropper());
         if (el.saveBtn) el.saveBtn.addEventListener('click', () => void saveProfile());
         if (el.refreshBtn) el.refreshBtn.addEventListener('click', () => void loadRemoteProfile(true));
     }
@@ -210,6 +319,38 @@
         return window.firebase.database();
     }
 
+    async function migrateLegacyUid() {
+        const legacyUid = getLegacyUid();
+        const targetUid = getUid();
+        if (!legacyUid || !targetUid || legacyUid === targetUid) return;
+        try {
+            const db = await ensureFirebase();
+            const legacySnap = await db.ref('user_activity').child(legacyUid).once('value');
+            const legacyData = legacySnap.val();
+            if (!legacyData) {
+                localStorage.setItem('quark_uid', targetUid);
+                return;
+            }
+            const targetSnap = await db.ref('user_activity').child(targetUid).once('value');
+            const targetData = targetSnap.val() || {};
+            const legacyProfile = legacyData.profile || {};
+            const targetProfile = targetData.profile || {};
+            const legacyUpdatedAt = legacyProfile.updatedAt || 0;
+            const targetUpdatedAt = targetProfile.updatedAt || 0;
+            const mergedProfile = legacyUpdatedAt > targetUpdatedAt ? legacyProfile : targetProfile;
+
+            await db.ref('user_activity').child(targetUid).update({
+                profile: mergedProfile,
+                events: { ...(legacyData.events || {}), ...(targetData.events || {}) },
+                logins: { ...(legacyData.logins || {}), ...(targetData.logins || {}) }
+            });
+            await db.ref('user_activity').child(legacyUid).remove();
+            localStorage.setItem('quark_uid', targetUid);
+        } catch (error) {
+            console.warn('账号迁移失败:', error);
+        }
+    }
+
     function applyProfileToForm(profile) {
         if (el.nickname instanceof HTMLInputElement) el.nickname.value = profile.nickname || '';
         if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = profile.avatarUrl || '';
@@ -233,6 +374,7 @@
                     window.QuarkUserProfile.syncProfile(remote);
                 }
                 applyProfileToForm(remote);
+                if (remote.login) setText(el.githubLogin, remote.login);
                 setText(el.createdAt, formatTime(remote.createdAt));
                 setText(el.accountAge, formatDuration(remote.createdAt));
                 setText(el.lastSyncAt, formatTime(remote.updatedAt));
@@ -301,7 +443,7 @@
         if (!user) return;
         const profile = getProfile();
         applyProfileToForm(profile);
-        setText(el.githubLogin, user.login || '');
+        setText(el.githubLogin, user.login || profile.login || '');
         setText(el.accountUid, getUid());
         setText(el.currentPage, location.pathname);
         setText(el.lastSyncAt, profile.updatedAt ? formatTime(profile.updatedAt) : '-');
@@ -310,7 +452,12 @@
     async function init() {
         fillStaticInfo();
         bindEvents();
+        await migrateLegacyUid();
         await loadRemoteProfile();
+        const profile = getProfile();
+        if (profile.login) {
+            setText(el.githubLogin, profile.login);
+        }
     }
 
     if (document.readyState === 'loading') {

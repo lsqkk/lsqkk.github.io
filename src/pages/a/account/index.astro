@@ -68,6 +68,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
                 <button class="btn ghost" id="avatarClear">清除头像</button>
                 <button class="btn ghost" id="avatarFromPic">使用图床 /a/pic</button>
               </div>
+              <div class="crop-hint">上传后可裁剪头像，保存时会同步到全站。</div>
               <div class="field">
                 <label for="avatarUrl">头像链接</label>
                 <input type="url" id="avatarUrl" placeholder="https://..." />
@@ -135,5 +136,25 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     </div>
 
     <script is:inline src="/assets/pages/a/account/account.js"></script>
+
+    <div class="cropper-modal" id="cropperModal">
+      <div class="cropper-card">
+        <div class="cropper-header">
+          <h3>裁剪头像</h3>
+          <button class="btn ghost" id="cropperClose">关闭</button>
+        </div>
+        <div class="cropper-body">
+          <canvas id="cropperCanvas"></canvas>
+        </div>
+        <div class="cropper-controls">
+          <label>缩放</label>
+          <input type="range" id="cropperZoom" min="1" max="3" step="0.01" value="1" />
+          <div class="cropper-actions">
+            <button class="btn ghost" id="cropperReset">重置</button>
+            <button class="btn primary" id="cropperApply">应用裁剪</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

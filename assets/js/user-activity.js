@@ -39,6 +39,11 @@
         return uid;
     }
 
+    function getLegacyUid() {
+        const uid = localStorage.getItem('quark_uid');
+        return uid && uid.startsWith('q_') ? uid : '';
+    }
+
     function readCachedIpInfo() {
         const raw = localStorage.getItem(IP_CACHE_KEY);
         if (!raw) return null;
@@ -233,6 +238,49 @@
         });
     }
 
+    async function migrateLegacyUid(targetUid) {
+        const legacyUid = getLegacyUid();
+        if (!legacyUid || legacyUid === targetUid) return;
+        try {
+            const legacySnap = await rootRef.child(legacyUid).once('value');
+            const legacyData = legacySnap.val();
+            if (!legacyData) return;
+
+            const targetSnap = await rootRef.child(targetUid).once('value');
+            const targetData = targetSnap.val() || {};
+
+            const legacyProfile = legacyData.profile || {};
+            const targetProfile = targetData.profile || {};
+            const legacyUpdatedAt = legacyProfile.updatedAt || 0;
+            const targetUpdatedAt = targetProfile.updatedAt || 0;
+
+            const mergedProfile = legacyUpdatedAt > targetUpdatedAt
+                ? legacyProfile
+                : targetProfile;
+
+            const mergedEvents = {
+                ...(legacyData.events || {}),
+                ...(targetData.events || {})
+            };
+
+            const mergedLogins = {
+                ...(legacyData.logins || {}),
+                ...(targetData.logins || {})
+            };
+
+            await rootRef.child(targetUid).update({
+                profile: mergedProfile,
+                events: mergedEvents,
+                logins: mergedLogins
+            });
+
+            await rootRef.child(legacyUid).remove();
+            localStorage.setItem('quark_uid', targetUid);
+        } catch (error) {
+            console.warn('迁移旧UID失败:', error);
+        }
+    }
+
     async function heartbeat(uid, profile) {
         const ipInfo = await fetchIpInfo();
         await presenceRef.child(uid).set({
@@ -255,6 +303,7 @@
     async function run() {
         await ensureFirebaseReady();
         const uid = getUid();
+        await migrateLegacyUid(uid);
         let profile = getProfile();
 
         const localMeta = getLocalProfileMeta();
