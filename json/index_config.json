@@ -13,6 +13,7 @@
         "datetime_display": true,
         "ip_greeting": true,
         "greeting_tip": true,
+        "online_preview": true,
         "github_promo": true,
         "latest_updates": true,
         "announcement": true,

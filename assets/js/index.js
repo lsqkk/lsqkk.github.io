@@ -846,6 +846,98 @@ function formatDateText(dateText) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
+const ONLINE_WINDOW = 15 * 60 * 1000;
+const ONLINE_PREVIEW_MAX = 4;
+
+function getOnlineFirebaseConfig() {
+    return window.firebaseConfig || window._firebaseConfig || null;
+}
+
+function waitForOnlineFirebaseReady() {
+    return new Promise((resolve) => {
+        const timer = window.setInterval(() => {
+            const config = getOnlineFirebaseConfig();
+            if (window.firebase && window.firebase.database && config && config.projectId) {
+                window.clearInterval(timer);
+                resolve(config);
+            }
+        }, 300);
+    });
+}
+
+async function ensureOnlineFirebaseDatabase() {
+    const config = getOnlineFirebaseConfig();
+    if (config && config.projectId && window.firebase && window.firebase.database) {
+        if (!window.firebase.apps || !window.firebase.apps.length) {
+            window.firebase.initializeApp(config);
+        }
+        return window.firebase.database();
+    }
+    const waited = await waitForOnlineFirebaseReady();
+    if (!window.firebase.apps || !window.firebase.apps.length) {
+        window.firebase.initializeApp(waited);
+    }
+    return window.firebase.database();
+}
+
+function getOnlineInitial(name) {
+    const value = (name || '').trim();
+    if (!value) return 'Q';
+    return value.slice(0, 1).toUpperCase();
+}
+
+async function loadOnlinePreview() {
+    const container = document.getElementById('online-preview');
+    if (!container) return;
+    try {
+        const db = await ensureOnlineFirebaseDatabase();
+        const snap = await db.ref('presence').once('value');
+        const raw = snap.val() || {};
+        const now = Date.now();
+        const items = Object.values(raw)
+            .filter((item) => item && item.lastSeen && now - item.lastSeen <= ONLINE_WINDOW)
+            .map((item) => ({
+                nickname: item.nickname || '',
+                login: item.login || '',
+                avatarUrl: item.avatarUrl || '',
+                province: item.province || '',
+                city: item.city || '',
+                lastSeen: item.lastSeen || 0
+            }))
+            .sort((a, b) => b.lastSeen - a.lastSeen)
+            .slice(0, ONLINE_PREVIEW_MAX);
+
+        if (items.length === 0) {
+            container.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">暂无在线用户</p></div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="online-preview-grid">
+                ${items.map((item) => {
+        const name = item.nickname || item.login || '访客';
+        const location = [item.province, item.city].filter(Boolean).join(' ');
+        const avatar = item.avatarUrl
+            ? `<img src="${item.avatarUrl}" alt="${name}">`
+            : `<span>${getOnlineInitial(name)}</span>`;
+        return `
+                        <div class="online-preview-card">
+                            <div class="online-preview-avatar">${avatar}</div>
+                            <div>
+                                <div class="online-preview-name">${name}</div>
+                                <div class="online-preview-meta">${location || '在线'}</div>
+                            </div>
+                        </div>
+                    `;
+    }).join('')}
+            </div>
+        `;
+    } catch (error) {
+        console.error('在线预览加载失败:', error);
+        container.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">在线加载失败</p></div>';
+    }
+}
+
 async function loadGithubRepoCard() {
     const container = document.getElementById('github-promo-card');
     if (!container) return;
@@ -1038,6 +1130,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (document.getElementById('github-promo-card')) {
         loadGithubRepoCard();
+    }
+
+    if (document.getElementById('online-preview')) {
+        loadOnlinePreview();
     }
 
     // 检查并显示弹窗

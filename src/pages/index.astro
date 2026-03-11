@@ -261,6 +261,15 @@ const sidebarSectionRenderers: Record<string, () => string> = {
       <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
     </div>
   `,
+  online_preview: () => `
+    <div class="index-sidebar-section">
+      <h3 class="sidebar-title">在线 Online</h3>
+      <div id="online-preview">
+        <div class="index-announcement"><p class="index-announcement-text">在线加载中...</p></div>
+      </div>
+      <div class="sidebar-more-wrap"><a href="/a/online" class="sidebar-more-link">查看在线</a></div>
+    </div>
+  `,
   github_promo: () => `
     <div class="index-sidebar-section">
       <div class="github-promo" id="github-promo-card">
