@@ -171,6 +171,18 @@
             color: #007bff;
             font-size: 0.75em;
             font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-tag i {
+            font-size: 0.85em;
+        }
+
+        .post-tag-column {
+            background: rgba(120, 89, 203, 0.16);
+            color: #6346b5;
         }
 
         /* 分页样式 */

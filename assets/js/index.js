@@ -97,7 +97,8 @@ async function loadRecentPosts() {
                         <div class="post-date">${post.date}</div>
                         <div class="post-tags">
                             <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
-                            ${(post.tags || ['未分类']).map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+                            ${(post.columns || []).map(column => `<span class="post-tag post-tag-col"><i class="fa-solid fa-folder"></i>${column}</span>`).join('')}
+                            ${(post.tags || ['未分类']).map(tag => `<span class="post-tag"><i class="fa-solid fa-tag"></i>${tag}</span>`).join('')}
                         </div>
                     </a>
                 `).join('');

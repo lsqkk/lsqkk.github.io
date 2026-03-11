@@ -123,6 +123,10 @@ body {
     font-weight: 600;
 }
 
+.search-tag i {
+    font-size: 0.82em;
+}
+
 .search-tag-date {
     background: rgba(16, 66, 148, 0.12);
     color: #1f59b9;

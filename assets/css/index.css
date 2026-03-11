@@ -198,11 +198,23 @@ body {
     font-size: 0.76rem;
     background: #edf3ff;
     color: #2759a6;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .recent-posts .post-tag.read-time {
     background: #fdf3db;
     color: #916302;
+}
+
+.recent-posts .post-tag i {
+    font-size: 0.82em;
+}
+
+.recent-posts .post-tag-col {
+    background: rgba(120, 89, 203, 0.16);
+    color: #6346b5;
 }
 
 .dynamic-title {
@@ -929,6 +941,11 @@ body {
     .recent-posts .post-tag {
         background: rgba(84, 127, 197, 0.35);
         color: #cde0ff;
+    }
+
+    .recent-posts .post-tag-col {
+        background: rgba(168, 140, 255, 0.26);
+        color: #e3d3ff;
     }
 
     .recent-posts .post-tag.read-time {

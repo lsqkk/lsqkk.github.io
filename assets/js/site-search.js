@@ -229,8 +229,12 @@ async function runSearch(keyword) {
         const date = meta?.date || '';
         const wordCount = meta?.wordCount || 0;
         const readTime = wordCount ? Math.ceil(wordCount / 400) : 0;
-        const tagHtml = tags.slice(0, 6).map((tag) => `<span class="search-tag">${tag}</span>`).join('');
-        const columnHtml = columns.slice(0, 3).map((col) => `<span class="search-tag search-tag-col">${col}</span>`).join('');
+        const tagHtml = tags.slice(0, 6)
+            .map((tag) => `<span class="search-tag"><i class="fa-solid fa-tag"></i>${tag}</span>`)
+            .join('');
+        const columnHtml = columns.slice(0, 3)
+            .map((col) => `<span class="search-tag search-tag-col"><i class="fa-solid fa-folder"></i>${col}</span>`)
+            .join('');
         const metaHtml = meta ? `
             <div class="search-result-tags">
                 ${date ? `<span class="search-tag search-tag-date">${date}</span>` : ''}
