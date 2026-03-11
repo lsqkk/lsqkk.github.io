@@ -30,6 +30,9 @@ const toolData = JSON.parse(await fs.readFile(toolPath, "utf8"));
 const gameData = JSON.parse(await fs.readFile(gamePath, "utf8"));
 const projectData = JSON.parse(await fs.readFile(projectPath, "utf8"));
 const currentYear = new Date().getFullYear();
+const footerTitleCn = navConfig?.title?.text || "夸克博客";
+const footerTitleEn = navConfig?.title?.en || "Quark Blog";
+const footerLogo = navConfig?.logo?.url || SITE_LOGO_URL;
 
 function escapeHtml(text: unknown): string {
   return String(text ?? "")
@@ -325,28 +328,20 @@ const sidebarSectionRenderers: Record<string, () => string> = {
 const footerSectionRenderers: Record<string, () => string> = {
   visitor_stats: () => `
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <div class="footer-stat-card">
-      <div class="footer-stat-label">访问数据</div>
-      <div class="footer-stat-value">
-        <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
-        <span class="footer-stat-unit">访客</span>
-      </div>
-      <div class="footer-stat-meta">
-        来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次
-      </div>
+    <div class="footer-meta-item">
+      访客 <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
+      · 来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次
     </div>
   `,
   copyright_info: () => `
-    <div class="footer-legal">
-      <a class="footer-link" href="/posts/copyright">© 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.</a>
-    </div>
+    <a class="footer-link footer-meta-item" href="/posts/copyright">
+      © 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.
+    </a>
   `,
   icp_record: () => `
-    <div class="footer-legal">
-      <a class="footer-link" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
-        <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
-      </a>
-    </div>
+    <a class="footer-link footer-meta-item" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
+      <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
+    </a>
   `,
 };
 
@@ -431,41 +426,48 @@ const homePreloaded = {
       <div class="footer-card">
         <div class="footer-head">
           <div>
-            <div class="footer-kicker">Site Overview</div>
-            <div class="footer-title">站点概览</div>
+            <div class="footer-kicker">{footerTitleEn}</div>
+            <div class="footer-title">
+              <img class="footer-logo" src={footerLogo} alt="logo" />
+              <span>{footerTitleCn}</span>
+            </div>
           </div>
           <div class="footer-meta" set:html={footerContentHtml}></div>
         </div>
         <div class="footer-stats-grid" id="footer-static-stats">
-          <div class="footer-stat">
+          <a class="footer-stat footer-stat-link" href="/posts">
             <div class="footer-stat-label">文章总数</div>
             <div class="footer-stat-value" id="footer-post-total">0</div>
-          </div>
-          <div class="footer-stat">
+          </a>
+          <a class="footer-stat footer-stat-link" href="/blog/dt">
             <div class="footer-stat-label">动态总数</div>
             <div class="footer-stat-value" id="footer-dynamic-total">0</div>
-          </div>
-          <div class="footer-stat">
+          </a>
+          <a class="footer-stat footer-stat-link" href="/tool">
             <div class="footer-stat-label">工具 / 实验</div>
             <div class="footer-stat-value" id="footer-tool-total">0</div>
-          </div>
-          <div class="footer-stat">
+          </a>
+          <a class="footer-stat footer-stat-link" href="/games">
             <div class="footer-stat-label">游戏总数</div>
             <div class="footer-stat-value" id="footer-game-total">0</div>
-          </div>
-          <div class="footer-stat">
+          </a>
+          <a class="footer-stat footer-stat-link" href="/a/online">
             <div class="footer-stat-label">注册用户</div>
             <div class="footer-stat-value" id="footer-user-total">--</div>
-          </div>
-          <div class="footer-stat">
+          </a>
+          <a class="footer-stat footer-stat-link" href="https://github.com/lsqkk" target="_blank" rel="noreferrer">
+            <div class="footer-stat-label">开源项目</div>
+            <div class="footer-stat-value" id="footer-project-total">--</div>
+          </a>
+          <a class="footer-stat footer-stat-link" href="/blog/log">
             <div class="footer-stat-label">今日 Commit</div>
             <div class="footer-stat-value" id="footer-commit-total">--</div>
-          </div>
-          <div class="footer-stat">
+          </a>
+          <a class="footer-stat footer-stat-link" href="/blog/log">
             <div class="footer-stat-label">安全运行</div>
             <div class="footer-stat-value" id="footer-running-days">--</div>
             <div class="footer-stat-meta">自 2025-01-31 起</div>
-          </div>
+          </a>
         </div>
       </div>
     </div>

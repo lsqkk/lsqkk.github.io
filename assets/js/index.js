@@ -340,6 +340,7 @@ function initFooterStats() {
     setTextSafe('footer-running-days', String(days));
 
     void loadFooterUserCount();
+    void loadOpenSourceCount();
     void loadTodayCommitCount();
 
     window.addEventListener('firebase-config-loaded', () => {
@@ -358,6 +359,28 @@ async function loadFooterUserCount() {
         el.textContent = String(count);
     } catch (error) {
         console.warn('加载注册用户失败:', error);
+        el.textContent = '--';
+    }
+}
+
+async function loadOpenSourceCount() {
+    const el = document.getElementById('footer-project-total');
+    if (!el) return;
+    const excluded = new Set(['lsqkk.github.io', 'lsqkk', 'image', 'quarkdoc', 'academic-homepage']);
+    try {
+        const resp = await fetch('https://api.github.com/users/lsqkk/repos?per_page=100', {
+            headers: { Accept: 'application/vnd.github+json' }
+        });
+        if (!resp.ok) throw new Error(`GitHub API ${resp.status}`);
+        const repos = await resp.json();
+        if (!Array.isArray(repos)) {
+            el.textContent = '0';
+            return;
+        }
+        const count = repos.filter((repo) => repo && !excluded.has(repo.name)).length;
+        el.textContent = String(count);
+    } catch (error) {
+        console.warn('加载开源项目失败:', error);
         el.textContent = '--';
     }
 }

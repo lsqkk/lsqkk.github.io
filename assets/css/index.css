@@ -789,6 +789,17 @@ body {
     font-size: 1.3rem;
     font-weight: 700;
     color: #173b69;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(45, 73, 112, 0.18);
 }
 
 .footer-meta {
@@ -805,6 +816,11 @@ body {
     font-size: 0.88rem;
 }
 
+.footer-meta-item {
+    color: var(--text-subtle);
+    font-size: 0.88rem;
+}
+
 .footer-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -814,12 +830,35 @@ body {
 .footer-stat {
     padding: 12px 12px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.3);
     border: 1px solid rgba(45, 73, 112, 0.12);
     display: flex;
     flex-direction: column;
     gap: 6px;
     min-height: 72px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-stat-link::after {
+    content: "";
+    position: absolute;
+    top: -30%;
+    left: -120%;
+    width: 60%;
+    height: 160%;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+    transform: translateX(0) skewX(-12deg);
+    opacity: 0;
+    transition: transform 0.7s ease, opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.footer-stat-link:hover::after {
+    transform: translateX(260%) skewX(-12deg);
+    opacity: 1;
 }
 
 .footer-stat-label {
@@ -989,6 +1028,11 @@ body {
         text-align: left;
     }
 
+    .footer-logo {
+        width: 30px;
+        height: 30px;
+    }
+
     .footer-stats-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1122,5 +1166,9 @@ body {
     .footer-stat {
         background: rgba(16, 28, 48, 0.58);
         border-color: rgba(124, 161, 216, 0.35);
+    }
+
+    .footer-stat-link::after {
+        background: linear-gradient(120deg, transparent 0%, rgba(219, 232, 251, 0.35) 50%, transparent 100%);
     }
 }

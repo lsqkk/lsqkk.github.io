@@ -6,6 +6,7 @@
     },
     "title": {
         "text": "夸克博客",
+        "en": "Quark Blog",
         "link": "/"
     },
     "navItems": [
