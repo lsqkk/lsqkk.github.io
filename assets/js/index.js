@@ -886,6 +886,13 @@ function getOnlineInitial(name) {
     return value.slice(0, 1).toUpperCase();
 }
 
+function setOnlineCount(value) {
+    const countEl = document.getElementById('online-preview-count');
+    if (countEl) {
+        countEl.textContent = String(value);
+    }
+}
+
 async function loadOnlinePreview() {
     const container = document.getElementById('online-preview');
     if (!container) return;
@@ -894,7 +901,7 @@ async function loadOnlinePreview() {
         const snap = await db.ref('presence').once('value');
         const raw = snap.val() || {};
         const now = Date.now();
-        const items = Object.values(raw)
+        const allItems = Object.values(raw)
             .filter((item) => item && item.lastSeen && now - item.lastSeen <= ONLINE_WINDOW)
             .map((item) => ({
                 nickname: item.nickname || '',
@@ -904,9 +911,10 @@ async function loadOnlinePreview() {
                 city: item.city || '',
                 lastSeen: item.lastSeen || 0
             }))
-            .sort((a, b) => b.lastSeen - a.lastSeen)
-            .slice(0, ONLINE_PREVIEW_MAX);
+            .sort((a, b) => b.lastSeen - a.lastSeen);
+        const items = allItems.slice(0, ONLINE_PREVIEW_MAX);
 
+        setOnlineCount(allItems.length);
         if (items.length === 0) {
             container.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">暂无在线用户</p></div>';
             return;
@@ -915,21 +923,21 @@ async function loadOnlinePreview() {
         container.innerHTML = `
             <div class="online-preview-grid">
                 ${items.map((item) => {
-        const name = item.nickname || item.login || '访客';
-        const location = [item.province, item.city].filter(Boolean).join(' ');
-        const avatar = item.avatarUrl
-            ? `<img src="${item.avatarUrl}" alt="${name}">`
-            : `<span>${getOnlineInitial(name)}</span>`;
-        return `
-                        <div class="online-preview-card">
+            const name = item.nickname || item.login || '访客';
+            const location = [item.province, item.city].filter(Boolean).join(' ');
+            const avatar = item.avatarUrl
+                ? `<img src="${item.avatarUrl}" alt="${name}">`
+                : `<span>${getOnlineInitial(name)}</span>`;
+            return `
+                        <a class="online-preview-card" href="/a/online">
                             <div class="online-preview-avatar">${avatar}</div>
                             <div>
                                 <div class="online-preview-name">${name}</div>
                                 <div class="online-preview-meta">${location || '在线'}</div>
                             </div>
-                        </div>
+                        </a>
                     `;
-    }).join('')}
+        }).join('')}
             </div>
         `;
     } catch (error) {
@@ -1135,6 +1143,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('online-preview')) {
         loadOnlinePreview();
     }
+
+    window.addEventListener('firebase-config-loaded', () => {
+        if (document.getElementById('online-preview')) {
+            loadOnlinePreview();
+        }
+    });
 
     // 检查并显示弹窗
     checkAndShowPopup();

@@ -11,6 +11,7 @@ let firebaseInitialized = false;
 let isWaiting = false;
 /** @type {number | null} */
 let configCheckInterval = null;
+let notifiedFirebaseReady = false;
 
 /**
  * @returns {FirebaseConfig | null}
@@ -19,11 +20,19 @@ function getFirebaseConfig() {
     return window.firebaseConfig || window._firebaseConfig || null;
 }
 
+function notifyFirebaseConfigReady(config) {
+    if (notifiedFirebaseReady) return;
+    if (!config || !config.projectId) return;
+    notifiedFirebaseReady = true;
+    window.dispatchEvent(new CustomEvent('firebase-config-loaded', { detail: config }));
+}
+
 // 静候Firebase配置加载（无限等待）
 function waitForFirebaseConfig() {
     return new Promise((resolve) => {
         const existingConfig = getFirebaseConfig();
         if (existingConfig && existingConfig.projectId) {
+            notifyFirebaseConfigReady(existingConfig);
             resolve(existingConfig);
             return;
         }
@@ -38,6 +47,7 @@ function waitForFirebaseConfig() {
                     window.clearInterval(configCheckInterval);
                     configCheckInterval = null;
                 }
+                notifyFirebaseConfigReady(config);
                 resolve(config);
             }
         };
@@ -50,6 +60,7 @@ function waitForFirebaseConfig() {
                         window.clearInterval(configCheckInterval);
                         configCheckInterval = null;
                     }
+                    notifyFirebaseConfigReady(value);
                     resolve(value);
                 }
                 this._firebaseConfig = value;
@@ -68,6 +79,7 @@ function waitForFirebaseConfig() {
                     window.clearInterval(configCheckInterval);
                     configCheckInterval = null;
                 }
+                notifyFirebaseConfigReady(config);
                 resolve(config);
             }
         }, 300);
