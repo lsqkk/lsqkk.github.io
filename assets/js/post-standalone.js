@@ -288,7 +288,8 @@ function initTOCSpy() {
         const activeItem = headingMap.get(activeId);
         if (activeItem) {
             activeItem.classList.add('active');
-            const top = activeItem.offsetTop;
+            const visualOffset = 20;
+            const top = Math.max(0, activeItem.offsetTop - visualOffset);
             const height = activeItem.offsetHeight;
             highlight.style.transform = `translateY(${top}px)`;
             highlight.style.height = `${height}px`;

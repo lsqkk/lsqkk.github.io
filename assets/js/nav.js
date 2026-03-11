@@ -117,7 +117,6 @@ function generateNavHTML(config) {
                             <option value="english">English</option>
                         </select>
                     </li>
-                    <li id="login-button"><a href="${config.login.url}">登录</a></li>
                 </ul>
             </div>
             <div class="header-right">
