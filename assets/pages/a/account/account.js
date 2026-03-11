@@ -59,7 +59,12 @@
     }
 
     function setText(target, value) {
-        if (target) target.textContent = value;
+        if (!target) return;
+        if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+            target.value = value ?? '';
+            return;
+        }
+        target.textContent = value;
     }
 
     function getProfile() {
@@ -215,12 +220,95 @@
         reader.readAsDataURL(file);
     }
 
-    function applyCropper() {
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const result = String(reader.result || '');
+                const commaIndex = result.indexOf(',');
+                resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
+            };
+            reader.onerror = () => reject(new Error('文件读取失败'));
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    function canvasToBlob(canvas) {
+        return new Promise((resolve, reject) => {
+            canvas.toBlob((blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error('图片导出失败'));
+            }, 'image/png', 0.92);
+        });
+    }
+
+    function buildAvatarFileName(login) {
+        const safeLogin = (login || 'guest').replace(/[^a-zA-Z0-9_-]/g, '');
+        const ts = Date.now();
+        const rand = Math.random().toString(36).slice(2, 8);
+        return `${safeLogin}-${ts}-${rand}.png`;
+    }
+
+    async function uploadToGitHub({ token, repoPath, base64Content, originalName }) {
+        const url = `https://api.github.com/repos/lsqkk/image/contents/${encodeURI(repoPath)}`;
+        const body = {
+            message: `upload avatar: ${originalName} -> ${repoPath}`,
+            content: base64Content,
+            branch: 'main'
+        };
+
+        const resp = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: 'application/vnd.github+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!resp.ok) {
+            const text = await resp.text();
+            throw new Error(`GitHub 上传失败（${resp.status}）：${text.slice(0, 120)}`);
+        }
+    }
+
+    async function uploadCroppedAvatar() {
         if (!(el.cropperCanvas instanceof HTMLCanvasElement)) return;
-        const dataUrl = el.cropperCanvas.toDataURL('image/png', 0.92);
-        if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = dataUrl;
-        updateAvatarPreview(dataUrl, el.nickname && el.nickname.value);
-        if (el.cropperModal) el.cropperModal.classList.remove('active');
+        const token = window.GITHUB_API_KEY;
+        if (!token) {
+            setStatus('未获取到 GITHUB_API_KEY，请稍后重试');
+            return;
+        }
+
+        try {
+            setStatus('头像上传中...');
+            const blob = await canvasToBlob(el.cropperCanvas);
+            const base64Content = await blobToBase64(blob);
+            const login = (el.githubLogin instanceof HTMLInputElement ? el.githubLogin.value.trim() : '') || '';
+            const fileName = buildAvatarFileName(login);
+            const year = new Date().getFullYear();
+            const repoPath = `pic/avatar/${year}/${fileName}`;
+            await uploadToGitHub({
+                token,
+                repoPath,
+                base64Content,
+                originalName: fileName
+            });
+
+            const cdnUrl = `https://cdn.jsdelivr.net/gh/lsqkk/image@main/${repoPath}`;
+            if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = cdnUrl;
+            updateAvatarPreview(cdnUrl, el.nickname && el.nickname.value);
+            setStatus('头像已上传并应用');
+            if (el.cropperModal) el.cropperModal.classList.remove('active');
+        } catch (error) {
+            console.error('头像上传失败:', error);
+            setStatus('头像上传失败，请稍后重试');
+        }
+    }
+
+    function applyCropper() {
+        void uploadCroppedAvatar();
     }
 
     function closeCropper() {
@@ -238,6 +326,13 @@
                 const file = el.avatarFile.files ? el.avatarFile.files[0] : null;
                 handleAvatarFile(file);
             });
+            const label = el.avatarFile.closest('label');
+            if (label) {
+                label.addEventListener('click', (event) => {
+                    if (event.target === el.avatarFile) return;
+                    el.avatarFile.click();
+                });
+            }
         }
         if (el.avatarUrl instanceof HTMLInputElement) {
             el.avatarUrl.addEventListener('input', () => {
@@ -449,7 +544,21 @@
         setText(el.lastSyncAt, profile.updatedAt ? formatTime(profile.updatedAt) : '-');
     }
 
+    function initThemeSync() {
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+        const apply = () => {
+            document.body.classList.toggle('dark-mode', media.matches);
+        };
+        apply();
+        if (typeof media.addEventListener === 'function') {
+            media.addEventListener('change', apply);
+        } else if (typeof media.addListener === 'function') {
+            media.addListener(apply);
+        }
+    }
+
     async function init() {
+        initThemeSync();
         fillStaticInfo();
         bindEvents();
         await migrateLegacyUid();
