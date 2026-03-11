@@ -355,7 +355,13 @@ async function loadFooterUserCount() {
         const db = await ensureOnlineFirebaseDatabase();
         const snap = await db.ref('user_activity').once('value');
         const raw = snap.val() || {};
-        const count = Object.keys(raw).length;
+        const entries = Object.values(raw);
+        const count = entries.filter((user) => {
+            const profile = user?.profile || {};
+            const nickname = typeof profile.nickname === 'string' ? profile.nickname.trim() : '';
+            const login = typeof profile.login === 'string' ? profile.login.trim() : '';
+            return Boolean(nickname || login);
+        }).length;
         el.textContent = String(count);
     } catch (error) {
         console.warn('加载注册用户失败:', error);
