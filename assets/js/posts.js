@@ -54,8 +54,12 @@ function initFoldPanels() {
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     const searchParam = params.get('search');
+    const tagParam = params.get('tag');
+    const columnsParam = params.get('columns');
     return {
-        search: searchParam
+        search: searchParam,
+        tag: tagParam,
+        columns: columnsParam
     };
 }
 
@@ -143,6 +147,31 @@ async function loadPosts() {
                 console.error('未找到搜索框元素!');
             }
         }, 100);
+        return;
+    }
+
+    let didApplyFilter = false;
+    if (urlParams.tag && allTags.includes(urlParams.tag)) {
+        currentTag = urlParams.tag;
+        didApplyFilter = true;
+    }
+    if (urlParams.columns && allColumns.includes(urlParams.columns)) {
+        currentColumn = urlParams.columns;
+        didApplyFilter = true;
+    }
+
+    if (didApplyFilter) {
+        const searchResults = document.getElementById('searchResults');
+        if (searchResults) searchResults.style.display = 'none';
+        setFilterPanelsVisible(true);
+        const posts = document.getElementById('posts');
+        const pagination = document.getElementById('pagination');
+        if (posts) posts.style.display = 'block';
+        if (pagination) pagination.style.display = 'flex';
+        renderTagFilter();
+        renderColumnFilter();
+        renderPosts();
+        renderPagination();
     }
 }
 
@@ -261,6 +290,11 @@ function filterByTag(tag) {
     // 清除URL中的搜索参数
     const url = new URL(window.location);
     url.searchParams.delete('search');
+    if (tag && tag !== '全部') {
+        url.searchParams.set('tag', tag);
+    } else {
+        url.searchParams.delete('tag');
+    }
     window.history.replaceState({}, '', url);
 }
 
@@ -279,6 +313,11 @@ function filterByColumn(column) {
 
     const url = new URL(window.location);
     url.searchParams.delete('search');
+    if (column && column !== '全部') {
+        url.searchParams.set('columns', column);
+    } else {
+        url.searchParams.delete('columns');
+    }
     window.history.replaceState({}, '', url);
 }
 

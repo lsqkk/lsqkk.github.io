@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     wrapPostTables();
     await initPostGallery();
     initSidebarToggle();
+    initBackToTop();
 
     // 如果 KaTeX 已经加载，渲染公式；否则等待加载
     if (window.renderMathInElement) {
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 生成目录并添加导航
     generateTOC();
+    initTOCSpy();
     addPostNavigationFromData();
 
     // 显示侧边栏内容
@@ -147,6 +149,27 @@ function initSidebarToggle() {
     }
 }
 
+function initBackToTop() {
+    const button = document.querySelector('.back-to-top');
+    if (!(button instanceof HTMLElement)) return;
+    const updateVisibility = () => {
+        if (window.scrollY > 240) {
+            button.style.opacity = '1';
+            button.style.pointerEvents = 'auto';
+            button.style.transform = 'translateY(0)';
+        } else {
+            button.style.opacity = '0';
+            button.style.pointerEvents = 'none';
+            button.style.transform = 'translateY(6px)';
+        }
+    };
+    updateVisibility();
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    button.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
 // 2. 渲染元数据和基础 UI
 function initPostUI() {
     const tagsContainer = document.getElementById('post-tags-container');
@@ -176,9 +199,10 @@ function initPostUI() {
             /** @type {string[]} */
             const tags = JSON.parse(tagsJson);
             if (tags && tags.length > 0) {
-                tagsContainer.innerHTML = tags.map((tag) =>
-                    `<span class="post-tag">${tag}</span>`
-                ).join('');
+                tagsContainer.innerHTML = tags.map((tag) => {
+                    const href = `/posts?tag=${encodeURIComponent(tag)}`;
+                    return `<a class="post-tag post-tag-link" href="${href}">${tag}</a>`;
+                }).join('');
             }
         } catch (e) { console.error("解析标签 JSON 失败", e); }
     }
@@ -202,11 +226,12 @@ function renderMath() {
 
 // 4. 生成目录 (TOC)
 function generateTOC() {
-    const headings = document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4');
+    const headings = Array.from(document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4'))
+        .filter((heading) => heading.getClientRects().length > 0);
     const tocContainer = document.querySelector('.sidebar-main-content');
     if (!tocContainer) return;
 
-    let html = '<h4>目录</h4>';
+    let html = '<div class="toc-highlight" id="toc-highlight"></div>';
     if (headings.length === 0) {
         html += '<p style="font-size:0.8em; color:#999;">暂无目录</p>';
     }
@@ -216,7 +241,7 @@ function generateTOC() {
         const id = `heading-${index}`;
         heading.id = id;
         html += `
-        <div class="toc-item ${level}">
+        <div class="toc-item ${level}" data-heading="${id}">
             <a href="#${id}">${heading.textContent}</a>
         </div>
         `;
@@ -231,6 +256,51 @@ function generateTOC() {
     `;
 
     tocContainer.innerHTML = html;
+}
+
+function initTOCSpy() {
+    const headings = Array.from(document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4'))
+        .filter((heading) => heading.getClientRects().length > 0);
+    const tocItems = Array.from(document.querySelectorAll('.toc-item'));
+    const highlight = document.getElementById('toc-highlight');
+    if (!headings.length || !tocItems.length || !(highlight instanceof HTMLElement)) return;
+
+    const headingMap = new Map();
+    tocItems.forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+        const id = item.getAttribute('data-heading');
+        if (!id) return;
+        headingMap.set(id, item);
+    });
+
+    const updateActive = () => {
+        let activeId = headings[0].id;
+        const threshold = 140;
+        for (const heading of headings) {
+            const rect = heading.getBoundingClientRect();
+            if (rect.top <= threshold) {
+                activeId = heading.id;
+            } else {
+                break;
+            }
+        }
+        tocItems.forEach((item) => item.classList.remove('active'));
+        const activeItem = headingMap.get(activeId);
+        if (activeItem) {
+            activeItem.classList.add('active');
+            const top = activeItem.offsetTop;
+            const height = activeItem.offsetHeight;
+            highlight.style.transform = `translateY(${top}px)`;
+            highlight.style.height = `${height}px`;
+            highlight.style.opacity = '1';
+        }
+    };
+
+    updateActive();
+    window.addEventListener('scroll', () => {
+        window.requestAnimationFrame(updateActive);
+    }, { passive: true });
+    window.addEventListener('resize', updateActive);
 }
 
 // 5. 侧边栏导航逻辑（使用构建期注入的数据，不再请求 posts.json）

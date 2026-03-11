@@ -1,6 +1,7 @@
 ---
 interface Props {
   pageTitle: string;
+  postTitle: string;
   date: string;
   tags: string[];
   columns: string[];
@@ -15,6 +16,7 @@ interface Props {
 
 const {
   pageTitle,
+  postTitle,
   date,
   tags,
   columns,
@@ -32,7 +34,10 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 const currentYear = new Date().getFullYear();
 
 function buildColumnHref(columnName: string): string {
-  return `/posts/${encodeURIComponent(columnName)}`;
+  return `/posts?columns=${encodeURIComponent(columnName)}`;
+}
+function buildTagHref(tagName: string): string {
+  return `/posts?tag=${encodeURIComponent(tagName)}`;
 }
 ---
 <!doctype html>
@@ -50,6 +55,7 @@ function buildColumnHref(columnName: string): string {
     <link id="dynamic-gallery-style" rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css" />
     <link rel="stylesheet" href="/assets/css/code.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/copyright-injector.js"></script>
     <script is:inline async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script>
@@ -87,7 +93,6 @@ function buildColumnHref(columnName: string): string {
     <script id="dynamic-gallery-script" is:inline src="/assets/js/dynamic-gallery.js"></script>
     <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
     <div class="sidebar">
-      <button class="sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="打开目录" aria-expanded="false">☰</button>
       <div class="sidebar-content" id="sidebarContent">
         <div id="toc-loading" style="display: none;">目录加载中...</div>
         <div class="sidebar-main-content"></div>
@@ -102,19 +107,19 @@ function buildColumnHref(columnName: string): string {
     </div>
 
     <div class="morenpost">
+      <div class="post-header">
+        <h1 class="post-title-main">{postTitle}</h1>
+      </div>
       <div class="post-meta">
-        <div class="post-meta-item">
-          作者：
-          <a href="/posts/about" class="post-meta-author"
-            ><img src="/assets/img/touxiang.png" alt="头像" class="post-meta-avatar" />
-            蓝色奇夸克</a
-          >
+        <div class="post-meta-left">
+          <div id="post-date" class="post-meta-item">发表于 {date}</div>
         </div>
-        <div id="post-date" class="post-meta-item">发表于 {date}</div>
-        <div class="post-meta-item">
-          <img src="/assets/img/view.png" alt="view" class="post-meta-view-icon" />
-          <span id="busuanzi_value_page_pv"></span> 浏览 /
-          <span id="post-wordcount">{wordCount}字 · {readTime}min</span>
+        <div class="post-meta-right">
+          <div class="post-meta-item">
+            <i class="fa-regular fa-eye post-meta-view-icon"></i>
+            <span id="busuanzi_value_page_pv"></span>
+          </div>
+          <div class="post-meta-item" id="post-wordcount">{wordCount}字 · {readTime}min</div>
         </div>
       </div>
 
@@ -144,7 +149,9 @@ function buildColumnHref(columnName: string): string {
         data-next-title={nextPostTitle}
         data-next-url={nextPostUrl}
       >
-        {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+        {tags.map((tag) => (
+          <a class="post-tag post-tag-link" href={buildTagHref(tag)}>{tag}</a>
+        ))}
       </div>
 
       <div id="content" class="post-content">
@@ -207,5 +214,13 @@ function buildColumnHref(columnName: string): string {
       async
     >
     </script>
+
+    <div class="post-fab-stack">
+      <button class="fab-btn sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="打开目录" aria-expanded="false">☰</button>
+      <button class="fab-btn back-to-top" type="button" aria-label="回到顶部">
+        <span class="back-to-top-icon">↑</span>
+        <span class="back-to-top-text">回到顶部</span>
+      </button>
+    </div>
   </body>
 </html>

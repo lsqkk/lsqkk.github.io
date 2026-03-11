@@ -72,6 +72,7 @@
     .morenpost,
     .morenpost p,
     .morenpost li,
+    .post-title-main,
     .post-meta,
     .post-column-note,
     .donate-text,
@@ -115,6 +116,22 @@
 
     .sidebar-toggle:hover {
         background: rgba(36, 52, 84, 0.9);
+    }
+
+    .fab-btn {
+        background: rgba(24, 36, 58, 0.82);
+        border: 1px solid rgba(138, 173, 220, 0.35);
+        color: #dce8fb;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+    }
+
+    .fab-btn:hover {
+        background: rgba(36, 52, 84, 0.9);
+    }
+
+    .toc-highlight {
+        background: rgba(110, 168, 255, 0.2) !important;
+        border-color: rgba(110, 168, 255, 0.35) !important;
     }
 
     .sidebar-backdrop {
@@ -198,7 +215,6 @@
     }
 
     .toc-item a:hover {
-        background: rgba(110, 168, 255, 0.2) !important;
         color: #ffffff !important;
     }
 
