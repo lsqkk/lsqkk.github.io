@@ -141,6 +141,17 @@
     background: rgba(248, 250, 252, 0.85);
 }
 
+.post-annotation-profile.locked {
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.post-annotation-color.locked,
+.post-annotation-profile-row input[disabled],
+.post-annotation-profile-row select[disabled] {
+    cursor: not-allowed;
+}
+
 .post-annotation-profile-row {
     display: flex;
     gap: 8px;

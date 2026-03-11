@@ -116,6 +116,17 @@
     font-weight: bold;
 }
 
+.avatar-toggle button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#newDiscussionForm input[disabled],
+#newDiscussionForm textarea[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .avatar-toggle button:hover:not(.active) {
     background-color: rgba(255, 255, 255, 0.15);
 }
@@ -281,6 +292,21 @@
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.login-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(122, 189, 154, 0.18);
+    border: 1px solid rgba(122, 189, 154, 0.45);
+    letter-spacing: 0.02em;
 }
 
 .message-avatar {

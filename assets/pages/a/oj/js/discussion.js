@@ -14,6 +14,8 @@ let userAvatarType = localStorage.getItem('avatarType') || 'color';
 let userColor = localStorage.getItem('userColor') || '#4a6cf7';
 let userAvatarUrl = localStorage.getItem('userAvatarUrl') || '';
 let nickname = localStorage.getItem('nickname') || '';
+let loginName = '';
+let isLoggedUser = false;
 
 
 // --- 视图控制函数 ---
@@ -64,6 +66,14 @@ function getUserAvatarStyle(currentNickname = nickname) {
     return { style: `background: ${userColor}`, content: currentNickname ? currentNickname[0].toUpperCase() : 'A' };
 }
 
+function formatAuthor(nick, login) {
+    const base = nick || login || '访客';
+    if (login) {
+        return `${base}<span class="login-badge">@${login}</span>`;
+    }
+    return base;
+}
+
 function renderPagination() {
     const totalPages = Math.ceil(totalDiscussions / PAGE_SIZE);
     const paginationDiv = document.getElementById('pagination');
@@ -94,6 +104,15 @@ window.updateAvatar = function (type) {
     const nicknameInput = document.getElementById('nickname');
 
     if (!nicknameInput) return; // 确保表单元素存在
+    if (isLoggedUser) {
+        const preview = getUserAvatarStyle(nickname);
+        const avatarPreview = document.getElementById('avatarPreview');
+        if (avatarPreview) {
+            avatarPreview.style.cssText = preview.style;
+            avatarPreview.textContent = preview.content;
+        }
+        return;
+    }
 
     nickname = nicknameInput.value.trim();
     localStorage.setItem('nickname', nickname);
@@ -143,6 +162,7 @@ function initAvatarToggle() {
         : null;
     if (profile) {
         if (profile.nickname) nickname = profile.nickname;
+        if (profile.login) loginName = profile.login;
         if (profile.avatarUrl) {
             userAvatarType = 'image';
             userAvatarUrl = profile.avatarUrl;
@@ -151,10 +171,43 @@ function initAvatarToggle() {
             userColor = profile.avatarColor;
         }
     }
+    if (!loginName) {
+        const raw = localStorage.getItem('github_user');
+        if (raw) {
+            try {
+                loginName = JSON.parse(raw).login || '';
+            } catch {
+                loginName = '';
+            }
+        }
+    }
+    isLoggedUser = Boolean(loginName) && Boolean(localStorage.getItem('github_user') || localStorage.getItem('github_code'));
+    if (isLoggedUser && !nickname) {
+        nickname = loginName;
+    }
 
     document.getElementById('colorPicker').value = userColor;
     document.getElementById('avatarUrl').value = userAvatarUrl;
-    nicknameInput.value = nickname;
+    nicknameInput.value = nickname || loginName || '';
+
+    if (isLoggedUser) {
+        nicknameInput.setAttribute('disabled', 'true');
+        if (colorToggle) {
+            colorToggle.classList.add('disabled');
+            colorToggle.style.pointerEvents = 'none';
+        }
+        if (imageToggle) {
+            imageToggle.classList.add('disabled');
+            imageToggle.style.pointerEvents = 'none';
+        }
+        if (colorSelector) colorSelector.style.pointerEvents = 'none';
+        if (imageSelector) imageSelector.style.pointerEvents = 'none';
+        const colorPickerInput = document.getElementById('colorPicker');
+        if (colorPickerInput) colorPickerInput.setAttribute('disabled', 'true');
+        const avatarUrlInput = document.getElementById('avatarUrl');
+        if (avatarUrlInput) avatarUrlInput.setAttribute('disabled', 'true');
+        return;
+    }
 
     const selectors = [
         { btn: colorToggle, sel: colorSelector, type: 'color' },
@@ -420,6 +473,7 @@ function loadDiscussionsList() {
             if (searchTerm &&
                 !discussion.title.toLowerCase().includes(searchTerm) &&
                 !discussion.nickname.toLowerCase().includes(searchTerm) &&
+                !(discussion.login || '').toLowerCase().includes(searchTerm) &&
                 !(discussion.problemId && discussion.problemId.toString() === searchTerm)) {
                 return;
             }
@@ -467,7 +521,7 @@ function renderDiscussionsSummaries(discussions) {
                 <div class="summary-title">${discussion.title}</div>
                 <div class="summary-meta">
                     <span class="problem-tag">P${discussion.problemId}</span>
-                    <span><i class="fas fa-user"></i> ${discussion.nickname}</span>
+                    <span><i class="fas fa-user"></i> ${formatAuthor(discussion.nickname, discussion.login)}</span>
                     <span><i class="fas fa-heart"></i> ${discussion.likes || 0}</span>
                     <span><i class="fas fa-comment"></i> ${replyCount}</span>
                 </div>
@@ -491,7 +545,7 @@ window.submitNewDiscussion = function () {
 
     if (!nicknameInput || !title || !content || !problemId) return; // 安全检查
 
-    const currentNickname = nicknameInput.value.trim();
+    const currentNickname = isLoggedUser ? (nickname || loginName || '') : nicknameInput.value.trim();
     const currentTitle = title.value.trim();
     const currentContent = content.value.trim();
     const currentProblemId = problemId.value.trim();
@@ -514,6 +568,7 @@ window.submitNewDiscussion = function () {
         problemId: parsedProblemId,
         text: currentContent,
         nickname: nickname,
+        login: loginName || '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -580,7 +635,7 @@ function renderSingleDiscussion(discussion) {
             <div class="detail-meta-row">
                 <div class="author-time">
                     <span class="problem-tag">P${discussion.problemId}</span>
-                    <span style="font-weight: bold; color: #81D4FA;">作者：${discussion.nickname}</span>
+                    <span style="font-weight: bold; color: #81D4FA;">作者：${formatAuthor(discussion.nickname, discussion.login)}</span>
                     <span>发布于：${formatTime(discussion.timestamp)}</span>
                 </div>
                 <div class="message-actions">
@@ -659,7 +714,7 @@ function renderRepliesTree(discussionId, replies) {
                         </div>
                         <div class="message-info">
                             <div class="message-author">
-                                ${node.nickname} 
+                                ${formatAuthor(node.nickname, node.login)} 
                                 ${parentNickname ? `<span class="replying-to">回复 ${parentNickname}</span>` : ''}
                             </div>
                             <div class="message-time">${formatTime(node.timestamp)}</div>
@@ -745,10 +800,13 @@ window.submitReply = function (discussionId, parentReplyId) {
     if (nicknameInput) {
         nickname = nicknameInput.value.trim();
         if (!nickname) {
-            alert('请先填写昵称');
-            return;
+            if (!isLoggedUser) {
+                alert('请先填写昵称');
+                return;
+            }
+            nickname = loginName || '访客';
         }
-        localStorage.setItem('nickname', nickname);
+        if (!isLoggedUser) localStorage.setItem('nickname', nickname);
     }
 
     // 确保头像信息是最新的
@@ -757,6 +815,7 @@ window.submitReply = function (discussionId, parentReplyId) {
     const reply = {
         text: content,
         nickname: nickname,
+        login: loginName || '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),

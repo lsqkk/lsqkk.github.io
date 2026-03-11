@@ -99,6 +99,39 @@
         return `${y}-${m}-${day} ${hh}:${mm}`;
     }
 
+    function getLoginProfile() {
+        const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+            ? window.QuarkUserProfile.getProfile()
+            : null;
+        let login = profile && profile.login ? profile.login : '';
+        if (!login) {
+            const raw = localStorage.getItem('github_user');
+            if (raw) {
+                try {
+                    const data = JSON.parse(raw);
+                    login = data.login || '';
+                } catch {
+                    login = '';
+                }
+            }
+        }
+        return {
+            nickname: (profile && profile.nickname) ? profile.nickname : '',
+            login,
+            avatarUrl: profile && profile.avatarUrl ? profile.avatarUrl : '',
+            avatarColor: profile && profile.avatarColor ? profile.avatarColor : '',
+            avatarType: profile && profile.avatarType ? profile.avatarType : 'color'
+        };
+    }
+
+    function renderDisplayName(nickname, login) {
+        const base = nickname || login || '访客';
+        if (login) {
+            return `${escapeHtml(base)}<span class="login-badge">@${escapeHtml(login)}</span>`;
+        }
+        return escapeHtml(base);
+    }
+
     function getLikeCount(likesBy) {
         if (!likesBy || typeof likesBy !== 'object') return 0;
         return Object.keys(likesBy).length;
@@ -319,13 +352,16 @@
         let latestComments = [];
         let postRef = null;
 
+        const loginProfile = getLoginProfile();
+        const isLoggedUser = Boolean(loginProfile.login) && Boolean(localStorage.getItem('github_code') || localStorage.getItem('github_user'));
         if (nicknameInput instanceof HTMLInputElement) {
-            const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
-                ? window.QuarkUserProfile.getProfile()
-                : null;
-            const preferred = (profile && profile.nickname) ? profile.nickname : (localStorage.getItem(NICKNAME_KEY) || '');
+            const preferred = loginProfile.nickname || loginProfile.login || (localStorage.getItem(NICKNAME_KEY) || '');
             nicknameInput.value = preferred;
             if (preferred) localStorage.setItem(NICKNAME_KEY, preferred);
+            if (isLoggedUser) {
+                nicknameInput.setAttribute('disabled', 'true');
+                nicknameInput.placeholder = '已登录';
+            }
         }
 
         const setCommentsLoading = (message, isError = false) => {
@@ -430,7 +466,7 @@
                 return `
                     <div class="dynamic-comment-item" data-comment-id="${escapeHtml(comment.id)}">
                         <div class="dynamic-comment-head">
-                            <strong>${escapeHtml(comment.nickname || '访客')}</strong>
+                            <strong>${renderDisplayName(comment.nickname, comment.login)}</strong>
                             <span>${escapeHtml(formatTime(comment.timestamp))}</span>
                         </div>
                         <div class="dynamic-comment-text">${escapeHtml(comment.text || '')}</div>
@@ -448,7 +484,7 @@
                                     return `
                                         <div class="dynamic-reply-item" data-reply-id="${escapeHtml(reply.id)}">
                                             <div class="dynamic-comment-head">
-                                                <strong>${escapeHtml(reply.nickname || '访客')}</strong>
+                                                <strong>${renderDisplayName(reply.nickname, reply.login)}</strong>
                                                 <span>${escapeHtml(formatTime(reply.timestamp))}</span>
                                             </div>
                                             <div class="dynamic-comment-text">${escapeHtml(reply.text || '')}</div>
@@ -513,11 +549,17 @@
                         alert('评论内容不能为空');
                         return;
                     }
-                    const nickname = nicknameInput instanceof HTMLInputElement
-                        ? (nicknameInput.value.trim() || '访客')
-                        : '访客';
-                    localStorage.setItem(NICKNAME_KEY, nickname);
-                    const payload = { nickname, text, timestamp: Date.now(), likesBy: {} };
+                    const nickname = isLoggedUser
+                        ? (loginProfile.nickname || loginProfile.login || '访客')
+                        : (nicknameInput instanceof HTMLInputElement ? (nicknameInput.value.trim() || '访客') : '访客');
+                    if (!isLoggedUser) localStorage.setItem(NICKNAME_KEY, nickname);
+                    const payload = {
+                        nickname,
+                        login: isLoggedUser ? (loginProfile.login || '') : '',
+                        text,
+                        timestamp: Date.now(),
+                        likesBy: {}
+                    };
                     if (replyToCommentId) {
                         await postRef.child('comments').child(replyToCommentId).child('replies').push(payload);
                         replyToCommentId = '';

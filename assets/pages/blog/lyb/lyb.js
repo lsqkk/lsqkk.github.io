@@ -21,6 +21,8 @@ let userAvatarType = 'color'; // 'color' 或 'image'
 let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '';
+let loginName = '';
+let isLoggedUser = false;
 /** @type {string | null} */
 let replyingTo = null; // 当前回复的留言ID
 
@@ -78,8 +80,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
         ? window.QuarkUserProfile.getProfile()
         : null;
+    const githubUser = localStorage.getItem('github_user');
     if (profile) {
         if (profile.nickname) nickname = profile.nickname;
+        if (profile.login) loginName = profile.login;
         if (profile.avatarUrl) {
             userAvatarType = 'image';
             userAvatarUrl = profile.avatarUrl;
@@ -87,6 +91,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             userAvatarType = 'color';
             userColor = profile.avatarColor;
         }
+    }
+    if (!loginName && githubUser) {
+        try {
+            loginName = JSON.parse(githubUser).login || '';
+        } catch {
+            loginName = '';
+        }
+    }
+    isLoggedUser = Boolean(localStorage.getItem('github_code') || githubUser);
+    if (isLoggedUser && !nickname) {
+        nickname = loginName || '已登录';
     }
 
     // 初始化头像切换
@@ -113,24 +128,32 @@ document.addEventListener('DOMContentLoaded', async function () {
     const nicknameInput = byId('nickname');
     if (nicknameInput instanceof HTMLInputElement) {
         if (nickname) nicknameInput.value = nickname;
-        nicknameInput.addEventListener('input', () => {
-            nickname = nicknameInput.value.trim();
-            localStorage.setItem('nickname', nickname);
-            if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
-                window.QuarkUserProfile.syncProfile({
-                    nickname,
-                    avatarType: userAvatarType,
-                    avatarColor: userColor,
-                    avatarUrl: userAvatarUrl
-                });
-            }
-            updateAvatarPreview();
-        });
+        if (isLoggedUser) {
+            nicknameInput.setAttribute('disabled', 'true');
+            nicknameInput.value = nickname || loginName || '已登录';
+        } else {
+            nicknameInput.addEventListener('input', () => {
+                nickname = nicknameInput.value.trim();
+                localStorage.setItem('nickname', nickname);
+                if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
+                    window.QuarkUserProfile.syncProfile({
+                        nickname,
+                        avatarType: userAvatarType,
+                        avatarColor: userColor,
+                        avatarUrl: userAvatarUrl
+                    });
+                }
+                updateAvatarPreview();
+            });
+        }
     }
 
     const avatarUrlInput = byId('avatarUrl');
-    if (avatarUrlInput instanceof HTMLInputElement && userAvatarUrl) {
-        avatarUrlInput.value = userAvatarUrl;
+    if (avatarUrlInput instanceof HTMLInputElement) {
+        if (userAvatarUrl) avatarUrlInput.value = userAvatarUrl;
+        if (isLoggedUser) {
+            avatarUrlInput.setAttribute('disabled', 'true');
+        }
     }
     updateAvatarPreview();
 });
@@ -176,7 +199,7 @@ function submitMessage() {
         return;
     }
 
-    const nickname = nicknameInput.value.trim();
+    const nickname = isLoggedUser ? (nicknameInput.value.trim() || loginName || '已登录') : nicknameInput.value.trim();
     const content = contentInput.value.trim();
     const useMarkdown = markdownInput.checked;
 
@@ -186,11 +209,14 @@ function submitMessage() {
     }
 
     // 保存昵称到本地存储
-    localStorage.setItem('nickname', nickname);
+    if (!isLoggedUser) {
+        localStorage.setItem('nickname', nickname);
+    }
 
     const message = {
         text: content,
         nickname: nickname,
+        login: loginName || '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -220,6 +246,16 @@ function initAvatarToggle() {
         !(imageToggle instanceof HTMLElement) ||
         !(colorPicker instanceof HTMLElement) ||
         !(avatarUrl instanceof HTMLInputElement)) {
+        return;
+    }
+    if (isLoggedUser) {
+        colorToggle.classList.add('disabled');
+        imageToggle.classList.add('disabled');
+        colorToggle.style.pointerEvents = 'none';
+        imageToggle.style.pointerEvents = 'none';
+        colorPicker.style.pointerEvents = 'none';
+        avatarUrl.setAttribute('disabled', 'true');
+        updateAvatarPreview();
         return;
     }
 
@@ -258,6 +294,13 @@ function selectColor(element) {
 function updateAvatarPreview() {
     const avatarPreview = byId('avatarPreview');
     if (!(avatarPreview instanceof HTMLElement)) {
+        return;
+    }
+
+    if (isLoggedUser && userAvatarUrl) {
+        avatarPreview.style.backgroundImage = `url(${userAvatarUrl})`;
+        avatarPreview.style.backgroundColor = 'transparent';
+        avatarPreview.textContent = '';
         return;
     }
 
@@ -316,7 +359,8 @@ function loadMessages() {
             // 搜索过滤
             if (searchTerm &&
                 !message.text.toLowerCase().includes(searchTerm) &&
-                !message.nickname.toLowerCase().includes(searchTerm)) {
+                !message.nickname.toLowerCase().includes(searchTerm) &&
+                !(message.login || '').toLowerCase().includes(searchTerm)) {
                 return;
             }
 
@@ -397,15 +441,19 @@ function createMessageElement(message) {
         repliesHtml += '</div>';
     }
 
+    const baseName = message.nickname || '访客';
+    const authorHtml = message.login
+        ? `${baseName}<span class="login-badge">@${message.login}</span>`
+        : baseName;
     messageDiv.innerHTML = `
                 <div class="message-header">
                     <div class="message-avatar" style="${message.avatarType === 'color' ?
             `background: ${message.avatar}` :
             `background-image: url(${message.avatar})`}">
-                        ${message.avatarType === 'color' ? message.nickname[0].toUpperCase() : ''}
+                        ${message.avatarType === 'color' ? (message.nickname || '访')[0].toUpperCase() : ''}
                     </div>
                     <div class="message-info">
-                        <div class="message-author">${message.nickname}</div>
+                        <div class="message-author">${authorHtml}</div>
                         <div class="message-time">${dateStr} ${timeStr}</div>
                     </div>
                     <div class="message-actions">
@@ -445,16 +493,20 @@ function createReplyElement(reply) {
         content = content.replace(/\n/g, '<br>');
     }
 
+    const baseName = reply.nickname || '访客';
+    const authorHtml = reply.login
+        ? `${baseName}<span class="login-badge">@${reply.login}</span>`
+        : baseName;
     return `
                 <div class="reply-card">
                     <div class="reply-header">
                         <div class="reply-avatar" style="${reply.avatarType === 'color' ?
             `background: ${reply.avatar}` :
             `background-image: url(${reply.avatar})`}">
-                            ${reply.avatarType === 'color' ? reply.nickname[0].toUpperCase() : ''}
+                            ${reply.avatarType === 'color' ? (reply.nickname || '访')[0].toUpperCase() : ''}
                         </div>
                         <div class="message-info">
-                            <div class="message-author">${reply.nickname}</div>
+                            <div class="message-author">${authorHtml}</div>
                             <div class="message-time">${dateStr} ${timeStr}</div>
                         </div>
                         ${isAdmin ? `<button class="delete-btn" onclick="deleteReply('${reply.id}')">删除</button>` : ''}
@@ -560,7 +612,7 @@ function submitReply() {
         !(replyMarkdownInput instanceof HTMLInputElement)) {
         return;
     }
-    const nickname = nicknameInput.value.trim();
+    const nickname = isLoggedUser ? (nicknameInput.value.trim() || loginName || '已登录') : nicknameInput.value.trim();
     const content = replyContentInput.value.trim();
     const useMarkdown = replyMarkdownInput.checked;
 
@@ -573,6 +625,7 @@ function submitReply() {
         id: Date.now().toString(), // 简单ID生成
         text: content,
         nickname: nickname,
+        login: loginName || '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),

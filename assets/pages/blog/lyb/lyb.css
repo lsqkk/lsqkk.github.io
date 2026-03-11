@@ -183,6 +183,17 @@ textarea:focus {
     border-color: var(--primary-color);
 }
 
+.toggle-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+input[disabled],
+textarea[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .color-picker {
     display: flex;
     flex-wrap: wrap;

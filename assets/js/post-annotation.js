@@ -4,8 +4,8 @@
     'use strict';
 
     /**
-     * @typedef {{ uid: string, nickname: string, avatarType: 'color' | 'image', avatarColor: string, avatarUrl: string }} AnnotationProfile
-     * @typedef {{ id: string, text?: string, timestamp?: number, nickname?: string, avatarType?: 'color' | 'image', avatarColor?: string, avatarUrl?: string, likesBy?: Record<string, boolean> }} AnnotationComment
+     * @typedef {{ uid: string, nickname: string, login?: string, avatarType: 'color' | 'image', avatarColor: string, avatarUrl: string }} AnnotationProfile
+     * @typedef {{ id: string, text?: string, timestamp?: number, nickname?: string, login?: string, avatarType?: 'color' | 'image', avatarColor?: string, avatarUrl?: string, likesBy?: Record<string, boolean> }} AnnotationComment
      * @typedef {{ exactText?: string, prefix?: string, suffix?: string, startHint?: number, createdAt?: number, likesBy?: Record<string, boolean>, comments?: Record<string, AnnotationComment>, [key: string]: unknown }} AnnotationHighlight
      */
 
@@ -57,6 +57,9 @@
     }
 
     function getOrCreateUid() {
+        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function') {
+            return window.QuarkUserProfile.getUid();
+        }
         let uid = localStorage.getItem(STORAGE_KEYS.uid);
         if (!uid) {
             uid = `u_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -71,6 +74,7 @@
             ? window.QuarkUserProfile.getProfile()
             : null;
         const nickname = ((externalProfile && externalProfile.nickname) || localStorage.getItem(STORAGE_KEYS.nickname) || '').trim();
+        const login = (externalProfile && externalProfile.login) ? externalProfile.login : (localStorage.getItem('github_login') || '');
         const rawAvatarType = (externalProfile && externalProfile.avatarType) || localStorage.getItem(STORAGE_KEYS.avatarType) || 'color';
         /** @type {'color' | 'image'} */
         const avatarType = rawAvatarType === 'image' ? 'image' : 'color';
@@ -78,7 +82,8 @@
         const avatarUrl = ((externalProfile && externalProfile.avatarUrl) || localStorage.getItem(STORAGE_KEYS.avatarUrl) || '').trim();
         return {
             uid: getOrCreateUid(),
-            nickname: nickname || '访客',
+            nickname: nickname || login || '访客',
+            login: login || '',
             avatarType,
             avatarColor,
             avatarUrl
@@ -356,6 +361,14 @@
         return `<span class="post-annotation-avatar-preview" style="background:${escapeHtml(user.avatarColor || COLOR_OPTIONS[0])};">${letter}</span>`;
     }
 
+    function renderDisplayName(nickname, login) {
+        const base = nickname || login || '访客';
+        if (login) {
+            return `${escapeHtml(base)}<span class="login-badge">@${escapeHtml(login)}</span>`;
+        }
+        return escapeHtml(base);
+    }
+
     function updateProfilePreview() {
         const nickname = ui.nicknameInput.value.trim() || '访客';
         const avatarType = ui.avatarTypeSelect.value;
@@ -377,6 +390,9 @@
         if (!state.profile) {
             state.profile = loadProfile();
         }
+        if (state.profile.login) {
+            return state.profile;
+        }
         const nickname = (ui.nicknameInput.value.trim() || '访客').slice(0, 24);
         /** @type {'color' | 'image'} */
         const avatarType = ui.avatarTypeSelect.value === 'image' ? 'image' : 'color';
@@ -387,6 +403,7 @@
         const profile = {
             uid: state.profile.uid,
             nickname,
+            login: state.profile.login || '',
             avatarType,
             avatarColor,
             avatarUrl
@@ -409,7 +426,7 @@
         const comments = getSortedComments(item);
         let text = `点赞 ${likes} · 评论 ${comments.length}`;
         if (comments.length) {
-            const recent = comments.slice(-2).map((c) => `${c.nickname || '访客'}: ${(c.text || '').slice(0, 30)}`);
+            const recent = comments.slice(-2).map((c) => `${c.nickname || c.login || '访客'}: ${(c.text || '').slice(0, 30)}`);
             text += `\n${recent.join('\n')}`;
         }
         return text;
@@ -582,6 +599,7 @@
                 createdBy: {
                     uid: profile.uid,
                     nickname: profile.nickname,
+                    login: profile.login || '',
                     avatarType: profile.avatarType,
                     avatarColor: profile.avatarColor,
                     avatarUrl: profile.avatarUrl
@@ -629,6 +647,7 @@
             text: text.slice(0, 2000),
             timestamp: Date.now(),
             nickname: profile.nickname,
+            login: profile.login || '',
             avatarType: profile.avatarType,
             avatarColor: profile.avatarColor,
             avatarUrl: profile.avatarUrl,
@@ -677,7 +696,7 @@
             return `
                 <div class="post-annotation-comment">
                     <div class="post-annotation-comment-head">
-                        <div class="post-annotation-user">${avatar}<strong>${escapeHtml(comment.nickname || '访客')}</strong></div>
+                        <div class="post-annotation-user">${avatar}<strong>${renderDisplayName(comment.nickname, comment.login)}</strong></div>
                         <span class="post-annotation-comment-time">${escapeHtml(formatTime(comment.timestamp))}</span>
                     </div>
                     <div class="post-annotation-comment-text">${escapeHtml(comment.text || '')}</div>
@@ -788,6 +807,14 @@
             target.classList.add('active');
         }
         updateProfilePreview();
+
+        if (state.profile.login) {
+            ui.nicknameInput.setAttribute('disabled', 'true');
+            ui.avatarTypeSelect.setAttribute('disabled', 'true');
+            ui.avatarUrlInput.setAttribute('disabled', 'true');
+            ui.colorPicker.classList.add('locked');
+            ui.modal.querySelector('.post-annotation-profile')?.classList.add('locked');
+        }
     }
 
     function createUI() {
@@ -892,11 +919,18 @@
 
         ui.modal.querySelector('[data-send-comment]').addEventListener('click', submitComment);
         ui.nicknameInput.addEventListener('input', () => {
+            if (state.profile.login) return;
             state.profile.nickname = ui.nicknameInput.value.trim() || '访客';
             updateProfilePreview();
         });
-        ui.avatarTypeSelect.addEventListener('change', updateProfilePreview);
-        ui.avatarUrlInput.addEventListener('input', updateProfilePreview);
+        ui.avatarTypeSelect.addEventListener('change', () => {
+            if (state.profile.login) return;
+            updateProfilePreview();
+        });
+        ui.avatarUrlInput.addEventListener('input', () => {
+            if (state.profile.login) return;
+            updateProfilePreview();
+        });
     }
 
     function subscribeHighlights() {
