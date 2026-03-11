@@ -1,6 +1,8 @@
 // @ts-check
 
 (function () {
+    if (window.__quarkAccountInited) return;
+    window.__quarkAccountInited = true;
     const API_BASE = '__API_BASE__';
     const LOGIN_URL = (window.__NAV_CONFIG__ && window.__NAV_CONFIG__.login && window.__NAV_CONFIG__.login.url) || '/auth.html';
 
@@ -325,14 +327,8 @@
             el.avatarFile.addEventListener('change', () => {
                 const file = el.avatarFile.files ? el.avatarFile.files[0] : null;
                 handleAvatarFile(file);
+                el.avatarFile.value = '';
             });
-            const label = el.avatarFile.closest('label');
-            if (label) {
-                label.addEventListener('click', (event) => {
-                    if (event.target === el.avatarFile) return;
-                    el.avatarFile.click();
-                });
-            }
         }
         if (el.avatarUrl instanceof HTMLInputElement) {
             el.avatarUrl.addEventListener('input', () => {

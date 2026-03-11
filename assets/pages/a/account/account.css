@@ -328,7 +328,7 @@
   }
 }
 
-.dark-mode .account-body {
+.dark-mode.account-body {
   background: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.16), transparent 55%),
     radial-gradient(circle at 80% 10%, rgba(129, 140, 248, 0.18), transparent 60%),
     linear-gradient(180deg, #0b1120, #0f172a);
