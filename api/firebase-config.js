@@ -69,6 +69,6 @@ export default function handler(req, res) {
     if (requestOrigin) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
     }
-    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Cache-Control', 'no-store');
     res.send(jsContent);
 }

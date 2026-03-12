@@ -5,6 +5,18 @@
   window.__quarkAppCheckBooted = true;
 
   const SITE_KEY = window.__APP_CHECK_SITE_KEY__ || '';
+  const DEBUG_FLAG_KEY = 'quark_appcheck_debug';
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('appcheck_debug') === '1') {
+    try {
+      localStorage.setItem(DEBUG_FLAG_KEY, '1');
+    } catch {
+      // ignore
+    }
+  }
+  if (localStorage.getItem(DEBUG_FLAG_KEY) === '1') {
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
 
   function loadSdk() {
     return new Promise((resolve) => {
@@ -34,6 +46,19 @@
     try {
       window.firebase.appCheck().activate(SITE_KEY, true);
       window.__quarkAppCheckActivated = true;
+      // Minimal diagnostics for App Check failures
+      try {
+        const cfg = window.firebaseConfig || window._firebaseConfig || {};
+        console.info('[app-check] activated', {
+          origin: window.location.origin,
+          appId: cfg.appId || '',
+          apiKey: cfg.apiKey ? `${String(cfg.apiKey).slice(0, 6)}***` : '',
+          siteKey: SITE_KEY ? `${SITE_KEY.slice(0, 6)}***` : '',
+          debug: localStorage.getItem(DEBUG_FLAG_KEY) === '1'
+        });
+      } catch {
+        // ignore
+      }
     } catch {
       // ignore
     }
