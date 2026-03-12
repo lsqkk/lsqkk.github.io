@@ -63,6 +63,23 @@
   gap: 24px;
 }
 
+.risk-banner {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: rgba(15, 23, 42, 0.7);
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.risk-banner strong {
+  color: rgba(15, 23, 42, 0.85);
+  font-size: 13px;
+}
+
 .login-card {
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(148, 163, 184, 0.35);
@@ -252,20 +269,20 @@
 
 .captcha-row {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   gap: 8px;
   align-items: center;
 }
 
-#captchaCanvas {
-  border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  background: rgba(255, 255, 255, 0.9);
+.turnstile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
-.captcha-refresh {
-  padding: 8px 12px;
-  font-size: 12px;
+.turnstile-box {
+  min-height: 65px;
 }
 
 .login-body.dark-mode {
@@ -289,6 +306,16 @@
   background: rgba(15, 23, 42, 0.7);
   border-color: rgba(148, 163, 184, 0.2);
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
+}
+
+.dark-mode .risk-banner {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.2);
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.dark-mode .risk-banner strong {
+  color: rgba(226, 232, 240, 0.9);
 }
 
 .dark-mode .field input {
@@ -337,10 +364,6 @@
   border-color: rgba(148, 163, 184, 0.25);
 }
 
-.dark-mode #captchaCanvas {
-  border-color: rgba(148, 163, 184, 0.25);
-  background: rgba(15, 23, 42, 0.85);
-}
 
 @media (max-width: 960px) {
   .login-hero {

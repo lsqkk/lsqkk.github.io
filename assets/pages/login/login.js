@@ -20,9 +20,7 @@
     el.tabPanels = document.querySelectorAll('.tab-panel');
     el.loginUsername = document.getElementById('loginUsername');
     el.loginPassword = document.getElementById('loginPassword');
-    el.loginCaptcha = document.getElementById('loginCaptcha');
-    el.captchaCanvas = document.getElementById('captchaCanvas');
-    el.captchaRefresh = document.getElementById('captchaRefresh');
+    el.turnstileContainer = document.getElementById('turnstileContainer');
     el.loginSubmit = document.getElementById('loginSubmit');
     el.loginReset = document.getElementById('loginReset');
     el.loginStatus = document.getElementById('loginStatus');
@@ -51,7 +49,8 @@
     el.registerStatus = document.getElementById('registerStatus');
   }
 
-  let captchaCode = '';
+  let turnstileToken = '';
+  let turnstileWidgetId = null;
   let firebaseReady = false;
   let emailTokenCache = {};
   let loginMode = 'password';
@@ -69,6 +68,9 @@
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const apply = () => {
       document.body.classList.toggle('dark-mode', media.matches);
+      if (window.turnstile && typeof window.turnstile.render === 'function' && getTurnstileSiteKey()) {
+        renderTurnstile();
+      }
     };
     apply();
     if (typeof media.addEventListener === 'function') {
@@ -103,36 +105,52 @@
     });
   }
 
-  function randomCaptcha() {
-    const chars = '23456789';
-    let code = '';
-    for (let i = 0; i < 4; i += 1) {
-      code += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return code;
+  function getTurnstileSiteKey() {
+    return window.__TURNSTILE_SITE_KEY__ || '';
   }
 
-  function drawCaptcha() {
-    const canvas = el.captchaCanvas;
-    if (!(canvas instanceof HTMLCanvasElement)) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    captchaCode = randomCaptcha();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(248,250,252,0.9)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '24px sans-serif';
-    ctx.fillStyle = '#1e293b';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center';
-    ctx.fillText(captchaCode, canvas.width / 2, canvas.height / 2 + 2);
-    for (let i = 0; i < 6; i += 1) {
-      ctx.strokeStyle = `rgba(148,163,184,${0.3 + Math.random() * 0.4})`;
-      ctx.beginPath();
-      ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
-      ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
-      ctx.stroke();
+  function resetTurnstile() {
+    turnstileToken = '';
+    if (window.turnstile && typeof window.turnstile.reset === 'function' && turnstileWidgetId !== null) {
+      window.turnstile.reset(turnstileWidgetId);
     }
+  }
+
+  function renderTurnstile() {
+    const key = getTurnstileSiteKey();
+    if (!key || !el.turnstileContainer) return;
+    if (!window.turnstile || typeof window.turnstile.render !== 'function') return;
+    el.turnstileContainer.innerHTML = '';
+    turnstileToken = '';
+    const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    turnstileWidgetId = window.turnstile.render(el.turnstileContainer, {
+      sitekey: key,
+      theme,
+      callback: (token) => {
+        turnstileToken = token || '';
+      },
+      'expired-callback': () => {
+        turnstileToken = '';
+      },
+      'error-callback': () => {
+        turnstileToken = '';
+      }
+    });
+  }
+
+  function waitForTurnstileReady() {
+    return new Promise((resolve) => {
+      if (window.turnstile && typeof window.turnstile.render === 'function') {
+        resolve();
+        return;
+      }
+      const timer = window.setInterval(() => {
+        if (window.turnstile && typeof window.turnstile.render === 'function') {
+          window.clearInterval(timer);
+          resolve();
+        }
+      }, 200);
+    });
   }
 
   function normalizeUsername(value) {
@@ -298,6 +316,35 @@
     }
   }
 
+  async function verifyTurnstileToken(purpose) {
+    const key = getTurnstileSiteKey();
+    if (!key) {
+      setStatus(el.loginStatus, '验证码未配置，请联系站长');
+      return false;
+    }
+    if (!turnstileToken) {
+      setStatus(el.loginStatus, '请先完成安全校验');
+      return false;
+    }
+    try {
+      const resp = await fetch(`${API_BASE}/api/turnstile-verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: turnstileToken, purpose })
+      });
+      const data = await resp.json();
+      if (resp.ok && data && data.ok) return true;
+      setStatus(el.loginStatus, data?.error || '验证码校验失败');
+      resetTurnstile();
+      return false;
+    } catch (error) {
+      console.error('验证码校验失败:', error);
+      setStatus(el.loginStatus, '验证码校验失败');
+      resetTurnstile();
+      return false;
+    }
+  }
+
   async function lookupUsernameByEmail(email) {
     const db = await ensureFirebase();
     const key = emailKey(email);
@@ -402,15 +449,13 @@
 
   async function handleLogin() {
     if (!(el.loginUsername instanceof HTMLInputElement) ||
-      !(el.loginPassword instanceof HTMLInputElement) ||
-      !(el.loginCaptcha instanceof HTMLInputElement)) {
+      !(el.loginPassword instanceof HTMLInputElement)) {
       return;
     }
 
     const usernameRaw = el.loginUsername.value;
     const username = normalizeUsername(usernameRaw);
     const password = el.loginPassword.value;
-    const captcha = el.loginCaptcha.value.trim();
 
     if (!validateUsername(usernameRaw)) {
       setText(el.loginStatus, '账号名需为 3-20 位英文字母');
@@ -420,11 +465,9 @@
       setText(el.loginStatus, '请输入密码');
       return;
     }
-    if (captcha.toLowerCase() !== captchaCode.toLowerCase()) {
-      setText(el.loginStatus, '验证码错误');
-      drawCaptcha();
-      return;
-    }
+
+    const captchaOk = await verifyTurnstileToken('login');
+    if (!captchaOk) return;
 
     setText(el.loginStatus, '正在登录...');
 
@@ -579,19 +622,12 @@
       });
     });
 
-    if (el.captchaRefresh) {
-      el.captchaRefresh.addEventListener('click', () => drawCaptcha());
-    }
-    if (el.captchaCanvas) {
-      el.captchaCanvas.addEventListener('click', () => drawCaptcha());
-    }
     if (el.loginReset) {
       el.loginReset.addEventListener('click', () => {
         if (el.loginUsername instanceof HTMLInputElement) el.loginUsername.value = '';
         if (el.loginPassword instanceof HTMLInputElement) el.loginPassword.value = '';
-        if (el.loginCaptcha instanceof HTMLInputElement) el.loginCaptcha.value = '';
         setText(el.loginStatus, '等待登录');
-        drawCaptcha();
+        resetTurnstile();
       });
     }
     if (el.loginSubmit) {
@@ -659,7 +695,11 @@
     if (el.resetPanel instanceof HTMLElement) {
       el.resetPanel.classList.remove('active');
     }
-    drawCaptcha();
+    if (getTurnstileSiteKey()) {
+      void waitForTurnstileReady().then(() => renderTurnstile());
+    } else {
+      setStatus(el.loginStatus, '验证码未配置，请联系站长');
+    }
     bindEvents();
   }
 

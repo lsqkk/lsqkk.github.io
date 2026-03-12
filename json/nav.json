@@ -58,6 +58,7 @@
     ],
     "login": {
         "url": "/login",
-        "githubUrl": "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user"
+        "githubUrl": "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user",
+        "turnstileSiteKey": "0x4AAAAAACpimXtCyzKQV1ev"
     }
 }

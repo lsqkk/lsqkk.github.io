@@ -5,6 +5,8 @@
     window.__quarkAccountInited = true;
     const API_BASE = '__API_BASE__';
     const LOGIN_URL = (window.__NAV_CONFIG__ && window.__NAV_CONFIG__.login && window.__NAV_CONFIG__.login.url) || '/auth.html';
+    const DB_USERS = 'qb_users';
+    const DB_EMAIL_INDEX = 'qb_email_index';
 
     /** @type {Record<string, any>} */
     const el = {};
@@ -36,6 +38,13 @@
         el.avatarState = document.getElementById('avatarState');
         el.loginHistoryBody = document.getElementById('loginHistoryBody');
         el.localSyncToggle = document.getElementById('localSyncToggle');
+        el.bindEmail = document.getElementById('bindEmail');
+        el.bindEmailCode = document.getElementById('bindEmailCode');
+        el.bindEmailSend = document.getElementById('bindEmailSend');
+        el.bindEmailApply = document.getElementById('bindEmailApply');
+        el.bindEmailRemove = document.getElementById('bindEmailRemove');
+        el.bindEmailStatus = document.getElementById('bindEmailStatus');
+        el.loginTypeLabel = document.getElementById('loginTypeLabel');
     }
 
     let firebaseReady = false;
@@ -153,6 +162,22 @@
 
     function setStatus(text) {
         setText(el.status, text);
+    }
+
+    function setEmailStatus(text) {
+        setText(el.bindEmailStatus, text);
+    }
+
+    function normalizeEmail(value) {
+        return String(value || '').trim().toLowerCase();
+    }
+
+    function validateEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function emailKey(email) {
+        return normalizeEmail(email).replace(/[.#$/\[\]]/g, '_');
     }
 
     function initCropper(image) {
@@ -391,6 +416,19 @@
         if (el.cropperClose) el.cropperClose.addEventListener('click', () => closeCropper());
         if (el.saveBtn) el.saveBtn.addEventListener('click', () => void saveProfile());
         if (el.refreshBtn) el.refreshBtn.addEventListener('click', () => void loadRemoteProfile(true));
+        if (el.bindEmailSend) {
+            el.bindEmailSend.addEventListener('click', () => {
+                if (el.bindEmail instanceof HTMLInputElement) {
+                    void sendEmailCode(el.bindEmail.value.trim(), 'bind');
+                }
+            });
+        }
+        if (el.bindEmailApply) {
+            el.bindEmailApply.addEventListener('click', () => { void bindEmail(); });
+        }
+        if (el.bindEmailRemove) {
+            el.bindEmailRemove.addEventListener('click', () => { void unbindEmail(); });
+        }
     }
 
     function getFirebaseConfig() {
@@ -439,6 +477,61 @@
         }
         firebaseReady = true;
         return window.firebase.database();
+    }
+
+    async function sendEmailCode(email, purpose) {
+        if (!validateEmail(email)) {
+            setEmailStatus('邮箱格式不正确');
+            return false;
+        }
+        setEmailStatus('验证码发送中...');
+        try {
+            const resp = await fetch(`${API_BASE}/api/email-send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, purpose })
+            });
+            const data = await resp.json();
+            if (!resp.ok || !data?.token) {
+                throw new Error(data?.error || '发送失败');
+            }
+            try {
+                sessionStorage.setItem(`qb_email_token_${purpose}_${emailKey(email)}`, data.token);
+            } catch {
+                // ignore
+            }
+            setEmailStatus('验证码已发送');
+            return true;
+        } catch (error) {
+            console.error('发送邮箱验证码失败:', error);
+            setEmailStatus('验证码发送失败');
+            return false;
+        }
+    }
+
+    function readEmailToken(email, purpose) {
+        try {
+            return sessionStorage.getItem(`qb_email_token_${purpose}_${emailKey(email)}`) || '';
+        } catch {
+            return '';
+        }
+    }
+
+    async function verifyEmailCode(email, code, purpose) {
+        const token = readEmailToken(email, purpose);
+        if (!token) return false;
+        try {
+            const resp = await fetch(`${API_BASE}/api/email-verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, code, token, purpose })
+            });
+            const data = await resp.json();
+            return !!(resp.ok && data && data.ok);
+        } catch (error) {
+            console.error('邮箱验证码校验失败:', error);
+            return false;
+        }
     }
 
     async function migrateLegacyUid() {
@@ -509,6 +602,38 @@
         }
     }
 
+    async function loadBoundEmail() {
+        if (!(el.bindEmail instanceof HTMLInputElement)) return;
+        const loginType = getLoginType();
+        const isLocal = loginType === 'local';
+        const controls = [el.bindEmail, el.bindEmailCode, el.bindEmailSend, el.bindEmailApply, el.bindEmailRemove];
+        controls.forEach((item) => {
+            if (item instanceof HTMLInputElement || item instanceof HTMLButtonElement) {
+                item.disabled = !isLocal;
+            }
+        });
+        if (!isLocal) {
+            el.bindEmail.value = '';
+            setEmailStatus('仅支持站内账号绑定邮箱');
+            return;
+        }
+        const localUser = getLocalUser();
+        if (!localUser || !localUser.login) {
+            setEmailStatus('未读取到账号信息');
+            return;
+        }
+        try {
+            const db = await ensureFirebase();
+            const snap = await db.ref(`${DB_USERS}/${String(localUser.login).toLowerCase()}`).once('value');
+            const data = snap.val() || {};
+            el.bindEmail.value = data.email || '';
+            setEmailStatus(data.email ? '已绑定邮箱' : '未绑定邮箱');
+        } catch (error) {
+            console.error('加载邮箱失败:', error);
+            setEmailStatus('邮箱信息加载失败');
+        }
+    }
+
     function renderLoginHistory(items) {
         if (!el.loginHistoryBody) return;
         if (!items.length) {
@@ -544,6 +669,92 @@
         } catch (error) {
             console.error('加载登录记录失败:', error);
             if (el.loginHistoryBody) el.loginHistoryBody.textContent = '加载失败';
+        }
+    }
+
+    async function bindEmail() {
+        if (!(el.bindEmail instanceof HTMLInputElement) || !(el.bindEmailCode instanceof HTMLInputElement)) return;
+        const loginType = getLoginType();
+        if (loginType !== 'local') {
+            setEmailStatus('仅支持站内账号绑定邮箱');
+            return;
+        }
+        const email = el.bindEmail.value.trim();
+        const code = el.bindEmailCode.value.trim();
+        if (!validateEmail(email)) {
+            setEmailStatus('邮箱格式不正确');
+            return;
+        }
+        if (!code) {
+            setEmailStatus('请输入邮箱验证码');
+            return;
+        }
+        const ok = await verifyEmailCode(email, code, 'bind');
+        if (!ok) {
+            setEmailStatus('邮箱验证码无效或已过期');
+            return;
+        }
+        const localUser = getLocalUser();
+        if (!localUser || !localUser.login) {
+            setEmailStatus('未读取到账号信息');
+            return;
+        }
+        try {
+            const db = await ensureFirebase();
+            const key = emailKey(email);
+            const existing = await db.ref(`${DB_EMAIL_INDEX}/${key}`).once('value');
+            const existLogin = existing.val();
+            if (existLogin && String(existLogin).toLowerCase() !== String(localUser.login).toLowerCase()) {
+                setEmailStatus('该邮箱已绑定其他账号');
+                return;
+            }
+            await db.ref(`${DB_USERS}/${String(localUser.login).toLowerCase()}`).update({
+                email: normalizeEmail(email),
+                updatedAt: Date.now()
+            });
+            await db.ref(`${DB_EMAIL_INDEX}/${key}`).set(String(localUser.login).toLowerCase());
+            await db.ref('user_activity').child(getUid()).child('profile').update({
+                email: normalizeEmail(email),
+                updatedAt: Date.now()
+            });
+            setEmailStatus('邮箱已绑定');
+        } catch (error) {
+            console.error('绑定邮箱失败:', error);
+            setEmailStatus('绑定失败，请稍后重试');
+        }
+    }
+
+    async function unbindEmail() {
+        if (!(el.bindEmail instanceof HTMLInputElement)) return;
+        const loginType = getLoginType();
+        if (loginType !== 'local') {
+            setEmailStatus('仅支持站内账号解绑邮箱');
+            return;
+        }
+        const localUser = getLocalUser();
+        if (!localUser || !localUser.login) {
+            setEmailStatus('未读取到账号信息');
+            return;
+        }
+        const email = el.bindEmail.value.trim();
+        try {
+            const db = await ensureFirebase();
+            if (email) {
+                await db.ref(`${DB_EMAIL_INDEX}/${emailKey(email)}`).remove();
+            }
+            await db.ref(`${DB_USERS}/${String(localUser.login).toLowerCase()}`).update({
+                email: '',
+                updatedAt: Date.now()
+            });
+            await db.ref('user_activity').child(getUid()).child('profile').update({
+                email: '',
+                updatedAt: Date.now()
+            });
+            el.bindEmail.value = '';
+            setEmailStatus('邮箱已解绑');
+        } catch (error) {
+            console.error('解绑邮箱失败:', error);
+            setEmailStatus('解绑失败，请稍后重试');
         }
     }
 
@@ -616,11 +827,13 @@
         const profile = getProfile();
         applyProfileToForm(profile);
         setText(el.githubLogin, user.login || profile.login || '');
+        const loginType = getLoginType();
+        const loginTypeLabel = loginType === 'github' ? 'GitHub 登录' : (loginType === 'local' ? '站内账号' : '未知');
+        setText(el.loginTypeLabel, `登录方式：${loginTypeLabel}`);
         setText(el.accountUid, getUid());
         setText(el.currentPage, location.pathname);
         setText(el.lastSyncAt, profile.updatedAt ? formatTime(profile.updatedAt) : '-');
         if (el.avatarFromGithub instanceof HTMLElement) {
-            const loginType = getLoginType();
             el.avatarFromGithub.style.display = loginType === 'github' ? 'inline-flex' : 'none';
         }
     }
@@ -645,6 +858,7 @@
         bindEvents();
         await migrateLegacyUid();
         await loadRemoteProfile();
+        await loadBoundEmail();
         await loadLoginHistory();
         const profile = getProfile();
         if (profile.login) {

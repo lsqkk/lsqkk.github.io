@@ -6,6 +6,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 const navConfigPath = path.join(process.cwd(), "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "";
+const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -19,10 +20,12 @@ const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/pages/login/login.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script is:inline define:vars={{ navConfig, githubLoginUrl }}>
+    <script is:inline define:vars={{ navConfig, githubLoginUrl, turnstileSiteKey }}>
       window.__NAV_CONFIG__ = navConfig;
       window.__GITHUB_LOGIN_URL__ = githubLoginUrl;
+      window.__TURNSTILE_SITE_KEY__ = turnstileSiteKey;
     </script>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
@@ -49,6 +52,10 @@ const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "
           <div class="card-header">
             <h2>GitHub 登录</h2>
             <p>推荐，安全快捷。</p>
+          </div>
+          <div class="risk-banner">
+            <strong>安全提示</strong>
+            <span>请确认域名为 lsqkk.github.io，谨防钓鱼页面泄露账号信息。</span>
           </div>
           <div class="github-panel">
             <button class="btn primary github-btn" id="githubLoginBtn">
@@ -85,12 +92,11 @@ const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "
                 <input type="password" id="loginPassword" placeholder="请输入密码" autocomplete="current-password" />
               </div>
               <div class="field captcha-field">
-                <label for="loginCaptcha">验证码</label>
-                <div class="captcha-row">
-                  <input type="text" id="loginCaptcha" placeholder="输入验证码" />
-                  <canvas id="captchaCanvas" width="110" height="40"></canvas>
-                  <button class="btn ghost captcha-refresh" id="captchaRefresh" type="button">换一张</button>
+                <label>安全校验</label>
+                <div class="turnstile-row">
+                  <div id="turnstileContainer" class="turnstile-box"></div>
                 </div>
+                <div class="helper">通过验证后即可登录，防止脚本攻击。</div>
               </div>
               <div class="action-row">
                 <button class="btn primary" id="loginSubmit">登录</button>

@@ -191,7 +191,15 @@
   color: rgba(15, 23, 42, 0.7);
 }
 
+.captcha-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
 .field input[type="text"],
+.field input[type="email"],
 .field input[type="url"] {
   border: 1px solid rgba(148, 163, 184, 0.45);
   background: rgba(255, 255, 255, 0.6);
@@ -393,6 +401,7 @@
 }
 
 .dark-mode .field input[type="text"],
+.dark-mode .field input[type="email"],
 .dark-mode .field input[type="url"] {
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(148, 163, 184, 0.25);
