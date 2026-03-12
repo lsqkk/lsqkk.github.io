@@ -1,4 +1,5 @@
-const DAILY_LIMIT = 20;
+const GUEST_DAILY_LIMIT = 20;
+const LOGGED_DAILY_LIMIT = 100;
 const RTDB_LIMIT_ROOT = 'pic_upload_limits';
 const REPO_OWNER = 'lsqkk';
 const REPO_NAME = 'image';
@@ -18,6 +19,7 @@ const resultBox = document.getElementById('resultBox');
 const limitText = document.getElementById('limitText');
 const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
 const copyHtmlBtn = document.getElementById('copyHtmlBtn');
+const loginTip = document.getElementById('picLoginTip');
 
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -42,9 +44,33 @@ async function initializePageContext() {
         const [ip, exemptIps] = await Promise.all([getClientIp(), loadExemptIps()]);
         clientIp = ip;
         exemptIpSet = new Set(exemptIps);
+        updateLoginTip();
         await refreshLimitText();
     } catch (error) {
         setStatus(`初始化失败：${error.message}`);
+    }
+}
+
+function isLoggedUser() {
+    if (window.CommentShared && typeof window.CommentShared.getLoginProfile === 'function') {
+        const profile = window.CommentShared.getLoginProfile();
+        return Boolean(profile && profile.isLoggedUser);
+    }
+    return Boolean(localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user'));
+}
+
+function getDailyLimit() {
+    return isLoggedUser() ? LOGGED_DAILY_LIMIT : GUEST_DAILY_LIMIT;
+}
+
+function updateLoginTip() {
+    if (!(loginTip instanceof HTMLElement)) return;
+    if (isLoggedUser()) {
+        loginTip.textContent = '已登录，上传额度提升至 100 张/天';
+        loginTip.classList.add('is-logged');
+    } else {
+        loginTip.textContent = '未登录用户每日可上传 20 张，登录后提升至 100 张';
+        loginTip.classList.remove('is-logged');
     }
 }
 
@@ -231,7 +257,7 @@ async function refreshLimitText() {
     }
 
     const count = await getTodayUploadCount(getDateKey());
-    limitText.textContent = `当前IP：${clientIp}，今日已上传 ${count}/${DAILY_LIMIT}`;
+    limitText.textContent = `当前IP：${clientIp}，今日已上传 ${count}/${getDailyLimit()}`;
 }
 
 function getTodayUploadCount(dateKey) {
@@ -257,7 +283,7 @@ async function holdQuota(dateKey, countToAdd) {
     let exceed = false;
     const result = await ref.transaction(current => {
         const currentCount = Number(current?.count || 0);
-        if (currentCount + countToAdd > DAILY_LIMIT) {
+        if (currentCount + countToAdd > getDailyLimit()) {
             exceed = true;
             return;
         }
@@ -273,7 +299,7 @@ async function holdQuota(dateKey, countToAdd) {
         return {
             ok: false,
             reserved: 0,
-            message: `今日上传额度不足：最多 ${DAILY_LIMIT} 张/天`
+            message: `今日上传额度不足：最多 ${getDailyLimit()} 张/天`
         };
     }
 

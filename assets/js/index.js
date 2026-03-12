@@ -314,8 +314,20 @@ function updateGreeting() {
     else if (hour < 18) greeting = '下午好~';
     else greeting = '晚上好~';
 
-    greetingElement.textContent = greeting;
+    const displayName = getGreetingName();
+    greetingElement.textContent = displayName ? greeting.replace('~', `，${displayName}~`) : greeting;
     tipElement.textContent = getRandomTip();
+}
+
+function getGreetingName() {
+    if (window.CommentShared && typeof window.CommentShared.getLoginProfile === 'function') {
+        const profile = window.CommentShared.getLoginProfile();
+        if (profile && profile.nickname) return profile.nickname;
+        if (profile && profile.login) return profile.login;
+    }
+    const nickname = localStorage.getItem('nickname');
+    if (nickname && nickname.trim()) return nickname.trim();
+    return '';
 }
 
 // 随机提示语 - 添加存在性检查
@@ -854,6 +866,21 @@ function renderDynamicEntries(entries) {
         </div>
         `;
     }).join('');
+    applyDynamicClamp(container);
+}
+
+function applyDynamicClamp(container) {
+    const nodes = (container || document).querySelectorAll('.dynamic-content');
+    nodes.forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        node.classList.remove('is-clamped');
+        const lineHeight = parseFloat(getComputedStyle(node).lineHeight || '0');
+        if (!lineHeight) return;
+        const maxHeight = lineHeight * 6 + 1;
+        if (node.scrollHeight > maxHeight) {
+            node.classList.add('is-clamped');
+        }
+    });
 }
 
 // 加载最新视频
@@ -1379,4 +1406,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 检查并显示弹窗
     checkAndShowPopup();
+
+    window.addEventListener('resize', () => {
+        applyDynamicClamp(document.getElementById('dynamic-entries') || document);
+    });
 });

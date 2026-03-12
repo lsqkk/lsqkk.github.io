@@ -40,6 +40,22 @@
     color: #dfeeff;
 }
 
+.pic-login-tip {
+    margin: 8px 0 14px;
+    font-size: 13px;
+    color: rgba(223, 238, 255, 0.85);
+    background: rgba(8, 28, 48, 0.4);
+    border: 1px dashed rgba(139, 198, 255, 0.4);
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.pic-login-tip.is-logged {
+    color: rgba(178, 255, 220, 0.9);
+    border-color: rgba(46, 204, 113, 0.45);
+    background: rgba(14, 40, 30, 0.45);
+}
+
 .pic-picker {
     display: block;
     border: 1px dashed rgba(255, 255, 255, 0.45);

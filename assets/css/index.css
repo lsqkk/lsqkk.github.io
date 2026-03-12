@@ -249,6 +249,38 @@ body {
     font-weight: 500;
 }
 
+.dynamic-content.is-clamped {
+    position: relative;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    padding-right: 3.2em;
+}
+
+.dynamic-content.is-clamped::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 6em;
+    height: 1.7em;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(247, 252, 255, 0.85));
+    pointer-events: none;
+}
+
+.dynamic-content.is-clamped::after {
+    content: "更多";
+    position: absolute;
+    right: 0.4em;
+    bottom: 0;
+    font-size: 12px;
+    color: #5a86c7;
+    background: rgba(247, 252, 255, 0.9);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
 .dynamic-entry-footer {
     margin-top: 10px;
     display: flex;

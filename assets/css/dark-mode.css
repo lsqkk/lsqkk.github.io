@@ -369,6 +369,15 @@
         color: #e3edff !important;
     }
 
+    .dynamic-content.is-clamped::before {
+        background: linear-gradient(90deg, rgba(9, 18, 35, 0), rgba(8, 16, 30, 0.85));
+    }
+
+    .dynamic-content.is-clamped::after {
+        color: #9ec2ff;
+        background: rgba(8, 16, 30, 0.9);
+    }
+
     .dynamic-detail-link {
         color: #9dc1ff !important;
     }

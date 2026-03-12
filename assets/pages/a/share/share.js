@@ -66,6 +66,20 @@ const cleanRoomBtn = document.getElementById('clean-room-btn');
 const currentFileInfoP = document.getElementById('current-file-info');
 const zipDownloadBtn = document.getElementById('zip-download-btn');
 
+const GUEST_FILE_LIMIT = 20;
+const LOGGED_FILE_LIMIT = 50;
+
+function isLoggedUser() {
+    if (window.CommentShared && typeof window.CommentShared.getLoginProfile === 'function') {
+        const profile = window.CommentShared.getLoginProfile();
+        return Boolean(profile && profile.isLoggedUser);
+    }
+    return Boolean(localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user'));
+}
+
+function getFileLimit() {
+    return isLoggedUser() ? LOGGED_FILE_LIMIT : GUEST_FILE_LIMIT;
+}
 
 // -----------------------------------------------------------
 // 3. 核心函数：UI 工具
@@ -523,7 +537,12 @@ async function createZipAndDownload() {
 
 // 监听：文件选择
 fileInput.addEventListener('change', (e) => {
-    filesToSend = Array.from(e.target.files);
+    const limit = getFileLimit();
+    const selected = Array.from(e.target.files);
+    if (selected.length > limit) {
+        logStatus(`⚠️ 最多选择 ${limit} 个文件${isLoggedUser() ? '' : '（登录后可提升至 50）'}，已自动截取前 ${limit} 个。`);
+    }
+    filesToSend = selected.slice(0, limit);
     fileListUL.innerHTML = '';
     currentFileIndex = 0; // 重置索引
 

@@ -16,6 +16,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
+    <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
@@ -35,6 +36,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <a class="pic-back-link" href="/a/">返回实验室</a>
                 <div class="pic-limit-text" id="limitText">上传额度读取中...</div>
             </div>
+            <div class="pic-login-tip" id="picLoginTip">未登录用户每日可上传 20 张，登录后提升至 100 张</div>
 
             <label class="pic-picker" for="fileInput">
                 <span>选择图片（支持批量）</span>
