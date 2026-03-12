@@ -1013,6 +1013,47 @@ function getOnlineFirebaseConfig() {
     return window.firebaseConfig || window._firebaseConfig || null;
 }
 
+function ensureFirebaseConfigScript() {
+    return new Promise((resolve) => {
+        const existing = getOnlineFirebaseConfig();
+        if (existing && existing.projectId) {
+            resolve(existing);
+            return;
+        }
+
+        window.__firebaseConfigLoaded = (config) => {
+            if (typeof config === 'object' && config.projectId) {
+                window.firebaseConfig = config;
+                resolve(config);
+            }
+        };
+
+        if (!Object.getOwnPropertyDescriptor(window, 'firebaseConfig')) {
+            Object.defineProperty(window, 'firebaseConfig', {
+                set(value) {
+                    if (value && value.projectId) {
+                        resolve(value);
+                    }
+                    this._firebaseConfig = value;
+                },
+                get() {
+                    return this._firebaseConfig;
+                },
+                configurable: true
+            });
+        }
+
+        const scriptId = 'firebase-config-loader-index';
+        if (!document.getElementById(scriptId)) {
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = `__API_BASE__/api/firebase-config?v=${Date.now()}`;
+            script.async = true;
+            document.head.appendChild(script);
+        }
+    });
+}
+
 async function waitForAppCheck() {
     if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
         try {
@@ -1025,6 +1066,7 @@ async function waitForAppCheck() {
 
 function waitForOnlineFirebaseReady() {
     return new Promise((resolve) => {
+        void ensureFirebaseConfigScript();
         const timer = window.setInterval(() => {
             const config = getOnlineFirebaseConfig();
             if (window.firebase && window.firebase.database && config && config.projectId) {
@@ -1036,6 +1078,7 @@ function waitForOnlineFirebaseReady() {
 }
 
 async function ensureOnlineFirebaseDatabase() {
+    await ensureFirebaseConfigScript();
     const config = getOnlineFirebaseConfig();
     if (config && config.projectId && window.firebase && window.firebase.database) {
         if (!window.firebase.apps || !window.firebase.apps.length) {
