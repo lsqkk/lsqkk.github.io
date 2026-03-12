@@ -4,7 +4,7 @@
     'use strict';
 
     /**
-     * @typedef {{ uid: string, nickname: string, login?: string, avatarType: 'color' | 'image', avatarColor: string, avatarUrl: string }} AnnotationProfile
+     * @typedef {{ uid: string, nickname: string, login?: string, loginType?: string, avatarType: 'color' | 'image', avatarColor: string, avatarUrl: string }} AnnotationProfile
      * @typedef {{ id: string, text?: string, timestamp?: number, nickname?: string, login?: string, avatarType?: 'color' | 'image', avatarColor?: string, avatarUrl?: string, likesBy?: Record<string, boolean> }} AnnotationComment
      * @typedef {{ exactText?: string, prefix?: string, suffix?: string, startHint?: number, createdAt?: number, likesBy?: Record<string, boolean>, comments?: Record<string, AnnotationComment>, [key: string]: unknown }} AnnotationHighlight
      */
@@ -74,7 +74,11 @@
             ? window.QuarkUserProfile.getProfile()
             : null;
         const nickname = ((externalProfile && externalProfile.nickname) || localStorage.getItem(STORAGE_KEYS.nickname) || '').trim();
-        const login = (externalProfile && externalProfile.login) ? externalProfile.login : (localStorage.getItem('github_login') || '');
+        const login = (externalProfile && externalProfile.login) ? externalProfile.login : (localStorage.getItem('github_login') || localStorage.getItem('qb_login') || '');
+        let loginType = (externalProfile && externalProfile.loginType) ? externalProfile.loginType : (localStorage.getItem('quark_login_type') || '');
+        if (!loginType && login) {
+            loginType = localStorage.getItem('qb_user') ? 'local' : 'github';
+        }
         const rawAvatarType = (externalProfile && externalProfile.avatarType) || localStorage.getItem(STORAGE_KEYS.avatarType) || 'color';
         /** @type {'color' | 'image'} */
         const avatarType = rawAvatarType === 'image' ? 'image' : 'color';
@@ -84,6 +88,7 @@
             uid: getOrCreateUid(),
             nickname: nickname || login || '访客',
             login: login || '',
+            loginType: loginType || '',
             avatarType,
             avatarColor,
             avatarUrl
@@ -361,10 +366,13 @@
         return `<span class="post-annotation-avatar-preview" style="background:${escapeHtml(user.avatarColor || COLOR_OPTIONS[0])};">${letter}</span>`;
     }
 
-    function renderDisplayName(nickname, login) {
+    function renderDisplayName(nickname, login, loginType) {
         const base = nickname || login || '访客';
         if (login) {
-            return `${escapeHtml(base)}<span class="login-badge">@${escapeHtml(login)}</span>`;
+            const icon = loginType === 'local'
+                ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+                : `<i class="fab fa-github login-icon"></i>`;
+            return `${escapeHtml(base)}<span class="login-badge">${icon}@${escapeHtml(login)}</span>`;
         }
         return escapeHtml(base);
     }
@@ -404,6 +412,7 @@
             uid: state.profile.uid,
             nickname,
             login: state.profile.login || '',
+            loginType: state.profile.loginType || '',
             avatarType,
             avatarColor,
             avatarUrl
@@ -600,6 +609,7 @@
                     uid: profile.uid,
                     nickname: profile.nickname,
                     login: profile.login || '',
+                    loginType: profile.loginType || '',
                     avatarType: profile.avatarType,
                     avatarColor: profile.avatarColor,
                     avatarUrl: profile.avatarUrl
@@ -648,6 +658,7 @@
             timestamp: Date.now(),
             nickname: profile.nickname,
             login: profile.login || '',
+            loginType: profile.loginType || '',
             avatarType: profile.avatarType,
             avatarColor: profile.avatarColor,
             avatarUrl: profile.avatarUrl,
@@ -696,7 +707,7 @@
             return `
                 <div class="post-annotation-comment">
                     <div class="post-annotation-comment-head">
-                        <div class="post-annotation-user">${avatar}<strong>${renderDisplayName(comment.nickname, comment.login)}</strong></div>
+                        <div class="post-annotation-user">${avatar}<strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType)}</strong></div>
                         <span class="post-annotation-comment-time">${escapeHtml(formatTime(comment.timestamp))}</span>
                     </div>
                     <div class="post-annotation-comment-text">${escapeHtml(comment.text || '')}</div>

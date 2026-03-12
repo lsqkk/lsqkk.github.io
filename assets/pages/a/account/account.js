@@ -51,13 +51,23 @@
         }
     }
 
+    function getLocalUser() {
+        const raw = localStorage.getItem('qb_user');
+        if (!raw) return null;
+        try {
+            return JSON.parse(raw);
+        } catch {
+            return null;
+        }
+    }
+
     function getStoredLoginFallback() {
         const login = localStorage.getItem('github_login');
         return login ? { login } : null;
     }
 
     function ensureLogin() {
-        const user = getGithubUser() || getStoredLoginFallback();
+        const user = getGithubUser() || getLocalUser() || getStoredLoginFallback();
         if (user && user.login) return user;
         window.location.href = LOGIN_URL;
         return null;
@@ -90,6 +100,8 @@
         if (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function') {
             return window.QuarkUserProfile.getUid();
         }
+        const localUser = getLocalUser();
+        if (localUser && localUser.login) return `qb_${String(localUser.login).toLowerCase()}`;
         const user = getGithubUser();
         if (user && user.login) return `gh_${String(user.login).toLowerCase()}`;
         return localStorage.getItem('quark_uid') || '';
@@ -485,6 +497,9 @@
         const user = ensureLogin();
         if (!user) return;
         const login = user.login || '';
+        const loginType = (window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+            ? (window.QuarkUserProfile.getProfile().loginType || '')
+            : (localStorage.getItem('quark_login_type') || '')) || '';
         const nickname = el.nickname instanceof HTMLInputElement ? el.nickname.value.trim() : '';
         const avatarUrl = el.avatarUrl instanceof HTMLInputElement ? el.avatarUrl.value.trim() : '';
         const profileUrl = user.html_url || '';
@@ -495,6 +510,7 @@
             uid,
             nickname,
             login,
+            loginType,
             avatarUrl,
             avatarType: avatarUrl ? 'image' : 'color',
             avatarColor: '#2563eb',
@@ -512,10 +528,18 @@
         try {
             const db = await ensureFirebase();
             await db.ref('user_activity').child(uid).child('profile').update(profile);
+            if (loginType === 'local' && login) {
+                await db.ref('qb_users').child(String(login).toLowerCase()).update({
+                    nickname: profile.nickname || '',
+                    avatarUrl: profile.avatarUrl || '',
+                    updatedAt: Date.now()
+                });
+            }
             await db.ref('presence').child(uid).update({
                 uid,
                 nickname,
                 login,
+                loginType,
                 avatarUrl,
                 avatarType: avatarUrl ? 'image' : 'color',
                 avatarColor: '#2563eb',

@@ -276,7 +276,9 @@ function displayRecentMessages(messages) {
         const baseName = message.nickname || '匿名用户';
         const login = message.login || '';
         const displayName = login
-            ? `${baseName}<span class="login-badge">@${login}</span>`
+            ? `${baseName}<span class="login-badge">${message.loginType === 'local'
+                ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+                : `<i class="fab fa-github login-icon"></i>`}@${login}</span>`
             : baseName;
 
         html += `

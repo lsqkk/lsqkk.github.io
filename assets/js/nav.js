@@ -48,7 +48,8 @@ const defaultNavConfig = {
         { name: "更多", link: "/blog", target: "blank" }
     ],
     login: {
-        url: "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user",
+        url: "/login",
+        githubUrl: "https://github.com/login/oauth/authorize?client_id=Ov23liKnR1apo7atwzU0&redirect_uri=https://lsqkk.github.io/auth.html&scope=user",
     }
 };
 
@@ -456,7 +457,7 @@ function performLanguageChange(targetLanguage) {
 // 检查登录状态（与index.js保持一致）
 function checkLoginStatus() {
     // 使用与index.js完全相同的逻辑
-    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user');
 
     const loginButton = document.getElementById('login-button');
     const mobileLoginButton = document.getElementById('mobile-login-button');
@@ -500,15 +501,31 @@ function readGithubUserFallback() {
     }
 }
 
+function readLocalUserFallback() {
+    const raw = localStorage.getItem('qb_user');
+    if (!raw) return null;
+    try {
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== 'object') return null;
+        return {
+            nickname: data.nickname || data.login || data.username || '',
+            avatarUrl: data.avatarUrl || '',
+            profileUrl: ''
+        };
+    } catch {
+        return null;
+    }
+}
+
 function renderUserProfile() {
     let profile = getUserProfile();
     const headerUser = document.getElementById('header-user');
     const mobileUser = document.getElementById('mobile-user');
     if (!headerUser && !mobileUser) return;
 
-    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user');
     if (!profile || (!profile.nickname && !profile.avatarUrl)) {
-        const fallback = readGithubUserFallback();
+        const fallback = readGithubUserFallback() || readLocalUserFallback();
         if (fallback && (fallback.nickname || fallback.avatarUrl)) {
             profile = fallback;
         }
@@ -568,7 +585,7 @@ function initializeAll() {
 
     window.addEventListener('storage', (event) => {
         if (!event || !event.key) return;
-        if (event.key === 'github_user' || event.key === 'github_code' || event.key === 'quark_user_profile') {
+        if (event.key === 'github_user' || event.key === 'github_code' || event.key === 'quark_user_profile' || event.key === 'qb_user') {
             checkLoginStatus();
         }
     });

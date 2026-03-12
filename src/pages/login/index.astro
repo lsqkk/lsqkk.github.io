@@ -1,0 +1,124 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "";
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录 | {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="/assets/pages/login/login.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script is:inline define:vars={{ navConfig, githubLoginUrl }}>
+      window.__NAV_CONFIG__ = navConfig;
+      window.__GITHUB_LOGIN_URL__ = githubLoginUrl;
+    </script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/js/user-profile.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="/assets/pages/login/login.js"></script>
+  </head>
+  <body class="login-body">
+    <div class="login-shell">
+      <section class="login-hero">
+        <div>
+          <p class="login-kicker">Quark Blog</p>
+          <h1 class="login-title">登录到夸克博客</h1>
+          <p class="login-subtitle">支持 GitHub 与站内账号密码两种方式。</p>
+        </div>
+        <div class="login-logo">
+          <img src={SITE_LOGO_URL} alt="logo" />
+        </div>
+      </section>
+
+      <main class="login-grid">
+        <section class="login-card">
+          <div class="card-header">
+            <h2>GitHub 登录</h2>
+            <p>推荐，安全快捷。</p>
+          </div>
+          <div class="github-panel">
+            <button class="btn primary github-btn" id="githubLoginBtn">
+              <i class="fab fa-github"></i>
+              使用 GitHub 登录
+            </button>
+            <p class="helper">点击后将跳转到 GitHub 授权页面。</p>
+          </div>
+        </section>
+
+        <section class="login-card">
+          <div class="card-header">
+            <h2>账号密码登录</h2>
+            <p>适用于不想绑定 GitHub 的用户。</p>
+          </div>
+          <div class="tab-row">
+            <button class="tab-btn active" data-tab="login">登录</button>
+            <button class="tab-btn" data-tab="register">注册</button>
+          </div>
+
+          <div class="tab-panel active" data-panel="login">
+            <div class="field">
+              <label for="loginUsername">账号名</label>
+              <input type="text" id="loginUsername" placeholder="仅限英文字母" autocomplete="username" />
+            </div>
+            <div class="field">
+              <label for="loginPassword">密码</label>
+              <input type="password" id="loginPassword" placeholder="请输入密码" autocomplete="current-password" />
+            </div>
+            <div class="field captcha-field">
+              <label for="loginCaptcha">验证码</label>
+              <div class="captcha-row">
+                <input type="text" id="loginCaptcha" placeholder="输入验证码" />
+                <canvas id="captchaCanvas" width="110" height="40"></canvas>
+                <button class="btn ghost captcha-refresh" id="captchaRefresh" type="button">换一张</button>
+              </div>
+            </div>
+            <div class="action-row">
+              <button class="btn primary" id="loginSubmit">登录</button>
+              <button class="btn ghost" id="loginReset" type="button">清空</button>
+            </div>
+            <div class="status-row" id="loginStatus">等待登录</div>
+          </div>
+
+          <div class="tab-panel" data-panel="register">
+            <div class="field">
+              <label for="registerUsername">账号名</label>
+              <input type="text" id="registerUsername" placeholder="仅限英文字母，注册后不可修改" />
+              <div class="helper">账号名唯一，仅支持英文字母。</div>
+            </div>
+            <div class="field">
+              <label for="registerNickname">昵称（可选）</label>
+              <input type="text" id="registerNickname" placeholder="不填将自动生成" />
+            </div>
+            <div class="field">
+              <label for="registerPassword">密码</label>
+              <input type="password" id="registerPassword" placeholder="字母+数字，8-20位" />
+            </div>
+            <div class="field">
+              <label for="registerPassword2">确认密码</label>
+              <input type="password" id="registerPassword2" placeholder="再次输入密码" />
+            </div>
+            <div class="action-row">
+              <button class="btn primary" id="registerSubmit">注册账号</button>
+              <button class="btn ghost" id="registerReset" type="button">清空</button>
+            </div>
+            <div class="status-row" id="registerStatus">等待注册</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

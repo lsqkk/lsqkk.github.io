@@ -22,6 +22,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
       }
       if (code) {
         localStorage.setItem("github_code", code);
+        localStorage.setItem("quark_login_type", "github");
+        localStorage.removeItem("qb_user");
+        localStorage.removeItem("qb_login");
         fetchGithubUser(code).then((user) => {
           if (user) {
             localStorage.setItem("github_user", JSON.stringify(user));

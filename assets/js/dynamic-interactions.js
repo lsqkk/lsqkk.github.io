@@ -104,12 +104,26 @@
             ? window.QuarkUserProfile.getProfile()
             : null;
         let login = profile && profile.login ? profile.login : '';
+        let loginType = profile && profile.loginType ? profile.loginType : '';
         if (!login) {
             const raw = localStorage.getItem('github_user');
             if (raw) {
                 try {
                     const data = JSON.parse(raw);
                     login = data.login || '';
+                    loginType = login ? 'github' : '';
+                } catch {
+                    login = '';
+                }
+            }
+        }
+        if (!login) {
+            const raw = localStorage.getItem('qb_user');
+            if (raw) {
+                try {
+                    const data = JSON.parse(raw);
+                    login = data.login || data.username || '';
+                    loginType = login ? 'local' : '';
                 } catch {
                     login = '';
                 }
@@ -118,16 +132,20 @@
         return {
             nickname: (profile && profile.nickname) ? profile.nickname : '',
             login,
+            loginType,
             avatarUrl: profile && profile.avatarUrl ? profile.avatarUrl : '',
             avatarColor: profile && profile.avatarColor ? profile.avatarColor : '',
             avatarType: profile && profile.avatarType ? profile.avatarType : 'color'
         };
     }
 
-    function renderDisplayName(nickname, login) {
+    function renderDisplayName(nickname, login, loginType) {
         const base = nickname || login || '访客';
         if (login) {
-            return `${escapeHtml(base)}<span class="login-badge">@${escapeHtml(login)}</span>`;
+            const icon = loginType === 'local'
+                ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+                : `<i class="fab fa-github login-icon"></i>`;
+            return `${escapeHtml(base)}<span class="login-badge">${icon}@${escapeHtml(login)}</span>`;
         }
         return escapeHtml(base);
     }
@@ -353,7 +371,7 @@
         let postRef = null;
 
         const loginProfile = getLoginProfile();
-        const isLoggedUser = Boolean(loginProfile.login) && Boolean(localStorage.getItem('github_code') || localStorage.getItem('github_user'));
+        const isLoggedUser = Boolean(loginProfile.login) && Boolean(localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user'));
         if (nicknameInput instanceof HTMLInputElement) {
             const preferred = loginProfile.nickname || loginProfile.login || (localStorage.getItem(NICKNAME_KEY) || '');
             nicknameInput.value = preferred;
@@ -466,7 +484,7 @@
                 return `
                     <div class="dynamic-comment-item" data-comment-id="${escapeHtml(comment.id)}">
                         <div class="dynamic-comment-head">
-                            <strong>${renderDisplayName(comment.nickname, comment.login)}</strong>
+                            <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType)}</strong>
                             <span>${escapeHtml(formatTime(comment.timestamp))}</span>
                         </div>
                         <div class="dynamic-comment-text">${escapeHtml(comment.text || '')}</div>
@@ -484,7 +502,7 @@
                                     return `
                                         <div class="dynamic-reply-item" data-reply-id="${escapeHtml(reply.id)}">
                                             <div class="dynamic-comment-head">
-                                                <strong>${renderDisplayName(reply.nickname, reply.login)}</strong>
+                                                <strong>${renderDisplayName(reply.nickname, reply.login, reply.loginType)}</strong>
                                                 <span>${escapeHtml(formatTime(reply.timestamp))}</span>
                                             </div>
                                             <div class="dynamic-comment-text">${escapeHtml(reply.text || '')}</div>
@@ -556,6 +574,7 @@
                     const payload = {
                         nickname,
                         login: isLoggedUser ? (loginProfile.login || '') : '',
+                        loginType: isLoggedUser ? (loginProfile.loginType || '') : '',
                         text,
                         timestamp: Date.now(),
                         likesBy: {}

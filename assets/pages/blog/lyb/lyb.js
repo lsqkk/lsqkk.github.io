@@ -22,6 +22,7 @@ let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '';
 let loginName = '';
+let loginType = '';
 let isLoggedUser = false;
 /** @type {string | null} */
 let replyingTo = null; // 当前回复的留言ID
@@ -81,9 +82,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         ? window.QuarkUserProfile.getProfile()
         : null;
     const githubUser = localStorage.getItem('github_user');
+    const qbUser = localStorage.getItem('qb_user');
     if (profile) {
         if (profile.nickname) nickname = profile.nickname;
         if (profile.login) loginName = profile.login;
+        if (profile.loginType) loginType = profile.loginType;
         if (profile.avatarUrl) {
             userAvatarType = 'image';
             userAvatarUrl = profile.avatarUrl;
@@ -95,11 +98,21 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (!loginName && githubUser) {
         try {
             loginName = JSON.parse(githubUser).login || '';
+            if (loginName) loginType = 'github';
         } catch {
             loginName = '';
         }
     }
-    isLoggedUser = Boolean(localStorage.getItem('github_code') || githubUser);
+    if (!loginName && qbUser) {
+        try {
+            const data = JSON.parse(qbUser);
+            loginName = data.login || data.username || '';
+            loginType = loginName ? 'local' : '';
+        } catch {
+            loginName = '';
+        }
+    }
+    isLoggedUser = Boolean(localStorage.getItem('github_code') || githubUser || qbUser);
     if (isLoggedUser && !nickname) {
         nickname = loginName || '已登录';
     }
@@ -217,6 +230,7 @@ function submitMessage() {
         text: content,
         nickname: nickname,
         login: loginName || '',
+        loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -443,7 +457,9 @@ function createMessageElement(message) {
 
     const baseName = message.nickname || '访客';
     const authorHtml = message.login
-        ? `${baseName}<span class="login-badge">@${message.login}</span>`
+        ? `${baseName}<span class="login-badge">${message.loginType === 'local'
+            ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+            : `<i class="fab fa-github login-icon"></i>`}@${message.login}</span>`
         : baseName;
     messageDiv.innerHTML = `
                 <div class="message-header">
@@ -495,7 +511,9 @@ function createReplyElement(reply) {
 
     const baseName = reply.nickname || '访客';
     const authorHtml = reply.login
-        ? `${baseName}<span class="login-badge">@${reply.login}</span>`
+        ? `${baseName}<span class="login-badge">${reply.loginType === 'local'
+            ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+            : `<i class="fab fa-github login-icon"></i>`}@${reply.login}</span>`
         : baseName;
     return `
                 <div class="reply-card">
@@ -626,6 +644,7 @@ function submitReply() {
         text: content,
         nickname: nickname,
         login: loginName || '',
+        loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),

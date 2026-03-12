@@ -31,6 +31,19 @@ body {
     vertical-align: middle;
 }
 
+.login-badge .login-icon {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+}
+
+.login-badge .login-icon img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
 .dark-mode .login-badge {
     color: #93c5fd;
     background: rgba(59, 130, 246, 0.18);

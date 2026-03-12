@@ -15,6 +15,7 @@ let userColor = localStorage.getItem('userColor') || '#4a6cf7';
 let userAvatarUrl = localStorage.getItem('userAvatarUrl') || '';
 let nickname = localStorage.getItem('nickname') || '';
 let loginName = '';
+let loginType = '';
 let isLoggedUser = false;
 
 
@@ -66,10 +67,13 @@ function getUserAvatarStyle(currentNickname = nickname) {
     return { style: `background: ${userColor}`, content: currentNickname ? currentNickname[0].toUpperCase() : 'A' };
 }
 
-function formatAuthor(nick, login) {
+function formatAuthor(nick, login, type) {
     const base = nick || login || '访客';
     if (login) {
-        return `${base}<span class="login-badge">@${login}</span>`;
+        const icon = type === 'local'
+            ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+            : `<i class="fab fa-github login-icon"></i>`;
+        return `${base}<span class="login-badge">${icon}@${login}</span>`;
     }
     return base;
 }
@@ -163,6 +167,7 @@ function initAvatarToggle() {
     if (profile) {
         if (profile.nickname) nickname = profile.nickname;
         if (profile.login) loginName = profile.login;
+        if (profile.loginType) loginType = profile.loginType;
         if (profile.avatarUrl) {
             userAvatarType = 'image';
             userAvatarUrl = profile.avatarUrl;
@@ -176,12 +181,25 @@ function initAvatarToggle() {
         if (raw) {
             try {
                 loginName = JSON.parse(raw).login || '';
+                if (loginName) loginType = 'github';
             } catch {
                 loginName = '';
             }
         }
     }
-    isLoggedUser = Boolean(loginName) && Boolean(localStorage.getItem('github_user') || localStorage.getItem('github_code'));
+    if (!loginName) {
+        const raw = localStorage.getItem('qb_user');
+        if (raw) {
+            try {
+                const data = JSON.parse(raw);
+                loginName = data.login || data.username || '';
+                loginType = loginName ? 'local' : '';
+            } catch {
+                loginName = '';
+            }
+        }
+    }
+    isLoggedUser = Boolean(loginName) && Boolean(localStorage.getItem('github_user') || localStorage.getItem('github_code') || localStorage.getItem('qb_user'));
     if (isLoggedUser && !nickname) {
         nickname = loginName;
     }
@@ -521,7 +539,7 @@ function renderDiscussionsSummaries(discussions) {
                 <div class="summary-title">${discussion.title}</div>
                 <div class="summary-meta">
                     <span class="problem-tag">P${discussion.problemId}</span>
-                    <span><i class="fas fa-user"></i> ${formatAuthor(discussion.nickname, discussion.login)}</span>
+                    <span><i class="fas fa-user"></i> ${formatAuthor(discussion.nickname, discussion.login, discussion.loginType)}</span>
                     <span><i class="fas fa-heart"></i> ${discussion.likes || 0}</span>
                     <span><i class="fas fa-comment"></i> ${replyCount}</span>
                 </div>
@@ -563,12 +581,13 @@ window.submitNewDiscussion = function () {
 
     updateAvatar(userAvatarType); // 确保最新头像和昵称已同步
 
-    const discussion = {
+        const discussion = {
         title: currentTitle,
         problemId: parsedProblemId,
         text: currentContent,
         nickname: nickname,
         login: loginName || '',
+        loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -635,7 +654,7 @@ function renderSingleDiscussion(discussion) {
             <div class="detail-meta-row">
                 <div class="author-time">
                     <span class="problem-tag">P${discussion.problemId}</span>
-                    <span style="font-weight: bold; color: #81D4FA;">作者：${formatAuthor(discussion.nickname, discussion.login)}</span>
+                    <span style="font-weight: bold; color: #81D4FA;">作者：${formatAuthor(discussion.nickname, discussion.login, discussion.loginType)}</span>
                     <span>发布于：${formatTime(discussion.timestamp)}</span>
                 </div>
                 <div class="message-actions">
@@ -714,7 +733,7 @@ function renderRepliesTree(discussionId, replies) {
                         </div>
                         <div class="message-info">
                             <div class="message-author">
-                                ${formatAuthor(node.nickname, node.login)} 
+                                ${formatAuthor(node.nickname, node.login, node.loginType)} 
                                 ${parentNickname ? `<span class="replying-to">回复 ${parentNickname}</span>` : ''}
                             </div>
                             <div class="message-time">${formatTime(node.timestamp)}</div>
@@ -816,6 +835,7 @@ window.submitReply = function (discussionId, parentReplyId) {
         text: content,
         nickname: nickname,
         login: loginName || '',
+        loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),

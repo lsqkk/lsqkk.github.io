@@ -164,7 +164,7 @@ if (pvElement) {
 
 // 检查是否已登录 - 添加存在性检查
 function checkLoginStatus() {
-    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user');
+    const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user');
     const loginButton = document.getElementById('login-button');
     const mobileLoginButton = document.getElementById('mobile-login-button');
     const headerLoginButton = document.getElementById('header-login');

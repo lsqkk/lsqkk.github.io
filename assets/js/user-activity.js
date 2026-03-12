@@ -18,7 +18,8 @@
         }
         return {
             nickname: localStorage.getItem('nickname') || '',
-            login: localStorage.getItem('github_login') || '',
+            login: localStorage.getItem('github_login') || localStorage.getItem('qb_login') || '',
+            loginType: localStorage.getItem('quark_login_type') || '',
             avatarUrl: '',
             avatarType: 'color',
             avatarColor: '#2563eb',
@@ -184,7 +185,8 @@
             ts: now,
             nickname: profile.nickname || '',
             avatarUrl: profile.avatarUrl || '',
-            login: profile.login || ''
+            login: profile.login || '',
+            loginType: profile.loginType || ''
         });
     }
 
@@ -196,7 +198,8 @@
             title: document.title || '',
             nickname: profile.nickname || '',
             avatarUrl: profile.avatarUrl || '',
-            login: profile.login || ''
+            login: profile.login || '',
+            loginType: profile.loginType || ''
         });
     }
 
@@ -225,6 +228,7 @@
             uid,
             nickname: profile.nickname || '',
             login: profile.login || '',
+            loginType: profile.loginType || '',
             avatarUrl: profile.avatarUrl || '',
             avatarType: profile.avatarType || 'color',
             avatarColor: profile.avatarColor || '',
@@ -287,6 +291,7 @@
             uid,
             nickname: profile.nickname || '',
             login: profile.login || '',
+            loginType: profile.loginType || '',
             avatarUrl: profile.avatarUrl || '',
             avatarType: profile.avatarType || 'color',
             avatarColor: profile.avatarColor || '',
@@ -320,7 +325,7 @@
         const createdAt = remoteProfile && typeof remoteProfile.createdAt === 'number' ? remoteProfile.createdAt : 0;
         await upsertProfile(uid, profile, createdAt);
 
-        if (localStorage.getItem('github_user')) {
+        if (localStorage.getItem('github_user') || localStorage.getItem('qb_user')) {
             await recordLogin(uid, profile);
         }
         await recordPageView(uid, profile);
