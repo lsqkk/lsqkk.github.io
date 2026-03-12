@@ -26,7 +26,7 @@ window.onload = function () {
 async function getWeatherForecast(lat, lon) {
     try {
         if (!API_KEY) {
-            console.error('缺少 OPENWEATHER_API_KEY，请检查 /api/openweather-key 配置');
+            console.error('缺少 OPENWEATHER_API_KEY，请检查 /api/keys?names=openweather 配置');
             return;
         }
         const response = await fetch(

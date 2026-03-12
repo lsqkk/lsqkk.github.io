@@ -1,13 +1,13 @@
-// OpenWeatherMap API配置（由 /api/openweather-key 注入）
+// OpenWeatherMap API配置（由 /api/keys?names=openweather 注入）
 const API_KEY = window.OPENWEATHER_API_KEY || '';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 const TIANDITU_KEY = window.TIANDITU_KEY || '';
 
 if (!API_KEY) {
-    console.error('缺少 OPENWEATHER_API_KEY，请检查 /api/openweather-key 配置');
+    console.error('缺少 OPENWEATHER_API_KEY，请检查 /api/keys?names=openweather 配置');
 }
 if (!TIANDITU_KEY) {
-    console.error('缺少 TIANDITU_KEY，请检查 /api/tianditu-key 配置');
+    console.error('缺少 TIANDITU_KEY，请检查 /api/keys?names=tianditu 配置');
 }
 
 // 管理员状态（基于服务端签名 token 校验）

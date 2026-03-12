@@ -1,4 +1,4 @@
-// API配置（由 /api/openweather-key 注入）
+// API配置（由 /api/keys?names=openweather 注入）
 const API_KEY = window.OPENWEATHER_API_KEY || '';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 const ICON_URL = 'https://openweathermap.org/img/wn/';

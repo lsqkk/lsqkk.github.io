@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const idleVideo = document.getElementById('idle-video');
     const talkingVideo = document.getElementById('talking-video');
 
-    // API配置（由 /api/quarkchat-key 注入）
+    // API配置（由 /api/keys?names=quarkchat 注入）
     const API_KEY = window.QUARKCHAT_API_KEY || '';
     const CHAT_API_URL = 'https://api.yaohud.cn/api/v5/smartai';
     const USER_ID = 'quark';

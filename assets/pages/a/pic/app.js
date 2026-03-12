@@ -87,7 +87,7 @@ function renderSelectedFiles() {
 async function handleUpload() {
     const token = window.GITHUB_API_KEY;
     if (!token) {
-        setStatus('未获取到 GITHUB_API_KEY，请检查 /api/github-api-key');
+        setStatus('未获取到 GITHUB_API_KEY，请检查 /api/keys?names=github');
         return;
     }
 

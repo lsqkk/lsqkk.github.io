@@ -6,6 +6,8 @@
 
   const SITE_KEY = window.__APP_CHECK_SITE_KEY__ || '';
   const DEBUG_FLAG_KEY = 'quark_appcheck_debug';
+  const ASSESS_FLAG_KEY = 'quark_appcheck_assess_done';
+  const ASSESS_TTL_MS = 6 * 60 * 60 * 1000;
   if (!window.__quarkAppCheckReady) {
     window.__quarkAppCheckReady = Promise.resolve();
   }
@@ -42,6 +44,67 @@
     });
   }
 
+  function loadRecaptcha() {
+    return new Promise((resolve) => {
+      if (!SITE_KEY) {
+        resolve();
+        return;
+      }
+      if (window.grecaptcha && window.grecaptcha.enterprise) {
+        resolve();
+        return;
+      }
+      const existing = document.getElementById('recaptcha-enterprise-sdk');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(), { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'recaptcha-enterprise-sdk';
+      script.src = `https://www.google.com/recaptcha/enterprise.js?render=${encodeURIComponent(SITE_KEY)}`;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => resolve();
+      document.head.appendChild(script);
+    });
+  }
+
+  function shouldRequestAssessment() {
+    try {
+      const raw = localStorage.getItem(ASSESS_FLAG_KEY);
+      if (!raw) return true;
+      const last = Number(raw);
+      if (!Number.isFinite(last)) return true;
+      return Date.now() - last > ASSESS_TTL_MS;
+    } catch {
+      return true;
+    }
+  }
+
+  async function requestAssessment() {
+    if (!SITE_KEY) return;
+    if (!shouldRequestAssessment()) return;
+    await loadRecaptcha();
+    if (!(window.grecaptcha && window.grecaptcha.enterprise && typeof window.grecaptcha.enterprise.execute === 'function')) {
+      return;
+    }
+    try {
+      const token = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'app_check' });
+      if (!token) return;
+      const resp = await fetch('__API_BASE__/api/recaptcha-assess', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'app_check' })
+      });
+      const data = await resp.json();
+      if (resp.ok && data && data.ok) {
+        localStorage.setItem(ASSESS_FLAG_KEY, String(Date.now()));
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   function activate() {
     if (!SITE_KEY) return;
     if (!window.firebase || !window.firebase.appCheck) return;
@@ -52,6 +115,7 @@
         .then(() => true)
         .catch(() => false);
       window.__quarkAppCheckActivated = true;
+      void requestAssessment();
       // Minimal diagnostics for App Check failures
       try {
         const cfg = window.firebaseConfig || window._firebaseConfig || {};
@@ -89,6 +153,7 @@
       if (window.firebase.apps && window.firebase.apps.length) {
         void loadSdk().then(() => activate());
       }
+      void requestAssessment();
       return;
     }
     const timer = window.setInterval(() => {
