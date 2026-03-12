@@ -1,5 +1,9 @@
 import crypto from 'node:crypto';
 
+const ipLimiter = new Map();
+const emailLimiter = new Map();
+const RATE_WINDOW_MS = 60 * 1000;
+
 function buildToken(payload, secret) {
     const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
     const signature = crypto.createHmac('sha256', secret).update(payloadBase64).digest('hex');
@@ -41,6 +45,18 @@ export default async function handler(req, res) {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return res.status(400).json({ error: 'Invalid email' });
     }
+
+    const now = Date.now();
+    const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').toString().split(',')[0].trim();
+    const ipKey = `ip:${ip}:${purpose}`;
+    const emailKey = `mail:${email}:${purpose}`;
+    const ipLast = ipLimiter.get(ipKey) || 0;
+    const mailLast = emailLimiter.get(emailKey) || 0;
+    if (now - ipLast < RATE_WINDOW_MS || now - mailLast < RATE_WINDOW_MS) {
+        return res.status(429).json({ error: 'Too many requests' });
+    }
+    ipLimiter.set(ipKey, now);
+    emailLimiter.set(emailKey, now);
 
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.RESEND_FROM;

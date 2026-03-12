@@ -45,6 +45,7 @@
         el.bindEmailRemove = document.getElementById('bindEmailRemove');
         el.bindEmailStatus = document.getElementById('bindEmailStatus');
         el.loginTypeLabel = document.getElementById('loginTypeLabel');
+        el.emailBindSection = document.getElementById('emailBindSection');
     }
 
     let firebaseReady = false;
@@ -617,6 +618,9 @@
         if (!(el.bindEmail instanceof HTMLInputElement)) return;
         const loginType = getLoginType();
         const isLocal = loginType === 'local';
+        if (el.emailBindSection instanceof HTMLElement) {
+            el.emailBindSection.style.display = isLocal ? 'block' : 'none';
+        }
         const controls = [el.bindEmail, el.bindEmailCode, el.bindEmailSend, el.bindEmailApply, el.bindEmailRemove];
         controls.forEach((item) => {
             if (item instanceof HTMLInputElement || item instanceof HTMLButtonElement) {

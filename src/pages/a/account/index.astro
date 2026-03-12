@@ -86,23 +86,25 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
                 <label for="nicknameInput">昵称</label>
                 <input type="text" id="nicknameInput" placeholder="输入昵称" />
               </div>
-              <div class="field">
-                <label for="bindEmail">绑定邮箱</label>
-                <input type="email" id="bindEmail" placeholder="name@example.com" />
-                <div class="helper">绑定后可用于邮箱登录与找回密码。</div>
-              </div>
-              <div class="field">
-                <label for="bindEmailCode">邮箱验证码</label>
-                <div class="captcha-row">
-                  <input type="text" id="bindEmailCode" placeholder="输入验证码" />
-                  <button class="btn ghost" id="bindEmailSend" type="button">发送验证码</button>
+              <div class="email-bind-section" id="emailBindSection">
+                <div class="field">
+                  <label for="bindEmail">绑定邮箱</label>
+                  <input type="email" id="bindEmail" placeholder="name@example.com" />
+                  <div class="helper">绑定后可用于邮箱登录与找回密码。</div>
                 </div>
+                <div class="field">
+                  <label for="bindEmailCode">邮箱验证码</label>
+                  <div class="captcha-row">
+                    <input type="text" id="bindEmailCode" placeholder="输入验证码" />
+                    <button class="btn ghost" id="bindEmailSend" type="button">发送验证码</button>
+                  </div>
+                </div>
+                <div class="action-row">
+                  <button class="btn primary" id="bindEmailApply">绑定邮箱</button>
+                  <button class="btn ghost" id="bindEmailRemove" type="button">解绑邮箱</button>
+                </div>
+                <div class="status-row" id="bindEmailStatus">等待操作</div>
               </div>
-              <div class="action-row">
-                <button class="btn primary" id="bindEmailApply">绑定邮箱</button>
-                <button class="btn ghost" id="bindEmailRemove" type="button">解绑邮箱</button>
-              </div>
-              <div class="status-row" id="bindEmailStatus">等待操作</div>
               <div class="field">
                 <label>账户标识</label>
                 <input type="text" id="accountUid" disabled />

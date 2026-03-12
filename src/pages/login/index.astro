@@ -48,7 +48,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
       </section>
 
       <main class="login-grid">
-        <section class="login-card">
+        <section class="login-card login-card--github">
           <div class="card-header">
             <h2>GitHub 登录</h2>
             <p>推荐，安全快捷。</p>
@@ -63,6 +63,14 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
               使用 GitHub 登录
             </button>
             <p class="helper">点击后将跳转到 GitHub 授权页面。</p>
+          </div>
+          <div class="login-aside">
+            <div class="aside-title">登录后可获得</div>
+            <ul>
+              <li>评论自动填充昵称与头像</li>
+              <li>跨设备资料同步</li>
+              <li>参与互动更方便</li>
+            </ul>
           </div>
         </section>
 
@@ -182,6 +190,13 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
             <div class="field">
               <label for="registerPassword2">确认密码</label>
               <input type="password" id="registerPassword2" placeholder="再次输入密码" />
+            </div>
+            <div class="field captcha-field">
+              <label>安全校验</label>
+              <div class="turnstile-row">
+                <div id="turnstileRegisterContainer" class="turnstile-box"></div>
+              </div>
+              <div class="helper">注册前需通过人机验证。</div>
             </div>
             <div class="action-row">
               <button class="btn primary" id="registerSubmit">注册账号</button>

@@ -21,6 +21,7 @@
     el.loginUsername = document.getElementById('loginUsername');
     el.loginPassword = document.getElementById('loginPassword');
     el.turnstileContainer = document.getElementById('turnstileContainer');
+    el.turnstileRegisterContainer = document.getElementById('turnstileRegisterContainer');
     el.loginSubmit = document.getElementById('loginSubmit');
     el.loginReset = document.getElementById('loginReset');
     el.loginStatus = document.getElementById('loginStatus');
@@ -49,8 +50,12 @@
     el.registerStatus = document.getElementById('registerStatus');
   }
 
-  let turnstileToken = '';
-  let turnstileWidgetId = null;
+  let loginTurnstileToken = '';
+  let registerTurnstileToken = '';
+  let loginTurnstileWidgetId = null;
+  let registerTurnstileWidgetId = null;
+  const SEND_COOLDOWN_MS = 60 * 1000;
+  const REGISTER_COOLDOWN_MS = 2 * 60 * 1000;
   let firebaseReady = false;
   let emailTokenCache = {};
   let loginMode = 'password';
@@ -89,6 +94,9 @@
       if (!(panel instanceof HTMLElement)) return;
       panel.classList.toggle('active', panel.dataset.panel === target);
     });
+    if (getTurnstileSiteKey()) {
+      void waitForTurnstileReady().then(() => renderTurnstile());
+    }
   }
 
   function switchLoginMode(mode) {
@@ -110,32 +118,57 @@
   }
 
   function resetTurnstile() {
-    turnstileToken = '';
-    if (window.turnstile && typeof window.turnstile.reset === 'function' && turnstileWidgetId !== null) {
-      window.turnstile.reset(turnstileWidgetId);
+    loginTurnstileToken = '';
+    registerTurnstileToken = '';
+    if (window.turnstile && typeof window.turnstile.reset === 'function') {
+      if (loginTurnstileWidgetId !== null) window.turnstile.reset(loginTurnstileWidgetId);
+      if (registerTurnstileWidgetId !== null) window.turnstile.reset(registerTurnstileWidgetId);
     }
   }
 
   function renderTurnstile() {
     const key = getTurnstileSiteKey();
-    if (!key || !el.turnstileContainer) return;
+    if (!key || (!el.turnstileContainer && !el.turnstileRegisterContainer)) return;
     if (!window.turnstile || typeof window.turnstile.render !== 'function') return;
-    el.turnstileContainer.innerHTML = '';
-    turnstileToken = '';
+    if (el.turnstileContainer) {
+      el.turnstileContainer.innerHTML = '';
+    }
+    if (el.turnstileRegisterContainer) {
+      el.turnstileRegisterContainer.innerHTML = '';
+    }
+    loginTurnstileToken = '';
+    registerTurnstileToken = '';
     const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-    turnstileWidgetId = window.turnstile.render(el.turnstileContainer, {
-      sitekey: key,
-      theme,
-      callback: (token) => {
-        turnstileToken = token || '';
-      },
-      'expired-callback': () => {
-        turnstileToken = '';
-      },
-      'error-callback': () => {
-        turnstileToken = '';
-      }
-    });
+    if (el.turnstileContainer) {
+      loginTurnstileWidgetId = window.turnstile.render(el.turnstileContainer, {
+        sitekey: key,
+        theme,
+        callback: (token) => {
+          loginTurnstileToken = token || '';
+        },
+        'expired-callback': () => {
+          loginTurnstileToken = '';
+        },
+        'error-callback': () => {
+          loginTurnstileToken = '';
+        }
+      });
+    }
+    if (el.turnstileRegisterContainer) {
+      registerTurnstileWidgetId = window.turnstile.render(el.turnstileRegisterContainer, {
+        sitekey: key,
+        theme,
+        callback: (token) => {
+          registerTurnstileToken = token || '';
+        },
+        'expired-callback': () => {
+          registerTurnstileToken = '';
+        },
+        'error-callback': () => {
+          registerTurnstileToken = '';
+        }
+      });
+    }
   }
 
   function waitForTurnstileReady() {
@@ -161,6 +194,14 @@
     return String(value || '').trim().toLowerCase();
   }
 
+  function sanitizeText(value, maxLen = 32) {
+    return String(value || '')
+      .replace(/[<>"'\\]/g, '')
+      .replace(/[\u0000-\u001F\u007F]/g, '')
+      .trim()
+      .slice(0, maxLen);
+  }
+
   function emailKey(email) {
     return normalizeEmail(email).replace(/[.#$/\[\]]/g, '_');
   }
@@ -175,6 +216,21 @@
 
   function validatePassword(value) {
     return /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,20}$/.test(value);
+  }
+
+  function isWeakPattern(value) {
+    if (!value) return true;
+    const lower = value.toLowerCase();
+    if (/^(.)\1+$/.test(lower)) return true;
+    const seq = 'abcdefghijklmnopqrstuvwxyz';
+    const num = '0123456789';
+    for (let i = 0; i <= lower.length - 4; i += 1) {
+      const chunk = lower.slice(i, i + 4);
+      if (seq.includes(chunk) || seq.split('').reverse().join('').includes(chunk)) return true;
+      if (num.includes(chunk) || num.split('').reverse().join('').includes(chunk)) return true;
+    }
+    if (/(..)\1\1/.test(lower)) return true;
+    return false;
   }
 
   function buildNickname(username) {
@@ -284,9 +340,42 @@
     return '';
   }
 
+  function canSend(key, cooldown) {
+    const now = Date.now();
+    const last = Number(localStorage.getItem(key) || 0);
+    if (now - last < cooldown) {
+      return Math.ceil((cooldown - (now - last)) / 1000);
+    }
+    localStorage.setItem(key, String(now));
+    return 0;
+  }
+
+  function startCooldown(button, seconds) {
+    if (!(button instanceof HTMLButtonElement)) return;
+    const original = button.textContent || '';
+    let remain = seconds;
+    button.disabled = true;
+    button.textContent = `${remain}s`;
+    const timer = window.setInterval(() => {
+      remain -= 1;
+      if (remain <= 0) {
+        window.clearInterval(timer);
+        button.disabled = false;
+        button.textContent = original;
+      } else {
+        button.textContent = `${remain}s`;
+      }
+    }, 1000);
+  }
+
   async function sendEmailCode(email, purpose, statusEl) {
     if (!validateEmail(email)) {
       setStatus(statusEl, '邮箱格式不正确');
+      return false;
+    }
+    const cooldownLeft = canSend(`email_send_${purpose}_${emailKey(email)}`, SEND_COOLDOWN_MS);
+    if (cooldownLeft > 0) {
+      setStatus(statusEl, `发送过于频繁，请 ${cooldownLeft}s 后再试`);
       return false;
     }
     setStatus(statusEl, '验证码发送中...');
@@ -327,30 +416,30 @@
     }
   }
 
-  async function verifyTurnstileToken(purpose) {
+  async function verifyTurnstileToken(purpose, token, statusEl) {
     const key = getTurnstileSiteKey();
     if (!key) {
-      setStatus(el.loginStatus, '验证码未配置，请联系站长');
+      setStatus(statusEl || el.loginStatus, '验证码未配置，请联系站长');
       return false;
     }
-    if (!turnstileToken) {
-      setStatus(el.loginStatus, '请先完成安全校验');
+    if (!token) {
+      setStatus(statusEl || el.loginStatus, '请先完成安全校验');
       return false;
     }
     try {
       const resp = await fetch(`${API_BASE}/api/turnstile-verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: turnstileToken, purpose })
+        body: JSON.stringify({ token, purpose })
       });
       const data = await resp.json();
       if (resp.ok && data && data.ok) return true;
-      setStatus(el.loginStatus, data?.error || '验证码校验失败');
+      setStatus(statusEl || el.loginStatus, data?.error || '验证码校验失败');
       resetTurnstile();
       return false;
     } catch (error) {
       console.error('验证码校验失败:', error);
-      setStatus(el.loginStatus, '验证码校验失败');
+      setStatus(statusEl || el.loginStatus, '验证码校验失败');
       resetTurnstile();
       return false;
     }
@@ -379,7 +468,7 @@
 
     const usernameRaw = el.registerUsername.value;
     const username = normalizeUsername(usernameRaw);
-    const nicknameInput = el.registerNickname instanceof HTMLInputElement ? el.registerNickname.value.trim() : '';
+    const nicknameInput = el.registerNickname instanceof HTMLInputElement ? sanitizeText(el.registerNickname.value, 24) : '';
     const emailInput = el.registerEmail instanceof HTMLInputElement ? el.registerEmail.value.trim() : '';
     const emailCodeInput = el.registerEmailCode instanceof HTMLInputElement ? el.registerEmailCode.value.trim() : '';
     const password = el.registerPassword.value;
@@ -393,10 +482,23 @@
       setText(el.registerStatus, '密码需 8-20 位，包含字母和数字');
       return;
     }
+    if (isWeakPattern(password)) {
+      setText(el.registerStatus, '密码过于简单，请避免连续或重复字符');
+      return;
+    }
     if (password !== password2) {
       setText(el.registerStatus, '两次输入的密码不一致');
       return;
     }
+
+    const registerCooldown = canSend(`register_submit_${username}`, REGISTER_COOLDOWN_MS);
+    if (registerCooldown > 0) {
+      setText(el.registerStatus, `注册过于频繁，请 ${registerCooldown}s 后再试`);
+      return;
+    }
+
+    const captchaOk = await verifyTurnstileToken('register', registerTurnstileToken, el.registerStatus);
+    if (!captchaOk) return;
 
     setText(el.registerStatus, '正在注册...');
 
@@ -476,8 +578,12 @@
       setText(el.loginStatus, '请输入密码');
       return;
     }
+    if (isWeakPattern(password)) {
+      setText(el.loginStatus, '密码过于简单，请检查后重试');
+      return;
+    }
 
-    const captchaOk = await verifyTurnstileToken('login');
+    const captchaOk = await verifyTurnstileToken('login', loginTurnstileToken, el.loginStatus);
     if (!captchaOk) return;
 
     setText(el.loginStatus, '正在登录...');
@@ -576,6 +682,10 @@
       setText(el.resetStatus, '密码需 8-20 位，包含字母和数字');
       return;
     }
+    if (isWeakPattern(password)) {
+      setText(el.resetStatus, '密码过于简单，请避免连续或重复字符');
+      return;
+    }
     if (password !== password2) {
       setText(el.resetStatus, '两次输入的密码不一致');
       return;
@@ -647,7 +757,10 @@
     if (el.emailLoginSend) {
       el.emailLoginSend.addEventListener('click', () => {
         if (el.emailLoginAddress instanceof HTMLInputElement) {
-          void sendEmailCode(el.emailLoginAddress.value.trim(), 'login', el.loginStatus);
+          const email = el.emailLoginAddress.value.trim();
+          void sendEmailCode(email, 'login', el.loginStatus).then((ok) => {
+            if (ok) startCooldown(el.emailLoginSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
+          });
         }
       });
     }
@@ -665,7 +778,10 @@
     if (el.resetSend) {
       el.resetSend.addEventListener('click', () => {
         if (el.resetEmail instanceof HTMLInputElement) {
-          void sendEmailCode(el.resetEmail.value.trim(), 'reset', el.resetStatus);
+          const email = el.resetEmail.value.trim();
+          void sendEmailCode(email, 'reset', el.resetStatus).then((ok) => {
+            if (ok) startCooldown(el.resetSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
+          });
         }
       });
     }
@@ -680,6 +796,7 @@
         if (el.registerPassword instanceof HTMLInputElement) el.registerPassword.value = '';
         if (el.registerPassword2 instanceof HTMLInputElement) el.registerPassword2.value = '';
         setText(el.registerStatus, '等待注册');
+        resetTurnstile();
       });
     }
     if (el.registerSubmit) {
@@ -689,7 +806,10 @@
     if (el.registerEmailSend) {
       el.registerEmailSend.addEventListener('click', () => {
         if (el.registerEmail instanceof HTMLInputElement) {
-          void sendEmailCode(el.registerEmail.value.trim(), 'register', el.registerStatus);
+          const email = el.registerEmail.value.trim();
+          void sendEmailCode(email, 'register', el.registerStatus).then((ok) => {
+            if (ok) startCooldown(el.registerEmailSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
+          });
         }
       });
     }
@@ -710,6 +830,7 @@
       void waitForTurnstileReady().then(() => renderTurnstile());
     } else {
       setStatus(el.loginStatus, '验证码未配置，请联系站长');
+      setStatus(el.registerStatus, '验证码未配置，请联系站长');
     }
     bindEvents();
   }

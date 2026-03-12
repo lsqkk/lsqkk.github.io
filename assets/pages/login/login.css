@@ -61,6 +61,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
+  align-items: start;
 }
 
 .risk-banner {
@@ -103,6 +104,29 @@
   margin-top: 18px;
   display: grid;
   gap: 12px;
+}
+
+.login-aside {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(248, 250, 252, 0.8);
+  color: rgba(15, 23, 42, 0.7);
+  font-size: 13px;
+}
+
+.login-aside .aside-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: rgba(15, 23, 42, 0.85);
+}
+
+.login-aside ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
 }
 
 .btn {
@@ -308,6 +332,15 @@
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35);
 }
 
+.dark-mode .login-aside {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(148, 163, 184, 0.2);
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.dark-mode .login-aside .aside-title {
+  color: rgba(226, 232, 240, 0.9);
+}
 .dark-mode .risk-banner {
   background: rgba(59, 130, 246, 0.12);
   border-color: rgba(59, 130, 246, 0.2);
