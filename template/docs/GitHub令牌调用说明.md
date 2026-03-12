@@ -1,7 +1,7 @@
 # GitHub 令牌调用说明
 
 ## 功能概述
-通过调用安全 API（`https://api.130923.xyz/api/keys?names=github`）动态获取 GitHub 令牌，避免在前端代码中硬编码泄露。
+通过调用安全 API（`__API_BASE__/api/keys?names=github`）动态获取 GitHub 令牌，避免在前端代码中硬编码泄露。
 
 ## 快速开始
 
@@ -9,7 +9,7 @@
 在需要调用 GitHub API 的页面中，先引入：
 
 ```html
-<script src="https://api.130923.xyz/api/keys?names=github"></script>
+<script src="__API_BASE__/api/keys?names=github"></script>
 ```
 
 ### 2. 使用全局变量

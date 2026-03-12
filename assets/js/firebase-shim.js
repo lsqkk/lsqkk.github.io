@@ -11,6 +11,9 @@
       this._value = value;
       this.key = key;
     }
+    exists() {
+      return typeof this._value !== 'undefined' && this._value !== null;
+    }
     val() {
       return this._value;
     }

@@ -249,6 +249,13 @@
             }
 
             if (!window.firebase || !window.firebase.database) {
+                try {
+                    await waitFor(() => window.firebase && window.firebase.database, 15000);
+                } catch {
+                    // ignore
+                }
+            }
+            if (!window.firebase || !window.firebase.database) {
                 throw new Error('Firebase代理未就绪');
             }
             if (!window.firebase.apps || !window.firebase.apps.length) {

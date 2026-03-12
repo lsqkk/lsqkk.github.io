@@ -178,15 +178,18 @@
     }
 
     async function waitForAppCheck() {
-}
+    }
 
     async function ensureFirebaseReady() {
-        if (typeof window.firebase === 'undefined' || !window.firebase.database) {
-            throw new Error('Firebase代理未就绪');
-        }
         if (typeof window.firebaseConfig === 'undefined') {
             await loadScript(`__API_BASE__/api/firebase-config?v=${Date.now()}`, 'post-anno-firebase-config');
             await waitFor(() => typeof window.firebaseConfig !== 'undefined', 15000);
+        }
+        if (!window.firebase || !window.firebase.database) {
+            await waitFor(() => window.firebase && window.firebase.database, 15000);
+        }
+        if (!window.firebase || !window.firebase.database) {
+            throw new Error('Firebase代理未就绪');
         }
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(window.firebaseConfig);
