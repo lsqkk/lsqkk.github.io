@@ -88,6 +88,15 @@
         return id;
     }
 
+    function getGuestUid() {
+        let uid = localStorage.getItem('quark_uid');
+        if (!uid) {
+            uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+            localStorage.setItem('quark_uid', uid);
+        }
+        return uid;
+    }
+
     function escapeHtml(text) {
         return String(text ?? '')
             .replace(/&/g, '&amp;')
@@ -149,13 +158,17 @@
         };
     }
 
-    function renderDisplayName(nickname, login, loginType) {
+    function renderDisplayName(nickname, login, loginType, uid) {
         const base = nickname || login || '访客';
         if (login) {
             const icon = loginType === 'local'
                 ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
                 : `<i class="fab fa-github login-icon"></i>`;
             return `${escapeHtml(base)}<span class="login-badge">${icon}@${escapeHtml(login)}</span>`;
+        }
+        if (uid) {
+            const suffix = String(uid).slice(-4);
+            return `${escapeHtml(base)}<span class="login-badge guest-badge">@访客${escapeHtml(suffix)}</span>`;
         }
         return escapeHtml(base);
     }
@@ -495,7 +508,7 @@
                 return `
                     <div class="dynamic-comment-item" data-comment-id="${escapeHtml(comment.id)}">
                         <div class="dynamic-comment-head">
-                            <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType)}</strong>
+                            <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong>
                             <span>${escapeHtml(formatTime(comment.timestamp))}</span>
                         </div>
                         <div class="dynamic-comment-text">${escapeHtml(comment.text || '')}</div>
@@ -513,7 +526,7 @@
                                     return `
                                         <div class="dynamic-reply-item" data-reply-id="${escapeHtml(reply.id)}">
                                             <div class="dynamic-comment-head">
-                                                <strong>${renderDisplayName(reply.nickname, reply.login, reply.loginType)}</strong>
+                                                <strong>${renderDisplayName(reply.nickname, reply.login, reply.loginType, reply.uid)}</strong>
                                                 <span>${escapeHtml(formatTime(reply.timestamp))}</span>
                                             </div>
                                             <div class="dynamic-comment-text">${escapeHtml(reply.text || '')}</div>
@@ -582,10 +595,18 @@
                         ? (loginProfile.nickname || loginProfile.login || '访客')
                         : (nicknameInput instanceof HTMLInputElement ? (nicknameInput.value.trim() || '访客') : '访客');
                     if (!isLoggedUser) localStorage.setItem(NICKNAME_KEY, nickname);
+                    const guestUid = isLoggedUser
+                        ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+                            ? window.QuarkUserProfile.getUid()
+                            : '')
+                        : getGuestUid();
                     const payload = {
                         nickname,
                         login: isLoggedUser ? (loginProfile.login || '') : '',
                         loginType: isLoggedUser ? (loginProfile.loginType || '') : '',
+                        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+                            ? window.QuarkUserProfile.getUid()
+                            : '') : guestUid,
                         text,
                         timestamp: Date.now(),
                         likesBy: {}

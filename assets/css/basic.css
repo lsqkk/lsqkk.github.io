@@ -31,6 +31,18 @@ body {
     vertical-align: middle;
 }
 
+.login-badge.guest-badge {
+    color: #0f766e;
+    background: rgba(13, 148, 136, 0.12);
+    border-color: rgba(13, 148, 136, 0.3);
+}
+
+.dark-mode .login-badge.guest-badge {
+    color: #5eead4;
+    background: rgba(13, 148, 136, 0.2);
+    border-color: rgba(45, 212, 191, 0.35);
+}
+
 .login-badge .login-icon {
     width: 12px;
     height: 12px;

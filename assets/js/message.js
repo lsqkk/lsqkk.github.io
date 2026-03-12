@@ -284,13 +284,15 @@ function displayRecentMessages(messages) {
         const content = message.text && message.text.length > 30
             ? `${message.text.substring(0, 30)}...`
             : (message.text || '无内容');
-        const baseName = message.nickname || '匿名用户';
+        const baseName = message.nickname || '访客';
         const login = message.login || '';
+        const guestUid = message.uid || '';
+        const guestBadge = guestUid ? `<span class="login-badge guest-badge">@访客${String(guestUid).slice(-4)}</span>` : '';
         const displayName = login
             ? `${baseName}<span class="login-badge">${message.loginType === 'local'
                 ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
                 : `<i class="fab fa-github login-icon"></i>`}@${login}</span>`
-            : baseName;
+            : `${baseName}${guestBadge}`;
 
         html += `
             <div class="index-announcement" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.03);">

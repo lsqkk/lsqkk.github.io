@@ -37,6 +37,21 @@ let isLoggedUser = false;
 /** @type {string | null} */
 let replyingTo = null; // 当前回复的留言ID
 
+function getGuestUid() {
+    let uid = localStorage.getItem('quark_uid');
+    if (!uid) {
+        uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+        localStorage.setItem('quark_uid', uid);
+    }
+    return uid;
+}
+
+function renderGuestBadge(uid) {
+    if (!uid) return '';
+    const suffix = String(uid).slice(-4);
+    return `<span class="login-badge guest-badge">@访客${suffix}</span>`;
+}
+
 /**
  * @param {string} id
  * @returns {HTMLElement | null}
@@ -243,6 +258,9 @@ function submitMessage() {
         nickname: nickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
+        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+            ? window.QuarkUserProfile.getUid()
+            : '') : getGuestUid(),
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -472,7 +490,7 @@ function createMessageElement(message) {
         ? `${baseName}<span class="login-badge">${message.loginType === 'local'
             ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
             : `<i class="fab fa-github login-icon"></i>`}@${message.login}</span>`
-        : baseName;
+        : `${baseName}${renderGuestBadge(message.uid)}`;
     messageDiv.innerHTML = `
                 <div class="message-header">
                     <div class="message-avatar" style="${message.avatarType === 'color' ?
@@ -526,7 +544,7 @@ function createReplyElement(reply) {
         ? `${baseName}<span class="login-badge">${reply.loginType === 'local'
             ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
             : `<i class="fab fa-github login-icon"></i>`}@${reply.login}</span>`
-        : baseName;
+        : `${baseName}${renderGuestBadge(reply.uid)}`;
     return `
                 <div class="reply-card">
                     <div class="reply-header">
@@ -657,6 +675,9 @@ function submitReply() {
         nickname: nickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
+        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+            ? window.QuarkUserProfile.getUid()
+            : '') : getGuestUid(),
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),

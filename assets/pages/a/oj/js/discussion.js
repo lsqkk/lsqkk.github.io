@@ -28,6 +28,20 @@ let loginName = '';
 let loginType = '';
 let isLoggedUser = false;
 
+function getGuestUid() {
+    let uid = localStorage.getItem('quark_uid');
+    if (!uid) {
+        uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+        localStorage.setItem('quark_uid', uid);
+    }
+    return uid;
+}
+
+function renderGuestBadge(uid) {
+    if (!uid) return '';
+    const suffix = String(uid).slice(-4);
+    return `<span class="login-badge guest-badge">@访客${suffix}</span>`;
+}
 
 // --- 视图控制函数 ---
 
@@ -77,7 +91,7 @@ function getUserAvatarStyle(currentNickname = nickname) {
     return { style: `background: ${userColor}`, content: currentNickname ? currentNickname[0].toUpperCase() : 'A' };
 }
 
-function formatAuthor(nick, login, type) {
+function formatAuthor(nick, login, type, uid) {
     const base = nick || login || '访客';
     if (login) {
         const icon = type === 'local'
@@ -85,7 +99,7 @@ function formatAuthor(nick, login, type) {
             : `<i class="fab fa-github login-icon"></i>`;
         return `${base}<span class="login-badge">${icon}@${login}</span>`;
     }
-    return base;
+    return `${base}${renderGuestBadge(uid)}`;
 }
 
 function renderPagination() {
@@ -549,7 +563,7 @@ function renderDiscussionsSummaries(discussions) {
                 <div class="summary-title">${discussion.title}</div>
                 <div class="summary-meta">
                     <span class="problem-tag">P${discussion.problemId}</span>
-                    <span><i class="fas fa-user"></i> ${formatAuthor(discussion.nickname, discussion.login, discussion.loginType)}</span>
+                    <span><i class="fas fa-user"></i> ${formatAuthor(discussion.nickname, discussion.login, discussion.loginType, discussion.uid)}</span>
                     <span><i class="fas fa-heart"></i> ${discussion.likes || 0}</span>
                     <span><i class="fas fa-comment"></i> ${replyCount}</span>
                 </div>
@@ -591,13 +605,16 @@ window.submitNewDiscussion = function () {
 
     updateAvatar(userAvatarType); // 确保最新头像和昵称已同步
 
-        const discussion = {
+    const discussion = {
         title: currentTitle,
         problemId: parsedProblemId,
         text: currentContent,
         nickname: nickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
+        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+            ? window.QuarkUserProfile.getUid()
+            : '') : getGuestUid(),
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -664,7 +681,7 @@ function renderSingleDiscussion(discussion) {
             <div class="detail-meta-row">
                 <div class="author-time">
                     <span class="problem-tag">P${discussion.problemId}</span>
-                    <span style="font-weight: bold; color: #81D4FA;">作者：${formatAuthor(discussion.nickname, discussion.login, discussion.loginType)}</span>
+                    <span style="font-weight: bold; color: #81D4FA;">作者：${formatAuthor(discussion.nickname, discussion.login, discussion.loginType, discussion.uid)}</span>
                     <span>发布于：${formatTime(discussion.timestamp)}</span>
                 </div>
                 <div class="message-actions">
@@ -743,7 +760,7 @@ function renderRepliesTree(discussionId, replies) {
                         </div>
                         <div class="message-info">
                             <div class="message-author">
-                                ${formatAuthor(node.nickname, node.login, node.loginType)} 
+                                ${formatAuthor(node.nickname, node.login, node.loginType, node.uid)} 
                                 ${parentNickname ? `<span class="replying-to">回复 ${parentNickname}</span>` : ''}
                             </div>
                             <div class="message-time">${formatTime(node.timestamp)}</div>
@@ -846,6 +863,9 @@ window.submitReply = function (discussionId, parentReplyId) {
         nickname: nickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
+        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+            ? window.QuarkUserProfile.getUid()
+            : '') : getGuestUid(),
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),

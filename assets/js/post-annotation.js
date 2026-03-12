@@ -388,6 +388,21 @@
         return escapeHtml(base);
     }
 
+    function renderDisplayNameWithUid(nickname, login, loginType, uid) {
+        const base = nickname || login || '访客';
+        if (login) {
+            const icon = loginType === 'local'
+                ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+                : `<i class="fab fa-github login-icon"></i>`;
+            return `${escapeHtml(base)}<span class="login-badge">${icon}@${escapeHtml(login)}</span>`;
+        }
+        if (uid) {
+            const suffix = String(uid).slice(-4);
+            return `${escapeHtml(base)}<span class="login-badge guest-badge">@访客${escapeHtml(suffix)}</span>`;
+        }
+        return escapeHtml(base);
+    }
+
     function updateProfilePreview() {
         const nickname = ui.nicknameInput.value.trim() || '访客';
         const avatarType = ui.avatarTypeSelect.value;
@@ -670,6 +685,7 @@
             nickname: profile.nickname,
             login: profile.login || '',
             loginType: profile.loginType || '',
+            uid: profile.uid || '',
             avatarType: profile.avatarType,
             avatarColor: profile.avatarColor,
             avatarUrl: profile.avatarUrl,
@@ -718,7 +734,7 @@
             return `
                 <div class="post-annotation-comment">
                     <div class="post-annotation-comment-head">
-                        <div class="post-annotation-user">${avatar}<strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType)}</strong></div>
+                        <div class="post-annotation-user">${avatar}<strong>${renderDisplayNameWithUid(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong></div>
                         <span class="post-annotation-comment-time">${escapeHtml(formatTime(comment.timestamp))}</span>
                     </div>
                     <div class="post-annotation-comment-text">${escapeHtml(comment.text || '')}</div>
