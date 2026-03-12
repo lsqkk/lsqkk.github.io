@@ -56,17 +56,8 @@ export default function handler(req, res) {
     };
 
     // 3. 返回纯JavaScript代码，这是关键！
-    const appCheckSiteKey = process.env.APP_CHECK_SITE_KEY || '';
     const jsContent = [
-        `window.firebaseConfig = ${JSON.stringify(firebaseConfig, null, 2)};`,
-        `window.__APP_CHECK_SITE_KEY__ = ${JSON.stringify(appCheckSiteKey)};`,
-        `if (!document.getElementById('quark-app-check')) {`,
-        `  var s = document.createElement('script');`,
-        `  s.id = 'quark-app-check';`,
-        `  s.src = window.location.origin + '/assets/js/app-check.js';`,
-        `  s.async = true;`,
-        `  document.head.appendChild(s);`,
-        `}`
+        `window.firebaseConfig = ${JSON.stringify(firebaseConfig, null, 2)};`
     ].join('\n');
 
     // 4. 设置正确的响应头

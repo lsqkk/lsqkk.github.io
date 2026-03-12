@@ -56,14 +56,7 @@
     }
 
     async function waitForAppCheck() {
-        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
-            try {
-                await window.__quarkAppCheckReady;
-            } catch {
-                // ignore
-            }
-        }
-    }
+}
 
     function waitForFirebaseReady() {
         return new Promise((resolve) => {
