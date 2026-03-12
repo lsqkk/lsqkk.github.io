@@ -142,6 +142,16 @@
         });
     }
 
+    async function waitForAppCheck() {
+        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+            try {
+                await window.__quarkAppCheckReady;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     async function ensureFirebaseReady() {
         if (rootRef) return;
         if (bootPromise) {
@@ -160,6 +170,7 @@
             if (!window.firebase.apps || !window.firebase.apps.length) {
                 window.firebase.initializeApp(window.firebaseConfig);
             }
+            await waitForAppCheck();
             rootRef = window.firebase.database().ref(DB_ROOT);
             presenceRef = window.firebase.database().ref(PRESENCE_ROOT);
         })();

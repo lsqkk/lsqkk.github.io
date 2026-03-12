@@ -55,6 +55,16 @@
         return window.firebaseConfig || window._firebaseConfig || null;
     }
 
+    async function waitForAppCheck() {
+        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+            try {
+                await window.__quarkAppCheckReady;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     function waitForFirebaseReady() {
         return new Promise((resolve) => {
             const existingConfig = getFirebaseConfig();
@@ -95,6 +105,7 @@
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(config);
         }
+        await waitForAppCheck();
         firebaseReady = true;
         return window.firebase.database();
     }

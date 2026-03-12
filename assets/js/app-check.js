@@ -6,6 +6,9 @@
 
   const SITE_KEY = window.__APP_CHECK_SITE_KEY__ || '';
   const DEBUG_FLAG_KEY = 'quark_appcheck_debug';
+  if (!window.__quarkAppCheckReady) {
+    window.__quarkAppCheckReady = Promise.resolve();
+  }
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('appcheck_debug') === '1') {
     try {
@@ -45,6 +48,9 @@
     if (window.__quarkAppCheckActivated) return;
     try {
       window.firebase.appCheck().activate(SITE_KEY, true);
+      window.__quarkAppCheckReady = window.firebase.appCheck().getToken(true)
+        .then(() => true)
+        .catch(() => false);
       window.__quarkAppCheckActivated = true;
       // Minimal diagnostics for App Check failures
       try {
