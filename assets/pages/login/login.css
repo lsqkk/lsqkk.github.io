@@ -153,6 +153,65 @@
   display: grid;
 }
 
+.mode-row {
+  display: inline-flex;
+  gap: 8px;
+  margin-top: 16px;
+  background: rgba(148, 163, 184, 0.2);
+  padding: 6px;
+  border-radius: 999px;
+}
+
+.mode-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.mode-btn.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.login-mode {
+  display: none;
+  gap: 14px;
+}
+
+.login-mode.active {
+  display: grid;
+}
+
+.forgot-row {
+  margin-top: 6px;
+}
+
+.link-btn {
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+}
+
+.reset-panel {
+  display: none;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  background: rgba(248, 250, 252, 0.6);
+}
+
+.reset-panel.active {
+  display: grid;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -254,6 +313,28 @@
 .dark-mode .tab-btn.active {
   background: rgba(15, 23, 42, 0.9);
   color: #e2e8f0;
+}
+
+.dark-mode .mode-row {
+  background: rgba(51, 65, 85, 0.5);
+}
+
+.dark-mode .mode-btn {
+  color: rgba(226, 232, 240, 0.75);
+}
+
+.dark-mode .mode-btn.active {
+  background: rgba(15, 23, 42, 0.9);
+  color: #e2e8f0;
+}
+
+.dark-mode .link-btn {
+  color: #93c5fd;
+}
+
+.dark-mode .reset-panel {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(148, 163, 184, 0.25);
 }
 
 .dark-mode #captchaCanvas {

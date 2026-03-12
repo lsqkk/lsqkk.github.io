@@ -70,26 +70,80 @@ const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "
           </div>
 
           <div class="tab-panel active" data-panel="login">
-            <div class="field">
-              <label for="loginUsername">账号名</label>
-              <input type="text" id="loginUsername" placeholder="仅限英文字母" autocomplete="username" />
+            <div class="mode-row">
+              <button class="mode-btn active" data-login-mode="password">账号密码</button>
+              <button class="mode-btn" data-login-mode="email">邮箱验证码</button>
             </div>
-            <div class="field">
-              <label for="loginPassword">密码</label>
-              <input type="password" id="loginPassword" placeholder="请输入密码" autocomplete="current-password" />
-            </div>
-            <div class="field captcha-field">
-              <label for="loginCaptcha">验证码</label>
-              <div class="captcha-row">
-                <input type="text" id="loginCaptcha" placeholder="输入验证码" />
-                <canvas id="captchaCanvas" width="110" height="40"></canvas>
-                <button class="btn ghost captcha-refresh" id="captchaRefresh" type="button">换一张</button>
+
+            <div class="login-mode active" data-login-panel="password">
+              <div class="field">
+                <label for="loginUsername">账号名</label>
+                <input type="text" id="loginUsername" placeholder="仅限英文字母" autocomplete="username" />
+              </div>
+              <div class="field">
+                <label for="loginPassword">密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码" autocomplete="current-password" />
+              </div>
+              <div class="field captcha-field">
+                <label for="loginCaptcha">验证码</label>
+                <div class="captcha-row">
+                  <input type="text" id="loginCaptcha" placeholder="输入验证码" />
+                  <canvas id="captchaCanvas" width="110" height="40"></canvas>
+                  <button class="btn ghost captcha-refresh" id="captchaRefresh" type="button">换一张</button>
+                </div>
+              </div>
+              <div class="action-row">
+                <button class="btn primary" id="loginSubmit">登录</button>
+                <button class="btn ghost" id="loginReset" type="button">清空</button>
               </div>
             </div>
-            <div class="action-row">
-              <button class="btn primary" id="loginSubmit">登录</button>
-              <button class="btn ghost" id="loginReset" type="button">清空</button>
+
+            <div class="login-mode" data-login-panel="email">
+              <div class="field">
+                <label for="emailLoginAddress">邮箱</label>
+                <input type="email" id="emailLoginAddress" placeholder="name@example.com" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="emailLoginCode">邮箱验证码</label>
+                <div class="captcha-row">
+                  <input type="text" id="emailLoginCode" placeholder="输入验证码" />
+                  <button class="btn ghost" id="emailLoginSend" type="button">发送验证码</button>
+                </div>
+              </div>
+              <div class="action-row">
+                <button class="btn primary" id="emailLoginSubmit">邮箱登录</button>
+              </div>
             </div>
+
+            <div class="forgot-row">
+              <button class="link-btn" id="toggleReset" type="button">忘记密码？</button>
+            </div>
+            <div class="reset-panel" id="resetPanel">
+              <div class="field">
+                <label for="resetEmail">绑定邮箱</label>
+                <input type="email" id="resetEmail" placeholder="name@example.com" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="resetCode">邮箱验证码</label>
+                <div class="captcha-row">
+                  <input type="text" id="resetCode" placeholder="输入验证码" />
+                  <button class="btn ghost" id="resetSend" type="button">发送验证码</button>
+                </div>
+              </div>
+              <div class="field">
+                <label for="resetPassword">新密码</label>
+                <input type="password" id="resetPassword" placeholder="字母+数字，8-20位" />
+              </div>
+              <div class="field">
+                <label for="resetPassword2">确认新密码</label>
+                <input type="password" id="resetPassword2" placeholder="再次输入新密码" />
+              </div>
+              <div class="action-row">
+                <button class="btn primary" id="resetSubmit">重置密码</button>
+              </div>
+              <div class="status-row" id="resetStatus">等待重置</div>
+            </div>
+
             <div class="status-row" id="loginStatus">等待登录</div>
           </div>
 
@@ -98,6 +152,18 @@ const githubLoginUrl = navConfig?.login?.githubUrl || navConfig?.login?.url || "
               <label for="registerUsername">账号名</label>
               <input type="text" id="registerUsername" placeholder="仅限英文字母，注册后不可修改" />
               <div class="helper">账号名唯一，仅支持英文字母。</div>
+            </div>
+            <div class="field">
+              <label for="registerEmail">邮箱（可选）</label>
+              <div class="captcha-row">
+                <input type="email" id="registerEmail" placeholder="name@example.com" />
+                <button class="btn ghost" id="registerEmailSend" type="button">发送验证码</button>
+              </div>
+              <div class="helper">填写邮箱可用于邮箱登录与找回密码。</div>
+            </div>
+            <div class="field">
+              <label for="registerEmailCode">邮箱验证码</label>
+              <input type="text" id="registerEmailCode" placeholder="如未绑定邮箱可留空" />
             </div>
             <div class="field">
               <label for="registerNickname">昵称（可选）</label>

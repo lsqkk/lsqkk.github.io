@@ -67,7 +67,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
                   <input type="file" id="avatarFile" class="file-input" accept="image/*" />
                 </label>
                 <button class="btn ghost" id="avatarClear">清除头像</button>
-                <button class="btn ghost" id="avatarFromPic">使用图床 /a/pic</button>
+                <button class="btn ghost" id="avatarFromGithub">使用我的 GitHub 头像</button>
               </div>
               <div class="crop-hint">上传后可裁剪头像，保存时会同步到全站。</div>
               <div class="field">
@@ -128,6 +128,10 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <span>头像状态</span>
               <strong id="avatarState">-</strong>
             </div>
+          </div>
+          <div class="record-list" id="loginHistory">
+            <div class="record-list-title">设备登录记录</div>
+            <div class="record-list-body" id="loginHistoryBody">暂无记录</div>
           </div>
           <div class="tips">
             <p>建议使用图床上传头像，避免外链失效。你也可以在评论中继续使用此昵称与头像。</p>

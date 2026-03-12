@@ -7,6 +7,7 @@
     const PAGE_VIEW_CACHE_KEY = 'quark_last_page_view';
     const IP_CACHE_KEY = 'quark_ip_info';
     const IP_CACHE_TTL = 24 * 60 * 60 * 1000;
+    const DEVICE_ID_KEY = 'quark_device_id';
 
     let bootPromise = null;
     let rootRef = null;
@@ -38,6 +39,15 @@
             localStorage.setItem('quark_uid', uid);
         }
         return uid;
+    }
+
+    function getDeviceId() {
+        let id = localStorage.getItem(DEVICE_ID_KEY);
+        if (!id) {
+            id = `d_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+            localStorage.setItem(DEVICE_ID_KEY, id);
+        }
+        return id;
     }
 
     function getLegacyUid() {
@@ -186,7 +196,9 @@
             nickname: profile.nickname || '',
             avatarUrl: profile.avatarUrl || '',
             login: profile.login || '',
-            loginType: profile.loginType || ''
+            loginType: profile.loginType || '',
+            deviceId: getDeviceId(),
+            ua: navigator.userAgent || ''
         });
     }
 

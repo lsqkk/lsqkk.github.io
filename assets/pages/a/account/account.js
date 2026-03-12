@@ -18,7 +18,7 @@
         el.avatarImage = document.getElementById('avatarImage');
         el.avatarFallback = document.getElementById('avatarFallback');
         el.avatarClear = document.getElementById('avatarClear');
-        el.avatarFromPic = document.getElementById('avatarFromPic');
+        el.avatarFromGithub = document.getElementById('avatarFromGithub');
         el.cropperModal = document.getElementById('cropperModal');
         el.cropperCanvas = document.getElementById('cropperCanvas');
         el.cropperZoom = document.getElementById('cropperZoom');
@@ -34,6 +34,7 @@
         el.currentPage = document.getElementById('currentPage');
         el.accountLocation = document.getElementById('accountLocation');
         el.avatarState = document.getElementById('avatarState');
+        el.loginHistoryBody = document.getElementById('loginHistoryBody');
         el.localSyncToggle = document.getElementById('localSyncToggle');
     }
 
@@ -89,11 +90,19 @@
         return {
             nickname: '',
             login: '',
+            loginType: '',
             avatarUrl: '',
             avatarType: 'color',
             avatarColor: '#2563eb',
             profileUrl: ''
         };
+    }
+
+    function getLoginType() {
+        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function') {
+            return window.QuarkUserProfile.getProfile().loginType || '';
+        }
+        return localStorage.getItem('quark_login_type') || '';
     }
 
     function getUid() {
@@ -356,9 +365,16 @@
                 updateAvatarPreview('', el.nickname && el.nickname.value);
             });
         }
-        if (el.avatarFromPic) {
-            el.avatarFromPic.addEventListener('click', () => {
-                window.open('/a/pic', '_blank');
+        if (el.avatarFromGithub) {
+            el.avatarFromGithub.addEventListener('click', () => {
+                const githubUser = getGithubUser();
+                const avatar = githubUser && githubUser.avatar_url ? githubUser.avatar_url : '';
+                if (!avatar) {
+                    setStatus('未读取到 GitHub 头像');
+                    return;
+                }
+                if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = avatar;
+                updateAvatarPreview(avatar, el.nickname && el.nickname.value);
             });
         }
         if (el.cropperApply) el.cropperApply.addEventListener('click', () => applyCropper());
@@ -493,6 +509,44 @@
         }
     }
 
+    function renderLoginHistory(items) {
+        if (!el.loginHistoryBody) return;
+        if (!items.length) {
+            el.loginHistoryBody.innerHTML = '暂无记录';
+            return;
+        }
+        el.loginHistoryBody.innerHTML = items.map((item) => {
+            const time = formatTime(item.ts);
+            const device = item.deviceId ? `设备 ${item.deviceId.slice(-6)}` : '未知设备';
+            const ua = (item.ua || '').slice(0, 80);
+            return `
+                <div class="record-entry">
+                    <strong>${time}</strong>
+                    <div>${device}</div>
+                    <div>${ua || '-'}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function loadLoginHistory() {
+        if (!el.loginHistoryBody) return;
+        try {
+            const db = await ensureFirebase();
+            const uid = getUid();
+            const snap = await db.ref('user_activity').child(uid).child('logins').once('value');
+            const raw = snap.val() || {};
+            const items = Object.values(raw)
+                .filter((item) => item && item.ts)
+                .sort((a, b) => b.ts - a.ts)
+                .slice(0, 8);
+            renderLoginHistory(items);
+        } catch (error) {
+            console.error('加载登录记录失败:', error);
+            if (el.loginHistoryBody) el.loginHistoryBody.textContent = '加载失败';
+        }
+    }
+
     async function saveProfile() {
         const user = ensureLogin();
         if (!user) return;
@@ -565,6 +619,10 @@
         setText(el.accountUid, getUid());
         setText(el.currentPage, location.pathname);
         setText(el.lastSyncAt, profile.updatedAt ? formatTime(profile.updatedAt) : '-');
+        if (el.avatarFromGithub instanceof HTMLElement) {
+            const loginType = getLoginType();
+            el.avatarFromGithub.style.display = loginType === 'github' ? 'inline-flex' : 'none';
+        }
     }
 
     function initThemeSync() {
@@ -587,6 +645,7 @@
         bindEvents();
         await migrateLegacyUid();
         await loadRemoteProfile();
+        await loadLoginHistory();
         const profile = getProfile();
         if (profile.login) {
             setText(el.githubLogin, profile.login);

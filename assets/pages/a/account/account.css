@@ -251,6 +251,42 @@
   color: rgba(15, 23, 42, 0.6);
 }
 
+.record-list {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(248, 250, 252, 0.7);
+}
+
+.record-list-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.record-list-body {
+  display: grid;
+  gap: 10px;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.65);
+}
+
+.record-entry {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.record-entry strong {
+  font-size: 13px;
+  color: rgba(15, 23, 42, 0.85);
+}
+
 .tips {
   margin-top: 16px;
   font-size: 12px;
@@ -376,6 +412,28 @@
 .dark-mode .record-item {
   background: rgba(30, 41, 59, 0.7);
   border-color: rgba(148, 163, 184, 0.2);
+}
+
+.dark-mode .record-list {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.dark-mode .record-list-title {
+  color: rgba(226, 232, 240, 0.75);
+}
+
+.dark-mode .record-list-body {
+  color: rgba(226, 232, 240, 0.65);
+}
+
+.dark-mode .record-entry {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark-mode .record-entry strong {
+  color: rgba(226, 232, 240, 0.9);
 }
 
 .dark-mode .cropper-card {
