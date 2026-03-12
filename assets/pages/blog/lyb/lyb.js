@@ -292,17 +292,15 @@ function createMessageElement(message) {
     messageDiv.className = 'message-card';
     messageDiv.id = `message-${message.id}`;
 
-    const date = new Date(message.timestamp);
-    const dateStr = date.toLocaleDateString();
-    const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const renderShared = window.CommentRenderShared;
+    const timeText = renderShared && typeof renderShared.formatTime === 'function'
+        ? renderShared.formatTime(message.timestamp)
+        : new Date(message.timestamp || Date.now()).toLocaleString();
 
     // 渲染内容（Markdown或纯文本）
-    let content = message.text;
-    if (message.isMarkdown) {
-        content = marked.parse(content);
-    } else {
-        content = content.replace(/\n/g, '<br>');
-    }
+    const content = renderShared && typeof renderShared.renderMarkdown === 'function'
+        ? renderShared.renderMarkdown(message.text, message.isMarkdown)
+        : String(message.text || '').replace(/\n/g, '<br>');
 
     // 构建回复HTML
     let repliesHtml = '';
@@ -331,7 +329,7 @@ function createMessageElement(message) {
                     </div>
                     <div class="message-info">
                         <div class="message-author">${authorHtml}</div>
-                        <div class="message-time">${dateStr} ${timeStr}</div>
+                        <div class="message-time">${timeText}</div>
                     </div>
                     <div class="message-actions">
                         <button class="action-btn" onclick="likeMessage('${message.id}')">
@@ -358,17 +356,15 @@ function createMessageElement(message) {
  * @returns {string}
  */
 function createReplyElement(reply) {
-    const date = new Date(reply.timestamp);
-    const dateStr = date.toLocaleDateString();
-    const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const renderShared = window.CommentRenderShared;
+    const timeText = renderShared && typeof renderShared.formatTime === 'function'
+        ? renderShared.formatTime(reply.timestamp)
+        : new Date(reply.timestamp || Date.now()).toLocaleString();
 
     // 渲染内容（Markdown或纯文本）
-    let content = reply.text;
-    if (reply.isMarkdown) {
-        content = marked.parse(content);
-    } else {
-        content = content.replace(/\n/g, '<br>');
-    }
+    const content = renderShared && typeof renderShared.renderMarkdown === 'function'
+        ? renderShared.renderMarkdown(reply.text, reply.isMarkdown)
+        : String(reply.text || '').replace(/\n/g, '<br>');
 
     const sharedList = window.CommentListShared;
     const authorHtml = sharedList && typeof sharedList.getDisplayName === 'function'
@@ -384,7 +380,7 @@ function createReplyElement(reply) {
                         </div>
                         <div class="message-info">
                             <div class="message-author">${authorHtml}</div>
-                            <div class="message-time">${dateStr} ${timeStr}</div>
+                            <div class="message-time">${timeText}</div>
                         </div>
                         ${isAdmin ? `<button class="delete-btn" onclick="deleteReply('${reply.id}')">删除</button>` : ''}
                     </div>

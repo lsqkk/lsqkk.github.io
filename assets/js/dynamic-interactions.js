@@ -99,6 +99,10 @@
     }
 
     function formatTime(ts) {
+        const shared = window.CommentRenderShared;
+        if (shared && typeof shared.formatTime === 'function') {
+            return shared.formatTime(ts);
+        }
         if (!ts) return '刚刚';
         const d = new Date(Number(ts));
         if (Number.isNaN(d.getTime())) return '刚刚';
@@ -108,6 +112,14 @@
         const hh = String(d.getHours()).padStart(2, '0');
         const mm = String(d.getMinutes()).padStart(2, '0');
         return `${y}-${m}-${day} ${hh}:${mm}`;
+    }
+
+    function renderCommentText(text) {
+        const shared = window.CommentRenderShared;
+        if (shared && typeof shared.renderMarkdown === 'function') {
+            return shared.renderMarkdown(text, false);
+        }
+        return escapeHtml(text || '').replace(/\n/g, '<br>');
     }
 
     function getLoginProfile() {
@@ -507,7 +519,7 @@
                             <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong>
                             <span>${escapeHtml(formatTime(comment.timestamp))}</span>
                         </div>
-                        <div class="dynamic-comment-text">${escapeHtml(comment.text || '')}</div>
+                        <div class="dynamic-comment-text">${renderCommentText(comment.text || '')}</div>
                         <div class="dynamic-comment-actions">
                             <button type="button" class="dynamic-comment-btn" data-action="reply">回复</button>
                             <button type="button" class="dynamic-comment-btn" data-action="like-comment">
@@ -525,7 +537,7 @@
                                                 <strong>${renderDisplayName(reply.nickname, reply.login, reply.loginType, reply.uid)}</strong>
                                                 <span>${escapeHtml(formatTime(reply.timestamp))}</span>
                                             </div>
-                                            <div class="dynamic-comment-text">${escapeHtml(reply.text || '')}</div>
+                                            <div class="dynamic-comment-text">${renderCommentText(reply.text || '')}</div>
                                             <div class="dynamic-comment-actions">
                                                 <button type="button" class="dynamic-comment-btn" data-action="like-reply">
                                                     ${replyLiked ? '取消赞' : '点赞'} (${replyLikeCount})

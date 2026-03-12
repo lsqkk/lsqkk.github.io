@@ -279,8 +279,13 @@ function displayRecentMessages(messages) {
 
     let html = '';
     messages.forEach((message) => {
-        const date = new Date(message.timestamp || Date.now());
-        const timeStr = `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        const renderShared = window.CommentRenderShared;
+        const timeStr = renderShared && typeof renderShared.formatTime === 'function'
+            ? renderShared.formatTime(message.timestamp || Date.now())
+            : (() => {
+                const date = new Date(message.timestamp || Date.now());
+                return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            })();
         const content = message.text && message.text.length > 30
             ? `${message.text.substring(0, 30)}...`
             : (message.text || '无内容');

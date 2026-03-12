@@ -64,6 +64,10 @@ window.showDetailView = function (discussionId) {
 // --- 辅助函数 (时间、头像、分页、管理员登录) ---
 
 function formatTime(timestamp) {
+    const shared = window.CommentRenderShared;
+    if (shared && typeof shared.formatTime === 'function') {
+        return shared.formatTime(timestamp);
+    }
     if (!timestamp) return '未知时间';
     const date = new Date(timestamp);
     return date.toLocaleString('zh-CN', {
@@ -538,7 +542,10 @@ function renderSingleDiscussion(discussion) {
     container.dataset.discussionId = discussion.id;
 
     // 主帖内容渲染
-    const contentHtml = marked.parse(discussion.text || '');
+    const renderShared = window.CommentRenderShared;
+    const contentHtml = renderShared && typeof renderShared.renderMarkdown === 'function'
+        ? renderShared.renderMarkdown(discussion.text || '', true)
+        : marked.parse(discussion.text || '');
 
     // 回复树渲染
     const repliesHtml = renderRepliesTree(discussion.id, discussion.replies || {});
@@ -587,31 +594,19 @@ function renderSingleDiscussion(discussion) {
 function renderRepliesTree(discussionId, replies) {
     if (!replies || Object.keys(replies).length === 0) return '';
 
-    const replyMap = {};
-    Object.keys(replies).forEach(key => {
-        const reply = replies[key];
-        reply.id = key;
-        reply.replies = [];
-        reply.discussionId = discussionId;
-        replyMap[key] = reply;
-    });
-
-    const rootReplies = [];
-    Object.keys(replyMap).forEach(key => {
-        const reply = replyMap[key];
-        if (reply.parentReplyId && replyMap[reply.parentReplyId]) {
-            replyMap[reply.parentReplyId].replies.push(reply);
-        } else {
-            rootReplies.push(reply);
-        }
-    });
-
-    rootReplies.sort((a, b) => a.timestamp - b.timestamp);
+    const renderShared = window.CommentRenderShared;
+    const tree = renderShared && typeof renderShared.buildReplyTree === 'function'
+        ? renderShared.buildReplyTree(replies)
+        : { roots: [], map: {} };
+    const rootReplies = tree.roots || [];
+    const replyMap = tree.map || {};
 
     let html = '';
 
     const renderNode = (node, depth = 0) => {
-        const contentHtml = marked.parse(node.text || '');
+        const contentHtml = renderShared && typeof renderShared.renderMarkdown === 'function'
+            ? renderShared.renderMarkdown(node.text || '', true)
+            : marked.parse(node.text || '');
         const parentNickname = node.parentReplyId && replyMap[node.parentReplyId] ? replyMap[node.parentReplyId].nickname : null;
 
         const avatarStyle = node.avatarType === 'image' ?
@@ -651,7 +646,7 @@ function renderRepliesTree(discussionId, replies) {
             </div>
         `;
 
-        node.replies.sort((a, b) => a.timestamp - b.timestamp);
+        node.replies.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
         node.replies.forEach(child => renderNode(child, depth + 1));
     };
 

@@ -48,6 +48,10 @@
 
     /** @param {unknown} text */
     function escapeHtml(text) {
+        const shared = window.CommentShared;
+        if (shared && typeof shared.escapeHtml === 'function') {
+            return shared.escapeHtml(text);
+        }
         return String(text || '')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -442,11 +446,23 @@
     }
 
     function formatTime(timestamp) {
+        const shared = window.CommentRenderShared;
+        if (shared && typeof shared.formatTime === 'function') {
+            return shared.formatTime(timestamp);
+        }
         if (!timestamp) {
             return '';
         }
         const date = new Date(timestamp);
         return date.toLocaleString();
+    }
+
+    function renderCommentText(text) {
+        const shared = window.CommentRenderShared;
+        if (shared && typeof shared.renderMarkdown === 'function') {
+            return shared.renderMarkdown(text || '', false);
+        }
+        return escapeHtml(text || '').replace(/\n/g, '<br>');
     }
 
     function buildTooltipText(item) {
@@ -730,7 +746,7 @@
                         <div class="post-annotation-user">${avatar}<strong>${renderDisplayNameWithUid(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong></div>
                         <span class="post-annotation-comment-time">${escapeHtml(formatTime(comment.timestamp))}</span>
                     </div>
-                    <div class="post-annotation-comment-text">${escapeHtml(comment.text || '')}</div>
+                    <div class="post-annotation-comment-text">${renderCommentText(comment.text || '')}</div>
                     <div class="post-annotation-comment-actions">
                         <button data-comment-like="${escapeHtml(comment.id)}">${liked ? '取消赞' : '点赞'} (${likes})</button>
                     </div>
