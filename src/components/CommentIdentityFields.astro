@@ -1,0 +1,62 @@
+---
+interface Props {
+  variant: "lyb" | "oj";
+}
+
+const { variant } = Astro.props as Props;
+---
+{variant === "lyb" ? (
+  <>
+    <div class="form-group">
+      <label for="nickname">昵称</label>
+      <input type="text" id="nickname" placeholder="您的昵称" />
+    </div>
+
+    <div class="avatar-section">
+      <div class="avatar-preview" id="avatarPreview">A</div>
+      <div class="avatar-options">
+        <div class="avatar-toggle">
+          <button class="toggle-btn active" id="colorToggle">颜色</button>
+          <button class="toggle-btn" id="imageToggle">图片URL</button>
+        </div>
+        <div class="color-picker" id="colorPicker">
+          <div class="color-option selected" style="background: #4a6cf7" onclick="selectColor(this)"></div>
+          <div class="color-option" style="background: #f56565" onclick="selectColor(this)"></div>
+          <div class="color-option" style="background: #48bb78" onclick="selectColor(this)"></div>
+          <div class="color-option" style="background: #ed8936" onclick="selectColor(this)"></div>
+          <div class="color-option" style="background: #9f7aea" onclick="selectColor(this)"></div>
+        </div>
+        <input type="text" id="avatarUrl" placeholder="图片URL (jpg, png, webp)" style="display: none;" />
+      </div>
+    </div>
+  </>
+) : (
+  <>
+    <div class="form-compact-row row-nickname-avatar">
+      <div class="form-group form-nickname">
+        <label for="nickname">您的昵称</label>
+        <input type="text" id="nickname" placeholder="昵称" />
+      </div>
+
+      <div class="form-group form-avatar-controls">
+        <label>头像设置</label>
+        <div class="avatar-selection-area">
+          <div class="avatar-preview" id="avatarPreview" style="background-color: #5C6BC0;">A</div>
+          <div class="avatar-toggle">
+            <button id="color-toggle" class="active">颜色</button>
+            <button id="image-toggle">URL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="avatar-input-container">
+      <div id="color-selector" class="avatar-selector active">
+        <input type="color" id="colorPicker" value="#5C6BC0" />
+      </div>
+      <div id="image-selector" class="avatar-selector">
+        <input type="text" id="avatarUrl" placeholder="输入图片 URL (例如: https://example.com/avatar.jpg)" />
+      </div>
+    </div>
+  </>
+)}

@@ -43,11 +43,81 @@
         return `${base}${renderGuestBadge(uid)}`;
     }
 
+    function getLoginProfile() {
+        const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
+            ? window.QuarkUserProfile.getProfile()
+            : null;
+        let nickname = localStorage.getItem('nickname') || '';
+        let avatarType = localStorage.getItem('avatarType') || 'color';
+        let avatarColor = localStorage.getItem('userColor') || '#4a6cf7';
+        let avatarUrl = localStorage.getItem('userAvatarUrl') || '';
+        let login = '';
+        let loginType = '';
+
+        if (profile) {
+            if (profile.nickname) nickname = profile.nickname;
+            if (profile.login) login = profile.login;
+            if (profile.loginType) loginType = profile.loginType;
+            if (profile.avatarType) avatarType = profile.avatarType;
+            if (profile.avatarColor) avatarColor = profile.avatarColor;
+            if (profile.avatarUrl) {
+                avatarType = 'image';
+                avatarUrl = profile.avatarUrl;
+            }
+        }
+
+        if (!login) {
+            const githubUser = localStorage.getItem('github_user');
+            if (githubUser) {
+                try {
+                    login = JSON.parse(githubUser).login || '';
+                    if (login) loginType = 'github';
+                } catch {
+                    login = '';
+                }
+            }
+        }
+
+        if (!login) {
+            const qbUser = localStorage.getItem('qb_user');
+            if (qbUser) {
+                try {
+                    const data = JSON.parse(qbUser);
+                    login = data.login || data.username || '';
+                    loginType = login ? 'local' : '';
+                } catch {
+                    login = '';
+                }
+            }
+        }
+
+        const isLoggedUser = Boolean(localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user'));
+        if (isLoggedUser && !nickname) {
+            nickname = login || '已登录';
+        }
+
+        const uid = window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+            ? window.QuarkUserProfile.getUid()
+            : '';
+
+        return {
+            nickname,
+            login,
+            loginType,
+            isLoggedUser,
+            avatarType,
+            avatarColor,
+            avatarUrl,
+            uid
+        };
+    }
+
     window.CommentShared = {
         escapeHtml,
         getGuestUid,
         renderGuestBadge,
         renderLoginBadge,
-        renderDisplayName
+        renderDisplayName,
+        getLoginProfile
     };
 })();

@@ -27,28 +27,11 @@ let nickname = localStorage.getItem('nickname') || '';
 let loginName = '';
 let loginType = '';
 let isLoggedUser = false;
+let identityInstance = null;
 
 function getGuestUid() {
     const shared = window.CommentShared;
-    if (shared && typeof shared.getGuestUid === 'function') {
-        return shared.getGuestUid();
-    }
-    let uid = localStorage.getItem('quark_uid');
-    if (!uid) {
-        uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-        localStorage.setItem('quark_uid', uid);
-    }
-    return uid;
-}
-
-function renderGuestBadge(uid) {
-    const shared = window.CommentShared;
-    if (shared && typeof shared.renderGuestBadge === 'function') {
-        return shared.renderGuestBadge(uid);
-    }
-    if (!uid) return '';
-    const suffix = String(uid).slice(-4);
-    return `<span class="login-badge guest-badge">@访客${suffix}</span>`;
+    return shared && typeof shared.getGuestUid === 'function' ? shared.getGuestUid() : '';
 }
 
 // --- 视图控制函数 ---
@@ -111,7 +94,9 @@ function formatAuthor(nick, login, type, uid) {
             : `<i class="fab fa-github login-icon"></i>`;
         return `${base}<span class="login-badge">${icon}@${login}</span>`;
     }
-    return `${base}${renderGuestBadge(uid)}`;
+    const shared = window.CommentShared;
+    const guestBadge = shared && typeof shared.renderGuestBadge === 'function' ? shared.renderGuestBadge(uid) : '';
+    return `${base}${guestBadge}`;
 }
 
 function renderPagination() {
@@ -138,163 +123,21 @@ function renderPagination() {
 /**
  * 更新头像预览和本地存储 (包含昵称同步)
  */
-window.updateAvatar = function (type) {
-    const colorPicker = document.getElementById('colorPicker');
-    const avatarUrlInput = document.getElementById('avatarUrl');
-    const nicknameInput = document.getElementById('nickname');
-
-    if (!nicknameInput) return; // 确保表单元素存在
-    if (isLoggedUser) {
-        const preview = getUserAvatarStyle(nickname);
-        const avatarPreview = document.getElementById('avatarPreview');
-        if (avatarPreview) {
-            avatarPreview.style.cssText = preview.style;
-            avatarPreview.textContent = preview.content;
-        }
-        return;
-    }
-
-    nickname = nicknameInput.value.trim();
-    localStorage.setItem('nickname', nickname);
-
-    userAvatarType = type;
-    localStorage.setItem('avatarType', userAvatarType);
-
-    if (type === 'color' && colorPicker) {
-        userColor = colorPicker.value;
-        localStorage.setItem('userColor', userColor);
-    } else if (avatarUrlInput) {
-        userAvatarUrl = avatarUrlInput.value.trim();
-        localStorage.setItem('userAvatarUrl', userAvatarUrl);
-    }
-
-    const preview = getUserAvatarStyle(nickname);
-    const avatarPreview = document.getElementById('avatarPreview');
-    if (avatarPreview) {
-        avatarPreview.style.cssText = preview.style;
-        avatarPreview.textContent = preview.content;
-    }
-
-    if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
-        window.QuarkUserProfile.syncProfile({
-            nickname,
-            avatarType: userAvatarType,
-            avatarColor: userColor,
-            avatarUrl: userAvatarUrl
-        });
-    }
+function syncIdentityState() {
+    if (!identityInstance || typeof identityInstance.getState !== 'function') return;
+    const state = identityInstance.getState();
+    nickname = state.nickname || '';
+    loginName = state.login || '';
+    loginType = state.loginType || '';
+    isLoggedUser = Boolean(state.isLoggedUser);
+    userAvatarType = state.avatarType || userAvatarType;
+    userColor = state.avatarColor || userColor;
+    userAvatarUrl = state.avatarUrl || userAvatarUrl;
 }
 
 /**
  * 初始化头像类型切换逻辑
  */
-function initAvatarToggle() {
-    const colorToggle = document.getElementById('color-toggle');
-    const imageToggle = document.getElementById('image-toggle');
-    const colorSelector = document.getElementById('color-selector');
-    const imageSelector = document.getElementById('image-selector');
-    const nicknameInput = document.getElementById('nickname');
-
-    if (!nicknameInput || !colorToggle) return; // 确保表单元素存在
-
-    const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
-        ? window.QuarkUserProfile.getProfile()
-        : null;
-    if (profile) {
-        if (profile.nickname) nickname = profile.nickname;
-        if (profile.login) loginName = profile.login;
-        if (profile.loginType) loginType = profile.loginType;
-        if (profile.avatarUrl) {
-            userAvatarType = 'image';
-            userAvatarUrl = profile.avatarUrl;
-        } else if (profile.avatarColor) {
-            userAvatarType = 'color';
-            userColor = profile.avatarColor;
-        }
-    }
-    if (!loginName) {
-        const raw = localStorage.getItem('github_user');
-        if (raw) {
-            try {
-                loginName = JSON.parse(raw).login || '';
-                if (loginName) loginType = 'github';
-            } catch {
-                loginName = '';
-            }
-        }
-    }
-    if (!loginName) {
-        const raw = localStorage.getItem('qb_user');
-        if (raw) {
-            try {
-                const data = JSON.parse(raw);
-                loginName = data.login || data.username || '';
-                loginType = loginName ? 'local' : '';
-            } catch {
-                loginName = '';
-            }
-        }
-    }
-    isLoggedUser = Boolean(loginName) && Boolean(localStorage.getItem('github_user') || localStorage.getItem('github_code') || localStorage.getItem('qb_user'));
-    if (isLoggedUser && !nickname) {
-        nickname = loginName;
-    }
-
-    document.getElementById('colorPicker').value = userColor;
-    document.getElementById('avatarUrl').value = userAvatarUrl;
-    nicknameInput.value = nickname || loginName || '';
-
-    if (isLoggedUser) {
-        nicknameInput.setAttribute('disabled', 'true');
-        if (colorToggle) {
-            colorToggle.classList.add('disabled');
-            colorToggle.style.pointerEvents = 'none';
-        }
-        if (imageToggle) {
-            imageToggle.classList.add('disabled');
-            imageToggle.style.pointerEvents = 'none';
-        }
-        if (colorSelector) colorSelector.style.pointerEvents = 'none';
-        if (imageSelector) imageSelector.style.pointerEvents = 'none';
-        const colorPickerInput = document.getElementById('colorPicker');
-        if (colorPickerInput) colorPickerInput.setAttribute('disabled', 'true');
-        const avatarUrlInput = document.getElementById('avatarUrl');
-        if (avatarUrlInput) avatarUrlInput.setAttribute('disabled', 'true');
-        return;
-    }
-
-    const selectors = [
-        { btn: colorToggle, sel: colorSelector, type: 'color' },
-        { btn: imageToggle, sel: imageSelector, type: 'image' }
-    ];
-
-    selectors.forEach(item => {
-        item.btn.onclick = () => {
-            selectors.forEach(s => {
-                s.btn.classList.remove('active');
-                s.sel.classList.remove('active');
-            });
-            item.btn.classList.add('active');
-            item.sel.classList.add('active');
-            updateAvatar(item.type);
-        };
-    });
-
-    // 设置默认状态
-    selectors.forEach(item => {
-        if (item.type === userAvatarType) {
-            item.btn.classList.add('active');
-            item.sel.classList.add('active');
-        }
-    });
-
-    document.getElementById('colorPicker').addEventListener('change', () => updateAvatar('color'));
-    document.getElementById('avatarUrl').addEventListener('input', () => updateAvatar('image'));
-    nicknameInput.addEventListener('input', () => updateAvatar(userAvatarType));
-
-    updateAvatar(userAvatarType);
-}
-
 /**
  * 异步 SHA-256 哈希计算 (用于管理员登录)
  */
@@ -599,6 +442,11 @@ window.submitNewDiscussion = function () {
 
     if (!nicknameInput || !title || !content || !problemId) return; // 安全检查
 
+    if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
+        identityInstance.refreshFromInputs();
+        syncIdentityState();
+    }
+
     const currentNickname = isLoggedUser ? (nickname || loginName || '') : nicknameInput.value.trim();
     const currentTitle = title.value.trim();
     const currentContent = content.value.trim();
@@ -614,8 +462,6 @@ window.submitNewDiscussion = function () {
         alert('关联题目 ID 必须是有效的数字');
         return;
     }
-
-    updateAvatar(userAvatarType); // 确保最新头像和昵称已同步
 
     const discussion = {
         title: currentTitle,
@@ -855,8 +701,12 @@ window.submitReply = function (discussionId, parentReplyId) {
 
     // 检查昵称
     const nicknameInput = document.getElementById('nickname');
+    if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
+        identityInstance.refreshFromInputs();
+        syncIdentityState();
+    }
     if (nicknameInput) {
-        nickname = nicknameInput.value.trim();
+        nickname = nicknameInput.value.trim() || nickname;
         if (!nickname) {
             if (!isLoggedUser) {
                 alert('请先填写昵称');
@@ -864,11 +714,7 @@ window.submitReply = function (discussionId, parentReplyId) {
             }
             nickname = loginName || '访客';
         }
-        if (!isLoggedUser) localStorage.setItem('nickname', nickname);
     }
-
-    // 确保头像信息是最新的
-    updateAvatar(userAvatarType);
 
     const reply = {
         text: content,
@@ -915,7 +761,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 2. 初始化头像设置和常驻表单
-    initAvatarToggle();
+    if (window.CommentInputShared && typeof window.CommentInputShared.init === 'function') {
+        identityInstance = window.CommentInputShared.init({ variant: 'oj' });
+        syncIdentityState();
+    }
 
     // 3. 加载讨论列表 (默认视图)
     loadDiscussionsList();

@@ -34,30 +34,13 @@ let nickname = localStorage.getItem('nickname') || '';
 let loginName = '';
 let loginType = '';
 let isLoggedUser = false;
+let identityInstance = null;
 /** @type {string | null} */
 let replyingTo = null; // 当前回复的留言ID
 
 function getGuestUid() {
     const shared = window.CommentShared;
-    if (shared && typeof shared.getGuestUid === 'function') {
-        return shared.getGuestUid();
-    }
-    let uid = localStorage.getItem('quark_uid');
-    if (!uid) {
-        uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-        localStorage.setItem('quark_uid', uid);
-    }
-    return uid;
-}
-
-function renderGuestBadge(uid) {
-    const shared = window.CommentShared;
-    if (shared && typeof shared.renderGuestBadge === 'function') {
-        return shared.renderGuestBadge(uid);
-    }
-    if (!uid) return '';
-    const suffix = String(uid).slice(-4);
-    return `<span class="login-badge guest-badge">@访客${suffix}</span>`;
+    return shared && typeof shared.getGuestUid === 'function' ? shared.getGuestUid() : '';
 }
 
 /**
@@ -111,47 +94,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 初始化主题（自动跟随系统）
     initTheme();
 
-    const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
-        ? window.QuarkUserProfile.getProfile()
-        : null;
-    const githubUser = localStorage.getItem('github_user');
-    const qbUser = localStorage.getItem('qb_user');
-    if (profile) {
-        if (profile.nickname) nickname = profile.nickname;
-        if (profile.login) loginName = profile.login;
-        if (profile.loginType) loginType = profile.loginType;
-        if (profile.avatarUrl) {
-            userAvatarType = 'image';
-            userAvatarUrl = profile.avatarUrl;
-        } else if (profile.avatarColor) {
-            userAvatarType = 'color';
-            userColor = profile.avatarColor;
-        }
+    if (window.CommentInputShared && typeof window.CommentInputShared.init === 'function') {
+        identityInstance = window.CommentInputShared.init({ variant: 'lyb' });
+        syncIdentityState();
     }
-    if (!loginName && githubUser) {
-        try {
-            loginName = JSON.parse(githubUser).login || '';
-            if (loginName) loginType = 'github';
-        } catch {
-            loginName = '';
-        }
-    }
-    if (!loginName && qbUser) {
-        try {
-            const data = JSON.parse(qbUser);
-            loginName = data.login || data.username || '';
-            loginType = loginName ? 'local' : '';
-        } catch {
-            loginName = '';
-        }
-    }
-    isLoggedUser = Boolean(localStorage.getItem('github_code') || githubUser || qbUser);
-    if (isLoggedUser && !nickname) {
-        nickname = loginName || '已登录';
-    }
-
-    // 初始化头像切换
-    initAvatarToggle();
 
     await waitForAppCheck();
 
@@ -172,38 +118,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    // 如果已有昵称，填充昵称输入框
-    const nicknameInput = byId('nickname');
-    if (nicknameInput instanceof HTMLInputElement) {
-        if (nickname) nicknameInput.value = nickname;
-        if (isLoggedUser) {
-            nicknameInput.setAttribute('disabled', 'true');
-            nicknameInput.value = nickname || loginName || '已登录';
-        } else {
-            nicknameInput.addEventListener('input', () => {
-                nickname = nicknameInput.value.trim();
-                localStorage.setItem('nickname', nickname);
-                if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
-                    window.QuarkUserProfile.syncProfile({
-                        nickname,
-                        avatarType: userAvatarType,
-                        avatarColor: userColor,
-                        avatarUrl: userAvatarUrl
-                    });
-                }
-                updateAvatarPreview();
-            });
-        }
-    }
-
-    const avatarUrlInput = byId('avatarUrl');
-    if (avatarUrlInput instanceof HTMLInputElement) {
-        if (userAvatarUrl) avatarUrlInput.value = userAvatarUrl;
-        if (isLoggedUser) {
-            avatarUrlInput.setAttribute('disabled', 'true');
-        }
-    }
-    updateAvatarPreview();
+    syncIdentityState();
 });
 
 // 初始化主题 - 自动跟随系统
@@ -247,7 +162,11 @@ function submitMessage() {
         return;
     }
 
-    const nickname = isLoggedUser ? (nicknameInput.value.trim() || loginName || '已登录') : nicknameInput.value.trim();
+    if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
+        identityInstance.refreshFromInputs();
+        syncIdentityState();
+    }
+    const nickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
     const content = contentInput.value.trim();
     const useMarkdown = markdownInput.checked;
 
@@ -257,10 +176,6 @@ function submitMessage() {
     }
 
     // 保存昵称到本地存储
-    if (!isLoggedUser) {
-        localStorage.setItem('nickname', nickname);
-    }
-
     const message = {
         text: content,
         nickname: nickname,
@@ -288,107 +203,16 @@ function submitMessage() {
     loadMessages();
 }
 
-// 初始化头像切换
-function initAvatarToggle() {
-    const colorToggle = byId('colorToggle');
-    const imageToggle = byId('imageToggle');
-    const colorPicker = byId('colorPicker');
-    const avatarUrl = byId('avatarUrl');
-    if (!(colorToggle instanceof HTMLElement) ||
-        !(imageToggle instanceof HTMLElement) ||
-        !(colorPicker instanceof HTMLElement) ||
-        !(avatarUrl instanceof HTMLInputElement)) {
-        return;
-    }
-    if (isLoggedUser) {
-        colorToggle.classList.add('disabled');
-        imageToggle.classList.add('disabled');
-        colorToggle.style.pointerEvents = 'none';
-        imageToggle.style.pointerEvents = 'none';
-        colorPicker.style.pointerEvents = 'none';
-        avatarUrl.setAttribute('disabled', 'true');
-        updateAvatarPreview();
-        return;
-    }
-
-    colorToggle.addEventListener('click', function () {
-        userAvatarType = 'color';
-        colorToggle.classList.add('active');
-        imageToggle.classList.remove('active');
-        colorPicker.style.display = 'flex';
-        avatarUrl.style.display = 'none';
-        updateAvatarPreview();
-    });
-
-    imageToggle.addEventListener('click', function () {
-        userAvatarType = 'image';
-        imageToggle.classList.add('active');
-        colorToggle.classList.remove('active');
-        colorPicker.style.display = 'none';
-        avatarUrl.style.display = 'block';
-        updateAvatarPreview();
-    });
-
-    avatarUrl.addEventListener('input', updateAvatarPreview);
-}
-
-// 选择颜色
-function selectColor(element) {
-    document.querySelectorAll('.color-option').forEach(opt => {
-        opt.classList.remove('selected');
-    });
-    element.classList.add('selected');
-    userColor = element.style.backgroundColor;
-    updateAvatarPreview();
-}
-
-// 更新头像预览
-function updateAvatarPreview() {
-    const avatarPreview = byId('avatarPreview');
-    if (!(avatarPreview instanceof HTMLElement)) {
-        return;
-    }
-
-    if (isLoggedUser && userAvatarUrl) {
-        avatarPreview.style.backgroundImage = `url(${userAvatarUrl})`;
-        avatarPreview.style.backgroundColor = 'transparent';
-        avatarPreview.textContent = '';
-        return;
-    }
-
-    if (userAvatarType === 'color') {
-        avatarPreview.style.background = userColor;
-        avatarPreview.style.backgroundImage = 'none';
-        avatarPreview.textContent = nickname ? nickname[0].toUpperCase() : 'A';
-        if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
-            window.QuarkUserProfile.syncProfile({
-                nickname,
-                avatarType: 'color',
-                avatarColor: userColor,
-                avatarUrl: ''
-            });
-        }
-    } else {
-        const avatarUrlInput = byId('avatarUrl');
-        const url = avatarUrlInput instanceof HTMLInputElement ? avatarUrlInput.value.trim() : '';
-        if (url && (url.endsWith('.jpg') || url.endsWith('.png') || url.endsWith('.webp'))) {
-            avatarPreview.style.backgroundImage = `url(${url})`;
-            avatarPreview.textContent = '';
-            userAvatarUrl = url;
-            if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
-                window.QuarkUserProfile.syncProfile({
-                    nickname,
-                    avatarType: 'image',
-                    avatarColor: userColor,
-                    avatarUrl: userAvatarUrl
-                });
-            }
-        } else {
-            avatarPreview.style.background = userColor;
-            avatarPreview.style.backgroundImage = 'none';
-            avatarPreview.textContent = nickname ? nickname[0].toUpperCase() : 'A';
-        }
-    }
+function syncIdentityState() {
+    if (!identityInstance || typeof identityInstance.getState !== 'function') return;
+    const state = identityInstance.getState();
+    nickname = state.nickname || '';
+    loginName = state.login || '';
+    loginType = state.loginType || '';
+    isLoggedUser = Boolean(state.isLoggedUser);
+    userAvatarType = state.avatarType || userAvatarType;
+    userColor = state.avatarColor || userColor;
+    userAvatarUrl = state.avatarUrl || userAvatarUrl;
 }
 
 // 加载留言
@@ -494,11 +318,13 @@ function createMessageElement(message) {
     }
 
     const baseName = message.nickname || '访客';
+    const shared = window.CommentShared;
+    const guestBadge = shared && typeof shared.renderGuestBadge === 'function' ? shared.renderGuestBadge(message.uid) : '';
     const authorHtml = message.login
         ? `${baseName}<span class="login-badge">${message.loginType === 'local'
             ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
             : `<i class="fab fa-github login-icon"></i>`}@${message.login}</span>`
-        : `${baseName}${renderGuestBadge(message.uid)}`;
+        : `${baseName}${guestBadge}`;
     messageDiv.innerHTML = `
                 <div class="message-header">
                     <div class="message-avatar" style="${message.avatarType === 'color' ?
@@ -548,11 +374,13 @@ function createReplyElement(reply) {
     }
 
     const baseName = reply.nickname || '访客';
+    const shared = window.CommentShared;
+    const guestBadge = shared && typeof shared.renderGuestBadge === 'function' ? shared.renderGuestBadge(reply.uid) : '';
     const authorHtml = reply.login
         ? `${baseName}<span class="login-badge">${reply.loginType === 'local'
             ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
             : `<i class="fab fa-github login-icon"></i>`}@${reply.login}</span>`
-        : `${baseName}${renderGuestBadge(reply.uid)}`;
+        : `${baseName}${guestBadge}`;
     return `
                 <div class="reply-card">
                     <div class="reply-header">
@@ -668,7 +496,11 @@ function submitReply() {
         !(replyMarkdownInput instanceof HTMLInputElement)) {
         return;
     }
-    const nickname = isLoggedUser ? (nicknameInput.value.trim() || loginName || '已登录') : nicknameInput.value.trim();
+    if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
+        identityInstance.refreshFromInputs();
+        syncIdentityState();
+    }
+    const nickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
     const content = replyContentInput.value.trim();
     const useMarkdown = replyMarkdownInput.checked;
 
