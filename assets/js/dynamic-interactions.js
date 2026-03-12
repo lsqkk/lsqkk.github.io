@@ -88,14 +88,6 @@
         return id;
     }
 
-    function getGuestUid() {
-        let uid = localStorage.getItem('quark_uid');
-        if (!uid) {
-            uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-            localStorage.setItem('quark_uid', uid);
-        }
-        return uid;
-    }
 
     function escapeHtml(text) {
         return String(text ?? '')
@@ -159,6 +151,10 @@
     }
 
     function renderDisplayName(nickname, login, loginType, uid) {
+        const shared = window.CommentShared;
+        if (shared && typeof shared.renderDisplayName === 'function') {
+            return shared.renderDisplayName(nickname || '', login || '', loginType || '', uid || '');
+        }
         const base = nickname || login || '访客';
         if (login) {
             const icon = loginType === 'local'
@@ -595,11 +591,12 @@
                         ? (loginProfile.nickname || loginProfile.login || '访客')
                         : (nicknameInput instanceof HTMLInputElement ? (nicknameInput.value.trim() || '访客') : '访客');
                     if (!isLoggedUser) localStorage.setItem(NICKNAME_KEY, nickname);
+                    const shared = window.CommentShared;
                     const guestUid = isLoggedUser
                         ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
                             ? window.QuarkUserProfile.getUid()
                             : '')
-                        : getGuestUid();
+                        : (shared && typeof shared.getGuestUid === 'function' ? shared.getGuestUid() : '');
                     const payload = {
                         nickname,
                         login: isLoggedUser ? (loginProfile.login || '') : '',

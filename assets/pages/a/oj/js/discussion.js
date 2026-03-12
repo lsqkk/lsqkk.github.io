@@ -29,6 +29,10 @@ let loginType = '';
 let isLoggedUser = false;
 
 function getGuestUid() {
+    const shared = window.CommentShared;
+    if (shared && typeof shared.getGuestUid === 'function') {
+        return shared.getGuestUid();
+    }
     let uid = localStorage.getItem('quark_uid');
     if (!uid) {
         uid = `q_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -38,6 +42,10 @@ function getGuestUid() {
 }
 
 function renderGuestBadge(uid) {
+    const shared = window.CommentShared;
+    if (shared && typeof shared.renderGuestBadge === 'function') {
+        return shared.renderGuestBadge(uid);
+    }
     if (!uid) return '';
     const suffix = String(uid).slice(-4);
     return `<span class="login-badge guest-badge">@访客${suffix}</span>`;
@@ -92,6 +100,10 @@ function getUserAvatarStyle(currentNickname = nickname) {
 }
 
 function formatAuthor(nick, login, type, uid) {
+    const shared = window.CommentShared;
+    if (shared && typeof shared.renderDisplayName === 'function') {
+        return shared.renderDisplayName(nick || '', login || '', type || '', uid || '');
+    }
     const base = nick || login || '访客';
     if (login) {
         const icon = type === 'local'

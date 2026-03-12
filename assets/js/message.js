@@ -287,12 +287,14 @@ function displayRecentMessages(messages) {
         const baseName = message.nickname || '访客';
         const login = message.login || '';
         const guestUid = message.uid || '';
-        const guestBadge = guestUid ? `<span class="login-badge guest-badge">@访客${String(guestUid).slice(-4)}</span>` : '';
-        const displayName = login
-            ? `${baseName}<span class="login-badge">${message.loginType === 'local'
-                ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
-                : `<i class="fab fa-github login-icon"></i>`}@${login}</span>`
-            : `${baseName}${guestBadge}`;
+        const shared = window.CommentShared;
+        const displayName = shared && typeof shared.renderDisplayName === 'function'
+            ? shared.renderDisplayName(baseName, login, message.loginType || '', guestUid)
+            : (login
+                ? `${baseName}<span class="login-badge">${message.loginType === 'local'
+                    ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
+                    : `<i class="fab fa-github login-icon"></i>`}@${login}</span>`
+                : `${baseName}${guestUid ? `<span class="login-badge guest-badge">@访客${String(guestUid).slice(-4)}</span>` : ''}`);
 
         html += `
             <div class="index-announcement" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.03);">

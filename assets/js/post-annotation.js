@@ -377,18 +377,11 @@
         return `<span class="post-annotation-avatar-preview" style="background:${escapeHtml(user.avatarColor || COLOR_OPTIONS[0])};">${letter}</span>`;
     }
 
-    function renderDisplayName(nickname, login, loginType) {
-        const base = nickname || login || '访客';
-        if (login) {
-            const icon = loginType === 'local'
-                ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
-                : `<i class="fab fa-github login-icon"></i>`;
-            return `${escapeHtml(base)}<span class="login-badge">${icon}@${escapeHtml(login)}</span>`;
-        }
-        return escapeHtml(base);
-    }
-
     function renderDisplayNameWithUid(nickname, login, loginType, uid) {
+        const shared = window.CommentShared;
+        if (shared && typeof shared.renderDisplayName === 'function') {
+            return shared.renderDisplayName(nickname || '', login || '', loginType || '', uid || '');
+        }
         const base = nickname || login || '访客';
         if (login) {
             const icon = loginType === 'local'
