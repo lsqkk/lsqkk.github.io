@@ -100,24 +100,20 @@ function formatAuthor(nick, login, type, uid) {
 }
 
 function renderPagination() {
-    const totalPages = Math.ceil(totalDiscussions / PAGE_SIZE);
     const paginationDiv = document.getElementById('pagination');
-    if (!paginationDiv) return;
-
-    paginationDiv.innerHTML = '';
-
-    if (totalPages <= 1) return;
-
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        btn.className = (i === currentPage ? 'active' : '');
-        btn.onclick = () => {
-            currentPage = i;
+    const sharedList = window.CommentListShared;
+    if (!sharedList || typeof sharedList.renderPagination !== 'function') return;
+    sharedList.renderPagination({
+        container: paginationDiv,
+        total: totalDiscussions,
+        pageSize: PAGE_SIZE,
+        current: currentPage,
+        showArrows: true,
+        onChange: (page) => {
+            currentPage = page;
             loadDiscussionsList();
-        };
-        paginationDiv.appendChild(btn);
-    }
+        }
+    });
 }
 
 /**
@@ -266,12 +262,18 @@ window.likeDiscussion = function (discussionId) {
     if (!discussionsRef) return;
 
     const discussionRef = discussionsRef.child(discussionId);
-    discussionRef.transaction(discussion => {
-        if (discussion) {
-            discussion.likes = (discussion.likes || 0) + 1;
-        }
-        return discussion;
-    }).then(() => {
+    const sharedList = window.CommentListShared;
+    if (sharedList && typeof sharedList.incrementLike === 'function') {
+        sharedList.incrementLike(discussionRef.child('likes'));
+    } else {
+        discussionRef.transaction(discussion => {
+            if (discussion) {
+                discussion.likes = (discussion.likes || 0) + 1;
+            }
+            return discussion;
+        });
+    }
+    Promise.resolve().then(() => {
         // 重新加载当前讨论详情以更新点赞数
         loadSingleDiscussion(discussionId);
     }).catch(error => {
@@ -287,12 +289,18 @@ window.likeReply = function (discussionId, replyId) {
     if (!discussionsRef) return;
 
     const replyRef = discussionsRef.child(discussionId).child('replies').child(replyId);
-    replyRef.transaction(reply => {
-        if (reply) {
-            reply.likes = (reply.likes || 0) + 1;
-        }
-        return reply;
-    }).then(() => {
+    const sharedList = window.CommentListShared;
+    if (sharedList && typeof sharedList.incrementLike === 'function') {
+        sharedList.incrementLike(replyRef.child('likes'));
+    } else {
+        replyRef.transaction(reply => {
+            if (reply) {
+                reply.likes = (reply.likes || 0) + 1;
+            }
+            return reply;
+        });
+    }
+    Promise.resolve().then(() => {
         // 重新加载当前讨论详情以更新点赞数
         loadSingleDiscussion(discussionId);
     }).catch(error => {
@@ -394,8 +402,10 @@ function renderDiscussionsSummaries(discussions) {
     if (!container) return;
 
     const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = Math.min(startIndex + PAGE_SIZE, discussions.length);
-    const pageDiscussions = discussions.slice(startIndex, endIndex);
+    const sharedList = window.CommentListShared;
+    const pageDiscussions = sharedList && typeof sharedList.paginate === 'function'
+        ? sharedList.paginate(discussions, currentPage, PAGE_SIZE)
+        : discussions.slice(startIndex, Math.min(startIndex + PAGE_SIZE, discussions.length));
 
     container.innerHTML = '';
 

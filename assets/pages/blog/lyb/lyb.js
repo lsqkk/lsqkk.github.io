@@ -259,9 +259,10 @@ function loadMessages() {
 function renderMessages(messages) {
     const container = byId('messagesContainer');
     if (!(container instanceof HTMLElement)) return;
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = Math.min(startIndex + PAGE_SIZE, messages.length);
-    const pageMessages = messages.slice(startIndex, endIndex);
+    const sharedList = window.CommentListShared;
+    const pageMessages = sharedList && typeof sharedList.paginate === 'function'
+        ? sharedList.paginate(messages, currentPage, PAGE_SIZE)
+        : messages.slice((currentPage - 1) * PAGE_SIZE, Math.min(currentPage * PAGE_SIZE, messages.length));
 
     container.innerHTML = '';
 
@@ -317,14 +318,10 @@ function createMessageElement(message) {
         repliesHtml += '</div>';
     }
 
-    const baseName = message.nickname || '访客';
-    const shared = window.CommentShared;
-    const guestBadge = shared && typeof shared.renderGuestBadge === 'function' ? shared.renderGuestBadge(message.uid) : '';
-    const authorHtml = message.login
-        ? `${baseName}<span class="login-badge">${message.loginType === 'local'
-            ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
-            : `<i class="fab fa-github login-icon"></i>`}@${message.login}</span>`
-        : `${baseName}${guestBadge}`;
+    const sharedList = window.CommentListShared;
+    const authorHtml = sharedList && typeof sharedList.getDisplayName === 'function'
+        ? sharedList.getDisplayName(message.nickname, message.login, message.loginType, message.uid)
+        : (message.nickname || '访客');
     messageDiv.innerHTML = `
                 <div class="message-header">
                     <div class="message-avatar" style="${message.avatarType === 'color' ?
@@ -373,14 +370,10 @@ function createReplyElement(reply) {
         content = content.replace(/\n/g, '<br>');
     }
 
-    const baseName = reply.nickname || '访客';
-    const shared = window.CommentShared;
-    const guestBadge = shared && typeof shared.renderGuestBadge === 'function' ? shared.renderGuestBadge(reply.uid) : '';
-    const authorHtml = reply.login
-        ? `${baseName}<span class="login-badge">${reply.loginType === 'local'
-            ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
-            : `<i class="fab fa-github login-icon"></i>`}@${reply.login}</span>`
-        : `${baseName}${guestBadge}`;
+    const sharedList = window.CommentListShared;
+    const authorHtml = sharedList && typeof sharedList.getDisplayName === 'function'
+        ? sharedList.getDisplayName(reply.nickname, reply.login, reply.loginType, reply.uid)
+        : (reply.nickname || '访客');
     return `
                 <div class="reply-card">
                     <div class="reply-header">
@@ -402,61 +395,36 @@ function createReplyElement(reply) {
 
 // 渲染分页
 function renderPagination() {
-    const totalPages = Math.ceil(totalMessages / PAGE_SIZE);
     const pagination = byId('pagination');
-    if (!(pagination instanceof HTMLElement)) return;
-
-    pagination.innerHTML = '';
-
-    if (totalPages <= 1) return;
-
-    // 上一页按钮
-    if (currentPage > 1) {
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'page-btn';
-        prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        prevBtn.addEventListener('click', () => {
-            currentPage--;
+    const sharedList = window.CommentListShared;
+    if (!sharedList || typeof sharedList.renderPagination !== 'function') return;
+    sharedList.renderPagination({
+        container: pagination,
+        total: totalMessages,
+        pageSize: PAGE_SIZE,
+        current: currentPage,
+        showArrows: true,
+        onChange: (page) => {
+            currentPage = page;
             loadMessages();
-        });
-        pagination.appendChild(prevBtn);
-    }
-
-    // 页码按钮
-    for (let i = 1; i <= totalPages; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-        pageBtn.textContent = String(i);
-        pageBtn.addEventListener('click', () => {
-            currentPage = i;
-            loadMessages();
-        });
-        pagination.appendChild(pageBtn);
-    }
-
-    // 下一页按钮
-    if (currentPage < totalPages) {
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'page-btn';
-        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-        nextBtn.addEventListener('click', () => {
-            currentPage++;
-            loadMessages();
-        });
-        pagination.appendChild(nextBtn);
-    }
+        }
+    });
 }
 
 // 点赞留言
 function likeMessage(messageId) {
     const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
-
-    messageRef.transaction(message => {
-        if (message) {
-            message.likes = (message.likes || 0) + 1;
-        }
-        return message;
-    });
+    const sharedList = window.CommentListShared;
+    if (sharedList && typeof sharedList.incrementLike === 'function') {
+        sharedList.incrementLike(messageRef.child('likes'));
+    } else {
+        messageRef.transaction(message => {
+            if (message) {
+                message.likes = (message.likes || 0) + 1;
+            }
+            return message;
+        });
+    }
 
     // 重新加载留言
     loadMessages();
