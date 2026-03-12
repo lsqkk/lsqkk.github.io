@@ -173,6 +173,16 @@
         });
     }
 
+    async function waitForAppCheck() {
+        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+            try {
+                await window.__quarkAppCheckReady;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     async function ensureFirebaseReady() {
         if (typeof window.firebase === 'undefined' || !window.firebase.database) {
             await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js', 'firebase-app-sdk');
@@ -185,6 +195,7 @@
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(window.firebaseConfig);
         }
+        await waitForAppCheck();
     }
 
     function unwrapElement(el) {

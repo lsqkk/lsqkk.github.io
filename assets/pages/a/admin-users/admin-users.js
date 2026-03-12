@@ -107,6 +107,16 @@
         });
     }
 
+    async function waitForAppCheck() {
+        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+            try {
+                await window.__quarkAppCheckReady;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     async function ensureFirebase() {
         if (firebaseReady) return window.firebase.database();
         setText(el.firebaseState, '等待中');
@@ -114,6 +124,7 @@
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(config);
         }
+        await waitForAppCheck();
         firebaseReady = true;
         setText(el.firebaseState, '已连接');
         return window.firebase.database();

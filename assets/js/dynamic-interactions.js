@@ -64,6 +64,16 @@
         });
     }
 
+    async function waitForAppCheck() {
+        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+            try {
+                await window.__quarkAppCheckReady;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     function sleep(ms) {
         return new Promise((resolve) => {
             window.setTimeout(resolve, ms);
@@ -232,6 +242,7 @@
             if (!window.firebase.apps || !window.firebase.apps.length) {
                 window.firebase.initializeApp(config);
             }
+            await waitForAppCheck();
             rootRef = window.firebase.database().ref(DB_ROOT);
         })();
 

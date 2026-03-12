@@ -86,6 +86,16 @@ function waitForFirebaseConfig() {
     });
 }
 
+async function waitForAppCheck() {
+    if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+        try {
+            await window.__quarkAppCheckReady;
+        } catch {
+            // ignore
+        }
+    }
+}
+
 // 主动触发配置脚本重新加载
 function reloadFirebaseConfig() {
     return new Promise((resolve, reject) => {
@@ -216,6 +226,7 @@ async function initializeAndLoadMessages() {
             if (!firebaseGlobal.apps.length) {
                 firebaseGlobal.initializeApp(config);
             }
+            await waitForAppCheck();
             firebaseInitialized = true;
             console.log('✅ Firebase初始化成功');
         } catch (initError) {

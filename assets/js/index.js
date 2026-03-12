@@ -1013,6 +1013,16 @@ function getOnlineFirebaseConfig() {
     return window.firebaseConfig || window._firebaseConfig || null;
 }
 
+async function waitForAppCheck() {
+    if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+        try {
+            await window.__quarkAppCheckReady;
+        } catch {
+            // ignore
+        }
+    }
+}
+
 function waitForOnlineFirebaseReady() {
     return new Promise((resolve) => {
         const timer = window.setInterval(() => {
@@ -1031,12 +1041,14 @@ async function ensureOnlineFirebaseDatabase() {
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(config);
         }
+        await waitForAppCheck();
         return window.firebase.database();
     }
     const waited = await waitForOnlineFirebaseReady();
     if (!window.firebase.apps || !window.firebase.apps.length) {
         window.firebase.initializeApp(waited);
     }
+    await waitForAppCheck();
     return window.firebase.database();
 }
 

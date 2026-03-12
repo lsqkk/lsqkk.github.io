@@ -469,12 +469,23 @@
         });
     }
 
+    async function waitForAppCheck() {
+        if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+            try {
+                await window.__quarkAppCheckReady;
+            } catch {
+                // ignore
+            }
+        }
+    }
+
     async function ensureFirebase() {
         if (firebaseReady) return window.firebase.database();
         const config = await waitForFirebaseReady();
         if (!window.firebase.apps || !window.firebase.apps.length) {
             window.firebase.initializeApp(config);
         }
+        await waitForAppCheck();
         firebaseReady = true;
         return window.firebase.database();
     }

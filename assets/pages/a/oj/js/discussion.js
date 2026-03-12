@@ -1,5 +1,15 @@
 firebase.initializeApp(firebaseConfig);
 
+async function waitForAppCheck() {
+    if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+        try {
+            await window.__quarkAppCheckReady;
+        } catch {
+            // ignore
+        }
+    }
+}
+
 // --- 全局变量和常量 ---
 const BOARD_NAME = 'oj-discussions';
 let discussionsRef = null;
@@ -861,9 +871,10 @@ window.submitReply = function (discussionId, parentReplyId) {
 }
 
 // --- 初始化入口 ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // 1. 初始化 Firebase 引用
     if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+        await waitForAppCheck();
         discussionsRef = firebase.database().ref(BOARD_NAME);
     } else {
         const container = document.getElementById('discussionsContainer');

@@ -7,6 +7,16 @@
 
 firebase.initializeApp(firebaseConfig);
 
+async function waitForAppCheck() {
+    if (window.__quarkAppCheckReady && typeof window.__quarkAppCheckReady.then === 'function') {
+        try {
+            await window.__quarkAppCheckReady;
+        } catch {
+            // ignore
+        }
+    }
+}
+
 // 全局变量
 const BOARD_NAME = 'lsqkk-lyb';
 /** @type {any} */
@@ -119,6 +129,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // 初始化头像切换
     initAvatarToggle();
+
+    await waitForAppCheck();
 
     // 初始化Firebase引用
     messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
