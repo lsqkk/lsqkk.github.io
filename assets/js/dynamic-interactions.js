@@ -215,11 +215,6 @@
         }
 
         bootPromise = (async () => {
-            if (typeof window.firebase === 'undefined' || !window.firebase.database) {
-                await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js', 'dynamic-firebase-app');
-                await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'dynamic-firebase-db');
-            }
-
             let config = getFirebaseConfig();
             if (!config || !config.projectId) {
                 let lastError = null;
@@ -253,6 +248,9 @@
                 }
             }
 
+            if (!window.firebase || !window.firebase.database) {
+                throw new Error('Firebase代理未就绪');
+            }
             if (!window.firebase.apps || !window.firebase.apps.length) {
                 window.firebase.initializeApp(config);
             }

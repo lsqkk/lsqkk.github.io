@@ -182,8 +182,7 @@
 
     async function ensureFirebaseReady() {
         if (typeof window.firebase === 'undefined' || !window.firebase.database) {
-            await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js', 'firebase-app-sdk');
-            await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'firebase-db-sdk');
+            throw new Error('Firebase代理未就绪');
         }
         if (typeof window.firebaseConfig === 'undefined') {
             await loadScript(`__API_BASE__/api/firebase-config?v=${Date.now()}`, 'post-anno-firebase-config');

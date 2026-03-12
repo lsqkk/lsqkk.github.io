@@ -1,6 +1,7 @@
 // @ts-check
 
 (function () {
+    const API_BASE = '__API_BASE__';
     const DB_ROOT = 'user_activity';
     const PRESENCE_ROOT = 'presence';
     const LOGIN_CACHE_KEY = 'quark_last_login_at';
@@ -8,10 +9,6 @@
     const IP_CACHE_KEY = 'quark_ip_info';
     const IP_CACHE_TTL = 24 * 60 * 60 * 1000;
     const DEVICE_ID_KEY = 'quark_device_id';
-
-    let bootPromise = null;
-    let rootRef = null;
-    let presenceRef = null;
 
     function getProfile() {
         if (window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function') {
@@ -107,67 +104,53 @@
         }
     }
 
-    function loadScript(src, id) {
-        return new Promise((resolve, reject) => {
-            const existing = document.getElementById(id);
-            if (existing) {
-                resolve();
-                return;
-            }
-            const script = document.createElement('script');
-            script.id = id;
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`load failed: ${src}`));
-            document.head.appendChild(script);
-        });
+    async function dbGet(path) {
+        const resp = await fetch(`${API_BASE}/api/db?path=${encodeURIComponent(path)}`, { credentials: 'omit' });
+        if (!resp.ok) throw new Error(`db get ${resp.status}`);
+        const data = await resp.json();
+        return data && data.data ? data.data : null;
     }
 
-    function waitForFirebaseConfig(timeout = 20000) {
-        return new Promise((resolve, reject) => {
-            const start = Date.now();
-            const timer = window.setInterval(() => {
-                const config = window.firebaseConfig || window._firebaseConfig;
-                if (config && config.projectId) {
-                    window.clearInterval(timer);
-                    resolve(config);
-                    return;
-                }
-                if (Date.now() - start > timeout) {
-                    window.clearInterval(timer);
-                    reject(new Error('firebase config timeout'));
-                }
-            }, 200);
+    async function dbSet(path, value) {
+        const resp = await fetch(`${API_BASE}/api/db`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'omit',
+            body: JSON.stringify({ op: 'set', path, value })
         });
+        if (!resp.ok) throw new Error(`db set ${resp.status}`);
     }
 
-    async function waitForAppCheck() {
-}
+    async function dbUpdate(path, value) {
+        const resp = await fetch(`${API_BASE}/api/db`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'omit',
+            body: JSON.stringify({ op: 'update', path, value })
+        });
+        if (!resp.ok) throw new Error(`db update ${resp.status}`);
+    }
 
-    async function ensureFirebaseReady() {
-        if (rootRef) return;
-        if (bootPromise) {
-            await bootPromise;
-            return;
-        }
-        bootPromise = (async () => {
-            if (typeof window.firebase === 'undefined' || !window.firebase.database) {
-                await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js', 'activity-firebase-app');
-                await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js', 'activity-firebase-db');
-            }
-            if (!window.firebaseConfig) {
-                await loadScript(`__API_BASE__/api/firebase-config?v=${Date.now()}`, 'activity-firebase-config');
-                await waitForFirebaseConfig(20000);
-            }
-            if (!window.firebase.apps || !window.firebase.apps.length) {
-                window.firebase.initializeApp(window.firebaseConfig);
-            }
-            await waitForAppCheck();
-            rootRef = window.firebase.database().ref(DB_ROOT);
-            presenceRef = window.firebase.database().ref(PRESENCE_ROOT);
-        })();
-        await bootPromise;
+    async function dbRemove(path) {
+        const resp = await fetch(`${API_BASE}/api/db`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'omit',
+            body: JSON.stringify({ op: 'remove', path })
+        });
+        if (!resp.ok) throw new Error(`db remove ${resp.status}`);
+    }
+
+    async function dbPush(path, value) {
+        const resp = await fetch(`${API_BASE}/api/db`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'omit',
+            body: JSON.stringify({ op: 'push', path, value })
+        });
+        if (!resp.ok) throw new Error(`db push ${resp.status}`);
+        const data = await resp.json();
+        return data && data.key ? data.key : '';
     }
 
     function shouldSendPageView() {
@@ -195,7 +178,7 @@
         const last = Number(localStorage.getItem(LOGIN_CACHE_KEY) || 0);
         if (now - last < 6 * 60 * 60 * 1000) return;
         localStorage.setItem(LOGIN_CACHE_KEY, String(now));
-        await rootRef.child(uid).child('logins').push({
+        await dbPush(`${DB_ROOT}/${uid}/logins`, {
             ts: now,
             nickname: profile.nickname || '',
             avatarUrl: profile.avatarUrl || '',
@@ -208,7 +191,7 @@
 
     async function recordPageView(uid, profile) {
         if (!shouldSendPageView()) return;
-        await rootRef.child(uid).child('events').push({
+        await dbPush(`${DB_ROOT}/${uid}/events`, {
             ts: Date.now(),
             path: location.pathname,
             title: document.title || '',
@@ -220,8 +203,8 @@
     }
 
     async function getRemoteProfile(uid) {
-        const snap = await rootRef.child(uid).child('profile').once('value');
-        return snap.val() || null;
+        const data = await dbGet(`${DB_ROOT}/${uid}/profile`);
+        return data || null;
     }
 
     function getLocalProfileMeta() {
@@ -240,7 +223,7 @@
 
     async function upsertProfile(uid, profile, createdAt) {
         const ipInfo = await fetchIpInfo();
-        await rootRef.child(uid).child('profile').set({
+        await dbSet(`${DB_ROOT}/${uid}/profile`, {
             uid,
             nickname: profile.nickname || '',
             login: profile.login || '',
@@ -262,12 +245,10 @@
         const legacyUid = getLegacyUid();
         if (!legacyUid || legacyUid === targetUid) return;
         try {
-            const legacySnap = await rootRef.child(legacyUid).once('value');
-            const legacyData = legacySnap.val();
+            const legacyData = await dbGet(`${DB_ROOT}/${legacyUid}`);
             if (!legacyData) return;
 
-            const targetSnap = await rootRef.child(targetUid).once('value');
-            const targetData = targetSnap.val() || {};
+            const targetData = await dbGet(`${DB_ROOT}/${targetUid}`) || {};
 
             const legacyProfile = legacyData.profile || {};
             const targetProfile = targetData.profile || {};
@@ -288,13 +269,13 @@
                 ...(targetData.logins || {})
             };
 
-            await rootRef.child(targetUid).update({
+            await dbUpdate(`${DB_ROOT}/${targetUid}`, {
                 profile: mergedProfile,
                 events: mergedEvents,
                 logins: mergedLogins
             });
 
-            await rootRef.child(legacyUid).remove();
+            await dbRemove(`${DB_ROOT}/${legacyUid}`);
             localStorage.setItem('quark_uid', targetUid);
         } catch (error) {
             console.warn('迁移旧UID失败:', error);
@@ -303,7 +284,7 @@
 
     async function heartbeat(uid, profile) {
         const ipInfo = await fetchIpInfo();
-        await presenceRef.child(uid).set({
+        await dbSet(`${PRESENCE_ROOT}/${uid}`, {
             uid,
             nickname: profile.nickname || '',
             login: profile.login || '',
@@ -322,7 +303,6 @@
     }
 
     async function run() {
-        await ensureFirebaseReady();
         const uid = getUid();
         await migrateLegacyUid(uid);
         let profile = getProfile();

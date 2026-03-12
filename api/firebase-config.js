@@ -57,7 +57,14 @@ export default function handler(req, res) {
 
     // 3. 返回纯JavaScript代码，这是关键！
     const jsContent = [
-        `window.firebaseConfig = ${JSON.stringify(firebaseConfig, null, 2)};`
+        `window.firebaseConfig = ${JSON.stringify(firebaseConfig, null, 2)};`,
+        `try { window.dispatchEvent(new CustomEvent('firebase-config-loaded', { detail: window.firebaseConfig })); } catch (e) { }`,
+        `if (!window.firebase || !window.firebase.database) {`,
+        `  var s = document.createElement('script');`,
+        `  s.src = window.location.origin + '/assets/js/firebase-shim.js';`,
+        `  s.async = true;`,
+        `  document.head.appendChild(s);`,
+        `}`
     ].join('\n');
 
     // 4. 设置正确的响应头

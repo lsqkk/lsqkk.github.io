@@ -26,8 +26,6 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
       window.__TURNSTILE_SITE_KEY__ = turnstileSiteKey;
     </script>
     <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/user-profile.js"></script>
     <script is:inline src="/assets/js/nav.js"></script>

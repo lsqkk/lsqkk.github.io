@@ -60,9 +60,49 @@ function isAllowedOrigin(req) {
   return requestOrigin;
 }
 
+function isAllowedPath(path) {
+  const allowedRoots = [
+    'presence',
+    'user_activity',
+    'chatrooms/lsqkk-lyb',
+    'dynamic_posts',
+    'post_annotations',
+    'oj-discussions',
+    'qb_users',
+    'qb_email_index',
+    'pic_upload_limits'
+  ];
+  const clean = String(path || '').replace(/^\/+/, '');
+  if (!clean) return false;
+  return allowedRoots.some((root) => clean === root || clean.startsWith(`${root}/`));
+}
+
+function applyQuery(ref, query) {
+  let chain = ref;
+  if (query.orderByChild) {
+    chain = chain.orderByChild(String(query.orderByChild));
+  }
+  if (typeof query.startAt !== 'undefined') {
+    chain = chain.startAt(query.startAt);
+  }
+  if (typeof query.endAt !== 'undefined') {
+    chain = chain.endAt(query.endAt);
+  }
+  if (typeof query.equalTo !== 'undefined') {
+    chain = chain.equalTo(query.equalTo);
+  }
+  if (query.limitToLast) {
+    chain = chain.limitToLast(Number(query.limitToLast));
+  }
+  if (query.limitToFirst) {
+    chain = chain.limitToFirst(Number(query.limitToFirst));
+  }
+  return chain;
+}
+
 export default async function handler(req, res) {
   const requestOrigin = isAllowedOrigin(req);
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Cache-Control', 'no-store');
   if (requestOrigin) {
@@ -77,21 +117,56 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const path = String(req.query?.path || '').trim();
-  const allowedPaths = ['presence'];
-  if (!path || !allowedPaths.includes(path)) {
+  const path = String(req.query?.path || req.body?.path || '').trim();
+  if (!path || !isAllowedPath(path)) {
     return res.status(400).json({ error: 'Invalid path' });
   }
 
   try {
     initAdmin();
     const db = admin.database();
-    const snap = await db.ref(path).once('value');
-    return res.status(200).json({ ok: true, data: snap.val() || {} });
+
+    if (req.method === 'GET') {
+      const query = {
+        orderByChild: req.query?.orderByChild,
+        startAt: req.query?.startAt,
+        endAt: req.query?.endAt,
+        equalTo: req.query?.equalTo,
+        limitToLast: req.query?.limitToLast,
+        limitToFirst: req.query?.limitToFirst
+      };
+      const ref = applyQuery(db.ref(path), query);
+      const snap = await ref.once('value');
+      return res.status(200).json({ ok: true, data: snap.val() || {} });
+    }
+
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    const op = String(req.body?.op || '').trim();
+    const value = req.body?.value;
+    const ref = db.ref(path);
+
+    if (op === 'set') {
+      await ref.set(value);
+      return res.status(200).json({ ok: true });
+    }
+    if (op === 'update') {
+      await ref.update(value || {});
+      return res.status(200).json({ ok: true });
+    }
+    if (op === 'remove') {
+      await ref.remove();
+      return res.status(200).json({ ok: true });
+    }
+    if (op === 'push') {
+      const child = ref.push();
+      await child.set(value);
+      return res.status(200).json({ ok: true, key: child.key });
+    }
+
+    return res.status(400).json({ error: 'Invalid op' });
   } catch (error) {
     console.error('db proxy error:', error);
     return res.status(500).json({ error: 'Internal error' });
