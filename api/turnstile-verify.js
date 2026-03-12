@@ -1,4 +1,22 @@
+function allowOrigin(req, res) {
+  const allowed = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
+  const origin = req.headers.origin;
+  if (origin && allowed.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    return true;
+  }
+  res.setHeader('Access-Control-Allow-Origin', 'false');
+  return false;
+}
+
 export default async function handler(req, res) {
+  allowOrigin(req, res);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
