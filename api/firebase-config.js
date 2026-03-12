@@ -27,15 +27,20 @@ export default function handler(req, res) {
 
     // 在 if (!isAllowed) { 代码块内，修改为：
     if (!isAllowed) {
-        // 将调试信息返回，方便查看
-        return res.status(403).json({
-            error: 'Forbidden',
-            debug: {
-                receivedOrigin: origin,
-                receivedReferer: referer,
-                allowedDomains: allowedDomains
-            }
-        });
+        const hasOriginOrReferer = Boolean(origin || referer);
+        if (hasOriginOrReferer) {
+            // 将调试信息返回，方便查看
+            return res.status(403).json({
+                error: 'Forbidden',
+                debug: {
+                    receivedOrigin: origin,
+                    receivedReferer: referer,
+                    allowedDomains: allowedDomains
+                }
+            });
+        }
+        // 允许无 Origin/Referer（如 referrer-policy: no-referrer 的脚本请求）
+        isAllowed = true;
     }
 
     // 2. 从环境变量读取配置
