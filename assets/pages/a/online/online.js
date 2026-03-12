@@ -13,7 +13,6 @@
         detail: document.getElementById('onlineDetail')
     };
 
-    let firebaseReady = false;
     let presenceItems = [];
 
     function setText(target, value) {
@@ -49,58 +48,6 @@
         if (nickname && String(nickname).trim()) return String(nickname).trim();
         if (login && String(login).trim()) return String(login).trim();
         return getGuestName(uid);
-    }
-
-    function getFirebaseConfig() {
-        return window.firebaseConfig || window._firebaseConfig || null;
-    }
-
-    async function waitForAppCheck() {
-}
-
-    function waitForFirebaseReady() {
-        return new Promise((resolve) => {
-            const existingConfig = getFirebaseConfig();
-            if (window.firebase && window.firebase.database && existingConfig && existingConfig.projectId) {
-                resolve(existingConfig);
-                return;
-            }
-
-            window.__firebaseConfigLoaded = (config) => {
-                if (typeof config === 'object' && config.projectId) {
-                    window.firebaseConfig = config;
-                }
-            };
-
-            Object.defineProperty(window, 'firebaseConfig', {
-                set(value) {
-                    this._firebaseConfig = value;
-                },
-                get() {
-                    return this._firebaseConfig;
-                },
-                configurable: true
-            });
-
-            const timer = window.setInterval(() => {
-                const config = getFirebaseConfig();
-                if (window.firebase && window.firebase.database && config && config.projectId) {
-                    window.clearInterval(timer);
-                    resolve(config);
-                }
-            }, 300);
-        });
-    }
-
-    async function ensureFirebase() {
-        if (firebaseReady) return window.firebase.database();
-        const config = await waitForFirebaseReady();
-        if (!window.firebase.apps || !window.firebase.apps.length) {
-            window.firebase.initializeApp(config);
-        }
-        await waitForAppCheck();
-        firebaseReady = true;
-        return window.firebase.database();
     }
 
     function selectUser(item) {
@@ -167,9 +114,12 @@
     async function loadPresence() {
         try {
             setText(el.status, '正在加载在线用户...');
-            const db = await ensureFirebase();
-            const snap = await db.ref('presence').once('value');
-            const raw = snap.val() || {};
+            const resp = await fetch(`${API_BASE}/api/db?path=presence`, { credentials: 'omit' });
+            if (!resp.ok) {
+                throw new Error(`HTTP ${resp.status}`);
+            }
+            const payload = await resp.json();
+            const raw = (payload && payload.data) ? payload.data : {};
             const now = Date.now();
             presenceItems = Object.values(raw)
                 .filter((item) => item && item.lastSeen && now - item.lastSeen <= ONLINE_WINDOW)
