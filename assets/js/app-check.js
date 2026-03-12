@@ -50,18 +50,18 @@
         resolve();
         return;
       }
-      if (window.grecaptcha && window.grecaptcha.enterprise) {
+      if (window.grecaptcha && typeof window.grecaptcha.render === 'function') {
         resolve();
         return;
       }
-      const existing = document.getElementById('recaptcha-enterprise-sdk');
+      const existing = document.getElementById('recaptcha-sdk');
       if (existing) {
         existing.addEventListener('load', () => resolve(), { once: true });
         return;
       }
       const script = document.createElement('script');
-      script.id = 'recaptcha-enterprise-sdk';
-      script.src = `https://www.google.com/recaptcha/enterprise.js?render=${encodeURIComponent(SITE_KEY)}`;
+      script.id = 'recaptcha-sdk';
+      script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(SITE_KEY)}`;
       script.async = true;
       script.onload = () => resolve();
       script.onerror = () => resolve();
@@ -85,11 +85,15 @@
     if (!SITE_KEY) return;
     if (!shouldRequestAssessment()) return;
     await loadRecaptcha();
-    if (!(window.grecaptcha && window.grecaptcha.enterprise && typeof window.grecaptcha.enterprise.execute === 'function')) {
+    if (!(window.grecaptcha && typeof window.grecaptcha.execute === 'function')) {
       return;
     }
     try {
-      const token = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'app_check' });
+      let token = '';
+      if (typeof window.grecaptcha.ready === 'function') {
+        await new Promise((resolve) => window.grecaptcha.ready(resolve));
+      }
+      token = await window.grecaptcha.execute(SITE_KEY, { action: 'app_check' });
       if (!token) return;
       const resp = await fetch('__API_BASE__/api/recaptcha-assess', {
         method: 'POST',
@@ -105,10 +109,11 @@
     }
   }
 
-  function activate() {
+  async function activate() {
     if (!SITE_KEY) return;
     if (!window.firebase || !window.firebase.appCheck) return;
     if (window.__quarkAppCheckActivated) return;
+    await loadRecaptcha();
     try {
       window.firebase.appCheck().activate(SITE_KEY, true);
       window.__quarkAppCheckReady = window.firebase.appCheck().getToken(true)
