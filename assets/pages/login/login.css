@@ -291,6 +291,22 @@
   margin-top: 4px;
 }
 
+.status-row--inline {
+  margin-top: 0;
+}
+
+.status-row--ok {
+  color: #16a34a;
+}
+
+.status-row--warn {
+  color: #dc2626;
+}
+
+.status-row--info {
+  color: rgba(15, 23, 42, 0.7);
+}
+
 .captcha-row {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -395,6 +411,18 @@
 .dark-mode .reset-panel {
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark-mode .status-row--ok {
+  color: #4ade80;
+}
+
+.dark-mode .status-row--warn {
+  color: #fca5a5;
+}
+
+.dark-mode .status-row--info {
+  color: rgba(226, 232, 240, 0.75);
 }
 
 

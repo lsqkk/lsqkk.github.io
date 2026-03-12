@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import { parseDynamicEntries } from "../../../utils/dynamic-entries";
+import DynamicCommentPanel from "../../../components/DynamicCommentPanel.astro";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
@@ -75,19 +76,7 @@ const { entry } = Astro.props as {
         </div>
       </article>
 
-      <section class="dynamic-comments-panel" data-dynamic-comments-panel>
-        <h3>评论</h3>
-        <div class="dynamic-comment-form">
-          <input type="text" data-dynamic-comment-nickname placeholder="昵称（可选）" maxlength="24" />
-          <textarea data-dynamic-comment-text placeholder="写下你的评论..." maxlength="600"></textarea>
-          <div class="dynamic-reply-state" data-dynamic-reply-state></div>
-          <button type="button" class="dynamic-submit-btn" data-dynamic-comment-submit>发布评论</button>
-        </div>
-        <div class="dynamic-comment-list" data-dynamic-comment-list>
-          <div class="dynamic-comment-empty">还没有评论，欢迎第一条留言。</div>
-        </div>
-        <div class="dynamic-comment-pagination" data-dynamic-comment-pagination></div>
-      </section>
+      <DynamicCommentPanel />
 
       <div class="dynamic-detail-nav">
         <a href="/blog/dt" class="back-home">← 返回动态页</a>

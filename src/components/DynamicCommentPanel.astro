@@ -1,0 +1,28 @@
+---
+interface Props {
+  title?: string;
+  nicknamePlaceholder?: string;
+  textPlaceholder?: string;
+  submitText?: string;
+}
+
+const {
+  title = "评论",
+  nicknamePlaceholder = "昵称（可选）",
+  textPlaceholder = "写下你的评论...",
+  submitText = "发布评论",
+} = Astro.props as Props;
+---
+<section class="dynamic-comments-panel" data-dynamic-comments-panel>
+  <h3>{title}</h3>
+  <div class="dynamic-comment-form">
+    <input type="text" data-dynamic-comment-nickname placeholder={nicknamePlaceholder} maxlength="24" />
+    <textarea data-dynamic-comment-text placeholder={textPlaceholder} maxlength="600"></textarea>
+    <div class="dynamic-reply-state" data-dynamic-reply-state></div>
+    <button type="button" class="dynamic-submit-btn" data-dynamic-comment-submit>{submitText}</button>
+  </div>
+  <div class="dynamic-comment-list" data-dynamic-comment-list>
+    <div class="dynamic-comment-empty">还没有评论，欢迎第一条留言。</div>
+  </div>
+  <div class="dynamic-comment-pagination" data-dynamic-comment-pagination></div>
+</section>

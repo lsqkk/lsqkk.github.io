@@ -39,6 +39,7 @@
     el.resetSubmit = document.getElementById('resetSubmit');
     el.resetStatus = document.getElementById('resetStatus');
     el.registerUsername = document.getElementById('registerUsername');
+    el.registerUsernameStatus = document.getElementById('registerUsernameStatus');
     el.registerEmail = document.getElementById('registerEmail');
     el.registerEmailCode = document.getElementById('registerEmailCode');
     el.registerEmailSend = document.getElementById('registerEmailSend');
@@ -59,6 +60,9 @@
   let firebaseReady = false;
   let emailTokenCache = {};
   let loginMode = 'password';
+  let usernameCheckTimer = null;
+  let usernameCheckSeq = 0;
+  let lastCheckedUsername = '';
 
   function setText(target, value) {
     if (!target) return;
@@ -67,6 +71,16 @@
 
   function setStatus(target, value) {
     setText(target, value);
+  }
+
+  function setStatusState(target, value, state) {
+    if (!target) return;
+    target.textContent = value;
+    if (!(target instanceof HTMLElement)) return;
+    target.classList.remove('status-row--ok', 'status-row--warn', 'status-row--info');
+    if (state) {
+      target.classList.add(`status-row--${state}`);
+    }
   }
 
   function initThemeSync() {
@@ -459,6 +473,49 @@
     return snap.exists() ? snap.val() : null;
   }
 
+  async function checkUsernameAvailability(rawValue, immediate = false) {
+    if (!(el.registerUsernameStatus instanceof HTMLElement)) return;
+    const value = String(rawValue || '').trim();
+    if (!value) {
+      setStatusState(el.registerUsernameStatus, '等待输入账号名', 'info');
+      return;
+    }
+    if (!validateUsername(value)) {
+      setStatusState(el.registerUsernameStatus, '账号名需为 3-20 位英文字母', 'warn');
+      return;
+    }
+    const normalized = normalizeUsername(value);
+    if (!immediate && normalized === lastCheckedUsername) return;
+    lastCheckedUsername = normalized;
+    setStatusState(el.registerUsernameStatus, '正在检查账号名...', 'info');
+    const seq = ++usernameCheckSeq;
+    try {
+      const db = await ensureFirebase();
+      const snap = await db.ref(`${DB_USERS}/${normalized}`).once('value');
+      if (seq !== usernameCheckSeq) return;
+      if (snap.exists()) {
+        setStatusState(el.registerUsernameStatus, '账号名已被占用', 'warn');
+      } else {
+        setStatusState(el.registerUsernameStatus, '账号名可用', 'ok');
+      }
+    } catch (error) {
+      console.error('检查账号名失败:', error);
+      if (seq !== usernameCheckSeq) return;
+      setStatusState(el.registerUsernameStatus, '账号名检查失败，请稍后再试', 'warn');
+    }
+  }
+
+  function scheduleUsernameCheck() {
+    if (!(el.registerUsername instanceof HTMLInputElement)) return;
+    if (usernameCheckTimer) {
+      window.clearTimeout(usernameCheckTimer);
+    }
+    const value = el.registerUsername.value;
+    usernameCheckTimer = window.setTimeout(() => {
+      void checkUsernameAvailability(value);
+    }, 400);
+  }
+
   async function handleRegister() {
     if (!(el.registerUsername instanceof HTMLInputElement) ||
       !(el.registerPassword instanceof HTMLInputElement) ||
@@ -796,6 +853,7 @@
         if (el.registerPassword instanceof HTMLInputElement) el.registerPassword.value = '';
         if (el.registerPassword2 instanceof HTMLInputElement) el.registerPassword2.value = '';
         setText(el.registerStatus, '等待注册');
+        setStatusState(el.registerUsernameStatus, '等待输入账号名', 'info');
         resetTurnstile();
       });
     }
@@ -811,6 +869,15 @@
             if (ok) startCooldown(el.registerEmailSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
           });
         }
+      });
+    }
+
+    if (el.registerUsername) {
+      el.registerUsername.addEventListener('input', () => {
+        scheduleUsernameCheck();
+      });
+      el.registerUsername.addEventListener('blur', () => {
+        void checkUsernameAvailability(el.registerUsername.value, true);
       });
     }
   }
@@ -832,6 +899,7 @@
       setStatus(el.loginStatus, '验证码未配置，请联系站长');
       setStatus(el.registerStatus, '验证码未配置，请联系站长');
     }
+    setStatusState(el.registerUsernameStatus, '等待输入账号名', 'info');
     bindEvents();
   }
 
