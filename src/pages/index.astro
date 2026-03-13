@@ -100,9 +100,11 @@ function renderContactLinks(config: any): string {
       ${items
         .map(
           (item) => `<a class="contact-chip" href="${escapeHtml(item.href)}"${item.target ? ` target="${item.target}"` : ""}>
-            <i class="${item.icon}"></i>
-            <span class="contact-label">${escapeHtml(item.label)}</span>
-            <span class="contact-value">${escapeHtml(item.value)}</span>
+            <span class="contact-icon"><i class="${item.icon}"></i></span>
+            <span class="contact-text">
+              <span class="contact-label">${escapeHtml(item.label)}</span>
+              <span class="contact-value">${escapeHtml(item.value)}</span>
+            </span>
           </a>`
         )
         .join("")}
@@ -236,8 +238,10 @@ const mainSectionRenderers: Record<string, () => string> = {
   `,
   recent_articles: () => `
     <section class="home-block content-section">
-      <h2 class="recent-header"><a href="/posts">文章 Articles</a> <a href="/posts/rss.xml"><img class="rss-icon"
-        src="/assets/img/rss.svg" alt="RSS"></a></h2>
+      <h2 class="recent-header">
+        <a href="/posts">文章 Articles</a>
+        <a href="/posts/rss.xml" class="rss-link" aria-label="RSS订阅"><i class="fa-solid fa-rss rss-icon"></i></a>
+      </h2>
       <div class="recent-posts">
         <div id="recent-posts"></div>
         <a href="/posts" class="more-link">更多</a>

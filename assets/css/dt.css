@@ -44,6 +44,9 @@
            color: #c5cdcd;
            font-size: 0.9rem;
            margin-bottom: 1rem;
+           display: inline-flex;
+           align-items: center;
+           gap: 6px;
        }
 
        .dynamic-content {
@@ -176,6 +179,10 @@
            margin-bottom: 1rem;
            text-align: center;
            font-weight: 500;
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           gap: 8px;
        }
 
        .month-list {

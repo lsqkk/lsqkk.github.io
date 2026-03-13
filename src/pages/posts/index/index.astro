@@ -39,12 +39,13 @@ const currentYear = new Date().getFullYear();
     <div class="posts-container">
       <h1 class="page-title">文章 / POSTS</h1>
       <h2 class="page-subtitle">
+        <i class="fa-solid fa-rss"></i>
         RSS订阅链接: <a href="https://lsqkk.github.io/posts/rss.xml" target="_blank">https://lsqkk.github.io/posts/rss.xml</a>
       </h2>
       <div id="searchResults" class="search-results"></div>
       <div class="posts-fold-panel" id="tagFilterPanel">
         <button class="posts-fold-toggle" type="button" data-target="tagFilterWrap">
-          标签 <span class="posts-fold-count" id="tagCount">0</span>
+          <i class="fa-solid fa-tag"></i>标签 <span class="posts-fold-count" id="tagCount">0</span>
         </button>
         <div class="posts-fold-content" id="tagFilterWrap">
           <div id="tagFilter" class="tag-filter"></div>
@@ -52,7 +53,7 @@ const currentYear = new Date().getFullYear();
       </div>
       <div class="posts-fold-panel" id="columnFilterPanel">
         <button class="posts-fold-toggle" type="button" data-target="columnFilterWrap">
-          专栏 <span class="posts-fold-count" id="columnCount">0</span>
+          <i class="fa-solid fa-folder-open"></i>专栏 <span class="posts-fold-count" id="columnCount">0</span>
         </button>
         <div class="posts-fold-content" id="columnFilterWrap">
           <div id="columnFilter" class="tag-filter"></div>

@@ -63,7 +63,7 @@ const { entry } = Astro.props as {
       <div class="dynamic-header"><h1 class="page-title">动态详情 / Update Detail</h1></div>
       <article class="dynamic-card dynamic-detail-card" data-dynamic-id={entry.id}>
         <h2 class="dynamic-title">{entry.title}</h2>
-        {entry.date && <div class="dynamic-date">📅 {entry.date}</div>}
+        {entry.date && <div class="dynamic-date"><i class="fa-regular fa-calendar"></i>{entry.date}</div>}
         <div class="dynamic-content" id="dynamic-detail-content"></div>
         <div class="dynamic-entry-footer">
           <button class="dynamic-action-btn" type="button" data-dynamic-like-btn>

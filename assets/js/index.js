@@ -853,7 +853,7 @@ function renderDynamicEntries(entries) {
         return `
         <div class="dynamic-card" data-dynamic-id="${dynamicId}" data-dynamic-link="/blog/dt/${dynamicId}">
             <div class="dynamic-title">${entry.title}</div>
-            ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
+            ${entry.date ? `<div class="dynamic-date"><i class="fa-regular fa-calendar"></i>${entry.date}</div>` : ''}
             <div class="dynamic-content">${htmlContent}</div>
             ${galleryHtml}
             <div class="dynamic-entry-footer">

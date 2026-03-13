@@ -147,7 +147,7 @@ function renderCalendar() {
     const monthKeys = Object.keys(monthData).sort((a, b) => b.localeCompare(a));
 
     let calendarHTML = '<div class="calendar-widget">';
-    calendarHTML += '<h3 class="calendar-title">📅 动态月历</h3>';
+    calendarHTML += '<h3 class="calendar-title"><i class="fa-regular fa-calendar"></i>动态月历</h3>';
     calendarHTML += '<div class="month-list">';
 
     if (monthKeys.length === 0) {
@@ -235,7 +235,7 @@ function renderDynamicEntries(entries) {
         return `
         <div class="dynamic-card" data-dynamic-id="${entry.id}" data-dynamic-link="/blog/dt/${entry.id}">
             <h2 class="dynamic-title">${entry.title}</h2>
-            ${entry.date ? `<div class="dynamic-date">📅 ${entry.date}</div>` : ''}
+            ${entry.date ? `<div class="dynamic-date"><i class="fa-regular fa-calendar"></i>${entry.date}</div>` : ''}
             <div class="dynamic-content">
                 ${htmlContent}
             </div>

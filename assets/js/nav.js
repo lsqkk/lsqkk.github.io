@@ -3,6 +3,13 @@ const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = '/assets/css/nav.css';
 document.head.appendChild(link);
+const faLink = document.querySelector('link[href*="font-awesome"]');
+if (!faLink) {
+    const fa = document.createElement('link');
+    fa.rel = 'stylesheet';
+    fa.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+    document.head.appendChild(fa);
+}
 const profileScript = document.createElement('script');
 profileScript.src = '/assets/js/user-profile.js';
 profileScript.defer = true;
@@ -589,9 +596,9 @@ function renderUserProfile() {
                 </div>
             </div>
             <div class="nav-user-actions">
-                <a href="/a/account">账号中心</a>
-                <a href="${spaceUrl}">我的主页</a>
-                <button type="button" data-action="logout">退出登录</button>
+                <a href="/a/account"><i class="fa-regular fa-user"></i><span>账号中心</span></a>
+                <a href="${spaceUrl}"><i class="fa-regular fa-id-badge"></i><span>我的主页</span></a>
+                <button type="button" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>退出登录</span></button>
             </div>
         </div>
     `;
