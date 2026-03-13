@@ -371,9 +371,10 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px;
-    max-width: 44px;
+    width: 44px;
     height: 44px;
+    padding: 0;
+    max-width: 44px;
     box-sizing: border-box;
     border: 1px solid var(--line);
     border-radius: 999px;
@@ -384,13 +385,14 @@ body {
     backdrop-filter: blur(7px);
     -webkit-backdrop-filter: blur(7px);
     overflow: hidden;
-    transition: max-width 0.55s ease, background-color 0.35s ease, border-color 0.35s ease;
+    justify-content: center;
+    transition: max-width 0.7s ease, background-color 0.45s ease, border-color 0.45s ease;
 }
 
 .contact-chip:hover,
 .contact-chip.is-open {
     max-width: 320px;
-    padding: 6px 12px;
+    padding: 0 12px;
     border-color: rgba(47, 110, 219, 0.2);
 }
 
@@ -399,7 +401,7 @@ body {
     align-items: center;
     justify-content: center;
     color: #2f6edb;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     flex-shrink: 0;
 }
 
@@ -412,7 +414,7 @@ body {
     max-width: 0;
     overflow: hidden;
     transform: translateX(-6px);
-    transition: opacity 0.25s ease, max-width 0.55s ease, transform 0.55s ease;
+    transition: opacity 0.3s ease, max-width 0.7s ease, transform 0.7s ease;
 }
 
 .contact-chip:hover .contact-text,
@@ -1114,17 +1116,18 @@ body {
     }
 
     .contact-chip {
-        width: 100%;
+        width: 44px;
+        height: 44px;
         max-width: 44px;
         justify-content: center;
         border-radius: var(--radius-sm);
-        padding: 8px 10px;
-        height: auto;
+        padding: 0;
     }
 
     .contact-chip.is-open {
-        max-width: none;
+        max-width: 160px;
         justify-content: flex-start;
+        padding: 0 10px;
     }
 
     .contact-chip.is-open .contact-text {
