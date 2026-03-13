@@ -4,60 +4,117 @@
   window.__quarkSpaceInited = true;
 
   const API_BASE = '__API_BASE__';
-  const listEl = document.getElementById('spaceSearchList');
-  const activityEl = document.getElementById('spaceActivityList');
-  const dynamicEl = document.getElementById('spaceDynamicList');
-  const postCommentEl = document.getElementById('spacePostCommentList');
-  const ojEl = document.getElementById('spaceOjList');
-  const statusEl = document.getElementById('spaceProfileStatus');
-  const avatarEl = document.getElementById('spaceAvatar');
-  const avatarFallback = document.getElementById('spaceAvatarFallback');
-  const nicknameEl = document.getElementById('spaceNickname');
-  const loginEl = document.getElementById('spaceLogin');
-  const loginTypeEl = document.getElementById('spaceLoginType');
-  const registerAtEl = document.getElementById('spaceRegisterAt');
-  const selfActions = document.getElementById('spaceSelfActions');
-  const logoutBtn = document.getElementById('spaceLogoutBtn');
-  const searchInput = document.getElementById('spaceSearchInput');
-  const searchBtn = document.getElementById('spaceSearchBtn');
-  const privacyToggle = document.getElementById('spaceShowActivity');
+  const LIKE_DAILY_LIMIT = 10;
+
+  const el = {
+    list: document.getElementById('spaceSearchList'),
+    activity: document.getElementById('spaceActivityList'),
+    dynamic: document.getElementById('spaceDynamicList'),
+    postComment: document.getElementById('spacePostCommentList'),
+    oj: document.getElementById('spaceOjList'),
+    status: document.getElementById('spaceProfileStatus'),
+    avatar: document.getElementById('spaceAvatar'),
+    avatarFallback: document.getElementById('spaceAvatarFallback'),
+    nickname: document.getElementById('spaceNickname'),
+    login: document.getElementById('spaceLogin'),
+    loginType: document.getElementById('spaceLoginType'),
+    registerAt: document.getElementById('spaceRegisterAt'),
+    handle: document.getElementById('spaceHandle'),
+    location: document.getElementById('spaceLocation'),
+    lastSeen: document.getElementById('spaceLastSeen'),
+    recentPage: document.getElementById('spaceRecentPage'),
+    locationSummary: document.getElementById('spaceLocationSummary'),
+    lastSeenSummary: document.getElementById('spaceLastSeenSummary'),
+    recentPageSummary: document.getElementById('spaceRecentPageSummary'),
+    recentList: document.getElementById('spaceRecentList'),
+    selfActions: document.getElementById('spaceSelfActions'),
+    logoutBtn: document.getElementById('spaceLogoutBtn'),
+    searchInput: document.getElementById('spaceSearchInput'),
+    searchBtn: document.getElementById('spaceSearchBtn'),
+    likeBtn: document.getElementById('spaceLikeBtn'),
+    likeCount: document.getElementById('spaceLikeCount'),
+    likeStatus: document.getElementById('spaceLikeStatus')
+  };
+
+  const privacyButtons = Array.from(document.querySelectorAll('[data-privacy-toggle]'));
+  const privacyCards = Array.from(document.querySelectorAll('.space-card[data-privacy-key]'));
+  const summaryItems = Array.from(document.querySelectorAll('.summary-item[data-privacy-key]'));
 
   const params = new URLSearchParams(window.location.search);
+  let activityCache = null;
+  let currentUser = null;
+  let currentUid = '';
+  let currentPrivacy = {};
+  let isSelfUser = false;
+  let likeState = { total: 0, todayCount: 0 };
 
-  function setText(el, value) {
-    if (el) el.textContent = value;
+  function setText(target, value) {
+    if (target) target.textContent = value;
   }
 
-  function setAvatar(url, name) {
-    if (avatarEl instanceof HTMLImageElement) {
-      avatarEl.src = url || '';
-      avatarEl.style.display = url ? 'block' : 'none';
+  function escapeHtml(text) {
+    const shared = window.CommentShared;
+    if (shared && typeof shared.escapeHtml === 'function') {
+      return shared.escapeHtml(text);
     }
-    if (avatarFallback instanceof HTMLElement) {
-      avatarFallback.textContent = name ? name.slice(0, 1).toUpperCase() : 'Q';
-      avatarFallback.style.display = url ? 'none' : 'flex';
-    }
+    return String(text ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
-  function formatTime(ts) {
+  function formatDate(ts) {
     if (!ts) return '-';
     const date = new Date(ts);
     if (Number.isNaN(date.getTime())) return '-';
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
 
-  function isSelf(login, loginType) {
-    const profile = window.CommentShared && typeof window.CommentShared.getLoginProfile === 'function'
-      ? window.CommentShared.getLoginProfile()
-      : null;
-    if (!profile || !profile.login) return false;
-    if (window.CommentShared && typeof window.CommentShared.getAccountIdentifier === 'function') {
-      return window.CommentShared.getAccountIdentifier(profile) === (loginType === 'local' ? `qb_${login}` : `gh_${login}`);
+  function formatDateTime(ts) {
+    if (!ts) return '-';
+    const date = new Date(ts);
+    if (Number.isNaN(date.getTime())) return '-';
+    return date.toLocaleString('zh-CN', { hour12: false });
+  }
+
+  function formatAgo(ts) {
+    if (!ts) return '-';
+    const diff = Date.now() - ts;
+    if (diff < 60 * 1000) return '刚刚';
+    const minutes = Math.round(diff / 60000);
+    if (minutes < 60) return `${minutes} 分钟前`;
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return `${hours} 小时前`;
+    const days = Math.round(hours / 24);
+    return `${days} 天前`;
+  }
+
+  function getDayKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  function setAvatar(url, name) {
+    if (el.avatar instanceof HTMLImageElement) {
+      el.avatar.src = url || '';
+      el.avatar.style.display = url ? 'block' : 'none';
     }
-    if (profile.loginType === 'local') {
-      return loginType === 'local' && profile.login === login;
+    if (el.avatarFallback instanceof HTMLElement) {
+      el.avatarFallback.textContent = name ? name.slice(0, 1).toUpperCase() : 'Q';
+      el.avatarFallback.style.display = url ? 'none' : 'flex';
     }
-    return loginType === 'github' && profile.login === login;
+  }
+
+  function matchLogin(item, login, loginType) {
+    if (!item || !login) return false;
+    const itemLogin = String(item.login || '');
+    const itemType = String(item.loginType || '');
+    if (itemLogin !== login) return false;
+    if (!loginType) return true;
+    if (!itemType) return true;
+    return itemType === loginType;
   }
 
   async function fetchDb(path, query) {
@@ -77,101 +134,174 @@
     return data && data.data ? data.data : null;
   }
 
+  async function postDb(op, path, value) {
+    const resp = await fetch(`${API_BASE}/api/db`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ op, path, value })
+    });
+    if (!resp.ok) throw new Error(`DB ${resp.status}`);
+    return resp.json().catch(() => ({}));
+  }
+
+  async function loadActivityCache() {
+    if (activityCache) return activityCache;
+    activityCache = await fetchDb('user_activity').catch(() => ({})) || {};
+    return activityCache;
+  }
+
+  function getAccountIdentifier(login, loginType) {
+    const shared = window.CommentShared;
+    if (shared && typeof shared.getAccountIdentifierFrom === 'function') {
+      return shared.getAccountIdentifierFrom(login || '', loginType || '');
+    }
+    if (!login) return '';
+    return loginType === 'local' ? `qb_${login}` : `gh_${login}`;
+  }
+
+  function normalizeIdentifier(raw) {
+    const input = String(raw || '').trim();
+    if (!input) return { login: '', loginType: '', identifier: '' };
+    if (input.startsWith('qb_')) {
+      return { login: input.slice(3), loginType: 'local', identifier: input };
+    }
+    if (input.startsWith('gh_')) {
+      return { login: input.slice(3), loginType: 'github', identifier: input };
+    }
+    return { login: input, loginType: '', identifier: '' };
+  }
+
+  function isSelf(login, loginType) {
+    const shared = window.CommentShared;
+    const profile = shared && typeof shared.getLoginProfile === 'function'
+      ? shared.getLoginProfile()
+      : null;
+    if (!profile || !profile.login) return false;
+    const identifier = getAccountIdentifier(profile.login, profile.loginType || '');
+    if (!identifier) return false;
+    return identifier === getAccountIdentifier(login, loginType);
+  }
+
+  async function resolveUser(identifier) {
+    if (!identifier) return null;
+    const parsed = normalizeIdentifier(identifier);
+    const activity = await loadActivityCache();
+    const entries = Object.entries(activity || {});
+
+    let matchedUid = '';
+    let matchedProfile = null;
+
+    if (parsed.login) {
+      for (const [uid, item] of entries) {
+        const profile = item && item.profile ? item.profile : null;
+        if (!profile || !profile.login) continue;
+        const profileLogin = String(profile.login);
+        const profileType = String(profile.loginType || 'github');
+        if (profileLogin !== parsed.login) continue;
+        if (parsed.loginType && profileType !== parsed.loginType) continue;
+        matchedUid = uid;
+        matchedProfile = profile;
+        break;
+      }
+    }
+
+    if (!matchedProfile && parsed.login && parsed.loginType === 'local') {
+      const qb = await fetchDb(`qb_users/${parsed.login.toLowerCase()}`).catch(() => null);
+      if (qb) {
+        matchedProfile = {
+          login: parsed.login,
+          loginType: 'local',
+          nickname: qb.nickname || parsed.login,
+          avatarUrl: qb.avatarUrl || '',
+          avatarType: qb.avatarUrl ? 'image' : (qb.avatarType || 'color'),
+          avatarColor: qb.avatarColor || '#4a6cf7',
+          createdAt: qb.createdAt || 0,
+          updatedAt: qb.updatedAt || 0
+        };
+      }
+    }
+
+    if (!matchedProfile) return null;
+
+    const loginType = matchedProfile.loginType || parsed.loginType || 'github';
+    const login = matchedProfile.login || parsed.login;
+    const identifierOut = getAccountIdentifier(login, loginType);
+
+    return {
+      uid: matchedUid,
+      login,
+      loginType,
+      identifier: identifierOut,
+      profile: matchedProfile,
+      raw: activity[matchedUid] || {}
+    };
+  }
+
   function renderSearchList(items) {
-    if (!(listEl instanceof HTMLElement)) return;
+    if (!(el.list instanceof HTMLElement)) return;
     if (!items.length) {
-      listEl.textContent = '未找到匹配用户';
+      el.list.textContent = '未找到匹配用户';
       return;
     }
-    listEl.innerHTML = items.map((item) => `
+    el.list.innerHTML = items.map((item) => `
       <div class="space-item">
-        <strong>${item.nickname || item.login}</strong>
-        <div>账号标识：${item.identifier}</div>
+        <strong>${escapeHtml(item.nickname || item.login)}</strong>
+        <div>账号标识：${escapeHtml(item.identifier)}</div>
         <a href="/space?user=${encodeURIComponent(item.identifier)}">查看主页</a>
       </div>
     `).join('');
   }
 
-  function renderActivity(items) {
-    if (!(activityEl instanceof HTMLElement)) return;
+  function renderList(target, items, emptyText, builder) {
+    if (!(target instanceof HTMLElement)) return;
     if (!items.length) {
-      activityEl.textContent = '暂无发言';
+      target.textContent = emptyText;
       return;
     }
-    activityEl.innerHTML = items.map((item) => `
+    target.innerHTML = items.map(builder).join('');
+  }
+
+  function renderRecent(events) {
+    if (!(el.recentList instanceof HTMLElement)) return;
+    if (!events.length) {
+      el.recentList.textContent = '暂无浏览记录';
+      return;
+    }
+    el.recentList.innerHTML = events.map((item) => `
       <div class="space-item">
-        <strong>${item.text}</strong>
-        <div>${formatTime(item.timestamp)}</div>
-        <a href="/blog/lyb">前往留言板</a>
+        <strong>${escapeHtml(item.title || '未命名页面')}</strong>
+        <div>${formatDateTime(item.ts)}</div>
+        <a href="${escapeHtml(item.path || '#')}">${escapeHtml(item.path || '链接')}</a>
       </div>
     `).join('');
   }
 
-  function renderDynamic(items) {
-    if (!(dynamicEl instanceof HTMLElement)) return;
-    if (!items.length) {
-      dynamicEl.textContent = '暂无动态评论';
-      return;
-    }
-    dynamicEl.innerHTML = items.map((item) => `
-      <div class="space-item">
-        <strong>${item.text}</strong>
-        <div>${formatTime(item.timestamp)}</div>
-        <a href="/blog/dt/${encodeURIComponent(item.postId)}">查看动态</a>
-      </div>
-    `).join('');
-  }
-
-  function renderPostComments(items) {
-    if (!(postCommentEl instanceof HTMLElement)) return;
-    if (!items.length) {
-      postCommentEl.textContent = '暂无文章评论';
-      return;
-    }
-    postCommentEl.innerHTML = items.map((item) => `
-      <div class="space-item">
-        <strong>${item.text}</strong>
-        <div>${formatTime(item.timestamp)}</div>
-        ${item.postPath ? `<a href="${item.postPath}">查看文章${item.postTitle ? ` · ${item.postTitle}` : ''}</a>` : '<span>来源未知</span>'}
-      </div>
-    `).join('');
-  }
-
-  function renderOj(items) {
-    if (!(ojEl instanceof HTMLElement)) return;
-    if (!items.length) {
-      ojEl.textContent = '暂无讨论';
-      return;
-    }
-    ojEl.innerHTML = items.map((item) => `
-      <div class="space-item">
-        <strong>${item.text}</strong>
-        <div>${formatTime(item.timestamp)}</div>
-        <a href="/a/oj/discussion?id=${encodeURIComponent(item.discussionId)}">查看讨论</a>
-      </div>
-    `).join('');
-  }
-
-  async function loadActivity(login) {
+  async function loadActivity(login, loginType) {
     try {
       const raw = await fetchDb('chatrooms/lsqkk-lyb/messages');
       const list = raw ? Object.values(raw) : [];
       const items = list
-        .filter((msg) => msg && msg.login === login)
+        .filter((msg) => matchLogin(msg, login, loginType))
         .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
         .slice(0, 5)
         .map((msg) => ({
           text: msg.text || '无内容',
           timestamp: msg.timestamp || 0
         }));
-      renderActivity(items);
+      renderList(el.activity, items, '暂无发言', (item) => `
+        <div class="space-item">
+          <strong>${escapeHtml(item.text)}</strong>
+          <div>${formatDateTime(item.timestamp)}</div>
+          <a href="/blog/lyb">前往留言板</a>
+        </div>
+      `);
     } catch (error) {
       console.error('加载发言失败:', error);
-      if (activityEl instanceof HTMLElement) activityEl.textContent = '加载失败';
+      if (el.activity) el.activity.textContent = '加载失败';
     }
   }
 
-  async function loadDynamicComments(login) {
+  async function loadDynamicComments(login, loginType) {
     try {
       const raw = await fetchDb('dynamic_posts');
       const posts = raw ? Object.entries(raw) : [];
@@ -180,7 +310,7 @@
         const comments = post && post.comments ? post.comments : null;
         if (!comments) return;
         Object.values(comments).forEach((comment) => {
-          if (comment && comment.login === login) {
+          if (matchLogin(comment, login, loginType)) {
             items.push({
               postId,
               text: comment.text || '无内容',
@@ -189,7 +319,7 @@
           }
           if (comment && comment.replies) {
             Object.values(comment.replies).forEach((reply) => {
-              if (reply && reply.login === login) {
+              if (matchLogin(reply, login, loginType)) {
                 items.push({
                   postId,
                   text: reply.text || '无内容',
@@ -201,26 +331,32 @@
         });
       });
       const sorted = items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
-      renderDynamic(sorted);
+      renderList(el.dynamic, sorted, '暂无动态评论', (item) => `
+        <div class="space-item">
+          <strong>${escapeHtml(item.text)}</strong>
+          <div>${formatDateTime(item.timestamp)}</div>
+          <a href="/blog/dt/${encodeURIComponent(item.postId)}">查看动态</a>
+        </div>
+      `);
     } catch (error) {
       console.error('加载动态评论失败:', error);
-      if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '加载失败';
+      if (el.dynamic) el.dynamic.textContent = '加载失败';
     }
   }
 
-  async function loadPostComments(login) {
+  async function loadPostComments(login, loginType) {
     try {
       const raw = await fetchDb('post_annotations');
       const posts = raw ? Object.entries(raw) : [];
       const items = [];
-      posts.forEach(([postKey, post]) => {
+      posts.forEach(([, post]) => {
         const highlights = post && post.highlights ? post.highlights : null;
         if (!highlights) return;
         Object.values(highlights).forEach((highlight) => {
           const comments = highlight && highlight.comments ? highlight.comments : null;
           if (!comments) return;
           Object.values(comments).forEach((comment) => {
-            if (comment && comment.login === login) {
+            if (matchLogin(comment, login, loginType)) {
               items.push({
                 text: comment.text || '无内容',
                 timestamp: comment.timestamp || 0,
@@ -232,14 +368,20 @@
         });
       });
       const sorted = items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
-      renderPostComments(sorted);
+      renderList(el.postComment, sorted, '暂无文章评论', (item) => `
+        <div class="space-item">
+          <strong>${escapeHtml(item.text)}</strong>
+          <div>${formatDateTime(item.timestamp)}</div>
+          ${item.postPath ? `<a href="${escapeHtml(item.postPath)}">查看文章${item.postTitle ? ` · ${escapeHtml(item.postTitle)}` : ''}</a>` : '<span>来源未知</span>'}
+        </div>
+      `);
     } catch (error) {
       console.error('加载文章评论失败:', error);
-      if (postCommentEl instanceof HTMLElement) postCommentEl.textContent = '加载失败';
+      if (el.postComment) el.postComment.textContent = '加载失败';
     }
   }
 
-  async function loadOjDiscussions(login) {
+  async function loadOjDiscussions(login, loginType) {
     try {
       const raw = await fetchDb('oj-discussions');
       const list = raw ? Object.entries(raw) : [];
@@ -248,7 +390,7 @@
         const replies = discussion && discussion.replies ? discussion.replies : null;
         if (!replies) return;
         Object.values(replies).forEach((reply) => {
-          if (reply && reply.login === login) {
+          if (matchLogin(reply, login, loginType)) {
             items.push({
               discussionId,
               text: reply.text || '无内容',
@@ -258,70 +400,266 @@
         });
       });
       const sorted = items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
-      renderOj(sorted);
+      renderList(el.oj, sorted, '暂无讨论', (item) => `
+        <div class="space-item">
+          <strong>${escapeHtml(item.text)}</strong>
+          <div>${formatDateTime(item.timestamp)}</div>
+          <a href="/a/oj/discussion?id=${encodeURIComponent(item.discussionId)}">查看讨论</a>
+        </div>
+      `);
     } catch (error) {
       console.error('加载OJ讨论失败:', error);
-      if (ojEl instanceof HTMLElement) ojEl.textContent = '加载失败';
+      if (el.oj) el.oj.textContent = '加载失败';
     }
   }
 
-  async function resolveUser(identifier) {
-    if (!identifier) return null;
-    let login = identifier;
-    let loginType = 'github';
-    if (identifier.startsWith('qb_')) {
-      login = identifier.slice(3);
-      loginType = 'local';
-    } else if (identifier.startsWith('gh_')) {
-      login = identifier.slice(3);
-      loginType = 'github';
-    }
-
-    if (loginType === 'local') {
-      const data = await fetchDb(`qb_users/${login.toLowerCase()}`);
-      if (!data) return null;
-      let avatarUrl = data.avatarUrl || '';
-      let privacy = {};
-      let createdAt = data.createdAt || 0;
-      try {
-        const activity = await fetchDb('user_activity');
-        const list = activity ? Object.values(activity) : [];
-        const matched = list.find((item) => item && item.profile && item.profile.login === login);
-        if (matched && matched.profile) {
-          const profile = matched.profile;
-          avatarUrl = profile.avatarUrl || avatarUrl;
-          privacy = profile.privacy || {};
-          if (!createdAt && profile.createdAt) createdAt = profile.createdAt;
-        }
-      } catch {
-        // ignore
+  function applyPrivacy() {
+    privacyCards.forEach((card) => {
+      const key = card.getAttribute('data-privacy-key') || '';
+      if (!key) return;
+      const visible = currentPrivacy[key] !== false;
+      if (!visible && !isSelfUser) {
+        card.classList.add('is-hidden');
+      } else {
+        card.classList.remove('is-hidden');
       }
-      return {
-        login,
-        loginType,
-        nickname: data.nickname || login,
-        avatarUrl,
-        createdAt,
-        privacy,
-        identifier: `qb_${login}`
-      };
+      card.classList.toggle('is-private', !visible && isSelfUser);
+    });
+
+    summaryItems.forEach((item) => {
+      const key = item.getAttribute('data-privacy-key') || '';
+      if (!key) return;
+      const visible = currentPrivacy[key] !== false;
+      if (!visible && !isSelfUser) {
+        item.classList.add('is-hidden');
+      } else {
+        item.classList.remove('is-hidden');
+      }
+      item.classList.toggle('is-private', !visible && isSelfUser);
+    });
+
+    privacyButtons.forEach((button) => {
+      const key = button.getAttribute('data-privacy-toggle') || '';
+      if (!key) return;
+      const visible = currentPrivacy[key] !== false;
+      button.classList.toggle('is-off', !visible);
+      button.setAttribute('aria-pressed', String(visible));
+      const label = button.querySelector('span');
+      if (label) label.textContent = visible ? '展示中' : '已隐藏';
+      if (!isSelfUser) {
+        button.setAttribute('disabled', 'true');
+      } else {
+        button.removeAttribute('disabled');
+      }
+    });
+
+    if (!isSelfUser) {
+      if (currentPrivacy.showLocation === false) {
+        setText(el.location, 'IP 属地：已隐藏');
+        setText(el.locationSummary, '已隐藏');
+      }
+      if (currentPrivacy.showLastSeen === false) {
+        setText(el.lastSeen, '最近在线：已隐藏');
+        setText(el.lastSeenSummary, '已隐藏');
+      }
+      if (currentPrivacy.showRecentPage === false) {
+        setText(el.recentPage, '最近浏览：已隐藏');
+        setText(el.recentPageSummary, '已隐藏');
+      }
+      if (currentPrivacy.showIdentifier === false) {
+        setText(el.login, '账号标识：已隐藏');
+        setText(el.handle, '@已隐藏');
+      }
     }
 
-    const activity = await fetchDb('user_activity');
-    if (!activity) return null;
-    const list = Object.values(activity);
-    const matched = list.find((item) => item && item.profile && item.profile.login === login);
-    if (!matched) return null;
-    const profile = matched.profile || {};
-    return {
-      login,
-      loginType: profile.loginType || 'github',
-      nickname: profile.nickname || login,
-      avatarUrl: profile.avatarUrl || profile.avatar || '',
-      createdAt: profile.createdAt || profile.updatedAt || 0,
-      privacy: profile.privacy || {},
-      identifier: `gh_${login}`
-    };
+    if (isSelfUser) {
+      if (el.activity && currentPrivacy.showActivity === false) el.activity.textContent = '你已隐藏留言板';
+      if (el.dynamic && currentPrivacy.showDynamic === false) el.dynamic.textContent = '你已隐藏动态评论';
+      if (el.postComment && currentPrivacy.showPostComments === false) el.postComment.textContent = '你已隐藏文章讨论';
+      if (el.oj && currentPrivacy.showOj === false) el.oj.textContent = '你已隐藏 OJ 讨论';
+      if (el.recentList && currentPrivacy.showRecentBrowse === false) el.recentList.textContent = '你已隐藏最近浏览';
+    }
+  }
+
+  async function updatePrivacy(key, visible) {
+    if (!currentUid || !key) return;
+    currentPrivacy = { ...currentPrivacy, [key]: visible };
+    applyPrivacy();
+    try {
+      await postDb('update', `user_activity/${currentUid}/profile`, {
+        privacy: currentPrivacy,
+        updatedAt: Date.now()
+      });
+    } catch (error) {
+      console.error('更新隐私设置失败:', error);
+    }
+  }
+
+  function getLikeActorId() {
+    const shared = window.CommentShared;
+    const profile = shared && typeof shared.getLoginProfile === 'function'
+      ? shared.getLoginProfile()
+      : null;
+    if (profile && profile.login) {
+      return getAccountIdentifier(profile.login, profile.loginType || '');
+    }
+    if (shared && typeof shared.getGuestUid === 'function') {
+      const guestUid = shared.getGuestUid();
+      return guestUid || '';
+    }
+    return '';
+  }
+
+  async function loadLikes(targetUid) {
+    if (!targetUid) return;
+    try {
+      const data = await fetchDb(`user_space_likes/${targetUid}`) || {};
+      const total = typeof data.total === 'number' ? data.total : 0;
+      const dayKey = getDayKey();
+      const likeId = getLikeActorId();
+      const todayCount = likeId && data.daily && data.daily[dayKey] && data.daily[dayKey][likeId]
+        ? Number(data.daily[dayKey][likeId])
+        : 0;
+      likeState = { total, todayCount };
+      if (el.likeCount) el.likeCount.textContent = String(total);
+      if (el.likeStatus) {
+        const remain = Math.max(0, LIKE_DAILY_LIMIT - todayCount);
+        el.likeStatus.textContent = `今日可点赞 ${remain} 次`;
+      }
+    } catch (error) {
+      console.error('加载点赞失败:', error);
+    }
+  }
+
+  async function handleLike() {
+    if (!currentUid) return;
+    const likeId = getLikeActorId();
+    if (!likeId) {
+      if (el.likeStatus) el.likeStatus.textContent = '请先登录或刷新后再试';
+      return;
+    }
+    const dayKey = getDayKey();
+    if (likeState.todayCount >= LIKE_DAILY_LIMIT) {
+      if (el.likeStatus) el.likeStatus.textContent = '今日点赞已达上限';
+      return;
+    }
+    try {
+      const data = await fetchDb(`user_space_likes/${currentUid}`) || {};
+      const total = typeof data.total === 'number' ? data.total : 0;
+      const todayCount = likeId && data.daily && data.daily[dayKey] && data.daily[dayKey][likeId]
+        ? Number(data.daily[dayKey][likeId])
+        : 0;
+      if (todayCount >= LIKE_DAILY_LIMIT) {
+        likeState.todayCount = todayCount;
+        if (el.likeStatus) el.likeStatus.textContent = '今日点赞已达上限';
+        return;
+      }
+      const nextCount = todayCount + 1;
+      const nextTotal = total + 1;
+      await postDb('update', `user_space_likes/${currentUid}`, {
+        total: nextTotal,
+        [`daily/${dayKey}/${likeId}`]: nextCount
+      });
+      likeState = { total: nextTotal, todayCount: nextCount };
+      if (el.likeCount) el.likeCount.textContent = String(nextTotal);
+      if (el.likeStatus) {
+        const remain = Math.max(0, LIKE_DAILY_LIMIT - nextCount);
+        el.likeStatus.textContent = `今日可点赞 ${remain} 次`;
+      }
+    } catch (error) {
+      console.error('点赞失败:', error);
+      if (el.likeStatus) el.likeStatus.textContent = '点赞失败，请稍后再试';
+    }
+  }
+
+  async function loadProfile() {
+    const rawIdentifier = params.get('user') || '';
+    if (!rawIdentifier) {
+      setText(el.status, '请输入用户后搜索');
+      if (el.selfActions) el.selfActions.style.display = 'none';
+      return;
+    }
+    setText(el.status, '加载中...');
+    try {
+      const result = await resolveUser(rawIdentifier);
+      if (!result) {
+        setText(el.status, '未找到用户');
+        return;
+      }
+      const profile = result.profile || {};
+      currentUser = result;
+      currentUid = result.uid || '';
+      currentPrivacy = profile.privacy || {};
+      isSelfUser = isSelf(result.login, result.loginType);
+
+      setText(el.status, '已加载');
+      setText(el.nickname, profile.nickname || result.login);
+      setText(el.login, result.identifier ? `账号标识：${result.identifier}` : '账号标识：-');
+      setText(el.loginType, `类型：${result.loginType === 'local' ? '站内账号' : 'GitHub'}`);
+      setText(el.registerAt, `注册时间：${formatDate(profile.createdAt || profile.updatedAt || 0)}`);
+      setText(el.handle, result.identifier ? `@${result.identifier}` : '@-');
+
+      const locationText = [profile.province, profile.city].filter(Boolean).join(' ');
+      setText(el.location, `IP 属地：${locationText || '-'}`);
+      setText(el.locationSummary, locationText || '-');
+
+      const activity = await loadActivityCache();
+      const userData = currentUid ? activity[currentUid] || {} : {};
+      const events = userData && userData.events ? Object.values(userData.events) : [];
+      const logins = userData && userData.logins ? Object.values(userData.logins) : [];
+      const latestEvent = events.sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
+      const latestLogin = logins.sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
+      let lastSeenTs = latestEvent && latestEvent.ts ? latestEvent.ts : (latestLogin && latestLogin.ts ? latestLogin.ts : 0);
+
+      if (currentUid) {
+        const presence = await fetchDb(`presence/${currentUid}`).catch(() => null);
+        if (presence && presence.lastSeen) {
+          lastSeenTs = Math.max(lastSeenTs || 0, presence.lastSeen);
+        }
+      }
+
+      setText(el.lastSeen, `最近在线：${formatAgo(lastSeenTs)} (${formatDateTime(lastSeenTs)})`);
+      setText(el.lastSeenSummary, formatAgo(lastSeenTs));
+
+      const recentPageTitle = latestEvent ? (latestEvent.title || latestEvent.path || '-') : '-';
+      setText(el.recentPage, `最近浏览：${recentPageTitle}`);
+      setText(el.recentPageSummary, recentPageTitle || '-');
+
+      const recentEvents = events.sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 5);
+      renderRecent(recentEvents);
+
+      setAvatar(profile.avatarUrl || profile.avatar || '', profile.nickname || result.login);
+
+      if (el.selfActions) {
+        el.selfActions.style.display = isSelfUser ? 'flex' : 'none';
+      }
+
+      applyPrivacy();
+
+      if (currentPrivacy.showActivity !== false) {
+        await loadActivity(result.login, result.loginType);
+      }
+      if (currentPrivacy.showDynamic !== false) {
+        await loadDynamicComments(result.login, result.loginType);
+      }
+      if (currentPrivacy.showPostComments !== false) {
+        await loadPostComments(result.login, result.loginType);
+      }
+      if (currentPrivacy.showOj !== false) {
+        await loadOjDiscussions(result.login, result.loginType);
+      }
+
+      if (currentPrivacy.showRecentBrowse === false) {
+        if (el.recentList) el.recentList.textContent = isSelfUser ? '你已隐藏最近浏览' : '该用户隐藏了最近浏览';
+      }
+
+      if (currentUid) {
+        await loadLikes(currentUid);
+      }
+    } catch (error) {
+      console.error('加载用户失败:', error);
+      setText(el.status, '加载失败');
+    }
   }
 
   async function searchUsers(keyword) {
@@ -332,150 +670,77 @@
     const lower = keyword.toLowerCase();
     const [locals, activity] = await Promise.all([
       fetchDb('qb_users').catch(() => ({})),
-      fetchDb('user_activity').catch(() => ({}))
+      loadActivityCache()
     ]);
     const list = [];
+    const seen = new Set();
+
     Object.entries(locals || {}).forEach(([login, data]) => {
       const nickname = data && data.nickname ? data.nickname : login;
       if (login.toLowerCase().includes(lower) || String(nickname).toLowerCase().includes(lower)) {
-        list.push({
-          login,
-          loginType: 'local',
-          nickname,
-          identifier: `qb_${login}`
-        });
+        const identifier = `qb_${login}`;
+        if (!seen.has(identifier)) {
+          seen.add(identifier);
+          list.push({ login, loginType: 'local', nickname, identifier });
+        }
       }
     });
+
     Object.values(activity || {}).forEach((item) => {
       const profile = item && item.profile ? item.profile : null;
       if (!profile || !profile.login) return;
       const login = String(profile.login);
       const nickname = profile.nickname || login;
       if (login.toLowerCase().includes(lower) || String(nickname).toLowerCase().includes(lower)) {
-        list.push({
-          login,
-          loginType: profile.loginType || 'github',
-          nickname,
-          identifier: `gh_${login}`
-        });
+        const identifier = getAccountIdentifier(login, profile.loginType || 'github');
+        if (identifier && !seen.has(identifier)) {
+          seen.add(identifier);
+          list.push({ login, loginType: profile.loginType || 'github', nickname, identifier });
+        }
       }
     });
+
     renderSearchList(list.slice(0, 20));
   }
 
-  async function loadProfile() {
-    const identifier = params.get('user') || '';
-    if (!identifier) {
-      setText(statusEl, '请输入用户后搜索');
-      if (selfActions) selfActions.style.display = 'none';
-      return;
-    }
-    setText(statusEl, '加载中...');
-    try {
-      const user = await resolveUser(identifier);
-      if (!user) {
-        setText(statusEl, '未找到用户');
-        return;
-      }
-      setText(statusEl, '已加载');
-      setText(nicknameEl, user.nickname || user.login);
-      setText(loginEl, `账号标识：${user.identifier}`);
-      setText(loginTypeEl, `类型：${user.loginType === 'local' ? '站内账号' : 'GitHub'}`);
-      setText(registerAtEl, `注册时间：${formatTime(user.createdAt)}`);
-      setAvatar(user.avatarUrl, user.nickname || user.login);
-      if (selfActions instanceof HTMLElement) {
-        selfActions.style.display = isSelf(user.login, user.loginType) ? 'flex' : 'none';
-      }
-      const showActivity = user.privacy && user.privacy.showActivity === false ? false : true;
-      if (privacyToggle instanceof HTMLInputElement) {
-        privacyToggle.checked = showActivity;
-      }
-      if (showActivity) {
-        await loadActivity(user.login);
-        await loadDynamicComments(user.login);
-        await loadPostComments(user.login);
-        await loadOjDiscussions(user.login);
-      } else {
-        if (activityEl instanceof HTMLElement) activityEl.textContent = '该用户隐藏了最近发言';
-        if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '该用户隐藏了最近发言';
-        if (postCommentEl instanceof HTMLElement) postCommentEl.textContent = '该用户隐藏了最近发言';
-        if (ojEl instanceof HTMLElement) ojEl.textContent = '该用户隐藏了最近发言';
-      }
-      if (isSelf(user.login, user.loginType)) {
-        if (privacyToggle instanceof HTMLInputElement) {
-          privacyToggle.disabled = false;
-        }
-      } else if (privacyToggle instanceof HTMLInputElement) {
-        privacyToggle.disabled = true;
-      }
-    } catch (error) {
-      console.error('加载用户失败:', error);
-      setText(statusEl, '加载失败');
-    }
-  }
-
   function bindEvents() {
-    if (searchBtn) {
-      searchBtn.addEventListener('click', () => {
-        const keyword = searchInput instanceof HTMLInputElement ? searchInput.value.trim() : '';
+    if (el.searchBtn) {
+      el.searchBtn.addEventListener('click', () => {
+        const keyword = el.searchInput instanceof HTMLInputElement ? el.searchInput.value.trim() : '';
         void searchUsers(keyword);
       });
     }
-    if (searchInput instanceof HTMLInputElement) {
-      searchInput.addEventListener('keydown', (event) => {
+    if (el.searchInput instanceof HTMLInputElement) {
+      el.searchInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-          void searchUsers(searchInput.value.trim());
+          void searchUsers(el.searchInput.value.trim());
         }
       });
     }
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
+    if (el.logoutBtn) {
+      el.logoutBtn.addEventListener('click', () => {
         if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
           window.CommentShared.logout('/');
         }
       });
     }
-    if (privacyToggle instanceof HTMLInputElement) {
-      privacyToggle.addEventListener('change', async () => {
-        const profile = window.CommentShared && typeof window.CommentShared.getLoginProfile === 'function'
-          ? window.CommentShared.getLoginProfile()
-          : null;
-        if (!profile || !profile.login) return;
-        try {
-          const uid = window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
-            ? window.QuarkUserProfile.getUid()
-            : '';
-          if (!uid) return;
-          await fetch(`${API_BASE}/api/db`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              op: 'update',
-              path: `user_activity/${uid}/profile`,
-              value: {
-                privacy: { showActivity: privacyToggle.checked },
-                updatedAt: Date.now()
-              }
-            })
-          });
-          if (!privacyToggle.checked) {
-            if (activityEl instanceof HTMLElement) activityEl.textContent = '你已隐藏最近发言';
-            if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '你已隐藏最近发言';
-            if (ojEl instanceof HTMLElement) ojEl.textContent = '你已隐藏最近发言';
-          } else {
-            void loadActivity(profile.login);
-            void loadDynamicComments(profile.login);
-            void loadPostComments(profile.login);
-            void loadOjDiscussions(profile.login);
-          }
-        } catch (error) {
-          console.error('更新隐私设置失败:', error);
-        }
+    if (el.likeBtn) {
+      el.likeBtn.addEventListener('click', () => {
+        void handleLike();
       });
     }
+    privacyButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!isSelfUser) return;
+        const key = button.getAttribute('data-privacy-toggle') || '';
+        if (!key) return;
+        const nextVisible = currentPrivacy[key] === false;
+        void updatePrivacy(key, nextVisible);
+      });
+    });
   }
 
-  function init() {
+  function initTheme() {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const applyTheme = () => {
       document.body.classList.toggle('dark-mode', media.matches);
@@ -486,11 +751,11 @@
     } else if (typeof media.addListener === 'function') {
       media.addListener(applyTheme);
     }
+  }
+
+  function init() {
+    initTheme();
     bindEvents();
-    const keyword = searchInput instanceof HTMLInputElement ? searchInput.value.trim() : '';
-    if (keyword) {
-      void searchUsers(keyword);
-    }
     void loadProfile();
   }
 

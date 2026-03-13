@@ -339,13 +339,26 @@ function createMessageElement(message) {
     const authorHtml = sharedList && typeof sharedList.getDisplayName === 'function'
         ? sharedList.getDisplayName(message.nickname, message.login, message.loginType, message.uid)
         : (message.nickname || '访客');
-    messageDiv.innerHTML = `
-                <div class="message-header">
+    const shared = window.CommentShared;
+    const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
+        ? shared.getUserSpaceUrl(message.login, message.loginType)
+        : '';
+    const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
+        ? shared.escapeHtml(spaceUrl)
+        : spaceUrl;
+    const avatarInner = `
                     <div class="message-avatar" style="${message.avatarType === 'color' ?
             `background: ${message.avatar}` :
             `background-image: url(${message.avatar})`}">
                         ${message.avatarType === 'color' ? (message.nickname || '访')[0].toUpperCase() : ''}
                     </div>
+                `;
+    const avatarHtml = spaceUrl
+        ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarInner}</a>`
+        : avatarInner;
+    messageDiv.innerHTML = `
+                <div class="message-header">
+                    ${avatarHtml}
                     <div class="message-info">
                         <div class="message-author">${authorHtml}</div>
                         <div class="message-time">${timeText}</div>
@@ -389,14 +402,27 @@ function createReplyElement(reply) {
     const authorHtml = sharedList && typeof sharedList.getDisplayName === 'function'
         ? sharedList.getDisplayName(reply.nickname, reply.login, reply.loginType, reply.uid)
         : (reply.nickname || '访客');
-    return `
-                <div class="reply-card">
-                    <div class="reply-header">
+    const shared = window.CommentShared;
+    const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
+        ? shared.getUserSpaceUrl(reply.login, reply.loginType)
+        : '';
+    const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
+        ? shared.escapeHtml(spaceUrl)
+        : spaceUrl;
+    const avatarInner = `
                         <div class="reply-avatar" style="${reply.avatarType === 'color' ?
             `background: ${reply.avatar}` :
             `background-image: url(${reply.avatar})`}">
                             ${reply.avatarType === 'color' ? (reply.nickname || '访')[0].toUpperCase() : ''}
                         </div>
+                    `;
+    const avatarHtml = spaceUrl
+        ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarInner}</a>`
+        : avatarInner;
+    return `
+                <div class="reply-card">
+                    <div class="reply-header">
+                        ${avatarHtml}
                         <div class="message-info">
                             <div class="message-author">${authorHtml}</div>
                             <div class="message-time">${timeText}</div>

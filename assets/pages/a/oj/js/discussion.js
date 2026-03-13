@@ -91,7 +91,6 @@ function formatAuthor(nick, login, type, uid) {
             : `<i class="fab fa-github login-icon"></i>`;
         return `${base}<span class="login-badge">${icon}@${login}</span>`;
     }
-    const shared = window.CommentShared;
     const guestBadge = shared && typeof shared.renderGuestBadge === 'function' ? shared.renderGuestBadge(uid) : '';
     return `${base}${guestBadge}`;
 }
@@ -606,14 +605,27 @@ function renderRepliesTree(discussionId, replies) {
             `background-image: url(${node.avatar})` :
             `background: ${node.avatar}`;
         const avatarContent = node.avatarType === 'color' && node.nickname ? node.nickname[0].toUpperCase() : '';
+        const shared = window.CommentShared;
+        const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
+            ? shared.getUserSpaceUrl(node.login || '', node.loginType || '')
+            : '';
+        const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
+            ? shared.escapeHtml(spaceUrl)
+            : spaceUrl;
+        const avatarBlock = `
+                        <div class="message-avatar" style="${avatarStyle}">
+                            ${avatarContent}
+                        </div>
+                    `;
+        const avatarHtml = spaceUrl
+            ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarBlock}</a>`
+            : avatarBlock;
 
         html += `
             <div class="reply-card depth-${Math.min(depth, 2)}">
                 <div class="reply-header">
                     <div class="reply-meta">
-                        <div class="message-avatar" style="${avatarStyle}">
-                            ${avatarContent}
-                        </div>
+                        ${avatarHtml}
                         <div class="message-info">
                             <div class="message-author">
                                 ${formatAuthor(node.nickname, node.login, node.loginType, node.uid)} 

@@ -1,0 +1,30 @@
+---
+const { className = "" } = Astro.props;
+---
+<style is:global>
+  body.luxury-body {
+    background: linear-gradient(160deg, rgba(6, 17, 33, 0.55), rgba(13, 27, 47, 0.45)),
+      url('/assets/img/bg.png') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  body.dark-mode.luxury-body {
+    background: linear-gradient(160deg, rgba(5, 10, 22, 0.88), rgba(2, 6, 23, 0.92)),
+      url('/assets/img/bg.png') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  .luxury-backdrop {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(94, 234, 212, 0.16), transparent 42%),
+      radial-gradient(circle at 88% 22%, rgba(96, 165, 250, 0.2), transparent 46%),
+      radial-gradient(circle at 30% 88%, rgba(56, 189, 248, 0.12), transparent 46%);
+    opacity: 0.9;
+  }
+</style>
+
+<div class={`luxury-backdrop ${className}`} aria-hidden="true"></div>

@@ -1,9 +1,7 @@
 .account-body {
   min-height: 100vh;
   color: var(--text-color, #0f172a);
-  background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.12), transparent 55%),
-    radial-gradient(circle at 80% 10%, rgba(14, 165, 233, 0.16), transparent 55%),
-    linear-gradient(180deg, #f8fafc, #eef2ff);
+  background: transparent;
 }
 
 .account-shell {
@@ -414,9 +412,7 @@
 }
 
 .dark-mode.account-body {
-  background: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.16), transparent 55%),
-    radial-gradient(circle at 80% 10%, rgba(129, 140, 248, 0.18), transparent 60%),
-    linear-gradient(180deg, #0b1120, #0f172a);
+  background: transparent;
   color: #e2e8f0;
 }
 

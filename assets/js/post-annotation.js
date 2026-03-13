@@ -301,11 +301,21 @@
     }
 
     function getDisplayAvatar(user) {
+        const shared = window.CommentShared;
+        const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
+            ? shared.getUserSpaceUrl(user.login || '', user.loginType || '')
+            : '';
+        let avatarHtml = '';
         if (user.avatarType === 'image' && user.avatarUrl) {
-            return `<span class="post-annotation-avatar-preview" style="background-image:url('${escapeHtml(user.avatarUrl)}');background-color:#e2e8f0;"></span>`;
+            avatarHtml = `<span class="post-annotation-avatar-preview" style="background-image:url('${escapeHtml(user.avatarUrl)}');background-color:#e2e8f0;"></span>`;
+        } else {
+            const letter = escapeHtml((user.nickname || '访').slice(0, 1).toUpperCase());
+            avatarHtml = `<span class="post-annotation-avatar-preview" style="background:${escapeHtml(user.avatarColor || COLOR_OPTIONS[0])};">${letter}</span>`;
         }
-        const letter = escapeHtml((user.nickname || '访').slice(0, 1).toUpperCase());
-        return `<span class="post-annotation-avatar-preview" style="background:${escapeHtml(user.avatarColor || COLOR_OPTIONS[0])};">${letter}</span>`;
+        if (spaceUrl) {
+            return `<a class="user-avatar-link" href="${escapeHtml(spaceUrl)}">${avatarHtml}</a>`;
+        }
+        return avatarHtml;
     }
 
     function renderDisplayNameWithUid(nickname, login, loginType, uid) {

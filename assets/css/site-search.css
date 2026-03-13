@@ -8,9 +8,7 @@
     --search-shadow: 0 14px 32px rgba(4, 20, 46, 0.14);
 }
 
-body {
-    background: linear-gradient(160deg, rgba(6, 17, 33, 0.55), rgba(13, 27, 47, 0.45)), url('/assets/img/bg.png') no-repeat center center fixed;
-    background-size: cover;
+.search-body {
     color: var(--search-text);
 }
 

@@ -2,6 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 
 const navConfigPath = path.join(process.cwd(), "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
@@ -34,7 +35,8 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <meta name="referrer" content="never" />
   </head>
-  <body class="account-body">
+  <body class="account-body luxury-body">
+    <LuxuryBackground />
     <div class="account-shell">
       <header class="account-hero">
         <div>

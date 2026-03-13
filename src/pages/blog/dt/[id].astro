@@ -1,4 +1,5 @@
 ---
+import ShichaBackground from "../../../components/ShichaBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
@@ -28,6 +29,7 @@ const { entry } = Astro.props as {
   };
 };
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
@@ -55,9 +57,7 @@ const { entry } = Astro.props as {
     body { background: url('/assets/img/bg.png') no-repeat center center fixed; background-size: cover; }
   </style>
   <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css" />
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
 
     <div class="dynamic-container dynamic-detail-container">
       <div class="dynamic-header"><h1 class="page-title">动态详情 / Update Detail</h1></div>
@@ -94,3 +94,10 @@ const { entry } = Astro.props as {
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>
+
+
+
+
+
+
+

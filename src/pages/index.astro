@@ -1,4 +1,5 @@
 ---
+import ShichaBackground from "../components/ShichaBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
@@ -383,6 +384,7 @@ const homePreloaded = {
   },
 };
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
@@ -412,9 +414,7 @@ const homePreloaded = {
   </head>
 
   <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css" />
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
 
     <div class="main-layout">
       <div class="main-content" set:html={mainContentHtml}></div>
@@ -515,3 +515,10 @@ const homePreloaded = {
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>
+
+
+
+
+
+
+

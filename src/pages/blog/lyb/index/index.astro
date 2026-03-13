@@ -1,7 +1,9 @@
 ---
+import ShichaBackground from "../../../../components/ShichaBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import CommentIdentityFields from "../../../../components/CommentIdentityFields.astro";
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -21,9 +23,7 @@ import CommentIdentityFields from "../../../../components/CommentIdentityFields.
 
 <body class="light-mode">
 
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
     <div class="container">
         <h1 class="page-title">留言板 / Message</h1>
         <header>
@@ -113,3 +113,10 @@ import CommentIdentityFields from "../../../../components/CommentIdentityFields.
 </body>
 
 </html>
+
+
+
+
+
+
+

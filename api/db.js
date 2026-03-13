@@ -70,7 +70,8 @@ function isAllowedPath(path) {
     'oj-discussions',
     'qb_users',
     'qb_email_index',
-    'pic_upload_limits'
+    'pic_upload_limits',
+    'user_space_likes'
   ];
   const clean = String(path || '').replace(/^\/+/, '');
   if (!clean) return false;

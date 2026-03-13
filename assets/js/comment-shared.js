@@ -35,10 +35,23 @@
         return `<span class="login-badge">${icon}@${escapeHtml(login)}</span>`;
     }
 
+    function getAccountIdentifierFrom(login, loginType) {
+        if (!login) return '';
+        return loginType === 'local' ? `qb_${login}` : `gh_${login}`;
+    }
+
+    function getUserSpaceUrl(login, loginType) {
+        const identifier = getAccountIdentifierFrom(login, loginType);
+        if (!identifier) return '';
+        return `/space?user=${encodeURIComponent(identifier)}`;
+    }
+
     function renderDisplayName(nickname, login, loginType, uid) {
         const base = escapeHtml(nickname || login || '访客');
         if (login) {
-            return `${base}${renderLoginBadge(login, loginType)}`;
+            const url = getUserSpaceUrl(login, loginType);
+            const linked = url ? `<a class="user-link" href="${url}">${base}</a>` : base;
+            return `${linked}${renderLoginBadge(login, loginType)}`;
         }
         return `${base}${renderGuestBadge(uid)}`;
     }
@@ -115,7 +128,7 @@
     function getAccountIdentifier(profile) {
         const info = profile || getLoginProfile();
         if (!info || !info.login) return '';
-        return info.loginType === 'local' ? `qb_${info.login}` : `gh_${info.login}`;
+        return getAccountIdentifierFrom(info.login, info.loginType);
     }
 
     function clearLoginStorage() {
@@ -176,6 +189,8 @@
         renderDisplayName,
         getLoginProfile,
         getAccountIdentifier,
+        getAccountIdentifierFrom,
+        getUserSpaceUrl,
         clearLoginStorage,
         logout
     };

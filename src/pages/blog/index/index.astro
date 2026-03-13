@@ -1,4 +1,5 @@
 ---
+import ShichaBackground from "../../../components/ShichaBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -10,6 +11,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const blogFunctions = JSON.parse(await fs.readFile(functionsPath, "utf8"));
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
@@ -28,9 +30,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   </head>
 
   <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css" />
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
     <div class="container">
       <h1 class="page-title">功能导航</h1>
       <div id="functions-container"></div>
@@ -38,3 +38,10 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/pages/blog/blog.js"></script>
   </body>
 </html>
+
+
+
+
+
+
+

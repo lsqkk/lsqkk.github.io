@@ -74,12 +74,22 @@
 
     function renderAvatar(info) {
         const name = (info.nickname || info.login || '访客').trim();
+        const shared = window.CommentShared;
+        const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
+            ? shared.getUserSpaceUrl(info.login || '', info.loginType || '')
+            : '';
+        let avatarHtml = '';
         if (info.avatarType === 'image' && info.avatarUrl) {
-            return `<span class="dynamic-comment-avatar" style="background-image:url('${escapeHtml(info.avatarUrl)}')"></span>`;
+            avatarHtml = `<span class="dynamic-comment-avatar" style="background-image:url('${escapeHtml(info.avatarUrl)}')"></span>`;
+        } else {
+            const color = info.avatarColor || '#4a6cf7';
+            const letter = escapeHtml(name.slice(0, 1).toUpperCase());
+            avatarHtml = `<span class="dynamic-comment-avatar" style="background:${escapeHtml(color)}">${letter}</span>`;
         }
-        const color = info.avatarColor || '#4a6cf7';
-        const letter = escapeHtml(name.slice(0, 1).toUpperCase());
-        return `<span class="dynamic-comment-avatar" style="background:${escapeHtml(color)}">${letter}</span>`;
+        if (spaceUrl) {
+            return `<a class="user-avatar-link" href="${escapeHtml(spaceUrl)}">${avatarHtml}</a>`;
+        }
+        return avatarHtml;
     }
 
     function getLoginProfile() {

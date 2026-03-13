@@ -1,6 +1,8 @@
 ---
+import ShichaBackground from "../../../../components/ShichaBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -23,9 +25,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 </head>
 
 <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
     <!-- 页面内容 -->
     <main class="typeflow-container">
         <div class="hero-section">
@@ -283,3 +283,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 </body>
 
 </html>
+
+
+
+
+
+

@@ -1,7 +1,9 @@
 ---
+import ShichaBackground from "../../../../components/ShichaBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 const currentYear = new Date().getFullYear();
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -15,9 +17,7 @@ const currentYear = new Date().getFullYear();
 </head>
 
 <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
     <div class="container">
         <h1>实时语音转文字</h1>
 
@@ -58,3 +58,9 @@ const currentYear = new Date().getFullYear();
 </body>
 
 </html>
+
+
+
+
+
+

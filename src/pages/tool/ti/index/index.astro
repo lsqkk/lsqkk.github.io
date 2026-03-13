@@ -1,6 +1,8 @@
 ---
+import ShichaBackground from "../../../../components/ShichaBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -19,9 +21,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 </head>
 
 <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css">
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
+    <ShichaBackground />
     <div class="glass-card">
         <h1 id="title-text">《思想道德与法制》题库抽测</h1>
 
@@ -71,3 +71,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 </body>
 
 </html>
+
+
+
+
+
+

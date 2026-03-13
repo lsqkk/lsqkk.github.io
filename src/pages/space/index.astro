@@ -2,6 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../components/LuxuryBackground.astro";
 
 const navConfigPath = path.join(process.cwd(), "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
@@ -17,6 +18,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/pages/space/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script is:inline define:vars={{ navConfig }}>
       window.__NAV_CONFIG__ = navConfig;
     </script>
@@ -27,78 +29,154 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
-  <body class="space-body">
+  <body class="space-body luxury-body">
+    <LuxuryBackground />
     <div class="space-shell">
       <header class="space-hero">
-        <div>
-          <p class="space-kicker">User Space</p>
-          <h1 class="space-title">用户主页</h1>
-          <p class="space-subtitle">查看某位用户的公开资料与最近发言。</p>
+        <div class="space-profile-head">
+          <div class="profile-avatar">
+            <img id="spaceAvatar" alt="avatar" />
+            <span id="spaceAvatarFallback">Q</span>
+          </div>
+          <div class="profile-info">
+            <div class="profile-name">
+              <span id="spaceNickname">-</span>
+              <span class="profile-handle" id="spaceHandle">@-</span>
+            </div>
+            <div class="profile-meta-row">
+              <span id="spaceLoginType">-</span>
+              <span id="spaceRegisterAt">注册时间：-</span>
+            </div>
+            <div class="profile-meta-row">
+              <span id="spaceLocation">IP 属地：-</span>
+              <span id="spaceLastSeen">最近在线：-</span>
+            </div>
+            <div class="profile-meta-row">
+              <span id="spaceRecentPage">最近浏览：-</span>
+            </div>
+            <div class="profile-actions" id="spaceSelfActions">
+              <a class="btn ghost" href="/a/account">账号中心</a>
+              <button class="btn ghost" id="spaceLogoutBtn">退出登录</button>
+            </div>
+          </div>
+          <div class="profile-like">
+            <button class="btn primary" id="spaceLikeBtn">
+              <i class="fa-solid fa-thumbs-up"></i> 点赞
+            </button>
+            <div class="profile-like-count">
+              <span id="spaceLikeCount">0</span>
+              <span>赞</span>
+            </div>
+            <div class="profile-like-status" id="spaceLikeStatus">今日可点赞 10 次</div>
+          </div>
         </div>
         <div class="space-search">
           <input type="text" id="spaceSearchInput" placeholder="输入账号名或昵称" />
-          <button id="spaceSearchBtn" class="btn primary">搜索用户</button>
+          <button id="spaceSearchBtn" class="btn ghost">搜索用户</button>
         </div>
       </header>
 
       <main class="space-grid">
-        <section class="space-card space-card--profile">
+        <section class="space-card space-card--summary">
           <div class="card-header">
-            <h2>基础信息</h2>
+            <h2>账号概览</h2>
             <p id="spaceProfileStatus">等待加载</p>
           </div>
-          <div class="profile-panel">
-            <div class="profile-avatar">
-              <img id="spaceAvatar" alt="avatar" />
-              <span id="spaceAvatarFallback">Q</span>
+          <div class="summary-grid">
+            <div class="summary-item" data-privacy-key="showIdentifier">
+              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showIdentifier">
+                <i class="fa-solid fa-eye"></i><span>展示中</span>
+              </button>
+              <span>账号标识</span>
+              <strong id="spaceLogin">-</strong>
             </div>
-              <div class="profile-info">
-                <div class="profile-name" id="spaceNickname">-</div>
-              <div class="profile-meta" id="spaceLogin">账号标识：-</div>
-              <div class="profile-meta" id="spaceLoginType">-</div>
-              <div class="profile-meta" id="spaceRegisterAt">注册时间：-</div>
-              </div>
-          </div>
-          <div class="profile-actions" id="spaceSelfActions">
-            <a class="btn ghost" href="/a/account">账号中心</a>
-            <button class="btn ghost" id="spaceLogoutBtn">退出登录</button>
-            <label class="space-toggle">
-              <input type="checkbox" id="spaceShowActivity" checked />
-              <span>展示最近发言</span>
-            </label>
+            <div class="summary-item" data-privacy-key="showLocation">
+              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showLocation">
+                <i class="fa-solid fa-eye"></i><span>展示中</span>
+              </button>
+              <span>IP 属地</span>
+              <strong id="spaceLocationSummary">-</strong>
+            </div>
+            <div class="summary-item" data-privacy-key="showLastSeen">
+              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showLastSeen">
+                <i class="fa-solid fa-eye"></i><span>展示中</span>
+              </button>
+              <span>最近在线</span>
+              <strong id="spaceLastSeenSummary">-</strong>
+            </div>
+            <div class="summary-item" data-privacy-key="showRecentPage">
+              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showRecentPage">
+                <i class="fa-solid fa-eye"></i><span>展示中</span>
+              </button>
+              <span>最近浏览</span>
+              <strong id="spaceRecentPageSummary">-</strong>
+            </div>
           </div>
         </section>
 
-        <section class="space-card">
+        <section class="space-card" data-privacy-key="showActivity">
           <div class="card-header">
-            <h2>最近发言</h2>
-            <p>来自留言板的公开记录</p>
+            <div>
+              <h2>留言板</h2>
+              <p>最近留言记录</p>
+            </div>
+            <button class="privacy-toggle" data-privacy-toggle="showActivity">
+              <i class="fa-solid fa-eye"></i><span>展示中</span>
+            </button>
           </div>
           <div class="space-list" id="spaceActivityList">暂无数据</div>
         </section>
 
-        <section class="space-card">
+        <section class="space-card" data-privacy-key="showDynamic">
           <div class="card-header">
-            <h2>动态评论</h2>
-            <p>来自动态页的最新评论</p>
+            <div>
+              <h2>动态评论</h2>
+              <p>来自动态页的最新评论</p>
+            </div>
+            <button class="privacy-toggle" data-privacy-toggle="showDynamic">
+              <i class="fa-solid fa-eye"></i><span>展示中</span>
+            </button>
           </div>
           <div class="space-list" id="spaceDynamicList">暂无数据</div>
         </section>
 
-        <section class="space-card">
+        <section class="space-card" data-privacy-key="showPostComments">
           <div class="card-header">
-            <h2>文章段落讨论</h2>
-            <p>来自文章段落讨论的最新评论</p>
+            <div>
+              <h2>文章段落讨论</h2>
+              <p>来自文章段落讨论的最新评论</p>
+            </div>
+            <button class="privacy-toggle" data-privacy-toggle="showPostComments">
+              <i class="fa-solid fa-eye"></i><span>展示中</span>
+            </button>
           </div>
           <div class="space-list" id="spacePostCommentList">暂无数据</div>
         </section>
 
-        <section class="space-card">
+        <section class="space-card" data-privacy-key="showOj">
           <div class="card-header">
-            <h2>OJ 讨论</h2>
-            <p>最近回复记录</p>
+            <div>
+              <h2>OJ 讨论</h2>
+              <p>最近回复记录</p>
+            </div>
+            <button class="privacy-toggle" data-privacy-toggle="showOj">
+              <i class="fa-solid fa-eye"></i><span>展示中</span>
+            </button>
           </div>
           <div class="space-list" id="spaceOjList">暂无数据</div>
+        </section>
+
+        <section class="space-card" data-privacy-key="showRecentBrowse">
+          <div class="card-header">
+            <div>
+              <h2>最近浏览</h2>
+              <p>最近访问的页面</p>
+            </div>
+            <button class="privacy-toggle" data-privacy-toggle="showRecentBrowse">
+              <i class="fa-solid fa-eye"></i><span>展示中</span>
+            </button>
+          </div>
+          <div class="space-list" id="spaceRecentList">暂无数据</div>
         </section>
 
         <section class="space-card">
@@ -107,6 +185,29 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
             <p>匹配的用户列表</p>
           </div>
           <div class="space-list" id="spaceSearchList">请输入关键字搜索</div>
+        </section>
+
+        <section class="space-card">
+          <div class="card-header">
+            <h2>公开设置</h2>
+            <p>仅对你本人可见，用于控制展示内容。</p>
+          </div>
+          <div class="space-privacy-grid" id="spacePrivacyGrid">
+            <div class="space-privacy-item">
+              <i class="fa-solid fa-eye"></i>
+              <div>
+                <strong>资料与互动</strong>
+                <span>在各卡片右上角开关展示</span>
+              </div>
+            </div>
+            <div class="space-privacy-item">
+              <i class="fa-solid fa-shield"></i>
+              <div>
+                <strong>信息安全提示</strong>
+                <span>关闭展示后，访客将无法看到该模块。</span>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
     </div>
