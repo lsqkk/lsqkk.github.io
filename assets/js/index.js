@@ -1336,3 +1336,27 @@ document.addEventListener('DOMContentLoaded', function () {
         applyDynamicClamp(document.getElementById('dynamic-entries') || document);
     });
 });
+
+function initContactChips() {
+    const container = document.getElementById('contact-chips');
+    if (!container) return;
+    const isTouch = window.matchMedia('(hover: none)').matches;
+    if (!isTouch) return;
+
+    container.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const chip = target.closest('.contact-chip');
+        if (!(chip instanceof HTMLElement)) return;
+
+        if (!chip.classList.contains('is-open')) {
+            event.preventDefault();
+            container.querySelectorAll('.contact-chip.is-open').forEach((el) => {
+                if (el !== chip) el.classList.remove('is-open');
+            });
+            chip.classList.add('is-open');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initContactChips);

@@ -384,24 +384,22 @@ body {
     backdrop-filter: blur(7px);
     -webkit-backdrop-filter: blur(7px);
     overflow: hidden;
-    transition: max-width 0.35s ease, background-color 0.25s ease, border-color 0.25s ease;
+    transition: max-width 0.55s ease, background-color 0.35s ease, border-color 0.35s ease;
 }
 
-.contact-chip:hover {
+.contact-chip:hover,
+.contact-chip.is-open {
     max-width: 320px;
     padding: 6px 12px;
     border-color: rgba(47, 110, 219, 0.2);
 }
 
 .contact-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: #2f6edb;
-    background: rgba(237, 244, 255, 0.9);
-    border: 1px solid rgba(47, 110, 219, 0.15);
+    font-size: 1.05rem;
     flex-shrink: 0;
 }
 
@@ -414,10 +412,11 @@ body {
     max-width: 0;
     overflow: hidden;
     transform: translateX(-6px);
-    transition: opacity 0.2s ease, max-width 0.35s ease, transform 0.35s ease;
+    transition: opacity 0.25s ease, max-width 0.55s ease, transform 0.55s ease;
 }
 
-.contact-chip:hover .contact-text {
+.contact-chip:hover .contact-text,
+.contact-chip.is-open .contact-text {
     opacity: 1;
     max-width: 240px;
     transform: translateX(0);
@@ -1116,14 +1115,19 @@ body {
 
     .contact-chip {
         width: 100%;
-        max-width: none;
-        justify-content: flex-start;
+        max-width: 44px;
+        justify-content: center;
         border-radius: var(--radius-sm);
         padding: 8px 10px;
         height: auto;
     }
 
-    .contact-text {
+    .contact-chip.is-open {
+        max-width: none;
+        justify-content: flex-start;
+    }
+
+    .contact-chip.is-open .contact-text {
         opacity: 1;
         max-width: none;
         transform: none;
@@ -1259,8 +1263,6 @@ body {
 
     .contact-icon {
         color: #8fb9ff;
-        background: rgba(44, 71, 116, 0.6);
-        border-color: rgba(124, 161, 216, 0.35);
     }
 
     .popup-container {
