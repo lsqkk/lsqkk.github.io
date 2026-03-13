@@ -11,7 +11,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>用户主页 | {SITE_TITLE}</title>
+    <title>用户主页 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/dark-mode.css" />
@@ -52,12 +52,12 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <img id="spaceAvatar" alt="avatar" />
               <span id="spaceAvatarFallback">Q</span>
             </div>
-            <div class="profile-info">
-              <div class="profile-name" id="spaceNickname">-</div>
-              <div class="profile-meta" id="spaceLogin">-</div>
+              <div class="profile-info">
+                <div class="profile-name" id="spaceNickname">-</div>
+              <div class="profile-meta" id="spaceLogin">账号标识：-</div>
               <div class="profile-meta" id="spaceLoginType">-</div>
               <div class="profile-meta" id="spaceRegisterAt">注册时间：-</div>
-            </div>
+              </div>
           </div>
           <div class="profile-actions" id="spaceSelfActions">
             <a class="btn ghost" href="/a/account">账号中心</a>
@@ -75,6 +75,22 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
             <p>来自留言板的公开记录</p>
           </div>
           <div class="space-list" id="spaceActivityList">暂无数据</div>
+        </section>
+
+        <section class="space-card">
+          <div class="card-header">
+            <h2>动态评论</h2>
+            <p>来自动态页的最新评论</p>
+          </div>
+          <div class="space-list" id="spaceDynamicList">暂无数据</div>
+        </section>
+
+        <section class="space-card">
+          <div class="card-header">
+            <h2>OJ 讨论</h2>
+            <p>最近回复记录</p>
+          </div>
+          <div class="space-list" id="spaceOjList">暂无数据</div>
         </section>
 
         <section class="space-card">

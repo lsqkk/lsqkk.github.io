@@ -185,87 +185,41 @@
     }
 
     function getTurnstileSiteKey() {
-        return window.__TURNSTILE_SITE_KEY__ || '';
-    }
-
-    function getBindTurnstileResponse() {
-        if (!window.turnstile || typeof window.turnstile.getResponse !== 'function') return '';
-        if (bindTurnstileWidgetId === null || typeof bindTurnstileWidgetId === 'undefined') return '';
-        return window.turnstile.getResponse(bindTurnstileWidgetId) || '';
+        return window.QuarkTurnstile ? window.QuarkTurnstile.getSiteKey() : '';
     }
 
     function resetBindTurnstile() {
         bindTurnstileToken = '';
-        if (window.turnstile && typeof window.turnstile.reset === 'function' && bindTurnstileWidgetId !== null) {
-            window.turnstile.reset(bindTurnstileWidgetId);
+        if (window.QuarkTurnstile) {
+            window.QuarkTurnstile.reset('bind');
         }
     }
 
     function renderBindTurnstile() {
         const key = getTurnstileSiteKey();
         if (!key || !(el.bindTurnstileContainer instanceof HTMLElement)) return;
-        if (!window.turnstile || typeof window.turnstile.render !== 'function') return;
+        if (!window.QuarkTurnstile) return;
         el.bindTurnstileContainer.innerHTML = '';
         bindTurnstileToken = '';
-        const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-        bindTurnstileWidgetId = window.turnstile.render(el.bindTurnstileContainer, {
-            sitekey: key,
-            theme,
-            callback: (token) => {
-                bindTurnstileToken = token || '';
-            },
-            'expired-callback': () => {
-                bindTurnstileToken = '';
-            },
-            'error-callback': () => {
-                bindTurnstileToken = '';
-            }
-        });
+        bindTurnstileWidgetId = window.QuarkTurnstile.render(el.bindTurnstileContainer, 'bind');
     }
 
     function waitForTurnstileReady() {
         return new Promise((resolve) => {
-            if (window.turnstile && typeof window.turnstile.render === 'function') {
-                resolve();
+            if (window.QuarkTurnstile) {
+                window.QuarkTurnstile.waitReady().then(resolve);
                 return;
             }
-            const timer = window.setInterval(() => {
-                if (window.turnstile && typeof window.turnstile.render === 'function') {
-                    window.clearInterval(timer);
-                    resolve();
-                }
-            }, 200);
+            resolve();
         });
     }
 
     async function verifyBindTurnstile(statusEl) {
-        const key = getTurnstileSiteKey();
-        if (!key) {
-            setEmailStatus('验证码未配置，请联系站长');
+        if (!window.QuarkTurnstile) {
+            setEmailStatus('验证码未加载');
             return false;
         }
-        const token = bindTurnstileToken || getBindTurnstileResponse();
-        if (!token) {
-            setEmailStatus('请先完成安全校验');
-            return false;
-        }
-        try {
-            const resp = await fetch(`${API_BASE}/api/turnstile-verify`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, purpose: 'bind' })
-            });
-            const data = await resp.json();
-            if (resp.ok && data && data.ok) return true;
-            setEmailStatus(data?.error || '验证码校验失败');
-            resetBindTurnstile();
-            return false;
-        } catch (error) {
-            console.error('验证码校验失败:', error);
-            setEmailStatus('验证码校验失败');
-            resetBindTurnstile();
-            return false;
-        }
+        return window.QuarkTurnstile.verify('bind', (msg) => setEmailStatus(msg));
     }
 
     function emailKey(email) {
@@ -978,7 +932,9 @@
         }
         if (el.accountSpaceLink instanceof HTMLAnchorElement) {
             const login = user.login || profile.login || '';
-            const identifier = login ? (loginType === 'local' ? `qb_${login}` : login) : '';
+            const identifier = window.CommentShared && typeof window.CommentShared.getAccountIdentifier === 'function'
+                ? window.CommentShared.getAccountIdentifier({ login, loginType })
+                : (login ? (loginType === 'local' ? `qb_${login}` : `gh_${login}`) : '');
             el.accountSpaceLink.href = identifier ? `/space?user=${encodeURIComponent(identifier)}` : '/space';
         }
     }

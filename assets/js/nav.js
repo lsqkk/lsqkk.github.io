@@ -127,7 +127,7 @@ function generateNavHTML(config) {
                 </div>
                 <div class="header-login nav-login" id="header-login">
                     <a href="${config.login.url}">登录</a>
-                    <div class="nav-login-tip">登陆后享受更多权益</div>
+                    <div class="nav-login-tip">登录后享受更多权益</div>
                 </div>
                 <div class="header-user" id="header-user"></div>
             </div>
@@ -559,7 +559,9 @@ function renderUserProfile() {
         : null;
     const login = (sharedProfile && sharedProfile.login) || '';
     const loginType = (sharedProfile && sharedProfile.loginType) || '';
-    const identifier = login ? (loginType === 'local' ? `qb_${login}` : login) : '';
+    const identifier = window.CommentShared && typeof window.CommentShared.getAccountIdentifier === 'function'
+        ? window.CommentShared.getAccountIdentifier(sharedProfile)
+        : (login ? (loginType === 'local' ? `qb_${login}` : `gh_${login}`) : '');
     const spaceUrl = identifier ? `/space?user=${encodeURIComponent(identifier)}` : '/space';
     const inner = `
         <div class="user-pill">
@@ -594,6 +596,7 @@ function renderUserProfile() {
     if (mobileUser) mobileUser.innerHTML = inner;
 
     if (headerUser) {
+        bindUserMenuHover(headerUser);
         headerUser.querySelectorAll('[data-action="logout"]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
@@ -605,6 +608,27 @@ function renderUserProfile() {
             });
         });
     }
+}
+
+function bindUserMenuHover(root) {
+    const wrap = root.querySelector('.nav-user-wrap');
+    if (!(wrap instanceof HTMLElement)) return;
+    let hideTimer = null;
+    const open = () => {
+        if (hideTimer) {
+            window.clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+        wrap.classList.add('is-open');
+    };
+    const close = () => {
+        if (hideTimer) window.clearTimeout(hideTimer);
+        hideTimer = window.setTimeout(() => {
+            wrap.classList.remove('is-open');
+        }, 200);
+    };
+    wrap.addEventListener('mouseenter', open);
+    wrap.addEventListener('mouseleave', close);
 }
 
 window.renderNavUserProfile = renderUserProfile;

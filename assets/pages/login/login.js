@@ -130,43 +130,22 @@
   }
 
   function getTurnstileSiteKey() {
-    return window.__TURNSTILE_SITE_KEY__ || '';
-  }
-
-  function getTurnstileResponse(kind) {
-    if (!window.turnstile || typeof window.turnstile.getResponse !== 'function') {
-      return '';
-    }
-    const widgetId = kind === 'register' ? registerTurnstileWidgetId : loginTurnstileWidgetId;
-    if (widgetId === null || typeof widgetId === 'undefined') return '';
-    const resp = window.turnstile.getResponse(widgetId);
-    return resp || '';
-  }
-
-  function syncTurnstileToken(kind) {
-    const response = getTurnstileResponse(kind);
-    if (!response) return '';
-    if (kind === 'register') {
-      registerTurnstileToken = response;
-    } else {
-      loginTurnstileToken = response;
-    }
-    return response;
+    return window.QuarkTurnstile ? window.QuarkTurnstile.getSiteKey() : '';
   }
 
   function resetTurnstile() {
     loginTurnstileToken = '';
     registerTurnstileToken = '';
-    if (window.turnstile && typeof window.turnstile.reset === 'function') {
-      if (loginTurnstileWidgetId !== null) window.turnstile.reset(loginTurnstileWidgetId);
-      if (registerTurnstileWidgetId !== null) window.turnstile.reset(registerTurnstileWidgetId);
+    if (window.QuarkTurnstile) {
+      window.QuarkTurnstile.reset('login');
+      window.QuarkTurnstile.reset('register');
     }
   }
 
   function renderTurnstile() {
     const key = getTurnstileSiteKey();
     if (!key || (!el.turnstileContainer && !el.turnstileRegisterContainer)) return;
-    if (!window.turnstile || typeof window.turnstile.render !== 'function') return;
+    if (!window.QuarkTurnstile) return;
     if (el.turnstileContainer) {
       el.turnstileContainer.innerHTML = '';
     }
@@ -175,51 +154,21 @@
     }
     loginTurnstileToken = '';
     registerTurnstileToken = '';
-    const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
     if (el.turnstileContainer) {
-      loginTurnstileWidgetId = window.turnstile.render(el.turnstileContainer, {
-        sitekey: key,
-        theme,
-        callback: (token) => {
-          loginTurnstileToken = token || '';
-        },
-        'expired-callback': () => {
-          loginTurnstileToken = '';
-        },
-        'error-callback': () => {
-          loginTurnstileToken = '';
-        }
-      });
+      loginTurnstileWidgetId = window.QuarkTurnstile.render(el.turnstileContainer, 'login');
     }
     if (el.turnstileRegisterContainer) {
-      registerTurnstileWidgetId = window.turnstile.render(el.turnstileRegisterContainer, {
-        sitekey: key,
-        theme,
-        callback: (token) => {
-          registerTurnstileToken = token || '';
-        },
-        'expired-callback': () => {
-          registerTurnstileToken = '';
-        },
-        'error-callback': () => {
-          registerTurnstileToken = '';
-        }
-      });
+      registerTurnstileWidgetId = window.QuarkTurnstile.render(el.turnstileRegisterContainer, 'register');
     }
   }
 
   function waitForTurnstileReady() {
     return new Promise((resolve) => {
-      if (window.turnstile && typeof window.turnstile.render === 'function') {
-        resolve();
+      if (window.QuarkTurnstile) {
+        window.QuarkTurnstile.waitReady().then(resolve);
         return;
       }
-      const timer = window.setInterval(() => {
-        if (window.turnstile && typeof window.turnstile.render === 'function') {
-          window.clearInterval(timer);
-          resolve();
-        }
-      }, 200);
+      resolve();
     });
   }
 
@@ -433,33 +382,11 @@
   }
 
   async function verifyTurnstileToken(purpose, token, statusEl) {
-    const key = getTurnstileSiteKey();
-    if (!key) {
-      setStatus(statusEl || el.loginStatus, '验证码未配置，请联系站长');
+    if (!window.QuarkTurnstile) {
+      setStatus(statusEl || el.loginStatus, '验证码未加载');
       return false;
     }
-    const effectiveToken = token || syncTurnstileToken(purpose);
-    if (!effectiveToken) {
-      setStatus(statusEl || el.loginStatus, '请先完成安全校验');
-      return false;
-    }
-    try {
-      const resp = await fetch(`${API_BASE}/api/turnstile-verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: effectiveToken, purpose })
-      });
-      const data = await resp.json();
-      if (resp.ok && data && data.ok) return true;
-      setStatus(statusEl || el.loginStatus, data?.error || '验证码校验失败');
-      resetTurnstile();
-      return false;
-    } catch (error) {
-      console.error('验证码校验失败:', error);
-      setStatus(statusEl || el.loginStatus, '验证码校验失败');
-      resetTurnstile();
-      return false;
-    }
+    return window.QuarkTurnstile.verify(purpose, (msg) => setStatus(statusEl || el.loginStatus, msg));
   }
 
   async function lookupUsernameByEmail(email) {

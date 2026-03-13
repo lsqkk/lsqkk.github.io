@@ -112,6 +112,12 @@
         };
     }
 
+    function getAccountIdentifier(profile) {
+        const info = profile || getLoginProfile();
+        if (!info || !info.login) return '';
+        return info.loginType === 'local' ? `qb_${info.login}` : `gh_${info.login}`;
+    }
+
     function clearLoginStorage() {
         const keys = [
             'github_code',
@@ -158,6 +164,7 @@
         renderLoginBadge,
         renderDisplayName,
         getLoginProfile,
+        getAccountIdentifier,
         clearLoginStorage,
         logout
     };

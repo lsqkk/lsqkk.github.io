@@ -198,6 +198,12 @@
     transform: translateY(0);
 }
 
+.nav-user-wrap.is-open .nav-user-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
 .nav-user-meta {
     display: flex;
     align-items: center;

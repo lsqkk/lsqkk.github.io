@@ -6,6 +6,8 @@
   const API_BASE = '__API_BASE__';
   const listEl = document.getElementById('spaceSearchList');
   const activityEl = document.getElementById('spaceActivityList');
+  const dynamicEl = document.getElementById('spaceDynamicList');
+  const ojEl = document.getElementById('spaceOjList');
   const statusEl = document.getElementById('spaceProfileStatus');
   const avatarEl = document.getElementById('spaceAvatar');
   const avatarFallback = document.getElementById('spaceAvatarFallback');
@@ -48,6 +50,9 @@
       ? window.CommentShared.getLoginProfile()
       : null;
     if (!profile || !profile.login) return false;
+    if (window.CommentShared && typeof window.CommentShared.getAccountIdentifier === 'function') {
+      return window.CommentShared.getAccountIdentifier(profile) === (loginType === 'local' ? `qb_${login}` : `gh_${login}`);
+    }
     if (profile.loginType === 'local') {
       return loginType === 'local' && profile.login === login;
     }
@@ -80,7 +85,7 @@
     listEl.innerHTML = items.map((item) => `
       <div class="space-item">
         <strong>${item.nickname || item.login}</strong>
-        <div>${item.loginType === 'local' ? `@${item.login}` : `@${item.login}`}</div>
+        <div>账号标识：${item.identifier}</div>
         <a href="/space?user=${encodeURIComponent(item.identifier)}">查看主页</a>
       </div>
     `).join('');
@@ -97,6 +102,36 @@
         <strong>${item.text}</strong>
         <div>${formatTime(item.timestamp)}</div>
         <a href="/blog/lyb">前往留言板</a>
+      </div>
+    `).join('');
+  }
+
+  function renderDynamic(items) {
+    if (!(dynamicEl instanceof HTMLElement)) return;
+    if (!items.length) {
+      dynamicEl.textContent = '暂无动态评论';
+      return;
+    }
+    dynamicEl.innerHTML = items.map((item) => `
+      <div class="space-item">
+        <strong>${item.text}</strong>
+        <div>${formatTime(item.timestamp)}</div>
+        <a href="/blog/dt/${encodeURIComponent(item.postId)}">查看动态</a>
+      </div>
+    `).join('');
+  }
+
+  function renderOj(items) {
+    if (!(ojEl instanceof HTMLElement)) return;
+    if (!items.length) {
+      ojEl.textContent = '暂无讨论';
+      return;
+    }
+    ojEl.innerHTML = items.map((item) => `
+      <div class="space-item">
+        <strong>${item.text}</strong>
+        <div>${formatTime(item.timestamp)}</div>
+        <a href="/a/oj/discussion?id=${encodeURIComponent(item.discussionId)}">查看讨论</a>
       </div>
     `).join('');
   }
@@ -120,6 +155,69 @@
     }
   }
 
+  async function loadDynamicComments(login) {
+    try {
+      const raw = await fetchDb('dynamic_posts');
+      const posts = raw ? Object.entries(raw) : [];
+      const items = [];
+      posts.forEach(([postId, post]) => {
+        const comments = post && post.comments ? post.comments : null;
+        if (!comments) return;
+        Object.values(comments).forEach((comment) => {
+          if (comment && comment.login === login) {
+            items.push({
+              postId,
+              text: comment.text || '无内容',
+              timestamp: comment.timestamp || 0
+            });
+          }
+          if (comment && comment.replies) {
+            Object.values(comment.replies).forEach((reply) => {
+              if (reply && reply.login === login) {
+                items.push({
+                  postId,
+                  text: reply.text || '无内容',
+                  timestamp: reply.timestamp || 0
+                });
+              }
+            });
+          }
+        });
+      });
+      const sorted = items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
+      renderDynamic(sorted);
+    } catch (error) {
+      console.error('加载动态评论失败:', error);
+      if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '加载失败';
+    }
+  }
+
+  async function loadOjDiscussions(login) {
+    try {
+      const raw = await fetchDb('oj-discussions');
+      const list = raw ? Object.entries(raw) : [];
+      const items = [];
+      list.forEach(([discussionId, discussion]) => {
+        const replies = discussion && discussion.replies ? discussion.replies : null;
+        if (!replies) return;
+        Object.values(replies).forEach((reply) => {
+          if (reply && reply.login === login) {
+            items.push({
+              discussionId,
+              text: reply.text || '无内容',
+              timestamp: reply.timestamp || 0
+            });
+          }
+        });
+      });
+      const sorted = items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
+      renderOj(sorted);
+    } catch (error) {
+      console.error('加载OJ讨论失败:', error);
+      if (ojEl instanceof HTMLElement) ojEl.textContent = '加载失败';
+    }
+  }
+
   async function resolveUser(identifier) {
     if (!identifier) return null;
     let login = identifier;
@@ -127,6 +225,9 @@
     if (identifier.startsWith('qb_')) {
       login = identifier.slice(3);
       loginType = 'local';
+    } else if (identifier.startsWith('gh_')) {
+      login = identifier.slice(3);
+      loginType = 'github';
     }
 
     if (loginType === 'local') {
@@ -155,7 +256,7 @@
         avatarUrl,
         createdAt,
         privacy,
-        identifier
+        identifier: `qb_${login}`
       };
     }
 
@@ -172,7 +273,7 @@
       avatarUrl: profile.avatarUrl || profile.avatar || '',
       createdAt: profile.createdAt || profile.updatedAt || 0,
       privacy: profile.privacy || {},
-      identifier: login
+      identifier: `gh_${login}`
     };
   }
 
@@ -208,7 +309,7 @@
           login,
           loginType: profile.loginType || 'github',
           nickname,
-          identifier: login
+          identifier: `gh_${login}`
         });
       }
     });
@@ -231,7 +332,7 @@
       }
       setText(statusEl, '已加载');
       setText(nicknameEl, user.nickname || user.login);
-      setText(loginEl, `账号：${user.login}`);
+      setText(loginEl, `账号标识：${user.identifier}`);
       setText(loginTypeEl, `类型：${user.loginType === 'local' ? '站内账号' : 'GitHub'}`);
       setText(registerAtEl, `注册时间：${formatTime(user.createdAt)}`);
       setAvatar(user.avatarUrl, user.nickname || user.login);
@@ -244,8 +345,12 @@
       }
       if (showActivity) {
         await loadActivity(user.login);
-      } else if (activityEl instanceof HTMLElement) {
-        activityEl.textContent = '该用户隐藏了最近发言';
+        await loadDynamicComments(user.login);
+        await loadOjDiscussions(user.login);
+      } else {
+        if (activityEl instanceof HTMLElement) activityEl.textContent = '该用户隐藏了最近发言';
+        if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '该用户隐藏了最近发言';
+        if (ojEl instanceof HTMLElement) ojEl.textContent = '该用户隐藏了最近发言';
       }
       if (isSelf(user.login, user.loginType)) {
         if (privacyToggle instanceof HTMLInputElement) {
@@ -304,10 +409,14 @@
               }
             })
           });
-          if (activityEl instanceof HTMLElement && !privacyToggle.checked) {
-            activityEl.textContent = '你已隐藏最近发言';
-          } else if (privacyToggle.checked) {
+          if (!privacyToggle.checked) {
+            if (activityEl instanceof HTMLElement) activityEl.textContent = '你已隐藏最近发言';
+            if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '你已隐藏最近发言';
+            if (ojEl instanceof HTMLElement) ojEl.textContent = '你已隐藏最近发言';
+          } else {
             void loadActivity(profile.login);
+            void loadDynamicComments(profile.login);
+            void loadOjDiscussions(profile.login);
           }
         } catch (error) {
           console.error('更新隐私设置失败:', error);
