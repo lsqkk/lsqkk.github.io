@@ -137,7 +137,8 @@ export default async function handler(req, res) {
       };
       const ref = applyQuery(db.ref(path), query);
       const snap = await ref.once('value');
-      return res.status(200).json({ ok: true, data: snap.val() || {} });
+      const data = snap.exists() ? snap.val() : null;
+      return res.status(200).json({ ok: true, data });
     }
 
     if (req.method !== 'POST') {

@@ -89,6 +89,27 @@ function waitForFirebaseConfig() {
 async function waitForAppCheck() {
 }
 
+function waitForFirebaseShim(timeoutMs = 15000) {
+    return new Promise((resolve, reject) => {
+        if (window.firebase && window.firebase.database) {
+            resolve();
+            return;
+        }
+        const started = Date.now();
+        const timer = window.setInterval(() => {
+            if (window.firebase && window.firebase.database) {
+                window.clearInterval(timer);
+                resolve();
+                return;
+            }
+            if (Date.now() - started > timeoutMs) {
+                window.clearInterval(timer);
+                reject(new Error('Firebase代理未就绪'));
+            }
+        }, 120);
+    });
+}
+
 // 主动触发配置脚本重新加载
 function reloadFirebaseConfig() {
     return new Promise((resolve, reject) => {
@@ -204,6 +225,9 @@ async function loadRecentMessagesWithInfiniteWait() {
 
 // 初始化和加载消息
 async function initializeAndLoadMessages() {
+    if (!window.firebase || !window.firebase.database) {
+        await waitForFirebaseShim();
+    }
     const firebaseGlobal = window.firebase;
     if (!firebaseGlobal) {
         throw new Error('Firebase SDK未加载');
