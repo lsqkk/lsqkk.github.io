@@ -55,7 +55,7 @@ body {
     padding: 18px;
 }
 
-.home-block + .home-block {
+.home-block+.home-block {
     margin-top: 22px;
 }
 
@@ -370,10 +370,10 @@ body {
 .contact-chip {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     min-width: 44px;
     height: 44px;
-    padding: 0;
+    padding: 0 5px;
     max-width: 44px;
     box-sizing: border-box;
     border: 1px solid var(--line);
@@ -386,13 +386,13 @@ body {
     -webkit-backdrop-filter: blur(7px);
     overflow: hidden;
     justify-content: center;
-    transition: max-width 0.7s ease, background-color 0.45s ease, border-color 0.45s ease;
+    transition: max-width 0.9s ease, padding 0.9s ease, background-color 0.5s ease, border-color 0.5s ease;
 }
 
 .contact-chip:hover,
 .contact-chip.is-open {
     max-width: 320px;
-    padding: 0 12px;
+    padding: 0 10px;
     justify-content: flex-start;
     border-color: rgba(47, 110, 219, 0.2);
 }
@@ -406,18 +406,19 @@ body {
     color: #2f6edb;
     font-size: 1.1rem;
     flex-shrink: 0;
+    transform: translateX(3px);
 }
 
 .contact-text {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     white-space: nowrap;
     opacity: 0;
     max-width: 0;
     overflow: hidden;
     transform: translateX(-6px);
-    transition: opacity 0.3s ease, max-width 0.7s ease, transform 0.7s ease;
+    transition: opacity 0.4s ease, max-width 0.9s ease, transform 0.9s ease;
 }
 
 .contact-chip:hover .contact-text,
@@ -552,11 +553,25 @@ body {
     color: #fff;
 }
 
-.index-log-tag.update { background: #3478e8; }
-.index-log-tag.optimize { background: #20a168; }
-.index-log-tag.add { background: #7759cb; }
-.index-log-tag.fix { background: #d84f4f; }
-.index-log-tag.default { background: #7a8898; }
+.index-log-tag.update {
+    background: #3478e8;
+}
+
+.index-log-tag.optimize {
+    background: #20a168;
+}
+
+.index-log-tag.add {
+    background: #7759cb;
+}
+
+.index-log-tag.fix {
+    background: #d84f4f;
+}
+
+.index-log-tag.default {
+    background: #7a8898;
+}
 
 .index-log-detail {
     color: #1e456f;
@@ -862,9 +877,20 @@ body {
 }
 
 @keyframes onlinePulse {
-    0% { transform: scale(1); opacity: 0.7; }
-    50% { transform: scale(1.35); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.7; }
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.35);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
 }
 
 .footer-container {
@@ -1124,13 +1150,13 @@ body {
         max-width: 44px;
         justify-content: center;
         border-radius: var(--radius-sm);
-        padding: 0;
+        padding: 0 6px;
     }
 
     .contact-chip.is-open {
         max-width: 160px;
         justify-content: flex-start;
-        padding: 0 10px;
+        padding: 0 12px;
     }
 
     .contact-chip.is-open .contact-text {
