@@ -126,7 +126,18 @@
             'qb_user',
             'qb_login',
             'quark_login_type',
-            'quark_user_profile'
+            'quark_user_profile',
+            'nickname',
+            'avatarType',
+            'avatarColor',
+            'userColor',
+            'userAvatarUrl',
+            'postAnnoAvatarType',
+            'postAnnoAvatarColor',
+            'postAnnoAvatarUrl',
+            'dynamic_comment_nickname',
+            'dynamic_comment_avatar',
+            'dynamic_device_id'
         ];
         keys.forEach((key) => {
             try {

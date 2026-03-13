@@ -285,6 +285,15 @@
   gap: 10px;
   font-size: 12px;
   color: rgba(15, 23, 42, 0.65);
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: none;
+}
+
+.record-list-body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .record-entry {

@@ -50,6 +50,22 @@
     return widgetId;
   }
 
+  function isRendered(kind) {
+    return widgetIds.has(kind);
+  }
+
+  function autoRender() {
+    const nodes = document.querySelectorAll('[data-turnstile-kind]');
+    nodes.forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      const kind = node.dataset.turnstileKind || '';
+      if (!kind) return;
+      if (!isRendered(kind)) {
+        render(node, kind);
+      }
+    });
+  }
+
   function getResponse(kind) {
     if (!window.turnstile || typeof window.turnstile.getResponse !== 'function') return '';
     const widgetId = widgetIds.get(kind);
@@ -103,6 +119,8 @@
     getSiteKey,
     waitReady,
     render,
+    autoRender,
+    isRendered,
     getToken,
     reset,
     verify

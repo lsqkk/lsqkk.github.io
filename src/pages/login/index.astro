@@ -50,7 +50,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
       <main class="login-grid">
         <section class="login-card login-card--github">
           <div class="card-header">
-            <h2>GitHub 登录</h2>
+            <h2>GitHub 登录 无需注册</h2>
             <p>推荐，安全快捷。</p>
           </div>
           <div class="risk-banner">
@@ -102,7 +102,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
               <div class="field captcha-field">
                 <label>安全校验</label>
                 <div class="turnstile-row">
-                  <div id="turnstileContainer" class="turnstile-box"></div>
+            <div id="turnstileContainer" class="turnstile-box" data-turnstile-kind="login"></div>
                 </div>
                 <div class="helper">通过验证后即可登录，防止脚本攻击。</div>
               </div>
@@ -196,7 +196,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
             <div class="field captcha-field">
               <label>安全校验</label>
               <div class="turnstile-row">
-                <div id="turnstileRegisterContainer" class="turnstile-box"></div>
+                <div id="turnstileRegisterContainer" class="turnstile-box" data-turnstile-kind="register"></div>
               </div>
               <div class="helper">注册前需通过人机验证。</div>
             </div>

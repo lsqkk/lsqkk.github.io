@@ -426,6 +426,16 @@
   }
 
   function init() {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const applyTheme = () => {
+      document.body.classList.toggle('dark-mode', media.matches);
+    };
+    applyTheme();
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', applyTheme);
+    } else if (typeof media.addListener === 'function') {
+      media.addListener(applyTheme);
+    }
     bindEvents();
     const keyword = searchInput instanceof HTMLInputElement ? searchInput.value.trim() : '';
     if (keyword) {

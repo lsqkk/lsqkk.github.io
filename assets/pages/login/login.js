@@ -52,10 +52,6 @@
     el.registerStatus = document.getElementById('registerStatus');
   }
 
-  let loginTurnstileToken = '';
-  let registerTurnstileToken = '';
-  let loginTurnstileWidgetId = null;
-  let registerTurnstileWidgetId = null;
   let resetBoundEmail = '';
   const SEND_COOLDOWN_MS = 60 * 1000;
   const REGISTER_COOLDOWN_MS = 2 * 60 * 1000;
@@ -134,8 +130,6 @@
   }
 
   function resetTurnstile() {
-    loginTurnstileToken = '';
-    registerTurnstileToken = '';
     if (window.QuarkTurnstile) {
       window.QuarkTurnstile.reset('login');
       window.QuarkTurnstile.reset('register');
@@ -146,20 +140,7 @@
     const key = getTurnstileSiteKey();
     if (!key || (!el.turnstileContainer && !el.turnstileRegisterContainer)) return;
     if (!window.QuarkTurnstile) return;
-    if (el.turnstileContainer) {
-      el.turnstileContainer.innerHTML = '';
-    }
-    if (el.turnstileRegisterContainer) {
-      el.turnstileRegisterContainer.innerHTML = '';
-    }
-    loginTurnstileToken = '';
-    registerTurnstileToken = '';
-    if (el.turnstileContainer) {
-      loginTurnstileWidgetId = window.QuarkTurnstile.render(el.turnstileContainer, 'login');
-    }
-    if (el.turnstileRegisterContainer) {
-      registerTurnstileWidgetId = window.QuarkTurnstile.render(el.turnstileRegisterContainer, 'register');
-    }
+    window.QuarkTurnstile.autoRender();
   }
 
   function waitForTurnstileReady() {
@@ -478,7 +459,7 @@
       return;
     }
 
-    const captchaOk = await verifyTurnstileToken('register', registerTurnstileToken, el.registerStatus);
+    const captchaOk = await verifyTurnstileToken('register', '', el.registerStatus);
     if (!captchaOk) return;
     const registerCooldown = canSend(`register_submit_${username}`, REGISTER_COOLDOWN_MS);
     if (registerCooldown > 0) {
@@ -569,7 +550,7 @@
       return;
     }
 
-    const captchaOk = await verifyTurnstileToken('login', loginTurnstileToken, el.loginStatus);
+    const captchaOk = await verifyTurnstileToken('login', '', el.loginStatus);
     if (!captchaOk) return;
 
     setText(el.loginStatus, '正在登录...');
@@ -619,7 +600,7 @@
       return;
     }
     setText(el.loginStatus, '正在验证邮箱...');
-    const captchaOk = await verifyTurnstileToken('login', loginTurnstileToken, el.loginStatus);
+    const captchaOk = await verifyTurnstileToken('login', '', el.loginStatus);
     if (!captchaOk) return;
     const ok = await verifyEmailCode(email, code, 'login');
     if (!ok) {
@@ -682,7 +663,7 @@
       setText(el.resetStatus, '两次输入的密码不一致');
       return;
     }
-    const captchaOk = await verifyTurnstileToken('login', loginTurnstileToken, el.resetStatus);
+    const captchaOk = await verifyTurnstileToken('login', '', el.resetStatus);
     if (!captchaOk) return;
     if (!resetBoundEmail) {
       const email = await prepareResetEmail();

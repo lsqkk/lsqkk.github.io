@@ -54,8 +54,6 @@
 
     let firebaseReady = false;
     let cachedRemote = null;
-    let bindTurnstileToken = '';
-    let bindTurnstileWidgetId = null;
     let emailEditMode = false;
     let cropper = null;
 
@@ -189,30 +187,20 @@
     }
 
     function resetBindTurnstile() {
-        bindTurnstileToken = '';
         if (window.QuarkTurnstile) {
             window.QuarkTurnstile.reset('bind');
         }
     }
 
-    function renderBindTurnstile() {
+    function ensureBindTurnstileRendered() {
         const key = getTurnstileSiteKey();
         if (!key || !(el.bindTurnstileContainer instanceof HTMLElement)) return;
         if (!window.QuarkTurnstile) return;
-        el.bindTurnstileContainer.innerHTML = '';
-        bindTurnstileToken = '';
-        bindTurnstileWidgetId = window.QuarkTurnstile.render(el.bindTurnstileContainer, 'bind');
+        if (!window.QuarkTurnstile.isRendered('bind')) {
+            window.QuarkTurnstile.render(el.bindTurnstileContainer, 'bind');
+        }
     }
 
-    function waitForTurnstileReady() {
-        return new Promise((resolve) => {
-            if (window.QuarkTurnstile) {
-                window.QuarkTurnstile.waitReady().then(resolve);
-                return;
-            }
-            resolve();
-        });
-    }
 
     async function verifyBindTurnstile(statusEl) {
         if (!window.QuarkTurnstile) {
@@ -465,6 +453,7 @@
         if (el.bindEmailSend) {
             el.bindEmailSend.addEventListener('click', () => {
                 if (el.bindEmail instanceof HTMLInputElement) {
+                    ensureBindTurnstileRendered();
                     void sendEmailCode(el.bindEmail.value.trim(), 'bind');
                 }
             });
@@ -472,6 +461,7 @@
         if (el.bindEmailEdit) {
             el.bindEmailEdit.addEventListener('click', () => {
                 emailEditMode = true;
+                ensureBindTurnstileRendered();
                 setEmailBindingState(el.bindEmail instanceof HTMLInputElement ? el.bindEmail.value.trim() : '', true);
                 if (el.bindEmailCode instanceof HTMLInputElement) el.bindEmailCode.value = '';
                 setEmailStatus('请输入新邮箱并完成验证');
@@ -943,9 +933,6 @@
         const media = window.matchMedia('(prefers-color-scheme: dark)');
         const apply = () => {
             document.body.classList.toggle('dark-mode', media.matches);
-            if (window.turnstile && typeof window.turnstile.render === 'function') {
-                renderBindTurnstile();
-            }
         };
         apply();
         if (typeof media.addEventListener === 'function') {
@@ -958,9 +945,6 @@
     async function init() {
         initThemeSync();
         cacheElements();
-        if (getTurnstileSiteKey()) {
-            void waitForTurnstileReady().then(() => renderBindTurnstile());
-        }
         fillStaticInfo();
         bindEvents();
         await migrateLegacyUid();
