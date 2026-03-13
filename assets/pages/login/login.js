@@ -68,10 +68,18 @@
   }
 
   function setStatus(target, value) {
+    if (window.SecurityShared && typeof window.SecurityShared.setStatus === 'function') {
+      window.SecurityShared.setStatus(target, value);
+      return;
+    }
     setText(target, value);
   }
 
   function setStatusState(target, value, state) {
+    if (window.SecurityShared && typeof window.SecurityShared.setStatus === 'function') {
+      window.SecurityShared.setStatus(target, value, state);
+      return;
+    }
     if (!target) return;
     target.textContent = value;
     if (!(target instanceof HTMLElement)) return;
@@ -283,6 +291,9 @@
   }
 
   function canSend(key, cooldown) {
+    if (window.SecurityShared && typeof window.SecurityShared.checkCooldown === 'function') {
+      return window.SecurityShared.checkCooldown(key, cooldown);
+    }
     const now = Date.now();
     const last = Number(localStorage.getItem(key) || 0);
     if (now - last < cooldown) {
@@ -293,6 +304,10 @@
   }
 
   function startCooldown(button, seconds) {
+    if (window.SecurityShared && typeof window.SecurityShared.startCooldown === 'function') {
+      window.SecurityShared.startCooldown(button, seconds);
+      return;
+    }
     if (!(button instanceof HTMLButtonElement)) return;
     const original = button.textContent || '';
     let remain = seconds;
@@ -363,6 +378,9 @@
   }
 
   async function verifyTurnstileToken(purpose, token, statusEl) {
+    if (window.SecurityShared && typeof window.SecurityShared.verifyTurnstile === 'function') {
+      return window.SecurityShared.verifyTurnstile(purpose, statusEl || el.loginStatus);
+    }
     if (!window.QuarkTurnstile) {
       setStatus(statusEl || el.loginStatus, '验证码未加载');
       return false;

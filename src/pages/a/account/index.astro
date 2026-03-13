@@ -24,6 +24,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
     </script>
     <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script is:inline src="/assets/js/turnstile-guard.js"></script>
+    <script is:inline src="/assets/js/security-shared.js"></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline src="__API_BASE__/api/keys?names=github"></script>
@@ -161,11 +162,11 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
             </div>
           </div>
           <div class="record-list" id="loginHistory">
-            <div class="record-list-title">设备登录记录</div>
-            <div class="record-list-body" id="loginHistoryBody">暂无记录</div>
-          </div>
-          <div class="tips">
-            <p>建议使用图床上传头像，避免外链失效。你也可以在评论中继续使用此昵称与头像。</p>
+            <div class="record-list-title">
+              <span>设备登录记录</span>
+              <button class="record-toggle" id="loginHistoryToggle" type="button">展开</button>
+            </div>
+            <div class="record-list-body is-collapsed" id="loginHistoryBody">暂无记录</div>
           </div>
         </section>
       </main>

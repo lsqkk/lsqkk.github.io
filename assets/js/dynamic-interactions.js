@@ -72,7 +72,21 @@
         return escapeHtml(text || '').replace(/\n/g, '<br>');
     }
 
+    function renderAvatar(info) {
+        const name = (info.nickname || info.login || '访客').trim();
+        if (info.avatarType === 'image' && info.avatarUrl) {
+            return `<span class="dynamic-comment-avatar" style="background-image:url('${escapeHtml(info.avatarUrl)}')"></span>`;
+        }
+        const color = info.avatarColor || '#4a6cf7';
+        const letter = escapeHtml(name.slice(0, 1).toUpperCase());
+        return `<span class="dynamic-comment-avatar" style="background:${escapeHtml(color)}">${letter}</span>`;
+    }
+
     function getLoginProfile() {
+        const shared = window.CommentShared;
+        if (shared && typeof shared.getLoginProfile === 'function') {
+            return shared.getLoginProfile();
+        }
         const profile = window.QuarkUserProfile && typeof window.QuarkUserProfile.getProfile === 'function'
             ? window.QuarkUserProfile.getProfile()
             : null;
@@ -106,9 +120,9 @@
             nickname: (profile && profile.nickname) ? profile.nickname : '',
             login,
             loginType,
-            avatarUrl: profile && profile.avatarUrl ? profile.avatarUrl : '',
-            avatarColor: profile && profile.avatarColor ? profile.avatarColor : '',
-            avatarType: profile && profile.avatarType ? profile.avatarType : 'color'
+            avatarUrl: profile && profile.avatarUrl ? profile.avatarUrl : (localStorage.getItem('userAvatarUrl') || ''),
+            avatarColor: profile && profile.avatarColor ? profile.avatarColor : (localStorage.getItem('userColor') || '#4a6cf7'),
+            avatarType: profile && profile.avatarType ? profile.avatarType : (localStorage.getItem('avatarType') || 'color')
         };
     }
 
@@ -469,11 +483,17 @@
                 const commentLikeCount = getLikeCount(comment.likesBy);
                 const commentLiked = !!(comment.likesBy && comment.likesBy[uid]);
                 const replies = getRepliesSorted(comment.replies);
+                const commentAvatar = renderAvatar(comment);
                 return `
                     <div class="dynamic-comment-item" data-comment-id="${escapeHtml(comment.id)}">
                         <div class="dynamic-comment-head">
-                            <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong>
-                            <span>${escapeHtml(formatTime(comment.timestamp))}</span>
+                            <div class="dynamic-comment-user">
+                                ${commentAvatar}
+                                <div class="dynamic-comment-meta">
+                                    <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong>
+                                    <span class="dynamic-comment-time">${escapeHtml(formatTime(comment.timestamp))}</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="dynamic-comment-text">${renderCommentText(comment.text || '')}</div>
                         <div class="dynamic-comment-actions">
@@ -487,11 +507,17 @@
                                 ${replies.map((reply) => {
                                     const replyLikeCount = getReplyLikeCount(reply);
                                     const replyLiked = !!(reply.likesBy && reply.likesBy[uid]);
+                                    const replyAvatar = renderAvatar(reply);
                                     return `
                                         <div class="dynamic-reply-item" data-reply-id="${escapeHtml(reply.id)}">
                                             <div class="dynamic-comment-head">
-                                                <strong>${renderDisplayName(reply.nickname, reply.login, reply.loginType, reply.uid)}</strong>
-                                                <span>${escapeHtml(formatTime(reply.timestamp))}</span>
+                                                <div class="dynamic-comment-user">
+                                                    ${replyAvatar}
+                                                    <div class="dynamic-comment-meta">
+                                                        <strong>${renderDisplayName(reply.nickname, reply.login, reply.loginType, reply.uid)}</strong>
+                                                        <span class="dynamic-comment-time">${escapeHtml(formatTime(reply.timestamp))}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="dynamic-comment-text">${renderCommentText(reply.text || '')}</div>
                                             <div class="dynamic-comment-actions">
@@ -512,7 +538,7 @@
         void getRootRef().then((dbRef) => {
             postRef = dbRef.child(dynamicId);
             setCommentsReady();
-            postRef.on('value', (snapshot) => {
+            const applySnapshot = (snapshot) => {
                 const data = snapshot.val() || {};
                 const likesBy = data.likesBy || {};
                 const comments = getCommentsSorted(data.comments).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -527,6 +553,9 @@
                 }
 
                 renderCommentList(comments);
+            };
+            postRef.on('value', (snapshot) => {
+                applySnapshot(snapshot);
             });
 
             if (likeBtn instanceof HTMLElement) {
@@ -572,6 +601,9 @@
                         uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
                             ? window.QuarkUserProfile.getUid()
                             : '') : guestUid,
+                        avatarType: loginProfile.avatarType || 'color',
+                        avatarColor: loginProfile.avatarColor || '#4a6cf7',
+                        avatarUrl: loginProfile.avatarUrl || '',
                         text,
                         timestamp: Date.now(),
                         likesBy: {}
@@ -585,6 +617,12 @@
                         await postRef.child('comments').push(payload);
                     }
                     textInput.value = '';
+                    try {
+                        const snap = await postRef.once('value');
+                        applySnapshot(snap);
+                    } catch {
+                        // ignore
+                    }
                 });
             }
 

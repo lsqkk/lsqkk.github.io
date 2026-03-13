@@ -750,6 +750,21 @@ body {
     box-shadow: var(--shadow-soft);
     min-height: 46px;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.online-preview-card::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5eead4;
+    box-shadow: 0 0 10px rgba(94, 234, 212, 0.8);
+    animation: onlinePulse 1.6s ease-in-out infinite;
 }
 
 .online-preview-avatar {
@@ -783,6 +798,12 @@ body {
     color: #45658f;
     line-height: 1.1;
     margin-top: 2px;
+}
+
+@keyframes onlinePulse {
+    0% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.35); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.7; }
 }
 
 .footer-container {

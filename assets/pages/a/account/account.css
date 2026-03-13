@@ -274,10 +274,28 @@
 }
 
 .record-list-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 10px;
   color: rgba(15, 23, 42, 0.7);
+}
+
+.record-toggle {
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(255, 255, 255, 0.8);
+  color: rgba(15, 23, 42, 0.72);
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.record-toggle:hover {
+  background: rgba(226, 232, 240, 0.8);
 }
 
 .record-list-body {
@@ -289,6 +307,14 @@
   overflow-y: auto;
   padding-right: 6px;
   scrollbar-width: none;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+}
+
+.record-list-body.is-collapsed {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding-right: 0;
 }
 
 .record-list-body::-webkit-scrollbar {
@@ -445,6 +471,12 @@
 
 .dark-mode .record-list-title {
   color: rgba(226, 232, 240, 0.75);
+}
+
+.dark-mode .record-toggle {
+  background: rgba(51, 65, 85, 0.6);
+  border-color: rgba(148, 163, 184, 0.35);
+  color: rgba(226, 232, 240, 0.85);
 }
 
 .dark-mode .record-list-body {

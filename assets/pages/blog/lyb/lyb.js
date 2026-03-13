@@ -5,7 +5,18 @@
  * @typedef {{ id: string, text: string, nickname: string, avatar: string, avatarType: 'color' | 'image', timestamp: number, isMarkdown?: boolean }} ReplyItem
  */
 
-firebase.initializeApp(firebaseConfig);
+let firebaseReadyPromise = null;
+
+async function ensureDatabaseReady() {
+    if (firebaseReadyPromise) return firebaseReadyPromise;
+    if (!window.QuarkFirebaseReady) {
+        throw new Error('Firebase就绪模块未加载');
+    }
+    firebaseReadyPromise = window.QuarkFirebaseReady.ensureDatabase({
+        scriptId: 'lyb-firebase-config'
+    });
+    return firebaseReadyPromise;
+}
 
 async function waitForAppCheck() {
 }
@@ -92,13 +103,23 @@ document.addEventListener('DOMContentLoaded', async function () {
         syncIdentityState();
     }
 
+    try {
+        await ensureDatabaseReady();
+    } catch (error) {
+        console.error('留言板 Firebase 初始化失败:', error);
+    }
+
     await waitForAppCheck();
 
     // 初始化Firebase引用
-    messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
+    try {
+        messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
+    } catch (error) {
+        console.error('留言板 Firebase 引用初始化失败:', error);
+    }
 
     // 加载留言
-    loadMessages();
+    await loadMessages();
 
     // 初始化管理员状态
     await verifyAdminSession();
@@ -145,7 +166,7 @@ function initTheme() {
 }
 
 // 提交留言
-function submitMessage() {
+async function submitMessage() {
     const nicknameInput = byId('nickname');
     const contentInput = byId('messageContent');
     const markdownInput = byId('useMarkdown');
@@ -189,11 +210,16 @@ function submitMessage() {
         messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
     }
 
-    messagesRef.push(message);
-    contentInput.value = '';
-
-    // 重新加载留言
-    loadMessages();
+    try {
+        if (messagesRef && typeof messagesRef.push === 'function') {
+            await messagesRef.push(message);
+        }
+    } catch (error) {
+        console.error('提交留言失败:', error);
+    } finally {
+        contentInput.value = '';
+        await loadMessages();
+    }
 }
 
 function syncIdentityState() {
@@ -209,7 +235,7 @@ function syncIdentityState() {
 }
 
 // 加载留言
-function loadMessages() {
+async function loadMessages() {
     const searchInput = byId('searchInput');
     const searchTerm = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : '';
 
@@ -218,7 +244,7 @@ function loadMessages() {
         messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
     }
 
-    messagesRef.once('value').then((snapshot) => {
+    return messagesRef.once('value').then((snapshot) => {
         /** @type {MessageItem[]} */
         const messages = [];
         snapshot.forEach((childSnapshot) => {
@@ -401,22 +427,25 @@ function renderPagination() {
 }
 
 // 点赞留言
-function likeMessage(messageId) {
+async function likeMessage(messageId) {
     const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
     const sharedList = window.CommentListShared;
-    if (sharedList && typeof sharedList.incrementLike === 'function') {
-        sharedList.incrementLike(messageRef.child('likes'));
-    } else {
-        messageRef.transaction(message => {
-            if (message) {
-                message.likes = (message.likes || 0) + 1;
-            }
-            return message;
-        });
+    try {
+        if (sharedList && typeof sharedList.incrementLike === 'function') {
+            await sharedList.incrementLike(messageRef.child('likes'));
+        } else {
+            await messageRef.transaction(message => {
+                if (message) {
+                    message.likes = (message.likes || 0) + 1;
+                }
+                return message;
+            });
+        }
+    } catch (error) {
+        console.error('点赞失败:', error);
+    } finally {
+        await loadMessages();
     }
-
-    // 重新加载留言
-    loadMessages();
 }
 
 // 打开回复模态框
@@ -442,7 +471,7 @@ function closeReplyModal() {
 }
 
 // 提交回复
-function submitReply() {
+async function submitReply() {
     if (!replyingTo) return;
 
     const nicknameInput = byId('nickname');
@@ -482,12 +511,14 @@ function submitReply() {
     };
 
     const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${replyingTo}/replies/${reply.id}`);
-    replyRef.set(reply);
-
-    closeReplyModal();
-
-    // 重新加载留言
-    loadMessages();
+    try {
+        await replyRef.set(reply);
+    } catch (error) {
+        console.error('提交回复失败:', error);
+    } finally {
+        closeReplyModal();
+        await loadMessages();
+    }
 }
 
 // 管理员登录 (安全API版本)
@@ -582,7 +613,7 @@ function updateAdminUI() {
 }
 
 // 删除留言
-function deleteMessage(messageId) {
+async function deleteMessage(messageId) {
     if (!isAdmin) {
         alert('无权限删除留言');
         return;
@@ -590,15 +621,18 @@ function deleteMessage(messageId) {
 
     if (confirm('确定要删除这条留言吗？')) {
         const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
-        messageRef.remove();
-
-        // 重新加载留言
-        loadMessages();
+        try {
+            await messageRef.remove();
+        } catch (error) {
+            console.error('删除留言失败:', error);
+        } finally {
+            await loadMessages();
+        }
     }
 }
 
 // 删除回复
-function deleteReply(replyId) {
+async function deleteReply(replyId) {
     if (!isAdmin) {
         alert('无权限删除回复');
         return;
@@ -611,10 +645,13 @@ function deleteReply(replyId) {
 
     if (confirm('确定要删除这条回复吗？')) {
         const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${replyingTo}/replies/${replyId}`);
-        replyRef.remove();
-
-        // 重新加载留言
-        loadMessages();
+        try {
+            await replyRef.remove();
+        } catch (error) {
+            console.error('删除回复失败:', error);
+        } finally {
+            await loadMessages();
+        }
     }
 }
 

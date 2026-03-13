@@ -7,6 +7,7 @@
   const listEl = document.getElementById('spaceSearchList');
   const activityEl = document.getElementById('spaceActivityList');
   const dynamicEl = document.getElementById('spaceDynamicList');
+  const postCommentEl = document.getElementById('spacePostCommentList');
   const ojEl = document.getElementById('spaceOjList');
   const statusEl = document.getElementById('spaceProfileStatus');
   const avatarEl = document.getElementById('spaceAvatar');
@@ -121,6 +122,21 @@
     `).join('');
   }
 
+  function renderPostComments(items) {
+    if (!(postCommentEl instanceof HTMLElement)) return;
+    if (!items.length) {
+      postCommentEl.textContent = '暂无文章评论';
+      return;
+    }
+    postCommentEl.innerHTML = items.map((item) => `
+      <div class="space-item">
+        <strong>${item.text}</strong>
+        <div>${formatTime(item.timestamp)}</div>
+        ${item.postPath ? `<a href="${item.postPath}">查看文章${item.postTitle ? ` · ${item.postTitle}` : ''}</a>` : '<span>来源未知</span>'}
+      </div>
+    `).join('');
+  }
+
   function renderOj(items) {
     if (!(ojEl instanceof HTMLElement)) return;
     if (!items.length) {
@@ -189,6 +205,37 @@
     } catch (error) {
       console.error('加载动态评论失败:', error);
       if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '加载失败';
+    }
+  }
+
+  async function loadPostComments(login) {
+    try {
+      const raw = await fetchDb('post_annotations');
+      const posts = raw ? Object.entries(raw) : [];
+      const items = [];
+      posts.forEach(([postKey, post]) => {
+        const highlights = post && post.highlights ? post.highlights : null;
+        if (!highlights) return;
+        Object.values(highlights).forEach((highlight) => {
+          const comments = highlight && highlight.comments ? highlight.comments : null;
+          if (!comments) return;
+          Object.values(comments).forEach((comment) => {
+            if (comment && comment.login === login) {
+              items.push({
+                text: comment.text || '无内容',
+                timestamp: comment.timestamp || 0,
+                postPath: highlight.postPath || '',
+                postTitle: highlight.postTitle || ''
+              });
+            }
+          });
+        });
+      });
+      const sorted = items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
+      renderPostComments(sorted);
+    } catch (error) {
+      console.error('加载文章评论失败:', error);
+      if (postCommentEl instanceof HTMLElement) postCommentEl.textContent = '加载失败';
     }
   }
 
@@ -346,10 +393,12 @@
       if (showActivity) {
         await loadActivity(user.login);
         await loadDynamicComments(user.login);
+        await loadPostComments(user.login);
         await loadOjDiscussions(user.login);
       } else {
         if (activityEl instanceof HTMLElement) activityEl.textContent = '该用户隐藏了最近发言';
         if (dynamicEl instanceof HTMLElement) dynamicEl.textContent = '该用户隐藏了最近发言';
+        if (postCommentEl instanceof HTMLElement) postCommentEl.textContent = '该用户隐藏了最近发言';
         if (ojEl instanceof HTMLElement) ojEl.textContent = '该用户隐藏了最近发言';
       }
       if (isSelf(user.login, user.loginType)) {
@@ -416,6 +465,7 @@
           } else {
             void loadActivity(profile.login);
             void loadDynamicComments(profile.login);
+            void loadPostComments(profile.login);
             void loadOjDiscussions(profile.login);
           }
         } catch (error) {

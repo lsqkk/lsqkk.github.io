@@ -5,6 +5,41 @@
 
   const API_BASE = '__API_BASE__';
   const POLL_INTERVAL = 15000;
+  const PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+  let lastPushTime = 0;
+  const lastRandChars = [];
+
+  function generatePushId() {
+    let now = Date.now();
+    const duplicateTime = now === lastPushTime;
+    lastPushTime = now;
+
+    const timeStampChars = new Array(8);
+    for (let i = 7; i >= 0; i -= 1) {
+      timeStampChars[i] = PUSH_CHARS.charAt(now % 64);
+      now = Math.floor(now / 64);
+    }
+    let id = timeStampChars.join('');
+
+    if (!duplicateTime) {
+      for (let i = 0; i < 12; i += 1) {
+        lastRandChars[i] = Math.floor(Math.random() * 64);
+      }
+    } else {
+      for (let i = 11; i >= 0; i -= 1) {
+        if (lastRandChars[i] !== 63) {
+          lastRandChars[i] += 1;
+          break;
+        }
+        lastRandChars[i] = 0;
+      }
+    }
+
+    for (let i = 0; i < 12; i += 1) {
+      id += PUSH_CHARS.charAt(lastRandChars[i]);
+    }
+    return id;
+  }
 
   class Snapshot {
     constructor(value, key = null) {
@@ -29,6 +64,10 @@
       this._path = path.replace(/^\/+/, '');
       this._query = query;
       this._listeners = [];
+    }
+    get key() {
+      const parts = this._path.split('/');
+      return parts[parts.length - 1] || null;
     }
     child(sub) {
       const next = `${this._path}/${String(sub).replace(/^\/+/, '')}`;
@@ -66,10 +105,18 @@
       await fetchDb('remove', this._path, {});
     }
     push(value) {
-      return fetchDb('push', this._path, { value }).then((payload) => {
-        const key = payload && payload.key ? payload.key : '';
-        return new Ref(`${this._path}/${key}`, this._query);
-      });
+      const key = generatePushId();
+      const ref = new Ref(`${this._path}/${key}`, this._query);
+      const hasValue = arguments.length > 0;
+      const promise = hasValue
+        ? ref.set(value).then(() => ref)
+        : Promise.resolve(ref);
+      ref.then = promise.then.bind(promise);
+      ref.catch = promise.catch.bind(promise);
+      if (typeof promise.finally === 'function') {
+        ref.finally = promise.finally.bind(promise);
+      }
+      return ref;
     }
     async transaction(updater) {
       if (typeof updater !== 'function') return;

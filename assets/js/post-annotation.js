@@ -532,6 +532,15 @@
         };
     }
 
+    function getPostMeta() {
+        const titleEl = document.querySelector('h1');
+        const title = titleEl ? titleEl.textContent?.trim() : '';
+        return {
+            postPath: window.location.pathname || '',
+            postTitle: title || document.title || ''
+        };
+    }
+
     function findExistingHighlightByAnchor(anchor) {
         const ids = Object.keys(state.highlights);
         for (let i = 0; i < ids.length; i += 1) {
@@ -564,8 +573,10 @@
             const profile = collectProfileFromUI();
             const newRef = state.dbRef.push();
             highlightId = newRef.key;
+            const meta = getPostMeta();
             await newRef.set({
                 ...anchor,
+                ...meta,
                 createdAt: Date.now(),
                 createdBy: {
                     uid: profile.uid,

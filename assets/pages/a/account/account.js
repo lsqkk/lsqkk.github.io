@@ -38,6 +38,7 @@
         el.accountLocation = document.getElementById('accountLocation');
         el.avatarState = document.getElementById('avatarState');
         el.loginHistoryBody = document.getElementById('loginHistoryBody');
+        el.loginHistoryToggle = document.getElementById('loginHistoryToggle');
         el.localSyncToggle = document.getElementById('localSyncToggle');
         el.bindEmail = document.getElementById('bindEmail');
         el.bindEmailCode = document.getElementById('bindEmailCode');
@@ -171,6 +172,10 @@
     }
 
     function setEmailStatus(text) {
+        if (window.SecurityShared && typeof window.SecurityShared.setStatus === 'function') {
+            window.SecurityShared.setStatus(el.bindEmailStatus, text);
+            return;
+        }
         setText(el.bindEmailStatus, text);
     }
 
@@ -203,6 +208,9 @@
 
 
     async function verifyBindTurnstile(statusEl) {
+        if (window.SecurityShared && typeof window.SecurityShared.verifyTurnstile === 'function') {
+            return window.SecurityShared.verifyTurnstile('bind', statusEl || el.bindEmailStatus);
+        }
         if (!window.QuarkTurnstile) {
             setEmailStatus('验证码未加载');
             return false;
@@ -481,6 +489,12 @@
                     localStorage.clear();
                     window.location.href = '/';
                 }
+            });
+        }
+        if (el.loginHistoryToggle && el.loginHistoryBody) {
+            el.loginHistoryToggle.addEventListener('click', () => {
+                const collapsed = el.loginHistoryBody.classList.toggle('is-collapsed');
+                el.loginHistoryToggle.textContent = collapsed ? '展开' : '收起';
             });
         }
     }

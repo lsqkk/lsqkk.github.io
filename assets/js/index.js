@@ -1057,8 +1057,10 @@ function getGuestName(uid) {
 }
 
 function getDisplayName(nickname, login, uid) {
-    if (nickname && String(nickname).trim()) return String(nickname).trim();
-    if (login && String(login).trim()) return String(login).trim();
+    const nick = nickname && String(nickname).trim();
+    if (nick && nick !== '访客') return nick;
+    const lg = login && String(login).trim();
+    if (lg) return lg;
     return getGuestName(uid);
 }
 

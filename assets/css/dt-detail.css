@@ -158,11 +158,43 @@
 
 .dynamic-comment-head {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: center;
     gap: 12px;
     font-size: 0.86rem;
     color: #5b6873;
     margin-bottom: 6px;
+}
+
+.dynamic-comment-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dynamic-comment-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: rgba(47, 110, 219, 0.15);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: #1f59b9;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.dynamic-comment-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dynamic-comment-time {
+    font-size: 0.78rem;
+    color: #6a7c90;
 }
 
 .dynamic-comment-text {
@@ -188,6 +220,14 @@
     .dynamic-comment-empty,
     .dynamic-comment-head,
     .dynamic-reply-state {
+        color: #bcd0e8;
+    }
+
+    .dynamic-comment-avatar {
+        color: #cfe0ff;
+    }
+
+    .dynamic-comment-time {
         color: #bcd0e8;
     }
 
