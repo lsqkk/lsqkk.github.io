@@ -371,7 +371,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    width: 44px;
+    min-width: 44px;
     height: 44px;
     padding: 0;
     max-width: 44px;
@@ -393,10 +393,13 @@ body {
 .contact-chip.is-open {
     max-width: 320px;
     padding: 0 12px;
+    justify-content: flex-start;
     border-color: rgba(47, 110, 219, 0.2);
 }
 
 .contact-icon {
+    width: 44px;
+    height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1116,7 +1119,7 @@ body {
     }
 
     .contact-chip {
-        width: 44px;
+        min-width: 44px;
         height: 44px;
         max-width: 44px;
         justify-content: center;
