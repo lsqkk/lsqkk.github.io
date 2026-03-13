@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
@@ -18,7 +19,8 @@ const currentYear = new Date().getFullYear();
     <script is:inline src="/assets/js/cursor-trail.js"></script>
 </head>
 
-<body>
+<body class="luxury-body">
+    <LuxuryBackground />
 
     <div class="container">
         <header>
@@ -124,3 +126,4 @@ const currentYear = new Date().getFullYear();
 </body>
 
 </html>
+

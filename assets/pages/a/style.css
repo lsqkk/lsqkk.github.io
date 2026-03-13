@@ -12,7 +12,7 @@
             --card-bg: rgba(255, 255, 255, 0.05);
         }
         body {
-            background: linear-gradient(135deg, var(--dark-color) 0%, #1a1d3a 100%);
+            background: transparent;
             color: var(--light-color);
             min-height: 100vh;
             line-height: 1.6;

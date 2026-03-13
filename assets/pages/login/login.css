@@ -1,9 +1,7 @@
 .login-body {
   min-height: 100vh;
   color: #0f172a;
-  background: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.12), transparent 55%),
-    radial-gradient(circle at 80% 10%, rgba(129, 140, 248, 0.14), transparent 60%),
-    linear-gradient(180deg, #f8fafc, #eef2ff);
+  background: transparent;
 }
 
 .login-shell {
@@ -326,9 +324,7 @@
 }
 
 .login-body.dark-mode {
-  background: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.16), transparent 55%),
-    radial-gradient(circle at 80% 10%, rgba(129, 140, 248, 0.18), transparent 60%),
-    linear-gradient(180deg, #0b1120, #0f172a);
+  background: transparent;
   color: #e2e8f0;
 }
 

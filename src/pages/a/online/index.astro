@@ -2,6 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 
 const navConfigPath = path.join(process.cwd(), "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
@@ -24,7 +25,8 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <meta name="referrer" content="never" />
   </head>
-  <body class="online-body">
+  <body class="online-body luxury-body">
+    <LuxuryBackground />
     <div class="online-shell">
       <header class="online-hero">
         <div>

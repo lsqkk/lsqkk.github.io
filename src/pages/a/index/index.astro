@@ -1,6 +1,7 @@
 ---
 import fs from "node:fs/promises";
 import path from "node:path";
+import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
@@ -29,7 +30,8 @@ const currentYear = new Date().getFullYear();
     </script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
-  <body>
+  <body class="luxury-body">
+    <LuxuryBackground />
     <script is:inline src="/assets/js/nav.js"></script>
     <main>
       <div class="container">

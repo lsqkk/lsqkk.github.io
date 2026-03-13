@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../components/LuxuryBackground.astro";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -13,7 +14,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="stylesheet" href="/assets/css/404.css" />
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
-  <body>
+  <body class="luxury-body">
+    <LuxuryBackground />
     <div class="container">
       <h2>{SITE_TITLE}</h2>
       <div class="emoji">🌌</div>

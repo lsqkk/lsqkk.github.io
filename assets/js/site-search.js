@@ -117,6 +117,41 @@ function buildBingUrl(keyword) {
     return `https://cn.bing.com/search?q=${encodeURIComponent(q)}`;
 }
 
+function escapeHtml(text) {
+    return String(text ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function normalizePath(path) {
+    return String(path || '').replace(/^\/+/, '').replace(/\/$/, '');
+}
+
+function buildSnippet(content, keyword) {
+    const text = String(content || '');
+    const lowerText = text.toLowerCase();
+    const lowerKeyword = keyword.toLowerCase();
+    const index = lowerText.indexOf(lowerKeyword);
+    if (index < 0) return '';
+    const context = 48;
+    const start = Math.max(0, index - context);
+    const end = Math.min(text.length, index + lowerKeyword.length + context);
+    const before = text.slice(start, index);
+    const hit = text.slice(index, index + lowerKeyword.length);
+    const after = text.slice(index + lowerKeyword.length, end);
+    const prefix = start > 0 ? '…' : '';
+    const suffix = end < text.length ? '…' : '';
+    return `${prefix}${escapeHtml(before)}<mark>${escapeHtml(hit)}</mark>${escapeHtml(after)}${suffix}`;
+}
+
+function loadFulltextIndex() {
+    if (window.__FULLTEXT_INDEX__) return window.__FULLTEXT_INDEX__;
+    return { posts: [], dynamics: [] };
+}
+
 function scoreMatch(text, keyword) {
     const t = text.toLowerCase();
     const k = keyword.toLowerCase();
@@ -131,7 +166,7 @@ function buildTitle(path, postMap) {
     return path === '' ? '首页' : `/${path}`;
 }
 
-async function runSearch(keyword) {
+async function runSearch(keyword, fulltextEnabled) {
     const resultsEl = document.getElementById('siteSearchResults');
     const statusEl = document.getElementById('siteSearchStatus');
     const bingLink = document.getElementById('bingSearchLink');
@@ -174,28 +209,86 @@ async function runSearch(keyword) {
     if (pages.length) {
         pages.forEach((page) => {
             if (!page || !page.path) return;
-            const path = String(page.path);
+            const path = normalizePath(page.path);
             if (!path || path.endsWith('.xml') || path.endsWith('.txt')) return;
             const meta = postMetaMap.get(path) || null;
             merged.set(path, {
                 path,
                 title: page.title || (meta?.title || buildTitle(path, postTitleMap)),
                 meta,
+                kind: meta ? 'post' : 'page'
             });
         });
     }
 
     const fallbackPaths = pages.length ? urls : [];
     fallbackPaths.forEach((path) => {
-        if (!path || path.endsWith('.xml') || path.endsWith('.txt')) return;
-        if (merged.has(path)) return;
+        const cleanPath = normalizePath(path);
+        if (!cleanPath || cleanPath.endsWith('.xml') || cleanPath.endsWith('.txt')) return;
+        if (merged.has(cleanPath)) return;
         const meta = postMetaMap.get(path) || null;
-        merged.set(path, {
-            path,
+        merged.set(cleanPath, {
+            path: cleanPath,
             title: meta?.title || buildTitle(path, postTitleMap),
             meta,
+            kind: meta ? 'post' : 'page'
         });
     });
+
+    if (fulltextEnabled) {
+        const fullIndex = loadFulltextIndex();
+        const postItems = Array.isArray(fullIndex.posts) ? fullIndex.posts : [];
+        const dynamicItems = Array.isArray(fullIndex.dynamics) ? fullIndex.dynamics : [];
+
+        postItems.forEach((item) => {
+            if (!item || !item.content) return;
+            const snippet = buildSnippet(item.content, trimmed);
+            if (!snippet) return;
+            const path = normalizePath(item.path || '');
+            if (!path) return;
+            const existing = merged.get(path);
+            const meta = existing?.meta || postMetaMap.get(path) || {
+                title: item.title || path,
+                tags: item.tags || [],
+                columns: item.columns || [],
+                date: item.date || '',
+                wordCount: item.wordCount || 0
+            };
+            merged.set(path, {
+                path,
+                title: item.title || existing?.title || buildTitle(path, postTitleMap),
+                meta,
+                snippet,
+                kind: 'post'
+            });
+        });
+
+        dynamicItems.forEach((item) => {
+            if (!item || !item.content) return;
+            const snippet = buildSnippet(item.content, trimmed);
+            if (!snippet) return;
+            const path = normalizePath(item.path || '');
+            if (!path) return;
+            if (!merged.has(path)) {
+                merged.set(path, {
+                    path,
+                    title: item.title || item.date || path,
+                    meta: null,
+                    snippet,
+                    kind: 'dynamic',
+                    date: item.date || ''
+                });
+            } else {
+                const existing = merged.get(path);
+                merged.set(path, {
+                    ...existing,
+                    snippet: existing.snippet || snippet,
+                    kind: existing.kind || 'dynamic',
+                    date: existing.date || item.date || ''
+                });
+            }
+        });
+    }
 
     const filtered = Array.from(merged.values())
         .map((item) => {
@@ -207,9 +300,10 @@ async function runSearch(keyword) {
                 const columnText = (item.meta.columns || []).join(' ');
                 tagScore = Math.max(scoreMatch(tagText, trimmed), scoreMatch(columnText, trimmed));
             }
+            const fulltextScore = item.snippet ? 1 : 0;
             return {
                 ...item,
-                score: Math.max(titleScore, pathScore, tagScore)
+                score: Math.max(titleScore, pathScore, tagScore, fulltextScore)
             };
         })
         .filter((item) => item.score > 0)
@@ -242,12 +336,20 @@ async function runSearch(keyword) {
                 ${columnHtml}
                 ${tagHtml}
             </div>
-        ` : '';
+        ` : (item.kind === 'dynamic' ? `
+            <div class="search-result-tags">
+                ${item.date ? `<span class="search-tag search-tag-date">${item.date}</span>` : ''}
+                <span class="search-result-badge">动态全文</span>
+            </div>
+        ` : '');
+        const badge = item.kind === 'post' && item.snippet ? `<span class="search-result-badge">文章全文</span>` : '';
+        const snippetHtml = item.snippet ? `<div class="search-result-snippet">${item.snippet}</div>` : '';
         return `
             <div class="search-result" data-href="/${item.path}">
-                <div class="search-result-title">${item.title}</div>
+                <div class="search-result-title">${item.title}${badge}</div>
                 <div class="search-result-meta">/${item.path}</div>
                 ${metaHtml}
+                ${snippetHtml}
             </div>
         `;
     }).join('');
@@ -258,25 +360,36 @@ async function runSearch(keyword) {
 function initSearchPage() {
     const input = document.getElementById('siteSearchInput');
     const btn = document.getElementById('siteSearchBtn');
+    const fulltextToggle = document.getElementById('siteSearchFulltext');
     if (!(input instanceof HTMLInputElement) || !(btn instanceof HTMLElement)) return;
 
     const params = new URLSearchParams(window.location.search);
     const initial = params.get('q') || params.get('search') || '';
+    const fulltextInitial = params.get('full') === '1';
+    if (fulltextToggle instanceof HTMLInputElement) {
+        fulltextToggle.checked = fulltextInitial;
+    }
     if (initial) {
         input.value = initial;
-        runSearch(initial);
+        runSearch(initial, fulltextInitial);
     }
 
     btn.addEventListener('click', () => {
         const value = input.value.trim();
         const url = new URL(window.location.href);
+        const fulltextEnabled = fulltextToggle instanceof HTMLInputElement ? fulltextToggle.checked : false;
         if (value) {
             url.searchParams.set('q', value);
         } else {
             url.searchParams.delete('q');
         }
+        if (fulltextEnabled) {
+            url.searchParams.set('full', '1');
+        } else {
+            url.searchParams.delete('full');
+        }
         window.history.replaceState({}, '', url);
-        runSearch(value);
+        runSearch(value, fulltextEnabled);
     });
 
     input.addEventListener('keypress', (event) => {
@@ -284,6 +397,14 @@ function initSearchPage() {
             btn.click();
         }
     });
+
+    if (fulltextToggle instanceof HTMLInputElement) {
+        fulltextToggle.addEventListener('change', () => {
+            const value = input.value.trim();
+            if (!value) return;
+            btn.click();
+        });
+    }
 }
 
 function bindSearchResultLinks(container) {

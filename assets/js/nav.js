@@ -11,6 +11,16 @@ const activityScript = document.createElement('script');
 activityScript.src = '/assets/js/user-activity.js';
 activityScript.defer = true;
 document.head.appendChild(activityScript);
+function ensureCursorTrail() {
+    const hasCursorCss = !!document.querySelector('link[href*="cursor.css"]');
+    const hasCursorScript = !!document.querySelector('script[src="/assets/js/cursor-trail.js"]');
+    if (!hasCursorCss || hasCursorScript) return;
+    const cursorScript = document.createElement('script');
+    cursorScript.src = '/assets/js/cursor-trail.js';
+    cursorScript.defer = true;
+    document.head.appendChild(cursorScript);
+}
+ensureCursorTrail();
 const hoverRootMap = {
     '/posts': 'posts',
     '/tool': 'tool',

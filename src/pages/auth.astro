@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../components/LuxuryBackground.astro";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -45,9 +46,12 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         });
       }
     </script>
-  </head>
-  <body>
+      <script is:inline src="/assets/js/cursor-trail.js"></script>
+</head>
+  <body class="luxury-body">
+    <LuxuryBackground />
     <p>登录中...</p>
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
 </html>
+

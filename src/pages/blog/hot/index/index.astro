@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -15,7 +16,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
 </head>
 
-<body>
+<body class="luxury-body">
+    <LuxuryBackground />
     <div class="container">
         <header>
             <link rel="stylesheet" href="/assets/css/basic.css">
@@ -226,3 +228,4 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 </body>
 
 </html>
+

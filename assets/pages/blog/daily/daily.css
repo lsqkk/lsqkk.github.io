@@ -19,14 +19,10 @@
 }
 
 body {
-    background-color: var(--bg-color);
+    background: transparent;
     color: var(--text-color);
     line-height: 1.6;
     padding: 20px;
-    background-image: url('https://source.unsplash.com/random/1920x1080/?tech');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
     min-height: 100vh;
 }
 

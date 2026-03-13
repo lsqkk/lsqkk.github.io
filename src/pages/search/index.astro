@@ -1,7 +1,87 @@
 ---
+import fs from "node:fs/promises";
+import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { parseDynamicEntries } from "../../utils/dynamic-entries";
 import LuxuryBackground from "../../components/LuxuryBackground.astro";
+
 const pageTitle = `站内搜索 - ${SITE_TITLE}`;
+const PROJECT_ROOT = process.cwd();
+const postsIndexPath = path.join(PROJECT_ROOT, "posts", "posts.json");
+const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
+
+function stripMarkdown(text: string): string {
+  return String(text || "")
+    .replace(/^---[\s\S]*?---\s*/g, "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
+    .replace(/\[[^\]]+\]\([^)]+\)/g, (match) => {
+      const label = match.replace(/\[|\].*$/g, "");
+      return label || " ";
+    })
+    .replace(/^\s{0,3}>\s?/gm, "")
+    .replace(/^\s{0,3}#{1,6}\s*/gm, "")
+    .replace(/^\s{0,3}[-*+]\s+/gm, "")
+    .replace(/^\s{0,3}\d+\.\s+/gm, "")
+    .replace(/<\/?[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+let postsFulltext: Array<Record<string, any>> = [];
+let dynamicFulltext: Array<Record<string, any>> = [];
+
+try {
+  const postsRaw = await fs.readFile(postsIndexPath, "utf8");
+  const posts = JSON.parse(postsRaw);
+  postsFulltext = await Promise.all(
+    (Array.isArray(posts) ? posts : []).map(async (post: any) => {
+      const file = post?.file || "";
+      const title = post?.title || file;
+      const fullPath = file ? path.join(PROJECT_ROOT, "posts", file) : "";
+      let content = "";
+      try {
+        const md = await fs.readFile(fullPath, "utf8");
+        content = stripMarkdown(md);
+      } catch {
+        content = "";
+      }
+      return {
+        type: "post",
+        title,
+        path: file ? `/posts/${String(file).replace(/\.md$/, "")}` : "",
+        tags: Array.isArray(post?.tags) ? post.tags : [],
+        columns: Array.isArray(post?.columns) ? post.columns : [],
+        date: post?.date || "",
+        wordCount: post?.wordCount || 0,
+        content
+      };
+    })
+  );
+} catch {
+  postsFulltext = [];
+}
+
+try {
+  const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
+  const entries = parseDynamicEntries(dynamicMd);
+  dynamicFulltext = entries.map((entry) => ({
+    type: "dynamic",
+    id: entry.id,
+    title: entry.title || entry.date,
+    date: entry.date,
+    path: `/blog/dt/${entry.id}`,
+    content: stripMarkdown(entry.lines.join("\n"))
+  }));
+} catch {
+  dynamicFulltext = [];
+}
+
+const fulltextIndex = {
+  posts: postsFulltext,
+  dynamics: dynamicFulltext
+};
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -15,6 +95,9 @@ const pageTitle = `站内搜索 - ${SITE_TITLE}`;
     <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/css/site-search.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script is:inline define:vars={{ fulltextIndex }}>
+      window.__FULLTEXT_INDEX__ = fulltextIndex;
+    </script>
     <script is:inline src="/assets/js/nav.js"></script>
   </head>
   <body class="search-body luxury-body">
@@ -27,6 +110,12 @@ const pageTitle = `站内搜索 - ${SITE_TITLE}`;
       <div class="search-box">
         <input type="text" id="siteSearchInput" placeholder="输入关键词，按回车搜索..." />
         <button id="siteSearchBtn">搜索</button>
+      </div>
+      <div class="search-mode">
+        <label class="search-toggle">
+          <input type="checkbox" id="siteSearchFulltext" />
+          <span>全文搜索（文章/动态正文）</span>
+        </label>
       </div>
       <div class="search-actions">
         <a id="bingSearchLink" class="bing-link" href="https://cn.bing.com/search?q=site%3Alsqkk.github.io" target="_blank" rel="noreferrer">使用必应全站搜索</a>

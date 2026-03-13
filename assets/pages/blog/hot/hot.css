@@ -21,7 +21,7 @@
         }
 
         body {
-            background-color: var(--background-color);
+            background: transparent;
             color: var(--text-color);
             line-height: 1.6;
         }

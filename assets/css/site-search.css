@@ -65,6 +65,22 @@
     margin-bottom: 10px;
 }
 
+.search-mode {
+    margin-bottom: 12px;
+}
+
+.search-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: var(--search-muted);
+}
+
+.search-toggle input {
+    accent-color: var(--search-accent);
+}
+
 .bing-link {
     text-decoration: none;
     color: var(--search-accent);
@@ -74,6 +90,34 @@
 .search-status {
     color: var(--search-muted);
     margin: 10px 0 12px;
+}
+
+.search-result-snippet {
+    margin-top: 10px;
+    color: var(--search-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.search-result-snippet mark {
+    background: rgba(59, 130, 246, 0.2);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 4px;
+}
+
+.search-result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.12);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 8px;
 }
 
 .search-results {
