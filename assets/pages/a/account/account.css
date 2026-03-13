@@ -198,6 +198,12 @@
   align-items: center;
 }
 
+.turnstile-box {
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+}
+
 .field input[type="text"],
 .field input[type="email"],
 .field input[type="url"] {

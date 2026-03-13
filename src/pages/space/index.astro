@@ -1,0 +1,92 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用户主页 | {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="/assets/pages/space/style.css" />
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+    </script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/js/firebase-ready.js"></script>
+    <script is:inline src="/assets/js/comment-shared.js"></script>
+    <script is:inline src="/assets/js/user-profile.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+  </head>
+  <body class="space-body">
+    <div class="space-shell">
+      <header class="space-hero">
+        <div>
+          <p class="space-kicker">User Space</p>
+          <h1 class="space-title">用户主页</h1>
+          <p class="space-subtitle">查看某位用户的公开资料与最近发言。</p>
+        </div>
+        <div class="space-search">
+          <input type="text" id="spaceSearchInput" placeholder="输入账号名或昵称" />
+          <button id="spaceSearchBtn" class="btn primary">搜索用户</button>
+        </div>
+      </header>
+
+      <main class="space-grid">
+        <section class="space-card space-card--profile">
+          <div class="card-header">
+            <h2>基础信息</h2>
+            <p id="spaceProfileStatus">等待加载</p>
+          </div>
+          <div class="profile-panel">
+            <div class="profile-avatar">
+              <img id="spaceAvatar" alt="avatar" />
+              <span id="spaceAvatarFallback">Q</span>
+            </div>
+            <div class="profile-info">
+              <div class="profile-name" id="spaceNickname">-</div>
+              <div class="profile-meta" id="spaceLogin">-</div>
+              <div class="profile-meta" id="spaceLoginType">-</div>
+              <div class="profile-meta" id="spaceRegisterAt">注册时间：-</div>
+            </div>
+          </div>
+          <div class="profile-actions" id="spaceSelfActions">
+            <a class="btn ghost" href="/a/account">账号中心</a>
+            <button class="btn ghost" id="spaceLogoutBtn">退出登录</button>
+            <label class="space-toggle">
+              <input type="checkbox" id="spaceShowActivity" checked />
+              <span>展示最近发言</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="space-card">
+          <div class="card-header">
+            <h2>最近发言</h2>
+            <p>来自留言板的公开记录</p>
+          </div>
+          <div class="space-list" id="spaceActivityList">暂无数据</div>
+        </section>
+
+        <section class="space-card">
+          <div class="card-header">
+            <h2>搜索结果</h2>
+            <p>匹配的用户列表</p>
+          </div>
+          <div class="space-list" id="spaceSearchList">请输入关键字搜索</div>
+        </section>
+      </main>
+    </div>
+
+    <script is:inline src="/assets/pages/space/space.js"></script>
+  </body>
+</html>

@@ -125,7 +125,10 @@ function generateNavHTML(config) {
                     <input type="text" id="searchInput" placeholder="搜索站内...">
                     <button onclick="handleGlobalSearch()">搜索</button>
                 </div>
-                <div class="header-login" id="header-login"><a href="${config.login.url}">登录</a></div>
+                <div class="header-login nav-login" id="header-login">
+                    <a href="${config.login.url}">登录</a>
+                    <div class="nav-login-tip">登陆后享受更多权益</div>
+                </div>
                 <div class="header-user" id="header-user"></div>
             </div>
         </div>
@@ -551,21 +554,57 @@ function renderUserProfile() {
 
     const avatarUrl = profile.avatarUrl || '/assets/img/touxiang.png';
     const nickname = profile.nickname || '已登录';
-    const profileUrl = isLoggedIn ? '/a/account' : (profile.profileUrl || '');
+    const sharedProfile = window.CommentShared && typeof window.CommentShared.getLoginProfile === 'function'
+        ? window.CommentShared.getLoginProfile()
+        : null;
+    const login = (sharedProfile && sharedProfile.login) || '';
+    const loginType = (sharedProfile && sharedProfile.loginType) || '';
+    const identifier = login ? (loginType === 'local' ? `qb_${login}` : login) : '';
+    const spaceUrl = identifier ? `/space?user=${encodeURIComponent(identifier)}` : '/space';
     const inner = `
         <div class="user-pill">
             <img class="user-avatar" src="${avatarUrl}" alt="avatar">
             <span class="user-name">${nickname}</span>
         </div>
     `;
-    const wrapped = profileUrl
-        ? (profileUrl.startsWith('/a/')
-            ? `<a class="user-link" href="${profileUrl}">${inner}</a>`
-            : `<a class="user-link" href="${profileUrl}" target="_blank" rel="noreferrer">${inner}</a>`)
-        : inner;
+    const dropdown = `
+        <div class="nav-user-menu">
+            <div class="nav-user-meta">
+                <img class="nav-user-avatar" src="${avatarUrl}" alt="avatar">
+                <div>
+                    <div class="nav-user-name">${nickname}</div>
+                    <div class="nav-user-sub">${login ? `@${login}` : '已登录用户'}</div>
+                </div>
+            </div>
+            <div class="nav-user-actions">
+                <a href="/a/account">账号中心</a>
+                <a href="${spaceUrl}">我的主页</a>
+                <button type="button" data-action="logout">退出登录</button>
+            </div>
+        </div>
+    `;
+    const wrapped = `
+        <div class="nav-user-wrap">
+            ${inner}
+            ${isLoggedIn ? dropdown : ''}
+        </div>
+    `;
 
     if (headerUser) headerUser.innerHTML = wrapped;
-    if (mobileUser) mobileUser.innerHTML = wrapped;
+    if (mobileUser) mobileUser.innerHTML = inner;
+
+    if (headerUser) {
+        headerUser.querySelectorAll('[data-action="logout"]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
+                    window.CommentShared.logout('/');
+                } else {
+                    localStorage.clear();
+                    window.location.href = '/';
+                }
+            });
+        });
+    }
 }
 
 window.renderNavUserProfile = renderUserProfile;

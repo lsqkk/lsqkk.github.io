@@ -31,7 +31,8 @@
     el.emailLoginSubmit = document.getElementById('emailLoginSubmit');
     el.toggleReset = document.getElementById('toggleReset');
     el.resetPanel = document.getElementById('resetPanel');
-    el.resetEmail = document.getElementById('resetEmail');
+    el.resetUsername = document.getElementById('resetUsername');
+    el.resetEmailHint = document.getElementById('resetEmailHint');
     el.resetCode = document.getElementById('resetCode');
     el.resetSend = document.getElementById('resetSend');
     el.resetPassword = document.getElementById('resetPassword');
@@ -55,6 +56,7 @@
   let registerTurnstileToken = '';
   let loginTurnstileWidgetId = null;
   let registerTurnstileWidgetId = null;
+  let resetBoundEmail = '';
   const SEND_COOLDOWN_MS = 60 * 1000;
   const REGISTER_COOLDOWN_MS = 2 * 60 * 1000;
   let firebaseReady = false;
@@ -129,6 +131,27 @@
 
   function getTurnstileSiteKey() {
     return window.__TURNSTILE_SITE_KEY__ || '';
+  }
+
+  function getTurnstileResponse(kind) {
+    if (!window.turnstile || typeof window.turnstile.getResponse !== 'function') {
+      return '';
+    }
+    const widgetId = kind === 'register' ? registerTurnstileWidgetId : loginTurnstileWidgetId;
+    if (widgetId === null || typeof widgetId === 'undefined') return '';
+    const resp = window.turnstile.getResponse(widgetId);
+    return resp || '';
+  }
+
+  function syncTurnstileToken(kind) {
+    const response = getTurnstileResponse(kind);
+    if (!response) return '';
+    if (kind === 'register') {
+      registerTurnstileToken = response;
+    } else {
+      loginTurnstileToken = response;
+    }
+    return response;
   }
 
   function resetTurnstile() {
@@ -357,10 +380,14 @@
     }, 1000);
   }
 
-  async function sendEmailCode(email, purpose, statusEl) {
+  async function sendEmailCode(email, purpose, statusEl, captchaKind) {
     if (!validateEmail(email)) {
       setStatus(statusEl, '邮箱格式不正确');
       return false;
+    }
+    if (captchaKind) {
+      const captchaOk = await verifyTurnstileToken(captchaKind, '', statusEl);
+      if (!captchaOk) return false;
     }
     const cooldownLeft = canSend(`email_send_${purpose}_${emailKey(email)}`, SEND_COOLDOWN_MS);
     if (cooldownLeft > 0) {
@@ -411,7 +438,8 @@
       setStatus(statusEl || el.loginStatus, '验证码未配置，请联系站长');
       return false;
     }
-    if (!token) {
+    const effectiveToken = token || syncTurnstileToken(purpose);
+    if (!effectiveToken) {
       setStatus(statusEl || el.loginStatus, '请先完成安全校验');
       return false;
     }
@@ -419,7 +447,7 @@
       const resp = await fetch(`${API_BASE}/api/turnstile-verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, purpose })
+        body: JSON.stringify({ token: effectiveToken, purpose })
       });
       const data = await resp.json();
       if (resp.ok && data && data.ok) return true;
@@ -523,14 +551,13 @@
       return;
     }
 
+    const captchaOk = await verifyTurnstileToken('register', registerTurnstileToken, el.registerStatus);
+    if (!captchaOk) return;
     const registerCooldown = canSend(`register_submit_${username}`, REGISTER_COOLDOWN_MS);
     if (registerCooldown > 0) {
       setText(el.registerStatus, `注册过于频繁，请 ${registerCooldown}s 后再试`);
       return;
     }
-
-    const captchaOk = await verifyTurnstileToken('register', registerTurnstileToken, el.registerStatus);
-    if (!captchaOk) return;
 
     setText(el.registerStatus, '正在注册...');
 
@@ -665,6 +692,8 @@
       return;
     }
     setText(el.loginStatus, '正在验证邮箱...');
+    const captchaOk = await verifyTurnstileToken('login', loginTurnstileToken, el.loginStatus);
+    if (!captchaOk) return;
     const ok = await verifyEmailCode(email, code, 'login');
     if (!ok) {
       setText(el.loginStatus, '邮箱验证码无效或已过期');
@@ -696,18 +725,22 @@
   }
 
   async function handleResetPassword() {
-    if (!(el.resetEmail instanceof HTMLInputElement) ||
+    if (!(el.resetUsername instanceof HTMLInputElement) ||
       !(el.resetCode instanceof HTMLInputElement) ||
       !(el.resetPassword instanceof HTMLInputElement) ||
       !(el.resetPassword2 instanceof HTMLInputElement)) {
       return;
     }
-    const email = el.resetEmail.value.trim();
+    const usernameRaw = el.resetUsername.value.trim();
     const code = el.resetCode.value.trim();
     const password = el.resetPassword.value;
     const password2 = el.resetPassword2.value;
-    if (!validateEmail(email)) {
-      setText(el.resetStatus, '邮箱格式不正确');
+    if (!validateUsername(usernameRaw)) {
+      setText(el.resetStatus, '账号名需为 3-20 位英文字母');
+      return;
+    }
+    if (!code) {
+      setText(el.resetStatus, '请输入验证码');
       return;
     }
     if (!validatePassword(password)) {
@@ -722,18 +755,23 @@
       setText(el.resetStatus, '两次输入的密码不一致');
       return;
     }
-    const ok = await verifyEmailCode(email, code, 'reset');
+    const captchaOk = await verifyTurnstileToken('login', loginTurnstileToken, el.resetStatus);
+    if (!captchaOk) return;
+    if (!resetBoundEmail) {
+      const email = await prepareResetEmail();
+      if (!email) {
+        setText(el.resetStatus, '未绑定邮箱，无法重置');
+        return;
+      }
+    }
+    const ok = await verifyEmailCode(resetBoundEmail, code, 'reset');
     if (!ok) {
       setText(el.resetStatus, '邮箱验证码无效或已过期');
       return;
     }
     try {
       setText(el.resetStatus, '正在重置密码...');
-      const username = await lookupUsernameByEmail(email);
-      if (!username) {
-        setText(el.resetStatus, '该邮箱未绑定账号');
-        return;
-      }
+      const username = normalizeUsername(usernameRaw);
       const db = await ensureFirebase();
       const salt = genSalt();
       const hash = await sha256(`${salt}:${password}`);
@@ -746,6 +784,56 @@
     } catch (error) {
       console.error('重置密码失败:', error);
       setText(el.resetStatus, '密码重置失败');
+    }
+  }
+
+  function maskEmail(email) {
+    const [name, domain] = String(email || '').split('@');
+    if (!domain) return '';
+    const head = name.slice(0, 2);
+    return `${head}${'*'.repeat(Math.max(0, name.length - 2))}@${domain}`;
+  }
+
+  function setResetEmailHint(email) {
+    if (el.resetEmailHint instanceof HTMLElement) {
+      if (email) {
+        el.resetEmailHint.textContent = `验证码将发送至您绑定的邮箱 ${maskEmail(email)}`;
+      } else {
+        el.resetEmailHint.textContent = '验证码将发送至已绑定邮箱';
+      }
+    }
+  }
+
+  async function prepareResetEmail() {
+    if (!(el.resetUsername instanceof HTMLInputElement)) return '';
+    const usernameRaw = el.resetUsername.value.trim();
+    if (!validateUsername(usernameRaw)) {
+      setText(el.resetStatus, '账号名需为 3-20 位英文字母');
+      return '';
+    }
+    const username = normalizeUsername(usernameRaw);
+    try {
+      const db = await ensureFirebase();
+      const snap = await db.ref(`${DB_USERS}/${username}`).once('value');
+      if (!snap.exists()) {
+        setText(el.resetStatus, '该账号不存在');
+        setResetEmailHint('');
+        return '';
+      }
+      const data = snap.val() || {};
+      const email = data.email ? normalizeEmail(data.email) : '';
+      if (!email) {
+        setText(el.resetStatus, '该账号未绑定邮箱，无法重置');
+        setResetEmailHint('');
+        return '';
+      }
+      resetBoundEmail = email;
+      setResetEmailHint(email);
+      return email;
+    } catch (error) {
+      console.error('读取绑定邮箱失败:', error);
+      setText(el.resetStatus, '读取绑定邮箱失败');
+      return '';
     }
   }
 
@@ -790,7 +878,7 @@
       el.emailLoginSend.addEventListener('click', () => {
         if (el.emailLoginAddress instanceof HTMLInputElement) {
           const email = el.emailLoginAddress.value.trim();
-          void sendEmailCode(email, 'login', el.loginStatus).then((ok) => {
+          void sendEmailCode(email, 'login', el.loginStatus, 'login').then((ok) => {
             if (ok) startCooldown(el.emailLoginSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
           });
         }
@@ -805,16 +893,24 @@
         if (el.resetPanel instanceof HTMLElement) {
           el.resetPanel.classList.toggle('active');
         }
+        resetBoundEmail = '';
+        setResetEmailHint('');
       });
     }
     if (el.resetSend) {
       el.resetSend.addEventListener('click', () => {
-        if (el.resetEmail instanceof HTMLInputElement) {
-          const email = el.resetEmail.value.trim();
-          void sendEmailCode(email, 'reset', el.resetStatus).then((ok) => {
+        void prepareResetEmail().then((email) => {
+          if (!email) return;
+          void sendEmailCode(email, 'reset', el.resetStatus, 'login').then((ok) => {
             if (ok) startCooldown(el.resetSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
           });
-        }
+        });
+      });
+    }
+    if (el.resetUsername instanceof HTMLInputElement) {
+      el.resetUsername.addEventListener('input', () => {
+        resetBoundEmail = '';
+        setResetEmailHint('');
       });
     }
     if (el.resetSubmit) {
@@ -840,7 +936,7 @@
       el.registerEmailSend.addEventListener('click', () => {
         if (el.registerEmail instanceof HTMLInputElement) {
           const email = el.registerEmail.value.trim();
-          void sendEmailCode(email, 'register', el.registerStatus).then((ok) => {
+          void sendEmailCode(email, 'register', el.registerStatus, 'register').then((ok) => {
             if (ok) startCooldown(el.registerEmailSend, Math.ceil(SEND_COOLDOWN_MS / 1000));
           });
         }
@@ -868,6 +964,7 @@
     if (el.resetPanel instanceof HTMLElement) {
       el.resetPanel.classList.remove('active');
     }
+    setResetEmailHint('');
     if (getTurnstileSiteKey()) {
       void waitForTurnstileReady().then(() => renderTurnstile());
     } else {

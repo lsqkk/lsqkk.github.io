@@ -30,6 +30,7 @@
         el.saveBtn = document.getElementById('saveProfile');
         el.refreshBtn = document.getElementById('refreshProfile');
         el.status = document.getElementById('saveStatus');
+        el.accountSpaceLink = document.getElementById('accountSpaceLink');
         el.createdAt = document.getElementById('accountCreatedAt');
         el.accountAge = document.getElementById('accountAge');
         el.lastSyncAt = document.getElementById('lastSyncAt');
@@ -42,14 +43,20 @@
         el.bindEmailCode = document.getElementById('bindEmailCode');
         el.bindEmailSend = document.getElementById('bindEmailSend');
         el.bindEmailApply = document.getElementById('bindEmailApply');
+        el.bindEmailEdit = document.getElementById('bindEmailEdit');
         el.bindEmailRemove = document.getElementById('bindEmailRemove');
         el.bindEmailStatus = document.getElementById('bindEmailStatus');
+        el.bindTurnstileContainer = document.getElementById('bindTurnstileContainer');
+        el.accountLogout = document.getElementById('accountLogout');
         el.loginTypeLabel = document.getElementById('loginTypeLabel');
         el.emailBindSection = document.getElementById('emailBindSection');
     }
 
     let firebaseReady = false;
     let cachedRemote = null;
+    let bindTurnstileToken = '';
+    let bindTurnstileWidgetId = null;
+    let emailEditMode = false;
     let cropper = null;
 
     function getGithubUser() {
@@ -175,6 +182,90 @@
 
     function validateEmail(value) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function getTurnstileSiteKey() {
+        return window.__TURNSTILE_SITE_KEY__ || '';
+    }
+
+    function getBindTurnstileResponse() {
+        if (!window.turnstile || typeof window.turnstile.getResponse !== 'function') return '';
+        if (bindTurnstileWidgetId === null || typeof bindTurnstileWidgetId === 'undefined') return '';
+        return window.turnstile.getResponse(bindTurnstileWidgetId) || '';
+    }
+
+    function resetBindTurnstile() {
+        bindTurnstileToken = '';
+        if (window.turnstile && typeof window.turnstile.reset === 'function' && bindTurnstileWidgetId !== null) {
+            window.turnstile.reset(bindTurnstileWidgetId);
+        }
+    }
+
+    function renderBindTurnstile() {
+        const key = getTurnstileSiteKey();
+        if (!key || !(el.bindTurnstileContainer instanceof HTMLElement)) return;
+        if (!window.turnstile || typeof window.turnstile.render !== 'function') return;
+        el.bindTurnstileContainer.innerHTML = '';
+        bindTurnstileToken = '';
+        const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+        bindTurnstileWidgetId = window.turnstile.render(el.bindTurnstileContainer, {
+            sitekey: key,
+            theme,
+            callback: (token) => {
+                bindTurnstileToken = token || '';
+            },
+            'expired-callback': () => {
+                bindTurnstileToken = '';
+            },
+            'error-callback': () => {
+                bindTurnstileToken = '';
+            }
+        });
+    }
+
+    function waitForTurnstileReady() {
+        return new Promise((resolve) => {
+            if (window.turnstile && typeof window.turnstile.render === 'function') {
+                resolve();
+                return;
+            }
+            const timer = window.setInterval(() => {
+                if (window.turnstile && typeof window.turnstile.render === 'function') {
+                    window.clearInterval(timer);
+                    resolve();
+                }
+            }, 200);
+        });
+    }
+
+    async function verifyBindTurnstile(statusEl) {
+        const key = getTurnstileSiteKey();
+        if (!key) {
+            setEmailStatus('验证码未配置，请联系站长');
+            return false;
+        }
+        const token = bindTurnstileToken || getBindTurnstileResponse();
+        if (!token) {
+            setEmailStatus('请先完成安全校验');
+            return false;
+        }
+        try {
+            const resp = await fetch(`${API_BASE}/api/turnstile-verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, purpose: 'bind' })
+            });
+            const data = await resp.json();
+            if (resp.ok && data && data.ok) return true;
+            setEmailStatus(data?.error || '验证码校验失败');
+            resetBindTurnstile();
+            return false;
+        } catch (error) {
+            console.error('验证码校验失败:', error);
+            setEmailStatus('验证码校验失败');
+            resetBindTurnstile();
+            return false;
+        }
     }
 
     function emailKey(email) {
@@ -424,11 +515,29 @@
                 }
             });
         }
+        if (el.bindEmailEdit) {
+            el.bindEmailEdit.addEventListener('click', () => {
+                emailEditMode = true;
+                setEmailBindingState(el.bindEmail instanceof HTMLInputElement ? el.bindEmail.value.trim() : '', true);
+                if (el.bindEmailCode instanceof HTMLInputElement) el.bindEmailCode.value = '';
+                setEmailStatus('请输入新邮箱并完成验证');
+            });
+        }
         if (el.bindEmailApply) {
             el.bindEmailApply.addEventListener('click', () => { void bindEmail(); });
         }
         if (el.bindEmailRemove) {
             el.bindEmailRemove.addEventListener('click', () => { void unbindEmail(); });
+        }
+        if (el.accountLogout) {
+            el.accountLogout.addEventListener('click', () => {
+                if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
+                    window.CommentShared.logout('/');
+                } else {
+                    localStorage.clear();
+                    window.location.href = '/';
+                }
+            });
         }
     }
 
@@ -449,6 +558,8 @@
             setEmailStatus('邮箱格式不正确');
             return false;
         }
+        const captchaOk = await verifyBindTurnstile();
+        if (!captchaOk) return false;
         setEmailStatus('验证码发送中...');
         try {
             const resp = await fetch(`${API_BASE}/api/email-send`, {
@@ -555,8 +666,6 @@
                 }
                 applyProfileToForm(remote);
                 if (remote.login) setText(el.githubLogin, remote.login);
-                setText(el.createdAt, formatTime(remote.createdAt));
-                setText(el.accountAge, formatDuration(remote.createdAt));
                 setText(el.lastSyncAt, formatTime(remote.updatedAt));
                 const location = [remote.province, remote.city].filter(Boolean).join(' ');
                 setText(el.accountLocation, location || '-');
@@ -567,6 +676,60 @@
         }
     }
 
+    async function loadRegistrationInfo() {
+        let createdAt = 0;
+        const loginType = getLoginType();
+        if (loginType === 'local') {
+            const localUser = getLocalUser();
+            if (localUser && localUser.login) {
+                try {
+                    const db = await ensureFirebase();
+                    const snap = await db.ref(`${DB_USERS}/${String(localUser.login).toLowerCase()}`).once('value');
+                    const data = snap.val() || {};
+                    if (typeof data.createdAt === 'number') {
+                        createdAt = data.createdAt;
+                    }
+                } catch (error) {
+                    console.warn('读取注册时间失败:', error);
+                }
+            }
+        }
+        if (!createdAt && cachedRemote && typeof cachedRemote.createdAt === 'number') {
+            createdAt = cachedRemote.createdAt;
+        }
+        if (!createdAt && cachedRemote && typeof cachedRemote.updatedAt === 'number') {
+            createdAt = cachedRemote.updatedAt;
+        }
+        if (createdAt) {
+            setText(el.createdAt, formatTime(createdAt));
+            setText(el.accountAge, formatDuration(createdAt));
+        } else {
+            setText(el.createdAt, '-');
+            setText(el.accountAge, '-');
+        }
+    }
+
+    function setEmailBindingState(email, editable = false) {
+        const bound = Boolean(email);
+        const canEdit = editable || !bound;
+        const controls = [el.bindEmail, el.bindEmailCode, el.bindEmailSend, el.bindEmailApply];
+        controls.forEach((item) => {
+            if (item instanceof HTMLInputElement || item instanceof HTMLButtonElement) {
+                item.disabled = !canEdit;
+            }
+        });
+        if (el.bindEmailEdit instanceof HTMLButtonElement) {
+            el.bindEmailEdit.style.display = bound && !canEdit ? 'inline-flex' : 'none';
+        }
+        if (el.bindEmailRemove instanceof HTMLButtonElement) {
+            el.bindEmailRemove.style.display = bound ? 'inline-flex' : 'none';
+            el.bindEmailRemove.disabled = !bound;
+        }
+        if (el.bindEmailApply instanceof HTMLButtonElement) {
+            el.bindEmailApply.style.display = canEdit ? 'inline-flex' : 'none';
+        }
+    }
+
     async function loadBoundEmail() {
         if (!(el.bindEmail instanceof HTMLInputElement)) return;
         const loginType = getLoginType();
@@ -574,14 +737,16 @@
         if (el.emailBindSection instanceof HTMLElement) {
             el.emailBindSection.style.display = isLocal ? 'block' : 'none';
         }
-        const controls = [el.bindEmail, el.bindEmailCode, el.bindEmailSend, el.bindEmailApply, el.bindEmailRemove];
+        const controls = [el.bindEmail, el.bindEmailCode, el.bindEmailSend, el.bindEmailApply, el.bindEmailRemove, el.bindEmailEdit];
         controls.forEach((item) => {
             if (item instanceof HTMLInputElement || item instanceof HTMLButtonElement) {
                 item.disabled = !isLocal;
             }
         });
         if (!isLocal) {
-            el.bindEmail.value = '';
+            if (el.bindEmail instanceof HTMLInputElement) el.bindEmail.value = '';
+            if (el.bindEmailEdit instanceof HTMLButtonElement) el.bindEmailEdit.style.display = 'none';
+            if (el.bindEmailRemove instanceof HTMLButtonElement) el.bindEmailRemove.style.display = 'none';
             setEmailStatus('仅支持站内账号绑定邮箱');
             return;
         }
@@ -594,8 +759,11 @@
             const db = await ensureFirebase();
             const snap = await db.ref(`${DB_USERS}/${String(localUser.login).toLowerCase()}`).once('value');
             const data = snap.val() || {};
-            el.bindEmail.value = data.email || '';
-            setEmailStatus(data.email ? '已绑定邮箱' : '未绑定邮箱');
+            const email = data.email || '';
+            if (el.bindEmail instanceof HTMLInputElement) el.bindEmail.value = email;
+            emailEditMode = false;
+            setEmailBindingState(email, false);
+            setEmailStatus(email ? '已绑定邮箱' : '未绑定邮箱');
         } catch (error) {
             console.error('加载邮箱失败:', error);
             setEmailStatus('邮箱信息加载失败');
@@ -685,6 +853,8 @@
                 email: normalizeEmail(email),
                 updatedAt: Date.now()
             });
+            emailEditMode = false;
+            setEmailBindingState(normalizeEmail(email), false);
             setEmailStatus('邮箱已绑定');
         } catch (error) {
             console.error('绑定邮箱失败:', error);
@@ -718,7 +888,9 @@
                 email: '',
                 updatedAt: Date.now()
             });
-            el.bindEmail.value = '';
+            if (el.bindEmail instanceof HTMLInputElement) el.bindEmail.value = '';
+            emailEditMode = false;
+            setEmailBindingState('', true);
             setEmailStatus('邮箱已解绑');
         } catch (error) {
             console.error('解绑邮箱失败:', error);
@@ -804,12 +976,20 @@
         if (el.avatarFromGithub instanceof HTMLElement) {
             el.avatarFromGithub.style.display = loginType === 'github' ? 'inline-flex' : 'none';
         }
+        if (el.accountSpaceLink instanceof HTMLAnchorElement) {
+            const login = user.login || profile.login || '';
+            const identifier = login ? (loginType === 'local' ? `qb_${login}` : login) : '';
+            el.accountSpaceLink.href = identifier ? `/space?user=${encodeURIComponent(identifier)}` : '/space';
+        }
     }
 
     function initThemeSync() {
         const media = window.matchMedia('(prefers-color-scheme: dark)');
         const apply = () => {
             document.body.classList.toggle('dark-mode', media.matches);
+            if (window.turnstile && typeof window.turnstile.render === 'function') {
+                renderBindTurnstile();
+            }
         };
         apply();
         if (typeof media.addEventListener === 'function') {
@@ -822,10 +1002,14 @@
     async function init() {
         initThemeSync();
         cacheElements();
+        if (getTurnstileSiteKey()) {
+            void waitForTurnstileReady().then(() => renderBindTurnstile());
+        }
         fillStaticInfo();
         bindEvents();
         await migrateLegacyUid();
         await loadRemoteProfile();
+        await loadRegistrationInfo();
         await loadBoundEmail();
         await loadLoginHistory();
         const profile = getProfile();

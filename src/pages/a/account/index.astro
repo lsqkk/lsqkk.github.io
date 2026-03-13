@@ -5,6 +5,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
 const navConfigPath = path.join(process.cwd(), "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -17,12 +18,15 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/pages/a/account/account.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
-    <script is:inline define:vars={{ navConfig }}>
+    <script is:inline define:vars={{ navConfig, turnstileSiteKey }}>
       window.__NAV_CONFIG__ = navConfig;
+      window.__TURNSTILE_SITE_KEY__ = turnstileSiteKey;
     </script>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline src="__API_BASE__/api/keys?names=github"></script>
+    <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="/assets/js/user-profile.js"></script>
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
@@ -38,11 +42,11 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
         </div>
         <div class="account-metrics">
           <div class="metric">
-            <span class="metric-label">最近登录</span>
+            <span class="metric-label">注册时间</span>
             <strong class="metric-value" id="accountCreatedAt">-</strong>
           </div>
           <div class="metric">
-            <span class="metric-label">最近登录至今</span>
+            <span class="metric-label">注册至今</span>
             <strong class="metric-value" id="accountAge">-</strong>
           </div>
         </div>
@@ -98,8 +102,13 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
                     <button class="btn ghost" id="bindEmailSend" type="button">发送验证码</button>
                   </div>
                 </div>
+                <div class="field">
+                  <label>安全校验</label>
+                  <div id="bindTurnstileContainer" class="turnstile-box"></div>
+                </div>
                 <div class="action-row">
                   <button class="btn primary" id="bindEmailApply">绑定邮箱</button>
+                  <button class="btn ghost" id="bindEmailEdit" type="button">修改绑定邮箱</button>
                   <button class="btn ghost" id="bindEmailRemove" type="button">解绑邮箱</button>
                 </div>
                 <div class="status-row" id="bindEmailStatus">等待操作</div>
@@ -119,6 +128,8 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <div class="action-row">
                 <button class="btn primary" id="saveProfile">保存资料</button>
                 <button class="btn ghost" id="refreshProfile">从云端刷新</button>
+                <a class="btn ghost" id="accountSpaceLink" href="/space">我的主页</a>
+                <button class="btn ghost" id="accountLogout">退出登录</button>
               </div>
               <div class="status-row" id="saveStatus">等待操作</div>
             </div>

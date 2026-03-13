@@ -112,12 +112,53 @@
         };
     }
 
+    function clearLoginStorage() {
+        const keys = [
+            'github_code',
+            'github_user',
+            'github_login',
+            'qb_user',
+            'qb_login',
+            'quark_login_type',
+            'quark_user_profile'
+        ];
+        keys.forEach((key) => {
+            try {
+                localStorage.removeItem(key);
+            } catch {
+                // ignore
+            }
+        });
+        try {
+            sessionStorage.removeItem('github_code');
+            sessionStorage.removeItem('github_user');
+        } catch {
+            // ignore
+        }
+    }
+
+    function logout(redirectUrl) {
+        clearLoginStorage();
+        try {
+            window.dispatchEvent(new CustomEvent('quark-user-updated', { detail: { logout: true } }));
+        } catch {
+            // ignore
+        }
+        if (redirectUrl) {
+            window.location.href = redirectUrl;
+        } else {
+            window.location.reload();
+        }
+    }
+
     window.CommentShared = {
         escapeHtml,
         getGuestUid,
         renderGuestBadge,
         renderLoginBadge,
         renderDisplayName,
-        getLoginProfile
+        getLoginProfile,
+        clearLoginStorage,
+        logout
     };
 })();

@@ -133,8 +133,9 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
             </div>
             <div class="reset-panel" id="resetPanel">
               <div class="field">
-                <label for="resetEmail">绑定邮箱</label>
-                <input type="email" id="resetEmail" placeholder="name@example.com" autocomplete="email" />
+                <label for="resetUsername">账号名</label>
+                <input type="text" id="resetUsername" placeholder="输入账号名" autocomplete="username" />
+                <div class="helper" id="resetEmailHint">验证码将发送至已绑定邮箱</div>
               </div>
               <div class="field">
                 <label for="resetCode">邮箱验证码</label>
