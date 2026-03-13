@@ -432,56 +432,16 @@
         }
     }
 
-    function getFirebaseConfig() {
-        return window.firebaseConfig || window._firebaseConfig || null;
-    }
-
-    function waitForFirebaseReady() {
-        return new Promise((resolve) => {
-            const existingConfig = getFirebaseConfig();
-            if (window.firebase && window.firebase.database && existingConfig && existingConfig.projectId) {
-                resolve(existingConfig);
-                return;
-            }
-
-            window.__firebaseConfigLoaded = (config) => {
-                if (typeof config === 'object' && config.projectId) {
-                    window.firebaseConfig = config;
-                }
-            };
-
-            Object.defineProperty(window, 'firebaseConfig', {
-                set(value) {
-                    this._firebaseConfig = value;
-                },
-                get() {
-                    return this._firebaseConfig;
-                },
-                configurable: true
-            });
-
-            const timer = window.setInterval(() => {
-                const config = getFirebaseConfig();
-                if (window.firebase && window.firebase.database && config && config.projectId) {
-                    window.clearInterval(timer);
-                    resolve(config);
-                }
-            }, 300);
-        });
-    }
-
-    async function waitForAppCheck() {
-}
-
     async function ensureFirebase() {
         if (firebaseReady) return window.firebase.database();
-        const config = await waitForFirebaseReady();
-        if (!window.firebase.apps || !window.firebase.apps.length) {
-            window.firebase.initializeApp(config);
+        if (!window.QuarkFirebaseReady) {
+            throw new Error('Firebase就绪模块未加载');
         }
-        await waitForAppCheck();
+        const db = await window.QuarkFirebaseReady.ensureDatabase({
+            scriptId: 'firebase-config-loader-account'
+        });
         firebaseReady = true;
-        return window.firebase.database();
+        return db;
     }
 
     async function sendEmailCode(email, purpose) {

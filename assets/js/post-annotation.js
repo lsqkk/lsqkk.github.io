@@ -120,81 +120,13 @@
         }
     }
 
-    /**
-     * @param {string} src
-     * @param {string} id
-     * @returns {Promise<void>}
-     */
-    function loadScript(src, id) {
-        return new Promise((resolve, reject) => {
-            if (id) {
-                const exists = document.getElementById(id);
-                if (exists) {
-                    if (exists.dataset.loaded === 'true') {
-                        resolve();
-                        return;
-                    }
-                    exists.addEventListener('load', () => resolve(), { once: true });
-                    exists.addEventListener('error', () => reject(new Error(`load failed: ${src}`)), { once: true });
-                    return;
-                }
-            }
-
-            const script = document.createElement('script');
-            if (id) {
-                script.id = id;
-            }
-            script.src = src;
-            script.async = true;
-            script.onload = () => {
-                script.dataset.loaded = 'true';
-                resolve();
-            };
-            script.onerror = () => reject(new Error(`load failed: ${src}`));
-            document.head.appendChild(script);
-        });
-    }
-
-    /**
-     * @param {() => boolean} checkFn
-     * @param {number} timeoutMs
-     * @returns {Promise<void>}
-     */
-    function waitFor(checkFn, timeoutMs) {
-        return new Promise((resolve, reject) => {
-            const started = Date.now();
-            const timer = setInterval(() => {
-                if (checkFn()) {
-                    clearInterval(timer);
-                    resolve();
-                    return;
-                }
-                if (Date.now() - started > timeoutMs) {
-                    clearInterval(timer);
-                    reject(new Error('timeout'));
-                }
-            }, 80);
-        });
-    }
-
-    async function waitForAppCheck() {
-    }
-
     async function ensureFirebaseReady() {
-        if (typeof window.firebaseConfig === 'undefined') {
-            await loadScript(`__API_BASE__/api/firebase-config?v=${Date.now()}`, 'post-anno-firebase-config');
-            await waitFor(() => typeof window.firebaseConfig !== 'undefined', 15000);
+        if (!window.QuarkFirebaseReady) {
+            throw new Error('Firebase就绪模块未加载');
         }
-        if (!window.firebase || !window.firebase.database) {
-            await waitFor(() => window.firebase && window.firebase.database, 15000);
-        }
-        if (!window.firebase || !window.firebase.database) {
-            throw new Error('Firebase代理未就绪');
-        }
-        if (!window.firebase.apps || !window.firebase.apps.length) {
-            window.firebase.initializeApp(window.firebaseConfig);
-        }
-        await waitForAppCheck();
+        await window.QuarkFirebaseReady.ensureDatabase({
+            scriptId: 'post-anno-firebase-config'
+        });
     }
 
     function unwrapElement(el) {

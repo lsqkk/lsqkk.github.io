@@ -268,34 +268,16 @@
     return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 
-  function getFirebaseConfig() {
-    return window.firebaseConfig || window._firebaseConfig || null;
-  }
-
-  function waitForFirebaseReady() {
-    return new Promise((resolve) => {
-      const timer = window.setInterval(() => {
-        const config = getFirebaseConfig();
-        if (window.firebase && window.firebase.database && config && config.projectId) {
-          window.clearInterval(timer);
-          resolve(config);
-        }
-      }, 300);
-    });
-  }
-
-  async function waitForAppCheck() {
-}
-
   async function ensureFirebase() {
     if (firebaseReady) return window.firebase.database();
-    const config = await waitForFirebaseReady();
-    if (!window.firebase.apps || !window.firebase.apps.length) {
-      window.firebase.initializeApp(config);
+    if (!window.QuarkFirebaseReady) {
+      throw new Error('Firebase就绪模块未加载');
     }
-    await waitForAppCheck();
+    const db = await window.QuarkFirebaseReady.ensureDatabase({
+      scriptId: 'firebase-config-loader-login'
+    });
     firebaseReady = true;
-    return window.firebase.database();
+    return db;
   }
 
   function setLocalLogin(profile) {

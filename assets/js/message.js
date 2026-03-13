@@ -9,150 +9,17 @@
 
 let firebaseInitialized = false;
 let isWaiting = false;
-/** @type {number | null} */
-let configCheckInterval = null;
-let notifiedFirebaseReady = false;
-
-/**
- * @returns {FirebaseConfig | null}
- */
-function getFirebaseConfig() {
-    return window.firebaseConfig || window._firebaseConfig || null;
+function getFirebaseHelper() {
+    if (!window.QuarkFirebaseReady) {
+        throw new Error('Firebase就绪模块未加载');
+    }
+    return window.QuarkFirebaseReady;
 }
 
-function notifyFirebaseConfigReady(config) {
-    if (notifiedFirebaseReady) return;
-    if (!config || !config.projectId) return;
-    notifiedFirebaseReady = true;
-    window.dispatchEvent(new CustomEvent('firebase-config-loaded', { detail: config }));
-}
-
-// 静候Firebase配置加载（无限等待）
-function waitForFirebaseConfig() {
-    return new Promise((resolve) => {
-        const existingConfig = getFirebaseConfig();
-        if (existingConfig && existingConfig.projectId) {
-            notifyFirebaseConfigReady(existingConfig);
-            resolve(existingConfig);
-            return;
-        }
-
-        console.log('🔄 等待Firebase配置加载...');
-
-        window.__firebaseConfigLoaded = (config) => {
-            if (typeof config === 'object' && config.projectId) {
-                console.log('✅ Firebase配置通过全局事件加载');
-                window.firebaseConfig = config;
-                if (configCheckInterval !== null) {
-                    window.clearInterval(configCheckInterval);
-                    configCheckInterval = null;
-                }
-                notifyFirebaseConfigReady(config);
-                resolve(config);
-            }
-        };
-
-        Object.defineProperty(window, 'firebaseConfig', {
-            set(value) {
-                if (value && value.projectId) {
-                    console.log('✅ Firebase配置通过属性设置加载');
-                    if (configCheckInterval !== null) {
-                        window.clearInterval(configCheckInterval);
-                        configCheckInterval = null;
-                    }
-                    notifyFirebaseConfigReady(value);
-                    resolve(value);
-                }
-                this._firebaseConfig = value;
-            },
-            get() {
-                return this._firebaseConfig;
-            },
-            configurable: true
-        });
-
-        configCheckInterval = window.setInterval(() => {
-            const config = getFirebaseConfig();
-            if (config && config.projectId) {
-                console.log('✅ Firebase配置通过轮询发现');
-                if (configCheckInterval !== null) {
-                    window.clearInterval(configCheckInterval);
-                    configCheckInterval = null;
-                }
-                notifyFirebaseConfigReady(config);
-                resolve(config);
-            }
-        }, 300);
-    });
-}
-
-async function waitForAppCheck() {
-}
-
-function waitForFirebaseShim(timeoutMs = 15000) {
-    return new Promise((resolve, reject) => {
-        if (window.firebase && window.firebase.database) {
-            resolve();
-            return;
-        }
-        const started = Date.now();
-        const timer = window.setInterval(() => {
-            if (window.firebase && window.firebase.database) {
-                window.clearInterval(timer);
-                resolve();
-                return;
-            }
-            if (Date.now() - started > timeoutMs) {
-                window.clearInterval(timer);
-                reject(new Error('Firebase代理未就绪'));
-            }
-        }, 120);
-    });
-}
-
-// 主动触发配置脚本重新加载
 function reloadFirebaseConfig() {
-    return new Promise((resolve, reject) => {
-        console.log('🔄 重新加载Firebase配置...');
-
-        const scriptId = 'firebase-config-loader';
-        const existingScript = document.getElementById(scriptId);
-        if (existingScript) {
-            existingScript.remove();
-        }
-
-        const script = document.createElement('script');
-        script.id = scriptId;
-        script.src = `__API_BASE__/api/firebase-config?v=${Date.now()}`;
-
-        script.onload = () => {
-            console.log('📦 配置脚本加载完成');
-            window.setTimeout(() => {
-                const config = getFirebaseConfig();
-                if (config && config.projectId) {
-                    resolve(config);
-                    return;
-                }
-
-                window.setTimeout(() => {
-                    const fallbackConfig = getFirebaseConfig();
-                    if (fallbackConfig && fallbackConfig.projectId) {
-                        resolve(fallbackConfig);
-                    } else {
-                        reject(new Error('配置未定义'));
-                    }
-                }, 100);
-            }, 50);
-        };
-
-        script.onerror = (error) => {
-            console.error('❌ 配置脚本加载失败:', error);
-            reject(error);
-        };
-
-        script.async = true;
-        document.head.appendChild(script);
-    });
+    console.log('🔄 重新加载Firebase配置...');
+    const helper = getFirebaseHelper();
+    return helper.loadConfigScript({ id: 'firebase-config-loader', force: true, timeout: 15000 });
 }
 
 // 完全静候的加载函数
@@ -192,7 +59,7 @@ async function loadRecentMessagesWithInfiniteWait() {
 
         console.log('🚀 开始静候加载流程...');
 
-        const config = getFirebaseConfig();
+        const config = getFirebaseHelper().getConfig();
         if (config && config.projectId) {
             console.log('✅ 使用现有Firebase配置');
             await initializeAndLoadMessages();
@@ -208,7 +75,7 @@ async function loadRecentMessagesWithInfiniteWait() {
             console.log('⚠️ 重新加载失败，继续静候现有配置:', reloadError);
         }
 
-        await waitForFirebaseConfig();
+        await getFirebaseHelper().waitForConfig(15000);
         console.log('🎉 配置加载成功，开始初始化...');
         await initializeAndLoadMessages();
     } catch (error) {
@@ -225,34 +92,13 @@ async function loadRecentMessagesWithInfiniteWait() {
 
 // 初始化和加载消息
 async function initializeAndLoadMessages() {
-    if (!window.firebase || !window.firebase.database) {
-        await waitForFirebaseShim();
-    }
-    const firebaseGlobal = window.firebase;
-    if (!firebaseGlobal) {
-        throw new Error('Firebase SDK未加载');
-    }
-
+    const database = await getFirebaseHelper().ensureDatabase({
+        scriptId: 'firebase-config-loader'
+    });
     if (!firebaseInitialized) {
-        try {
-            const config = getFirebaseConfig();
-            if (!config || !config.projectId) {
-                throw new Error('Firebase配置无效');
-            }
-
-            if (!firebaseGlobal.apps.length) {
-                firebaseGlobal.initializeApp(config);
-            }
-            await waitForAppCheck();
-            firebaseInitialized = true;
-            console.log('✅ Firebase初始化成功');
-        } catch (initError) {
-            console.error('❌ Firebase初始化失败:', initError);
-            throw initError;
-        }
+        firebaseInitialized = true;
+        console.log('✅ Firebase初始化成功');
     }
-
-    const database = firebaseGlobal.database();
     const messagesRef = database.ref('chatrooms/lsqkk-lyb/messages');
     const snapshot = await messagesRef
         .orderByChild('timestamp')

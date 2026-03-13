@@ -14,54 +14,11 @@
     /** @type {Map<string, () => void>} */
     const cardListenerCleanupMap = new Map();
 
-    /**
-     * @param {string} src
-     * @param {string} id
-     * @returns {Promise<void>}
-     */
-    function loadScript(src, id) {
-        return new Promise((resolve, reject) => {
-            const existing = document.getElementById(id);
-            if (existing) {
-                resolve();
-                return;
-            }
-            const script = document.createElement('script');
-            script.id = id;
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`脚本加载失败: ${src}`));
-            document.head.appendChild(script);
-        });
-    }
-
-    function getFirebaseConfig() {
-        return window.firebaseConfig || window._firebaseConfig || null;
-    }
-
-    function waitForFirebaseConfig(timeout = 20000) {
-        return new Promise((resolve, reject) => {
-            const existing = getFirebaseConfig();
-            if (existing && existing.projectId) {
-                resolve(existing);
-                return;
-            }
-
-            const started = Date.now();
-            const timer = window.setInterval(() => {
-                const config = getFirebaseConfig();
-                if (config && config.projectId) {
-                    window.clearInterval(timer);
-                    resolve(config);
-                    return;
-                }
-                if (Date.now() - started > timeout) {
-                    window.clearInterval(timer);
-                    reject(new Error('Firebase配置加载超时'));
-                }
-            }, 200);
-        });
+    function getFirebaseHelper() {
+        if (!window.QuarkFirebaseReady) {
+            throw new Error('Firebase就绪模块未加载');
+        }
+        return window.QuarkFirebaseReady;
     }
 
     async function waitForAppCheck() {
@@ -215,22 +172,23 @@
         }
 
         bootPromise = (async () => {
-            let config = getFirebaseConfig();
+            let config = getFirebaseHelper().getConfig();
             if (!config || !config.projectId) {
                 let lastError = null;
                 const maxAttempts = 3;
                 for (let i = 1; i <= maxAttempts; i++) {
                     try {
-                        await loadScript(
-                            `__API_BASE__/api/firebase-config?v=${Date.now()}_${i}`,
-                            `dynamic-firebase-config-${i}`
-                        );
+                        await getFirebaseHelper().loadConfigScript({
+                            id: `dynamic-firebase-config-${i}`,
+                            force: true,
+                            timeout: 12000
+                        });
                     } catch (error) {
                         lastError = error;
                     }
 
                     try {
-                        config = await waitForFirebaseConfig(12000);
+                        config = await getFirebaseHelper().waitForConfig(12000);
                         break;
                     } catch {
                         // continue retry
@@ -240,7 +198,7 @@
 
                 if (!config || !config.projectId) {
                     try {
-                        config = await waitForFirebaseConfig(45000);
+                        config = await getFirebaseHelper().waitForConfig(45000);
                     } catch {
                         if (lastError) throw lastError;
                         throw new Error('Firebase配置加载失败');

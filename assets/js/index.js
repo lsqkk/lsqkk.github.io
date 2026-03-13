@@ -1036,83 +1036,13 @@ function formatDateText(dateText) {
 const ONLINE_WINDOW = 15 * 60 * 1000;
 const ONLINE_PREVIEW_MAX = 4;
 
-function getOnlineFirebaseConfig() {
-    return window.firebaseConfig || window._firebaseConfig || null;
-}
-
-function ensureFirebaseConfigScript() {
-    return new Promise((resolve) => {
-        const existing = getOnlineFirebaseConfig();
-        if (existing && existing.projectId) {
-            resolve(existing);
-            return;
-        }
-
-        window.__firebaseConfigLoaded = (config) => {
-            if (typeof config === 'object' && config.projectId) {
-                window.firebaseConfig = config;
-                resolve(config);
-            }
-        };
-
-        if (!Object.getOwnPropertyDescriptor(window, 'firebaseConfig')) {
-            Object.defineProperty(window, 'firebaseConfig', {
-                set(value) {
-                    if (value && value.projectId) {
-                        resolve(value);
-                    }
-                    this._firebaseConfig = value;
-                },
-                get() {
-                    return this._firebaseConfig;
-                },
-                configurable: true
-            });
-        }
-
-        const scriptId = 'firebase-config-loader-index';
-        if (!document.getElementById(scriptId)) {
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = `__API_BASE__/api/firebase-config?v=${Date.now()}`;
-            script.async = true;
-            document.head.appendChild(script);
-        }
-    });
-}
-
-async function waitForAppCheck() {
-}
-
-function waitForOnlineFirebaseReady() {
-    return new Promise((resolve) => {
-        void ensureFirebaseConfigScript();
-        const timer = window.setInterval(() => {
-            const config = getOnlineFirebaseConfig();
-            if (window.firebase && window.firebase.database && config && config.projectId) {
-                window.clearInterval(timer);
-                resolve(config);
-            }
-        }, 300);
-    });
-}
-
 async function ensureOnlineFirebaseDatabase() {
-    await ensureFirebaseConfigScript();
-    const config = getOnlineFirebaseConfig();
-    if (config && config.projectId && window.firebase && window.firebase.database) {
-        if (!window.firebase.apps || !window.firebase.apps.length) {
-            window.firebase.initializeApp(config);
-        }
-        await waitForAppCheck();
-        return window.firebase.database();
+    if (!window.QuarkFirebaseReady) {
+        throw new Error('Firebase就绪模块未加载');
     }
-    const waited = await waitForOnlineFirebaseReady();
-    if (!window.firebase.apps || !window.firebase.apps.length) {
-        window.firebase.initializeApp(waited);
-    }
-    await waitForAppCheck();
-    return window.firebase.database();
+    return window.QuarkFirebaseReady.ensureDatabase({
+        scriptId: 'firebase-config-loader-index'
+    });
 }
 
 function getOnlineInitial(name) {
