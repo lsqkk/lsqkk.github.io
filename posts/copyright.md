@@ -7,14 +7,14 @@ tags: 网站
 
 ## 网站简介
 
-“夸克博客”（Quark Blog）是由站主 **蓝色奇夸克** 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）构建，部署于 GitHub Pages，并通过 Vercel 与自有域名提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信等能力，打造一个“不依赖主流框架、功能丰富、体验流畅”的个人技术实验平台。
+夸克博客（Quark Blog）是由站主 **蓝色奇夸克** 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）+ Astro 构建，部署于 GitHub Pages，并通过 Firebase RTDB、Vercel 与自有域名等提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信、统一账号与登录中心等能力，打造一个功能丰富、体验流畅的个人技术实验平台。
 
 ## 版权信息
 
 - **网站开发者**：[蓝色奇夸克](https://github.com/lsqkk)
 - **托管平台**：[GitHub Pages](https://pages.github.com/)
-- **背景图片来源**：动画电影《云之彼端，约定的地方》（云のむこう、约束の场所）海报，源自 [bilibili 番剧页](https://www.bilibili.com/bangumi/play/ss2545)
-- **文章版权**：本站所有博客文章均由站主 **蓝色奇夸克** 原创撰写，未经授权禁止转载或用于商业用途。
+- **背景图片**：动画电影《云之彼端，约定的地方》（云のむこう、约束の场所）海报，源自 [bilibili 番剧页](https://www.bilibili.com/bangumi/play/ss2545)
+- **文章版权**：本站所有博客文章均由站主 **蓝色奇夸克** 原创撰写，未经授权禁止转载或用于商业用途，详情见开源协议。
 - **RSS订阅**：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
 - **版权期限**：Copyright © 2024 – 2026 蓝色奇夸克 All rights reserved. 
 
@@ -29,6 +29,8 @@ tags: 网站
 | KaTeX | 文章数学公式渲染 | [https://katex.org](https://katex.org) |
 | Postimages | 部分图片托管 | [https://postimages.org](https://postimages.org) |
 | Firebase Realtime Database | 实时数据同步（留言、游戏、协同工具） | [https://firebase.google.com](https://firebase.google.com) |
+| Cloudflare Turnstile | 登录/注册人机验证 | [https://www.cloudflare.com/products/turnstile/](https://www.cloudflare.com/products/turnstile/) |
+| GitHub OAuth | GitHub 登录授权 | [https://docs.github.com/apps/oauth-apps](https://docs.github.com/apps/oauth-apps) |
 | giscus | 文章评论系统 | [https://giscus.app/zh-CN](https://giscus.app/zh-CN) |
 | Vercel | Serverless 函数托管与域名服务 | [https://vercel.com](https://vercel.com) |
 | 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc](https://www.busuanzi.cc) |
@@ -60,6 +62,7 @@ tags: 网站
 - 集成 WebRTC 实现无信令服务器的 P2P 文件传输
 - 使用 Vercel 云函数托管敏感 API 与自定义服务
 - 自动化内容更新（文章生成、视频同步、动态搬运等）
+- 登录与账号系统：GitHub OAuth + 站内账号，支持账号中心、用户主页、在线用户与管理页面
 
 ## 免责声明
 
@@ -109,7 +112,7 @@ tags: 网站
 
 ---
 
-**最后更新**：2026年1月28日
+**最后更新**：2026年3月15日
 
 **维护者**：[蓝色奇夸克](https://github.com/lsqkk)
 
