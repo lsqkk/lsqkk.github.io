@@ -181,6 +181,12 @@ body {
     cursor: pointer;
 }
 
+.recent-posts .post-item-link {
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+}
+
 .recent-posts .post-item-link:hover,
 .dynamic-card:hover {
     transform: translateY(-1px);
@@ -192,6 +198,28 @@ body {
     font-weight: 700;
     margin-bottom: 6px;
     color: #16467d;
+}
+
+.recent-posts .post-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-posts .post-cover-wrap {
+    flex: 0 0 140px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 6px 16px rgba(9, 30, 60, 0.12);
+    align-self: center;
+}
+
+.recent-posts .post-cover {
+    width: 100%;
+    height: 100%;
+    min-height: 96px;
+    object-fit: cover;
+    display: block;
 }
 
 .recent-posts .post-date {
@@ -1198,6 +1226,19 @@ body {
 
     .footer-card {
         padding: 16px;
+    }
+
+    .recent-posts .post-item-link {
+        flex-direction: column-reverse;
+    }
+
+    .recent-posts .post-cover-wrap {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .recent-posts .post-cover {
+        min-height: 140px;
     }
 }
 

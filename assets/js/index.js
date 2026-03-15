@@ -3,7 +3,7 @@
 /**
  * @typedef {{url: string, icon: string, alt: string}} SocialLink
  * @typedef {{title: string, content: string}} AnnouncementConfig
- * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[]}} PostItem
+ * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[], cover?: string}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
  * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
  * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
@@ -100,15 +100,22 @@ async function loadRecentPosts() {
 
         const list = recentPosts.map(post => `
                     <div class="post-item post-item-link" data-href="/posts/${post.file.replace('.md', '')}">
-                        <div class="post-title">
-                            ${post.title}
+                        <div class="post-item-body">
+                            <div class="post-title">
+                                ${post.title}
+                            </div>
+                            <div class="post-date">${post.date}</div>
+                            <div class="post-tags">
+                                <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
+                                ${(post.columns || []).map(column => `<a class="post-tag post-tag-col tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                                ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
+                            </div>
                         </div>
-                        <div class="post-date">${post.date}</div>
-                        <div class="post-tags">
-                            <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
-                            ${(post.columns || []).map(column => `<a class="post-tag post-tag-col tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
-                            ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
-                        </div>
+                        ${post.cover ? `
+                            <div class="post-cover-wrap">
+                                <img class="post-cover" src="${post.cover}" alt="${post.title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('');
 

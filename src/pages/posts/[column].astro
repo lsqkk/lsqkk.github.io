@@ -1,6 +1,8 @@
 ---
 import ShichaBackground from "../../components/ShichaBackground.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import { buildPostCaseMap, resolveCaseSlug } from "../../utils/post-case-map";
 
@@ -77,6 +79,21 @@ const caseMap = await buildPostCaseMap();
 const { column, columnPosts } = Astro.props as { column: string; columnPosts: PostEntry[] };
 const sortedPosts = [...columnPosts].sort((a, b) => normalizeDate(b.data.date).localeCompare(normalizeDate(a.data.date)));
 const currentYear = new Date().getFullYear();
+const PROJECT_ROOT = process.cwd();
+const postsIndexPath = path.join(PROJECT_ROOT, "posts", "posts.json");
+const coverMap = new Map<string, string>();
+try {
+  const postsIndex = JSON.parse(await fs.readFile(postsIndexPath, "utf8"));
+  if (Array.isArray(postsIndex)) {
+    postsIndex.forEach((item) => {
+      if (item && item.file && typeof item.cover === "string" && item.cover.trim()) {
+        coverMap.set(String(item.file), item.cover.trim());
+      }
+    });
+  }
+} catch (err) {
+  console.warn("读取 posts.json 失败:", err);
+}
 ---
 
 <!DOCTYPE html>
@@ -107,17 +124,32 @@ const currentYear = new Date().getFullYear();
             const tags = normalizeTags(post.data.tags);
             const wc = wordCount(post);
             const rt = readTime(post);
+            const cover = coverMap.get(post.id) || "";
             return (
               <a
                 class="post-item post-item-link column-post-item"
                 href={`/posts/${resolveCaseSlug(post.id.replace(/\.md$/i, ""), caseMap)}`}
               >
-                <div class="post-title">{title}</div>
-                <div class="post-date">{date}</div>
-                <div class="post-tags">
-                  <span class="post-tag read-time">{wc}字·{rt}min</span>
-                  {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+                <div class="post-item-body">
+                  <div class="post-title">{title}</div>
+                  <div class="post-date">{date}</div>
+                  <div class="post-tags">
+                    <span class="post-tag read-time">{wc}字·{rt}min</span>
+                    {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+                  </div>
                 </div>
+                {cover && (
+                  <div class="post-cover-wrap">
+                    <img
+                      class="post-cover"
+                      src={cover}
+                      alt={title}
+                      loading="lazy"
+                      decoding="async"
+                      referrerpolicy="no-referrer"
+                    />
+                  </div>
+                )}
               </a>
             );
           })

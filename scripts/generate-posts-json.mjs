@@ -4,6 +4,7 @@ import path from "node:path";
 const PROJECT_ROOT = process.cwd();
 const POSTS_DIR = path.join(PROJECT_ROOT, "posts");
 const OUTPUT_FILE = path.join(POSTS_DIR, "posts.json");
+const COVER_SOURCE = "https://bing.img.run/rand_1366x768.php";
 
 function toPosix(relPath) {
   return relPath.split(path.sep).join("/");
@@ -129,14 +130,54 @@ async function findAllMdFiles(dir) {
   return out;
 }
 
+async function loadExistingCovers() {
+  try {
+    const raw = await fs.readFile(OUTPUT_FILE, "utf8");
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items)) return new Map();
+    const map = new Map();
+    for (const item of items) {
+      if (item && item.file && typeof item.cover === "string" && item.cover.trim()) {
+        map.set(String(item.file), item.cover.trim());
+      }
+    }
+    return map;
+  } catch (err) {
+    return new Map();
+  }
+}
+
+async function fetchCoverUrl() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const resp = await fetch(COVER_SOURCE, { redirect: "follow", signal: controller.signal });
+    const finalUrl = resp.url || COVER_SOURCE;
+    if (resp.body && typeof resp.body.cancel === "function") {
+      await resp.body.cancel();
+    }
+    return finalUrl;
+  } catch (err) {
+    console.warn("获取头图失败:", err?.message || err);
+    return "";
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function buildPostsJson() {
   const mdFiles = await findAllMdFiles(POSTS_DIR);
+  const existingCovers = await loadExistingCovers();
   const posts = [];
 
   for (const relPath of mdFiles) {
     const fullPath = path.join(POSTS_DIR, relPath);
     const raw = await fs.readFile(fullPath, "utf8");
     const { frontmatter, body } = stripFrontmatter(raw);
+    let cover = existingCovers.get(relPath) || "";
+    if (!cover) {
+      cover = await fetchCoverUrl();
+    }
     posts.push({
       title: extractTitle(body, relPath),
       file: relPath,
@@ -144,6 +185,7 @@ async function buildPostsJson() {
       tags: parseTags(frontmatter),
       columns: parseColumns(frontmatter),
       wordCount: body.trim().length,
+      cover,
     });
   }
 

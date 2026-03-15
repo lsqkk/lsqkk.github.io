@@ -202,18 +202,26 @@ function performSearch(searchTerm) {
             // 计算阅读时长
             const readTime = Math.ceil((post.wordCount || 0) / 400);
             const postUrl = `/posts/${post.file.replace('.md', '')}`;
+            const cover = post.cover || '';
 
             const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item post-item post-item-link';
             resultItem.setAttribute('data-href', postUrl);
             resultItem.innerHTML = `
-                <div class="post-title">${post.title}</div>
-                <div class="post-date">${post.date}</div>
-                <div class="post-tags">
-                    <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
-                    ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
-                    ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
+                <div class="post-item-body">
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-date">${post.date}</div>
+                    <div class="post-tags">
+                        <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
+                        ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                        ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
+                    </div>
                 </div>
+                ${cover ? `
+                    <div class="post-cover-wrap">
+                        <img class="post-cover" src="${cover}" alt="${post.title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                    </div>
+                ` : ''}
             `;
             searchResultsContainer.appendChild(resultItem);
         });
@@ -364,16 +372,24 @@ function renderPosts() {
         // 计算阅读时长
         const readTime = Math.ceil((post.wordCount || 0) / 400);
         const postUrl = `/posts/${post.file.replace('.md', '')}`;
+        const cover = post.cover || '';
 
         return `
                 <div class="post-item post-item-link" data-href="${postUrl}">
-                    <div class="post-title">${post.title}</div>
-                    <div class="post-date">${post.date}</div>
-                    <div class="post-tags">
-                        <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
-                        ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
-                        ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
+                    <div class="post-item-body">
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-date">${post.date}</div>
+                        <div class="post-tags">
+                            <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
+                            ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                            ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
+                        </div>
                     </div>
+                    ${cover ? `
+                        <div class="post-cover-wrap">
+                            <img class="post-cover" src="${cover}" alt="${post.title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                        </div>
+                    ` : ''}
                 </div>
             `;
     }).join('');

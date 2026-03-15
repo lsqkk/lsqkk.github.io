@@ -7,6 +7,7 @@ interface Props {
   columns: string[];
   wordCount: number;
   mdFile: string;
+  coverUrl: string;
   currentPostPath: string;
   prevPostTitle: string;
   prevPostUrl: string;
@@ -22,6 +23,7 @@ const {
   columns,
   wordCount,
   mdFile,
+  coverUrl,
   currentPostPath,
   prevPostTitle,
   prevPostUrl,
@@ -108,7 +110,23 @@ function buildTagHref(tagName: string): string {
 
     <div class="morenpost">
       <div class="post-header">
-        <h1 class="post-title-main">{postTitle}</h1>
+        {coverUrl ? (
+          <div class="post-hero">
+            <img
+              src={coverUrl}
+              alt={postTitle}
+              class="post-hero-image"
+              loading="lazy"
+              decoding="async"
+              referrerpolicy="no-referrer"
+            />
+            <div class="post-hero-overlay">
+              <h1 class="post-hero-title">{postTitle}</h1>
+            </div>
+          </div>
+        ) : (
+          <h1 class="post-title-main">{postTitle}</h1>
+        )}
       </div>
       <div class="post-meta">
         <div class="post-meta-left">

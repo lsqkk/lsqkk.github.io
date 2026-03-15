@@ -8,7 +8,8 @@
             "域名"
         ],
         "columns": [],
-        "wordCount": 3661
+        "wordCount": 3661,
+        "cover": "https://cn.bing.com/th?id=OHR.ElTajo_ZH-CN2134749418_1366x768.jpg"
     },
     {
         "title": "2025 年终总结",
@@ -19,7 +20,8 @@
             "报告"
         ],
         "columns": [],
-        "wordCount": 1281
+        "wordCount": 1281,
+        "cover": "https://cn.bing.com/th?id=OHR.SantaPark_ZH-CN7444715899_1366x768.jpg"
     },
     {
         "title": "新名词之争：教育理念不是话语权竞赛",
@@ -32,7 +34,8 @@
         "columns": [
             "驳论文"
         ],
-        "wordCount": 3438
+        "wordCount": 3438,
+        "cover": "https://cn.bing.com/th?id=OHR.TegallalangTerrace_ZH-CN8126456968_1366x768.jpg"
     },
     {
         "title": "香橙派AI Pro综合开发笔记 - 1",
@@ -46,7 +49,8 @@
         "columns": [
             "香橙派开发笔记"
         ],
-        "wordCount": 4492
+        "wordCount": 4492,
+        "cover": "https://cn.bing.com/th?id=OHR.CascadesNP_ZH-CN1830542356_1366x768.jpg"
     },
     {
         "title": "香橙派AI Pro综合开发笔记 - 2",
@@ -60,7 +64,8 @@
         "columns": [
             "香橙派开发笔记"
         ],
-        "wordCount": 8429
+        "wordCount": 8429,
+        "cover": "https://cn.bing.com/th?id=OHR.BernCH_ZH-CN0890742909_1366x768.jpg"
     },
     {
         "title": "香橙派AI Pro综合开发笔记 - 3",
@@ -74,7 +79,8 @@
         "columns": [
             "香橙派开发笔记"
         ],
-        "wordCount": 7547
+        "wordCount": 7547,
+        "cover": "https://cn.bing.com/th?id=OHR.Arrone_ZH-CN2794175618_1366x768.jpg"
     },
     {
         "title": "香橙派AI Pro综合开发笔记 - 4",
@@ -88,7 +94,23 @@
         "columns": [
             "香橙派开发笔记"
         ],
-        "wordCount": 14259
+        "wordCount": 14259,
+        "cover": "https://cn.bing.com/th?id=OHR.WinterludeIce_ZH-CN7868524911_1366x768.jpg"
+    },
+    {
+        "title": "香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器",
+        "file": "OrangePi/index.md",
+        "date": "2025-12-26",
+        "tags": [
+            "香橙派",
+            "开发",
+            "后端"
+        ],
+        "columns": [
+            "香橙派开发笔记"
+        ],
+        "wordCount": 2019,
+        "cover": "https://cn.bing.com/th?id=OHR.BigHole_ZH-CN2671071218_1366x768.jpg"
     },
     {
         "title": "《信息哲学概论》课程论文",
@@ -99,7 +121,8 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 6489
+        "wordCount": 6489,
+        "cover": "https://cn.bing.com/th?id=OHR.FoucaultsPendulum_ZH-CN9435794626_1366x768.jpg"
     },
     {
         "title": "WebRTC 零服务器信令技术实现",
@@ -111,7 +134,8 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 7379
+        "wordCount": 7379,
+        "cover": "https://cn.bing.com/th?id=OHR.MoonDogs_ZH-CN5201314184_1366x768.jpg"
     },
     {
         "title": "当代大学生后现代解构主义思潮分析",
@@ -122,7 +146,8 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 3702
+        "wordCount": 3702,
+        "cover": "https://cn.bing.com/th?id=OHR.Tetouan_ZH-CN6795834080_1366x768.jpg"
     },
     {
         "title": "《异见时刻》| 金斯伯格与真正的自由",
@@ -133,7 +158,8 @@
             "杂谈"
         ],
         "columns": [],
-        "wordCount": 4650
+        "wordCount": 4650,
+        "cover": "https://cn.bing.com/th?id=OHR.BathCircus_ZH-CN5796600786_1366x768.jpg"
     },
     {
         "title": "人非NPC，世界不是独角戏",
@@ -145,7 +171,8 @@
         "columns": [
             "驳论文"
         ],
-        "wordCount": 3132
+        "wordCount": 3132,
+        "cover": "https://cn.bing.com/th?id=OHR.Rauchnachte_ZH-CN6061051054_1366x768.jpg"
     },
     {
         "title": "未完成式美学：契诃夫的留白与不确定性的现代性",
@@ -155,7 +182,8 @@
             "书评"
         ],
         "columns": [],
-        "wordCount": 2117
+        "wordCount": 2117,
+        "cover": "https://cn.bing.com/th?id=OHR.DardagnaWaterfalls_ZH-CN5613123621_1366x768.jpg"
     },
     {
         "title": "铁屋中的舞蹈",
@@ -165,7 +193,8 @@
             "书评"
         ],
         "columns": [],
-        "wordCount": 4530
+        "wordCount": 4530,
+        "cover": "https://cn.bing.com/th?id=OHR.SummerDogs_ZH-CN1604998367_1366x768.jpg"
     },
     {
         "title": "Shor量子并行算法与Grover量子搜索算法的物理原理分析",
@@ -176,7 +205,8 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 4627
+        "wordCount": 4627,
+        "cover": "https://cn.bing.com/th?id=OHR.OiaVillage_ZH-CN2495652522_1366x768.jpg"
     },
     {
         "title": "从血与火中诞生的国际劳工节：被篡改的历史与未竟的斗争",
@@ -186,7 +216,8 @@
             "史政"
         ],
         "columns": [],
-        "wordCount": 6067
+        "wordCount": 6067,
+        "cover": "https://cn.bing.com/th?id=OHR.PoconosMaze_ZH-CN4696904367_1366x768.jpg"
     },
     {
         "title": "麦克斯韦妖，妖在哪里",
@@ -197,7 +228,8 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 3132
+        "wordCount": 3132,
+        "cover": "https://cn.bing.com/th?id=OHR.FatherEagle_ZH-CN6127856255_1366x768.jpg"
     },
     {
         "title": "洞穴之外",
@@ -207,7 +239,8 @@
             "书评"
         ],
         "columns": [],
-        "wordCount": 4090
+        "wordCount": 4090,
+        "cover": "https://cn.bing.com/th?id=OHR.Latern2022_ZH-CN0112710917_1366x768.jpg"
     },
     {
         "title": "这真的是个“低门槛”时代吗",
@@ -217,7 +250,8 @@
             "杂谈"
         ],
         "columns": [],
-        "wordCount": 2890
+        "wordCount": 2890,
+        "cover": "https://cn.bing.com/th?id=OHR.OkefenokeeSwamp_ZH-CN3640203783_1366x768.jpg"
     },
     {
         "title": "夸克博客全面接入DeepSeek",
@@ -228,7 +262,8 @@
             "前端"
         ],
         "columns": [],
-        "wordCount": 859
+        "wordCount": 859,
+        "cover": "https://cn.bing.com/th?id=OHR.TafilaletOasis_ZH-CN9143950935_1366x768.jpg"
     },
     {
         "title": "博客移动端App正式上线",
@@ -238,7 +273,8 @@
             "报告"
         ],
         "columns": [],
-        "wordCount": 1076
+        "wordCount": 1076,
+        "cover": "https://cn.bing.com/th?id=OHR.Buritaca_ZH-CN7178457066_1366x768.jpg"
     },
     {
         "title": "2025 年西交校园大使宣讲总结",
@@ -248,7 +284,8 @@
             "报告"
         ],
         "columns": [],
-        "wordCount": 2448
+        "wordCount": 2448,
+        "cover": "https://cn.bing.com/th?id=OHR.MalaysiaTwinTowers_ZH-CN1989513449_1366x768.jpg"
     },
     {
         "title": "关于我",
@@ -258,7 +295,8 @@
             "个人"
         ],
         "columns": [],
-        "wordCount": 1238
+        "wordCount": 1238,
+        "cover": "https://cn.bing.com/th?id=OHR.SmilingPunpkins2022_ZH-CN6763384812_1366x768.jpg"
     },
     {
         "title": "关于本站 & 版权声明",
@@ -268,7 +306,8 @@
             "网站"
         ],
         "columns": [],
-        "wordCount": 4085
+        "wordCount": 4409,
+        "cover": "https://cn.bing.com/th?id=OHR.CelebratingSurfing_ZH-CN9747833506_1366x768.jpg"
     },
     {
         "title": "摘不下的面具",
@@ -278,7 +317,8 @@
             "杂谈"
         ],
         "columns": [],
-        "wordCount": 6190
+        "wordCount": 6190,
+        "cover": "https://cn.bing.com/th?id=OHR.IbonPlan_ZH-CN8564017247_1366x768.jpg"
     },
     {
         "title": "交大之夜",
@@ -288,7 +328,8 @@
             "杂谈"
         ],
         "columns": [],
-        "wordCount": 1825
+        "wordCount": 1825,
+        "cover": "https://cn.bing.com/th?id=OHR.CaribouChristmas_ZH-CN6264028572_1366x768.jpg"
     },
     {
         "title": "当全国I卷作文遇到人工智能",
@@ -298,7 +339,8 @@
             "高考"
         ],
         "columns": [],
-        "wordCount": 7008
+        "wordCount": 7008,
+        "cover": "https://cn.bing.com/th?id=OHR.CottonwoodCanyon_ZH-CN5293620973_1366x768.jpg"
     },
     {
         "title": "关于新定义速度$\\mathbf{u}=\\frac{dt}{d\\mathbf{x}}$的讨论",
@@ -308,7 +350,8 @@
             "物理"
         ],
         "columns": [],
-        "wordCount": 4176
+        "wordCount": 4176,
+        "cover": "https://cn.bing.com/th?id=OHR.CameraSquirrel_ZH-CN3580119980_1366x768.jpg"
     },
     {
         "title": "三山岛居民生产、劳动方式演化的调研",
@@ -318,7 +361,8 @@
             "报告"
         ],
         "columns": [],
-        "wordCount": 6197
+        "wordCount": 6197,
+        "cover": "https://cn.bing.com/th?id=OHR.OldFortress_ZH-CN6469523538_1366x768.jpg"
     },
     {
         "title": "浅谈弹性与碰撞：从小球的反弹看碰撞的奥秘",
@@ -328,7 +372,8 @@
             "物理"
         ],
         "columns": [],
-        "wordCount": 5193
+        "wordCount": 5193,
+        "cover": "https://cn.bing.com/th?id=OHR.Tetouan_ZH-CN6795834080_1366x768.jpg"
     },
     {
         "title": "牛顿白光色散实验的科学原理",
@@ -338,7 +383,8 @@
             "物理"
         ],
         "columns": [],
-        "wordCount": 6674
+        "wordCount": 6674,
+        "cover": "https://cn.bing.com/th?id=OHR.JinliStreet_ZH-CN3020276206_1366x768.jpg"
     },
     {
         "title": "C++输出谢尔宾斯基三角形",
@@ -348,14 +394,7 @@
             "C++"
         ],
         "columns": [],
-        "wordCount": 825
-    },
-    {
-        "title": "香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器",
-        "file": "OrangePi/index.md",
-        "date": "1970-01-01",
-        "tags": [],
-        "columns": [],
-        "wordCount": 2019
+        "wordCount": 825,
+        "cover": "https://cn.bing.com/th?id=OHR.FosterCoveredBridge_ZH-CN2672988563_1366x768.jpg"
     }
 ]

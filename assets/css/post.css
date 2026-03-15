@@ -7,6 +7,48 @@ body {
     margin-bottom: 16px;
 }
 
+.post-hero {
+    position: relative;
+    margin: 0 0 18px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.post-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(12, 24, 44, 0.05), rgba(12, 24, 44, 0.35));
+    pointer-events: none;
+}
+
+.post-hero-image {
+    display: block;
+    width: 100%;
+    height: clamp(180px, 32vw, 320px);
+    object-fit: cover;
+    transform: scale(1.02);
+}
+
+.post-hero-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 18px 20px;
+    z-index: 1;
+}
+
+.post-hero-title {
+    margin: 0;
+    font-size: clamp(2.1rem, 3.4vw, 3rem);
+    color: #f8fafc;
+    text-shadow: 0 8px 22px rgba(10, 18, 35, 0.55);
+    line-height: 1.15;
+}
+
 .post-title-main {
     font-size: clamp(2rem, 2.8vw, 2.6rem);
     line-height: 1.2;
@@ -289,6 +331,14 @@ img {
 
     .post-title-main {
         font-size: 1.8rem;
+    }
+
+    .post-hero {
+        border-radius: 12px;
+    }
+
+    .post-hero-overlay {
+        padding: 14px;
     }
 }
 

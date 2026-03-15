@@ -1,5 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
+import fs from "node:fs/promises";
+import path from "node:path";
 import PostLayout from "../../layouts/PostLayout.astro";
 import { buildPostCaseMap, resolveCaseSlug } from "../../utils/post-case-map";
 
@@ -53,12 +55,28 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props as { post: PostEntry };
+const PROJECT_ROOT = process.cwd();
+const postsIndexPath = path.join(PROJECT_ROOT, "posts", "posts.json");
+const coverMap = new Map<string, string>();
+try {
+  const postsIndex = JSON.parse(await fs.readFile(postsIndexPath, "utf8"));
+  if (Array.isArray(postsIndex)) {
+    postsIndex.forEach((item) => {
+      if (item && item.file && typeof item.cover === "string" && item.cover.trim()) {
+        coverMap.set(String(item.file), item.cover.trim());
+      }
+    });
+  }
+} catch (err) {
+  console.warn("读取 posts.json 失败:", err);
+}
 const title = extractTitle(post);
 const date = normalizeDate(post.data.date);
 const tags = normalizeTags(post.data.tags);
 const columns = normalizeColumns((post.data as any).columns ?? (post.data as any).column ?? (post.data as any)["专栏"]);
 const wordCount = getWordCount(post);
 const mdFile = post.id.split("/").pop() || post.id;
+const coverUrl = coverMap.get(post.id) || "";
 const caseMap = await buildPostCaseMap();
 const currentPostPath = resolveCaseSlug(post.id.replace(/\.md$/i, ""), caseMap);
 
@@ -85,6 +103,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   columns={columns}
   wordCount={wordCount}
   mdFile={mdFile}
+  coverUrl={coverUrl}
   currentPostPath={currentPostPath}
   prevPostTitle={prevPost ? extractTitle(prevPost) : ""}
   prevPostUrl={prevPost ? `/posts/${resolveCaseSlug(prevPost.id.replace(/\.md$/i, ""), caseMap)}` : ""}

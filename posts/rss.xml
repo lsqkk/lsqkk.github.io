@@ -63,6 +63,14 @@
       <content:encoded><![CDATA[香橙派AI Pro综合开发笔记 4 10. 服务器Nginx配置与管理 10.1 概述 Nginx是一个高性能的HTTP和反向代理服务器，在本项目中承担了托管网站（WordPress）的核心任务。在基于ARM架构的香橙派上部署Nginx，需要特别注意其与现有服务（如CasaOS网关）的兼容性与资源协调。 10.2 安装与基础配置 通过包管理器安装Nginx是最佳实践： 安装后，关键目录结构如下： : 主配置目录。 : 主配置文件。 : ]]></content:encoded>
     </item>
     <item>
+      <title>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/index</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/index</guid>
+      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+      <description>香橙派, 开发, 后端</description>
+      <content:encoded><![CDATA[香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的]]></content:encoded>
+    </item>
+    <item>
       <title>《信息哲学概论》课程论文</title>
       <link>https://lsqkk.github.io/posts/2025/2517</link>
       <guid isPermaLink="true">https://lsqkk.github.io/posts/2025/2517</guid>
@@ -196,7 +204,7 @@
       <guid isPermaLink="true">https://lsqkk.github.io/posts/copyright</guid>
       <pubDate>Fri, 31 Jan 2025 16:00:00 GMT</pubDate>
       <description>网站</description>
-      <content:encoded><![CDATA[关于本站 &amp; 版权声明 网站简介 “夸克博客”（Quark Blog）是由站主 蓝色奇夸克 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）构建，部署于 GitHub Pages，并通过 Vercel 与自有域名提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信等能力，打造一个“不依赖主流框架、功能丰富、体验流畅”的个人]]></content:encoded>
+      <content:encoded><![CDATA[关于本站 &amp; 版权声明 网站简介 夸克博客（Quark Blog）是由站主 蓝色奇夸克 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）+ Astro 构建，部署于 GitHub Pages，并通过 Firebase RTDB、Vercel 与自有域名等提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信、统一账号与登录中]]></content:encoded>
     </item>
     <item>
       <title>摘不下的面具</title>
@@ -261,14 +269,6 @@
       <pubDate>Sun, 27 Nov 2022 16:00:00 GMT</pubDate>
       <description>C++</description>
       <content:encoded><![CDATA[C++输出谢尔宾斯基三角形 2022年11月28日 谢尔宾斯基三角形 （Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。 我们可以这样做一个谢尔宾斯基三角形： 1. 取一个实心的三角形。（最好是等边三角形） 2. 沿三边中点的连线，将它分成四个小三角形。 3. 去掉中间的那一个小三角形。 4. 对其余三个小三角形重复1。 下面是用C++代码模拟的过程：]]></content:encoded>
-    </item>
-    <item>
-      <title>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器</title>
-      <link>https://lsqkk.github.io/posts/OrangePi/index</link>
-      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/index</guid>
-      <pubDate>Wed, 31 Dec 1969 16:00:00 GMT</pubDate>
-      <description>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的</description>
-      <content:encoded><![CDATA[香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的]]></content:encoded>
     </item>
   </channel>
 </rss>
