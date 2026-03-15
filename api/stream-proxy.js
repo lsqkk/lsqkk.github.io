@@ -29,16 +29,10 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Cache-Control', 'no-store');
-  if (requestOrigin) {
-    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
-  }
+  res.setHeader('Access-Control-Allow-Origin', requestOrigin || '*');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
-  }
-
-  if (!requestOrigin) {
-    return res.status(403).json({ error: 'Forbidden' });
   }
 
   const rawUrl = String(req.query?.url || '').trim();
@@ -77,7 +71,9 @@ export default async function handler(req, res) {
 
     if (isM3U) {
       const text = await upstream.text();
-      const baseOrigin = requestOrigin || `https://${req.headers.host}`;
+      const forwardedProto = req.headers['x-forwarded-proto'] || 'https';
+      const forwardedHost = req.headers['x-forwarded-host'] || req.headers.host;
+      const baseOrigin = requestOrigin || `${forwardedProto}://${forwardedHost}`;
       const proxyBase = `${baseOrigin}/api/stream-proxy?url=`;
       const rewritten = text.split(/\r?\n/).map((line) => {
         const trimmed = line.trim();
