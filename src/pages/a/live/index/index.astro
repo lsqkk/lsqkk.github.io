@@ -182,8 +182,13 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <!-- HLS.js for video streaming -->
     <script is:inline src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-    <!-- Font Awesome -->
-    <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Font Awesome (CSS CDN to avoid kit CORS) -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    >
 
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
 

@@ -55,7 +55,11 @@ export default async function handler(req, res) {
     const upstream = await fetch(targetUrl.toString(), {
       redirect: 'follow',
       headers: {
-        'User-Agent': req.headers['user-agent'] || 'lsqkk-proxy'
+        'User-Agent': req.headers['user-agent'] || 'lsqkk-proxy',
+        'Accept': req.headers.accept || '*/*',
+        'Accept-Language': req.headers['accept-language'] || 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Referer': targetUrl.origin + '/',
+        'Origin': targetUrl.origin
       }
     });
 
