@@ -41,16 +41,19 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <div class="live-container">
             <div class="video-container">
                 <div id="video-placeholder" class="video-placeholder">
-                    <iframe
-                        id="fallback-browser"
-                        class="fallback-browser"
-                        src="https://tv.cctv.com/live/cctv13/"
-                        data-fallback-src="https://tv.cctv.com/live/cctv13/"
-                        title="CCTV-13 直播"
-                        allow="autoplay; fullscreen"
-                        allowfullscreen
-                        referrerpolicy="no-referrer-when-downgrade"
-                    ></iframe>
+                    <div class="fallback-player">
+                        <div class="fallback-header">
+                            <span class="fallback-title">备用频道</span>
+                            <span class="fallback-status" id="fallback-status">准备中</span>
+                        </div>
+                        <div class="fallback-controls">
+                            <label class="fallback-label" for="fallback-select">频道</label>
+                            <select id="fallback-select" class="fallback-select"></select>
+                            <button id="fallback-reload" class="fallback-btn" type="button">刷新列表</button>
+                        </div>
+                        <video id="fallback-video" class="fallback-video" controls playsinline></video>
+                        <div class="fallback-note">如播放失败，可尝试切换其他频道。</div>
+                    </div>
                 </div>
                 <video id="live-video" style="display: none;" controls autoplay muted playsinline></video>
             </div>

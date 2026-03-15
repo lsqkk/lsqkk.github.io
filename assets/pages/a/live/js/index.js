@@ -22,34 +22,51 @@ let userAvatarType = 'color';
 let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '观众';
-const fallbackStreamUrl = 'https://tv.cctv.com/live/cctv13/';
+const fallbackPlaylistUrl = 'https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u';
+const fallbackDefaultName = '咪咕直播 𝟙「移动」';
+let fallbackHls = null;
 
 function showFallbackStream() {
     const placeholder = document.getElementById('video-placeholder');
-    const fallbackBrowser = document.getElementById('fallback-browser');
+    const fallbackVideo = document.getElementById('fallback-video');
+    const fallbackStatus = document.getElementById('fallback-status');
 
     if (placeholder) {
         placeholder.style.display = 'block';
     }
 
-    if (fallbackBrowser) {
-        const desiredSrc = fallbackBrowser.dataset.fallbackSrc || fallbackStreamUrl;
-        if (fallbackBrowser.src !== desiredSrc) {
-            fallbackBrowser.src = desiredSrc;
-        }
+    if (fallbackVideo && fallbackVideo.dataset.streamActive === 'true') {
+        fallbackVideo.style.display = 'block';
+    }
+
+    if (fallbackStatus) {
+        fallbackStatus.textContent = '播放中';
     }
 }
 
 function hideFallbackStream() {
     const placeholder = document.getElementById('video-placeholder');
-    const fallbackBrowser = document.getElementById('fallback-browser');
+    const fallbackVideo = document.getElementById('fallback-video');
+    const fallbackStatus = document.getElementById('fallback-status');
 
     if (placeholder) {
         placeholder.style.display = 'none';
     }
 
-    if (fallbackBrowser) {
-        fallbackBrowser.src = 'about:blank';
+    if (fallbackVideo) {
+        fallbackVideo.pause();
+        fallbackVideo.removeAttribute('src');
+        fallbackVideo.load();
+        fallbackVideo.dataset.streamActive = 'false';
+    }
+
+    if (fallbackHls) {
+        fallbackHls.destroy();
+        fallbackHls = null;
+    }
+
+    if (fallbackStatus) {
+        fallbackStatus.textContent = '已暂停';
     }
 }
 
@@ -811,6 +828,122 @@ function resumeAllAudioTracks() {
     showMessage('音频已启用', 'success');
 }
 
+function parseM3U(text) {
+    const lines = text.split(/\r?\n/);
+    const channels = [];
+    let currentMeta = null;
+
+    lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        if (trimmed.startsWith('#EXTINF')) {
+            const nameMatch = trimmed.match(/,(.*)$/);
+            const name = nameMatch ? nameMatch[1].trim() : '未命名频道';
+            currentMeta = { name };
+            return;
+        }
+        if (!trimmed.startsWith('#') && currentMeta) {
+            channels.push({ name: currentMeta.name, url: trimmed });
+            currentMeta = null;
+        }
+    });
+
+    return channels;
+}
+
+function setFallbackStatus(message, isError = false) {
+    const fallbackStatus = document.getElementById('fallback-status');
+    if (!fallbackStatus) return;
+    fallbackStatus.textContent = message;
+    if (isError) {
+        fallbackStatus.style.background = 'rgba(255, 71, 87, 0.2)';
+        fallbackStatus.style.color = '#ff4757';
+        fallbackStatus.style.borderColor = 'rgba(255, 71, 87, 0.4)';
+    } else {
+        fallbackStatus.style.background = 'rgba(8, 217, 214, 0.15)';
+        fallbackStatus.style.color = 'var(--secondary-color)';
+        fallbackStatus.style.borderColor = 'rgba(8, 217, 214, 0.35)';
+    }
+}
+
+async function loadFallbackPlaylist() {
+    const select = document.getElementById('fallback-select');
+    if (!select) return;
+
+    select.innerHTML = '';
+    setFallbackStatus('加载中...');
+
+    try {
+        const response = await fetch(fallbackPlaylistUrl, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error('播放列表加载失败');
+        }
+        const text = await response.text();
+        const channels = parseM3U(text);
+        if (!channels.length) {
+            throw new Error('未解析到可用频道');
+        }
+
+        channels.forEach((channel) => {
+            const option = document.createElement('option');
+            option.value = channel.url;
+            option.textContent = channel.name;
+            select.appendChild(option);
+        });
+
+        let defaultOption = Array.from(select.options).find(opt => opt.textContent.includes(fallbackDefaultName));
+        if (!defaultOption) {
+            defaultOption = select.options[0];
+        }
+        if (defaultOption) {
+            select.value = defaultOption.value;
+            playFallbackStream(defaultOption.value);
+        }
+    } catch (error) {
+        console.error('加载备用播放列表失败:', error);
+        setFallbackStatus('加载失败', true);
+    }
+}
+
+function playFallbackStream(url) {
+    const video = document.getElementById('fallback-video');
+    if (!video || !url) return;
+
+    video.dataset.streamActive = 'true';
+    setFallbackStatus('连接中...');
+
+    if (fallbackHls) {
+        fallbackHls.destroy();
+        fallbackHls = null;
+    }
+
+    if (Hls.isSupported()) {
+        fallbackHls = new Hls({
+            lowLatencyMode: true,
+            backBufferLength: 30
+        });
+        fallbackHls.loadSource(url);
+        fallbackHls.attachMedia(video);
+        fallbackHls.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.play().catch(() => {
+                setFallbackStatus('等待播放');
+            });
+        });
+        fallbackHls.on(Hls.Events.ERROR, () => {
+            setFallbackStatus('播放失败', true);
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
+        video.addEventListener('loadedmetadata', () => {
+            video.play().catch(() => {
+                setFallbackStatus('等待播放');
+            });
+        }, { once: true });
+    } else {
+        setFallbackStatus('不支持播放', true);
+    }
+}
+
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function () {
     applyUserProfile();
@@ -830,6 +963,19 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeChat();
     initializeLikes();
     initializeViewerCount();
+
+    // 初始化备用频道播放列表
+    loadFallbackPlaylist();
+    const fallbackSelect = document.getElementById('fallback-select');
+    const fallbackReload = document.getElementById('fallback-reload');
+    if (fallbackSelect) {
+        fallbackSelect.addEventListener('change', (event) => {
+            playFallbackStream(event.target.value);
+        });
+    }
+    if (fallbackReload) {
+        fallbackReload.addEventListener('click', loadFallbackPlaylist);
+    }
 
     // 初始化AudioContext
     document.addEventListener('click', function initAudio() {
