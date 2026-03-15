@@ -41,8 +41,16 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <div class="live-container">
             <div class="video-container">
                 <div id="video-placeholder" class="video-placeholder">
-                    <i class="fas fa-satellite-dish"></i>
-                    <div>准备播放直播流...</div>
+                    <iframe
+                        id="fallback-browser"
+                        class="fallback-browser"
+                        src="https://tv.cctv.com/live/cctv13/"
+                        data-fallback-src="https://tv.cctv.com/live/cctv13/"
+                        title="CCTV-13 直播"
+                        allow="autoplay; fullscreen"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
                 </div>
                 <video id="live-video" style="display: none;" controls autoplay muted playsinline></video>
             </div>

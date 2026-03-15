@@ -22,6 +22,36 @@ let userAvatarType = 'color';
 let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '观众';
+const fallbackStreamUrl = 'https://tv.cctv.com/live/cctv13/';
+
+function showFallbackStream() {
+    const placeholder = document.getElementById('video-placeholder');
+    const fallbackBrowser = document.getElementById('fallback-browser');
+
+    if (placeholder) {
+        placeholder.style.display = 'block';
+    }
+
+    if (fallbackBrowser) {
+        const desiredSrc = fallbackBrowser.dataset.fallbackSrc || fallbackStreamUrl;
+        if (fallbackBrowser.src !== desiredSrc) {
+            fallbackBrowser.src = desiredSrc;
+        }
+    }
+}
+
+function hideFallbackStream() {
+    const placeholder = document.getElementById('video-placeholder');
+    const fallbackBrowser = document.getElementById('fallback-browser');
+
+    if (placeholder) {
+        placeholder.style.display = 'none';
+    }
+
+    if (fallbackBrowser) {
+        fallbackBrowser.src = 'about:blank';
+    }
+}
 
 // 生成唯一观众ID
 function generateViewerId() {
@@ -134,15 +164,8 @@ function handleStreamEnded() {
     }
 
     const videoElement = document.getElementById('live-video');
-    const placeholder = document.getElementById('video-placeholder');
-
     videoElement.style.display = 'none';
-    placeholder.style.display = 'flex';
-    placeholder.innerHTML = `
-                <i class="fas fa-satellite-dish"></i>
-                <div>等待直播开始</div>
-                <div style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">主播上线后将自动连接</div>
-            `;
+    showFallbackStream();
 
     updateStatus('等待直播');
     showMessage('直播已结束或尚未开始', 'success');
@@ -275,11 +298,10 @@ async function handleUserPublished(user, mediaType) {
 
     if (mediaType === "video") {
         const videoElement = document.getElementById('live-video');
-        const placeholder = document.getElementById('video-placeholder');
 
         user.videoTrack.play(videoElement);
 
-        placeholder.style.display = 'none';
+        hideFallbackStream();
         videoElement.style.display = 'block';
 
         updateStatus('直播中');
@@ -319,14 +341,9 @@ async function handleUserUnpublished(user, mediaType) {
 
     if (mediaType === "video") {
         const videoElement = document.getElementById('live-video');
-        const placeholder = document.getElementById('video-placeholder');
 
         videoElement.style.display = 'none';
-        placeholder.style.display = 'flex';
-        placeholder.innerHTML = `
-                    <i class="fas fa-pause-circle"></i>
-                    <div>直播暂停</div>
-                `;
+        showFallbackStream();
 
         updateStatus('直播暂停');
     }
