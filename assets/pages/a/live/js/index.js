@@ -22,8 +22,10 @@ let userAvatarType = 'color';
 let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '观众';
+const API_BASE = '__API_BASE__';
 const fallbackPlaylistUrl = 'https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u';
 const fallbackDefaultName = '咪咕直播 𝟙「移动」';
+const fallbackProxyBase = `${API_BASE}/api/stream-proxy?url=`;
 let fallbackHls = null;
 
 function showFallbackStream() {
@@ -875,18 +877,18 @@ async function loadFallbackPlaylist() {
     setFallbackStatus('加载中...');
 
     try {
-        const response = await fetch(fallbackPlaylistUrl, { cache: 'no-store' });
+        const proxiedPlaylist = `${fallbackProxyBase}${encodeURIComponent(fallbackPlaylistUrl)}`;
+        const response = await fetch(proxiedPlaylist, { cache: 'no-store' });
         if (!response.ok) {
             throw new Error('播放列表加载失败');
         }
         const text = await response.text();
         const channels = parseM3U(text);
-        const secureChannels = channels.filter(channel => channel.url.startsWith('https://'));
-        if (!secureChannels.length) {
+        if (!channels.length) {
             throw new Error('未解析到可用频道');
         }
 
-        secureChannels.forEach((channel) => {
+        channels.forEach((channel) => {
             const option = document.createElement('option');
             option.value = channel.url;
             option.textContent = channel.name;
@@ -919,12 +921,13 @@ function playFallbackStream(url) {
         fallbackHls = null;
     }
 
+    const proxiedUrl = `${fallbackProxyBase}${encodeURIComponent(url)}`;
     if (Hls.isSupported()) {
         fallbackHls = new Hls({
             lowLatencyMode: true,
             backBufferLength: 30
         });
-        fallbackHls.loadSource(url);
+        fallbackHls.loadSource(proxiedUrl);
         fallbackHls.attachMedia(video);
         fallbackHls.on(Hls.Events.MANIFEST_PARSED, () => {
             video.play().catch(() => {
@@ -935,7 +938,7 @@ function playFallbackStream(url) {
             setFallbackStatus('播放失败', true);
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
+        video.src = proxiedUrl;
         video.addEventListener('loadedmetadata', () => {
             video.play().catch(() => {
                 setFallbackStatus('等待播放');
