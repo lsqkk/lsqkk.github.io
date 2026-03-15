@@ -843,7 +843,8 @@ function parseM3U(text) {
             return;
         }
         if (!trimmed.startsWith('#') && currentMeta) {
-            channels.push({ name: currentMeta.name, url: trimmed });
+            const url = trimmed;
+            channels.push({ name: currentMeta.name, url });
             currentMeta = null;
         }
     });
@@ -880,11 +881,12 @@ async function loadFallbackPlaylist() {
         }
         const text = await response.text();
         const channels = parseM3U(text);
-        if (!channels.length) {
+        const secureChannels = channels.filter(channel => channel.url.startsWith('https://'));
+        if (!secureChannels.length) {
             throw new Error('未解析到可用频道');
         }
 
-        channels.forEach((channel) => {
+        secureChannels.forEach((channel) => {
             const option = document.createElement('option');
             option.value = channel.url;
             option.textContent = channel.name;
