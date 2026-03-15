@@ -63,7 +63,10 @@ try {
   if (Array.isArray(postsIndex)) {
     postsIndex.forEach((item) => {
       if (item && item.file && typeof item.cover === "string" && item.cover.trim()) {
-        coverMap.set(String(item.file), item.cover.trim());
+        const key = String(item.file);
+        const value = item.cover.trim();
+        coverMap.set(key, value);
+        coverMap.set(key.replace(/\.md$/i, ""), value);
       }
     });
   }
@@ -76,7 +79,7 @@ const tags = normalizeTags(post.data.tags);
 const columns = normalizeColumns((post.data as any).columns ?? (post.data as any).column ?? (post.data as any)["专栏"]);
 const wordCount = getWordCount(post);
 const mdFile = post.id.split("/").pop() || post.id;
-const coverUrl = coverMap.get(post.id) || "";
+const coverUrl = coverMap.get(post.id) || coverMap.get(`${post.id}.md`) || "";
 const caseMap = await buildPostCaseMap();
 const currentPostPath = resolveCaseSlug(post.id.replace(/\.md$/i, ""), caseMap);
 

@@ -9,8 +9,8 @@ body {
 
 .post-hero {
     position: relative;
-    margin: 0 0 18px;
-    border-radius: 16px;
+    margin: -40px -40px 18px;
+    border-radius: 0;
     overflow: hidden;
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
     background: rgba(255, 255, 255, 0.25);
@@ -44,9 +44,16 @@ body {
 .post-hero-title {
     margin: 0;
     font-size: clamp(2.1rem, 3.4vw, 3rem);
-    color: #f8fafc;
-    text-shadow: 0 8px 22px rgba(10, 18, 35, 0.55);
+    color: #0b1f3a;
+    text-shadow: none;
     line-height: 1.15;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 10px 24px rgba(10, 18, 35, 0.18);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    max-width: 95%;
 }
 
 .post-title-main {
@@ -334,11 +341,24 @@ img {
     }
 
     .post-hero {
-        border-radius: 12px;
+        margin: -20px -20px 16px;
+        border-radius: 0;
     }
 
     .post-hero-overlay {
         padding: 14px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .post-hero::after {
+        background: linear-gradient(180deg, rgba(10, 16, 28, 0.25), rgba(5, 10, 20, 0.65));
+    }
+
+    .post-hero-title {
+        color: #e6f1ff;
+        background: rgba(10, 18, 35, 0.68);
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
     }
 }
 
