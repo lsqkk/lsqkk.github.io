@@ -127,13 +127,23 @@ function generateNavHTML(config) {
                     </li>`;
         }
         return `<li><a href="${item.link}" target="${target}">${item.name}</a></li>`;
-    }).join('')}
+                    }).join('')}
                     <!-- 语言切换器 - 不会被翻译 -->
                     <li class="ignore">
-                        <select id="languageSelector" class="language-selector">
-                            <option value="chinese_simplified">中文/CN</option>
-                            <option value="english">English</option>
-                        </select>
+                        <div class="language-picker" data-language-picker>
+                            <button class="language-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="language-label">中文/CN</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+                            <ul class="language-menu" role="listbox">
+                                <li><button type="button" data-lang="chinese_simplified">中文/CN</button></li>
+                                <li><button type="button" data-lang="english">English</button></li>
+                            </ul>
+                            <select id="languageSelector" class="language-selector" aria-hidden="true" tabindex="-1">
+                                <option value="chinese_simplified">中文/CN</option>
+                                <option value="english">English</option>
+                            </select>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -172,10 +182,20 @@ function generateNavHTML(config) {
             </div>
             <div class="navsidebar-controls">
                 <div class="navsidebar-language">
-                    <select id="mobileLanguageSelector" class="language-selector">
-                        <option value="chinese_simplified">中文/CN</option>
-                        <option value="english">English</option>
-                    </select>
+                    <div class="language-picker" data-language-picker>
+                        <button class="language-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="language-label">中文/CN</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <ul class="language-menu" role="listbox">
+                            <li><button type="button" data-lang="chinese_simplified">中文/CN</button></li>
+                            <li><button type="button" data-lang="english">English</button></li>
+                        </ul>
+                        <select id="mobileLanguageSelector" class="language-selector" aria-hidden="true" tabindex="-1">
+                            <option value="chinese_simplified">中文/CN</option>
+                            <option value="english">English</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="navsidebar-login" id="mobile-login-button">
                     <a href="${config.login.url}">登录</a>
@@ -451,6 +471,7 @@ function initializeTranslation() {
 
         // 3. 初始化完成后，可尝试设置一个默认状态（可选）
         console.log('Translate.js 初始化完成');
+        syncLanguagePickers('chinese_simplified');
     };
     document.head.appendChild(script);
 }
@@ -472,6 +493,102 @@ function performLanguageChange(targetLanguage) {
     document.querySelectorAll('.language-selector').forEach(sel => {
         sel.value = targetLanguage;
     });
+    syncLanguagePickers(targetLanguage);
+}
+
+function syncLanguagePickers(targetLanguage) {
+    document.querySelectorAll('[data-language-picker]').forEach(picker => {
+        if (!(picker instanceof HTMLElement)) return;
+        const select = picker.querySelector('.language-selector');
+        if (select && select.value !== targetLanguage) {
+            select.value = targetLanguage;
+        }
+        const option = select ? select.querySelector(`option[value="${targetLanguage}"]`) : null;
+        const label = picker.querySelector('.language-label');
+        if (label) {
+            label.textContent = option ? option.textContent : targetLanguage;
+        }
+        picker.querySelectorAll('.language-menu button').forEach(btn => {
+            btn.classList.toggle('is-active', btn.dataset.lang === targetLanguage);
+        });
+    });
+}
+
+function initializeLanguagePickers() {
+    const pickers = document.querySelectorAll('[data-language-picker]');
+    if (pickers.length === 0) return;
+
+    const closeAll = () => {
+        pickers.forEach(picker => {
+            picker.classList.remove('is-open');
+            const trigger = picker.querySelector('.language-trigger');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+    };
+
+    pickers.forEach(picker => {
+        if (!(picker instanceof HTMLElement)) return;
+        const trigger = picker.querySelector('.language-trigger');
+        const select = picker.querySelector('.language-selector');
+        const menuButtons = picker.querySelectorAll('.language-menu button');
+
+        if (select) {
+            const currentValue = select.value || 'chinese_simplified';
+            syncLanguagePickers(currentValue);
+        }
+
+        if (trigger) {
+            trigger.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isOpen = picker.classList.contains('is-open');
+                closeAll();
+                if (!isOpen) {
+                    picker.classList.add('is-open');
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+
+        menuButtons.forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const lang = btn.dataset.lang;
+                if (!lang) return;
+                if (select) {
+                    select.value = lang;
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                } else {
+                    performLanguageChange(lang);
+                }
+                closeAll();
+            });
+        });
+    });
+
+    document.addEventListener('click', closeAll);
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeAll();
+    });
+}
+
+function initializeSearchInputs() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                handleGlobalSearch();
+            }
+        });
+    }
+
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                handleMobileSearch();
+            }
+        });
+    }
 }
 
 // 检查登录状态（与index.js保持一致）
@@ -652,11 +769,13 @@ window.renderNavUserProfile = renderUserProfile;
 
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
+    initializeLanguagePickers();
     initializeTranslation();
     initializeSidebar();
     initializeNavHoverMenus();
     initializeNavThemeMode();
     initializeNavScrollBehavior();
+    initializeSearchInputs();
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
