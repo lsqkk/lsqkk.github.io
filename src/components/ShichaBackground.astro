@@ -1,6 +1,8 @@
 ---
+import GlowFollow from "./GlowFollow.astro";
 const { id = "parallaxBg" } = Astro.props;
 ---
 <link rel="stylesheet" href="/assets/css/shicha.css" />
 <div class="parallax-bg" id={id}></div>
 <script is:inline src="/assets/js/shicha.js"></script>
+<GlowFollow />

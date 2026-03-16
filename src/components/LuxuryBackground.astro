@@ -1,12 +1,13 @@
 ---
+import GlowFollow from "./GlowFollow.astro";
 const { className = "" } = Astro.props;
 ---
 <style is:global>
   body.luxury-body {
     background-color: #f2f6fb;
     background-image:
-      radial-gradient(1200px circle at var(--lux-glow-x, 50%) var(--lux-glow-y, 42%), rgba(255, 255, 255, 0.7), transparent 62%),
-      radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.68), transparent 48%),
+      radial-gradient(1200px circle at var(--glow-x, 50%) var(--glow-y, 42%), rgba(255, 238, 219, 0.65), transparent 62%),
+      radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.7), transparent 48%),
       radial-gradient(circle at 86% 22%, rgba(226, 240, 255, 0.62), transparent 55%),
       radial-gradient(circle at 20% 82%, rgba(214, 246, 240, 0.5), transparent 55%),
       linear-gradient(165deg, rgba(255, 255, 255, 0.78), rgba(229, 236, 246, 0.88)),
@@ -29,7 +30,7 @@ const { className = "" } = Astro.props;
     pointer-events: none;
     z-index: 0;
     background:
-      radial-gradient(900px circle at var(--lux-glow-x, 50%) var(--lux-glow-y, 45%), rgba(255, 255, 255, 0.45), transparent 70%),
+      radial-gradient(900px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(206, 226, 255, 0.45), transparent 70%),
       radial-gradient(circle at 18% 24%, rgba(148, 163, 184, 0.2), transparent 50%),
       radial-gradient(circle at 86% 20%, rgba(96, 165, 250, 0.16), transparent 50%),
       radial-gradient(circle at 30% 82%, rgba(94, 234, 212, 0.14), transparent 46%);
@@ -45,7 +46,7 @@ const { className = "" } = Astro.props;
 
     .luxury-backdrop {
       background:
-        radial-gradient(1000px circle at var(--lux-glow-x, 50%) var(--lux-glow-y, 45%), rgba(110, 168, 255, 0.2), transparent 70%),
+        radial-gradient(1000px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(110, 168, 255, 0.22), transparent 70%),
         radial-gradient(circle at 18% 24%, rgba(148, 163, 184, 0.12), transparent 55%),
         radial-gradient(circle at 86% 20%, rgba(96, 165, 250, 0.12), transparent 55%),
         radial-gradient(circle at 30% 82%, rgba(94, 234, 212, 0.08), transparent 50%);
@@ -55,56 +56,4 @@ const { className = "" } = Astro.props;
 </style>
 
 <div class={`luxury-backdrop ${className}`} aria-hidden="true"></div>
-
-<script>
-  const startLuxuryGlow = () => {
-    if (window.__luxuryGlowInit) return;
-    const backdrop = document.querySelector('.luxury-backdrop');
-    if (!backdrop) return;
-    window.__luxuryGlowInit = true;
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let targetX = 50;
-    let targetY = 45;
-    let currentX = 50;
-    let currentY = 45;
-    let rafId = 0;
-    const root = document.documentElement;
-
-    const render = () => {
-      currentX += (targetX - currentX) * 0.12;
-      currentY += (targetY - currentY) * 0.12;
-      root.style.setProperty('--lux-glow-x', `${currentX}%`);
-      root.style.setProperty('--lux-glow-y', `${currentY}%`);
-      rafId = window.requestAnimationFrame(render);
-    };
-
-    const ensureRenderLoop = () => {
-      if (!rafId) rafId = window.requestAnimationFrame(render);
-    };
-
-    const onMove = (event) => {
-      if (!event) return;
-      const { clientX, clientY } = event;
-      if (typeof clientX !== 'number' || typeof clientY !== 'number') return;
-      const nextX = (clientX / window.innerWidth) * 100;
-      const nextY = (clientY / window.innerHeight) * 100;
-      targetX = Math.min(90, Math.max(10, nextX));
-      targetY = Math.min(90, Math.max(10, nextY));
-      ensureRenderLoop();
-    };
-
-    root.style.setProperty('--lux-glow-x', '50%');
-    root.style.setProperty('--lux-glow-y', '45%');
-
-    if (!reduceMotion) {
-      window.addEventListener('pointermove', onMove, { passive: true });
-    }
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startLuxuryGlow);
-  } else {
-    startLuxuryGlow();
-  }
-</script>
+<GlowFollow />

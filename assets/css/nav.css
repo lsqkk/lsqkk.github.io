@@ -59,7 +59,7 @@
 .header-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .header-login {
@@ -88,14 +88,14 @@
     align-items: center;
 }
 .header-nav li {
-    margin: 0 8px;
+    margin: 0 6px;
     white-space: nowrap;
     position: relative;
 }
 .header-nav li a {
     color: white;
     text-decoration: none;
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-radius: 5px;
     transition: background-color 0.3s;
     font-size: 0.9em;
@@ -125,7 +125,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    min-width: 120px;
+    min-width: 100px;
 }
 
 .language-trigger {
@@ -211,7 +211,7 @@
 .header-search {
     display: flex;
     align-items: center;
-    margin-left: 15px;
+    margin-left: 12px;
     gap: 8px;
     position: relative;
 }
@@ -397,7 +397,7 @@
     color: inherit;
 }
 .header-search input {
-    width: 160px;
+    width: 140px;
     padding: 7px 12px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.35);
@@ -412,12 +412,12 @@
     color: rgba(255, 255, 255, 0.7);
 }
 .header-search:focus-within input {
-    width: 220px;
+    width: 190px;
     background: rgba(255, 255, 255, 0.3);
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 .header-search button {
-    padding: 7px 14px;
+    padding: 6px 12px;
     margin-left: 0;
     background: rgba(255, 255, 255, 0.32);
     backdrop-filter: blur(10px);

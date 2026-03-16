@@ -1,0 +1,54 @@
+---
+const { enabled = true } = Astro.props;
+---
+<script is:inline define:vars={{ enabled }}>
+  const startGlowFollow = () => {
+    if (!enabled) return;
+    if (window.__glowFollowInit) return;
+    window.__glowFollowInit = true;
+
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let targetX = 50;
+    let targetY = 45;
+    let currentX = 50;
+    let currentY = 45;
+    let rafId = 0;
+
+    const render = () => {
+      currentX += (targetX - currentX) * 0.12;
+      currentY += (targetY - currentY) * 0.12;
+      root.style.setProperty('--glow-x', `${currentX}%`);
+      root.style.setProperty('--glow-y', `${currentY}%`);
+      rafId = window.requestAnimationFrame(render);
+    };
+
+    const ensureRenderLoop = () => {
+      if (!rafId) rafId = window.requestAnimationFrame(render);
+    };
+
+    const onMove = (event) => {
+      if (!event) return;
+      const { clientX, clientY } = event;
+      if (typeof clientX !== 'number' || typeof clientY !== 'number') return;
+      const nextX = (clientX / window.innerWidth) * 100;
+      const nextY = (clientY / window.innerHeight) * 100;
+      targetX = Math.min(90, Math.max(10, nextX));
+      targetY = Math.min(90, Math.max(10, nextY));
+      ensureRenderLoop();
+    };
+
+    root.style.setProperty('--glow-x', '50%');
+    root.style.setProperty('--glow-y', '45%');
+
+    if (!reduceMotion) {
+      window.addEventListener('pointermove', onMove, { passive: true });
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startGlowFollow);
+  } else {
+    startGlowFollow();
+  }
+</script>

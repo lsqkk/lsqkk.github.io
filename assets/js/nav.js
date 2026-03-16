@@ -21,7 +21,13 @@ document.head.appendChild(activityScript);
 function ensureCursorTrail() {
     const hasCursorCss = !!document.querySelector('link[href*="cursor.css"]');
     const hasCursorScript = !!document.querySelector('script[src="/assets/js/cursor-trail.js"]');
-    if (!hasCursorCss || hasCursorScript) return;
+    if (!hasCursorCss) {
+        const cursorCss = document.createElement('link');
+        cursorCss.rel = 'stylesheet';
+        cursorCss.href = '/assets/css/cursor.css';
+        document.head.appendChild(cursorCss);
+    }
+    if (hasCursorScript) return;
     const cursorScript = document.createElement('script');
     cursorScript.src = '/assets/js/cursor-trail.js';
     cursorScript.defer = true;

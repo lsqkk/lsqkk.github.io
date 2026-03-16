@@ -8,6 +8,7 @@ interface Props {
 
 const { title, description = "", extraStyles = [], extraHeadScripts = [] } = Astro.props;
 import { SITE_LOGO_URL } from "@siteConfig";
+import GlowFollow from "../components/GlowFollow.astro";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -26,6 +27,7 @@ import { SITE_LOGO_URL } from "@siteConfig";
     <link rel="stylesheet" href="/assets/css/shicha.css" />
     <div class="parallax-bg" id="parallaxBg"></div>
     <script is:inline src="/assets/js/shicha.js"></script>
+    <GlowFollow />
     <slot />
     <script is:inline src="/assets/js/disable-right-click.js"></script>
   </body>
