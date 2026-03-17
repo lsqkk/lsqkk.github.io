@@ -5,7 +5,23 @@
     <description>夸克博客</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 08 Feb 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2026 16:00:00 GMT</lastBuildDate>
+    <item>
+      <title>走进长乐塬：在那个警报长鸣的年代</title>
+      <link>https://lsqkk.github.io/posts/2026/2602</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2602</guid>
+      <pubDate>Mon, 16 Mar 2026 16:00:00 GMT</pubDate>
+      <description>杂谈</description>
+      <content:encoded><![CDATA[走进长乐塬：在那个警报长鸣的年代 《史纲》课“寻访革命旧址，弘扬革命文化”讲稿 半个月前，当我踏上宝鸡这片土地时，我并没有想到，一次偶然的游览，会让我至今心绪难平。 那天上午，我先去了大唐秦王陵。那里长眠着一位唐代的将领，墓室幽深，壁画斑驳，石棺沉默地诉说着千年前的尊荣。说实话墓道修得很长，走在幽暗的墓道里，你能感受到一种森严的等级和对死后世界极尽奢华的想象。然而，让我真正感到震撼，甚至可以说，让我对“历史”二字有了重新认识的，是当天下]]></content:encoded>
+    </item>
+    <item>
+      <title>指南车工作原理探究及其自动控制思想分析</title>
+      <link>https://lsqkk.github.io/posts/2026/2603</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2603</guid>
+      <pubDate>Mon, 16 Mar 2026 16:00:00 GMT</pubDate>
+      <description>自动化, 论文</description>
+      <content:encoded><![CDATA[指南车工作原理探究及其自动控制思想分析 《自动化专业概论》第一次课程作业 摘要 指南车是中国古代重要的机械装置之一，其功能是在车辆运动过程中保持指向装置始终指向既定方向。此装置并不像指南针一样依赖磁性原理，而是通过车轮运动差动与齿轮传动机构实现方向补偿，因此在机械工程史与自动化思想发展史中具有重要研究价值。本文从自动化专业视角出发，对指南车的结构组成与工作机理进行系统分析，重点探讨定轴轮系结构的运动学原理及齿轮传动关系，并结合车辆运动学]]></content:encoded>
+    </item>
     <item>
       <title>从Namecheap到Cloudflare：一个域名“韭菜”的技术自救实录</title>
       <link>https://lsqkk.github.io/posts/2026/2601</link>
