@@ -22,7 +22,7 @@ const loginTip = document.getElementById('picLoginTip');
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const database = firebase.database();
+let database = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     bindEvents();
@@ -39,6 +39,7 @@ function bindEvents() {
 
 async function initializePageContext() {
     try {
+        await ensureFirebaseDatabase();
         const [ip, exemptIps] = await Promise.all([getClientIp(), loadExemptIps()]);
         clientIp = ip;
         exemptIpSet = new Set(exemptIps);
@@ -47,6 +48,24 @@ async function initializePageContext() {
     } catch (error) {
         setStatus(`初始化失败：${error.message}`);
     }
+}
+
+async function ensureFirebaseDatabase() {
+    if (database) return database;
+    if (window.QuarkFirebaseReady && typeof window.QuarkFirebaseReady.ensureDatabase === 'function') {
+        database = await window.QuarkFirebaseReady.ensureDatabase({ loadConfig: true });
+        return database;
+    }
+    if (window.firebase && window.firebase.database) {
+        if (!window.firebase.apps || !window.firebase.apps.length) {
+            if (window.firebaseConfig && window.firebaseConfig.projectId) {
+                window.firebase.initializeApp(window.firebaseConfig);
+            }
+        }
+        database = window.firebase.database();
+        return database;
+    }
+    throw new Error('Firebase 未就绪');
 }
 
 function isLoggedUser() {
