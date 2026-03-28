@@ -338,7 +338,11 @@ const homePreloaded = {
                           <i class="fa-regular fa-calendar"></i>{escapeHtml(entry.date)}
                         </div>
                       )}
-                      <div class="dynamic-content" set:html={htmlContent}></div>
+                      <div
+                        class="dynamic-content"
+                        data-raw-md={escapeHtml(extracted.text)}
+                        set:html={htmlContent}
+                      ></div>
                       {galleryHtml && <Fragment set:html={galleryHtml} />}
                       <div class="dynamic-entry-footer">
                         <a class="dynamic-detail-link" href={`/blog/dt/${dynamicId}`}>查看详情</a>

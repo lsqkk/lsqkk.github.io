@@ -847,6 +847,7 @@ function renderDynamicEntries(entries) {
         if (window.DynamicGallery && typeof window.DynamicGallery.hydrateStaticGalleries === 'function') {
             window.DynamicGallery.hydrateStaticGalleries(container);
         }
+        enhanceDynamicMarkdown(container);
         applyDynamicClamp(container);
         return;
     }
@@ -887,7 +888,24 @@ function renderDynamicEntries(entries) {
     if (window.DynamicGallery && typeof window.DynamicGallery.hydrateStaticGalleries === 'function') {
         window.DynamicGallery.hydrateStaticGalleries(container);
     }
+    enhanceDynamicMarkdown(container);
     applyDynamicClamp(container);
+}
+
+function enhanceDynamicMarkdown(root = document) {
+    if (!window.marked || typeof window.marked.parse !== 'function') return;
+    root.querySelectorAll('.dynamic-content[data-raw-md]').forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        if (node.dataset.mdEnhanced === 'true') return;
+        const raw = node.dataset.rawMd || '';
+        if (!raw.trim()) return;
+        try {
+            node.innerHTML = window.marked.parse(raw, { breaks: true, gfm: true });
+            node.dataset.mdEnhanced = 'true';
+        } catch (error) {
+            console.warn('动态 Markdown 增强失败:', error);
+        }
+    });
 }
 
 function applyDynamicClamp(container) {
