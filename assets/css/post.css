@@ -210,8 +210,8 @@ pre {
 .post-tag {
     padding: 4px 10px;
     border-radius: 10px;
-    background: rgba(93, 208, 255, 0.2);
-    color: #007bff;
+    background: rgba(47, 110, 219, 0.14);
+    color: #2f6edb;
     font-size: 0.75em;
     font-weight: 500;
     white-space: nowrap;
@@ -223,6 +223,7 @@ pre {
     border: 1px solid transparent;
     transition: all 0.2s ease;
     border-bottom: none;
+    color: inherit;
 }
 
 .post-tags a {

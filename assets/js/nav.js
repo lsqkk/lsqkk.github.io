@@ -76,22 +76,10 @@ const defaultNavConfig = {
     }
 };
 
-// 获取导航配置（同步XHR方式）
-function getNavConfigSync() {
+// 获取导航配置（优先使用构建注入）
+function getNavConfig() {
     if (window.__NAV_CONFIG__) {
         return window.__NAV_CONFIG__;
-    }
-
-    try {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/json/nav.json', false); // 同步请求
-        xhr.send();
-
-        if (xhr.status === 200) {
-            return JSON.parse(xhr.responseText);
-        }
-    } catch (error) {
-        console.warn('无法加载导航配置，使用默认值:', error);
     }
     return defaultNavConfig;
 }
@@ -127,9 +115,7 @@ function generateNavHTML(config) {
         if (hoverKey) {
             return `<li class="nav-hover-item" data-hover-key="${hoverKey}">
                         <a href="${item.link}" target="${target}">${item.name}</a>
-                        <div class="nav-hover-menu" id="nav-hover-${hoverKey}">
-                            <div class="nav-hover-loading">加载中...</div>
-                        </div>
+                        <div class="nav-hover-menu" id="nav-hover-${hoverKey}"></div>
                     </li>`;
         }
         return `<li><a href="${item.link}" target="${target}">${item.name}</a></li>`;
@@ -214,7 +200,7 @@ function generateNavHTML(config) {
 }
 
 // 获取配置并写入导航栏
-const navConfig = getNavConfigSync();
+const navConfig = getNavConfig();
 document.write(generateNavHTML(navConfig));
 
 // 全局搜索处理函数
@@ -295,6 +281,7 @@ const navHoverCache = {
     a: null,
     blog: null
 };
+const preloadedNavHover = window.__NAV_HOVER_DATA__ || null;
 
 function normalizeLabLink(link) {
     if (!link) return '#';
@@ -310,6 +297,10 @@ function normalizeGamesLink(link) {
 
 async function loadHoverSections(key) {
     if (navHoverCache[key]) return navHoverCache[key];
+    if (preloadedNavHover && preloadedNavHover[key]) {
+        navHoverCache[key] = preloadedNavHover[key];
+        return navHoverCache[key];
+    }
 
     let sections = [];
     if (key === 'posts') {
@@ -422,6 +413,11 @@ function initializeNavHoverMenus() {
         const menuEl = item.querySelector('.nav-hover-menu');
         if (!(menuEl instanceof HTMLElement)) return;
 
+        if (preloadedNavHover && preloadedNavHover[key]) {
+            navHoverCache[key] = preloadedNavHover[key];
+            renderHoverMenu(menuEl, key, navHoverCache[key]);
+        }
+
         let closeTimer = null;
 
         const openMenu = async () => {
@@ -430,15 +426,13 @@ function initializeNavHoverMenus() {
                 closeTimer = null;
             }
             item.classList.add('open');
-            if (!navHoverCache[key]) {
-                menuEl.innerHTML = '<div class="nav-hover-loading">加载中...</div>';
-                try {
-                    const sections = await loadHoverSections(key);
-                    renderHoverMenu(menuEl, key, sections);
-                } catch (error) {
-                    console.error(`加载${key}导航项失败:`, error);
-                    menuEl.innerHTML = '<div class="nav-hover-empty">加载失败</div>';
-                }
+            if (navHoverCache[key]) return;
+            try {
+                const sections = await loadHoverSections(key);
+                renderHoverMenu(menuEl, key, sections);
+            } catch (error) {
+                console.error(`加载${key}导航项失败:`, error);
+                menuEl.innerHTML = '<div class="nav-hover-empty">加载失败</div>';
             }
         };
 

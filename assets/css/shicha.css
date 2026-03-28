@@ -24,16 +24,7 @@ body {
 }
 
 .parallax-bg::after {
-    content: "";
-    position: absolute;
-    inset: -20%;
-    pointer-events: none;
-    z-index: 2;
-    background:
-        radial-gradient(1000px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(205, 230, 255, 0.45), transparent 70%),
-        radial-gradient(900px circle at calc(var(--glow-x, 50%) + 8%) calc(var(--glow-y, 45%) + 6%), rgba(255, 228, 214, 0.35), transparent 72%);
-    opacity: 0.55;
-    transition: opacity 0.3s ease;
+    content: none;
 }
 
 .parallax-bg img {
@@ -66,20 +57,4 @@ body {
     opacity: 1;
     background-color: rgba(25, 40, 70, 0.6);
     /* 深蓝色，60%透明度 */
-}
-
-.parallax-bg.dark-mode::after {
-    background:
-        radial-gradient(1100px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(110, 168, 255, 0.28), transparent 72%),
-        radial-gradient(900px circle at calc(var(--glow-x, 50%) + 6%) calc(var(--glow-y, 45%) + 4%), rgba(94, 234, 212, 0.18), transparent 75%);
-    opacity: 0.5;
-}
-
-@media (prefers-color-scheme: dark) {
-    .parallax-bg::after {
-        background:
-            radial-gradient(1100px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(110, 168, 255, 0.28), transparent 72%),
-            radial-gradient(900px circle at calc(var(--glow-x, 50%) + 6%) calc(var(--glow-y, 45%) + 4%), rgba(94, 234, 212, 0.18), transparent 75%);
-        opacity: 0.5;
-    }
 }

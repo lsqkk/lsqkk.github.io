@@ -1,5 +1,6 @@
 ---
 import GlowFollow from "./GlowFollow.astro";
+import NavHoverData from "./NavHoverData.astro";
 const { className = "" } = Astro.props;
 ---
 <style is:global>
@@ -57,3 +58,4 @@ const { className = "" } = Astro.props;
 
 <div class={`luxury-backdrop ${className}`} aria-hidden="true"></div>
 <GlowFollow />
+<NavHoverData />

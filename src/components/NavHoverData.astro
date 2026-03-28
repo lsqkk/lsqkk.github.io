@@ -1,0 +1,110 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const PROJECT_ROOT = process.cwd();
+const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
+const toolPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "tool.json");
+const gamePath = path.join(PROJECT_ROOT, "assets", "pages", "games", "game.json");
+const projectPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.json");
+const functionsPath = path.join(PROJECT_ROOT, "assets", "pages", "blog", "functions.json");
+
+const safeReadJson = async (filePath: string) => {
+  try {
+    return JSON.parse(await fs.readFile(filePath, "utf8"));
+  } catch {
+    return null;
+  }
+};
+
+const posts = (await safeReadJson(postsPath)) || [];
+const toolData = (await safeReadJson(toolPath)) || {};
+const gameData = (await safeReadJson(gamePath)) || {};
+const projectData = (await safeReadJson(projectPath)) || {};
+const functionsData = (await safeReadJson(functionsPath)) || {};
+
+const normalizeLabLink = (link: string) => {
+  if (!link) return "#";
+  if (link.startsWith("http://") || link.startsWith("https://") || link.startsWith("/")) return link;
+  return `/a/${link}`;
+};
+
+const normalizeGamesLink = (link: string) => {
+  if (!link) return "#";
+  if (link.startsWith("http://") || link.startsWith("https://") || link.startsWith("/")) return link;
+  return `/games/${link}`;
+};
+
+const columnItems = Array.from(
+  new Set(
+    (posts || [])
+      .flatMap((post: any) => (Array.isArray(post?.columns) ? post.columns : []))
+      .map((name: any) => String(name || "").trim())
+      .filter(Boolean)
+  )
+).sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
+
+const navHoverData = {
+  posts: [
+    {
+      title: "专栏",
+      items: [
+        { name: "查看全部文章", link: "/posts", target: "_blank" },
+        ...columnItems.map((name) => ({
+          name,
+          link: `/posts/${encodeURIComponent(name)}`,
+          target: "_blank",
+        })),
+      ],
+    },
+  ],
+  tool: (toolData.categories || [])
+    .map((cat: any) => ({
+      title: cat.name || "工具",
+      items: (cat.tools || []).map((item: any) => ({
+        name: item.name || "未命名",
+        link: item.url || "#",
+        target: item.target || "_blank",
+      })),
+    }))
+    .filter((section: any) => section.items.length > 0),
+  games: [
+    { title: "多人联机", items: gameData.multiplayer || [] },
+    { title: "单机游戏", items: gameData.singlePlayer || [] },
+    { title: "经典游戏", items: gameData.classic || [] },
+  ]
+    .map((group: any) => ({
+      title: group.title,
+      items: (group.items || []).map((item: any) => ({
+        name: item.name || "未命名",
+        link: normalizeGamesLink(item.link || ""),
+        target: "_blank",
+      })),
+    }))
+    .filter((section: any) => section.items.length > 0),
+  a: (projectData.categories || [])
+    .map((cat: any) => ({
+      title: cat.name || "实验室",
+      items: (cat.projects || []).map((item: any) => ({
+        name: item.name || "未命名",
+        link: normalizeLabLink(item.link || ""),
+        target: "_blank",
+      })),
+    }))
+    .filter((section: any) => section.items.length > 0),
+  blog: (functionsData.categories || [])
+    .map((cat: any) => ({
+      title: cat.name || "更多",
+      items: (cat.functions || []).map((item: any) => ({
+        name: item.name || "未命名",
+        link: item.link || "#",
+        target: item.target === "_self" ? "_self" : "_blank",
+      })),
+    }))
+    .filter((section: any) => section.items.length > 0),
+};
+---
+
+<script is:inline define:vars={{ navHoverData }}>
+  window.__NAV_HOVER_DATA__ = navHoverData;
+</script>

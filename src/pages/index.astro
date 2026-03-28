@@ -44,84 +44,6 @@ function escapeHtml(text: unknown): string {
     .replace(/'/g, "&#39;");
 }
 
-function renderSocialLinks(config: any): string {
-  const links = Array.isArray(config?.socialLinks) ? config.socialLinks : [];
-  return links
-    .map(
-      (item: any) =>
-        `<a class="social-link" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">
-          <img class="social-link-icon" src="${escapeHtml(item.icon)}" alt="${escapeHtml(item.alt)}">
-        </a>`
-    )
-    .join("");
-}
-
-function renderContactLinks(config: any): string {
-  const contact = config?.contact || config?.Contact || {};
-  const items = [
-    {
-      key: "email",
-      icon: "fas fa-envelope",
-      label: "邮箱",
-      value: contact.email,
-      href: contact.email ? `mailto:${contact.email}` : "",
-      target: "",
-    },
-    {
-      key: "phone",
-      icon: "fas fa-phone",
-      label: "电话",
-      value: contact.phone,
-      href: contact.phone ? `tel:${contact.phone}` : "",
-      target: "",
-    },
-    {
-      key: "cv",
-      icon: "fas fa-file-lines",
-      label: "简历",
-      value: "查看 CV",
-      href: contact.cv || "",
-      target: "_blank",
-    },
-    {
-      key: "academic",
-      icon: "fas fa-graduation-cap",
-      label: "学术主页",
-      value: "Academic",
-      href: contact.academic || "",
-      target: "_blank",
-    },
-  ].filter((item) => item.href);
-
-  if (items.length === 0) return "";
-
-  return `
-    <div class="contact-chips" id="contact-chips">
-      ${items
-        .map(
-          (item) => `<a class="contact-chip" href="${escapeHtml(item.href)}"${item.target ? ` target="${item.target}"` : ""}>
-            <span class="contact-icon"><i class="${item.icon}"></i></span>
-            <span class="contact-text">
-              <span class="contact-label">${escapeHtml(item.label)}</span>
-              <span class="contact-value">${escapeHtml(item.value)}</span>
-            </span>
-          </a>`
-        )
-        .join("")}
-    </div>
-  `;
-}
-
-function renderAnnouncement(config: any): string {
-  const title = config?.announcement?.title || "";
-  const content = config?.announcement?.content || "";
-  return `
-    <div class="index-announcement-text">
-      <span class="index-announcement-title">${escapeHtml(title)}</span>
-      <span class="index-announcement-body">${content}</span>
-    </div>
-  `;
-}
 
 function parseRecentLogs(content: string, maxItems: number) {
   const lines = content.split(/\r?\n/);
@@ -155,204 +77,57 @@ function getLogTagClass(type: string): string {
   return "default";
 }
 
-function renderRecentLogs(config: any): string {
-  const count = typeof config?.showLogNum === "number" ? config.showLogNum : 6;
-  const logs = parseRecentLogs(logMd, Math.max(1, count));
-  if (logs.length === 0) {
-    return `
-      <div class="index-sidebar-section">
-        <h3 class="sidebar-title">最近更新 Recent Logs</h3>
-        <div class="index-announcement"><p class="index-announcement-text">暂无更新内容</p></div>
-      </div>
-    `;
-  }
-  return `
-    <div class="index-sidebar-section">
-      <h3 class="sidebar-title">最近更新 Recent Logs</h3>
-      <div class="index-log-list">
-        ${logs
-          .map(
-            (log) => `<a class="index-log-item" href="/blog/log">
-              <span class="index-log-tag ${getLogTagClass(log.type)}">${escapeHtml(log.type)}</span>
-              <span class="index-log-detail">${escapeHtml(log.detail)}</span>
-              <span class="index-log-date">${escapeHtml(log.date)}</span>
-            </a>`
-          )
-          .join("")}
-      </div>
-      <div class="sidebar-more-wrap"><a href="/blog/log" class="sidebar-more-link">查看更多</a></div>
-    </div>
-  `;
-}
+const socialLinks = Array.isArray(homeConfig?.socialLinks) ? homeConfig.socialLinks : [];
+const contact = homeConfig?.contact || homeConfig?.Contact || {};
+const contactItems = [
+  {
+    key: "email",
+    icon: "fas fa-envelope",
+    label: "邮箱",
+    value: contact.email,
+    href: contact.email ? `mailto:${contact.email}` : "",
+    target: "",
+  },
+  {
+    key: "phone",
+    icon: "fas fa-phone",
+    label: "电话",
+    value: contact.phone,
+    href: contact.phone ? `tel:${contact.phone}` : "",
+    target: "",
+  },
+  {
+    key: "cv",
+    icon: "fas fa-file-lines",
+    label: "简历",
+    value: "查看 CV",
+    href: contact.cv || "",
+    target: "_blank",
+  },
+  {
+    key: "academic",
+    icon: "fas fa-graduation-cap",
+    label: "学术主页",
+    value: "Academic",
+    href: contact.academic || "",
+    target: "_blank",
+  },
+].filter((item) => item.href);
 
-function assembleSections(
-  config: Record<string, boolean>,
-  renderers: Record<string, () => string>,
-  withDivider = false
-): string {
-  const displayed: string[] = [];
-  for (const key of Object.keys(config)) {
-    if (!config[key]) continue;
-    const renderer = renderers[key];
-    if (!renderer) continue;
-    const html = renderer().trim();
-    if (html) displayed.push(html);
-  }
-  if (!withDivider) return displayed.join("\n");
-  return displayed
-    .map((html, idx) => (idx < displayed.length - 1 ? `${html}\n<div class="index-divider"></div>` : html))
-    .join("\n");
-}
+const announcementTitle = homeConfig?.announcement?.title || "";
+const announcementContent = homeConfig?.announcement?.content || "";
+const logCount = typeof homeConfig?.showLogNum === "number" ? homeConfig.showLogNum : 6;
+const recentLogs = parseRecentLogs(logMd, Math.max(1, logCount));
 
-const mainSectionRenderers: Record<string, () => string> = {
-  avatar_nickname: () => `
-    <section class="home-block hero-section">
-      <a class="hero-avatar-link" href="/posts/about">
-        <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
-      </a>
-      <h1 class="hero-title" id="Nickname">${escapeHtml(homeConfig.Nickname || "")}</h1>
-    </section>
-  `,
-  contact_links: () => `
-    <section class="home-block contact-section">
-      ${renderContactLinks(homeConfig)}
-    </section>
-  `,
-  social_links: () => `
-    <section class="home-block social-section">
-      <div class="social-icons" id="social-icons-container">${renderSocialLinks(homeConfig)}</div>
-    </section>
-  `,
-  welcome_section: () => `
-    <section class="home-block intro-section">
-      <h2 class="welcome-title" id="welcome-title">${escapeHtml(homeConfig.welcomeTitle || "")}</h2>
-      <p class="welcome-text" id="welcome-text">${escapeHtml(homeConfig.welcomeText || "")}</p>
-    </section>
-  `,
-  typewriter: () => `
-    <section class="home-block typewriter-section">
-      <div class="typewriter-container">
-        <div id="typewriter" class="typewriter"></div>
-      </div>
-    </section>
-  `,
-  recent_articles: () => `
-    <section class="home-block content-section">
-      <h2 class="recent-header">
-        <a href="/posts">文章 Articles</a>
-        <a href="/posts/rss.xml" class="rss-link" aria-label="RSS订阅"><i class="fa-solid fa-rss rss-icon"></i></a>
-      </h2>
-      <div class="recent-posts">
-        <div id="recent-posts"></div>
-        <a href="/posts" class="more-link">更多</a>
-      </div>
-    </section>
-  `,
-  dynamic_feed: () => `
-    <section class="home-block content-section dynamic-feed">
-      <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
-      <div id="dynamic-entries"></div>
-      <a href="/blog/dt" class="more-link">更多</a>
-    </section>
-  `,
-};
-
-const sidebarSectionRenderers: Record<string, () => string> = {
-  datetime_display: () => `
-    <div class="index-sidebar-section">
-      <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
-      <div class="date" id="date">2025年5月14日星期三</div>
-    </div>
-  `,
-  ip_greeting: () => `
-    <div class="index-sidebar-section">
-      <div class="info" id="welcome-info"></div>
-    </div>
-  `,
-  greeting_tip: () => `
-    <div class="index-sidebar-section">
-      <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
-      <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
-    </div>
-  `,
-  online_preview: () => `
-    <div class="index-sidebar-section">
-      <h3 class="sidebar-title online-preview-title">在线 Online <span class="online-preview-count" id="online-preview-count">0</span></h3>
-      <div id="online-preview">
-        <div class="index-announcement"><p class="index-announcement-text">在线加载中...</p></div>
-      </div>
-      <div class="sidebar-more-wrap"><a href="/a/online" class="sidebar-more-link">查看在线</a></div>
-    </div>
-  `,
-  github_promo: () => `
-    <div class="index-sidebar-section">
-      <div class="github-promo" id="github-promo-card">
-        <div class="github-promo-loading">GitHub 数据加载中...</div>
-      </div>
-    </div>
-  `,
-  latest_updates: () => renderRecentLogs(homeConfig),
-  announcement: () => `
-    <div class="index-sidebar-section">
-      <h3 class="sidebar-title">公告 Announcement</h3>
-      <div class="index-announcement" id="announcement-container">${renderAnnouncement(homeConfig)}</div>
-    </div>
-  `,
-  latest_video: () => `
-    <div class="index-sidebar-section">
-      <h3 class="sidebar-title">新视频 Latest Video</h3>
-      <div id="latest-video-container" class="latest-video-container">
-        <div class="loading-placeholder">视频加载中...</div>
-      </div>
-      <div class="sidebar-more-wrap"><a href="qtv" class="sidebar-more-link">查看更多</a></div>
-    </div>
-  `,
-  comments: () => `
-    <div class="index-sidebar-section">
-      <h3 class="sidebar-title">留言 Comment</h3>
-      <div id="recent-messages">
-        <div class="index-announcement"><p class="index-announcement-text">留言加载中...</p></div>
-      </div>
-      <div class="sidebar-more-wrap"><a href="/blog/lyb" class="sidebar-more-link">查看更多 / 写留言</a></div>
-    </div>
-  `,
-  friend_links: () => `
-    <div class="index-sidebar-section">
-      <h3 class="sidebar-title">友链 Friends</h3>
-      <div id="friend-links">
-        <div class="index-announcement"><p class="index-announcement-text">友链加载中...</p></div>
-      </div>
-      <div class="sidebar-more-wrap sidebar-more-wrap-sm"><a href="/blog/friends"
-        class="sidebar-more-link">查看更多</a> / 添加友链请
-        <a href="/blog/lyb" class="sidebar-more-link">在留言板留言</a>
-      </div>
-    </div>
-  `,
-};
-
-const footerSectionRenderers: Record<string, () => string> = {
-  visitor_stats: () => `
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <div class="footer-meta-item">
-      访客 <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
-      · 来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次
-    </div>
-  `,
-  copyright_info: () => `
-    <a class="footer-link footer-meta-item" href="/posts/copyright">
-      © 2024 - ${currentYear} 蓝色奇夸克 | ${SITE_TITLE} All rights reserved.
-    </a>
-  `,
-  icp_record: () => `
-    <a class="footer-link footer-meta-item" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
-      <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
-    </a>
-  `,
-};
-
-const mainContentHtml = assembleSections(indexConfig.main_content, mainSectionRenderers, false);
-const sidebarContentHtml = assembleSections(indexConfig.sidebar, sidebarSectionRenderers, false);
-const footerContentHtml = assembleSections(indexConfig.footer, footerSectionRenderers, false);
+const mainSectionKeys = Object.keys(indexConfig.main_content || {}).filter(
+  (key) => indexConfig.main_content?.[key]
+);
+const sidebarSectionKeys = Object.keys(indexConfig.sidebar || {}).filter(
+  (key) => indexConfig.sidebar?.[key]
+);
+const footerSectionKeys = Object.keys(indexConfig.footer || {}).filter(
+  (key) => indexConfig.footer?.[key]
+);
 
 const postsTotal = Array.isArray(posts) ? posts.length : 0;
 const dynamicTotal = parseDynamicEntries(dynamicMd).length;
@@ -421,8 +196,164 @@ const homePreloaded = {
     <ShichaBackground />
 
     <div class="main-layout">
-      <div class="main-content" set:html={mainContentHtml}></div>
-      <div class="sidebar-index" set:html={sidebarContentHtml}></div>
+      <div class="main-content">
+        {mainSectionKeys.map((key) => (
+          key === "avatar_nickname" ? (
+            <section class="home-block hero-section">
+              <a class="hero-avatar-link" href="/posts/about">
+                <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
+              </a>
+              <h1 class="hero-title" id="Nickname">{escapeHtml(homeConfig.Nickname || "")}</h1>
+            </section>
+          ) : key === "contact_links" ? (
+            <section class="home-block contact-section">
+              {contactItems.length > 0 && (
+                <div class="contact-chips" id="contact-chips">
+                  {contactItems.map((item) => (
+                    <a class="contact-chip" href={escapeHtml(item.href)} target={item.target || undefined}>
+                      <span class="contact-icon"><i class={item.icon}></i></span>
+                      <span class="contact-text">
+                        <span class="contact-label">{escapeHtml(item.label)}</span>
+                        <span class="contact-value">{escapeHtml(item.value)}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </section>
+          ) : key === "social_links" ? (
+            <section class="home-block social-section">
+              <div class="social-icons" id="social-icons-container">
+                {socialLinks.map((item: any) => (
+                  <a class="social-link" href={escapeHtml(item.url)} target="_blank" rel="noreferrer">
+                    <img class="social-link-icon" src={escapeHtml(item.icon)} alt={escapeHtml(item.alt)} />
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : key === "welcome_section" ? (
+            <section class="home-block intro-section">
+              <h2 class="welcome-title" id="welcome-title">{escapeHtml(homeConfig.welcomeTitle || "")}</h2>
+              <p class="welcome-text" id="welcome-text">{escapeHtml(homeConfig.welcomeText || "")}</p>
+            </section>
+          ) : key === "typewriter" ? (
+            <section class="home-block typewriter-section">
+              <div class="typewriter-container">
+                <div id="typewriter" class="typewriter"></div>
+              </div>
+            </section>
+          ) : key === "recent_articles" ? (
+            <section class="home-block content-section">
+              <h2 class="recent-header">
+                <a href="/posts">文章 Articles</a>
+                <a href="/posts/rss.xml" class="rss-link" aria-label="RSS订阅">
+                  <i class="fa-solid fa-rss rss-icon"></i>
+                </a>
+              </h2>
+              <div class="recent-posts">
+                <div id="recent-posts"></div>
+                <a href="/posts" class="more-link">更多</a>
+              </div>
+            </section>
+          ) : key === "dynamic_feed" ? (
+            <section class="home-block content-section dynamic-feed">
+              <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
+              <div id="dynamic-entries"></div>
+              <a href="/blog/dt" class="more-link">更多</a>
+            </section>
+          ) : null
+        ))}
+      </div>
+      <div class="sidebar-index">
+        {sidebarSectionKeys.map((key) => (
+          key === "datetime_display" ? (
+            <div class="index-sidebar-section">
+              <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
+              <div class="date" id="date">2025年5月14日星期三</div>
+            </div>
+          ) : key === "ip_greeting" ? (
+            <div class="index-sidebar-section">
+              <div class="info" id="welcome-info"></div>
+            </div>
+          ) : key === "greeting_tip" ? (
+            <div class="index-sidebar-section">
+              <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
+              <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
+            </div>
+          ) : key === "online_preview" ? (
+            <div class="index-sidebar-section">
+              <h3 class="sidebar-title online-preview-title">在线 Online <span class="online-preview-count" id="online-preview-count">0</span></h3>
+              <div id="online-preview">
+                <div class="index-announcement"><p class="index-announcement-text">在线加载中...</p></div>
+              </div>
+              <div class="sidebar-more-wrap"><a href="/a/online" class="sidebar-more-link">查看在线</a></div>
+            </div>
+          ) : key === "github_promo" ? (
+            <div class="index-sidebar-section">
+              <div class="github-promo" id="github-promo-card">
+                <div class="github-promo-loading">GitHub 数据加载中...</div>
+              </div>
+            </div>
+          ) : key === "latest_updates" ? (
+            <div class="index-sidebar-section">
+              <h3 class="sidebar-title">最近更新 Recent Logs</h3>
+              {recentLogs.length === 0 ? (
+                <div class="index-announcement"><p class="index-announcement-text">暂无更新内容</p></div>
+              ) : (
+                <>
+                  <div class="index-log-list">
+                    {recentLogs.map((log) => (
+                      <a class="index-log-item" href="/blog/log">
+                        <span class={`index-log-tag ${getLogTagClass(log.type)}`}>{escapeHtml(log.type)}</span>
+                        <span class="index-log-detail">{escapeHtml(log.detail)}</span>
+                        <span class="index-log-date">{escapeHtml(log.date)}</span>
+                      </a>
+                    ))}
+                  </div>
+                  <div class="sidebar-more-wrap"><a href="/blog/log" class="sidebar-more-link">查看更多</a></div>
+                </>
+              )}
+            </div>
+          ) : key === "announcement" ? (
+            <div class="index-sidebar-section">
+              <h3 class="sidebar-title">公告 Announcement</h3>
+              <div class="index-announcement" id="announcement-container">
+                <div class="index-announcement-text">
+                  <span class="index-announcement-title">{escapeHtml(announcementTitle)}</span>
+                  <span class="index-announcement-body" set:html={announcementContent}></span>
+                </div>
+              </div>
+            </div>
+          ) : key === "latest_video" ? (
+            <div class="index-sidebar-section">
+              <h3 class="sidebar-title">新视频 Latest Video</h3>
+              <div id="latest-video-container" class="latest-video-container">
+                <div class="loading-placeholder">视频加载中...</div>
+              </div>
+              <div class="sidebar-more-wrap"><a href="qtv" class="sidebar-more-link">查看更多</a></div>
+            </div>
+          ) : key === "comments" ? (
+            <div class="index-sidebar-section">
+              <h3 class="sidebar-title">留言 Comment</h3>
+              <div id="recent-messages">
+                <div class="index-announcement"><p class="index-announcement-text">留言加载中...</p></div>
+              </div>
+              <div class="sidebar-more-wrap"><a href="/blog/lyb" class="sidebar-more-link">查看更多 / 写留言</a></div>
+            </div>
+          ) : key === "friend_links" ? (
+            <div class="index-sidebar-section">
+              <h3 class="sidebar-title">友链 Friends</h3>
+              <div id="friend-links">
+                <div class="index-announcement"><p class="index-announcement-text">友链加载中...</p></div>
+              </div>
+              <div class="sidebar-more-wrap sidebar-more-wrap-sm">
+                <a href="/blog/friends" class="sidebar-more-link">查看更多</a> / 添加友链请
+                <a href="/blog/lyb" class="sidebar-more-link">在留言板留言</a>
+              </div>
+            </div>
+          ) : null
+        ))}
+      </div>
     </div>
     <div class="footer-container">
       <div class="footer-card">
@@ -434,7 +365,27 @@ const homePreloaded = {
               <span>{footerTitleCn}</span>
             </div>
           </div>
-          <div class="footer-meta" set:html={footerContentHtml}></div>
+          <div class="footer-meta">
+            {footerSectionKeys.map((key) => (
+              key === "visitor_stats" ? (
+                <>
+                  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                  <div class="footer-meta-item">
+                    访客 <span id="busuanzi_value_site_uv" class="footer-highlight"></span>
+                    · 来过 <span id="busuanzi_value_site_pv" class="footer-highlight"></span> 次
+                  </div>
+                </>
+              ) : key === "copyright_info" ? (
+                <a class="footer-link footer-meta-item" href="/posts/copyright">
+                  © 2024 - {currentYear} 蓝色奇夸克 | {SITE_TITLE} All rights reserved.
+                </a>
+              ) : key === "icp_record" ? (
+                <a class="footer-link footer-meta-item" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
+                  <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
+                </a>
+              ) : null
+            ))}
+          </div>
         </div>
         <div class="footer-stats-grid" id="footer-static-stats">
           <a class="footer-stat footer-stat-link" href="/posts">

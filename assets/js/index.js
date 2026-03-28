@@ -921,11 +921,12 @@ async function loadLatestVideo() {
         console.error('加载最新视频失败:', error);
         const videoContainer = document.getElementById('latest-video-container');
         if (videoContainer) {
-            videoContainer.innerHTML = `
-                <div class="loading-placeholder">
-                    视频加载失败
-                </div>
-            `;
+            const section = videoContainer.closest('.index-sidebar-section');
+            if (section) {
+                section.remove();
+            } else {
+                videoContainer.innerHTML = '';
+            }
         }
     }
 }
