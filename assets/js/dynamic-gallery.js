@@ -63,6 +63,32 @@
     }
 
     /**
+     * @param {ParentNode} root
+     */
+    function hydrateStaticGalleries(root = document) {
+        const containers = root.querySelectorAll('.gallery-container[data-gallery-images]');
+        containers.forEach((container) => {
+            if (!(container instanceof HTMLElement)) return;
+            if (container.dataset.galleryHydrated === 'true') return;
+            let images = [];
+            try {
+                images = JSON.parse(container.dataset.galleryImages || '[]');
+            } catch {
+                images = [];
+            }
+            if (!Array.isArray(images) || images.length === 0) return;
+            const galleryId = registerImages(images);
+            container.dataset.galleryId = galleryId;
+            container.dataset.galleryHydrated = 'true';
+            container.querySelectorAll('.gallery-item').forEach((btn) => {
+                if (!(btn instanceof HTMLElement)) return;
+                const index = Number(btn.dataset.galleryIndex || '0');
+                btn.addEventListener('click', () => openGallery(galleryId, index));
+            });
+        });
+    }
+
+    /**
      * @param {string} galleryId
      * @param {number} index
      */
@@ -148,6 +174,7 @@
         extractImages,
         createGalleryHtml,
         registerImages,
+        hydrateStaticGalleries,
         open: openGallery,
         change: changeImage,
         close: closeGallery,

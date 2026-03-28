@@ -89,6 +89,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 加载最近三篇文章
 async function loadRecentPosts() {
     try {
+        const recentPostsElement = document.getElementById('recent-posts');
+        if (recentPostsElement && recentPostsElement.dataset.preloaded === 'true' && recentPostsElement.children.length > 0) {
+            bindHomePostLinks(recentPostsElement);
+            return;
+        }
         const preload = getPreloadedHomeData();
         /** @type {PostItem[]} */
         const posts = Array.isArray(preload.posts) ? preload.posts : [];
@@ -119,7 +124,6 @@ async function loadRecentPosts() {
                     </div>
                 `).join('');
 
-        const recentPostsElement = document.getElementById('recent-posts');
         if (recentPostsElement) {
             recentPostsElement.innerHTML = list;
             bindHomePostLinks(recentPostsElement);
@@ -127,7 +131,7 @@ async function loadRecentPosts() {
     } catch (error) {
         console.error('加载最近文章失败:', error);
         const recentPostsElement = document.getElementById('recent-posts');
-        if (recentPostsElement) {
+        if (recentPostsElement && recentPostsElement.dataset.preloaded !== 'true') {
             recentPostsElement.innerHTML = '<div class="post-item">文章加载失败</div>';
         }
     }
@@ -839,6 +843,13 @@ function parseMdEntries(content) {
 function renderDynamicEntries(entries) {
     const container = document.getElementById('dynamic-entries');
     if (!container) return;
+    if (container.dataset.preloaded === 'true' && container.children.length > 0) {
+        if (window.DynamicGallery && typeof window.DynamicGallery.hydrateStaticGalleries === 'function') {
+            window.DynamicGallery.hydrateStaticGalleries(container);
+        }
+        applyDynamicClamp(container);
+        return;
+    }
 
     const emotionParser = new QQEmotionParser();
     if (window.DynamicGallery && typeof window.DynamicGallery.reset === 'function') {
@@ -873,6 +884,9 @@ function renderDynamicEntries(entries) {
         </div>
         `;
     }).join('');
+    if (window.DynamicGallery && typeof window.DynamicGallery.hydrateStaticGalleries === 'function') {
+        window.DynamicGallery.hydrateStaticGalleries(container);
+    }
     applyDynamicClamp(container);
 }
 
@@ -1198,6 +1212,10 @@ async function loadGithubRepoCard() {
 // 加载友链
 async function loadFriendLinks() {
     try {
+        const friendLinksElement = document.getElementById('friend-links');
+        if (friendLinksElement && friendLinksElement.dataset.preloaded === 'true' && friendLinksElement.children.length > 0) {
+            return;
+        }
         const preload = getPreloadedHomeData();
         /** @type {FriendLink[]} */
         const friends = Array.isArray(preload.friends) ? preload.friends : [];
@@ -1208,7 +1226,7 @@ async function loadFriendLinks() {
     } catch (error) {
         console.error('加载友链失败:', error);
         const friendLinksElement = document.getElementById('friend-links');
-        if (friendLinksElement) {
+        if (friendLinksElement && friendLinksElement.dataset.preloaded !== 'true') {
             friendLinksElement.innerHTML =
                 '<div class="index-announcement"><p style="margin: 0;">友链加载失败</p></div>';
         }

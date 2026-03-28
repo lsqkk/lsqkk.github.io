@@ -77,6 +77,40 @@ function getLogTagClass(type: string): string {
   return "default";
 }
 
+function extractDynamicImages(content: string) {
+  const matches = Array.from(content.matchAll(/!\[.*?\]\((.*?)\)/g));
+  const images = matches.map((item) => item[1]).filter(Boolean);
+  const text = content.replace(/!\[.*?\]\((.*?)\)/g, "").trim();
+  return { text, images };
+}
+
+function buildDynamicGallery(images: string[], id: string) {
+  if (!images.length) return "";
+  const perRow = images.length <= 4 ? 2 : 3;
+  const rows = Math.ceil(images.length / perRow);
+  let html = `<div class="gallery-container" data-gallery-id="${id}" data-gallery-images='${escapeHtml(JSON.stringify(images))}'>`;
+  for (let row = 0; row < rows; row += 1) {
+    html += '<div class="gallery-row">';
+    const start = row * perRow;
+    const end = Math.min(start + perRow, images.length);
+    for (let i = start; i < end; i += 1) {
+      const image = images[i];
+      html += `
+        <button type="button" class="gallery-item" aria-label="查看图片 ${i + 1}" data-gallery-index="${i}">
+          <img src="${escapeHtml(image)}" alt="动态图片 ${i + 1}" loading="lazy">
+        </button>
+      `;
+    }
+    html += "</div>";
+  }
+  html += "</div>";
+  return html;
+}
+
+function renderPlainLines(text: string) {
+  return escapeHtml(text).replace(/\n/g, "<br>");
+}
+
 const socialLinks = Array.isArray(homeConfig?.socialLinks) ? homeConfig.socialLinks : [];
 const contact = homeConfig?.contact || homeConfig?.Contact || {};
 const contactItems = [
@@ -149,6 +183,8 @@ const dynamicEntries = parseDynamicEntries(dynamicMd).slice(0, showDynamicNum).m
   date: entry.date,
   content: entry.lines,
 }));
+const showPostNum = typeof homeConfig.showPostNum === "number" ? homeConfig.showPostNum : 3;
+const recentPosts = posts.slice(0, showPostNum);
 const homePreloaded = {
   homeConfig,
   posts,
@@ -251,14 +287,70 @@ const homePreloaded = {
                 </a>
               </h2>
               <div class="recent-posts">
-                <div id="recent-posts"></div>
+                <div id="recent-posts" data-preloaded="true">
+                  {recentPosts.map((post: any) => (
+                    <div class="post-item post-item-link" data-href={`/posts/${post.file.replace(".md", "")}`}>
+                      <div class="post-item-body">
+                        <div class="post-title">{escapeHtml(post.title)}</div>
+                        <div class="post-date">{escapeHtml(post.date)}</div>
+                        <div class="post-tags">
+                          <span class="post-tag read-time">
+                            {String(post.wordCount || 0)}字·{Math.ceil((post.wordCount || 0) / 400)}min
+                          </span>
+                          {(post.columns || []).map((column: string) => (
+                            <a class="post-tag post-tag-col tag-link" href={`/posts?columns=${encodeURIComponent(column)}`}>
+                              <i class="fa-solid fa-folder"></i>{column}
+                            </a>
+                          ))}
+                          {(post.tags || ["未分类"]).map((tag: string) => (
+                            <a class="post-tag tag-link" href={`/posts?tag=${encodeURIComponent(tag)}`}>
+                              <i class="fa-solid fa-tag"></i>{tag}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                      {post.cover && (
+                        <div class="post-cover-wrap">
+                          <img class="post-cover" src={post.cover} alt={post.title} loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <a href="/posts" class="more-link">更多</a>
               </div>
             </section>
           ) : key === "dynamic_feed" ? (
             <section class="home-block content-section dynamic-feed">
               <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
-              <div id="dynamic-entries"></div>
+              <div id="dynamic-entries" data-preloaded="true">
+                {dynamicEntries.map((entry, index) => {
+                  const dynamicId = entry.id || `${entry.date || "undated"}-${index + 1}`;
+                  const rawContent = (entry.content || []).join("\n");
+                  const extracted = extractDynamicImages(rawContent);
+                  const htmlContent = renderPlainLines(extracted.text);
+                  const galleryHtml = buildDynamicGallery(extracted.images, `pre-${dynamicId}`);
+                  return (
+                    <div class="dynamic-card" data-dynamic-id={dynamicId} data-dynamic-link={`/blog/dt/${dynamicId}`}>
+                      <div class="dynamic-title">{escapeHtml(entry.title)}</div>
+                      {entry.date && (
+                        <div class="dynamic-date">
+                          <i class="fa-regular fa-calendar"></i>{escapeHtml(entry.date)}
+                        </div>
+                      )}
+                      <div class="dynamic-content" set:html={htmlContent}></div>
+                      {galleryHtml && <Fragment set:html={galleryHtml} />}
+                      <div class="dynamic-entry-footer">
+                        <a class="dynamic-detail-link" href={`/blog/dt/${dynamicId}`}>查看详情</a>
+                        <div class="dynamic-entry-stats">
+                          <span>点赞 <span data-dynamic-like-count>0</span></span>
+                          <span>评论 <span data-dynamic-comment-count>0</span></span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
               <a href="/blog/dt" class="more-link">更多</a>
             </section>
           ) : null
@@ -343,8 +435,20 @@ const homePreloaded = {
           ) : key === "friend_links" ? (
             <div class="index-sidebar-section">
               <h3 class="sidebar-title">友链 Friends</h3>
-              <div id="friend-links">
-                <div class="index-announcement"><p class="index-announcement-text">友链加载中...</p></div>
+              <div id="friend-links" data-preloaded="true">
+                {Array.isArray(friends) && friends.length > 0 ? (
+                  friends.map((friend: any) => (
+                    <a href={friend.url} target="_blank" class="friend-link-item">
+                      <img src={friend.icon} alt={friend.nickname} class="friend-icon" onerror="this.src='assets/img/logo_blue.png'">
+                      <div class="friend-info">
+                        <div class="friend-nickname">{escapeHtml(friend.nickname)}</div>
+                        <div class="friend-describe">{escapeHtml(friend.describe)}</div>
+                      </div>
+                    </a>
+                  ))
+                ) : (
+                  <div class="index-announcement"><p class="index-announcement-text">暂无友链</p></div>
+                )}
               </div>
               <div class="sidebar-more-wrap sidebar-more-wrap-sm">
                 <a href="/blog/friends" class="sidebar-more-link">查看更多</a> / 添加友链请
