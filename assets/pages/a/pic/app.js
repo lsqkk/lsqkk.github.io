@@ -18,10 +18,6 @@ const limitText = document.getElementById('limitText');
 const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
 const copyHtmlBtn = document.getElementById('copyHtmlBtn');
 const loginTip = document.getElementById('picLoginTip');
-
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
 let database = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
