@@ -9,7 +9,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="夸克图床，上传图片到 GitHub 仓库并生成可访问链接">
+    <meta name="description" content="夸克图床，上传图片到 Cloudflare R2 并生成可访问链接">
     <title>夸克图床 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
@@ -20,7 +20,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/js/disable-right-click.js"></script>
     <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
-    <script is:inline src="__API_BASE__/api/keys?names=github"></script>
 </head>
 
 <body>

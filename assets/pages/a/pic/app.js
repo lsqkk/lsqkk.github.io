@@ -1,9 +1,7 @@
 const GUEST_DAILY_LIMIT = 20;
 const LOGGED_DAILY_LIMIT = 100;
 const RTDB_LIMIT_ROOT = 'pic_upload_limits';
-const REPO_OWNER = 'lsqkk';
-const REPO_NAME = 'image';
-const BRANCH = 'main';
+const API_BASE = '__API_BASE__';
 
 let clientIp = 'unknown';
 let exemptIpSet = new Set();
@@ -85,12 +83,6 @@ function renderSelectedFiles() {
 }
 
 async function handleUpload() {
-    const token = window.GITHUB_API_KEY;
-    if (!token) {
-        setStatus('未获取到 GITHUB_API_KEY，请检查 /api/keys?names=github');
-        return;
-    }
-
     const files = Array.from(fileInput.files || []);
     if (!files.length) {
         setStatus('请先选择至少一张图片');
@@ -119,25 +111,17 @@ async function handleUpload() {
 
     for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
-        const year = new Date().getFullYear();
-        const fileName = buildFileName(file, i);
-        const repoPath = `pic/${year}/${fileName}`;
-
         try {
-            const base64Content = await fileToBase64(file);
-            await uploadToGitHub({ token, repoPath, base64Content, originalName: file.name });
-
-            const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${repoPath}`;
-            const cdnUrl = `https://cdn.jsdelivr.net/gh/${REPO_OWNER}/${REPO_NAME}@${BRANCH}/${repoPath}`;
+            const presign = await requestPresignedUpload(file);
+            await uploadToR2(presign.uploadUrl, file);
 
             uploadedResults.push({
                 originalName: file.name,
-                fileName,
-                rawUrl,
-                cdnUrl
+                fileName: presign.fileName,
+                publicUrl: presign.publicUrl
             });
 
-            addResultItem(file.name, cdnUrl, rawUrl);
+            addResultItem(file.name, presign.publicUrl);
             successCount += 1;
         } catch (error) {
             failCount += 1;
@@ -158,37 +142,44 @@ async function handleUpload() {
     await refreshLimitText();
 }
 
-async function uploadToGitHub({ token, repoPath, base64Content, originalName }) {
-    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURI(repoPath)}`;
-    const body = {
-        message: `upload pic: ${originalName} -> ${repoPath}`,
-        content: base64Content,
-        branch: BRANCH
-    };
+async function requestPresignedUpload(file) {
+    const resp = await fetch(`${API_BASE}/api/r2-presign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            originalName: file.name,
+            contentType: file.type || 'application/octet-stream'
+        })
+    });
 
-    const resp = await fetch(url, {
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok || !data?.uploadUrl || !data?.publicUrl) {
+        throw new Error(data?.error || '获取上传链接失败');
+    }
+    return data;
+}
+
+async function uploadToR2(uploadUrl, file) {
+    const resp = await fetch(uploadUrl, {
         method: 'PUT',
         headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/vnd.github+json',
-            'Content-Type': 'application/json'
+            'Content-Type': file.type || 'application/octet-stream'
         },
-        body: JSON.stringify(body)
+        body: file
     });
 
     if (!resp.ok) {
         const text = await resp.text();
-        throw new Error(`GitHub 上传失败（${resp.status}）：${text.slice(0, 120)}`);
+        throw new Error(`R2 上传失败（${resp.status}）：${text.slice(0, 120)}`);
     }
 }
 
-function addResultItem(originalName, cdnUrl, rawUrl) {
+function addResultItem(originalName, publicUrl) {
     const box = document.createElement('div');
     box.className = 'pic-item';
     box.innerHTML = `
         <p><strong>${escapeHtml(originalName)}</strong></p>
-        <p>加速链接：<a href="${cdnUrl}" target="_blank" rel="noopener noreferrer">${cdnUrl}</a></p>
-        <p>Raw 直链：<a href="${rawUrl}" target="_blank" rel="noopener noreferrer">${rawUrl}</a></p>
+        <p>图片直链：<a href="${publicUrl}" target="_blank" rel="noopener noreferrer">${publicUrl}</a></p>
     `;
     resultBox.appendChild(box);
 }
@@ -223,7 +214,7 @@ async function loadExemptIps() {
 
 async function getClientIp() {
     try {
-        const resp = await fetch('__API_BASE__/api/ip', { cache: 'no-store' });
+        const resp = await fetch(`${API_BASE}/api/ip`, { cache: 'no-store' });
         if (resp.ok) {
             const data = await resp.json();
             if (data && data.ip) {
@@ -341,39 +332,6 @@ function getDateKey() {
     return `${y}-${m}-${d}`;
 }
 
-function buildFileName(file, index) {
-    const ext = getFileExtension(file);
-    const ts = Date.now();
-    const random = Math.random().toString(36).slice(2, 8);
-    return `${ts}-${index + 1}-${random}.${ext}`;
-}
-
-function getFileExtension(file) {
-    const nameExt = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
-    if (nameExt) {
-        return nameExt;
-    }
-
-    const type = file.type.toLowerCase();
-    if (type.includes('png')) return 'png';
-    if (type.includes('webp')) return 'webp';
-    if (type.includes('gif')) return 'gif';
-    return 'jpg';
-}
-
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const result = String(reader.result || '');
-            const commaIndex = result.indexOf(',');
-            resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
-        };
-        reader.onerror = () => reject(new Error('文件读取失败'));
-        reader.readAsDataURL(file);
-    });
-}
-
 function setStatus(text) {
     statusText.textContent = text;
 }
@@ -386,14 +344,14 @@ function formatFileSize(size) {
 
 function copyMarkdownLinks() {
     const content = uploadedResults
-        .map(item => `![${item.fileName}](${item.cdnUrl})`)
+        .map(item => `![${item.fileName}](${item.publicUrl})`)
         .join('\n');
     copyText(content, 'Markdown');
 }
 
 function copyHtmlLinks() {
     const content = uploadedResults
-        .map(item => `<img src="${item.cdnUrl}" alt="${item.fileName}">`)
+        .map(item => `<img src="${item.publicUrl}" alt="${item.fileName}">`)
         .join('\n');
     copyText(content, 'HTML');
 }
