@@ -287,28 +287,51 @@ async function holdQuota(dateKey, countToAdd) {
     const ref = database.ref(`${RTDB_LIMIT_ROOT}/${dateKey}/${ipKey}`);
 
     let exceed = false;
-    const result = await ref.transaction(current => {
-        const currentCount = Number(current?.count || 0);
-        if (currentCount + countToAdd > getDailyLimit()) {
-            exceed = true;
-            return;
+    let result = null;
+    try {
+        result = await ref.transaction(current => {
+            const currentCount = Number(current?.count || 0);
+            if (currentCount + countToAdd > getDailyLimit()) {
+                exceed = true;
+                return;
+            }
+
+            return {
+                count: currentCount + countToAdd,
+                ip: clientIp,
+                updatedAt: Date.now()
+            };
+        });
+    } catch (error) {
+        result = null;
+    }
+
+    if (result && typeof result.committed === 'boolean') {
+        if (!result.committed || exceed) {
+            return {
+                ok: false,
+                reserved: 0,
+                message: `今日上传额度不足：最多 ${getDailyLimit()} 张/天`
+            };
         }
+        return { ok: true, reserved: countToAdd };
+    }
 
-        return {
-            count: currentCount + countToAdd,
-            ip: clientIp,
-            updatedAt: Date.now()
-        };
-    });
-
-    if (!result || !result.committed || exceed) {
+    // Fallback for firebase-shim: emulate transaction with get + set.
+    const snap = await ref.once('value');
+    const currentCount = Number(snap?.val()?.count || 0);
+    if (currentCount + countToAdd > getDailyLimit()) {
         return {
             ok: false,
             reserved: 0,
             message: `今日上传额度不足：最多 ${getDailyLimit()} 张/天`
         };
     }
-
+    await ref.set({
+        count: currentCount + countToAdd,
+        ip: clientIp,
+        updatedAt: Date.now()
+    });
     return { ok: true, reserved: countToAdd };
 }
 
