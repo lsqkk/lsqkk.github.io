@@ -900,7 +900,12 @@ function enhanceDynamicMarkdown(root = document) {
         const raw = node.dataset.rawMd || '';
         if (!raw.trim()) return;
         try {
-            node.innerHTML = window.marked.parse(raw, { breaks: true, gfm: true });
+            let parsed = raw;
+            if (window.QQEmotionParser) {
+                const parser = new window.QQEmotionParser();
+                parsed = parser.parse(parsed);
+            }
+            node.innerHTML = window.marked.parse(parsed, { breaks: true, gfm: true });
             node.dataset.mdEnhanced = 'true';
         } catch (error) {
             console.warn('动态 Markdown 增强失败:', error);
