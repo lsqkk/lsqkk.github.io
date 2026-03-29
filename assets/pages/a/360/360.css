@@ -24,7 +24,8 @@
         }
         #panorama {
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            min-height: 100vh;
             position: relative;
             z-index: 1;
         }
@@ -44,18 +45,11 @@
         #leftPanel {
             left: 20px;
             top: 70px;
-            width: 300px;
+            width: 360px;
             max-height: calc(100% - 90px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-        }
-        #rightPanel {
-            right: 20px;
-            top: 70px;
-            width: 320px;
-            max-height: calc(100% - 90px);
-            overflow-y: auto;
         }
         .panel-header {
             display: flex;
@@ -290,10 +284,6 @@
             left: 10px;
             top: 60px;
         }
-        #toggleRight {
-            right: 10px;
-            top: 60px;
-        }
         /* 移动端专用按钮 */
         .mobile-toggle-btn {
             display: none;
@@ -315,10 +305,6 @@
             top: 10px;
             left: 10px;
         }
-        #mobileInfoToggle {
-            top: 10px;
-            right: 10px;
-        }
         /* 自定义滚动条 */
         ::-webkit-scrollbar {
             width: 8px;
@@ -336,17 +322,11 @@
         }
         /* 响应式设计 - 重新设计移动端布局 */
         @media (max-width: 768px) {
-            #leftPanel,
-            #rightPanel {
-                width: calc(100% - 40px);
-                max-height: 60%;
-                top: 70px;
-            }
             #leftPanel {
+                width: calc(100% - 40px);
+                max-height: 72%;
+                top: 70px;
                 left: 20px;
-            }
-            #rightPanel {
-                right: 20px;
             }
             /* 在移动端隐藏桌面端切换按钮 */
             .hide-show-btn {
@@ -357,8 +337,7 @@
                 display: flex;
             }
             /* 移动端面板默认隐藏 */
-            #leftPanel,
-            #rightPanel {
+            #leftPanel {
                 display: none;
             }
             /* 移动端面板显示时的样式 */
@@ -370,24 +349,186 @@
                 height: 40px;
                 font-size: 1.2rem;
             }
+            #sceneMap {
+                height: 180px;
+            }
         }
-        /* 可编辑内容样式 - 修复链接问题 */
-        .editable-content {
-            outline: none;
-            min-height: 200px;
+        /* 管理员与上传区域 */
+        .admin-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(44, 62, 80, 0.08);
+            margin-bottom: 12px;
         }
-        .editable-content:focus {
-            background-color: rgba(240, 240, 240, 0.5);
-            border-radius: 5px;
+        .admin-login {
+            display: flex;
+            gap: 8px;
         }
-        /* 确保链接在可编辑内容中可点击 */
-        .editable-content a {
-            pointer-events: auto;
-            color: var(--primary-color);
-            text-decoration: none;
+        .admin-login input {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d5d5d5;
         }
-        .editable-content a:hover {
-            text-decoration: underline;
+        .admin-actions {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .admin-tag {
+            font-size: 0.85rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .admin-status {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn.primary {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        .btn.ghost {
+            background: rgba(44, 62, 80, 0.08);
+            color: #2c3e50;
+        }
+        .admin-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            background: var(--primary-color);
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .admin-btn.ghost {
+            background: rgba(44, 62, 80, 0.08);
+            color: #2c3e50;
+        }
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field.row {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .field-half {
+            flex: 1;
+            min-width: 120px;
+        }
+        .field label {
+            font-size: 0.85rem;
+            color: #555;
+        }
+        .field input {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d5d5d5;
+        }
+        .upload-preview {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .upload-preview img {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 6px;
+        }
+        .upload-status {
+            font-size: 0.85rem;
+            color: #555;
+        }
+        .map-card {
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin: 10px 0 14px;
+            background: #fff;
+        }
+        .map-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: rgba(44, 62, 80, 0.06);
+            font-weight: 600;
+        }
+        .map-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .map-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 6px 10px;
+            background: rgba(44, 62, 80, 0.15);
+            color: #2c3e50;
+            cursor: pointer;
+        }
+        #sceneMap {
+            height: 220px;
+            width: 100%;
+        }
+        .map-tip {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: #666;
+            background: rgba(44, 62, 80, 0.04);
+        }
+        .admin-section {
+            margin-top: 16px;
+        }
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        .admin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .admin-item {
+            padding: 10px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .admin-item .meta {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .admin-item .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .admin-only {
+            display: none;
         }
         /* 全景图操作按钮区域 */
         .pnlm-controls {
