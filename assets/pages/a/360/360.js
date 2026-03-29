@@ -139,6 +139,32 @@ function updateLoginPrefill() {
     }
 }
 
+
+async function bootstrapScenesFromJson() {
+    let jsonData = [];
+    try {
+        const resp = await fetch('/assets/pages/a/360/scenes.json', { cache: 'no-store' });
+        if (resp.ok) jsonData = await resp.json();
+    } catch (error) {
+        console.warn('读取 scenes.json 失败:', error);
+    }
+    if (!Array.isArray(jsonData) || jsonData.length === 0) return;
+    scenesData = jsonData.map((scene, idx) => ({
+        id: scene.id || `json_${idx}`,
+        name: scene.name,
+        contributor: scene.contributor || '未知',
+        path: scene.path,
+        lat: scene.lat ?? null,
+        lng: scene.lng ?? null,
+        source: 'json'
+    }));
+    renderSceneList(el.searchInput ? el.searchInput.value : '');
+    refreshMapMarkers();
+    if (!currentScene && scenesData.length > 0) {
+        void loadScene(scenesData[0]);
+    }
+}
+
 async function seedScenesIfNeeded() {
     const metaSnap = await database.ref(DB_META).once('value');
     const meta = metaSnap?.val() || {};
@@ -572,7 +598,17 @@ async function uploadToR2(uploadUrl, file, contentType) {
     }
 }
 
-function initMap() {
+async function initMap() {
+    if (!window.ol) {
+        try {
+            await ensureOpenLayers();
+        } catch (error) {
+            const mapEl = document.getElementById('sceneMap');
+            if (mapEl) mapEl.innerHTML = '<div style="padding:12px;color:#666;">地图库加载失败</div>';
+            console.error('OpenLayers 未就绪', error);
+            return;
+        }
+    }
     if (!window.ol) {
         console.error('OpenLayers 未就绪');
         return;
@@ -1082,12 +1118,18 @@ async function init() {
         console.error('Firebase 初始化失败:', error);
     }
 
+    setTimeout(() => {
+        if (!scenesData.length) {
+            void bootstrapScenesFromJson();
+        }
+    }, 1500);
+
     try {
         await ensureOpenLayers();
     } catch (error) {
         console.error('OpenLayers 加载失败:', error);
     }
-    initMap();
+    await initMap();
     void verifyAdminSession();
 }
 
