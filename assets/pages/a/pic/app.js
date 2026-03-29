@@ -301,7 +301,7 @@ async function holdQuota(dateKey, countToAdd) {
         };
     });
 
-    if (!result.committed || exceed) {
+    if (!result || !result.committed || exceed) {
         return {
             ok: false,
             reserved: 0,
