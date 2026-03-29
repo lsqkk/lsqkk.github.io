@@ -27,6 +27,27 @@ let uploadFile = null;
 
 const el = {};
 
+function loadScriptOnce(src, id) {
+    return new Promise((resolve, reject) => {
+        if (id && document.getElementById(id)) {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        if (id) script.id = id;
+        script.src = src;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`load script failed: ${src}`));
+        document.head.appendChild(script);
+    });
+}
+
+async function ensureOpenLayers() {
+    if (window.ol) return;
+    await loadScriptOnce('https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js', 'ol-lib');
+}
+
 function cacheElements() {
     el.leftPanel = document.getElementById('leftPanel');
     el.toggleLeft = document.getElementById('toggleLeft');
@@ -121,13 +142,12 @@ function updateLoginPrefill() {
 async function seedScenesIfNeeded() {
     const metaSnap = await database.ref(DB_META).once('value');
     const meta = metaSnap?.val() || {};
-    if (meta.seeded) return;
-
     const scenesSnap = await database.ref(DB_SCENES).once('value');
-    if (scenesSnap && scenesSnap.exists && scenesSnap.exists()) {
-        await database.ref(DB_META).update({ seeded: true, seededAt: Date.now() });
-        return;
-    }
+    const existing = scenesSnap && scenesSnap.val ? (scenesSnap.val() || {}) : {};
+    const existingList = Object.values(existing || {});
+    const existingKeySet = new Set(
+        existingList.map((item) => `${item?.name || ''}@@${item?.path || ''}`)
+    );
 
     let jsonData = [];
     try {
@@ -138,25 +158,38 @@ async function seedScenesIfNeeded() {
     }
 
     if (!Array.isArray(jsonData) || jsonData.length === 0) {
-        await database.ref(DB_META).update({ seeded: true, seededAt: Date.now() });
         return;
     }
 
     const now = Date.now();
+    let seededCount = 0;
     for (const scene of jsonData) {
         if (!scene || !scene.name || !scene.path) continue;
-        await database.ref(DB_SCENES).push({
-            name: scene.name,
-            contributor: scene.contributor || '未知',
-            path: scene.path,
-            lat: scene.lat ?? null,
-            lng: scene.lng ?? null,
-            createdAt: now,
-            approvedAt: now,
-            source: 'seed'
+        const key = `${scene.name}@@${scene.path}`;
+        if (existingKeySet.has(key)) continue;
+        try {
+            await database.ref(DB_SCENES).push({
+                name: scene.name,
+                contributor: scene.contributor || '未知',
+                path: scene.path,
+                lat: scene.lat ?? null,
+                lng: scene.lng ?? null,
+                createdAt: now,
+                approvedAt: now,
+                source: 'seed'
+            });
+            seededCount += 1;
+        } catch (error) {
+            console.warn('seed scene failed:', scene.name, error);
+        }
+    }
+    if (seededCount > 0 || !meta.seeded) {
+        await database.ref(DB_META).update({
+            seeded: true,
+            seededAt: Date.now(),
+            seededCount: (meta.seededCount || 0) + seededCount
         });
     }
-    await database.ref(DB_META).update({ seeded: true, seededAt: Date.now() });
 }
 
 function watchScenes() {
@@ -537,7 +570,13 @@ async function uploadToR2(uploadUrl, file, contentType) {
         const text = await resp.text();
         throw new Error(`R2 上传失败（${resp.status}）：${text.slice(0, 120)}`);
     }
-}function initMap() {
+}
+
+function initMap() {
+    if (!window.ol) {
+        console.error('OpenLayers 未就绪');
+        return;
+    }
     const TIANDITU_KEY = window.TIANDITU_KEY || '';
     const mapEl = document.getElementById('sceneMap');
     if (!mapEl) return;
@@ -1043,6 +1082,11 @@ async function init() {
         console.error('Firebase 初始化失败:', error);
     }
 
+    try {
+        await ensureOpenLayers();
+    } catch (error) {
+        console.error('OpenLayers 加载失败:', error);
+    }
     initMap();
     void verifyAdminSession();
 }
