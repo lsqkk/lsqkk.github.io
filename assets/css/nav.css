@@ -665,7 +665,7 @@
 }
 
 .nav-hover-item .nav-hover-menu {
-    display: none;
+    display: block;
     visibility: hidden;
     position: absolute;
     top: calc(100% + 2px);
@@ -681,16 +681,16 @@
     opacity: 0;
     transform: translateY(-8px);
     pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
     z-index: 1200;
 }
 
 .nav-hover-item.open .nav-hover-menu {
-    display: block;
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+    transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .nav-hover-scroll {

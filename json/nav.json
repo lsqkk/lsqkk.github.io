@@ -13,47 +13,47 @@
         {
             "name": "文章",
             "link": "/posts",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "工具",
             "link": "/tool",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "游戏",
             "link": "/games",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "API",
             "link": "https://lsqkk.github.io/quarkdoc/QuarkAPI",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "实验室",
             "link": "/a",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "项目",
             "link": "/blog/project",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "视频",
             "link": "/blog/qtv",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "留言",
             "link": "/blog/lyb",
-            "target": "blank"
+            "target": "_self"
         },
         {
             "name": "更多",
             "link": "/blog",
-            "target": "blank"
+            "target": "_self"
         }
     ],
     "login": {

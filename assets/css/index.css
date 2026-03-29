@@ -299,7 +299,7 @@ body {
     -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    padding-right: 3.2em;
+    padding-right: 0;
 }
 
 .dynamic-content.is-clamped::before {
@@ -1310,6 +1310,19 @@ body {
     .friend-nickname,
     .latest-video-title {
         color: #d9e7fb;
+    }
+
+    .dynamic-content.is-clamped {
+        padding-right: 0;
+    }
+
+    .dynamic-content.is-clamped::before {
+        display: none;
+    }
+
+    .dynamic-content.is-clamped::after {
+        background: rgba(14, 24, 41, 0.85);
+        color: #cfe0ff;
     }
 
     .dynamic-date,

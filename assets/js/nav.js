@@ -86,10 +86,7 @@ function getNavConfig() {
 
 // 生成导航HTML
 function generateNavHTML(config) {
-    const normalizeTarget = (target) => {
-        if (!target) return '_blank';
-        return target === 'blank' ? '_blank' : target;
-    };
+    const normalizeTarget = () => '_self';
     return `
     <div class="header-placeholder"></div>
     <div class="header">
@@ -322,12 +319,12 @@ async function loadHoverSections(key) {
             .map(name => ({
                 name,
                 link: `/posts/${encodeURIComponent(name)}`,
-                target: '_blank'
+                target: '_self'
             }));
         sections = [{
             title: '专栏',
             items: [
-                { name: '查看全部文章', link: '/posts', target: '_blank' },
+                { name: '查看全部文章', link: '/posts', target: '_self' },
                 ...columnItems
             ]
         }];
@@ -338,7 +335,7 @@ async function loadHoverSections(key) {
             items: (cat.tools || []).map(item => ({
                 name: item.name || '未命名',
                 link: item.url || '#',
-                target: item.target || '_blank'
+                target: '_self'
             }))
         })).filter(section => section.items.length > 0);
     } else if (key === 'games') {
@@ -353,7 +350,7 @@ async function loadHoverSections(key) {
             items: group.items.map(item => ({
                 name: item.name || '未命名',
                 link: normalizeGamesLink(item.link || ''),
-                target: '_blank'
+                target: '_self'
             }))
         })).filter(section => section.items.length > 0);
     } else if (key === 'a') {
@@ -363,7 +360,7 @@ async function loadHoverSections(key) {
             items: (cat.projects || []).map(item => ({
                 name: item.name || '未命名',
                 link: normalizeLabLink(item.link || ''),
-                target: '_blank'
+                target: '_self'
             }))
         })).filter(section => section.items.length > 0);
     } else if (key === 'blog') {
@@ -373,7 +370,7 @@ async function loadHoverSections(key) {
             items: (cat.functions || []).map(item => ({
                 name: item.name || '未命名',
                 link: item.link || '#',
-                target: item.target === '_self' ? '_self' : '_blank'
+                target: '_self'
             }))
         })).filter(section => section.items.length > 0);
     }
