@@ -57,6 +57,13 @@ function buildFileName(originalName, contentType) {
   return `${ts}-${rand}.${ext}`;
 }
 
+function sanitizeFolder(input) {
+  const raw = String(input || '').trim();
+  if (!raw) return 'pic';
+  const safe = raw.replace(/[^a-zA-Z0-9/_-]/g, '');
+  return safe || 'pic';
+}
+
 export default async function handler(req, res) {
   const requestOrigin = resolveOrigin(req);
   const isAllowed = Boolean(requestOrigin);
@@ -104,6 +111,7 @@ export default async function handler(req, res) {
   const body = req.body || {};
   const originalName = String(body.originalName || '').trim();
   const contentType = String(body.contentType || 'application/octet-stream').trim();
+  const folder = sanitizeFolder(body.folder);
 
   if (!originalName) {
     return res.status(400).json({ error: 'originalName required' });
@@ -112,7 +120,7 @@ export default async function handler(req, res) {
   const now = new Date();
   const year = now.getFullYear();
   const fileName = buildFileName(originalName, contentType);
-  const objectKey = `pic/${year}/${fileName}`;
+  const objectKey = `${folder}/${year}/${fileName}`;
 
   try {
     const client = new S3Client({

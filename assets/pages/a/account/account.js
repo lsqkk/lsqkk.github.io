@@ -313,19 +313,6 @@
         reader.readAsDataURL(file);
     }
 
-    function blobToBase64(blob) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const result = String(reader.result || '');
-                const commaIndex = result.indexOf(',');
-                resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
-            };
-            reader.onerror = () => reject(new Error('文件读取失败'));
-            reader.readAsDataURL(blob);
-        });
-    }
-
     function canvasToBlob(canvas) {
         return new Promise((resolve, reject) => {
             canvas.toBlob((blob) => {
@@ -342,56 +329,51 @@
         return `${safeLogin}-${ts}-${rand}.png`;
     }
 
-    async function uploadToGitHub({ token, repoPath, base64Content, originalName }) {
-        const url = `https://api.github.com/repos/lsqkk/image/contents/${encodeURI(repoPath)}`;
-        const body = {
-            message: `upload avatar: ${originalName} -> ${repoPath}`,
-            content: base64Content,
-            branch: 'main'
-        };
-
-        const resp = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/vnd.github+json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
+    async function requestPresignedUpload(fileName, contentType) {
+        const resp = await fetch(`${API_BASE}/api/r2-presign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                originalName: fileName,
+                contentType: contentType || 'application/octet-stream',
+                folder: 'avatar'
+            })
         });
 
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !data?.uploadUrl || !data?.publicUrl) {
+            throw new Error(data?.error || '获取上传链接失败');
+        }
+        return data;
+    }
+
+    async function uploadToR2(uploadUrl, blob, contentType) {
+        const resp = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': contentType || 'application/octet-stream' },
+            body: blob
+        });
         if (!resp.ok) {
             const text = await resp.text();
-            throw new Error(`GitHub 上传失败（${resp.status}）：${text.slice(0, 120)}`);
+            throw new Error(`R2 上传失败（${resp.status}）：${text.slice(0, 120)}`);
         }
     }
 
+
+
     async function uploadCroppedAvatar() {
         if (!(el.cropperCanvas instanceof HTMLCanvasElement)) return;
-        const token = window.GITHUB_API_KEY;
-        if (!token) {
-            setStatus('未获取到 GITHUB_API_KEY，请稍后重试');
-            return;
-        }
 
         try {
             setStatus('头像上传中...');
             const blob = await canvasToBlob(el.cropperCanvas);
-            const base64Content = await blobToBase64(blob);
             const login = (el.githubLogin instanceof HTMLInputElement ? el.githubLogin.value.trim() : '') || '';
             const fileName = buildAvatarFileName(login);
-            const year = new Date().getFullYear();
-            const repoPath = `pic/avatar/${year}/${fileName}`;
-            await uploadToGitHub({
-                token,
-                repoPath,
-                base64Content,
-                originalName: fileName
-            });
+            const presign = await requestPresignedUpload(fileName, 'image/png');
+            await uploadToR2(presign.uploadUrl, blob, 'image/png');
 
-            const cdnUrl = `https://cdn.jsdelivr.net/gh/lsqkk/image@main/${repoPath}`;
-            if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = cdnUrl;
-            updateAvatarPreview(cdnUrl, el.nickname && el.nickname.value);
+            if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = presign.publicUrl;
+            updateAvatarPreview(presign.publicUrl, el.nickname && el.nickname.value);
             setStatus('头像已上传并应用');
             if (el.cropperModal) el.cropperModal.classList.remove('active');
         } catch (error) {
