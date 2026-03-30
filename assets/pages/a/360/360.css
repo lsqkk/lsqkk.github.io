@@ -866,6 +866,7 @@
             pointer-events: auto;
         }
         .nearby-hotspot {
+            position: relative;
             width: var(--nearby-size, 16px);
             height: var(--nearby-size, 16px);
             border-radius: 50%;
@@ -876,9 +877,50 @@
             cursor: pointer;
             transition: transform 0.2s ease, opacity 0.2s ease;
         }
+        .nearby-hotspot .nearby-dot {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.32);
+        }
+        .nearby-hotspot .nearby-label {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 6px);
+            transform: translateX(-50%);
+            background: rgba(20, 24, 36, 0.6);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+            opacity: 0.85;
+            backdrop-filter: blur(6px);
+            pointer-events: none;
+        }
+        .nearby-hotspot .nearby-detail {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 30px);
+            transform: translateX(-50%);
+            background: rgba(10, 12, 20, 0.75);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
         .nearby-hotspot:hover {
-            transform: scale(1.15);
+            transform: scale(1.1);
             opacity: 1;
+        }
+        .nearby-hotspot:hover .nearby-detail {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
         }
         .loader-ring {
             width: 46px;

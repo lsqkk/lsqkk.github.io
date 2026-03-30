@@ -590,16 +590,24 @@ function updateNearbyHotspots(scene) {
         const size = Math.max(10, 22 - (dist / 200) * 10);
         const opacity = Math.max(0.35, 0.9 - (dist / 200) * 0.6);
         const hotId = `near_${s.id}`;
+        const label = escapeHtml(s.name || '未命名');
+        const contributor = escapeHtml(s.contributor || '未知');
+        const distanceText = `${Math.round(dist)}m`;
         const hotspot = {
             id: hotId,
-            pitch: 0,
+            pitch: 6,
             yaw,
             cssClass: 'nearby-hotspot',
             createTooltipFunc: (div) => {
                 div.classList.add('nearby-hotspot');
                 div.style.setProperty('--nearby-size', `${size}px`);
                 div.style.setProperty('--nearby-opacity', `${opacity}`);
-                div.title = `${s.name || '未知地点'} · ${Math.round(dist)}m`;
+                div.innerHTML = `
+                    <span class="nearby-dot" aria-hidden="true"></span>
+                    <span class="nearby-label">${label}</span>
+                    <span class="nearby-detail">贡献者: ${contributor} · 距离 ${distanceText}</span>
+                `;
+                div.title = `${s.name || '未知地点'} · ${distanceText}`;
                 div.addEventListener('click', () => {
                     selectScene(s);
                 });
@@ -1230,6 +1238,7 @@ function renderMissingCoords() {
             <div class="actions">
                 <button class="btn ghost" data-action="pick">地图选点</button>
                 <button class="btn ghost" data-action="south">取当前方向</button>
+                <button class="btn ghost" data-action="preview">预览</button>
                 <button class="btn primary" data-action="save">保存</button>
             </div>
         `;
@@ -1238,6 +1247,9 @@ function renderMissingCoords() {
         });
         block.querySelector('[data-action="south"]').addEventListener('click', () => {
             applySouthFromPreview('scene', scene.id);
+        });
+        block.querySelector('[data-action="preview"]').addEventListener('click', () => {
+            previewPanorama(scene, { type: 'scene', id: scene.id });
         });
         block.querySelector('[data-action="save"]').addEventListener('click', () => {
             const lat = parseFloat(document.getElementById(`scene-lat-${scene.id}`).value || '');
