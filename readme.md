@@ -216,7 +216,7 @@ npm install
 
 ### 扩展与二创项目
 
-可以关注 `/template` 中的相关文件。将相关模板说明文件添加为 Skills 后，可保证网站延申项目在结构和 UI 设计上的统一性。
+可以关注 `/src/docs` 中的相关文件。将相关模板说明文件添加为 Skills 后，可保证网站延申项目在结构和 UI 设计上的统一性。
 
 更新新项目后，应更新 `/assets/pages/blog/functions.json` 和 `/json/nav.json` 以在网站中显示您的新项目。
 
