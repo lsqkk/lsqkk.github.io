@@ -1,6 +1,12 @@
 ---
+import fs from "node:fs/promises";
+import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
+
+const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -18,6 +24,12 @@ import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link id="pannellumCss" rel="stylesheet" href="/assets/pages/a/360/pannellum.css" />
     <script id="pannellumJS" src="/assets/pages/a/360/pannellum.js"></script>
+    <script is:inline define:vars={{ turnstileSiteKey }}>
+        window.__TURNSTILE_SITE_KEY__ = turnstileSiteKey;
+    </script>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <script is:inline src="/assets/js/turnstile-guard.js"></script>
+    <script is:inline src="/assets/js/security-shared.js"></script>
     <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline src="__API_BASE__/api/keys?names=tianditu"></script>
@@ -77,13 +89,20 @@ import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
                             <input type="number" id="sceneLngInput" step="0.000001" placeholder="108.xxxxx">
                         </div>
                     </div>
-                    <div class="field row">
-                        <button class="btn ghost" id="pickPointBtn" type="button">地图选点</button>
-                        <button class="btn primary" id="submitUploadBtn" type="button">提交审核</button>
-                    </div>
-                    <div class="upload-preview" id="uploadPreview"></div>
-                    <div class="upload-status" id="uploadStatus">等待上传</div>
+                <div class="field row">
+                    <button class="btn ghost" id="pickPointBtn" type="button">地图选点</button>
+                    <button class="btn primary" id="submitUploadBtn" type="button">提交审核</button>
                 </div>
+                <div class="field captcha-field">
+                    <label>安全校验</label>
+                    <div class="turnstile-row">
+                        <div id="xjtu360Turnstile" class="turnstile-box" data-turnstile-kind="xjtu360-upload"></div>
+                    </div>
+                    <div class="helper">通过验证后即可提交审核，防止脚本刷图。</div>
+                </div>
+                <div class="upload-preview" id="uploadPreview"></div>
+                <div class="upload-status" id="uploadStatus">等待上传</div>
+            </div>
             </div>
 
             <div class="manage-card">

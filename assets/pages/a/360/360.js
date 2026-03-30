@@ -192,6 +192,45 @@ function setUploadStatus(text) {
     if (el.uploadStatus) el.uploadStatus.textContent = text;
 }
 
+async function verifyUploadTurnstile() {
+    if (window.SecurityShared && typeof window.SecurityShared.verifyTurnstile === 'function') {
+        return window.SecurityShared.verifyTurnstile('xjtu360-upload', el.uploadStatus, 'xjtu360-upload');
+    }
+    if (!window.QuarkTurnstile) {
+        setUploadStatus('验证码未加载');
+        return false;
+    }
+    return window.QuarkTurnstile.verify('xjtu360-upload', (msg) => setUploadStatus(msg));
+}
+
+async function postLybMessage(textContent) {
+    if (!database) return;
+    const profile = getLoginProfile();
+    const nickname = profile.nickname || profile.login || '访客';
+    const avatarType = profile.avatarType === 'image' && profile.avatarUrl ? 'image' : 'color';
+    const avatar = avatarType === 'image' ? profile.avatarUrl : (profile.avatarColor || '#4a6cf7');
+    const uid = profile.uid || (window.CommentShared && typeof window.CommentShared.getGuestUid === 'function'
+        ? window.CommentShared.getGuestUid()
+        : '');
+    const message = {
+        text: textContent,
+        nickname: nickname,
+        login: profile.login || '',
+        loginType: profile.isLoggedUser ? (profile.loginType || localStorage.getItem('quark_login_type') || '') : '',
+        uid: uid,
+        avatar: avatar,
+        avatarType: avatarType,
+        timestamp: Date.now(),
+        isMarkdown: false,
+        likes: 0
+    };
+    try {
+        await database.ref('chatrooms/lsqkk-lyb/messages').push(message);
+    } catch (error) {
+        console.warn('留言板同步失败:', error);
+    }
+}
+
 function setAdminStatus(text) {
     if (el.adminStatus) el.adminStatus.textContent = text;
 }
@@ -616,6 +655,9 @@ async function submitUpload() {
         return;
     }
 
+    const captchaOk = await verifyUploadTurnstile();
+    if (!captchaOk) return;
+
     try {
         setUploadStatus('上传中...');
         if (el.submitUploadBtn) el.submitUploadBtn.disabled = true;
@@ -637,6 +679,7 @@ async function submitUpload() {
         };
 
         await database.ref(DB_PENDING).push(payload);
+        await postLybMessage('我在 XJTU 360° 上传了一张全景待审核');
 
         setUploadStatus('已提交审核，管理员通过后对所有人可见');
         resetUploadForm();

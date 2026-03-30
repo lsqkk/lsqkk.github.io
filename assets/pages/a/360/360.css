@@ -523,6 +523,35 @@
             font-size: 0.85rem;
             color: var(--panel-muted);
         }
+        .captcha-field {
+            margin-top: 6px;
+        }
+        .turnstile-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .turnstile-box {
+            min-height: 64px;
+            min-width: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.7);
+        }
+        @media (prefers-color-scheme: dark) {
+            .turnstile-box {
+                background: rgba(15, 23, 42, 0.6);
+            }
+        }
+        .helper {
+            font-size: 0.8rem;
+            color: var(--panel-muted);
+            margin-top: 6px;
+        }
         .field input {
             padding: 8px 10px;
             border-radius: 8px;
