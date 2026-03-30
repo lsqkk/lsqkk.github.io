@@ -334,6 +334,7 @@ function renderSceneList(filter = '') {
     filtered.forEach((scene) => {
         const sceneItem = document.createElement('div');
         sceneItem.className = 'scene-item';
+        if (scene.id) sceneItem.dataset.sceneId = scene.id;
         if (currentScene && currentScene.id === scene.id) {
             sceneItem.classList.add('active');
         }
@@ -348,7 +349,7 @@ function renderSceneList(filter = '') {
             </div>
         `;
         sceneItem.addEventListener('click', () => {
-            void loadScene(scene);
+            selectScene(scene);
             if (isMobile) {
                 el.leftPanel?.classList.remove('panel-mobile-visible');
             }
@@ -745,13 +746,7 @@ async function initMap() {
             const pendingId = feature.get('pendingId');
             if (sceneId) {
                 const scene = scenesData.find((s) => s.id === sceneId);
-                if (scene) {
-                    if (el.previewPanorama) {
-                        void previewPanorama(scene);
-                    } else if (document.getElementById('panorama')) {
-                        void loadScene(scene);
-                    }
-                }
+                if (scene) selectScene(scene);
             } else if (pendingId) {
                 const pending = pendingData.find((p) => p.id === pendingId);
                 if (pending) {
@@ -902,7 +897,7 @@ function renderPendingList() {
         block.querySelector('[data-action="approve"]').addEventListener('click', () => {
             const lat = parseFloat(document.getElementById(`pending-lat-${item.id}`).value || '');
             const lng = parseFloat(document.getElementById(`pending-lng-${item.id}`).value || '');
-            void approvePending(item.id, lat, lng);
+            void approvePending(item.id, lat, lng, block);
         });
         block.querySelector('[data-action="reject"]').addEventListener('click', () => {
             void deletePending(item.id);
@@ -949,7 +944,7 @@ function renderMissingCoords() {
     });
 }
 
-async function approvePending(id, lat, lng) {
+async function approvePending(id, lat, lng, blockEl) {
     if (!isAdmin) return;
     const item = pendingData.find((p) => p.id === id);
     if (!item) return;
@@ -969,7 +964,14 @@ async function approvePending(id, lat, lng) {
         source: 'user'
     };
 
-    await database.ref(DB_SCENES).push(payload);
+    if (blockEl) {
+        const approveBtn = blockEl.querySelector('[data-action="approve"]');
+        if (approveBtn) {
+            approveBtn.disabled = true;
+            approveBtn.textContent = '已通过';
+        }
+    }
+    await database.ref(`${DB_SCENES}/${id}`).set(payload);
     await database.ref(`${DB_PENDING}/${id}`).remove();
 }
 
@@ -1063,6 +1065,23 @@ async function deleteScene(id) {
     const ok = confirm('确定要删除该场景吗？');
     if (!ok) return;
     await database.ref(`${DB_SCENES}/${id}`).remove();
+}
+
+function selectScene(scene) {
+    if (!scene) return;
+    if (el.previewPanorama) {
+        void previewPanorama(scene);
+    } else if (document.getElementById('panorama')) {
+        void loadScene(scene);
+    }
+    if (scene.id) {
+        const node = document.querySelector(`.scene-item[data-scene-id="${scene.id}"]`);
+        if (node) {
+            node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.querySelectorAll('.scene-item').forEach((item) => item.classList.remove('active'));
+            node.classList.add('active');
+        }
+    }
 }
 
 async function previewPanorama(scene) {
