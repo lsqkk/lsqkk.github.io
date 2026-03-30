@@ -27,10 +27,43 @@ let uploadFile = null;
 
 const el = {};
 
+
 function loadScriptOnce(src, id) {
     return new Promise((resolve, reject) => {
-        if (id && document.getElementById(id)) {
-            resolve();
+        const existing = id ? document.getElementById(id) : null;
+        if (existing) {
+            if (window.ol) {
+                resolve();
+                return;
+            }
+            const onLoad = () => {
+                cleanup();
+                resolve();
+            };
+            const onError = () => {
+                cleanup();
+                reject(new Error(`load script failed: ${src}`));
+            };
+            const cleanup = () => {
+                existing.removeEventListener('load', onLoad);
+                existing.removeEventListener('error', onError);
+            };
+            existing.addEventListener('load', onLoad);
+            existing.addEventListener('error', onError);
+            const started = Date.now();
+            const timer = window.setInterval(() => {
+                if (window.ol) {
+                    cleanup();
+                    window.clearInterval(timer);
+                    resolve();
+                    return;
+                }
+                if (Date.now() - started > 10000) {
+                    cleanup();
+                    window.clearInterval(timer);
+                    reject(new Error(`load script timeout: ${src}`));
+                }
+            }, 120);
             return;
         }
         const script = document.createElement('script');
@@ -47,6 +80,32 @@ async function ensureOpenLayers() {
     if (window.ol) return;
     await loadScriptOnce('https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js', 'ol-lib');
 }
+
+async function ensureTiandituKey(timeout = 5000) {
+    if (window.TIANDITU_KEY) return window.TIANDITU_KEY;
+    try {
+        await loadScriptOnce(`${API_BASE}/api/keys?names=tianditu`, 'tianditu-key');
+    } catch {
+        // ignore load error, will fallback to timeout
+    }
+    if (window.TIANDITU_KEY) return window.TIANDITU_KEY;
+    const started = Date.now();
+    return new Promise((resolve, reject) => {
+        const timer = window.setInterval(() => {
+            if (window.TIANDITU_KEY) {
+                window.clearInterval(timer);
+                resolve(window.TIANDITU_KEY);
+                return;
+            }
+            if (Date.now() - started > timeout) {
+                window.clearInterval(timer);
+                reject(new Error('TIANDITU_KEY timeout'));
+            }
+        }, 150);
+    });
+}
+
+
 
 function cacheElements() {
     el.leftPanel = document.getElementById('leftPanel');
@@ -613,7 +672,14 @@ async function initMap() {
         console.error('OpenLayers 未就绪');
         return;
     }
-    const TIANDITU_KEY = window.TIANDITU_KEY || '';
+    let TIANDITU_KEY = window.TIANDITU_KEY || '';
+    if (!TIANDITU_KEY) {
+        try {
+            TIANDITU_KEY = await ensureTiandituKey();
+        } catch (error) {
+            TIANDITU_KEY = '';
+        }
+    }
     const mapEl = document.getElementById('sceneMap');
     if (!mapEl) return;
 
@@ -1108,6 +1174,7 @@ async function init() {
     initMobileLayout();
     checkWatermarkStatus();
     updateLoginPrefill();
+    void bootstrapScenesFromJson();
 
     try {
         await ensureFirebaseDatabase();
