@@ -170,12 +170,7 @@ quark --help
 
 2. 初始化项目
 
-这会**清除项目中无关内容**（如此模板原作者的个人博文等无关内容）并进行初始化。
-
 ```bash
-# 初始化
-quark initrepo --apply
-
 # 先构建
 quark build
 

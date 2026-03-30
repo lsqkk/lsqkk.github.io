@@ -65,8 +65,8 @@ def process_commits(commits, output_file='output_commits.txt'):
 
 def main():
     # 设置日期范围（可以修改这里的时间）
-    since_date = "2026-03-09"
-    until_date = "2026-03-11"
+    since_date = "2026-03-12"
+    until_date = "2026-03-30"
     
     # 或者使用命令行参数（如果提供了的话）
     if len(sys.argv) > 2:

@@ -12,7 +12,6 @@ Quark 博客管理工具 - 帮助
                                artifact 模式导出到独立目录（默认 .quark-artifact）
   quark updateposts              兼容命令（等效 quark build --mode source）
   quark checkassets              检查未被 HTML 引用的 CSS/JS
-  quark initrepo [--apply]       按 template/init 初始化仓库（默认模拟）
   quark map                      兼容命令（已弃用；sitemap 随 build 自动生成）
   quark ppush [MESSAGE]          一键构建 + 推送
   quark push MESSAGE [--remote REMOTE] [--branch BRANCH]

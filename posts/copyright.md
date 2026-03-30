@@ -7,7 +7,7 @@ tags: 网站
 
 ## 网站简介
 
-夸克博客（Quark Blog）是由站主 **蓝色奇夸克** 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）+ Astro 构建，部署于 GitHub Pages，并通过 Firebase RTDB、Vercel 与自有域名等提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信、统一账号与登录中心等能力，打造一个功能丰富、体验流畅的个人技术实验平台。
+夸克博客（Quark Blog）是由站主 **蓝色奇夸克** 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）+ Astro 构建，部署于 GitHub Pages，并通过 Firebase RTDB、Vercel 与自有域名等提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信、统一账号与登录中心等多种能力，打造一个功能丰富、体验流畅的个人技术实验平台。
 
 ## 版权信息
 
@@ -28,10 +28,11 @@ tags: 网站
 |----------|----------|----------|
 | KaTeX | 文章数学公式渲染 | [https://katex.org](https://katex.org) |
 | Postimages | 部分图片托管 | [https://postimages.org](https://postimages.org) |
-| Firebase Realtime Database | 实时数据同步（留言、游戏、协同工具） | [https://firebase.google.com](https://firebase.google.com) |
-| Cloudflare Turnstile | 登录/注册人机验证 | [https://www.cloudflare.com/products/turnstile/](https://www.cloudflare.com/products/turnstile/) |
+| Cloudflare R2 | 站点图床和文件存储桶 | [https://www.cloudflare.com/zh-cn/developer-platform/products/r2/](https://www.cloudflare.com/zh-cn/developer-platform/products/r2/) |
+| Firebase Realtime Database | 站点实时数据库 | [https://firebase.google.com](https://firebase.google.com) |
+| Cloudflare Turnstile | 人机安全验证 | [https://www.cloudflare.com/products/turnstile/](https://www.cloudflare.com/products/turnstile/) |
 | GitHub OAuth | GitHub 登录授权 | [https://docs.github.com/apps/oauth-apps](https://docs.github.com/apps/oauth-apps) |
-| giscus | 文章评论系统 | [https://giscus.app/zh-CN](https://giscus.app/zh-CN) |
+| giscus | 文章页底评论系统 | [https://giscus.app/zh-CN](https://giscus.app/zh-CN) |
 | Vercel | Serverless 函数托管与域名服务 | [https://vercel.com](https://vercel.com) |
 | 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc](https://www.busuanzi.cc) |
 | HYTangMeiRen55W | 网站默认字体 | [https://hanyi.com.cn](https://hanyi.com.cn) |
