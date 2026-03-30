@@ -1,0 +1,118 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交大360°管理后台 - {SITE_TITLE}</title>
+    <meta name="description" content="交大360°全景上传与管理">
+    <link rel="stylesheet" href="/assets/pages/a/360/360.css">
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link id="pannellumCss" rel="stylesheet" href="/assets/pages/a/360/pannellum.css" />
+    <script id="pannellumJS" src="/assets/pages/a/360/pannellum.js"></script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/js/firebase-ready.js"></script>
+    <script is:inline src="__API_BASE__/api/keys?names=tianditu"></script>
+    <script is:inline src="/assets/js/comment-shared.js"></script>
+    <script is:inline src="/assets/js/user-profile.js"></script>
+</head>
+
+<body>
+    <script is:inline src="/assets/js/nav.js"></script>
+
+    <div class="manage-shell">
+        <header class="manage-header">
+            <div>
+                <h1>交大360° 上传与管理</h1>
+                <p>上传全景、地图选点、审核发布与坐标维护</p>
+            </div>
+            <a class="btn ghost" href="/a/360/">返回全景首页</a>
+        </header>
+
+        <section class="manage-grid">
+            <div class="manage-card">
+                <div class="admin-bar" id="adminBar">
+                    <div class="admin-login" id="adminLoginForm">
+                        <input type="password" id="adminPassword" placeholder="管理员密码">
+                        <button class="admin-btn" id="adminLoginBtn">管理员登录</button>
+                    </div>
+                    <div class="admin-actions" id="adminActions">
+                        <span class="admin-tag">管理员模式</span>
+                        <button class="admin-btn ghost" id="adminLogoutBtn">退出</button>
+                    </div>
+                    <div class="admin-status" id="adminStatus">管理员未登录</div>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p class="upload-text">点击或拖拽上传全景图</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+                <div class="upload-form" id="uploadForm">
+                    <div class="field">
+                        <label for="sceneNameInput">地点名称</label>
+                        <input type="text" id="sceneNameInput" placeholder="如：东南门">
+                    </div>
+                    <div class="field">
+                        <label for="sceneUserInput">上传者</label>
+                        <input type="text" id="sceneUserInput" placeholder="昵称或姓名">
+                    </div>
+                    <div class="field row">
+                        <div class="field-half">
+                            <label for="sceneLatInput">纬度</label>
+                            <input type="number" id="sceneLatInput" step="0.000001" placeholder="34.xxxxx">
+                        </div>
+                        <div class="field-half">
+                            <label for="sceneLngInput">经度</label>
+                            <input type="number" id="sceneLngInput" step="0.000001" placeholder="108.xxxxx">
+                        </div>
+                    </div>
+                    <div class="field row">
+                        <button class="btn ghost" id="pickPointBtn" type="button">地图选点</button>
+                        <button class="btn primary" id="submitUploadBtn" type="button">提交审核</button>
+                    </div>
+                    <div class="upload-preview" id="uploadPreview"></div>
+                    <div class="upload-status" id="uploadStatus">等待上传</div>
+                </div>
+            </div>
+
+            <div class="manage-card">
+                <div class="map-card">
+                    <div class="map-header">
+                        <span>校园矢量路标图</span>
+                    </div>
+                    <div id="sceneMap"></div>
+                    <div class="map-tip" id="mapTip">点击地图可选择经纬度</div>
+                </div>
+                <div class="preview-card">
+                    <div class="preview-header">全景预览</div>
+                    <div id="previewPanorama"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="manage-grid">
+            <div class="manage-card admin-only" id="pendingSection">
+                <div class="section-title">待审核上传</div>
+                <div class="admin-list" id="pendingList"></div>
+            </div>
+            <div class="manage-card admin-only" id="missingCoordsSection">
+                <div class="section-title">待补充坐标</div>
+                <div class="admin-list" id="missingCoordsList"></div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
+    <script id="xjtu360Script" src="/assets/pages/a/360/360.js"></script>
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+</body>
+
+</html>

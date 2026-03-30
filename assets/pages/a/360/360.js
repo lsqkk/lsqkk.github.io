@@ -18,7 +18,7 @@ let pendingData = [];
 let database = null;
 let map = null;
 let vectorSource = null;
-let currentLayer = 'satellite';
+let previewViewer = null;
 let isUnlocked = localStorage.getItem('watermarkUnlocked') === 'true';
 let isMobile = false;
 let isAdmin = false;
@@ -125,8 +125,7 @@ function cacheElements() {
     el.searchInput = document.getElementById('searchInput');
     el.sceneList = document.getElementById('sceneList');
     el.mapTip = document.getElementById('mapTip');
-    el.mapSatelliteBtn = document.getElementById('mapSatelliteBtn');
-    el.mapTerrainBtn = document.getElementById('mapTerrainBtn');
+    el.previewPanorama = document.getElementById('previewPanorama');
     el.adminLoginForm = document.getElementById('adminLoginForm');
     el.adminPassword = document.getElementById('adminPassword');
     el.adminLoginBtn = document.getElementById('adminLoginBtn');
@@ -507,13 +506,6 @@ function setupEventListeners() {
         el.mobileMenuToggle.addEventListener('click', () => toggleMobilePanel('leftPanel'));
     }
 
-    if (el.mapSatelliteBtn) {
-        el.mapSatelliteBtn.addEventListener('click', () => switchLayer('satellite'));
-    }
-    if (el.mapTerrainBtn) {
-        el.mapTerrainBtn.addEventListener('click', () => switchLayer('terrain'));
-    }
-
     if (el.adminLoginBtn) {
         el.adminLoginBtn.addEventListener('click', () => { void adminLogin(); });
     }
@@ -688,10 +680,21 @@ async function initMap() {
         return;
     }
 
-    const imgLayer = new ol.layer.Tile({
+    const vecLayer = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'https://t0.tianditu.gov.cn/img_w/wmts?tk=' + TIANDITU_KEY,
-            layer: 'img',
+            url: 'https://t0.tianditu.gov.cn/vec_w/wmts?tk=' + TIANDITU_KEY,
+            layer: 'vec',
+            style: 'default',
+            matrixSet: 'w',
+            format: 'tiles',
+            projection: 'EPSG:3857',
+            tileGrid: buildTiandituTileGrid()
+        })
+    });
+    const cvaLayer = new ol.layer.Tile({
+        source: new ol.source.WMTS({
+            url: 'https://t0.tianditu.gov.cn/cva_w/wmts?tk=' + TIANDITU_KEY,
+            layer: 'cva',
             style: 'default',
             matrixSet: 'w',
             format: 'tiles',
@@ -718,7 +721,7 @@ async function initMap() {
 
     map = new ol.Map({
         target: 'sceneMap',
-        layers: [imgLayer, vectorLayer],
+        layers: [vecLayer, cvaLayer, vectorLayer],
         view: new ol.View({
             center: ol.proj.fromLonLat([108.983, 34.246]),
             zoom: 16
@@ -786,25 +789,6 @@ function fitMapToCampus() {
     const extent = [nw[0], se[1], se[0], nw[1]];
     const padding = 40;
     map.getView().fit(extent, { padding: [padding, padding, padding, padding], duration: 300 });
-}
-
-function switchLayer(layerType) {
-    if (!map) return;
-    const TIANDITU_KEY = window.TIANDITU_KEY || '';
-    if (!TIANDITU_KEY) return;
-
-    currentLayer = layerType;
-    const baseLayer = map.getLayers().item(0);
-    const layerName = layerType === 'terrain' ? 'ter' : 'img';
-    baseLayer.setSource(new ol.source.WMTS({
-        url: `https://t0.tianditu.gov.cn/${layerName}_w/wmts?tk=${TIANDITU_KEY}`,
-        layer: layerName,
-        style: 'default',
-        matrixSet: 'w',
-        format: 'tiles',
-        projection: 'EPSG:3857',
-        tileGrid: buildTiandituTileGrid()
-    }));
 }
 
 function refreshMapMarkers() {
@@ -882,11 +866,15 @@ function renderPendingList() {
                 <input id="pending-lng-${item.id}" type="number" step="0.000001" placeholder="经度" value="${formatNumber(item.lng)}">
             </div>
             <div class="actions">
+                <button class="btn ghost" data-action="preview">预览全景</button>
                 <button class="btn ghost" data-action="pick">地图选点</button>
                 <button class="btn primary" data-action="approve">通过</button>
                 <button class="btn ghost" data-action="reject">删除</button>
             </div>
         `;
+        block.querySelector('[data-action="preview"]').addEventListener('click', () => {
+            previewPanorama(item);
+        });
         block.querySelector('[data-action="pick"]').addEventListener('click', () => {
             setPickMode({ type: 'pending', id: item.id });
         });
@@ -983,6 +971,28 @@ async function deleteScene(id) {
     const ok = confirm('确定要删除该场景吗？');
     if (!ok) return;
     await database.ref(`${DB_SCENES}/${id}`).remove();
+}
+
+async function previewPanorama(scene) {
+    if (!scene || !scene.path) return;
+    if (!el.previewPanorama) return;
+    let panoramaPath = scene.path;
+    if (isMobile && scene.path && !scene.path.startsWith('data:')) {
+        try {
+            panoramaPath = await getMobilePanorama(scene.path);
+        } catch {
+            panoramaPath = scene.path;
+        }
+    }
+    if (previewViewer) {
+        previewViewer.destroy();
+    }
+    previewViewer = pannellum.viewer('previewPanorama', {
+        type: 'equirectangular',
+        panorama: panoramaPath,
+        autoLoad: true,
+        showControls: true
+    });
 }
 function getAdminToken() {
     return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
@@ -1196,7 +1206,9 @@ async function init() {
     } catch (error) {
         console.error('OpenLayers 加载失败:', error);
     }
-    await initMap();
+    if (document.getElementById('sceneMap')) {
+        await initMap();
+    }
     void verifyAdminSession();
 }
 
