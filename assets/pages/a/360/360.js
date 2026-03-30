@@ -209,7 +209,7 @@ async function bootstrapScenesFromJson() {
         console.warn('读取 scenes.json 失败:', error);
     }
     if (!Array.isArray(jsonData) || jsonData.length === 0) return;
-    scenesData = jsonData.map((scene, idx) => ({
+    scenesData = dedupeScenes(jsonData.map((scene, idx) => ({
         id: scene.id || `json_${idx}`,
         name: scene.name,
         contributor: scene.contributor || '未知',
@@ -217,7 +217,7 @@ async function bootstrapScenesFromJson() {
         lat: scene.lat ?? null,
         lng: scene.lng ?? null,
         source: 'json'
-    }));
+    })));
     renderSceneList(el.searchInput ? el.searchInput.value : '');
     refreshMapMarkers();
     if (!currentScene && scenesData.length > 0) {
@@ -302,7 +302,7 @@ function watchPending() {
 function normalizeSnapshot(snapshot) {
     if (!snapshot || !snapshot.val) return [];
     const data = snapshot.val() || {};
-    return Object.keys(data).map((id) => {
+    const list = Object.keys(data).map((id) => {
         const item = data[id] || {};
         const latNum = typeof item.lat === 'number' ? item.lat : parseFloat(item.lat);
         const lngNum = typeof item.lng === 'number' ? item.lng : parseFloat(item.lng);
@@ -312,8 +312,24 @@ function normalizeSnapshot(snapshot) {
             lat: Number.isNaN(latNum) ? null : latNum,
             lng: Number.isNaN(lngNum) ? null : lngNum
         };
-    }).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    });
+    return dedupeScenes(list).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
+
+function dedupeScenes(list) {
+    const seen = new Map();
+    list.forEach((item) => {
+        const path = String(item.path || '').trim();
+        const lat = typeof item.lat === 'number' ? item.lat.toFixed(6) : '';
+        const lng = typeof item.lng === 'number' ? item.lng.toFixed(6) : '';
+        const key = `${path}@@${lat}@@${lng}`;
+        if (!seen.has(key)) {
+            seen.set(key, item);
+        }
+    });
+    return Array.from(seen.values());
+}
+
 
 function renderSceneList(filter = '') {
     if (!el.sceneList) return;

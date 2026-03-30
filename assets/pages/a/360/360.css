@@ -22,10 +22,17 @@
             background: #000;
             color: #333;
         }
+        html:has(body.manage-body),
         body.manage-body {
-            overflow: auto;
             height: auto;
+            overflow: auto;
+        }
+        body.manage-body {
             background: transparent;
+        }
+        body.manage-body #panorama,
+        body.manage-body .watermark {
+            display: none !important;
         }
         #panorama {
             width: 100vw;
