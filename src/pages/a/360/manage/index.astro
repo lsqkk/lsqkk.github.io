@@ -71,6 +71,14 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
                     <input type="file" id="fileInput" accept="image/*" style="display: none;">
                 </div>
                 <div class="upload-form" id="uploadForm">
+                    <div class="info-card">
+                        <div class="info-title">什么是全景图？</div>
+                        <p class="info-text">请上传具有畸变效果的 360° 全景图（鱼眼/全景拼接结果），而不是手机相机“平移拍摄”的普通照片。</p>
+                        <div class="info-actions">
+                            <a class="btn ghost" href="https://img.130923.xyz/drive/2026/1774862908183-jlwpl4.apk" target="_blank" rel="noopener">推荐下载：谷歌相机</a>
+                            <button class="btn ghost" type="button" id="copyApkLink">复制下载链接</button>
+                        </div>
+                    </div>
                     <div class="field">
                         <label for="sceneNameInput">地点名称</label>
                         <input type="text" id="sceneNameInput" placeholder="如：东南门">

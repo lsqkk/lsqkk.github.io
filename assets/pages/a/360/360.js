@@ -17,6 +17,8 @@ let scenesData = [];
 let pendingData = [];
 let database = null;
 let map = null;
+let mapCardHome = null;
+let mapCardNext = null;
 let vectorSource = null;
 let previewViewer = null;
 let pickMarkerSource = null;
@@ -115,6 +117,7 @@ function cacheElements() {
     el.panelToggleBtn = document.getElementById('panelToggleBtn');
     el.mapToggleBtn = document.getElementById('mapToggleBtn');
     el.mapCard = document.querySelector('.map-card');
+    el.copyApkLink = document.getElementById('copyApkLink');
     el.uploadArea = document.getElementById('uploadArea');
     el.fileInput = document.getElementById('fileInput');
     el.sceneNameInput = document.getElementById('sceneNameInput');
@@ -588,6 +591,20 @@ function setupEventListeners() {
         el.mapCard.addEventListener('click', (event) => {
             if (el.mapCard.classList.contains('expanded')) {
                 event.stopPropagation();
+            }
+        });
+    }
+    if (el.copyApkLink) {
+        el.copyApkLink.addEventListener('click', () => {
+            const link = 'https://img.130923.xyz/drive/2026/1774862908183-jlwpl4.apk';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(() => {
+                    setUploadStatus('下载链接已复制');
+                }).catch(() => {
+                    window.prompt('复制下载链接：', link);
+                });
+            } else {
+                window.prompt('复制下载链接：', link);
             }
         });
     }
@@ -1426,6 +1443,19 @@ function toggleMapExpand(force) {
     const shouldExpand = typeof force === 'boolean'
         ? force
         : !el.mapCard.classList.contains('expanded');
+    if (shouldExpand) {
+        if (!mapCardHome) {
+            mapCardHome = el.mapCard.parentElement;
+            mapCardNext = el.mapCard.nextElementSibling;
+        }
+        document.body.appendChild(el.mapCard);
+    } else if (mapCardHome) {
+        if (mapCardNext && mapCardHome.contains(mapCardNext)) {
+            mapCardHome.insertBefore(el.mapCard, mapCardNext);
+        } else {
+            mapCardHome.appendChild(el.mapCard);
+        }
+    }
     el.mapCard.classList.toggle('expanded', shouldExpand);
     if (el.mapToggleBtn) {
         el.mapToggleBtn.textContent = shouldExpand ? '收起地图' : '放大地图';
