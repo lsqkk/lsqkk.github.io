@@ -501,6 +501,7 @@ function renderSceneList(filter = '') {
 async function loadScene(scene) {
     if (!scene) return;
     currentScene = scene;
+    refreshMapMarkers();
 
     document.querySelectorAll('.scene-item').forEach((item) => item.classList.remove('active'));
 
@@ -593,9 +594,10 @@ function updateNearbyHotspots(scene) {
         const label = escapeHtml(s.name || '未命名');
         const contributor = escapeHtml(s.contributor || '未知');
         const distanceText = `${Math.round(dist)}m`;
+        const pitch = getNearbyPitch(dist);
         const hotspot = {
             id: hotId,
-            pitch: 6,
+            pitch,
             yaw,
             cssClass: 'nearby-hotspot',
             createTooltipFunc: (div) => {
@@ -620,6 +622,13 @@ function updateNearbyHotspots(scene) {
             console.warn('添加附近热点失败:', error);
         }
     });
+}
+
+function getNearbyPitch(dist) {
+    if (dist >= 150) return 6;
+    if (dist <= 60) return 2;
+    const ratio = (dist - 60) / (150 - 60);
+    return 2 + ratio * 4;
 }
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
@@ -980,7 +989,10 @@ async function initMap() {
         source: vectorSource,
         style: (feature) => {
             const status = feature.get('status') || 'approved';
-            const color = status === 'pending' ? 'rgba(255, 107, 53, 0.85)' : 'rgba(52, 152, 219, 0.85)';
+            const isActive = feature.get('active');
+            const color = isActive
+                ? 'rgba(235, 87, 87, 0.95)'
+                : (status === 'pending' ? 'rgba(255, 107, 53, 0.85)' : 'rgba(52, 152, 219, 0.85)');
             return new ol.style.Style({
                 image: new ol.style.Circle({
                     radius: 7,
@@ -1076,6 +1088,7 @@ function refreshMapMarkers() {
         });
         feature.set('sceneId', scene.id);
         feature.set('status', 'approved');
+        feature.set('active', !!(currentScene && currentScene.id === scene.id));
         vectorSource.addFeature(feature);
     });
 
@@ -1087,6 +1100,7 @@ function refreshMapMarkers() {
             });
             feature.set('pendingId', scene.id);
             feature.set('status', 'pending');
+            feature.set('active', false);
             vectorSource.addFeature(feature);
         });
     }
