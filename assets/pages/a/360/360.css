@@ -775,11 +775,11 @@
         }
         .map-card.expanded {
             position: fixed;
-            top: 80px;
+            top: 70px;
             left: 50%;
             transform: translateX(-50%);
-            width: min(92vw, 980px);
-            height: min(70vh, 560px);
+            width: min(94vw, 1100px);
+            height: min(76vh, 620px);
             z-index: 1600;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
         }
@@ -789,19 +789,6 @@
         }
         .map-card.expanded .map-tip {
             display: none;
-        }
-        .map-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.55);
-            z-index: 1500;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
-        .map-backdrop.show {
-            opacity: 1;
-            pointer-events: auto;
         }
         .map-ripple {
             position: absolute;

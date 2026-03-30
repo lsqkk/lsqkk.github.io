@@ -114,7 +114,6 @@ function cacheElements() {
     el.collapseLeft = document.getElementById('collapseLeft');
     el.panelToggleBtn = document.getElementById('panelToggleBtn');
     el.mapToggleBtn = document.getElementById('mapToggleBtn');
-    el.mapBackdrop = document.getElementById('mapBackdrop');
     el.mapCard = document.querySelector('.map-card');
     el.uploadArea = document.getElementById('uploadArea');
     el.fileInput = document.getElementById('fileInput');
@@ -584,9 +583,6 @@ function setupEventListeners() {
     }
     if (el.mapToggleBtn) {
         el.mapToggleBtn.addEventListener('click', () => toggleMapExpand());
-    }
-    if (el.mapBackdrop) {
-        el.mapBackdrop.addEventListener('click', () => toggleMapExpand(false));
     }
     if (el.mapCard) {
         el.mapCard.addEventListener('click', (event) => {
@@ -1431,9 +1427,6 @@ function toggleMapExpand(force) {
         ? force
         : !el.mapCard.classList.contains('expanded');
     el.mapCard.classList.toggle('expanded', shouldExpand);
-    if (el.mapBackdrop) {
-        el.mapBackdrop.classList.toggle('show', shouldExpand);
-    }
     if (el.mapToggleBtn) {
         el.mapToggleBtn.textContent = shouldExpand ? '收起地图' : '放大地图';
     }
