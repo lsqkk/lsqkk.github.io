@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
-const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---

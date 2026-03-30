@@ -5,7 +5,7 @@ import path from "node:path";
 import { parseDynamicEntries } from "../../../../utils/dynamic-entries";
 
 const PROJECT_ROOT = process.cwd();
-const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
 const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");

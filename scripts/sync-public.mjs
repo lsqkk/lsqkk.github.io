@@ -3,15 +3,14 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const PUBLIC_DIR = path.join(ROOT, "public");
-const INDEX_JSON_PATH = path.join(ROOT, "json", "index.json");
-const API_JSON_PATH = path.join(ROOT, "json", "api.json");
+const INDEX_JSON_PATH = path.join(ROOT, "src", "config", "json", "index.json");
+const API_JSON_PATH = path.join(ROOT, "src", "config", "json", "api.json");
 const POSTS_JSON_PATH = path.join(ROOT, "posts", "posts.json");
 const SHICHA_BG_PLACEHOLDER = "__SHICHA_BACKGROUND__";
 const API_BASE_PLACEHOLDER = "__API_BASE__";
 
 const COPY_DIRS = [
   "assets",
-  "json",
 ];
 
 const COPY_FILES = [
@@ -97,6 +96,7 @@ async function main() {
   for (const dir of COPY_DIRS) {
     await rmIfExists(path.join(PUBLIC_DIR, dir));
   }
+  await rmIfExists(path.join(PUBLIC_DIR, "json"));
 
   for (const file of COPY_FILES) {
     await rmIfExists(path.join(PUBLIC_DIR, file));
@@ -106,6 +106,7 @@ async function main() {
   for (const dir of COPY_DIRS) {
     await copyTree(dir, path.join("public", dir));
   }
+  await copyTree(path.join("src", "config", "json"), path.join("public", "json"));
 
   for (const file of COPY_FILES) {
     const src = path.join(ROOT, file);

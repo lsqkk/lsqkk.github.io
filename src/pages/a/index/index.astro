@@ -4,7 +4,7 @@ import path from "node:path";
 import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 
 const PROJECT_ROOT = process.cwd();
-const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
 const projectsPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));

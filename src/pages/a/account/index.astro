@@ -4,7 +4,7 @@ import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 
-const navConfigPath = path.join(process.cwd(), "json", "nav.json");
+const navConfigPath = path.join(process.cwd(), "src", "config", "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
 ---

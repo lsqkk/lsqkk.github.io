@@ -19,18 +19,18 @@ def cli(port, no_browser, host, debug):
     """
     启动JSON配置编辑器Web界面
     
-    打开浏览器访问 http://localhost:5050 查看和编辑json/目录下的所有JSON文件
+    打开浏览器访问 http://localhost:5050 查看和编辑 src/config/json/ 目录下的所有JSON文件
     """
     
     try:
         # 检查json目录是否存在
         from ..utils import get_blog_root
         blog_root = Path(get_blog_root())
-        json_dir = blog_root / 'json'
+        json_dir = blog_root / 'src' / 'config' / 'json'
         
         if not json_dir.exists():
             click.echo(f"❌ 找不到json目录: {json_dir}")
-            click.echo("💡 请先创建json目录，或确保路径正确")
+            click.echo("💡 请先创建 src/config/json 目录，或确保路径正确")
             return
         
         # 尝试导入Flask

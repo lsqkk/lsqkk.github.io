@@ -12,11 +12,11 @@ def cli(year, drafts, count):
     try:
         from ..utils import get_blog_root
         blog_root = Path(get_blog_root())
-        json_dir = blog_root / 'json'
+        json_dir = blog_root / 'src' / 'config' / 'json'
         
         if not json_dir.exists():
-            click.echo("📂 json目录不存在")
-            click.echo("💡 请先创建json目录：mkdir json")
+            click.echo("📂 配置目录不存在")
+            click.echo("💡 请先创建配置目录：mkdir -p src/config/json")
             return
         
         json_files = list(json_dir.glob('*.json'))
@@ -26,7 +26,7 @@ def cli(year, drafts, count):
             return
         
         if not json_files:
-            click.echo("📂 json目录中没有JSON文件")
+            click.echo("📂 配置目录中没有JSON文件")
             return
         
         click.echo(f"📁 找到 {len(json_files)} 个JSON文件:")

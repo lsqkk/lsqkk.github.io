@@ -22,5 +22,6 @@ async function fetchRepos() {
 ```
 
 ## 注意事项
-- 域名变更需同步更新 `api/keys.js` 的允许列表。
+> ⚠ **白名单提示**：域名变更需同步更新 `api/keys.js` 的允许列表，否则前端无法拿到令牌。
+
 - 令牌更新只需改 Vercel 环境变量 `GITHUB_API_KEY`。

@@ -9,7 +9,7 @@
 ## 前端接入步骤
 
 ## 站点密钥来源
-推荐从 `json/nav.json` 的 `login.turnstileSiteKey` 读取，并通过 Astro `define:vars` 注入到 `window.__TURNSTILE_SITE_KEY__`。
+推荐从 `src/config/json/nav.json` 的 `login.turnstileSiteKey` 读取，并通过 Astro `define:vars` 注入到 `window.__TURNSTILE_SITE_KEY__`（构建后会复制到 `/json/nav.json`）。
 
 ### 1. 页面引入
 ```html
@@ -33,5 +33,6 @@ if (!ok) return;
 ```
 
 ## 注意事项
-- 域名变更需同步更新 `api/turnstile-verify.js` 的允许列表与 hostname 校验。
+> ⚠ **白名单提示**：域名变更需同步更新 `api/turnstile-verify.js` 的允许列表与 hostname 校验，否则验证会一直失败。
+
 - `turnstile-guard.js` 会自动渲染所有带 `data-turnstile-kind` 的容器。

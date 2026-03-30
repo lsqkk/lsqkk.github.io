@@ -311,7 +311,7 @@ def run_server(host='127.0.0.1', port=5050, debug=False, json_dir=None):
     """运行Flask服务器"""
     if json_dir is None:
         # 默认使用当前目录下的json文件夹
-        json_dir = Path.cwd() / 'json'
+        json_dir = Path.cwd() / 'src' / 'config' / 'json'
     
     app = create_app(json_dir)
     

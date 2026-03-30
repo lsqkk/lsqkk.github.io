@@ -4,8 +4,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
-const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
-const friendsPath = path.join(PROJECT_ROOT, "json", "friends.json");
+const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
+const friendsPath = path.join(PROJECT_ROOT, "src", "config", "json", "friends.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const friendsData = JSON.parse(await fs.readFile(friendsPath, "utf8"));

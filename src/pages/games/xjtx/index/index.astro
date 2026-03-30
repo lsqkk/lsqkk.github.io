@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const PROJECT_ROOT = process.cwd();
-const navConfigPath = path.join(PROJECT_ROOT, "json", "nav.json");
+const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
 const dataPath = path.join(PROJECT_ROOT, "assets", "pages", "games", "xjtx", "data.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));

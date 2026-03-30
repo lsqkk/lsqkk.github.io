@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const NAV_PATH = path.join(ROOT, "json", "nav.json");
-const INDEX_PATH = path.join(ROOT, "json", "index.json");
+const NAV_PATH = path.join(ROOT, "src", "config", "json", "nav.json");
+const INDEX_PATH = path.join(ROOT, "src", "config", "json", "index.json");
 
 function readJson(filePath, fallback = {}) {
   try {

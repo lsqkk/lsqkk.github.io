@@ -35,3 +35,4 @@ if (typeof firebaseConfig !== 'undefined') {
 - 必须使用 `__API_BASE__/api/firebase-config`，不要写死 `api.130923.xyz`。
 - `firebase-ready.js` 会负责等待配置加载并保证单例初始化，建议所有新页面使用。
 - 如需切换项目，只需在 Vercel 环境变量中更新配置，无需改前端。
+> ⚠ **白名单提示**：域名变更需同步更新 `api/firebase-config.js` 的允许列表，否则配置注入会被拒绝。
