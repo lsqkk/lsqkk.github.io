@@ -159,6 +159,18 @@ function detectDeviceType() {
     });
 }
 
+function ensureTurnstileRendered() {
+    if (!window.QuarkTurnstile) return;
+    const key = window.QuarkTurnstile.getSiteKey();
+    if (!key) {
+        setUploadStatus('验证码未配置，请联系站长');
+        return;
+    }
+    window.QuarkTurnstile.waitReady().then(() => {
+        window.QuarkTurnstile.autoRender();
+    });
+}
+
 function initMobileLayout() {
     setPanelOpen(!isMobile);
 }
@@ -1463,6 +1475,7 @@ async function init() {
     detectDeviceType();
     cacheElements();
     setupEventListeners();
+    ensureTurnstileRendered();
     initMobileLayout();
     checkWatermarkStatus();
     updateLoginPrefill();

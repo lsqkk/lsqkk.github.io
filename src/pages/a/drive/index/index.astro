@@ -45,6 +45,18 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <div class="drive-title">文件上传</div>
                 <div class="drive-local" id="localSyncState">本地记录未同步</div>
             </div>
+            <div class="drive-options">
+                <label class="drive-option">
+                    <input id="keepNameToggle" type="checkbox" checked>
+                    保持原文件名
+                </label>
+                <label class="drive-option">
+                    <input id="nicknameToggle" type="checkbox">
+                    附上昵称
+                </label>
+                <input id="nicknameInput" class="drive-option-input" type="text" placeholder="昵称（可选）">
+            </div>
+            <div class="drive-option-tip" id="optionTip">未勾选“保持原文件名”时，将自动追加时间戳以避免重名。</div>
             <label class="drive-picker" for="fileInput">
                 <span>选择文件（支持多选）</span>
                 <input id="fileInput" type="file" multiple>

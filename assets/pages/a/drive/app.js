@@ -6,6 +6,8 @@
     const DRIVE_ITEMS_KEY = 'quark_drive_items';
     const DRIVE_SYNC_KEY = 'quark_drive_sync_at';
     const MAX_LOCAL_ITEMS = 200;
+    const DRIVE_OPTIONS_KEY = 'quark_drive_options';
+    const LARGE_FILE_THRESHOLD = 100 * 1024 * 1024;
 
     const el = {
         adminSession: document.getElementById('adminSession'),
@@ -28,6 +30,11 @@
 
     /** @type {Array<{name: string, size: number, url: string, uploadedAt: number}>} */
     let uploadedResults = [];
+    let uploadOptions = {
+        keepOriginalName: true,
+        appendNickname: false,
+        nickname: ''
+    };
 
     function setText(target, value) {
         if (target) target.textContent = value;
@@ -104,6 +111,28 @@
                 if (event.key === 'Enter') void adminLogin();
             });
         }
+        const keepNameToggle = document.getElementById('keepNameToggle');
+        const nicknameToggle = document.getElementById('nicknameToggle');
+        const nicknameInput = document.getElementById('nicknameInput');
+        if (keepNameToggle) {
+            keepNameToggle.addEventListener('change', () => {
+                uploadOptions.keepOriginalName = keepNameToggle.checked;
+                persistOptions();
+                updateOptionTip();
+            });
+        }
+        if (nicknameToggle) {
+            nicknameToggle.addEventListener('change', () => {
+                uploadOptions.appendNickname = nicknameToggle.checked;
+                persistOptions();
+            });
+        }
+        if (nicknameInput instanceof HTMLInputElement) {
+            nicknameInput.addEventListener('input', () => {
+                uploadOptions.nickname = nicknameInput.value.trim();
+                persistOptions();
+            });
+        }
         if (el.fileInput) el.fileInput.addEventListener('change', renderSelectedFiles);
         if (el.uploadBtn) el.uploadBtn.addEventListener('click', () => void handleUpload());
         if (el.clearBtn) el.clearBtn.addEventListener('click', clearResults);
@@ -140,24 +169,33 @@
 
         let successCount = 0;
         let failCount = 0;
+        const totalBytes = files.reduce((sum, file) => sum + (file.size || 0), 0) || 1;
+        let completedBytes = 0;
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             try {
-                const presign = await requestPresignedUpload(file);
-                await uploadToR2(presign.uploadUrl, file);
+                const uploadName = buildUploadName(file.name);
+                const presign = await requestPresignedUpload(file, uploadName);
+                await uploadWithRetry(presign.uploadUrl, file, (loaded) => {
+                    const percent = Math.min(100, Math.round(((completedBytes + loaded) / totalBytes) * 100));
+                    if (el.progressBar) el.progressBar.style.width = `${percent}%`;
+                });
                 const record = {
                     name: file.name,
+                    storedName: uploadName,
                     size: file.size,
                     url: presign.publicUrl,
                     uploadedAt: Date.now()
                 };
+                completedBytes += file.size || 0;
                 uploadedResults.push(record);
                 addResultItem(record);
                 appendLocalItem(record);
                 successCount += 1;
             } catch (error) {
                 failCount += 1;
+                completedBytes += file.size || 0;
                 addFailureItem(file.name, error.message || '上传失败');
             }
 
@@ -170,12 +208,25 @@
         setText(el.statusText, `完成：成功 ${successCount}，失败 ${failCount}`);
     }
 
-    async function requestPresignedUpload(file) {
+    function buildUploadName(originalName) {
+        const safeOriginal = sanitizeFileName(originalName);
+        let name = safeOriginal;
+        if (!uploadOptions.keepOriginalName) {
+            name = `${Date.now()}-${safeOriginal}`;
+        }
+        if (uploadOptions.appendNickname && uploadOptions.nickname) {
+            const nick = sanitizeFileName(uploadOptions.nickname);
+            if (nick) name = `${nick}-${name}`;
+        }
+        return name;
+    }
+
+    async function requestPresignedUpload(file, uploadName) {
         const resp = await fetch(`${API_BASE}/api/r2-presign`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                originalName: file.name,
+                originalName: uploadName || file.name,
                 contentType: file.type || 'application/octet-stream',
                 folder: 'drive'
             })
@@ -187,24 +238,55 @@
         return data;
     }
 
-    async function uploadToR2(uploadUrl, file) {
-        const resp = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': file.type || 'application/octet-stream' },
-            body: file
-        });
-        if (!resp.ok) {
-            const text = await resp.text();
-            throw new Error(`上传失败（${resp.status}）：${text.slice(0, 120)}`);
+    async function uploadWithRetry(uploadUrl, file, onProgress) {
+        const maxRetries = file.size >= LARGE_FILE_THRESHOLD ? 2 : 1;
+        let attempt = 0;
+        while (attempt <= maxRetries) {
+            try {
+                await uploadToR2(uploadUrl, file, onProgress);
+                return;
+            } catch (error) {
+                attempt += 1;
+                if (attempt > maxRetries) throw error;
+                await wait(800 * attempt);
+                setText(el.statusText, `大文件上传波动，正在重试（${attempt}/${maxRetries}）...`);
+            }
         }
+    }
+
+    function uploadToR2(uploadUrl, file, onProgress) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('PUT', uploadUrl, true);
+            xhr.timeout = 0;
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable && typeof onProgress === 'function') {
+                    onProgress(event.loaded);
+                }
+            };
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve();
+                } else {
+                    reject(new Error(`上传失败（${xhr.status}）：${String(xhr.responseText || '').slice(0, 120)}`));
+                }
+            };
+            xhr.onerror = () => reject(new Error('网络错误，上传中断'));
+            xhr.onabort = () => reject(new Error('上传已取消'));
+            xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+            xhr.send(file);
+        });
     }
 
     function addResultItem(record) {
         if (!el.resultBox) return;
         const box = document.createElement('div');
         box.className = 'drive-item';
+        const nameLine = record.storedName && record.storedName !== record.name
+            ? `${escapeHtml(record.name)} → ${escapeHtml(record.storedName)}`
+            : escapeHtml(record.name);
         box.innerHTML = `
-            <p><strong>${escapeHtml(record.name)}</strong></p>
+            <p><strong>${nameLine}</strong></p>
             <p>大小：${formatFileSize(record.size)}</p>
             <p>直链：<a href="${record.url}" target="_blank" rel="noopener noreferrer">${record.url}</a></p>
             <div class="drive-item-actions">
@@ -314,9 +396,13 @@
             el.historyBox.innerHTML = '<div class="drive-item">暂无本地记录</div>';
             return;
         }
-        el.historyBox.innerHTML = items.map((item) => `
+        el.historyBox.innerHTML = items.map((item) => {
+            const nameLine = item.storedName && item.storedName !== item.name
+                ? `${escapeHtml(item.name)} → ${escapeHtml(item.storedName)}`
+                : escapeHtml(item.name);
+            return `
             <div class="drive-item">
-                <p><strong>${escapeHtml(item.name)}</strong></p>
+                <p><strong>${nameLine}</strong></p>
                 <p>大小：${formatFileSize(item.size)}</p>
                 <p>时间：${formatTime(item.uploadedAt)}</p>
                 <p>直链：<a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.url}</a></p>
@@ -324,7 +410,8 @@
                     <button type="button" data-copy="${item.url}">复制直链</button>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
         el.historyBox.querySelectorAll('button[data-copy]').forEach((btn) => {
             btn.addEventListener('click', () => copyText(btn.getAttribute('data-copy') || '', '直链'));
         });
@@ -346,8 +433,55 @@
         setText(el.localSyncState, `本地记录已同步 · ${formatTime(ts)}`);
     }
 
+    function wait(ms) {
+        return new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+
+    function sanitizeFileName(name) {
+        return String(name || '')
+            .replace(/[\\/:*?"<>|]/g, '-')
+            .replace(/\\s+/g, ' ')
+            .trim();
+    }
+
+    function loadOptions() {
+        try {
+            const raw = localStorage.getItem(DRIVE_OPTIONS_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                uploadOptions = {
+                    keepOriginalName: parsed?.keepOriginalName !== false,
+                    appendNickname: !!parsed?.appendNickname,
+                    nickname: String(parsed?.nickname || '').trim()
+                };
+            }
+        } catch (error) {
+            console.warn('读取上传选项失败:', error);
+        }
+        const keepNameToggle = document.getElementById('keepNameToggle');
+        const nicknameToggle = document.getElementById('nicknameToggle');
+        const nicknameInput = document.getElementById('nicknameInput');
+        if (keepNameToggle) keepNameToggle.checked = uploadOptions.keepOriginalName;
+        if (nicknameToggle) nicknameToggle.checked = uploadOptions.appendNickname;
+        if (nicknameInput instanceof HTMLInputElement) nicknameInput.value = uploadOptions.nickname;
+        updateOptionTip();
+    }
+
+    function persistOptions() {
+        localStorage.setItem(DRIVE_OPTIONS_KEY, JSON.stringify(uploadOptions));
+    }
+
+    function updateOptionTip() {
+        const tip = document.getElementById('optionTip');
+        if (!tip) return;
+        tip.textContent = uploadOptions.keepOriginalName
+            ? '已保持原文件名，若担心重名可取消此项自动追加时间戳。'
+            : '已自动追加时间戳以避免重名。';
+    }
+
     function init() {
         bindEvents();
+        loadOptions();
         updateAdminUI();
         updateLocalSyncState();
         if (isAdmin()) {

@@ -60,6 +60,49 @@
     padding: 10px 12px;
 }
 
+.drive-options {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.drive-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #e7f3ff;
+    background: rgba(8, 28, 48, 0.35);
+    border: 1px solid rgba(139, 198, 255, 0.3);
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+.drive-option input[type="checkbox"] {
+    accent-color: #67b7ff;
+}
+
+.drive-option-input {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(4, 22, 40, 0.45);
+    color: #eef6ff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    outline: none;
+}
+
+.drive-option-input::placeholder {
+    color: rgba(223, 238, 255, 0.6);
+}
+
+.drive-option-tip {
+    font-size: 12px;
+    color: rgba(223, 238, 255, 0.75);
+    margin-bottom: 12px;
+}
+
 .drive-login {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
@@ -229,6 +272,10 @@
     }
 
     .drive-login {
+        grid-template-columns: 1fr;
+    }
+
+    .drive-options {
         grid-template-columns: 1fr;
     }
 }
