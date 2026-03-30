@@ -626,9 +626,9 @@ function updateNearbyHotspots(scene) {
 
 function getNearbyPitch(dist) {
     if (dist >= 150) return 3;
-    if (dist <= 60) return -3;
+    if (dist <= 60) return -1;
     const ratio = (dist - 60) / (150 - 60);
-    return -3 + ratio * 6;
+    return -1 + ratio * 4;
 }
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
