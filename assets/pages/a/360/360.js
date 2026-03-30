@@ -7,8 +7,8 @@ const DB_PENDING = `${DB_ROOT}/pending`;
 const DB_META = `${DB_ROOT}/meta`;
 const ADMIN_TOKEN_KEY = 'xjtu360_admin_token';
 const MAP_BOUNDS = {
-    nw: [108.97932615618622, 34.25098474333452],
-    se: [108.98800060553368, 34.241275648541404]
+    nw: [108.974535, 34.252553],
+    se: [108.983328, 34.242716]
 };
 
 let currentViewer = null;
@@ -286,7 +286,7 @@ function watchScenes() {
         renderSceneList(el.searchInput ? el.searchInput.value : '');
         refreshMapMarkers();
         renderMissingCoords();
-    renderAllScenes();
+        renderAllScenes();
         if (!currentScene && scenesData.length > 0) {
             void loadScene(scenesData[0]);
         }
