@@ -21,6 +21,7 @@ let mapCardHome = null;
 let mapCardNext = null;
 let vectorSource = null;
 let previewViewer = null;
+let nearbyHotspotIds = new Set();
 let pickMarkerSource = null;
 let pickMarkerFeature = null;
 let isUnlocked = localStorage.getItem('watermarkUnlocked') === 'true';
@@ -345,6 +346,8 @@ function watchScenes() {
         renderAllScenes();
         if (!currentScene && scenesData.length > 0) {
             void loadScene(scenesData[0]);
+        } else if (currentScene) {
+            updateNearbyHotspots(currentScene);
         }
     });
 }
@@ -477,6 +480,7 @@ async function loadScene(scene) {
     currentViewer.on('load', function () {
         addCustomContextMenuItem(currentViewer);
         setPanoramaLoading(false);
+        updateNearbyHotspots(scene);
     });
 }
 
@@ -511,6 +515,74 @@ function loadImageFromBlob(blob) {
         };
         img.src = url;
     });
+}
+
+function updateNearbyHotspots(scene) {
+    if (!currentViewer || !scene) return;
+    if (typeof scene.lat !== 'number' || typeof scene.lng !== 'number') return;
+    // 清理旧的热点
+    nearbyHotspotIds.forEach((id) => {
+        try { currentViewer.removeHotSpot(id); } catch { /* ignore */ }
+    });
+    nearbyHotspotIds = new Set();
+
+    const neighbors = scenesData.filter((s) => s && s.id !== scene.id && typeof s.lat === 'number' && typeof s.lng === 'number');
+    neighbors.forEach((s) => {
+        const dist = haversineDistance(scene.lat, scene.lng, s.lat, s.lng);
+        if (dist > 200) return;
+        const bearing = bearingDegrees(scene.lat, scene.lng, s.lat, s.lng);
+        const yaw = normalizeYaw(bearing);
+        const size = Math.max(10, 22 - (dist / 200) * 10);
+        const opacity = Math.max(0.35, 0.9 - (dist / 200) * 0.6);
+        const hotId = `near_${s.id}`;
+        const hotspot = {
+            id: hotId,
+            pitch: 0,
+            yaw,
+            cssClass: 'nearby-hotspot',
+            createTooltipFunc: (div) => {
+                div.classList.add('nearby-hotspot');
+                div.style.setProperty('--nearby-size', `${size}px`);
+                div.style.setProperty('--nearby-opacity', `${opacity}`);
+                div.title = `${s.name || '未知地点'} · ${Math.round(dist)}m`;
+                div.addEventListener('click', () => {
+                    selectScene(s);
+                });
+            }
+        };
+        try {
+            currentViewer.addHotSpot(hotspot);
+            nearbyHotspotIds.add(hotId);
+        } catch (error) {
+            console.warn('添加附近热点失败:', error);
+        }
+    });
+}
+
+function haversineDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function bearingDegrees(lat1, lng1, lat2, lng2) {
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const toDeg = (rad) => (rad * 180) / Math.PI;
+    const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
+    const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(toRad(lng2 - lng1));
+    const brng = toDeg(Math.atan2(y, x));
+    return (brng + 360) % 360;
+}
+
+function normalizeYaw(deg) {
+    let yaw = deg;
+    while (yaw > 180) yaw -= 360;
+    while (yaw < -180) yaw += 360;
+    return yaw;
 }
 
 function updateWatermark(scene) {

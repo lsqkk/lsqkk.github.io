@@ -853,6 +853,21 @@
             opacity: 1;
             pointer-events: auto;
         }
+        .nearby-hotspot {
+            width: var(--nearby-size, 16px);
+            height: var(--nearby-size, 16px);
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.32);
+            border: 2px solid rgba(52, 152, 219, 0.85);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) inset, 0 6px 16px rgba(0, 0, 0, 0.25);
+            opacity: var(--nearby-opacity, 0.85);
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .nearby-hotspot:hover {
+            transform: scale(1.15);
+            opacity: 1;
+        }
         .loader-ring {
             width: 46px;
             height: 46px;
