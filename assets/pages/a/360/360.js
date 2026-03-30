@@ -293,7 +293,7 @@ function applySouthFromPreview(type, id) {
     }
     const inputId = type === 'pending' ? `pending-south-${id}`
         : type === 'scene' ? `scene-south-${id}`
-        : `scene-all-south-${id}`;
+            : `scene-all-south-${id}`;
     const input = document.getElementById(inputId);
     if (input) input.value = value;
 }
@@ -625,10 +625,10 @@ function updateNearbyHotspots(scene) {
 }
 
 function getNearbyPitch(dist) {
-    if (dist >= 150) return 6;
-    if (dist <= 60) return 2;
+    if (dist >= 150) return 3;
+    if (dist <= 60) return -3;
     const ratio = (dist - 60) / (150 - 60);
-    return 2 + ratio * 4;
+    return -3 + ratio * 6;
 }
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
