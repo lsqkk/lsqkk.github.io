@@ -29,6 +29,8 @@ let isMobile = false;
 let isAdmin = false;
 let pickMode = null;
 let uploadFile = null;
+let currentPreviewContext = null;
+let uploadObjectUrl = null;
 
 const el = {};
 
@@ -125,6 +127,9 @@ function cacheElements() {
     el.sceneUserInput = document.getElementById('sceneUserInput');
     el.sceneLatInput = document.getElementById('sceneLatInput');
     el.sceneLngInput = document.getElementById('sceneLngInput');
+    el.sceneSouthInput = document.getElementById('sceneSouthInput');
+    el.calibrateSouthBtn = document.getElementById('calibrateSouthBtn');
+    el.applySouthBtn = document.getElementById('applySouthBtn');
     el.pickPointBtn = document.getElementById('pickPointBtn');
     el.submitUploadBtn = document.getElementById('submitUploadBtn');
     el.uploadPreview = document.getElementById('uploadPreview');
@@ -258,6 +263,51 @@ function updateLoginPrefill() {
     }
 }
 
+function startSouthCalibration(type, scene) {
+    if (type === 'upload') {
+        if (!uploadFile) {
+            setUploadStatus('请先选择全景图');
+            return;
+        }
+        loadUploadPreviewPanorama();
+        currentPreviewContext = { type: 'upload', id: 'upload' };
+        setUploadStatus('请旋转预览，使南方向对齐竖线后点击“确认南向”');
+        return;
+    }
+    if (scene) {
+        previewPanorama(scene, { type, id: scene.id });
+        currentPreviewContext = { type, id: scene.id };
+    }
+}
+
+function applySouthFromPreview(type, id) {
+    if (!previewViewer || typeof previewViewer.getYaw !== 'function') {
+        alert('请先打开预览并对齐南方向');
+        return;
+    }
+    const yaw = normalizeYaw(previewViewer.getYaw());
+    const value = yaw.toFixed(1);
+    if (type === 'upload') {
+        if (el.sceneSouthInput) el.sceneSouthInput.value = value;
+        return;
+    }
+    const inputId = type === 'pending' ? `pending-south-${id}`
+        : type === 'scene' ? `scene-south-${id}`
+        : `scene-all-south-${id}`;
+    const input = document.getElementById(inputId);
+    if (input) input.value = value;
+}
+
+function loadUploadPreviewPanorama() {
+    if (!el.previewPanorama) return;
+    if (uploadObjectUrl) {
+        try { URL.revokeObjectURL(uploadObjectUrl); } catch { /* ignore */ }
+        uploadObjectUrl = null;
+    }
+    uploadObjectUrl = URL.createObjectURL(uploadFile);
+    previewPanorama({ id: 'upload', name: '上传预览', path: uploadObjectUrl }, { type: 'upload', id: 'upload' });
+}
+
 
 async function bootstrapScenesFromJson() {
     let jsonData = [];
@@ -275,6 +325,7 @@ async function bootstrapScenesFromJson() {
         path: scene.path,
         lat: scene.lat ?? null,
         lng: scene.lng ?? null,
+        southYaw: scene.southYaw ?? null,
         source: 'json'
     })));
     renderSceneList(el.searchInput ? el.searchInput.value : '');
@@ -319,6 +370,7 @@ async function seedScenesIfNeeded() {
                 path: scene.path,
                 lat: scene.lat ?? null,
                 lng: scene.lng ?? null,
+                southYaw: scene.southYaw ?? null,
                 createdAt: now,
                 approvedAt: now,
                 source: 'seed'
@@ -367,11 +419,13 @@ function normalizeSnapshot(snapshot) {
         const item = data[id] || {};
         const latNum = typeof item.lat === 'number' ? item.lat : parseFloat(item.lat);
         const lngNum = typeof item.lng === 'number' ? item.lng : parseFloat(item.lng);
+        const southNum = typeof item.southYaw === 'number' ? item.southYaw : parseFloat(item.southYaw);
         return {
             id,
             ...item,
             lat: Number.isNaN(latNum) ? null : latNum,
-            lng: Number.isNaN(lngNum) ? null : lngNum
+            lng: Number.isNaN(lngNum) ? null : lngNum,
+            southYaw: Number.isNaN(southNum) ? null : southNum
         };
     });
     return dedupeScenes(list).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -451,7 +505,7 @@ async function loadScene(scene) {
     document.querySelectorAll('.scene-item').forEach((item) => item.classList.remove('active'));
 
     let panoramaPath = scene.path;
-    if (isMobile && scene.path && !scene.path.startsWith('data:')) {
+    if (isMobile && scene.path && !scene.path.startsWith('data:') && !scene.path.startsWith('blob:')) {
         try {
             panoramaPath = await getMobilePanorama(scene.path);
         } catch (error) {
@@ -531,7 +585,8 @@ function updateNearbyHotspots(scene) {
         const dist = haversineDistance(scene.lat, scene.lng, s.lat, s.lng);
         if (dist > 200) return;
         const bearing = bearingDegrees(scene.lat, scene.lng, s.lat, s.lng);
-        const yaw = normalizeYaw(bearing);
+        const baseYaw = typeof scene.southYaw === 'number' ? scene.southYaw : 0;
+        const yaw = normalizeYaw((bearing - 180) + baseYaw);
         const size = Math.max(10, 22 - (dist / 200) * 10);
         const opacity = Math.max(0.35, 0.9 - (dist / 200) * 0.6);
         const hotId = `near_${s.id}`;
@@ -646,6 +701,17 @@ function setupEventListeners() {
         });
     }
 
+    if (el.calibrateSouthBtn) {
+        el.calibrateSouthBtn.addEventListener('click', () => {
+            startSouthCalibration('upload');
+        });
+    }
+    if (el.applySouthBtn) {
+        el.applySouthBtn.addEventListener('click', () => {
+            applySouthFromPreview('upload');
+        });
+    }
+
     if (el.submitUploadBtn) {
         el.submitUploadBtn.addEventListener('click', () => { void submitUpload(); });
     }
@@ -730,7 +796,8 @@ function handleFileSelected(file) {
         };
         reader.readAsDataURL(file);
     }
-    setUploadStatus('图片已选择，填写信息后提交审核');
+    loadUploadPreviewPanorama();
+    setUploadStatus('图片已选择，请校准南向后提交审核');
 }
 
 async function submitUpload() {
@@ -742,6 +809,7 @@ async function submitUpload() {
     const contributor = (el.sceneUserInput?.value || '').trim();
     const lat = parseFloat(el.sceneLatInput?.value || '');
     const lng = parseFloat(el.sceneLngInput?.value || '');
+    const southYaw = parseFloat(el.sceneSouthInput?.value || '');
 
     if (!name || !contributor) {
         setUploadStatus('请填写地点名称和上传者');
@@ -749,6 +817,10 @@ async function submitUpload() {
     }
     if (Number.isNaN(lat) || Number.isNaN(lng)) {
         setUploadStatus('请填写经纬度或在地图上选点');
+        return;
+    }
+    if (Number.isNaN(southYaw)) {
+        setUploadStatus('请校准南向（对齐竖线后确认）');
         return;
     }
 
@@ -769,6 +841,7 @@ async function submitUpload() {
             path: presign.publicUrl,
             lat,
             lng,
+            southYaw,
             createdAt: Date.now(),
             uploaderUid: profile.uid || '',
             uploaderLogin: profile.login || '',
@@ -795,6 +868,7 @@ function resetUploadForm() {
     updateLoginPrefill();
     if (el.sceneLatInput) el.sceneLatInput.value = '';
     if (el.sceneLngInput) el.sceneLngInput.value = '';
+    if (el.sceneSouthInput) el.sceneSouthInput.value = '';
     if (el.uploadPreview) el.uploadPreview.innerHTML = '';
 }
 
@@ -1095,24 +1169,30 @@ function renderPendingList() {
             <div class="field row">
                 <input id="pending-lat-${item.id}" type="number" step="0.000001" placeholder="纬度" value="${formatNumber(item.lat)}">
                 <input id="pending-lng-${item.id}" type="number" step="0.000001" placeholder="经度" value="${formatNumber(item.lng)}">
+                <input id="pending-south-${item.id}" type="number" step="0.1" placeholder="南向" value="${formatNumber(item.southYaw)}">
             </div>
             <div class="actions">
                 <button class="btn ghost" data-action="preview">预览全景</button>
                 <button class="btn ghost" data-action="pick">地图选点</button>
+                <button class="btn ghost" data-action="south">取当前方向</button>
                 <button class="btn primary" data-action="approve">通过</button>
                 <button class="btn ghost" data-action="reject">删除</button>
             </div>
         `;
         block.querySelector('[data-action="preview"]').addEventListener('click', () => {
-            previewPanorama(item);
+            previewPanorama(item, { type: 'pending', id: item.id });
         });
         block.querySelector('[data-action="pick"]').addEventListener('click', () => {
             setPickMode({ type: 'pending', id: item.id, sticky: true });
         });
+        block.querySelector('[data-action="south"]').addEventListener('click', () => {
+            applySouthFromPreview('pending', item.id);
+        });
         block.querySelector('[data-action="approve"]').addEventListener('click', () => {
             const lat = parseFloat(document.getElementById(`pending-lat-${item.id}`).value || '');
             const lng = parseFloat(document.getElementById(`pending-lng-${item.id}`).value || '');
-            void approvePending(item.id, lat, lng, block);
+            const southYaw = parseFloat(document.getElementById(`pending-south-${item.id}`).value || '');
+            void approvePending(item.id, lat, lng, southYaw, block);
         });
         block.querySelector('[data-action="reject"]').addEventListener('click', () => {
             void deletePending(item.id);
@@ -1126,7 +1206,11 @@ function renderMissingCoords() {
     el.missingCoordsList.innerHTML = '';
     if (!isAdmin) return;
 
-    const missing = scenesData.filter((scene) => !(typeof scene.lat === 'number' && typeof scene.lng === 'number'));
+    const missing = scenesData.filter((scene) => {
+        const hasCoords = typeof scene.lat === 'number' && typeof scene.lng === 'number';
+        const hasSouth = typeof scene.southYaw === 'number';
+        return !(hasCoords && hasSouth);
+    });
     if (!missing.length) {
         el.missingCoordsList.innerHTML = '<div class="admin-item">坐标已齐全</div>';
         return;
@@ -1141,25 +1225,31 @@ function renderMissingCoords() {
             <div class="field row">
                 <input id="scene-lat-${scene.id}" type="number" step="0.000001" placeholder="纬度" value="${formatNumber(scene.lat)}">
                 <input id="scene-lng-${scene.id}" type="number" step="0.000001" placeholder="经度" value="${formatNumber(scene.lng)}">
+                <input id="scene-south-${scene.id}" type="number" step="0.1" placeholder="南向" value="${formatNumber(scene.southYaw)}">
             </div>
             <div class="actions">
                 <button class="btn ghost" data-action="pick">地图选点</button>
+                <button class="btn ghost" data-action="south">取当前方向</button>
                 <button class="btn primary" data-action="save">保存</button>
             </div>
         `;
         block.querySelector('[data-action="pick"]').addEventListener('click', () => {
             setPickMode({ type: 'scene', id: scene.id, sticky: true });
         });
+        block.querySelector('[data-action="south"]').addEventListener('click', () => {
+            applySouthFromPreview('scene', scene.id);
+        });
         block.querySelector('[data-action="save"]').addEventListener('click', () => {
             const lat = parseFloat(document.getElementById(`scene-lat-${scene.id}`).value || '');
             const lng = parseFloat(document.getElementById(`scene-lng-${scene.id}`).value || '');
-            void updateSceneCoords(scene.id, lat, lng);
+            const southYaw = parseFloat(document.getElementById(`scene-south-${scene.id}`).value || '');
+            void updateSceneCoords(scene.id, lat, lng, southYaw);
         });
         el.missingCoordsList.appendChild(block);
     });
 }
 
-async function approvePending(id, lat, lng, blockEl) {
+async function approvePending(id, lat, lng, southYaw, blockEl) {
     if (!isAdmin) return;
     const item = pendingData.find((p) => p.id === id);
     if (!item) return;
@@ -1167,6 +1257,11 @@ async function approvePending(id, lat, lng, blockEl) {
         alert('请填写经纬度');
         return;
     }
+    if (Number.isNaN(southYaw)) {
+        alert('请校准南向');
+        return;
+    }
+    const southVal = southYaw;
 
     const payload = {
         name: item.name || '未命名',
@@ -1174,6 +1269,7 @@ async function approvePending(id, lat, lng, blockEl) {
         path: item.path,
         lat,
         lng,
+        southYaw: southVal,
         createdAt: item.createdAt || Date.now(),
         approvedAt: Date.now(),
         source: 'user'
@@ -1195,13 +1291,22 @@ async function deletePending(id) {
     await database.ref(`${DB_PENDING}/${id}`).remove();
 }
 
-async function updateSceneCoords(id, lat, lng) {
+async function updateSceneCoords(id, lat, lng, southYaw) {
     if (!isAdmin) return;
     if (Number.isNaN(lat) || Number.isNaN(lng)) {
         alert('请填写经纬度');
         return;
     }
-    await database.ref(`${DB_SCENES}/${id}`).update({ lat, lng, updatedAt: Date.now() });
+    if (Number.isNaN(southYaw)) {
+        alert('请校准南向');
+        return;
+    }
+    const southVal = southYaw;
+    const payload = { updatedAt: Date.now() };
+    if (!Number.isNaN(lat)) payload.lat = lat;
+    if (!Number.isNaN(lng)) payload.lng = lng;
+    if (!Number.isNaN(southYaw)) payload.southYaw = southYaw;
+    await database.ref(`${DB_SCENES}/${id}`).update(payload);
 }
 
 function renderAllScenes() {
@@ -1234,9 +1339,11 @@ function renderAllScenes() {
             <div class="field row">
                 <input id="scene-all-lat-${scene.id}" type="number" step="0.000001" placeholder="纬度" value="${formatNumber(scene.lat)}">
                 <input id="scene-all-lng-${scene.id}" type="number" step="0.000001" placeholder="经度" value="${formatNumber(scene.lng)}">
+                <input id="scene-all-south-${scene.id}" type="number" step="0.1" placeholder="南向" value="${formatNumber(scene.southYaw)}">
             </div>
             <div class="actions">
                 <button class="btn ghost" data-action="pick">地图选点</button>
+                <button class="btn ghost" data-action="south">取当前方向</button>
                 <button class="btn primary" data-action="save">保存修改</button>
                 <button class="btn ghost" data-action="preview">预览全景</button>
                 <button class="btn ghost" data-action="delete">删除</button>
@@ -1245,16 +1352,20 @@ function renderAllScenes() {
         block.querySelector('[data-action="pick"]').addEventListener('click', () => {
             setPickMode({ type: 'scene-all', id: scene.id, sticky: true });
         });
+        block.querySelector('[data-action="south"]').addEventListener('click', () => {
+            applySouthFromPreview('scene-all', scene.id);
+        });
         block.querySelector('[data-action="save"]').addEventListener('click', () => {
             const name = document.getElementById(`scene-name-${scene.id}`).value.trim();
             const contributor = document.getElementById(`scene-contrib-${scene.id}`).value.trim();
             const path = document.getElementById(`scene-path-${scene.id}`).value.trim();
             const lat = parseFloat(document.getElementById(`scene-all-lat-${scene.id}`).value || '');
             const lng = parseFloat(document.getElementById(`scene-all-lng-${scene.id}`).value || '');
-            void updateSceneInfo(scene.id, { name, contributor, path, lat, lng });
+            const southYaw = parseFloat(document.getElementById(`scene-all-south-${scene.id}`).value || '');
+            void updateSceneInfo(scene.id, { name, contributor, path, lat, lng, southYaw });
         });
         block.querySelector('[data-action="preview"]').addEventListener('click', () => {
-            previewPanorama(scene);
+            previewPanorama(scene, { type: 'scene-all', id: scene.id });
         });
         block.querySelector('[data-action="delete"]').addEventListener('click', () => {
             void deleteScene(scene.id);
@@ -1271,6 +1382,7 @@ async function updateSceneInfo(id, payload) {
     if (payload.path) next.path = payload.path;
     if (!Number.isNaN(payload.lat)) next.lat = payload.lat;
     if (!Number.isNaN(payload.lng)) next.lng = payload.lng;
+    if (!Number.isNaN(payload.southYaw)) next.southYaw = payload.southYaw;
     next.updatedAt = Date.now();
     await database.ref(`${DB_SCENES}/${id}`).update(next);
 }
@@ -1299,11 +1411,12 @@ function selectScene(scene) {
     }
 }
 
-async function previewPanorama(scene) {
+async function previewPanorama(scene, context) {
     if (!scene || !scene.path) return;
     if (!el.previewPanorama || !el.previewPanorama.classList) return;
+    if (context) currentPreviewContext = context;
     let panoramaPath = scene.path;
-    if (isMobile && scene.path && !scene.path.startsWith('data:')) {
+    if (isMobile && scene.path && !scene.path.startsWith('data:') && !scene.path.startsWith('blob:')) {
         try {
             panoramaPath = await getMobilePanorama(scene.path);
         } catch {

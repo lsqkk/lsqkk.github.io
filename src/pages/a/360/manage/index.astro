@@ -97,20 +97,30 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
                             <input type="number" id="sceneLngInput" step="0.000001" placeholder="108.xxxxx">
                         </div>
                     </div>
-                <div class="field row">
-                    <button class="btn ghost" id="pickPointBtn" type="button">地图选点</button>
-                    <button class="btn primary" id="submitUploadBtn" type="button">提交审核</button>
-                </div>
-                <div class="field captcha-field">
-                    <label>安全校验</label>
-                    <div class="turnstile-row">
-                        <div id="xjtu360Turnstile" class="turnstile-box" data-turnstile-kind="xjtu360-upload"></div>
+                    <div class="field row">
+                        <div class="field-half">
+                            <label for="sceneSouthInput">南向（度）</label>
+                            <input type="number" id="sceneSouthInput" step="0.1" placeholder="对齐竖线后点击确认">
+                        </div>
+                        <div class="field-half field row">
+                            <button class="btn ghost" id="calibrateSouthBtn" type="button">校准南向</button>
+                            <button class="btn ghost" id="applySouthBtn" type="button">确认南向</button>
+                        </div>
                     </div>
-                    <div class="helper">通过验证后即可提交审核，防止脚本刷图。</div>
+                    <div class="field row">
+                        <button class="btn ghost" id="pickPointBtn" type="button">地图选点</button>
+                        <button class="btn primary" id="submitUploadBtn" type="button">提交审核</button>
+                    </div>
+                    <div class="field captcha-field">
+                        <label>安全校验</label>
+                        <div class="turnstile-row">
+                            <div id="xjtu360Turnstile" class="turnstile-box" data-turnstile-kind="xjtu360-upload"></div>
+                        </div>
+                        <div class="helper">通过验证后即可提交审核，防止脚本刷图。</div>
+                    </div>
+                    <div class="upload-preview" id="uploadPreview"></div>
+                    <div class="upload-status" id="uploadStatus">等待上传</div>
                 </div>
-                <div class="upload-preview" id="uploadPreview"></div>
-                <div class="upload-status" id="uploadStatus">等待上传</div>
-            </div>
             </div>
 
             <div class="manage-card">
@@ -124,6 +134,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
                 <div class="preview-card">
                     <div class="preview-header">全景预览</div>
                     <div id="previewPanorama"></div>
+                    <div class="orientation-line" aria-hidden="true"></div>
                     <div class="preview-loader" id="previewLoader">
                         <div class="loader-ring"></div>
                         <div class="loader-text">预览加载中...</div>
@@ -138,7 +149,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
                 <div class="admin-list" id="pendingList"></div>
             </div>
             <div class="manage-card admin-only" id="missingCoordsSection">
-                <div class="section-title">待补充坐标</div>
+                <div class="section-title">待补充坐标 / 南向</div>
                 <div class="admin-list" id="missingCoordsList"></div>
             </div>
             <div class="manage-card admin-only" id="allScenesSection">
