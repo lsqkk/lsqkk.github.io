@@ -776,6 +776,7 @@ async function initMap() {
     map.on('click', (evt) => {
         const [lon, lat] = ol.proj.toLonLat(evt.coordinate);
         showPickMarker(lat, lon);
+        showMapRipple(evt.pixel);
         if (pickMode) {
             applyPickedPoint(lat, lon);
             return;
@@ -914,6 +915,18 @@ function showPickMarker(lat, lng) {
         const label = pickMode ? '已选择坐标' : '已点击坐标';
         el.mapTip.textContent = `${label}: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     }
+}
+
+function showMapRipple(pixel) {
+    if (!map) return;
+    const viewport = map.getViewport();
+    if (!viewport) return;
+    const ripple = document.createElement('div');
+    ripple.className = 'map-ripple';
+    ripple.style.left = `${pixel[0]}px`;
+    ripple.style.top = `${pixel[1]}px`;
+    viewport.appendChild(ripple);
+    window.setTimeout(() => ripple.remove(), 700);
 }
 
 function renderPendingList() {
@@ -1339,7 +1352,7 @@ function setPanelOpen(open) {
     if (el.panelToggleBtn) {
         el.panelToggleBtn.classList.toggle('opened', shouldOpen);
         el.panelToggleBtn.innerHTML = shouldOpen
-            ? '<i class="fas fa-chevron-left"></i>'
+            ? '<i class="fas fa-chevron-left"></i><span>收起侧栏</span>'
             : '<i class="fas fa-list"></i>';
     }
 }
