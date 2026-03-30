@@ -679,7 +679,7 @@ async function submitUpload() {
         };
 
         await database.ref(DB_PENDING).push(payload);
-        await postLybMessage('我在 XJTU 360° 上传了一张全景待审核');
+        await postLybMessage(`我在 XJTU 360° 上传了一张全景待审核：${name}`);
 
         setUploadStatus('已提交审核，管理员通过后对所有人可见');
         resetUploadForm();
