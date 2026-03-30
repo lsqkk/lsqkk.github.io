@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -24,8 +25,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/js/user-profile.js"></script>
 </head>
 
-<body>
+<body class="manage-body luxury-body">
     <script is:inline src="/assets/js/nav.js"></script>
+    <LuxuryBackground />
 
     <div class="manage-shell">
         <header class="manage-header">
@@ -106,6 +108,10 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <div class="manage-card admin-only" id="missingCoordsSection">
                 <div class="section-title">待补充坐标</div>
                 <div class="admin-list" id="missingCoordsList"></div>
+            </div>
+            <div class="manage-card admin-only" id="allScenesSection">
+                <div class="section-title">全部地点管理</div>
+                <div class="admin-list" id="allScenesList"></div>
             </div>
         </section>
     </div>

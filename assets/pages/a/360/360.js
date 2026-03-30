@@ -136,6 +136,8 @@ function cacheElements() {
     el.pendingList = document.getElementById('pendingList');
     el.missingCoordsSection = document.getElementById('missingCoordsSection');
     el.missingCoordsList = document.getElementById('missingCoordsList');
+    el.allScenesSection = document.getElementById('allScenesSection');
+    el.allScenesList = document.getElementById('allScenesList');
     el.watermark = document.getElementById('watermark');
     el.passwordDialog = document.getElementById('passwordDialog');
     el.passwordInput = document.getElementById('passwordInput');
@@ -282,6 +284,7 @@ function watchScenes() {
         renderSceneList(el.searchInput ? el.searchInput.value : '');
         refreshMapMarkers();
         renderMissingCoords();
+    renderAllScenes();
         if (!currentScene && scenesData.length > 0) {
             void loadScene(scenesData[0]);
         }
@@ -487,7 +490,7 @@ function setupEventListeners() {
 
     if (el.pickPointBtn) {
         el.pickPointBtn.addEventListener('click', () => {
-            setPickMode({ type: 'upload' });
+            setPickMode({ type: 'upload', id: 'upload', sticky: true });
         });
     }
 
@@ -742,7 +745,13 @@ async function initMap() {
             const pendingId = feature.get('pendingId');
             if (sceneId) {
                 const scene = scenesData.find((s) => s.id === sceneId);
-                if (scene) void loadScene(scene);
+                if (scene) {
+                    if (el.previewPanorama) {
+                        void previewPanorama(scene);
+                    } else if (document.getElementById('panorama')) {
+                        void loadScene(scene);
+                    }
+                }
             } else if (pendingId) {
                 const pending = pendingData.find((p) => p.id === pendingId);
                 if (pending) {
@@ -819,6 +828,11 @@ function refreshMapMarkers() {
 }
 
 function setPickMode(mode) {
+    if (pickMode && mode && pickMode.type === mode.type && pickMode.id === mode.id) {
+        pickMode = null;
+        if (el.mapTip) el.mapTip.textContent = '点击地图可选择经纬度';
+        return;
+    }
     pickMode = mode;
     if (el.mapTip) {
         el.mapTip.textContent = '请在地图上点击选择坐标';
@@ -840,9 +854,16 @@ function applyPickedPoint(lat, lng) {
         const lngEl = document.getElementById(`pending-lng-${pickMode.id}`);
         if (latEl) latEl.value = lat.toFixed(6);
         if (lngEl) lngEl.value = lng.toFixed(6);
+    } else if (pickMode.type === 'scene-all') {
+        const latEl = document.getElementById(`scene-all-lat-${pickMode.id}`);
+        const lngEl = document.getElementById(`scene-all-lng-${pickMode.id}`);
+        if (latEl) latEl.value = lat.toFixed(6);
+        if (lngEl) lngEl.value = lng.toFixed(6);
     }
-    pickMode = null;
-    if (el.mapTip) el.mapTip.textContent = '点击地图可选择经纬度';
+    if (!pickMode || !pickMode.sticky) {
+        pickMode = null;
+        if (el.mapTip) el.mapTip.textContent = '点击地图可选择经纬度';
+    }
 }
 
 function renderPendingList() {
@@ -876,7 +897,7 @@ function renderPendingList() {
             previewPanorama(item);
         });
         block.querySelector('[data-action="pick"]').addEventListener('click', () => {
-            setPickMode({ type: 'pending', id: item.id });
+            setPickMode({ type: 'pending', id: item.id, sticky: true });
         });
         block.querySelector('[data-action="approve"]').addEventListener('click', () => {
             const lat = parseFloat(document.getElementById(`pending-lat-${item.id}`).value || '');
@@ -917,7 +938,7 @@ function renderMissingCoords() {
             </div>
         `;
         block.querySelector('[data-action="pick"]').addEventListener('click', () => {
-            setPickMode({ type: 'scene', id: scene.id });
+            setPickMode({ type: 'scene', id: scene.id, sticky: true });
         });
         block.querySelector('[data-action="save"]').addEventListener('click', () => {
             const lat = parseFloat(document.getElementById(`scene-lat-${scene.id}`).value || '');
@@ -966,6 +987,77 @@ async function updateSceneCoords(id, lat, lng) {
     await database.ref(`${DB_SCENES}/${id}`).update({ lat, lng, updatedAt: Date.now() });
 }
 
+function renderAllScenes() {
+    if (!el.allScenesList) return;
+    el.allScenesList.innerHTML = '';
+    if (!isAdmin) return;
+
+    if (!scenesData.length) {
+        el.allScenesList.innerHTML = '<div class="admin-item">暂无场景数据</div>';
+        return;
+    }
+
+    scenesData.forEach((scene) => {
+        const block = document.createElement('div');
+        block.className = 'admin-item';
+        block.innerHTML = `
+            <div><strong>${escapeHtml(scene.name || '未命名')}</strong></div>
+            <div class="field">
+                <label>地点名称</label>
+                <input id="scene-name-${scene.id}" type="text" value="${escapeHtml(scene.name || '')}">
+            </div>
+            <div class="field">
+                <label>贡献者</label>
+                <input id="scene-contrib-${scene.id}" type="text" value="${escapeHtml(scene.contributor || '')}">
+            </div>
+            <div class="field">
+                <label>全景地址</label>
+                <input id="scene-path-${scene.id}" type="text" value="${escapeHtml(scene.path || '')}">
+            </div>
+            <div class="field row">
+                <input id="scene-all-lat-${scene.id}" type="number" step="0.000001" placeholder="纬度" value="${formatNumber(scene.lat)}">
+                <input id="scene-all-lng-${scene.id}" type="number" step="0.000001" placeholder="经度" value="${formatNumber(scene.lng)}">
+            </div>
+            <div class="actions">
+                <button class="btn ghost" data-action="pick">地图选点</button>
+                <button class="btn primary" data-action="save">保存修改</button>
+                <button class="btn ghost" data-action="preview">预览全景</button>
+                <button class="btn ghost" data-action="delete">删除</button>
+            </div>
+        `;
+        block.querySelector('[data-action="pick"]').addEventListener('click', () => {
+            setPickMode({ type: 'scene-all', id: scene.id, sticky: true });
+        });
+        block.querySelector('[data-action="save"]').addEventListener('click', () => {
+            const name = document.getElementById(`scene-name-${scene.id}`).value.trim();
+            const contributor = document.getElementById(`scene-contrib-${scene.id}`).value.trim();
+            const path = document.getElementById(`scene-path-${scene.id}`).value.trim();
+            const lat = parseFloat(document.getElementById(`scene-all-lat-${scene.id}`).value || '');
+            const lng = parseFloat(document.getElementById(`scene-all-lng-${scene.id}`).value || '');
+            void updateSceneInfo(scene.id, { name, contributor, path, lat, lng });
+        });
+        block.querySelector('[data-action="preview"]').addEventListener('click', () => {
+            previewPanorama(scene);
+        });
+        block.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            void deleteScene(scene.id);
+        });
+        el.allScenesList.appendChild(block);
+    });
+}
+
+async function updateSceneInfo(id, payload) {
+    if (!isAdmin) return;
+    const next = {};
+    if (payload.name) next.name = payload.name;
+    if (payload.contributor) next.contributor = payload.contributor;
+    if (payload.path) next.path = payload.path;
+    if (!Number.isNaN(payload.lat)) next.lat = payload.lat;
+    if (!Number.isNaN(payload.lng)) next.lng = payload.lng;
+    next.updatedAt = Date.now();
+    await database.ref(`${DB_SCENES}/${id}`).update(next);
+}
+
 async function deleteScene(id) {
     if (!isAdmin) return;
     const ok = confirm('确定要删除该场景吗？');
@@ -975,7 +1067,7 @@ async function deleteScene(id) {
 
 async function previewPanorama(scene) {
     if (!scene || !scene.path) return;
-    if (!el.previewPanorama) return;
+    if (!el.previewPanorama || !el.previewPanorama.classList) return;
     let panoramaPath = scene.path;
     if (isMobile && scene.path && !scene.path.startsWith('data:')) {
         try {
@@ -1078,6 +1170,7 @@ function updateAdminUI() {
     if (el.adminActions) el.adminActions.style.display = isAdmin ? 'flex' : 'none';
     if (el.pendingSection) el.pendingSection.style.display = isAdmin ? 'block' : 'none';
     if (el.missingCoordsSection) el.missingCoordsSection.style.display = isAdmin ? 'block' : 'none';
+    if (el.allScenesSection) el.allScenesSection.style.display = isAdmin ? 'block' : 'none';
     if (isAdmin) {
         setAdminStatus('管理员已登录');
     } else {
@@ -1086,6 +1179,7 @@ function updateAdminUI() {
     refreshMapMarkers();
     renderPendingList();
     renderMissingCoords();
+    renderAllScenes();
 }
 
 async function verifyPassword() {

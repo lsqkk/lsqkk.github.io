@@ -22,6 +22,11 @@
             background: #000;
             color: #333;
         }
+        body.manage-body {
+            overflow: auto;
+            height: auto;
+            background: transparent;
+        }
         #panorama {
             width: 100vw;
             height: 100vh;
@@ -487,6 +492,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            min-height: 100vh;
         }
         .manage-header {
             display: flex;
