@@ -19,6 +19,8 @@ let database = null;
 let map = null;
 let vectorSource = null;
 let previewViewer = null;
+let pickMarkerSource = null;
+let pickMarkerFeature = null;
 let isUnlocked = localStorage.getItem('watermarkUnlocked') === 'true';
 let isMobile = false;
 let isAdmin = false;
@@ -724,6 +726,17 @@ async function initMap() {
     });
 
     vectorSource = new ol.source.Vector();
+    pickMarkerSource = new ol.source.Vector();
+    const pickLayer = new ol.layer.Vector({
+        source: pickMarkerSource,
+        style: new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 10,
+                fill: new ol.style.Fill({ color: 'rgba(52, 152, 219, 0.35)' }),
+                stroke: new ol.style.Stroke({ color: 'rgba(52, 152, 219, 0.9)', width: 2 })
+            })
+        })
+    });
     const vectorLayer = new ol.layer.Vector({
         source: vectorSource,
         style: (feature) => {
@@ -741,7 +754,7 @@ async function initMap() {
 
     map = new ol.Map({
         target: 'sceneMap',
-        layers: [vecLayer, cvaLayer, vectorLayer],
+        layers: [vecLayer, cvaLayer, vectorLayer, pickLayer],
         view: new ol.View({
             center: ol.proj.fromLonLat([108.983, 34.246]),
             zoom: 16
@@ -752,6 +765,7 @@ async function initMap() {
 
     map.on('click', (evt) => {
         const [lon, lat] = ol.proj.toLonLat(evt.coordinate);
+        showPickMarker(lat, lon);
         if (pickMode) {
             applyPickedPoint(lat, lon);
             return;
@@ -846,7 +860,7 @@ function setPickMode(mode) {
     }
     pickMode = mode;
     if (el.mapTip) {
-        el.mapTip.textContent = '请在地图上点击选择坐标';
+        el.mapTip.textContent = '请在地图上点击选择坐标（可多次点击）';
     }
 }
 
@@ -874,6 +888,21 @@ function applyPickedPoint(lat, lng) {
     if (!pickMode || !pickMode.sticky) {
         pickMode = null;
         if (el.mapTip) el.mapTip.textContent = '点击地图可选择经纬度';
+    }
+}
+
+function showPickMarker(lat, lng) {
+    if (!pickMarkerSource) return;
+    const coord = ol.proj.fromLonLat([lng, lat]);
+    if (!pickMarkerFeature) {
+        pickMarkerFeature = new ol.Feature({ geometry: new ol.geom.Point(coord) });
+        pickMarkerSource.addFeature(pickMarkerFeature);
+    } else {
+        pickMarkerFeature.setGeometry(new ol.geom.Point(coord));
+    }
+    if (el.mapTip) {
+        const label = pickMode ? '已选择坐标' : '已点击坐标';
+        el.mapTip.textContent = `${label}: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     }
 }
 

@@ -7,6 +7,23 @@
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             --border-radius: 12px;
             --transition: all 0.3s ease;
+            --glass-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.35);
+            --panel-text: #1f2937;
+            --panel-muted: #5a6a7a;
+            --panel-strong-bg: rgba(15, 23, 42, 0.82);
+            --panel-strong-text: #f8fafc;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --glass-bg: rgba(15, 23, 42, 0.72);
+                --glass-border: rgba(148, 163, 184, 0.18);
+                --panel-text: #e2e8f0;
+                --panel-muted: #94a3b8;
+                --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+                --panel-strong-bg: rgba(15, 23, 42, 0.92);
+                --panel-strong-text: #f1f5f9;
+            }
         }
         * {
             box-sizing: border-box;
@@ -48,11 +65,12 @@
         .control-panel {
             position: fixed;
             z-index: 100;
-            background: var(--light-bg);
+            background: var(--glass-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
             transition: var(--transition);
+            border: 1px solid var(--glass-border);
         }
         .control-panel.collapsed {
             opacity: 0.7;
@@ -71,8 +89,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: var(--dark-bg);
-            color: white;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 58, 138, 0.7));
+            color: var(--panel-strong-text);
             border-radius: var(--border-radius) var(--border-radius) 0 0;
             position: relative;
         }
@@ -105,6 +123,7 @@
             padding: 15px;
             flex: 1;
             overflow-y: auto;
+            color: var(--panel-text);
         }
         /* 搜索框样式 */
         .search-container {
@@ -118,7 +137,15 @@
             border-radius: 30px;
             font-size: 0.9rem;
             transition: var(--transition);
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--panel-text);
+        }
+        @media (prefers-color-scheme: dark) {
+            .search-input {
+                background: rgba(15, 23, 42, 0.6);
+                border-color: rgba(148, 163, 184, 0.35);
+                color: #e2e8f0;
+            }
         }
         .search-input:focus {
             outline: none;
@@ -149,6 +176,15 @@
             transition: var(--transition);
             border: 1px solid #eee;
         }
+        @media (prefers-color-scheme: dark) {
+            .scene-item {
+                background: rgba(15, 23, 42, 0.65);
+                border-color: rgba(148, 163, 184, 0.2);
+            }
+            .scene-contributor {
+                color: var(--panel-muted);
+            }
+        }
         .scene-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -177,10 +213,11 @@
             font-weight: 600;
             margin: 0 0 5px 0;
             font-size: 1rem;
+            color: var(--panel-text);
         }
         .scene-contributor {
             font-size: 0.85rem;
-            color: #666;
+            color: var(--panel-muted);
             margin: 0;
         }
         /* 上传区域样式 */
@@ -194,6 +231,15 @@
             background: rgba(240, 240, 240, 0.5);
             margin-bottom: 15px;
         }
+        @media (prefers-color-scheme: dark) {
+            .upload-area {
+                background: rgba(15, 23, 42, 0.45);
+                border-color: rgba(148, 163, 184, 0.3);
+            }
+            .upload-text {
+                color: var(--panel-muted);
+            }
+        }
         .upload-area:hover {
             border-color: var(--primary-color);
             background: rgba(52, 152, 219, 0.05);
@@ -206,7 +252,7 @@
         .upload-text {
             margin: 0;
             font-size: 0.9rem;
-            color: #555;
+            color: var(--panel-muted);
         }
         /* 水印样式 */
         .watermark {
@@ -235,17 +281,19 @@
             justify-content: center;
         }
         .password-box {
-            background: white;
+            background: var(--glass-bg);
             border-radius: var(--border-radius);
             padding: 30px;
             width: 90%;
             max-width: 400px;
             box-shadow: var(--shadow);
             text-align: center;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
         }
         .password-title {
             margin-top: 0;
-            color: var(--secondary-color);
+            color: var(--panel-text);
         }
         .password-input {
             width: 100%;
@@ -254,6 +302,14 @@
             border-radius: 6px;
             margin: 15px 0;
             font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--panel-text);
+        }
+        @media (prefers-color-scheme: dark) {
+            .password-input {
+                background: rgba(15, 23, 42, 0.6);
+                border-color: rgba(148, 163, 184, 0.35);
+            }
         }
         .password-btn {
             background: var(--primary-color);
@@ -378,8 +434,13 @@
             gap: 8px;
             padding: 10px 12px;
             border-radius: 10px;
-            background: rgba(44, 62, 80, 0.08);
+            background: rgba(255, 255, 255, 0.7);
             margin-bottom: 12px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .admin-bar {
+                background: rgba(15, 23, 42, 0.55);
+            }
         }
         .admin-login {
             display: flex;
@@ -390,6 +451,14 @@
             padding: 8px 10px;
             border-radius: 8px;
             border: 1px solid #d5d5d5;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--panel-text);
+        }
+        @media (prefers-color-scheme: dark) {
+            .admin-login input {
+                background: rgba(15, 23, 42, 0.6);
+                border-color: rgba(148, 163, 184, 0.35);
+            }
         }
         .admin-actions {
             display: none;
@@ -398,12 +467,12 @@
         }
         .admin-tag {
             font-size: 0.85rem;
-            color: #2c3e50;
+            color: var(--panel-text);
             font-weight: 600;
         }
         .admin-status {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--panel-muted);
         }
         .btn {
             border: none;
@@ -417,8 +486,8 @@
             color: #fff;
         }
         .btn.ghost {
-            background: rgba(44, 62, 80, 0.08);
-            color: #2c3e50;
+            background: rgba(15, 23, 42, 0.08);
+            color: var(--panel-text);
         }
         .admin-btn {
             border: none;
@@ -430,8 +499,8 @@
             transition: var(--transition);
         }
         .admin-btn.ghost {
-            background: rgba(44, 62, 80, 0.08);
-            color: #2c3e50;
+            background: rgba(15, 23, 42, 0.08);
+            color: var(--panel-text);
         }
         .upload-form {
             display: flex;
@@ -456,16 +525,24 @@
         }
         .field label {
             font-size: 0.85rem;
-            color: #555;
+            color: var(--panel-muted);
         }
         .field input {
             padding: 8px 10px;
             border-radius: 8px;
             border: 1px solid #d5d5d5;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--panel-text);
+        }
+        @media (prefers-color-scheme: dark) {
+            .field input {
+                background: rgba(15, 23, 42, 0.6);
+                border-color: rgba(148, 163, 184, 0.35);
+            }
         }
         .upload-preview {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--panel-muted);
         }
         .upload-preview img {
             width: 100%;
@@ -474,22 +551,25 @@
         }
         .upload-status {
             font-size: 0.85rem;
-            color: #555;
+            color: var(--panel-muted);
         }
         .action-card {
             border-radius: 12px;
             border: 1px solid rgba(0, 0, 0, 0.08);
             padding: 12px;
             margin-bottom: 14px;
-            background: #fff;
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+            backdrop-filter: blur(10px);
         }
         .action-title {
             font-weight: 600;
             margin-bottom: 6px;
+            color: var(--panel-text);
         }
         .action-desc {
             font-size: 0.85rem;
-            color: #666;
+            color: var(--panel-muted);
             margin-bottom: 10px;
         }
         .manage-shell {
@@ -522,10 +602,12 @@
             gap: 16px;
         }
         .manage-card {
-            background: rgba(255, 255, 255, 0.96);
+            background: var(--glass-bg);
             border-radius: 14px;
             padding: 16px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
         }
         .preview-card {
             margin-top: 14px;
@@ -535,8 +617,9 @@
         }
         .preview-header {
             padding: 8px 12px;
-            background: rgba(44, 62, 80, 0.06);
+            background: rgba(44, 62, 80, 0.12);
             font-weight: 600;
+            color: var(--panel-text);
         }
         #previewPanorama {
             width: 100%;
@@ -548,15 +631,18 @@
             border: 1px solid rgba(0, 0, 0, 0.08);
             overflow: hidden;
             margin: 10px 0 14px;
-            background: #fff;
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+            backdrop-filter: blur(10px);
         }
         .map-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 10px 12px;
-            background: rgba(44, 62, 80, 0.06);
+            background: rgba(15, 23, 42, 0.12);
             font-weight: 600;
+            color: var(--panel-text);
         }
         .map-actions {
             display: flex;
@@ -567,7 +653,7 @@
             border-radius: 8px;
             padding: 6px 10px;
             background: rgba(44, 62, 80, 0.15);
-            color: #2c3e50;
+            color: var(--panel-text);
             cursor: pointer;
         }
         #sceneMap {
@@ -577,8 +663,8 @@
         .map-tip {
             padding: 8px 12px;
             font-size: 0.8rem;
-            color: #666;
-            background: rgba(44, 62, 80, 0.04);
+            color: var(--panel-muted);
+            background: rgba(15, 23, 42, 0.04);
         }
         .admin-section {
             margin-top: 16px;
@@ -587,25 +673,35 @@
             font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 8px;
-            color: #2c3e50;
+            color: var(--panel-text);
         }
         .admin-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            max-height: min(380px, 50vh);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 4px;
+        }
+        @media (max-width: 768px) {
+            .admin-list {
+                max-height: 260px;
+            }
         }
         .admin-item {
             padding: 10px;
             border-radius: 10px;
-            background: #fff;
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
             gap: 6px;
+            color: var(--panel-text);
         }
         .admin-item .meta {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--panel-muted);
         }
         .admin-item .actions {
             display: flex;
