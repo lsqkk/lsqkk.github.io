@@ -35,11 +35,7 @@ import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
                 <h1>交大360° 上传与管理</h1>
                 <p>上传全景、地图选点、审核发布与坐标维护</p>
             </div>
-            <a class="btn ghost" href="/a/360/">返回全景首页</a>
-        </header>
-
-        <section class="manage-grid">
-            <div class="manage-card">
+            <div class="manage-actions">
                 <div class="admin-bar" id="adminBar">
                     <div class="admin-login" id="adminLoginForm">
                         <input type="password" id="adminPassword" placeholder="管理员密码">
@@ -51,7 +47,12 @@ import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
                     </div>
                     <div class="admin-status" id="adminStatus">管理员未登录</div>
                 </div>
+                <a class="btn ghost" href="/a/360/">返回全景首页</a>
+            </div>
+        </header>
 
+        <section class="manage-grid">
+            <div class="manage-card">
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
                     <p class="upload-text">点击或拖拽上传全景图</p>

@@ -537,6 +537,13 @@ function setupEventListeners() {
     if (el.mapBackdrop) {
         el.mapBackdrop.addEventListener('click', () => toggleMapExpand(false));
     }
+    if (el.mapCard) {
+        el.mapCard.addEventListener('click', (event) => {
+            if (el.mapCard.classList.contains('expanded')) {
+                event.stopPropagation();
+            }
+        });
+    }
 
     if (el.adminLoginBtn) {
         el.adminLoginBtn.addEventListener('click', () => { void adminLogin(); });

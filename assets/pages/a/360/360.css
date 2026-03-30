@@ -471,6 +471,11 @@
             padding: 8px 12px;
             cursor: pointer;
             transition: var(--transition);
+            text-decoration: none;
+        }
+        .btn:link,
+        .btn:visited {
+            text-decoration: none;
         }
         .btn.primary {
             background: var(--primary-color);
@@ -578,6 +583,17 @@
             justify-content: space-between;
             gap: 16px;
             color: #fff;
+            flex-wrap: wrap;
+        }
+        .manage-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .manage-actions .admin-bar {
+            margin-bottom: 0;
         }
         .manage-header h1 {
             margin: 0 0 6px 0;
