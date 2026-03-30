@@ -109,6 +109,12 @@
           "icon": "fa-image"
         },
         {
+          "name": "夸克网盘",
+          "link": "drive",
+          "description": "管理员专用的文件上传与直链分享工具，支持本地记录同步",
+          "icon": "fa-cloud-upload-alt"
+        },
+        {
           "name": "夸克博客留言板",
           "link": "/blog/lyb",
           "description": "用户互动与留言交流平台，支持实时评论和消息通知",

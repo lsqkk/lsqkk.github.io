@@ -1,0 +1,234 @@
+.drive-shell {
+    width: min(980px, 92vw);
+    margin: 34px auto 60px;
+}
+
+.drive-panel {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    color: #f4f8ff;
+}
+
+.drive-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.drive-back-link {
+    text-decoration: none;
+    color: #d8ebff;
+    border: 1px solid rgba(216, 235, 255, 0.5);
+    padding: 7px 12px;
+    border-radius: 8px;
+}
+
+.drive-back-link:hover {
+    background: rgba(216, 235, 255, 0.15);
+}
+
+.drive-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.drive-session,
+.drive-local {
+    font-size: 13px;
+    color: rgba(223, 238, 255, 0.85);
+    background: rgba(8, 28, 48, 0.45);
+    border: 1px dashed rgba(139, 198, 255, 0.4);
+    border-radius: 10px;
+    padding: 6px 10px;
+}
+
+.drive-tip {
+    margin: 8px 0 16px;
+    font-size: 13px;
+    color: rgba(223, 238, 255, 0.85);
+    background: rgba(8, 28, 48, 0.4);
+    border: 1px dashed rgba(139, 198, 255, 0.4);
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.drive-login {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.drive-login input {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(4, 22, 40, 0.45);
+    color: #eef6ff;
+    padding: 10px 12px;
+    border-radius: 10px;
+    outline: none;
+}
+
+.drive-login input::placeholder {
+    color: rgba(223, 238, 255, 0.6);
+}
+
+.drive-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.drive-actions button,
+.drive-top-row button,
+.drive-login button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #2f6fa2;
+    color: #fff;
+    cursor: pointer;
+}
+
+.drive-actions button:hover,
+.drive-top-row button:hover,
+.drive-login button:hover {
+    filter: brightness(1.08);
+}
+
+.drive-actions .ghost,
+.drive-top-row .ghost,
+.drive-login .ghost {
+    background: rgba(255, 255, 255, 0.16);
+    color: #e7f3ff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.drive-status {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #e2f0ff;
+}
+
+.drive-picker {
+    display: block;
+    border: 1px dashed rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(0, 18, 35, 0.35);
+}
+
+.drive-picker input {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    color: #dfeeff;
+}
+
+.drive-progress-wrap {
+    width: 100%;
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.drive-progress {
+    width: 0%;
+    height: 100%;
+    background: #67b7ff;
+    transition: width 0.2s ease;
+}
+
+.drive-file-list {
+    margin: 12px 0 0;
+    padding-left: 20px;
+    color: #ebf5ff;
+}
+
+.drive-result,
+.drive-history {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
+}
+
+.drive-item {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(4, 25, 45, 0.45);
+    display: grid;
+    gap: 8px;
+}
+
+.drive-item p {
+    margin: 0;
+    word-break: break-all;
+}
+
+.drive-item a {
+    color: #95d3ff;
+    text-decoration: none;
+}
+
+.drive-item a:hover {
+    text-decoration: underline;
+}
+
+.drive-item-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.drive-item-actions button {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.16);
+    color: #e7f3ff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.drive-item-actions button:hover {
+    filter: brightness(1.08);
+}
+
+.admin-only {
+    display: none;
+}
+
+.admin-ready .admin-only {
+    display: block;
+}
+
+@media (max-width: 720px) {
+    .drive-shell {
+        width: min(980px, 95vw);
+    }
+
+    .drive-top-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .drive-panel {
+        padding: 16px;
+    }
+
+    .drive-login {
+        grid-template-columns: 1fr;
+    }
+}
