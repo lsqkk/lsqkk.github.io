@@ -45,11 +45,10 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
     </div>
 
-    <!-- 桌面端隐藏/显示按钮 -->
-    <button class="hide-show-btn" id="toggleLeft"><i class="fas fa-chevron-right"></i></button>
-
-    <!-- 移动端专用按钮 -->
-    <button class="mobile-toggle-btn" id="mobileMenuToggle"><i class="fas fa-list"></i></button>
+    <!-- 侧栏展开/收起按钮 -->
+    <button class="panel-fab" id="panelToggleBtn" aria-label="展开或收起侧栏">
+        <i class="fas fa-list"></i>
+    </button>
 
     <!-- 左侧面板 - 图片列表 -->
     <div class="control-panel" id="leftPanel">
@@ -61,9 +60,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
         <div class="panel-content">
             <div class="action-card">
-                <p class="action-title">提交全景 / 管理审核</p>
-                <p class="action-desc">上传全景、补充坐标、审核与管理请进入后台页面。</p>
-                <a class="btn primary" href="/a/360/manage">进入上传与管理</a>
+                <p class="action-title">提交全景</p>
+                <p class="action-desc">XJTUer，期待您成为XJTU360°的贡献者！</p>
+                <a class="btn primary" href="/a/360/manage">上传全景图片（附工具）</a>
             </div>
 
             <div class="search-container">
@@ -73,6 +72,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <div class="map-card">
                 <div class="map-header">
                     <span>校园矢量路标图</span>
+                    <div class="map-actions">
+                        <button class="map-btn" id="mapToggleBtn" type="button">放大地图</button>
+                    </div>
                 </div>
                 <div id="sceneMap"></div>
                 <div class="map-tip" id="mapTip">点击点位可定位对应地点</div>
@@ -81,6 +83,12 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <!-- 场景列表将通过JS动态生成 -->
             </div>
         </div>
+    </div>
+    <div class="map-backdrop" id="mapBackdrop"></div>
+
+    <div class="pano-loader" id="panoLoader" aria-live="polite">
+        <div class="loader-ring"></div>
+        <div class="loader-text">全景加载中...</div>
     </div>
     <script id="xjtu360Script" src="/assets/pages/a/360/360.js"></script>
     <script is:inline src="/assets/js/disable-right-click.js"></script>

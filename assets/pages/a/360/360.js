@@ -111,9 +111,11 @@ async function ensureTiandituKey(timeout = 5000) {
 
 function cacheElements() {
     el.leftPanel = document.getElementById('leftPanel');
-    el.toggleLeft = document.getElementById('toggleLeft');
     el.collapseLeft = document.getElementById('collapseLeft');
-    el.mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    el.panelToggleBtn = document.getElementById('panelToggleBtn');
+    el.mapToggleBtn = document.getElementById('mapToggleBtn');
+    el.mapBackdrop = document.getElementById('mapBackdrop');
+    el.mapCard = document.querySelector('.map-card');
     el.uploadArea = document.getElementById('uploadArea');
     el.fileInput = document.getElementById('fileInput');
     el.sceneNameInput = document.getElementById('sceneNameInput');
@@ -128,6 +130,8 @@ function cacheElements() {
     el.sceneList = document.getElementById('sceneList');
     el.mapTip = document.getElementById('mapTip');
     el.previewPanorama = document.getElementById('previewPanorama');
+    el.previewLoader = document.getElementById('previewLoader');
+    el.panoLoader = document.getElementById('panoLoader');
     el.adminLoginForm = document.getElementById('adminLoginForm');
     el.adminPassword = document.getElementById('adminPassword');
     el.adminLoginBtn = document.getElementById('adminLoginBtn');
@@ -156,8 +160,7 @@ function detectDeviceType() {
 }
 
 function initMobileLayout() {
-    if (!isMobile) return;
-    if (el.leftPanel) el.leftPanel.style.display = 'none';
+    setPanelOpen(!isMobile);
 }
 
 async function ensureFirebaseDatabase() {
@@ -400,22 +403,27 @@ async function loadScene(scene) {
         }
     }
 
+    setPanoramaLoading(true);
+
     if (currentViewer) {
         currentViewer.destroy();
     }
 
+    const baseHfov = isMobile ? 80 : 100;
     currentViewer = pannellum.viewer('panorama', {
         type: 'equirectangular',
         panorama: panoramaPath,
         autoLoad: true,
         showControls: true,
         autoRotate: true,
+        hfov: baseHfov,
         hotSpots: []
     });
 
     updateWatermark(scene);
     currentViewer.on('load', function () {
         addCustomContextMenuItem(currentViewer);
+        setPanoramaLoading(false);
     });
 }
 
@@ -518,14 +526,16 @@ function setupEventListeners() {
     }
 
     if (el.collapseLeft) {
-        el.collapseLeft.addEventListener('click', () => togglePanel('leftPanel', 'toggleLeft'));
+        el.collapseLeft.addEventListener('click', () => setPanelOpen(false));
     }
-    if (el.toggleLeft) {
-        el.toggleLeft.addEventListener('click', () => togglePanel('leftPanel', 'toggleLeft'));
+    if (el.panelToggleBtn) {
+        el.panelToggleBtn.addEventListener('click', () => togglePanelState());
     }
-
-    if (el.mobileMenuToggle) {
-        el.mobileMenuToggle.addEventListener('click', () => toggleMobilePanel('leftPanel'));
+    if (el.mapToggleBtn) {
+        el.mapToggleBtn.addEventListener('click', () => toggleMapExpand());
+    }
+    if (el.mapBackdrop) {
+        el.mapBackdrop.addEventListener('click', () => toggleMapExpand(false));
     }
 
     if (el.adminLoginBtn) {
@@ -1140,14 +1150,20 @@ async function previewPanorama(scene) {
             panoramaPath = scene.path;
         }
     }
+    setPreviewLoading(true);
     if (previewViewer) {
         previewViewer.destroy();
     }
+    const previewHfov = isMobile ? 85 : 100;
     previewViewer = pannellum.viewer('previewPanorama', {
         type: 'equirectangular',
         panorama: panoramaPath,
         autoLoad: true,
-        showControls: true
+        showControls: true,
+        hfov: previewHfov
+    });
+    previewViewer.on('load', function () {
+        setPreviewLoading(false);
     });
 }
 function getAdminToken() {
@@ -1294,16 +1310,9 @@ async function sha256(message) {
 
 function togglePanel(panelId, toggleBtnId) {
     const panel = document.getElementById(panelId);
-    const toggleBtn = document.getElementById(toggleBtnId);
-    if (!panel || !toggleBtn) return;
-
-    if (panel.style.display === 'none') {
-        panel.style.display = 'flex';
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-    } else {
-        panel.style.display = 'none';
-        toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-    }
+    if (!panel) return;
+    const isHidden = panel.style.display === 'none';
+    setPanelOpen(isHidden);
 }
 
 function toggleMobilePanel(panelId) {
@@ -1314,6 +1323,58 @@ function toggleMobilePanel(panelId) {
     } else {
         panel.classList.add('panel-mobile-visible');
     }
+}
+
+function setPanelOpen(open) {
+    if (!el.leftPanel) return;
+    const shouldOpen = !!open;
+    el.leftPanel.style.display = shouldOpen ? 'flex' : 'none';
+    if (el.leftPanel.classList) {
+        if (shouldOpen) {
+            el.leftPanel.classList.add('panel-mobile-visible');
+        } else {
+            el.leftPanel.classList.remove('panel-mobile-visible');
+        }
+    }
+    if (el.panelToggleBtn) {
+        el.panelToggleBtn.classList.toggle('opened', shouldOpen);
+        el.panelToggleBtn.innerHTML = shouldOpen
+            ? '<i class="fas fa-chevron-left"></i>'
+            : '<i class="fas fa-list"></i>';
+    }
+}
+
+function togglePanelState() {
+    if (!el.leftPanel) return;
+    const isOpen = el.leftPanel.style.display !== 'none';
+    setPanelOpen(!isOpen);
+}
+
+function toggleMapExpand(force) {
+    if (!el.mapCard) return;
+    const shouldExpand = typeof force === 'boolean'
+        ? force
+        : !el.mapCard.classList.contains('expanded');
+    el.mapCard.classList.toggle('expanded', shouldExpand);
+    if (el.mapBackdrop) {
+        el.mapBackdrop.classList.toggle('show', shouldExpand);
+    }
+    if (el.mapToggleBtn) {
+        el.mapToggleBtn.textContent = shouldExpand ? '收起地图' : '放大地图';
+    }
+    if (map) {
+        setTimeout(() => map.updateSize(), 200);
+    }
+}
+
+function setPanoramaLoading(isLoading) {
+    if (!el.panoLoader) return;
+    el.panoLoader.classList.toggle('show', !!isLoading);
+}
+
+function setPreviewLoading(isLoading) {
+    if (!el.previewLoader) return;
+    el.previewLoader.classList.toggle('show', !!isLoading);
 }
 
 function addCustomContextMenuItem(viewer) {
@@ -1342,6 +1403,7 @@ async function init() {
     initMobileLayout();
     checkWatermarkStatus();
     updateLoginPrefill();
+    setPanoramaLoading(true);
     void bootstrapScenesFromJson();
 
     try {

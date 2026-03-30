@@ -89,10 +89,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 58, 138, 0.7));
+            background: var(--panel-strong-bg);
             color: var(--panel-strong-text);
             border-radius: var(--border-radius) var(--border-radius) 0 0;
             position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
         .panel-title {
             font-size: 1.1rem;
@@ -331,50 +332,29 @@
         .password-btn.cancel:hover {
             background: #7f8c8d;
         }
-        /* 隐藏/显示按钮 - 重新设计移动端逻辑 */
-        .hide-show-btn {
+        .panel-fab {
             position: fixed;
-            z-index: 110;
+            z-index: 1400;
             background: var(--dark-bg);
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            border-radius: 999px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             box-shadow: var(--shadow);
             transition: var(--transition);
+            left: 18px;
+            bottom: 20px;
         }
-        .hide-show-btn:hover {
-            transform: scale(1.1);
+        .panel-fab:hover {
+            transform: translateY(-2px);
         }
-        #toggleLeft {
-            left: 10px;
-            top: 60px;
-        }
-        /* 移动端专用按钮 */
-        .mobile-toggle-btn {
-            display: none;
-            position: fixed;
-            z-index: 120;
-            background: var(--dark-bg);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            font-size: 1.2rem;
-        }
-        #mobileMenuToggle {
-            top: 10px;
-            left: 10px;
+        .panel-fab.opened {
+            background: rgba(15, 23, 42, 0.85);
         }
         /* 自定义滚动条 */
         ::-webkit-scrollbar {
@@ -399,14 +379,6 @@
                 top: 70px;
                 left: 20px;
             }
-            /* 在移动端隐藏桌面端切换按钮 */
-            .hide-show-btn {
-                display: none;
-            }
-            /* 在移动端显示专用按钮 */
-            .mobile-toggle-btn {
-                display: flex;
-            }
             /* 移动端面板默认隐藏 */
             #leftPanel {
                 display: none;
@@ -425,6 +397,11 @@
             }
             .manage-shell {
                 padding-top: 80px;
+            }
+            .panel-fab {
+                right: 16px;
+                left: auto;
+                bottom: 18px;
             }
         }
         /* 管理员与上传区域 */
@@ -614,6 +591,7 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(0, 0, 0, 0.08);
+            position: relative;
         }
         .preview-header {
             padding: 8px 12px;
@@ -626,6 +604,25 @@
             height: 260px;
             background: #000;
         }
+        .preview-loader {
+            position: absolute;
+            inset: 38px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .preview-loader.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
         .map-card {
             border-radius: 12px;
             border: 1px solid rgba(0, 0, 0, 0.08);
@@ -634,6 +631,8 @@
             background: var(--glass-bg);
             border-color: var(--glass-border);
             backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
         }
         .map-header {
             display: flex;
@@ -714,4 +713,75 @@
         /* 全景图操作按钮区域 */
         .pnlm-controls {
             top: 20px !important;
+        }
+        .map-card.expanded {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(92vw, 980px);
+            height: min(70vh, 560px);
+            z-index: 1600;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        }
+        .map-card.expanded #sceneMap {
+            height: 100%;
+            flex: 1;
+        }
+        .map-card.expanded .map-tip {
+            display: none;
+        }
+        .map-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .map-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pano-loader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            font-size: 0.95rem;
+            z-index: 1200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .pano-loader.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .loader-ring {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: rgba(255, 255, 255, 0.9);
+            animation: spin 0.9s linear infinite;
+        }
+        .loader-text {
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
