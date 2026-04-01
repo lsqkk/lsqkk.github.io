@@ -48,6 +48,120 @@ const hoverRootLabelMap = {
     a: '实验室',
     blog: '更多'
 };
+const LANGUAGE_STORAGE_KEY = 'quark_language_preference';
+const DEFAULT_LANGUAGE = 'chinese_simplified';
+const LANGUAGE_OPTIONS = [
+    { code: 'chinese_simplified', urlCode: '', label: '中文/CN', htmlLang: 'zh-CN' },
+    { code: 'english', urlCode: 'en', label: 'English', htmlLang: 'en' },
+    { code: 'japanese', urlCode: 'ja', label: '日本語', htmlLang: 'ja' },
+    { code: 'korean', urlCode: 'ko', label: '한국어', htmlLang: 'ko' },
+    { code: 'french', urlCode: 'fr', label: 'Français', htmlLang: 'fr' },
+    { code: 'german', urlCode: 'de', label: 'Deutsch', htmlLang: 'de' },
+    { code: 'spanish', urlCode: 'es', label: 'Español', htmlLang: 'es' },
+    { code: 'russian', urlCode: 'ru', label: 'Русский', htmlLang: 'ru' }
+];
+const LANGUAGE_OPTION_MAP = new Map(LANGUAGE_OPTIONS.map(option => [option.code, option]));
+const LANGUAGE_URL_MAP = new Map(LANGUAGE_OPTIONS.filter(option => option.urlCode).map(option => [option.urlCode, option]));
+
+function normalizeLanguageCode(language) {
+    if (!language) return DEFAULT_LANGUAGE;
+    return LANGUAGE_OPTION_MAP.has(language) ? language : DEFAULT_LANGUAGE;
+}
+
+function getLanguageOption(language) {
+    return LANGUAGE_OPTION_MAP.get(normalizeLanguageCode(language)) || LANGUAGE_OPTION_MAP.get(DEFAULT_LANGUAGE);
+}
+
+function getLanguageFromUrl() {
+    try {
+        const lan = new URLSearchParams(window.location.search).get('lan');
+        if (!lan) return null;
+        const option = LANGUAGE_URL_MAP.get(String(lan).toLowerCase());
+        return option ? option.code : null;
+    } catch {
+        return null;
+    }
+}
+
+function getStoredLanguage() {
+    try {
+        return normalizeLanguageCode(localStorage.getItem(LANGUAGE_STORAGE_KEY));
+    } catch {
+        return DEFAULT_LANGUAGE;
+    }
+}
+
+function persistLanguagePreference(language) {
+    try {
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, normalizeLanguageCode(language));
+    } catch {
+        // ignore storage errors
+    }
+}
+
+function resolvePreferredLanguage() {
+    return normalizeLanguageCode(getLanguageFromUrl() || getStoredLanguage() || DEFAULT_LANGUAGE);
+}
+
+let currentLanguage = resolvePreferredLanguage();
+
+function buildLocalizedUrl(href, language = currentLanguage) {
+    if (!href || typeof href !== 'string') return href;
+    if (href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return href;
+    }
+
+    try {
+        const url = new URL(href, window.location.origin);
+        if (url.origin !== window.location.origin) return href;
+
+        const option = getLanguageOption(language);
+        if (option.urlCode) {
+            url.searchParams.set('lan', option.urlCode);
+        } else {
+            url.searchParams.delete('lan');
+        }
+
+        return `${url.pathname}${url.search}${url.hash}`;
+    } catch {
+        return href;
+    }
+}
+
+function updateCurrentPageLanguageUrl(language) {
+    const localizedUrl = buildLocalizedUrl(window.location.pathname + window.location.search + window.location.hash, language);
+    if (localizedUrl) {
+        window.history.replaceState(window.history.state, '', localizedUrl);
+    }
+}
+
+function updateDocumentLanguage(language) {
+    const option = getLanguageOption(language);
+    if (document.documentElement) {
+        document.documentElement.lang = option.htmlLang || 'zh-CN';
+    }
+}
+
+function renderLanguageMenuItems() {
+    return LANGUAGE_OPTIONS.map(option => `<li><button type="button" data-lang="${option.code}">${option.label}</button></li>`).join('');
+}
+
+function renderLanguageSelectOptions() {
+    return LANGUAGE_OPTIONS.map(option => `<option value="${option.code}">${option.label}</option>`).join('');
+}
+
+function updateLocalizedLinks(root = document) {
+    const scope = root && typeof root.querySelectorAll === 'function' ? root : document;
+    scope.querySelectorAll('a[href]').forEach(anchor => {
+        if (!(anchor instanceof HTMLAnchorElement)) return;
+        if (anchor.dataset.languageIgnore === 'true') return;
+        const href = anchor.getAttribute('href');
+        const localizedHref = buildLocalizedUrl(href, currentLanguage);
+        if (localizedHref && localizedHref !== href) {
+            anchor.setAttribute('href', localizedHref);
+        }
+    });
+}
 
 // 默认配置
 const defaultNavConfig = {
@@ -94,7 +208,7 @@ function generateNavHTML(config) {
             <div class="header-left">
                 <img src="${config.logo.url}" alt="${config.logo.alt}"
                 style="${config.logo.style}">
-                <a href="${config.title.link}" style="color: white; text-decoration: none;">
+                <a href="${buildLocalizedUrl(config.title.link)}" style="color: white; text-decoration: none;">
                     <h1>${config.title.text}</h1>
                 </a>
                 <!-- 移动端汉堡菜单按钮 -->
@@ -111,26 +225,24 @@ function generateNavHTML(config) {
         const target = normalizeTarget(item.target);
         if (hoverKey) {
             return `<li class="nav-hover-item" data-hover-key="${hoverKey}">
-                        <a href="${item.link}" target="${target}">${item.name}</a>
+                        <a href="${buildLocalizedUrl(item.link)}" target="${target}">${item.name}</a>
                         <div class="nav-hover-menu" id="nav-hover-${hoverKey}"></div>
                     </li>`;
         }
-        return `<li><a href="${item.link}" target="${target}">${item.name}</a></li>`;
+        return `<li><a href="${buildLocalizedUrl(item.link)}" target="${target}">${item.name}</a></li>`;
                     }).join('')}
                     <!-- 语言切换器 - 不会被翻译 -->
                     <li class="ignore">
                         <div class="language-picker" data-language-picker>
                             <button class="language-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                                <span class="language-label">中文/CN</span>
+                                <span class="language-label">${getLanguageOption(currentLanguage).label}</span>
                                 <i class="fa-solid fa-chevron-down"></i>
                             </button>
                             <ul class="language-menu" role="listbox">
-                                <li><button type="button" data-lang="chinese_simplified">中文/CN</button></li>
-                                <li><button type="button" data-lang="english">English</button></li>
+                                ${renderLanguageMenuItems()}
                             </ul>
                             <select id="languageSelector" class="language-selector" aria-hidden="true" tabindex="-1">
-                                <option value="chinese_simplified">中文/CN</option>
-                                <option value="english">English</option>
+                                ${renderLanguageSelectOptions()}
                             </select>
                         </div>
                     </li>
@@ -142,7 +254,7 @@ function generateNavHTML(config) {
                     <button onclick="handleGlobalSearch()">搜索</button>
                 </div>
                 <div class="header-login nav-login" id="header-login">
-                    <a href="${config.login.url}">登录</a>
+                    <a href="${buildLocalizedUrl(config.login.url)}">登录</a>
                     <div class="nav-login-tip">登录后享受更多权益</div>
                 </div>
                 <div class="header-user" id="header-user"></div>
@@ -161,7 +273,7 @@ function generateNavHTML(config) {
             <div class="navsidebar-nav">
                 <ul>
                     ${config.navItems.map(item =>
-        `<li><a href="${item.link}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`
+        `<li><a href="${buildLocalizedUrl(item.link)}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`
     ).join('')}
                 </ul>
             </div>
@@ -173,21 +285,19 @@ function generateNavHTML(config) {
                 <div class="navsidebar-language">
                     <div class="language-picker" data-language-picker>
                         <button class="language-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                            <span class="language-label">中文/CN</span>
+                            <span class="language-label">${getLanguageOption(currentLanguage).label}</span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </button>
                         <ul class="language-menu" role="listbox">
-                            <li><button type="button" data-lang="chinese_simplified">中文/CN</button></li>
-                            <li><button type="button" data-lang="english">English</button></li>
+                            ${renderLanguageMenuItems()}
                         </ul>
                         <select id="mobileLanguageSelector" class="language-selector" aria-hidden="true" tabindex="-1">
-                            <option value="chinese_simplified">中文/CN</option>
-                            <option value="english">English</option>
+                            ${renderLanguageSelectOptions()}
                         </select>
                     </div>
                 </div>
                 <div class="navsidebar-login" id="mobile-login-button">
-                    <a href="${config.login.url}">登录</a>
+                    <a href="${buildLocalizedUrl(config.login.url)}">登录</a>
                 </div>
                 <div class="navsidebar-user" id="mobile-user"></div>
             </div>
@@ -222,7 +332,7 @@ function handleGlobalSearch() {
         // 如果在其他页面，跳转到全站搜索页
         const searchParams = new URLSearchParams();
         searchParams.set('q', searchTerm);
-        window.location.href = `/search?${searchParams.toString()}`;
+        window.location.href = buildLocalizedUrl(`/search?${searchParams.toString()}`);
     }
 }
 
@@ -240,7 +350,7 @@ function handleMobileSearch() {
     // 跳转到全站搜索页面
     const searchParams = new URLSearchParams();
     searchParams.set('q', searchTerm);
-    window.location.href = `/search?${searchParams.toString()}`;
+    window.location.href = buildLocalizedUrl(`/search?${searchParams.toString()}`);
 }
 
 // 侧边栏控制函数
@@ -392,12 +502,13 @@ function renderHoverMenu(menuEl, key, sections) {
                 <div class="nav-hover-section">
                     <div class="nav-hover-section-title">${section.title}</div>
                     <ul class="nav-hover-list">
-                        ${section.items.map(item => `<li><a href="${item.link}" target="${item.target}">${item.name}</a></li>`).join('')}
+                        ${section.items.map(item => `<li><a href="${buildLocalizedUrl(item.link)}" target="${item.target}">${item.name}</a></li>`).join('')}
                     </ul>
                 </div>
             `).join('')}
         </div>
     `;
+    updateLocalizedLinks(menuEl);
 }
 
 function initializeNavHoverMenus() {
@@ -454,43 +565,55 @@ function initializeTranslation() {
     script.src = 'https://cdn.staticfile.net/translate.js/3.17.0/translate.js';
     script.onload = function () {
         // 1. 基础配置：设置本地语种并隐藏自动生成的选择框
-        translate.language.setLocal('chinese_simplified');
+        translate.language.setLocal(DEFAULT_LANGUAGE);
         translate.selectLanguageTag.show = false; // 确保隐藏自带选择框
+        if (translate.service && typeof translate.service.use === 'function') {
+            translate.service.use('client.edge');
+        }
 
-        // 2. 为自定义的选择器绑定事件
-        const languageSelectors = document.querySelectorAll('.language-selector');
-        languageSelectors.forEach(selector => {
-            selector.addEventListener('change', function () {
-                const selectedLanguage = this.value;
-                performLanguageChange(selectedLanguage);
-            });
-        });
-
-        // 3. 初始化完成后，可尝试设置一个默认状态（可选）
+        // 2. 初始化完成后同步当前状态
         console.log('Translate.js 初始化完成');
-        syncLanguagePickers('chinese_simplified');
+        syncLanguagePickers(currentLanguage);
+        performLanguageChange(currentLanguage, { force: true });
     };
     document.head.appendChild(script);
 }
 
 // 4. 封装统一的语言切换执行函数
-function performLanguageChange(targetLanguage) {
+function performLanguageChange(targetLanguage, options = {}) {
+    const normalizedLanguage = normalizeLanguageCode(targetLanguage);
+    const { force = false } = options;
+    const previousLanguage = currentLanguage;
+    currentLanguage = normalizedLanguage;
+
+    persistLanguagePreference(normalizedLanguage);
+    updateCurrentPageLanguageUrl(normalizedLanguage);
+    updateDocumentLanguage(normalizedLanguage);
+    updateLocalizedLinks();
+
+    document.querySelectorAll('.language-selector').forEach(sel => {
+        sel.value = normalizedLanguage;
+    });
+    syncLanguagePickers(normalizedLanguage);
+
+    if (!window.translate || typeof translate.changeLanguage !== 'function') {
+        return;
+    }
+
+    if (!force && normalizedLanguage === previousLanguage) {
+        return;
+    }
+
     // 在切换前，特别是切回中文时，尝试清除该语种的缓存
-    if (targetLanguage === 'chinese_simplified') {
+    if (normalizedLanguage === DEFAULT_LANGUAGE) {
         console.log('切换到中文，尝试清除缓存确保更新');
     }
 
     // 执行语言切换
-    translate.changeLanguage(targetLanguage);
+    translate.changeLanguage(normalizedLanguage);
 
     // 强制进行一次翻译执行，确保内容更新，特别是从其他语言切回中文时
     translate.execute();
-
-    // 同步所有选择器的状态
-    document.querySelectorAll('.language-selector').forEach(sel => {
-        sel.value = targetLanguage;
-    });
-    syncLanguagePickers(targetLanguage);
 }
 
 function syncLanguagePickers(targetLanguage) {
@@ -530,8 +653,15 @@ function initializeLanguagePickers() {
         const menuButtons = picker.querySelectorAll('.language-menu button');
 
         if (select) {
-            const currentValue = select.value || 'chinese_simplified';
+            const currentValue = currentLanguage || DEFAULT_LANGUAGE;
+            select.value = currentValue;
             syncLanguagePickers(currentValue);
+            if (!select.dataset.languageBound) {
+                select.addEventListener('change', () => {
+                    performLanguageChange(select.value);
+                });
+                select.dataset.languageBound = 'true';
+            }
         }
 
         if (trigger) {
@@ -710,8 +840,8 @@ function renderUserProfile() {
                 </div>
             </div>
             <div class="nav-user-actions">
-                <a href="/a/account"><i class="fa-regular fa-user"></i><span>账号中心</span></a>
-                <a href="${spaceUrl}"><i class="fa-regular fa-id-badge"></i><span>我的主页</span></a>
+                <a href="${buildLocalizedUrl('/a/account')}"><i class="fa-regular fa-user"></i><span>账号中心</span></a>
+                <a href="${buildLocalizedUrl(spaceUrl)}"><i class="fa-regular fa-id-badge"></i><span>我的主页</span></a>
                 <button type="button" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>退出登录</span></button>
             </div>
         </div>
@@ -731,10 +861,12 @@ function renderUserProfile() {
         headerUser.querySelectorAll('[data-action="logout"]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
-                    window.CommentShared.logout('/');
+                    window.CommentShared.logout(buildLocalizedUrl('/'));
                 } else {
+                    const savedLanguage = getStoredLanguage();
                     localStorage.clear();
-                    window.location.href = '/';
+                    persistLanguagePreference(savedLanguage);
+                    window.location.href = buildLocalizedUrl('/');
                 }
             });
         });
@@ -766,6 +898,7 @@ window.renderNavUserProfile = renderUserProfile;
 
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
+    updateDocumentLanguage(currentLanguage);
     initializeLanguagePickers();
     initializeTranslation();
     initializeSidebar();
@@ -773,6 +906,7 @@ function initializeAll() {
     initializeNavThemeMode();
     initializeNavScrollBehavior();
     initializeSearchInputs();
+    updateLocalizedLinks();
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
@@ -781,6 +915,12 @@ function initializeAll() {
 
     window.addEventListener('storage', (event) => {
         if (!event || !event.key) return;
+        if (event.key === LANGUAGE_STORAGE_KEY) {
+            const nextLanguage = resolvePreferredLanguage();
+            if (nextLanguage !== currentLanguage) {
+                performLanguageChange(nextLanguage, { force: true });
+            }
+        }
         if (event.key === 'github_user' || event.key === 'github_code' || event.key === 'quark_user_profile' || event.key === 'qb_user') {
             checkLoginStatus();
         }

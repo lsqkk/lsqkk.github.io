@@ -600,6 +600,9 @@
 .navsidebar-language .language-picker {
     width: 100%;
 }
+.navsidebar-language .language-trigger {
+    width: 100%;
+}
 .navsidebar-login a {
     display: block;
     padding: 10px;
@@ -652,6 +655,33 @@
     }
     .header-user .user-name {
         display: none;
+    }
+    .navsidebar-language .language-trigger {
+        display: none;
+    }
+    .navsidebar-language .language-menu {
+        display: none !important;
+    }
+    .navsidebar-language .language-selector {
+        position: static;
+        inset: auto;
+        opacity: 1;
+        pointer-events: auto;
+        appearance: auto;
+        -webkit-appearance: menulist;
+        min-height: 42px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        background: rgba(255, 255, 255, 0.22);
+        color: #fff;
+        font-size: 0.95em;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    .navsidebar-language .language-selector option {
+        color: #111827;
+        background: #ffffff;
     }
 }
 /* PC端样式 */
