@@ -29,6 +29,8 @@ function normalizeTags(tags: unknown): string[] {
 }
 
 function extractTitle(entry: PostEntry): string {
+  const frontmatterTitle = (entry.data as any).title;
+  if (frontmatterTitle) return String(frontmatterTitle).trim();
   const match = entry.body.match(/^#\s+(.+)$/m);
   if (match) return match[1].trim();
   return entry.id.replace(/\.md$/i, "").split("/").pop() || "untitled";

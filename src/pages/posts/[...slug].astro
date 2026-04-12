@@ -36,10 +36,30 @@ function normalizeColumns(columns: unknown): string[] {
 }
 
 function extractTitle(entry: PostEntry): string {
+  const frontmatterTitle = (entry.data as any).title;
+  if (frontmatterTitle) return String(frontmatterTitle).trim();
   const match = entry.body.match(/^#\s+(.+)$/m);
   if (match) return match[1].trim();
   const slugPart = entry.id.replace(/\.md$/i, "").split("/").pop() || "untitled";
   return slugPart;
+}
+
+function extractDescription(entry: PostEntry): string {
+  const frontmatterDescription = (entry.data as any).description;
+  if (frontmatterDescription) return String(frontmatterDescription).trim();
+  const title = extractTitle(entry);
+  const lines = entry.body.replace(/\r\n/g, "\n").split("\n");
+  const h1Index = lines.findIndex((line) => /^\s*#\s+/.test(line));
+  if (h1Index === -1) return title;
+
+  for (let index = h1Index + 1; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    if (!line) continue;
+    const match = line.match(/^\*(?!\*)(.+?)(?<!\*)\*$/);
+    return match ? match[1].trim() : title;
+  }
+
+  return title;
 }
 
 function getWordCount(entry: PostEntry): number {
@@ -74,6 +94,7 @@ try {
   console.warn("读取 posts.json 失败:", err);
 }
 const title = extractTitle(post);
+const description = extractDescription(post);
 const date = normalizeDate(post.data.date);
 const tags = normalizeTags(post.data.tags);
 const columns = normalizeColumns((post.data as any).columns ?? (post.data as any).column ?? (post.data as any)["专栏"]);
@@ -101,6 +122,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <PostLayout
   pageTitle={pageTitle}
   postTitle={title}
+  postDescription={description}
   date={date}
   tags={tags}
   columns={columns}

@@ -1,4 +1,6 @@
 ---
+title: "关于我"
+description: "关于我"
 date: 2025-02-01
 tags: 个人
 ---

@@ -58,6 +58,13 @@ function parseDate(frontmatter) {
   return normalizeDate(hit ? hit[1] : "");
 }
 
+function parseScalarField(frontmatter, fieldName) {
+  const fm = frontmatter.replace(/\r\n/g, "\n");
+  const hit = fm.match(new RegExp(`(?:^|\\n)${fieldName}:\\s*(.+)\\s*(?:\\n|$)`));
+  if (!hit) return "";
+  return String(hit[1]).trim().replace(/^["']|["']$/g, "");
+}
+
 function parseColumns(frontmatter) {
   const fm = frontmatter.replace(/\r\n/g, "\n");
 
@@ -105,6 +112,22 @@ function extractTitle(body, relPath) {
   if (hit) return hit[1].trim();
   const name = path.basename(relPath, ".md");
   return name;
+}
+
+function extractDescription(body, relPath) {
+  const title = extractTitle(body, relPath);
+  const lines = body.replace(/\r\n/g, "\n").split("\n");
+  const h1Index = lines.findIndex((line) => /^\s*#\s+/.test(line));
+  if (h1Index === -1) return title;
+
+  for (let index = h1Index + 1; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    if (!line) continue;
+    const match = line.match(/^\*(?!\*)(.+?)(?<!\*)\*$/);
+    return match ? match[1].trim() : title;
+  }
+
+  return title;
 }
 
 async function findAllMdFiles(dir) {
@@ -174,12 +197,15 @@ async function buildPostsJson() {
     const fullPath = path.join(POSTS_DIR, relPath);
     const raw = await fs.readFile(fullPath, "utf8");
     const { frontmatter, body } = stripFrontmatter(raw);
+    const frontmatterTitle = parseScalarField(frontmatter, "title");
+    const frontmatterDescription = parseScalarField(frontmatter, "description");
     let cover = existingCovers.get(relPath) || "";
     if (!cover) {
       cover = await fetchCoverUrl();
     }
     posts.push({
-      title: extractTitle(body, relPath),
+      title: frontmatterTitle || extractTitle(body, relPath),
+      description: frontmatterDescription || extractDescription(body, relPath),
       file: relPath,
       date: parseDate(frontmatter),
       tags: parseTags(frontmatter),

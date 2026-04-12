@@ -231,9 +231,19 @@ function generateTOC() {
     const tocContainer = document.querySelector('.sidebar-main-content');
     if (!tocContainer) return;
 
-    let html = '<div class="toc-highlight" id="toc-highlight"></div>';
+    let html = `
+        <div class="toc-shell">
+            <div class="toc-header">
+                <p class="toc-eyebrow">On This Page</p>
+                <div class="toc-title-row">
+                    <h4 class="toc-title">文章目录</h4>
+                    <span class="toc-count">${headings.length}</span>
+                </div>
+            </div>
+            <div class="toc-list-wrap">
+    `;
     if (headings.length === 0) {
-        html += '<p style="font-size:0.8em; color:#999;">暂无目录</p>';
+        html += '<p class="toc-empty">暂无目录</p>';
     }
 
     headings.forEach((heading, index) => {
@@ -242,16 +252,23 @@ function generateTOC() {
         heading.id = id;
         html += `
         <div class="toc-item ${level}" data-heading="${id}">
-            <a href="#${id}">${heading.textContent}</a>
+            <a href="#${id}">
+                <span class="toc-item-marker">&gt;</span>
+                <span class="toc-item-text">${heading.textContent}</span>
+            </a>
         </div>
         `;
     });
 
+    html += '</div>';
+
     // 添加翻页导航按钮容器
     html += `
-        <div class="nav-arrows-container" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
-            <a id="prevPost" class="nav-arrow" style="display:block; margin-bottom:10px; cursor:pointer;">← 加载中...</a>
-            <a id="nextPost" class="nav-arrow" style="display:block; cursor:pointer;">加载中... →</a>
+        <div class="nav-arrows-container">
+            <div class="nav-arrows-title">前后文章</div>
+            <a id="prevPost" class="nav-arrow nav-arrow-prev">← 加载中...</a>
+            <a id="nextPost" class="nav-arrow nav-arrow-next">加载中... →</a>
+        </div>
         </div>
     `;
 
@@ -262,8 +279,7 @@ function initTOCSpy() {
     const headings = Array.from(document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4'))
         .filter((heading) => heading.getClientRects().length > 0);
     const tocItems = Array.from(document.querySelectorAll('.toc-item'));
-    const highlight = document.getElementById('toc-highlight');
-    if (!headings.length || !tocItems.length || !(highlight instanceof HTMLElement)) return;
+    if (!headings.length || !tocItems.length) return;
 
     const headingMap = new Map();
     tocItems.forEach((item) => {
@@ -288,12 +304,6 @@ function initTOCSpy() {
         const activeItem = headingMap.get(activeId);
         if (activeItem) {
             activeItem.classList.add('active');
-            const visualOffset = 20;
-            const top = Math.max(0, activeItem.offsetTop - visualOffset);
-            const height = activeItem.offsetHeight;
-            highlight.style.transform = `translateY(${top}px)`;
-            highlight.style.height = `${height}px`;
-            highlight.style.opacity = '1';
         }
     };
 

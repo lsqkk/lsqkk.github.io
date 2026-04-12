@@ -2,6 +2,7 @@
 interface Props {
   pageTitle: string;
   postTitle: string;
+  postDescription: string;
   date: string;
   tags: string[];
   columns: string[];
@@ -18,6 +19,7 @@ interface Props {
 const {
   pageTitle,
   postTitle,
+  postDescription,
   date,
   tags,
   columns,
@@ -50,6 +52,13 @@ function buildTagHref(tagName: string): string {
     <title>{pageTitle}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={postDescription} />
+    <meta property="og:title" content={postTitle} />
+    <meta property="og:description" content={postDescription} />
+    <meta property="og:type" content="article" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={postTitle} />
+    <meta name="twitter:description" content={postDescription} />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
@@ -123,11 +132,35 @@ function buildTagHref(tagName: string): string {
               referrerpolicy="no-referrer"
             />
             <div class="post-hero-overlay">
-              <h1 class="post-hero-title">{postTitle}</h1>
+              <div class="post-hero-copy">
+                <div class="post-header-actions post-header-actions-hero">
+                  <button
+                    class="post-description-trigger"
+                    type="button"
+                    aria-label="查看文章简介"
+                    data-tooltip={postDescription}
+                  >
+                    <span class="post-description-trigger-icon">i</span>
+                  </button>
+                </div>
+                <h1 class="post-hero-title">{postTitle}</h1>
+              </div>
             </div>
           </div>
         ) : (
-          <h1 class="post-title-main">{postTitle}</h1>
+          <>
+            <h1 class="post-title-main">{postTitle}</h1>
+            <div class="post-header-actions post-header-actions-plain">
+              <button
+                class="post-description-trigger"
+                type="button"
+                aria-label="查看文章简介"
+                data-tooltip={postDescription}
+              >
+                <span class="post-description-trigger-icon">i</span>
+              </button>
+            </div>
+          </>
         )}
       </div>
       <div class="post-meta">
@@ -164,6 +197,7 @@ function buildTagHref(tagName: string): string {
         data-date={date}
         data-word-count={String(wordCount)}
         data-tags={JSON.stringify(tags)}
+        data-description={postDescription}
         data-prev-title={prevPostTitle}
         data-prev-url={prevPostUrl}
         data-next-title={nextPostTitle}

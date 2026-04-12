@@ -100,7 +100,7 @@ button {
     overflow-y: auto;
     padding: 20px;
     padding-right: 15px;
-    color: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
     position: relative;
 }
 
@@ -166,9 +166,58 @@ button {
 
 /* 目录样式 */
 .sidebar h4 {
-    margin: 0 0 15px 0;
-    color: #0366d6;
-    font-size: 1.1em;
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.05em;
+}
+
+.toc-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.toc-header {
+    margin-bottom: 14px;
+}
+
+.toc-eyebrow {
+    margin: 0 0 6px;
+    color: #64748b;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.toc-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.toc-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.toc-list-wrap {
+    position: relative;
+}
+
+.toc-empty {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.86rem;
 }
 
 .toc-item {
@@ -178,49 +227,91 @@ button {
 }
 
 .toc-item a {
-    display: block;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
     padding: 6px 10px;
-    color: #333;
+    color: #334155;
     text-decoration: none;
     border-radius: 4px;
-    transition: color 0.2s ease;
+    transition: color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .toc-item a:hover {
-    color: #007bff;
+    color: #1d4ed8;
+    transform: translateX(2px);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .toc-item.active a {
-    color: #0366d6;
+    color: #0f3ea8;
+    font-weight: 600;
 }
 
-.toc-highlight {
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    height: 28px;
-    border-radius: 8px;
-    background: rgba(0, 123, 255, 0.12);
-    border: 1px solid rgba(0, 123, 255, 0.18);
-    transform: translateY(0);
-    transition: transform 0.14s ease, height 0.14s ease, opacity 0.14s ease;
-    pointer-events: none;
-    opacity: 0;
+.toc-item-marker {
+    flex: 0 0 auto;
+    width: 10px;
+    color: rgba(37, 99, 235, 0);
+    transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.toc-item.active .toc-item-marker {
+    color: #2563eb;
+    transform: translateX(1px);
+}
+
+.toc-item-text {
+    display: block;
+    min-width: 0;
+}
+
+.toc-item.h2 a {
+    padding-left: 16px;
+}
+
+.toc-item.h3 a {
+    padding-left: 24px;
+}
+
+.toc-item.h4 a {
+    padding-left: 32px;
 }
 
 /* 导航箭头样式 */
+.nav-arrows-container {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.nav-arrows-title {
+    margin-bottom: 10px;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
 .nav-arrow {
-    display: inline-block;
-    margin: 5px 0;
-    color: #007bff;
+    display: block;
+    margin: 6px 0;
+    padding: 10px 12px;
+    color: #1d4ed8;
     text-decoration: none;
-    font-size: 0.9em;
-    transition: opacity 0.3s;
+    font-size: 0.88em;
+    line-height: 1.5;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .nav-arrow:hover {
-    opacity: 0.8;
-    text-decoration: underline;
+    opacity: 1;
+    transform: translateX(2px);
+    background: rgba(255, 255, 255, 0.44);
 }
 
 /* 底部链接样式 */
@@ -321,6 +412,51 @@ button {
 
 .sidebar-main-content::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+    .sidebar-main-content {
+        color: #dbe7f5;
+    }
+
+    .sidebar h4,
+    .toc-item.active a {
+        color: #dce9ff;
+    }
+
+    .toc-eyebrow,
+    .nav-arrows-title {
+        color: #8ca1be;
+    }
+
+    .toc-count {
+        background: rgba(96, 165, 250, 0.16);
+        color: #9fc5ff;
+    }
+
+    .toc-item a {
+        color: #c5d3e7;
+    }
+
+    .toc-item a:hover,
+    .nav-arrow:hover {
+        background: rgba(148, 163, 184, 0.12);
+    }
+
+    .toc-highlight {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: rgba(96, 165, 250, 0.18);
+    }
+
+    .nav-arrows-container {
+        border-top-color: rgba(148, 163, 184, 0.12);
+    }
+
+    .nav-arrow,
+    .sidebar-footer a {
+        color: #bfdbfe;
+        background: rgba(148, 163, 184, 0.08);
+    }
 }
 
 /* 标签分类样式 */
