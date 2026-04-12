@@ -3,10 +3,106 @@ import fs from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import rehypeRaw from "rehype-raw";
 
 const API_BASE_PLACEHOLDER = "__API_BASE__";
 const API_JSON_PATH = path.resolve("json", "api.json");
 const ROOT = process.cwd();
+
+function toText(value) {
+  if (value == null) return "";
+  if (Array.isArray(value)) return value.join(" ").trim();
+  return String(value).trim();
+}
+
+function createTextNode(value) {
+  return { type: "text", value };
+}
+
+function createElement(tagName, properties = {}, children = []) {
+  return { type: "element", tagName, properties, children };
+}
+
+function rehypePostCard() {
+  const visit = (node, parent = null, index = -1) => {
+    if (!node || typeof node !== "object") return;
+
+    if (node.type === "element" && node.properties) {
+      const id = toText(node.properties.id);
+      if (id === "card" && parent && index >= 0) {
+        const title = toText(node.properties.title) || "未命名卡片";
+        const intro = toText(node.properties.intro || node.properties.summary);
+        const tag = toText(node.properties.tag);
+        const description = toText(node.properties.description);
+        const href = toText(node.properties.href || node.properties.link);
+        const image = toText(node.properties.image || node.properties.img || node.properties.src);
+        const metaChildren = [];
+
+        if (tag) {
+          metaChildren.push(
+            createElement("span", { className: ["post-inline-card-chip", "is-tag"] }, [createTextNode(tag)]),
+          );
+        }
+        if (description) {
+          metaChildren.push(
+            createElement(
+              "span",
+              { className: ["post-inline-card-chip", "is-description"] },
+              [createTextNode(description)],
+            ),
+          );
+        }
+
+        const bodyChildren = [];
+        if (metaChildren.length > 0) {
+          bodyChildren.push(createElement("div", { className: ["post-inline-card-meta"] }, metaChildren));
+        }
+        bodyChildren.push(
+          createElement("h3", { className: ["post-inline-card-title"] }, [createTextNode(title)]),
+        );
+        if (intro) {
+          bodyChildren.push(
+            createElement("p", { className: ["post-inline-card-intro"] }, [createTextNode(intro)]),
+          );
+        }
+
+        const cardChildren = [];
+        if (image) {
+          cardChildren.push(
+            createElement("div", { className: ["post-inline-card-media"] }, [
+              createElement("img", {
+                className: ["post-inline-card-image"],
+                src: image,
+                alt: title,
+                loading: "lazy",
+                decoding: "async",
+                referrerpolicy: "no-referrer",
+              }),
+            ]),
+          );
+        }
+        cardChildren.push(createElement("div", { className: ["post-inline-card-body"] }, bodyChildren));
+
+        const tagName = href ? "a" : "div";
+        const properties = {
+          className: ["post-inline-card", href ? "is-link" : "is-static"],
+        };
+        if (href) properties.href = href;
+
+        parent.children[index] = createElement(tagName, properties, cardChildren);
+        return;
+      }
+    }
+
+    if (Array.isArray(node.children)) {
+      node.children.forEach((child, childIndex) => visit(child, node, childIndex));
+    }
+  };
+
+  return (tree) => {
+    visit(tree);
+  };
+}
 
 function apiBaseInjector() {
   return {
@@ -226,6 +322,12 @@ function apiBaseInjector() {
 export default defineConfig({
   site: "https://lsqkk.github.io",
   integrations: [sitemap(), apiBaseInjector()],
+  markdown: {
+    remarkRehype: {
+      allowDangerousHtml: true,
+    },
+    rehypePlugins: [rehypeRaw, rehypePostCard],
+  },
   build: {
     format: "file",
   },

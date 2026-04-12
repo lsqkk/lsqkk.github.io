@@ -206,6 +206,101 @@ body {
     margin-bottom: 1.2em;
 }
 
+.post-content .post-inline-card {
+    display: grid;
+    grid-template-columns: 148px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    margin: 24px 0;
+    padding: 22px;
+    border-radius: 22px;
+    border: 1px solid rgba(37, 99, 235, 0.14);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 255, 0.9)),
+        rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
+
+.post-content a.post-inline-card {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.post-content a.post-inline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 42px rgba(15, 23, 42, 0.14);
+    border-color: rgba(37, 99, 235, 0.28);
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    text-decoration: none !important;
+}
+
+.post-inline-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.post-inline-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.post-inline-card-chip {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.post-inline-card-chip.is-tag {
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+}
+
+.post-inline-card-chip.is-description {
+    background: rgba(15, 23, 42, 0.08);
+    color: #334155;
+}
+
+.post-inline-card-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.3;
+}
+
+.post-inline-card-intro {
+    margin: 12px 0 0;
+    color: #475569;
+    line-height: 1.75;
+}
+
+.post-inline-card-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+}
+
+.post-inline-card-image {
+    width: 100%;
+    height: 108px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+}
+
 /* 可选：修复标题间距 */
 .post-content h1,
 .post-content h2,
@@ -471,6 +566,22 @@ img {
     .post-description-trigger:focus-visible::after {
         transform: translateY(0);
     }
+
+    .post-content .post-inline-card {
+        grid-template-columns: 1fr;
+        padding: 18px;
+        gap: 14px;
+        border-radius: 18px;
+    }
+
+    .post-inline-card-media {
+        justify-content: flex-start;
+    }
+
+    .post-inline-card-image {
+        width: min(180px, 100%);
+        height: 112px;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -489,6 +600,32 @@ img {
         color: #8db5ff;
         border-color: rgba(96, 165, 250, 0.24);
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+    }
+
+    .post-content .post-inline-card {
+        border-color: rgba(96, 165, 250, 0.18);
+        background:
+            linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(20, 30, 48, 0.94)),
+            rgba(15, 23, 42, 0.92);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .post-inline-card-chip.is-tag {
+        background: rgba(96, 165, 250, 0.16);
+        color: #93c5fd;
+    }
+
+    .post-inline-card-chip.is-description {
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+    }
+
+    .post-inline-card-title {
+        color: #e2e8f0;
+    }
+
+    .post-inline-card-intro {
+        color: #cbd5e1;
     }
 }
 
