@@ -5,7 +5,15 @@
     <description>夸克博客</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 16 Mar 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 11 Apr 2026 16:00:00 GMT</lastBuildDate>
+    <item>
+      <title>机器学习基础笔记（1）：从房价预测到梯度下降</title>
+      <link>https://lsqkk.github.io/posts/ml/1</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/ml/1</guid>
+      <pubDate>Sat, 11 Apr 2026 16:00:00 GMT</pubDate>
+      <description>机器学习</description>
+      <content:encoded><![CDATA[机器学习基础笔记（1）：从房价预测到梯度下降 引言 当我们谈论机器学习时，其实是在谈论如何让计算机从数据中学习规律。这种学习通常发生在两种截然不同的场景下。第一种场景像是一位老师拿着标准答案来教学生，这种学习方式称为监督学习（Supervised Learning）。与之相对，还有一种场景是老师不给任何答案，学生自己翻阅资料、寻找数据中隐藏的规律，这便是无监督学习（Unsupervised Learning）。 监督学习的核心逻辑非常直]]></content:encoded>
+    </item>
     <item>
       <title>走进长乐塬：在那个警报长鸣的年代</title>
       <link>https://lsqkk.github.io/posts/2026/2602</link>
@@ -47,6 +55,14 @@
       <content:encoded><![CDATA[新名词之争：教育理念不是话语权竞赛 近期在教育领域出现了一种值得警惕的观点：将那些对层出不穷的教学新概念提出质疑的声音，简单粗暴地贴上“固步自封”、“输给时代”的标签。这种观点往往以一种不容置疑的姿态出现，好像宣称： 只要批评诸如“项目式学习”、“大单元教学”、“AI赋能课堂”等新名词，便意味着批判者已经陷入了某种认知上的失败！ 实际上，将复杂教育讨论简化为二元对立的叙事，不仅无助于教育实践的真正进步，反而可能掩盖了更为深刻的结构性问题]]></content:encoded>
     </item>
     <item>
+      <title>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器</title>
+      <link>https://lsqkk.github.io/posts/OrangePi/0</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/0</guid>
+      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
+      <description>香橙派, 开发, 后端</description>
+      <content:encoded><![CDATA[香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的]]></content:encoded>
+    </item>
+    <item>
       <title>香橙派AI Pro综合开发笔记 - 1</title>
       <link>https://lsqkk.github.io/posts/OrangePi/1</link>
       <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/1</guid>
@@ -77,14 +93,6 @@
       <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
       <description>香橙派, 开发, 后端</description>
       <content:encoded><![CDATA[香橙派AI Pro综合开发笔记 4 10. 服务器Nginx配置与管理 10.1 概述 Nginx是一个高性能的HTTP和反向代理服务器，在本项目中承担了托管网站（WordPress）的核心任务。在基于ARM架构的香橙派上部署Nginx，需要特别注意其与现有服务（如CasaOS网关）的兼容性与资源协调。 10.2 安装与基础配置 通过包管理器安装Nginx是最佳实践： 安装后，关键目录结构如下： : 主配置目录。 : 主配置文件。 : ]]></content:encoded>
-    </item>
-    <item>
-      <title>香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器</title>
-      <link>https://lsqkk.github.io/posts/OrangePi/index</link>
-      <guid isPermaLink="true">https://lsqkk.github.io/posts/OrangePi/index</guid>
-      <pubDate>Thu, 25 Dec 2025 16:00:00 GMT</pubDate>
-      <description>香橙派, 开发, 后端</description>
-      <content:encoded><![CDATA[香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 项目简介 这是一套由一名普通学生开发者，在宿舍环境中利用香橙派AI Pro开发板，从零开始搭建个人AI服务器的完整实战记录。香橙派AI Pro是一款基于昇腾AI处理器的边缘计算开发板，具备较强的本地AI推理能力和丰富的接口，非常适合作为学习、开发和轻量级个人服务器平台。 本系列笔记完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，重点包含了大量实际操作中遇到的]]></content:encoded>
     </item>
     <item>
       <title>《信息哲学概论》课程论文</title>

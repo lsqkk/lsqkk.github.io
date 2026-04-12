@@ -1,5 +1,18 @@
 [
     {
+        "title": "机器学习基础笔记（1）：从房价预测到梯度下降",
+        "file": "ml/1.md",
+        "date": "2026-04-12",
+        "tags": [
+            "机器学习"
+        ],
+        "columns": [
+            "机器学习笔记"
+        ],
+        "wordCount": 7620,
+        "cover": "https://cn.bing.com/th?id=OHR.SunsetArchesNP_ZH-CN9875945974_1366x768.jpg"
+    },
+    {
         "title": "走进长乐塬：在那个警报长鸣的年代",
         "file": "2026/2602.md",
         "date": "2026-03-17",
@@ -61,6 +74,21 @@
         "cover": "https://cn.bing.com/th?id=OHR.TegallalangTerrace_ZH-CN8126456968_1366x768.jpg"
     },
     {
+        "title": "香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器",
+        "file": "OrangePi/0.md",
+        "date": "2025-12-26",
+        "tags": [
+            "香橙派",
+            "开发",
+            "后端"
+        ],
+        "columns": [
+            "香橙派开发笔记"
+        ],
+        "wordCount": 2019,
+        "cover": "https://cn.bing.com/th?id=OHR.BlueBahamas_ZH-CN2083290847_1366x768.jpg"
+    },
+    {
         "title": "香橙派AI Pro综合开发笔记 - 1",
         "file": "OrangePi/1.md",
         "date": "2025-12-26",
@@ -119,21 +147,6 @@
         ],
         "wordCount": 14259,
         "cover": "https://cn.bing.com/th?id=OHR.WinterludeIce_ZH-CN7868524911_1366x768.jpg"
-    },
-    {
-        "title": "香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器",
-        "file": "OrangePi/index.md",
-        "date": "2025-12-26",
-        "tags": [
-            "香橙派",
-            "开发",
-            "后端"
-        ],
-        "columns": [
-            "香橙派开发笔记"
-        ],
-        "wordCount": 2019,
-        "cover": "https://cn.bing.com/th?id=OHR.BigHole_ZH-CN2671071218_1366x768.jpg"
     },
     {
         "title": "《信息哲学概论》课程论文",

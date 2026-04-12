@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 });
 
+function resolveProjectLink(link) {
+    if (!link) return '#';
+    if (/^(?:[a-z]+:)?\/\//i.test(link)) return link;
+    if (link.startsWith('/')) return link;
+    return `/a/${link.replace(/^\.?\//, '')}`;
+}
+
 function normalizeCategories(data) {
     // 兼容旧格式：数组扁平项目列表
     if (Array.isArray(data)) {
@@ -60,11 +67,12 @@ function renderCategory(container, category) {
     category.projects.forEach(project => {
         const card = document.createElement('article');
         card.className = 'project-card';
+        const projectLink = resolveProjectLink(project.link);
         card.innerHTML = `
             <i class="fas ${project.icon || 'fa-flask'} project-icon"></i>
             <h4>${project.name || '未命名项目'}</h4>
             <p>${project.description || '暂无描述'}</p>
-            <a href="${project.link || '#'}" class="project-link">查看项目 <i class="fas fa-arrow-right"></i></a>
+            <a href="${projectLink}" class="project-link">查看项目 <i class="fas fa-arrow-right"></i></a>
         `;
         grid.appendChild(card);
     });
@@ -81,7 +89,7 @@ function renderFooterCategory(container, category) {
 
     category.projects.forEach(project => {
         const item = document.createElement('li');
-        item.innerHTML = `<a href="${project.link || '#'}">${project.name || '未命名项目'}</a>`;
+        item.innerHTML = `<a href="${resolveProjectLink(project.link)}">${project.name || '未命名项目'}</a>`;
         container.appendChild(item);
     });
 }

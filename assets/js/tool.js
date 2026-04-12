@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('tools-container');
+    const TOOL_PREFIX = '/tool/';
+
+    function resolveToolUrl(url) {
+        if (!url) return '#';
+        if (/^(?:[a-z]+:)?\/\//i.test(url)) return url;
+        if (url.startsWith('/')) return url;
+        return `${TOOL_PREFIX}${url.replace(/^\.?\//, '')}`;
+    }
 
     // 显示加载状态
     container.innerHTML = '<div class="loading">正在加载工具箱数据...</div>';
@@ -44,9 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 tool.name = tool.name.replace(emojiRegex, '').trim();
 
                 // 确保URL格式正确
-                if (tool.url && !tool.url.startsWith('http') && !tool.url.startsWith('/')) {
-                    tool.url = '/' + tool.url;
-                }
+                tool.url = resolveToolUrl(tool.url);
             });
         });
 

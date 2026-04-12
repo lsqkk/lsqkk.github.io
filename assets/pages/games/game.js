@@ -1,3 +1,10 @@
+function resolveGameLink(link) {
+    if (!link) return '#';
+    if (/^(?:[a-z]+:)?\/\//i.test(link)) return link;
+    if (link.startsWith('/')) return link;
+    return `/games/${link.replace(/^\.?\//, '')}`;
+}
+
 async function loadGames() {
     const data = window.__GAMES_DATA__ || await fetch('/assets/pages/games/game.json').then((response) => response.json());
     const gameContainer = document.getElementById('game-container');
@@ -31,7 +38,7 @@ function createGameSection(container, title, games) {
         card.className = 'game-card';
 
         const link = document.createElement('a');
-        link.href = game.link;
+        link.href = resolveGameLink(game.link);
         link.target = '_blank';
 
         const bg = document.createElement('div');
