@@ -1,166 +1,265 @@
 # AGENTS.md - 夸克博客项目仓库
 
-Agent 应在必要时更新修改此文档，但必须非常慎重，以确保其准确性。
+Agent 应在必要时更新本文件，但必须非常慎重，确保内容与仓库现状一致。若发现文档与代码不符，应优先修正文档中的错误描述，而不是延续旧说法。
 
 ## 项目概述
 - **项目名称**：夸克博客
-- **简介**：基于 Astro 构建的静态+动态结合博客网站
+- **简介**：基于 Astro 构建的静态 + 动态结合博客网站
 - **仓库地址**：https://lsqkk.github.io
-- **本地地址**：D:\git\lsqkk\lsqkk.github.io
+- **本地地址**：`D:\git\lsqkk\lsqkk.github.io`
 
 ## 技术栈
-- **框架**：Astro
-- **文章格式**：Markdown
+- **框架**：Astro 5
+- **内容系统**：Markdown + `astro:content`
 - **包管理器**：npm
-- **部署平台**：Vercel 提供 serverless 服务以部署`/api`，GitHub Pages 托管本项目静态站点
+- **部署平台**：
+  - GitHub Pages 托管静态站点
+  - Vercel 仅用于 `/api` serverless，不负责本站静态构建
 - **数据库**：Firebase Realtime Database (RTDB)
 - **网站登录认证**：GitHub OAuth + 站内账号
-- **前端技术**：原生 JavaScript (ES6+)、Canvas、WebRTC、CSS3
+- **前端技术**：原生 JavaScript (ES6+)、Canvas、WebRTC、CSS3、少量 TypeScript
 - **后端语言**：Node.js (Vercel Serverless)、Python (Quark CLI)
 
 ## 目录结构
-```
+```text
 lsqkk.github.io/
-├── api/                 # serverless函数，部署在vercel（github同账号登录）
-├── assets/              # 静态资源
-│   ├── js/              # 公共js资源
-│   ├── css/             # 公共css资源
-│   ├── ......           # 其他类型资源
-│   ├── pages/           # /arc/pages具体某项目专属资源，和其目录对应
-│   ├── img/             # 图片资源（bg.png, logo_blue.png, favicon.ico, touxiang.png）
-│   └── md/              # 部分项目使用的markdown文件等（log.md更新日志[不需要agents更新]、dt.md动态等）
-├── posts/               # markdown博客文章位置（按年份分子文件夹如2026/）
+├── api/                         # Vercel serverless 函数
+├── assets/                      # 主静态资源源目录（构建时复制到 public/assets）
+│   ├── css/                     # 公共样式
+│   ├── js/                      # 公共脚本与共享逻辑
+│   ├── md/                      # 运行时会读取的 Markdown 数据，如 dt.md / log.md
+│   ├── pages/                   # 各功能页专属资源（a/blog/games/tool）
+│   ├── img/                     # 背景、logo、头像等图片
+│   └── ...
+├── posts/                       # 博客文章源文件与生成产物 posts.json / rss.xml
+├── public/                      # 构建前同步出的公共静态目录（生成目录，不建议手改）
 ├── src/
-│   ├── components/      # 可复用的 Astro 组件
+│   ├── components/              # Astro 组件
 │   ├── config/
-│   │   ├── json/       # 配置文件目录
-│   │   │   ├── friends.json      # 友链信息
-│   │   │   ├── index_config.json # 主页板块显示配置
-│   │   │   ├── index.json        # 个人信息及主页展示项
-│   │   │   ├── manifest.json     # PWA应用配置
-│   │   │   ├── nav.json          # 导航栏展示项
-│   │   │   ├── popups.json       # 主页弹窗展示信息
-│   │   │   └── ......            # 更多文件
-│   │   ├── site.js
-│   │   └── docs/       # 说明文档，添加或修改功能后更新此处
-│   │       ├── API/               # serverless等说明文件
-│   │       ├── debug/             # debug重要记录
-│   │       └── page_template/     # 一般性页面结构模板
-│   ├── layouts/         # 页面布局组件（BaseLayout、PostLayout）
-│   ├── pages/           # 路由页面（.astro文件，基于文件路由）
-│   └── utils/           # 工具函数（日期格式化、标签处理等）
-├── public/              # 公共静态资源
-├── dist/                # 构建产物目录
-├── quark/               # quark命令行工具安装包
-├── astro.config.mjs     # Astro 配置文件
-├── tsconfig.json        # TypeScript 配置
+│   │   ├── json/                # 站点配置源
+│   │   └── site.js              # 从配置中派生站点标题 / logo / 背景
+│   ├── docs/                    # 项目说明文档
+│   │   ├── API/                 # serverless 与密钥相关文档
+│   │   └── page_template/       # 页面模板与样式规范
+│   ├── layouts/                 # 页面布局，如 Post/OJ/FireAlert/RealtimeRoom
+│   ├── pages/                   # Astro 路由页面
+│   └── utils/                   # 构建与页面工具函数
+├── scripts/                     # Node 构建/同步/校验脚本
+├── quark/                       # Python CLI 与配置编辑器
+├── private/                     # 本地私有辅助文件，已 gitignore，不应提交
+├── dist/                        # Astro 构建产物
+├── .quark-artifact/             # quark build --mode artifact 导出的额外产物
+├── astro.config.mjs             # Astro 配置与构建后注入逻辑
 ├── package.json
-├── requirements.txt     # Python依赖
-└── .env                 # 环境变量（不提交到仓库）
+├── pyproject.toml               # quark CLI 包定义
+├── requirements.txt
+└── vercel.json                  # Vercel 仅保留 API，不做静态站点构建
 ```
+
+## 关键事实与维护约定
+
+### 1. 项目文档
+- 添加或修改功能后，优先在以下位置补充说明：
+  - `src/docs/API/`
+  - `src/docs/page_template/`
+  - `src/docs/TypeScript规范说明.md`
+  - `src/docs/构建与数据产物说明.md`
+
+### 2. 生成目录与禁止手改项
+- 以下目录/文件主要由构建或脚本生成，除非明确在修生成逻辑，否则不要直接手改：
+  - `public/`
+  - `dist/`
+  - `.quark-artifact/`
+  - `posts/posts.json`
+  - `posts/rss.xml`
+  - `public/json/posts.json`
+  - `dist/json/site-pages.json`
+
+### 3. 私有目录与敏感信息
+- `private/` 已被 `.gitignore` 忽略，用于本地私有脚本和中间数据，不应纳入提交。
+- `.env`、`.env.local` 等环境变量文件不提交。
+- `src/config/json/api.json` 只保存 API 基础地址，不存放真正密钥。
 
 ## 构建与开发
 
-### 构建链路
-1. 运行 `npm run build` 或 `quark build`
-2. 构建过程：先处理 public 目录，然后生成 posts.json，最后 Astro 构建输出到 dist
-3. 部署内容为 dist 目录
+### npm 构建链路
+运行 `npm run build` 时，实际顺序为：
 
-### TypeScript策略
-- 采用渐进式 TS 工程化：`@ts-check + JSDoc + globals.d.ts`
-- 类型检查命令：
-  ```bash
-  npm run typecheck
-  npm run check:syntax
-  ```
+1. `prebuild`
+2. `gen:posts-json`：扫描 `posts/**/*.md` 生成 `posts/posts.json`
+3. `gen:rss`：基于 `posts/posts.json` 生成 `posts/rss.xml`
+4. `sync:public`：将 `assets/`、`src/config/json/` 等同步到 `public/`
+5. `astro build`
+6. `postbuild`
+7. `verify-dist`：检查 `dist/index.html` 等关键产物是否存在
+
+补充说明：
+- `scripts/sync-public.mjs` 会把 `src/config/json/*.json` 暴露到 `public/json/`
+- `scripts/sync-public.mjs` 会把 `posts/posts.json` 复制到 `public/json/posts.json`
+- `astro.config.mjs` 会在构建结束后继续处理 `dist/`，包括：
+  - 将 `__API_BASE__` 注入文本产物
+  - 生成 `dist/json/site-pages.json`，供站内搜索和页面索引使用
+
+详细说明见：`src/docs/构建与数据产物说明.md`
+
+### Quark CLI
+`quark` 是项目自定义 Python CLI，已通过 `pip install -e .` 安装。
+
+常用命令：
+- `quark build`：执行完整构建流程；默认 `source` 模式，只生成 `dist`
+- `quark build --mode artifact`：额外导出 `.quark-artifact/`（不推荐使用）
+- `quark serve`：启动本地 `dist` 预览，默认端口 `8000`
+- `quark new`：创建文章；支持 `--draft`
+- `quark ppush`：构建并推送
+- `quark push`：普通推送，不构建
+- `quark updateposts`：兼容别名，当前实际转到 `quark build`
+- `quark config`：启动 JSON 配置编辑器 Web UI
+- `quark checkassets`：检查 `assets/css`、`assets/js` 是否被页面引用
 
 ### 本地开发
 ```bash
-# 安装前端依赖（首次）
 npm install
+pip install -r requirements.txt
+pip install -e .
 
-# 本地构建站点
-quark build          # 默认source模式
-quark build --mode artifact  # 导出可分发产物（已废弃，勿使用）
-
-# 预览dist
-quark serve          # 启动 localhost:8000
+npm run build
+quark serve
 ```
 
-## quark 命令行工具
-quark 是一个自定义的 Python 命令行工具，通过 `pip install -e .` 安装
+## 内容与数据源
 
-### 常用命令
-- `quark build` - 构建站点（默认source模式）
-- `quark serve` - 启动预览服务器
-- `quark new` - 在 VSCode 中创建新文章（需在VSCode终端执行）
-- `quark ppush` - 推送文章（自动执行构建并创建提交记录）
-- `quark push` - 普通推送（不构建站点）
-- `quark --help` - 查看帮助
+### 博客文章
+- 文章源文件位于 `posts/`
+- 文章路由由 `src/pages/posts/[...slug].astro` 处理
+- 文章通过 `astro:content` 加载，同时读取 `posts/posts.json` 中的封面等派生数据
+- 文章支持以下 frontmatter 字段：
+  - `title`
+  - `description`
+  - `date`
+  - `tags`
+  - `column` / `columns` / `专栏`
+- 路由额外做了 slug 大小写兼容：见 `src/utils/post-case-map.ts`
 
-### 文章创建注意事项
-- 需要 `/posts` 目录下存在以**当前年份**命名的文件夹（如 `2026`）
-- 如不存在需手动创建
+### 动态与日志
+- `assets/md/dt.md`：动态内容源，构建与运行时均会读取
+- `assets/md/log.md`：更新日志源，首页“最近更新”和日志页会使用
+- 动态解析逻辑见 `src/utils/dynamic-entries.ts`
+- 动态详情页为 `src/pages/blog/dt/[id].astro`
 
-## 项目代码风格与约定
+### 搜索
+- `src/pages/search/index.astro` 会在构建时预载文章与动态全文索引
+- 前端脚本 `assets/js/site-search.js` 会同时读取：
+  - `/json/site-pages.json`
+  - `/json/posts.json`
+  - 站点地图 `sitemap*.xml`
+- 因此若修改构建链路、页面收录逻辑或文章元数据，需留意搜索是否仍可工作
 
-### 新建页面/组件
-- 参考 `/src/config/docs/page_template/` 中的模板文件
-- 提供 `.astro` 模板和 `astro页面构建说明.md`
-
-### UI设计规范
-参考 `astro页面构建说明.md` 实现效果。
-- 统一 Windows 7 经典 Aero 模糊玻璃主题
-- 全站统一顶部导航、字体、标题样式
-- 深浅色切换跟随系统
-- 视差滚动效果
-
-### 添加新项目到网站
-更新以下文件以在网站中显示新项目：
-- `/assets/pages/blog/functions.json`
-- `/src/config/json/nav.json`（构建后生成 `/json/nav.json`）
-- 在 `/tool` 、 `/games` 和 `/a` 目录更新项目后，应更新对应json文件
-
-## serverless 函数说明
-详见 `/src/config/docs/API/` 目录，目前包含以下文档：
-- 安全验证 Turnstile 说明.md
-- 管理员密钥调用说明.md
-- 天地图密钥调用说明.md
-- 总：API 无服务器函数说明.md
-- firebaseRTDB 配置调用说明.md
-- GitHub 令牌调用说明.md
-- R2 上传与图床说明.md
-
-可按需查找对应文档了解具体实现。
+### 评论与互动
+- 文章页使用 Giscus 评论：`src/layouts/PostLayout.astro`
+- 留言板、动态评论、首页留言预览等功能依赖 Firebase RTDB 与共享评论脚本：
+  - `assets/js/comment-shared.js`
+  - `assets/js/comment-render-shared.js`
+  - `assets/js/message.js`
+  - `assets/js/dynamic-interactions.js`
+- `src/components/DynamicCommentPanel.astro` 是动态详情页评论输入组件
 
 ## 重要配置文件说明
 
-### JSON 配置文件（`/src/config/json/`）
+### `src/config/json/`
 | 文件 | 用途 |
 |------|------|
+| `api.json` | API 基础地址，构建时注入 `__API_BASE__` |
+| `city-banter.json` | 首页 IP 欢迎语 / 地域化问候语数据 |
 | `friends.json` | 友链信息 |
-| `index_config.json` | 调整主页各板块显示与否与显示顺序 |
-| `index.json` | 个人信息及主页展示项 |
-| `manifest.json` | PWA应用配置，填入站点信息 |
-| `nav.json` | 导航栏展示项 |
-| `popups.json` | 主页弹窗展示信息 |
+| `index_config.json` | 首页主区、侧栏、页脚板块显隐与顺序 |
+| `index.json` | 主页个人信息、联系方式、公告、展示数量等 |
+| `manifest.json` | PWA 配置 |
+| `nav.json` | 导航栏、标题、logo 等 |
+| `popups.json` | 首页弹窗信息 |
 
-### 自定义图像（`/assets/img/`）
-- `bg.png` - 网站背景
-- `logo_blue.png` 和 `favicon.ico` - 网站图标
-- `touxiang.png` - 个人头像
+### 其他关键文件
+- `astro.config.mjs`：Astro 配置、Markdown 插件、构建后注入、`site-pages.json` 生成
+- `src/content.config.ts`：文章 collection schema
+- `src/config/site.js`：从配置派生站点标题 / logo / 背景
+- `vercel.json`：Vercel 明确跳过静态构建，只承接 API
 
-## Git 提交规范
-commit 使用以下命名方法：
+## 页面与资源约定
+
+### 新建页面/组件
+- 页面模板与 UI 规范参考：
+  - `src/docs/page_template/page_template.astro`
+  - `src/docs/page_template/astro页面构建说明.md`
+- 本仓库遵循统一的 Aero / 玻璃拟态视觉风格，新增页面应尽量保持导航、字体、背景、视差体验一致
+
+### 专属资源目录
+- 各项目页的专属 JS/CSS/JSON 统一放在 `assets/pages/`
+- 当前主要分区：
+  - `assets/pages/a/`：实验室 / 账号 / 实时应用
+  - `assets/pages/blog/`：动态、留言板、视频、友链等
+  - `assets/pages/games/`：游戏页
+  - `assets/pages/tool/`：工具页
+
+### 添加新项目到网站
+若新增页面需要在导航或聚合页中显示，通常还要同步更新：
+- `assets/pages/blog/functions.json`
+- `assets/pages/a/projects.json`
+- `assets/pages/games/game.json`
+- `assets/pages/tool/tool.json`
+- `src/config/json/nav.json`
+
+注意：
+- 构建后会生成 `/json/nav.json`
+- 搜索页与 `site-pages.json` 也会基于这些聚合文件补充站点页面条目
+
+## serverless 函数说明
+详见 `src/docs/API/`，当前包含：
+- `安全验证Turnstile说明.md`
+- `管理员密钥调用说明.md`
+- `天地图密钥调用说明.md`
+- `总：API无服务器函数说明.md`
+- `firebaseRTDB配置调用说明.md`
+- `GitHub令牌调用说明.md`
+- `R2上传与图床说明.md`
+
+补充说明：
+- `api/github-user.js` 用于 GitHub OAuth 回调换取用户信息，前端入口页为 `src/pages/auth.astro`
+- `api/firebase-config.js` 会在前端以脚本方式加载 Firebase 公共配置
+
+## TypeScript 策略
+- 采用渐进式 TS 工程化：`@ts-check + JSDoc + globals.d.ts`
+- 详细规范见：`src/docs/TypeScript规范说明.md`
+- 类型检查命令：
+```bash
+npm run typecheck
+npm run check:syntax
+```
+
+## 提交与测试
+
+### Git 提交规范
+推荐使用以下前缀：
 - `更新 - 更新描述`
 - `优化 - 优化描述`
 - `修复 - 修复描述`
-- 其他前缀根据实际情况添加
+- 其他前缀按实际情况补充
 
-## 测试
-修改后须运行 `npm run build` 并等待构建完成，检查产物是否正确生成。
+### 修改后至少执行
+```bash
+npm run build
+```
 
-## 其他重要注意事项
-1. 构建产物位于 `dist` 目录，Github Pages部署时将部署此目录
-2. GitHub Pages 推荐使用仓库内置工作流 `.github/workflows/deploy-pages.yml` 在远端构建并部署
-3. 网站地图由 Astro 构建自动生成
+必要时补充：
+```bash
+npm run typecheck
+npm run check:syntax
+```
+
+## Agent 工作提醒
+1. 优先相信代码与当前目录结构，不要延续旧文档中的过时路径。
+2. 若修改了构建脚本、JSON 配置结构、聚合数据文件或路由，应同步检查：
+   - 首页
+   - `/posts`
+   - `/search`
+   - 相关功能聚合页
+3. 若新增可复用约定或修复了容易误判的结构，优先补充 `AGENTS.md` 或 `src/docs/`。
+4. 不要把 `private/`、`.env`、`public/`、`dist/` 当作普通源码目录处理。
