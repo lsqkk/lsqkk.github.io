@@ -17,141 +17,53 @@
   <img src="https://img.shields.io/badge/GitHub%20Pages-222222?style=flat&logo=githubpages&logoColor=white" alt="GitHub Pages">
 </p>
 
+一个基于 Astro 5 构建的静态 + 动态结合博客站点模板，同时也是[@蓝色奇夸克](https://github.com/lsqkk) 的个人网站仓库。静态页面由 GitHub Pages 托管，动态能力通过独立的 Vercel Serverless API 提供，前端交互以原生 JavaScript、Canvas、WebRTC 和 Firebase RTDB 为核心。
 
 
-<h3 align="center" style="color:#355fe9;"> 
-</h3>
+**网站演示**：[夸克博客](https://lsqkk.github.io)
 
-<br>
 
-[@蓝色奇夸克](https://github.com/lsqkk) 的个人网站仓库，主要记录前端开发、技术实验和个人心得。项目以原生前端为核心，使用 **Astro** 框架生成页面。部署在 **GitHub Pages** ，并由 **Vercel** + 自有域名提供 Serverless 支持。由 **Firebase RTDB** 提供数据库服务，为工具协同、游戏对战、博客留言等提供同步，并扩展了**统一账号体系与登录中心**。
+## 项目特点
 
-目前，本项目已完成模板化与命令行封装，支持迁移部署，详见以下 [迁移使用与部署](#迁移使用与部署) 章节。
-
----
-
-**网站地址**：[夸克博客](https://lsqkk.github.io)
-
-**更新日志**：[更新日志 - 夸克博客](/assets/md/log.md)
-
----
-
-## 主要技术特点
-
-Quark Blog 是 **静态 + 动态** 的结合站点，尽最大努力探索了**基于原生前端 + Astro 构建链路的解决方案**。
-
-- **原生开发 + Astro 构建**：业务交互以原生 JavaScript + Canvas 等为核心，页面使用 Astro 进行静态生成，在保持轻量运行时的同时提升模板复用与构建一致性。
-
-- **渐进式 TypeScript 工程化**：采用 `@ts-check + JSDoc + globals.d.ts` 的轻量策略，在不破坏静态站点直出模式的前提下逐步引入类型约束，提升重构安全性与可维护性。
-  
-- **统一 UI 设计**：项目使用统一的 UI 风格。使用类似 Windows 7 的经典 Aero 模糊玻璃主题，全站使用统一的顶部导航、字体、标题样式，深浅色切换跟随系统，优雅的视差滚动效果等。
-
-- **实时数据协同**：集成 Firebase RTDB 实现实时数据同步，支撑博客留言、在线聊天室、实时对战游戏和协同工具。
-
-- **账号与登录中心**：支持 GitHub OAuth 登录与站内账号登录，提供账号中心、用户主页、在线状态页与管理页；评论/留言/动态等模块自动填充昵称与头像。
-
-- **安全与风控**：登录与注册流程集成 **Cloudflare Turnstile** 人机验证；关键服务接口由 Vercel Serverless 提供校验与代理。
-  
-- **音视频推流**：通过 [声网 Agora API](https://doc.shengwang.cn/api-center) 实现直播画面的[实时推流与播放](https://lsqkk.github.io/a/live)。
-
-- **无服务器 WebRTC 通信**：[Quark Share](https://lsqkk.github.io/a/share) 实现了无可用信令服务器状况的 WebRTC 信令通信方案，提供 P2P 文件传输服务。
-  
-- **Serverless 集成**：使用 **Vercel 云函数 + 自有域名** 托管敏感配置 API Key 和自有/开放 API 服务，在 GitHub Pages 纯前端托管环境下实现后端能力。
-  
-- **网站流量计数**：引入 [不蒜子](https://www.busuanzi.cc/) 实现无服务器网站流量计数，统计文章访问量。使用 [Bing Webmaster Tools](https://www.bing.com/webmasters) 监控网站总体情况。
-
-- **PWA 网站应用支持**：通过 PWA 实现应用化体验，支持快速安装到设备桌面，提供离线访问、推送通知等原生应用功能。
-
-- **自定义网站管理工具**：开发了 **Quark 命令行工具**，通过 Python 包形式封装博客管理操作，实现了 `quark build`（站点构建，默认 source 模式）等命令，提升本地管理效率。
-  
-- **博客文章 RSS 订阅支持**：内置符合标准协议的 RSS 订阅源，可通过主流阅读器实时获取博客更新，支持全文或摘要输出，保障内容同步的及时性与跨平台阅读体验。RSS 订阅地址：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
+- Astro 5 + Markdown + `astro:content` 驱动内容页与静态构建
+- 原生 JavaScript 为主，保留轻量运行时与较强浏览器可控性
+- GitHub Pages 托管静态站点，Vercel 仅承接 `/api` Serverless
+- Firebase RTDB 支持留言、评论、在线状态、实时互动等动态能力
+- 支持 GitHub OAuth、站内账号、Turnstile、人机验证、邮件验证码等认证能力
+- 提供自定义、可扩展的 Quark CLI，封装构建、文章创建、日志更新与推送流程
 
 > 更多技术细节及本站使用服务清单，欢迎查看[更新日志](/assets/md/log.md)、[Agent文档](AGENTS.md)以及[关于本站](/posts/copyright.md)。
 
+## 技术架构
 
-Quark Blog 探索了在静态站点环境下实现动态应用的技术路径，通过实时数据库和无服务架构弥补前后端分离的鸿沟。
+本仓库不是“单平台一键部署”的常见纯静态模板，而是分成两部分运行：
 
+1. GitHub Pages 负责部署 Astro 构建产物 `dist/`
+2. Vercel 负责部署根目录 `api/` 下的 Serverless 函数
+3. 前端通过 `src/config/json/api.json` 中的 `apiBase` 指向你的 API 域名
 
-## 功能板块
+这意味着迁移时至少要完成两件事：
 
-### 基础功能
+- 把静态站点部署到你自己的 GitHub Pages 或其他静态托管
+- 把本仓库导入到你自己的 Vercel 项目，并补齐所需环境变量
 
-- [文章](https://lsqkk.github.io/posts)：日常分享、架构设计、开发心得、技术选型思考。文章源文件使用 Markdown，构建时由 Astro 模板生成静态页面（输出到 `dist`）。评论系统使用 [giscus](https://giscus.app/zh-CN) 实现。
-- [工具](https://lsqkk.github.io/tool)：**30+** 自研前端工具、效率解决方案。包含使用 Firebase RTDB 集成协同功能的工具集合。
-- [游戏](https://lsqkk.github.io/games)：基于 Canvas 的互动游戏等，包含五子棋对战、知识竞答对战等 Firebase RTDB 实时游戏。
-- [视频](https://lsqkk.github.io/blog/qtv)：视频内容专区，观看和分享视频。基于 `uapis` API 自动更新同步B站视频信息，无需手动更新。 
-- [动态](https://lsqkk.github.io/blog/dt)：分享动态内容，定期自动化搬运个人 QQ 动态条目，并开发了 [qq-emotion-parser](https://github.com/lsqkk/qq-emotion-parser) 脚本以解析渲染 Qzone 表情包。
-- [留言板](https://lsqkk.github.io/blog/lyb)：网站用户反馈留言区域，Firebase RTDB 提供数据库支持。
-- [账号中心](https://lsqkk.github.io/a/account)：统一账号管理，支持头像/昵称/邮箱绑定与设备登录记录。
-- [用户主页](https://lsqkk.github.io/space)：查看用户基础信息、动态、评论等公开内容，可个性化隐私展示项。
+## 快速开始
 
-### 实验功能
+### 如何迁移使用与部署
 
-- [前端实验室](https://lsqkk.github.io/a)：原生 JavaScript 深入应用、性能优化、API 集成、浏览器兼容性等实践，目前包含 **15+** 项目，持续更新优化中。
-- [实时热榜](https://lsqkk.github.io/blog/hot)：自动更新 `uapis` API 返回的各平台实时热搜，提供新闻热点聚合。
-- [夸克日报](https://lsqkk.github.io//blog/daily)：定期自动化搬运知乎收藏夹，提供新鲜优质的知乎文章资讯，优化了分页和懒加载机制。
-- [直播](https://lsqkk.github.io/a/live)：通过声网 Agora API 实现直播画面的实时推流与播放。
-- [贴吧](https://lsqkk.github.io/blog/tieba/)：全站公共论坛。
-- [在线用户](https://lsqkk.github.io/a/online)：展示实时在线用户与状态信息。
+完整的迁移部署说明见于以下文档：
 
-### 已启用的仓库 Pages
+- [迁移部署指南](src/docs/迁移部署说明.md)
+- [构建与数据产物说明](src/docs/构建与数据产物说明.md)
+- [Serverless API 说明](src/docs/API/README.md)
 
-- [我的学术主页](https://lsqkk.github.io/academic-homepage)：基于 Minimal Light 主题的修改版，添加了展示项目经历、竞赛获奖内容的板块。
-- [夸克文档](https://lsqkk.github.io/quarkdoc)：基于 MkDocs 的文档与知识库项目，系统地整理和分享技术笔记、开源项目文档、博客文章的延伸内容以及其他值得记录的知识。目前存放着以下项目文档。
-  - 【[香橙派 AI Pro 综合开发笔记：从零搭建个人AI服务器](https://lsqkk.github.io/quarkdoc/OrangePi/)】我在宿舍环境中利用香橙派AI Pro开发板从零开始搭建个人AI服务器的完整实战记录，完全源于个人真实探索过程，记录了从开箱接线到复杂服务部署的每一个步骤，系统性地整理了四大板块、共 12 个核心实战项目。（4篇）
-  - 【[Quark API - 夸克博客个人 API 服务集合](https://lsqkk.github.io/quarkdoc/QuarkAPI/)】模块化、可扩展的个人 API 服务集合，提供多种 API 服务。项目采用 Node.js 开发，部署于 Vercel 平台，支持通过 RESTful API 访问丰富的问答数据。目前包含以下几个 API 服务。（4篇）
-    <details><summary>Quark API 列表</summary>
+它们将涉及GitHub Pages 静态部署、Vercel Serverless 导入与环境变量配置、`API_BASE`绑定域名、第三方服务接入等。
 
-    | API 名称 | 简介 | API 文档地址 |
-    | :--- | :--- | :--- |
-    | **Quiz API** | 提供多主题百科题库服务，支持随机题目、ID查询、范围查询和全文搜索等功能。 | [Quiz API](https://lsqkk.github.io/quarkdoc/QuarkAPI/Quiz%20API/) |
-    | **Animal API** | 提供结构化动物图片数据集的访问服务，可按类别、ID获取图片，支持随机、范围查询和搜索，并包含 GitHub 原图与 CDN 加速双链接。 | [Animal API](https://lsqkk.github.io/quarkdoc/QuarkAPI/Animal%20API/) |
-    | **Bili Card** | 优雅、现代的B站用户卡片生成工具，传入UID返回精美的SVG卡片，完美嵌入个人网站、GitHub Profile或任何需要展示B站身份的场景。[仓库](https://github.com/lsqkk/bili-card) | [bili-card](https://lsqkk.github.io/quarkdoc/QuarkAPI/bili-card/) |
+如果你只是想先跑通一个“只含静态博客页面”的版本，可以先按照以下步骤完成本地构建和 GitHub Pages 部署。但只要你需要评论、留言、登录、数据库、上传或其他动态功能，就必须继续完成 Vercel Serverless 与相关环境变量配置。
 
-    </details>
-  - 【[其他资料](https://lsqkk.github.io/quarkdoc/资料/)】包含C程序设计考试题目等，持续更新。（2篇）
+### 本地初始化
 
-
-
-### 其他项目列表
-
-Quark Blog 网站[功能页](https://lsqkk.github.io/blog)还一并展示我的其他开源项目工具：
-
-<details><summary>点击展开其他项目列表</summary>
-
-| 名称 | 描述 |
-|------|------|
-| [question-helper](https://github.com/lsqkk/question-helper) | 自定义题目学习复习工具，支持智能复习算法和多模式练习，适用于中学生/大学生文科、公务员考试等题目的高校复习。将 Markdown 格式的题目源文件自动构建为交互式学习界面，提供基于艾宾浩斯遗忘曲线的复习计划、学习进度可视化以及多维度统计功能。 |
-| [pmt](https://github.com/lsqkk/pmt) | PMT 是一个基于 GitHub Pages 的 AI 提示词快捷链接工具，使用纯 HTML/CSS/JS 实现。通过超简洁的 URL 即可快速调用复杂的提示词模板，支持模糊搜索和自定义扩展，无需服务器，Fork 即可部署使用。 |
-| [bili-card](https://github.com/lsqkk/bili-card) | 一行代码返回B站展示SVG卡片 \| 优雅、现代的B站用户卡片生成工具，通过简洁的API接口将B站用户信息转化为精美的SVG卡片。无需复杂的配置，只需一个UID，即可获得美观、可自定义的用户信息展示卡片，完美嵌入个人网站、GitHub Profile或任何需要展示B站身份的场景。 |
-| [github-star-tracker](https://github.com/lsqkk/github-star-tracker) | 轻松追踪谁给你的GitHub仓库点了Star \| 简洁的 Python 工具，自动抓取并记录所有GitHub仓库的Star动态并对比历史数据，清晰地告诉你新增的Star来自哪些开发者和项目。 |
-| [quark-api](https://github.com/lsqkk/quark-api) | Quark API 是一个模块化、可扩展的个人 API 服务集合，提供多种 API 服务。项目采用 Node.js 开发，部署于 Vercel 平台，支持通过 RESTful API 访问丰富的问答数据。 |
-| [deepseek-skills](https://github.com/lsqkk/deepseek-skills) | DeepSeek 本地文件操作增强插件 \| 为 DeepSeek 网页版添加本地文件操作能力，模拟 SKILLS 的CODING功能。通过浏览器插件+本地服务的架构，在保障安全的前提下实现智能文件编辑。 |
-| [FileManager](https://github.com/lsqkk/FileManager) | 基于AI的智能文件分类与管理工具，通过分析文件名自动将文件分类到预设的目录结构。采用Web可视化界面，支持批量处理、手动调整和实时配置更新，让文件整理变得简单高效。 |
-| [ppt-remote](https://github.com/lsqkk/ppt-remote) | 摆脱遥控笔，在任何设备遥控放映PPT \| 基于 Firebase Realtime Database 与 Node.js 开发的轻量级跨网络 PPT 遥控工具，允许使用手机远程控制电脑上的 PPT 翻页、黑屏、激光笔等功能，无需处于同一局域网。 |
-| [animal-recognition-dataset](https://github.com/lsqkk/animal-recognition-dataset) | A high-quality animal image dataset with 9,757+ images across 16 categories for computer vision research and CNN training. 一个用于计算机视觉研究和CNN模型训练的高质量动物图像数据集。本数据集包含9,757张经过精心筛选的动物图像，涵盖多个类别，适用于目标识别、分类和迁移学习任务。 |
-| [qq-emotion-parser](https://github.com/lsqkk/qq-emotion-parser) | 解析QQ动态Qzone导出的 [em]e数字[/em]格式表情代码的轻量级JavaScript库，并将其转换为可显示的图片表情。 |
-| [chat-analyzer](https://github.com/lsqkk/chat-analyzer) | 功能强大的中文聊天记录分析工具，能够自动提取高频词汇、统计纯标点消息，并生成精美的词云可视化图表。 |
-| [OrangePi](https://github.com/lsqkk/OrangePi) | 香橙派AI Pro 综合开发笔记：从零搭建个人AI服务器 |
-| [fire-risk](https://github.com/lsqkk/fire-risk) | 一个基于机器学习的火灾风险预测系统，包含预处理数据和模型训练。 |
-| [image](https://github.com/lsqkk/image) | 我的PicGo图床仓库。 |
-| [academic-homepage](https://github.com/lsqkk/academic-homepage) | 我的学术主页。一个基于 Minimal Light 主题修改的学术个人主页模板，适用于本科生、研究生或研究人员展示个人信息、项目经历、竞赛获奖等内容。 |
-| [ZhihuCuration](https://github.com/lsqkk/ZhihuCuration) | 智能整理知乎收藏夹下载内容，调用大模型API实现可定制的自动分类。 |
-| [quarkdoc](https://github.com/lsqkk/quarkdoc) | 夸克博客的文档与知识库项目，系统地整理和分享技术笔记、开源项目文档、博客文章的延伸内容以及其他值得记录的知识。由MkDocs构建页面。 |
-
-</details>
-
-## 迁移使用与部署
-
-### 创建新项目
-
-点击本项目仓库上方 `Use this template` 或直接 `Fork` 创建你的新项目并**克隆到本地**。
-
-推荐使用 **VSCode** 管理项目，下述 Quark 工具部分功能（如文章快捷创建）依赖 VSCode 实现。
-
-### 安装 Quark 并初始化
-
-1. 安装 `Quark` 命令行工具
+点击本项目仓库上方 `Use this template` 或直接 `Fork` 创建你的新项目并**克隆到本地**。推荐使用 **VSCode** 管理项目，下述 Quark 工具部分功能（如文章快捷创建）依赖 VSCode 实现。
 
 ```bash
 # 可选但推荐：创建虚拟环境
@@ -161,91 +73,94 @@ python -m venv .venv
 # 安装依赖
 pip install -r requirements.txt
 
-# 安装 Quark 工具
+# 安装 Quark CLI
 pip install -e .
 
 # 可选：查看帮助
 quark --help
+
+npm install
+pip install -r requirements.txt
+pip install -e .
 ```
 
-2. 初始化项目
+### 本地构建与预览
 
 ```bash
-# 先构建
-quark build
-
-# 运行 dist 预览服务器并检查
+npm run build
 quark serve
 ```
-如可成功访问 `localhost:8000` 并出现博客页面，则表示已经**初始化成功**。
 
-### 自定义配置
-
-1. 修改 `json` 配置目录下的配置项，填入配置和个人信息。
-  - `friends.json` 友链信息
-  - `index_config.json` 调整主页各板块显示与否与显示顺序
-  - `index.json` 你的个人信息及主页展示项等
-  - `menifest.json` PWA 应用配置，填入站点信息等
-  - `nav.json` 导航栏展示项
-  - `popups.json` 主页弹窗展示信息
-
-2. 设置你的自定义网站图像。
-
-打开 `/assets/img` 目录，更新以下文件：
-  - `bg.png` 网站背景
-  - `logo_blue.png` 和 `favicon.ico` 网站图标
-  - `touxiang.png` 个人头像
-
-### 构建、博文写作与上传
-
-1. 安装前端构建依赖（首次）
+或使用 Quark CLI:
 
 ```bash
-npm install
+quark build
+quark serve
 ```
 
-2. **创建新文章**：在 VSCode 终端中使用 `quark new` 创建新文章。如创建失败，请检查`/posts`目录下是否存在名为**当前年**的文件夹，如 `2026`。如不存在，可手动创建。
+访问 `http://localhost:8000`，若页面正常渲染，说明本地构建链路可用。
 
-3. **本地构建站点**：运行 `quark build`。该命令默认执行 source 模式，完成 `posts.json` 生成和 Astro 构建，产物位于 `dist`。如需额外导出一份可分发产物，可用 `quark build --mode artifact`（默认导出到 `.quark-artifact`，可用 `--artifact-dir` 自定义）。
-   GitHub Pages 推荐使用仓库内置工作流 `.github/workflows/deploy-pages.yml` 在远端构建并部署 `dist`。
-
-4. **推送文章**：运行 `quark ppush` 以推送文章。这会自动执行站点构建（`quark build`）并创建一个名为“更新 - 更新了文章”的提交记录。网站地图由 Astro 构建自动生成，无需单独 `quark map`。
-  *注意：`quark push` 是普通推送，不会构建站点或更新地图。*
-
-关于 Quark 工具的其他用法，可 `quark --help` 查看。
-
-### 扩展与二创项目
-
-可以关注 `/src/docs` 中的相关文件。将相关模板说明文件添加为 Skills 后，可保证网站延申项目在结构和 UI 设计上的统一性。
-
-更新新项目后，应更新 `/assets/pages/blog/functions.json` 和 `src/config/json/nav.json`（构建后会生成 `/json/nav.json`）以在网站中显示您的新项目。
-
-### TS 说明
-
-本项目支持 TypeScript 检查，可以安装前端类型检查依赖并执行检查。
+### 常用命令
 
 ```bash
-npm install
+quark new          # 新建文章
+quark build        # 完整构建
+quark serve        # 预览 dist
+quark updatelog    # 根据 Git 提交刷新日志
+
+npm run build
 npm run typecheck
 npm run check:syntax
 ```
 
-### 许可证声明
+### 配置入口
+
+常见站点配置集中于 `src/config/json/`:
+
+- `api.json`: 前端注入的 API 基地址
+- `nav.json`: 导航、标题、GitHub OAuth 地址、Turnstile site key
+- `index.json`: 首页个人信息与展示数据
+- `index_config.json`: 首页板块开关与排序
+- `friends.json`: 友链数据
+- `manifest.json`: PWA 配置
+- `popups.json`: 首页弹窗配置
+
+站点图片资源主要位于 `assets/img/`，需要替换:
+
+- `bg.png`
+- `logo_blue.png`
+- `favicon.ico`
+- `touxiang.png`
+
+
+## 项目目录概览
+
+```text
+.
+├── api/                 # Vercel Serverless 函数
+├── assets/              # 静态资源源目录
+├── posts/               # 博文源码与生成数据
+├── public/              # 构建前同步产物，不建议手改
+├── src/
+│   ├── components/
+│   ├── config/json/
+│   ├── docs/
+│   ├── layouts/
+│   ├── pages/
+│   └── utils/
+├── scripts/             # 构建与同步脚本
+├── quark/               # Python CLI
+├── dist/                # Astro 构建产物
+└── vercel.json          # Vercel 仅承接 API，不负责静态构建
+```
+
+## 许可证
 
 需要注意的是，本仓库使用 GPLv3 协议，此协议支持自由查看、学习、修改、搭建自己的版本，但需保证：
 - 在使用我的代码时必须保留我的署名 [lsqkk / 蓝色奇夸克 / Quark](https://github.com/lsqkk)；
 - 修改后发布的版本必须继续遵守 GPLv3 协议。
 
 许可证详情见 [LICENSE](LICENSE) 。
-
-目前，本项目正持续进行**代码重构与模板化升级**，旨在提高项目的可复用性与部署友好度，包括：
-
-- 逐步抽离通用模块，提供配置示例文件；
-- 统一数据接口与构建脚本，降低耦合度；
-- 完善部署文档与自动化检查工具。
-
-如果你对原生开发、静态站点增强或实时协同方案感兴趣，欢迎参考本项目思路，或通过 Issues 交流部署中遇到的问题。未来版本中将逐步提供更友好的“一键部署”体验。
-
 
 ## 支持与反馈
 
@@ -259,10 +174,6 @@ npm run check:syntax
 ---
 
 <h3 align="center">「无穷的远方，无数的人们，都和我有关」</h3>
-
-在技术快速迭代的今天，我依然相信深入理解底层原理的价值。这个项目是对原生技术路线的探索，也是对一个静态站点能力边界的挑战。
-
-感谢你的访问，期待在技术的世界里与更多同行者相遇。
 
 <p align="center"> 
   <a href="https://github.com/lsqkk?tab=followers"><img src="https://img.shields.io/github/followers/lsqkk?label=Followers&style=plastic" height="25px" alt="github follow" /></a>
