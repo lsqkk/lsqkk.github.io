@@ -1,5 +1,47 @@
 [
     {
+        "title": "机器学习基础笔记（4）：高级优化方法与模型诊断",
+        "description": "吴恩达机器学习笔记整理版",
+        "file": "ml/4.md",
+        "date": "2026-04-15",
+        "tags": [
+            "机器学习"
+        ],
+        "columns": [
+            "机器学习笔记"
+        ],
+        "wordCount": 9978,
+        "cover": "https://cn.bing.com/th?id=OHR.Porto_ZH-CN9117852684_1366x768.jpg"
+    },
+    {
+        "title": "机器学习基础笔记（3）：神经网络与深度学习 从感知机到现代架构",
+        "description": "吴恩达机器学习笔记整理版",
+        "file": "ml/3.md",
+        "date": "2026-04-14",
+        "tags": [
+            "机器学习"
+        ],
+        "columns": [
+            "机器学习笔记"
+        ],
+        "wordCount": 11043,
+        "cover": "https://cn.bing.com/th?id=OHR.RibbontailStingray_ZH-CN3248204214_1366x768.jpg"
+    },
+    {
+        "title": "机器学习基础笔记（2）：多元线性回归 从单一特征到多维空间",
+        "description": "吴恩达机器学习笔记整理版",
+        "file": "ml/2.md",
+        "date": "2026-04-13",
+        "tags": [
+            "机器学习"
+        ],
+        "columns": [
+            "机器学习笔记"
+        ],
+        "wordCount": 12299,
+        "cover": "https://cn.bing.com/th?id=OHR.KobukRiver_ZH-CN9932342738_1366x768.jpg"
+    },
+    {
         "title": "机器学习基础笔记（1）：从房价预测到梯度下降",
         "description": "吴恩达机器学习笔记整理版",
         "file": "ml/1.md",

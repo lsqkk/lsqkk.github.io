@@ -1,24 +1,83 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import ShichaBackground from "../../components/ShichaBackground.astro";
+// 如果页面更适合轻量搜索/检索视觉/面板页，可改用：
+// import LuxuryBackground from "../../components/LuxuryBackground.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const PROJECT_ROOT = process.cwd();
+
+// 1. 新页面通常会读取 nav.json，供 nav.js 使用
+const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+
+// 2. 如果页面有构建期需要的本地 JSON，可按需取消注释并修改路径
+// const pageDataPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "demo", "demo.json");
+// const pageData = JSON.parse(await fs.readFile(pageDataPath, "utf8"));
+
+// 3. 页面级元信息
+const pageName = "页面名";
+const pageNameEn = "PAGE";
+const pageTitle = `${pageName} / ${pageNameEn} - ${SITE_TITLE}`;
+const pageDescription = `${SITE_TITLE} 的${pageName}页面描述。`;
+const currentYear = new Date().getFullYear();
+---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="页面描述">
-    <title>页面标题 - 夸克博客</title>
-    <link rel="icon" href="/assets/img/logo_blue.png" type="image/png">
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script src="/assets/js/cursor-trail.js"></script>
-    <script src="/assets/js/nav.js"></script>
-    <script src="/assets/js/disable-right-click.js"></script>
-</head>
+    <!-- 按页面需要选择保留 -->
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
-<!--其他说明详见 网页模板说明.md -->
+    <!-- 页面专属样式建议放在 assets/pages/... -->
+    <link rel="stylesheet" href="/assets/pages/section/demo/demo.css" />
 
-<body>
-    <!-- 页面主体 -->
+    <!-- 如果页面脚本需要构建期预载数据，就在这里注入 -->
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+      // window.__PAGE_DATA__ = pageData;
+    </script>
 
-</body>
+    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+  </head>
 
+  <body>
+    <ShichaBackground />
+    <!-- 如果改用 LuxuryBackground，body 通常改成 class="luxury-body" -->
+    <!-- <LuxuryBackground /> -->
+
+    <main class="container">
+      <h1 class="page-title">{pageName} / {pageNameEn}</h1>
+
+      <!-- 主内容区：建议使用带页面前缀的类名，避免与公共样式冲突 -->
+      <section class="glass-card demo-section">
+        <h2 class="demo-section-title">页面简介</h2>
+        <p class="demo-section-text">
+          这里放页面主体内容。若页面是列表、工具或检索页，可在此继续拆分为多个 section。
+        </p>
+      </section>
+
+      <!-- 如页面内容较完整、需要正式页尾，可保留版权区 -->
+      <div class="copyright">
+        <a href="/posts/copyright">© 2024 - {currentYear} {pageName} / {SITE_TITLE} All rights reserved.</a>
+      </div>
+    </main>
+
+    <!-- 页面专属脚本 -->
+    <script is:inline src="/assets/pages/section/demo/demo.js"></script>
+
+    <!-- 若页面允许用户右键查看源码，请删除下一行 -->
+    <script is:inline src="/assets/js/disable-right-click.js"></script>
+  </body>
 </html>
