@@ -157,8 +157,8 @@ quark serve
 - 因此若修改构建链路、页面收录逻辑或文章元数据，需留意搜索是否仍可工作
 
 ### 评论与互动
-- 文章页使用 Giscus 评论：`src/layouts/PostLayout.astro`
-- 留言板、动态评论、首页留言预览等功能依赖 Firebase RTDB 与共享评论脚本：
+- 文章页底评论系统使用 Giscus 评论：`src/layouts/PostLayout.astro`
+- 留言板、动态评论、文章段落讨论、首页留言预览等功能依赖 Firebase RTDB 与共享评论脚本：
   - `assets/js/comment-shared.js`
   - `assets/js/comment-render-shared.js`
   - `assets/js/message.js`
@@ -215,10 +215,10 @@ quark serve
 
 ## serverless 函数说明
 详见 `src/docs/API/`，当前包含：
+- `README.md`
 - `安全验证Turnstile说明.md`
 - `管理员密钥调用说明.md`
 - `天地图密钥调用说明.md`
-- `总：API无服务器函数说明.md`
 - `firebaseRTDB配置调用说明.md`
 - `GitHub令牌调用说明.md`
 - `R2上传与图床说明.md`
