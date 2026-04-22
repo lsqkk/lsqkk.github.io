@@ -167,9 +167,9 @@ class StorageManager {
 
     getEnv() {
         const env = JSON.parse(localStorage.getItem('terminalEnv') || '{}');
-        env.PWD = this.getCurrentPath();
         if (!env.HOME) env.HOME = '/home';
         if (!env.USER) env.USER = 'quark';
+        env.PWD = this.normalizePath(localStorage.getItem('currentPath') || env.PWD || '/home', '/');
         return env;
     }
 
@@ -214,7 +214,8 @@ class StorageManager {
     }
 
     normalizePath(path, currentPath = '/') {
-        const env = this.getEnv();
+        const env = JSON.parse(localStorage.getItem('terminalEnv') || '{}');
+        const homePath = env.HOME || '/home';
         let input = String(path || '').trim();
 
         if (!input) {
@@ -222,9 +223,9 @@ class StorageManager {
         }
 
         if (input === '~') {
-            input = env.HOME || '/home';
+            input = homePath;
         } else if (input.startsWith('~/')) {
-            input = `${env.HOME || '/home'}/${input.slice(2)}`;
+            input = `${homePath}/${input.slice(2)}`;
         } else if (!input.startsWith('/')) {
             input = `${currentPath || '/'}${(currentPath || '/').endsWith('/') ? '' : '/'}${input}`;
         }
