@@ -11,6 +11,9 @@ body {
     font-size: 14px;
     line-height: 1.4;
     overflow: hidden;
+    background-image:
+        radial-gradient(circle at top right, rgba(0, 255, 127, 0.12), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(0, 170, 255, 0.12), transparent 22%);
 }
 
 #terminal {
@@ -27,8 +30,12 @@ body {
 }
 
 .output-line {
-    margin-bottom: 2px;
+    margin-bottom: 6px;
     word-wrap: break-word;
+}
+
+.output-line.command {
+    color: #c9d1d9;
 }
 
 .output-line.error {
@@ -133,6 +140,46 @@ body {
     background: #444;
 }
 
+.terminal-block {
+    white-space: pre-wrap;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(126, 231, 135, 0.15);
+    border-radius: 10px;
+    padding: 10px 12px;
+    overflow-x: auto;
+}
+
+.terminal-llm {
+    border-color: rgba(88, 166, 255, 0.35);
+    background: rgba(88, 166, 255, 0.07);
+}
+
+.terminal-kv {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 0;
+}
+
+.terminal-kv-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+    padding-bottom: 6px;
+}
+
+.terminal-kv-key {
+    width: 96px;
+    color: #7ee787;
+    flex-shrink: 0;
+}
+
+.terminal-kv-value {
+    color: #c9d1d9;
+    word-break: break-all;
+}
+
 /* 滚动条样式 */
 ::-webkit-scrollbar {
     width: 8px;
@@ -204,4 +251,65 @@ body {
 .tree-branch {
     margin-right: 5px;
     color: #555;
+}
+
+.shutdown-screen,
+#destruction-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.shutdown-screen {
+    background: #000;
+    flex-direction: column;
+    color: #7ee787;
+    gap: 14px;
+}
+
+.shutdown-spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(255, 255, 255, 0.16);
+    border-top-color: #7ee787;
+    border-radius: 50%;
+    animation: terminal-spin 1s linear infinite;
+}
+
+.destruction-inner {
+    max-width: 620px;
+    padding: 28px;
+    border: 1px solid rgba(255, 95, 86, 0.5);
+    border-radius: 18px;
+    background: rgba(255, 0, 0, 0.08);
+    text-align: center;
+}
+
+.destruction-skull {
+    font-size: 88px;
+    margin-bottom: 18px;
+}
+
+.destruction-title {
+    font-size: 28px;
+    color: #ff5f56;
+    margin-bottom: 10px;
+}
+
+.destruction-subtitle,
+.destruction-help {
+    color: #ffb4b0;
+    white-space: pre-line;
+}
+
+@keyframes terminal-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

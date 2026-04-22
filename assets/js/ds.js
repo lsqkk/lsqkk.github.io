@@ -1,4 +1,3 @@
-const API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const CONTEXT_LIMIT = 15;
 
 let currentChatId = null;
@@ -11,21 +10,19 @@ window.onload = () => {
 };
 
 function initApp() {
-    // 绑定基础事件
     document.getElementById('model-toggle').onclick = toggleModel;
     document.getElementById('new-chat-btn').onclick = createNewChat;
     document.getElementById('sidebar-toggle').onclick = toggleSidebar;
     document.getElementById('theme-toggle').onclick = toggleTheme;
     document.getElementById('settings-btn').onclick = () => toggleModal(true);
     document.getElementById('close-settings').onclick = () => toggleModal(false);
-    document.getElementById('save-settings').onclick = saveApiKey;
+    document.getElementById('save-settings').onclick = saveApiSettings;
     document.getElementById('send-btn').onclick = sendMessage;
 
-    // 输入框自动高度与回车发送
     const userInput = document.getElementById('user-input');
     userInput.oninput = function () {
         this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
+        this.style.height = `${this.scrollHeight}px`;
     };
     userInput.onkeydown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -37,22 +34,49 @@ function initApp() {
     document.getElementById('file-btn').onclick = () => document.getElementById('file-input').click();
     document.getElementById('file-input').onchange = handleFileSelect;
 
+    hydrateSettingsModal();
     loadHistoryList();
-    if (localStorage.getItem('darkMode') === 'true') toggleTheme();
+
+    if (localStorage.getItem('darkMode') === 'true') {
+        toggleTheme();
+    }
 }
 
-// 侧边栏与主题切换
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
 function toggleTheme() {
     isDarkMode = !isDarkMode;
     document.body.classList.toggle('dark-mode', isDarkMode);
     localStorage.setItem('darkMode', isDarkMode);
 }
 
-// 核心：发送消息
+function hydrateSettingsModal() {
+    const settings = window.QuarkLLMConfig.getSettings();
+    currentModel = settings.model;
+    document.getElementById('api-key-input').value = settings.apiKey;
+    document.getElementById('base-url-input').value = settings.baseUrl;
+    document.getElementById('model-input').value = settings.model;
+
+    const toggle = document.getElementById('model-toggle');
+    const isChatMode = settings.model === 'deepseek-chat';
+    toggle.classList.toggle('off', isChatMode);
+    updateModelInfo();
+}
+
+function updateModelInfo() {
+    const isChatMode = currentModel === 'deepseek-chat';
+    document.querySelector('.model-info').textContent = isChatMode ? "CHAT / 聊天" : "REASONER / 推理";
+}
+
 async function sendMessage() {
-    const apiKey = localStorage.getItem('ds_api_key');
-    if (!apiKey) { alert("请先设置 API Key"); toggleModal(true); return; }
+    const settings = window.QuarkLLMConfig.getSettings();
+    if (!settings.apiKey) {
+        alert("请先设置 API Key");
+        toggleModal(true);
+        return;
+    }
 
     const inputEl = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
@@ -61,13 +85,14 @@ async function sendMessage() {
     if (!text && currentAttachments.length === 0) return;
     sendBtn.disabled = true;
 
-    // 构建内容
     let fullPrompt = text;
     if (currentAttachments.length > 0) {
-        fullPrompt = currentAttachments.map(a => `[文件: ${a.name}]\n${a.content}`).join('\n') + "\n\n" + text;
+        fullPrompt = currentAttachments.map(a => `[文件: ${a.name}]\n${a.content}`).join('\n\n');
+        if (text) {
+            fullPrompt += `\n\n${text}`;
+        }
     }
 
-    // UI 显示用户消息
     appendMessageUI('user', text || "[发送文件]");
     inputEl.value = "";
     inputEl.style.height = 'auto';
@@ -83,9 +108,12 @@ async function sendMessage() {
     const contentBox = botMsgDiv.querySelector('.markdown-content');
 
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(window.QuarkLLMConfig.buildChatEndpoint(settings.baseUrl), {
             method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${settings.apiKey}`
+            },
             body: JSON.stringify({
                 model: currentModel,
                 messages: getContext(fullPrompt),
@@ -93,66 +121,78 @@ async function sendMessage() {
             })
         });
 
+        if (!response.ok || !response.body) {
+            throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response));
+        }
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let fullText = "";
         let fullReasoning = "";
+        let pendingChunk = "";
 
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
 
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
-            for (let line of lines) {
-                if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-                    try {
-                        const data = JSON.parse(line.substring(6));
-                        const delta = data.choices[0].delta;
+            pendingChunk += decoder.decode(value, { stream: true });
+            const lines = pendingChunk.split('\n');
+            pendingChunk = lines.pop() || "";
 
-                        if (delta.reasoning_content) {
-                            fullReasoning += delta.reasoning_content;
-                            reasoningBox.style.display = "block";
-                            reasoningBox.textContent = fullReasoning;
-                        }
-                        if (delta.content) {
-                            fullText += delta.content;
-                            contentBox.innerHTML = marked.parse(fullText);
-                        }
-                        historyBox.scrollTop = historyBox.scrollHeight;
-                    } catch (e) { }
+            for (const line of lines) {
+                if (!line.startsWith('data: ') || line === 'data: [DONE]') {
+                    continue;
+                }
+
+                try {
+                    const data = JSON.parse(line.substring(6));
+                    const delta = data?.choices?.[0]?.delta || {};
+
+                    if (delta.reasoning_content) {
+                        fullReasoning += delta.reasoning_content;
+                        reasoningBox.style.display = "block";
+                        reasoningBox.textContent = fullReasoning;
+                    }
+
+                    if (delta.content) {
+                        fullText += delta.content;
+                        contentBox.innerHTML = marked.parse(fullText);
+                    }
+
+                    historyBox.scrollTop = historyBox.scrollHeight;
+                } catch (error) {
+                    console.warn('解析流式响应失败:', error);
                 }
             }
         }
 
         addCopyButton(botMsgDiv, fullText);
         saveToLocalStorage(fullPrompt, fullText);
-
     } catch (err) {
         contentBox.innerHTML = `<span style="color:red">错误: ${err.message}</span>`;
     } finally {
         sendBtn.disabled = false;
         currentAttachments = [];
         document.getElementById('drop-area').classList.remove('active');
+        document.getElementById('drop-area').textContent = "已就绪：等待发送文件内容...";
     }
 }
 
-// 历史与存储逻辑
 function getContext(newPrompt) {
-    let chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
     if (currentChatId !== null && chats[currentChatId]) {
-        let history = chats[currentChatId].messages.slice(-CONTEXT_LIMIT);
+        const history = chats[currentChatId].messages.slice(-CONTEXT_LIMIT);
         return [...history, { role: "user", content: newPrompt }];
     }
     return [{ role: "user", content: newPrompt }];
 }
 
 function saveToLocalStorage(userMsg, botMsg) {
-    let chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
     const msgPair = [{ role: "user", content: userMsg }, { role: "assistant", content: botMsg }];
 
     if (currentChatId === null) {
-        const title = userMsg.substring(0, 15);
+        const title = userMsg.substring(0, 15) || "新会话";
         chats.unshift({ title, messages: msgPair });
         currentChatId = 0;
     } else {
@@ -166,6 +206,7 @@ function loadHistoryList() {
     const list = document.getElementById('history-list');
     const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
     list.innerHTML = "";
+
     chats.forEach((chat, i) => {
         const div = document.createElement('div');
         div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
@@ -183,12 +224,12 @@ function renderChat(chat) {
     const historyBox = document.getElementById('chat-history');
     historyBox.innerHTML = "";
     document.getElementById('chat-title').textContent = chat.title;
-    chat.messages.forEach(m => appendMessageUI(m.role === 'user' ? 'user' : 'bot', m.content));
+    chat.messages.forEach((message) => appendMessageUI(message.role === 'user' ? 'user' : 'bot', message.content));
 }
 
 function deleteChat(index, e) {
     e.stopPropagation();
-    let chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
     chats.splice(index, 1);
     localStorage.setItem('deepseekChats', JSON.stringify(chats));
     createNewChat();
@@ -201,7 +242,6 @@ function createNewChat() {
     loadHistoryList();
 }
 
-// UI 辅助
 function appendMessageUI(role, text) {
     const div = document.createElement('div');
     div.className = `${role}-msg`;
@@ -218,7 +258,9 @@ function addCopyButton(parent, text) {
     btn.onclick = () => {
         navigator.clipboard.writeText(text);
         btn.textContent = 'DONE';
-        setTimeout(() => btn.textContent = 'COPY', 2000);
+        setTimeout(() => {
+            btn.textContent = 'COPY';
+        }, 2000);
     };
     parent.appendChild(btn);
 }
@@ -227,25 +269,39 @@ function toggleModel() {
     const btn = document.getElementById('model-toggle');
     btn.classList.toggle('off');
     currentModel = btn.classList.contains('off') ? "deepseek-chat" : "deepseek-reasoner";
-    document.querySelector('.model-info').textContent = currentModel === "deepseek-chat" ? "CHAT / 聊天" : "REASONER / 推理";
+    document.getElementById('model-input').value = currentModel;
+    updateModelInfo();
 }
 
-function saveApiKey() {
-    const key = document.getElementById('api-key-input').value.trim();
-    if (key) { localStorage.setItem('ds_api_key', key); toggleModal(false); }
+function saveApiSettings() {
+    const settings = window.QuarkLLMConfig.saveSettings({
+        apiKey: document.getElementById('api-key-input').value.trim(),
+        baseUrl: document.getElementById('base-url-input').value.trim(),
+        model: document.getElementById('model-input').value.trim() || currentModel
+    });
+
+    currentModel = settings.model;
+    const toggle = document.getElementById('model-toggle');
+    toggle.classList.toggle('off', currentModel === 'deepseek-chat');
+    document.getElementById('model-input').value = currentModel;
+    updateModelInfo();
+    toggleModal(false);
 }
 
-function toggleModal(show) { document.getElementById('settings-modal').style.display = show ? 'flex' : 'none'; }
+function toggleModal(show) {
+    document.getElementById('settings-modal').style.display = show ? 'flex' : 'none';
+}
 
 function handleFileSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = (arg) => {
         currentAttachments.push({ name: file.name, content: arg.target.result });
-        const da = document.getElementById('drop-area');
-        da.classList.add('active');
-        da.textContent = "文件已就绪: " + file.name;
+        const dropArea = document.getElementById('drop-area');
+        dropArea.classList.add('active');
+        dropArea.textContent = `文件已就绪: ${file.name}`;
     };
     reader.readAsText(file);
 }

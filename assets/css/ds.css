@@ -387,6 +387,10 @@ body {
   color: var(--text-main);
 }
 
+.input-group + .input-group {
+  margin-top: 12px;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

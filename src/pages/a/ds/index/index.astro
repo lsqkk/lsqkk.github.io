@@ -85,9 +85,15 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   <div id="settings-modal" class="modal">
     <div class="modal-content">
       <h3>API 密钥配置</h3>
-      <p class="modal-hint">密钥将存储在您的本地浏览器 (localStorage)</p>
+      <p class="modal-hint">配置会保存在本地浏览器 localStorage，并与 /a/terminal 共用</p>
       <div class="input-group">
         <input type="password" id="api-key-input" placeholder="请输入您的 DeepSeek API Key">
+      </div>
+      <div class="input-group">
+        <input type="text" id="base-url-input" placeholder="Base URL，默认 https://api.deepseek.com/v1">
+      </div>
+      <div class="input-group">
+        <input type="text" id="model-input" placeholder="模型名，默认 deepseek-reasoner">
       </div>
       <div class="modal-actions">
         <button id="save-settings" class="primary-btn">保存配置</button>
@@ -97,6 +103,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   </div>
 
   <script is:inline src="/assets/js/cursor-trail.js"></script>
+  <script is:inline src="/assets/js/llm-shared.js"></script>
   <script is:inline src="/assets/js/ds.js"></script>
 </body>
 

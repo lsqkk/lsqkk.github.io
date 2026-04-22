@@ -4,139 +4,332 @@ class CommandManager {
         this.output = outputHandler;
         this.multilineCallback = null;
         this.currentFileName = null;
-        this.presetCommands = null;
-        this.loadPresetCommands();
-
+        this.presetCommands = { output: {}, redirect: {} };
         this.dangerAttempts = 0;
+        this.contextLimit = 8;
+        this.builtinCommands = [
+            'help', 'man', 'ls', 'dir', 'pwd', 'cd', 'cd..', 'mkdir', 'rm', 'del', 'unlink',
+            'touch', 'write', 'cat', 'type', 'less', 'head', 'tail', 'wc', 'grep', 'find',
+            'cp', 'mv', 'rename', 'echo', 'clear', 'cls', 'tree', 'history', 'time', 'date',
+            'calc', 'expr', 'search', 'start', 'open', 'tools', 'games', 'whoami', 'uname',
+            'env', 'printenv', 'export', 'set', 'unset', 'llm', 'chat', 'ask', 'llm-config',
+            'llm-key', 'llm-base', 'llm-model', 'llm-clear', 'llm-history', 'stat'
+        ];
+
+        this.loadPresetCommands();
     }
 
     async loadPresetCommands() {
         try {
             const response = await fetch('/assets/pages/a/terminal/js/preset-commands.json');
+            if (!response.ok) {
+                throw new Error('preset-commands.json not found');
+            }
             this.presetCommands = await response.json();
         } catch (error) {
-            console.error('加载预设指令失败:', error);
-            this.presetCommands = {
-                output: {},
-                redirect: {}
-            };
+            this.presetCommands = { output: {}, redirect: {} };
         }
     }
 
-    execute(command) {
-        const parts = command.trim().split(/\s+/);
-        const cmd = parts[0].toLowerCase();
-        const args = parts.slice(1);
+    tokenize(input) {
+        const tokens = [];
+        let current = '';
+        let quote = '';
+        let escaped = false;
 
+        for (let index = 0; index < input.length; index += 1) {
+            const char = input[index];
 
-        // 检查是否处于危险模式
+            if (escaped) {
+                current += char;
+                escaped = false;
+                continue;
+            }
+
+            if (char === '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (quote) {
+                if (char === quote) {
+                    quote = '';
+                } else {
+                    current += char;
+                }
+                continue;
+            }
+
+            if (char === '"' || char === '\'') {
+                quote = char;
+                continue;
+            }
+
+            if (/\s/.test(char)) {
+                if (current) {
+                    tokens.push(current);
+                    current = '';
+                }
+                continue;
+            }
+
+            current += char;
+        }
+
+        if (quote) {
+            throw new Error('引号未闭合');
+        }
+
+        if (current) {
+            tokens.push(current);
+        }
+
+        return tokens.map((token) => this.expandEnv(token));
+    }
+
+    expandEnv(token) {
+        const env = this.storage.getEnv();
+        return String(token || '').replace(/\$([A-Za-z_][A-Za-z0-9_]*)/g, (match, name) => {
+            return Object.prototype.hasOwnProperty.call(env, name) ? env[name] : '';
+        });
+    }
+
+    parseOptions(args) {
+        const options = new Set();
+        const values = [];
+        args.forEach((arg) => {
+            if (arg.startsWith('-') && arg.length > 1) {
+                arg.slice(1).split('').forEach((flag) => options.add(flag));
+            } else {
+                values.push(arg);
+            }
+        });
+        return { options, values };
+    }
+
+    createCodeBlock(text, className = '') {
+        const pre = document.createElement('pre');
+        pre.className = `terminal-block ${className}`.trim();
+        pre.textContent = text;
+        return pre;
+    }
+
+    createDefinitionList(items) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'terminal-kv';
+        items.forEach(([key, value]) => {
+            const row = document.createElement('div');
+            row.className = 'terminal-kv-row';
+
+            const keySpan = document.createElement('span');
+            keySpan.className = 'terminal-kv-key';
+            keySpan.textContent = key;
+
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'terminal-kv-value';
+            valueSpan.textContent = value;
+
+            row.appendChild(keySpan);
+            row.appendChild(valueSpan);
+            wrapper.appendChild(row);
+        });
+        return wrapper;
+    }
+
+    async execute(commandLine) {
+        const raw = String(commandLine || '').trim();
+        if (!raw) return;
+
         if (this.storage.getDangerMode()) {
-            this.handleDangerMode(command);
+            this.handleDangerMode(raw);
             return;
         }
 
-        // 检查自毁状态
         if (this.storage.shouldShowDestruction()) {
             this.triggerSelfDestruction();
             return;
         }
 
-        // 检查危险指令
-        if (this.storage.checkDangerousCommand(command)) {
-            this.handleDangerousCommand(command);
+        if (this.storage.checkDangerousCommand(raw)) {
+            this.handleDangerousCommand(raw);
             return;
         }
 
+        let tokens;
+        try {
+            tokens = this.tokenize(raw);
+        } catch (error) {
+            this.output(`错误: ${error.message}`, 'error');
+            return;
+        }
 
+        const cmd = (tokens[0] || '').toLowerCase();
+        const args = tokens.slice(1);
 
-        // 检查关机命令
         if (cmd.includes('shutdown')) {
             this.shutdown();
             return;
         }
 
-        // 检查预设指令和自定义指令
-        if (this.checkPresetAndCustomCommands(cmd, args)) {
+        if (this.checkPresetAndCustomCommands(cmd)) {
             return;
         }
 
         try {
             switch (cmd) {
-                case '':
-                    break;
-
                 case 'help':
                 case '帮助':
+                case 'man':
                     this.help();
                     break;
-                case '列表':
                 case 'ls':
                 case 'dir':
+                case '列表':
                     this.list(args);
                     break;
-                case '切换目录':
+                case 'pwd':
+                    this.printWorkingDirectory();
+                    break;
                 case 'cd':
+                case '切换目录':
                     this.changeDirectory(args);
                     break;
                 case 'cd..':
                     this.changeToParentDirectory();
                     break;
-                case '创建目录':
                 case 'mkdir':
+                case '创建目录':
                     this.createDirectory(args);
                     break;
-                case '删除':
-                case 'del':
                 case 'rm':
+                case 'del':
+                case 'unlink':
+                case '删除':
                     this.delete(args);
                     break;
-                case '清屏':
+                case 'clear':
                 case 'cls':
+                case '清屏':
                     this.clearScreen();
                     break;
-                case '创建文本文档':
                 case 'touch':
+                case '创建文本文档':
                     this.createTextFile(args);
                     break;
-                case '写入':
                 case 'write':
+                case 'nano':
+                case 'vim':
+                case 'vi':
+                case 'edit':
                     this.writeFile(args);
                     break;
-                case '读取':
-                case 'type':
                 case 'cat':
+                case 'type':
+                case 'less':
+                case '读取':
                     this.readFile(args);
+                    break;
+                case 'head':
+                    this.head(args);
+                    break;
+                case 'tail':
+                    this.tail(args);
+                    break;
+                case 'wc':
+                    this.wordCount(args);
+                    break;
+                case 'grep':
+                    this.grep(args);
+                    break;
+                case 'find':
+                    this.find(args);
                     break;
                 case 'tree':
                     this.tree(args);
                     break;
-                case '搜索博客':
-                case 'search':
-                    this.searchBlog(args);
+                case 'cp':
+                    this.copy(args);
                     break;
-                case '启动':
-                case 'start':
-                    this.web(args);
+                case 'mv':
+                case 'rename':
+                    this.move(args);
                     break;
-                case '工具':
-                case 'tools':
-                    this.openTools();
+                case 'echo':
+                    this.echo(args);
                     break;
-                case '游戏':
-                case 'games':
-                    this.openGames();
+                case 'history':
+                case '历史':
+                    this.showHistory();
                     break;
-                case '时间':
                 case 'time':
+                case 'date':
+                case '时间':
                     this.showTime();
                     break;
-                case '计算器':
                 case 'calc':
+                case 'expr':
+                case '计算器':
                     this.calculator(args);
                     break;
-                case '历史':
-                case 'history':
-                    this.showHistory();
+                case 'search':
+                case '搜索博客':
+                    this.searchBlog(args);
+                    break;
+                case 'start':
+                case 'open':
+                case '启动':
+                    this.openWeb(args);
+                    break;
+                case 'tools':
+                case '工具':
+                    this.openTools();
+                    break;
+                case 'games':
+                case '游戏':
+                    this.openGames();
+                    break;
+                case 'whoami':
+                    this.output(this.storage.getEnv().USER || 'quark', 'success');
+                    break;
+                case 'uname':
+                    this.output('QuarkTerminal WebShell 2.0 (browser)', 'info');
+                    break;
+                case 'env':
+                case 'printenv':
+                    this.printEnv(args);
+                    break;
+                case 'export':
+                case 'set':
+                    this.setEnv(args);
+                    break;
+                case 'unset':
+                    this.unsetEnv(args);
+                    break;
+                case 'llm':
+                case 'chat':
+                case 'ask':
+                    await this.chatWithLlm(args);
+                    break;
+                case 'llm-config':
+                    this.showLlmConfig();
+                    break;
+                case 'llm-key':
+                    this.setLlmKey(args);
+                    break;
+                case 'llm-base':
+                    this.setLlmBase(args);
+                    break;
+                case 'llm-model':
+                    this.setLlmModel(args);
+                    break;
+                case 'llm-clear':
+                    this.clearLlmHistory();
+                    break;
+                case 'llm-history':
+                    this.showLlmHistory();
+                    break;
+                case 'stat':
+                    this.stat(args);
                     break;
                 case '自定义输出':
                     this.addCustomOutput(args);
@@ -146,32 +339,27 @@ class CommandManager {
                     break;
                 default:
                     this.output(`命令未找到: ${cmd}`, 'error');
-                    this.output('输入"帮助"/"help"查看可用命令', 'info');
+                    this.output('输入 "help" 查看可用命令', 'info');
             }
         } catch (error) {
             this.output(`错误: ${error.message}`, 'error');
         }
     }
 
-
     handleDangerousCommand(command) {
-        this.dangerAttempts++;
+        this.dangerAttempts += 1;
 
         if (this.dangerAttempts >= 2) {
-            // 第二次尝试危险指令，直接触发自毁
             this.triggerSelfDestruction();
             return;
         }
 
-        // 第一次警告
-        this.output('<span style="color: #ff0000; font-weight: bold;">⚠️ 警告：检测到危险指令！</span>', 'error');
-        this.output('系统已进入保护模式。再次尝试危险操作将导致系统自毁。', 'warning');
-        this.output('输入"安全模式"可退出保护模式，或等待10秒后自动恢复。', 'info');
+        this.output('<span style="color:#ff5f56;font-weight:bold">警告：检测到危险指令</span>', 'error');
+        this.output('系统已进入保护模式。再次尝试危险操作将触发自毁。', 'warning');
+        this.output('输入 "安全模式" 或 "safemode" 可退出保护模式。', 'info');
 
-        // 进入危险模式
         this.storage.setDangerMode(true);
 
-        // 设置10秒后自动退出危险模式
         setTimeout(() => {
             if (this.storage.getDangerMode()) {
                 this.storage.setDangerMode(false);
@@ -189,25 +377,18 @@ class CommandManager {
             return;
         }
 
-        // 在危险模式下尝试危险指令，触发自毁
         if (this.storage.checkDangerousCommand(command)) {
             this.triggerSelfDestruction();
             return;
         }
 
-        this.output('<span style="color: #ff9900">保护模式：系统处于高度戒备状态</span>', 'warning');
-        this.output('输入"安全模式"可恢复正常操作。', 'info');
+        this.output('保护模式启用中，输入 "安全模式" 可恢复正常。', 'warning');
     }
 
     triggerSelfDestruction() {
-        // 设置自毁状态
         this.storage.setSelfDestructTriggered(true);
         this.storage.destroySystem();
-
-        // 显示自毁序列
         this.showDestructionSequence();
-
-        // 10秒后关闭页面
         setTimeout(() => {
             this.finalDestruction();
         }, 10000);
@@ -215,205 +396,70 @@ class CommandManager {
 
     showDestructionSequence() {
         const messages = [
-            '🚨 危险指令检测到！',
-            '⚠️ 系统完整性受到威胁',
-            '🔓 启动自毁协议...',
-            '💥 正在擦除所有数据...',
-            '🔥 系统核心文件销毁中...',
-            '⚠️ 无法停止此过程',
-            '🕛 倒计时: 10',
-            '🕚 倒计时: 9',
-            '🕙 倒计时: 8',
-            '🕘 倒计时: 7',
-            '🕗 倒计时: 6',
-            '🕖 倒计时: 5',
-            '🕕 倒计时: 4',
-            '🕔 倒计时: 3',
-            '🕓 倒计时: 2',
-            '🕒 倒计时: 1',
-            '💀 系统自毁完成'
+            '危险指令检测到',
+            '系统完整性受到威胁',
+            '启动自毁协议...',
+            '正在擦除所有数据...',
+            '系统核心文件销毁中...',
+            '无法停止此过程',
+            '倒计时: 5',
+            '倒计时: 4',
+            '倒计时: 3',
+            '倒计时: 2',
+            '倒计时: 1',
+            '系统自毁完成'
         ];
 
         let index = 0;
         const interval = setInterval(() => {
-            if (index < messages.length) {
-                this.output(`<span style="color: #ff0000; font-weight: bold;">${messages[index]}</span>`, 'error');
-                index++;
-
-                // 模拟屏幕闪烁
-                if (index % 3 === 0) {
-                    document.body.style.backgroundColor = '#ff0000';
-                    setTimeout(() => {
-                        document.body.style.backgroundColor = '#000';
-                    }, 100);
-                }
-            } else {
+            if (index >= messages.length) {
                 clearInterval(interval);
+                return;
             }
-        }, 500);
+            this.output(`<span style="color:#ff5f56;font-weight:bold">${messages[index]}</span>`, 'error');
+            index += 1;
+        }, 600);
     }
 
     finalDestruction() {
-        // 创建自毁页面
-        const destructionHTML = `
-            <!DOCTYPE html>
+        document.open();
+        document.write(`
             <html>
-            <head>
-                <title>系统自毁</title>
-                <style>
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        background: #000;
-                        color: #f00;
-                        font-family: 'Courier New', monospace;
-                        overflow: hidden;
-                        height: 100vh;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        text-align: center;
-                    }
-                    .skull {
-                        font-size: 100px;
-                        animation: pulse 2s infinite;
-                        margin-bottom: 30px;
-                    }
-                    .message {
-                        font-size: 24px;
-                        margin: 10px 0;
-                        text-shadow: 0 0 10px #f00;
-                    }
-                    .warning {
-                        color: #ff9900;
-                        font-size: 18px;
-                        margin-top: 30px;
-                        padding: 20px;
-                        border: 2px solid #f00;
-                        border-radius: 5px;
-                        max-width: 600px;
-                        background: rgba(255, 0, 0, 0.1);
-                    }
-                    @keyframes pulse {
-                        0% { transform: scale(1); opacity: 1; }
-                        50% { transform: scale(1.1); opacity: 0.7; }
-                        100% { transform: scale(1); opacity: 1; }
-                    }
-                    .glitch {
-                        position: relative;
-                        animation: glitch 5s infinite;
-                    }
-                    @keyframes glitch {
-                        0% { transform: translate(0); }
-                        20% { transform: translate(-2px, 2px); }
-                        40% { transform: translate(-2px, -2px); }
-                        60% { transform: translate(2px, 2px); }
-                        80% { transform: translate(2px, -2px); }
-                        100% { transform: translate(0); }
-                    }
-                    .scanline {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 2px;
-                        background: linear-gradient(to right, transparent, #f00, transparent);
-                        animation: scan 2s linear infinite;
-                        z-index: 1000;
-                    }
-                    @keyframes scan {
-                        0% { top: 0; }
-                        100% { top: 100%; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="scanline"></div>
-                <div class="skull">💀</div>
-                <div class="message glitch">⚠️ 系统已被破坏</div>
-                <div class="message">检测到危险指令执行</div>
-                <div class="message">所有数据已被永久擦除</div>
-                <div class="warning">
-                    <strong>恢复方法：</strong><br>
-                    1. 清除浏览器所有本地存储数据<br>
-                    2. 清除Cookie和站点数据<br>
-                    3. 或使用无痕/隐私模式访问<br>
-                    <br>
-                    <small>下次请谨慎输入危险指令！</small>
+            <head><title>系统自毁</title></head>
+            <body style="margin:0;background:#000;color:#f00;font-family:Courier New,monospace;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center">
+                <div>
+                    <div style="font-size:96px;margin-bottom:24px">💀</div>
+                    <div style="font-size:24px;margin-bottom:12px">系统已被破坏</div>
+                    <div style="color:#ff9a9a">请清除站点 LocalStorage / Cookie 后再访问。</div>
                 </div>
-                <script>
-                    // 防止页面被刷新恢复
-                    localStorage.setItem('terminal_self_destruct', 'true');
-                    document.cookie = "terminal_destroyed=true; max-age=31536000; path=/";
-                    
-                    // 添加键盘监听，阻止任何操作
-                    document.addEventListener('keydown', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    });
-                    
-                    // 阻止右键菜单
-                    document.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                    });
-                    
-                    // 每5秒检查一次，确保自毁状态
-                    setInterval(function() {
-                        if (!localStorage.getItem('terminal_self_destruct')) {
-                            localStorage.setItem('terminal_self_destruct', 'true');
-                        }
-                    }, 5000);
-                </script>
             </body>
             </html>
-        `;
-
-        // 使用新页面替换当前页面
-        document.open();
-        document.write(destructionHTML);
+        `);
         document.close();
-
-        // 尝试关闭窗口
-        setTimeout(() => {
-            try {
-                window.close();
-            } catch (e) {
-                // 如果无法关闭，保持自毁页面
-            }
-        }, 3000);
     }
 
-    checkPresetAndCustomCommands(cmd, args) {
-        // 检查预设输出指令
-        if (this.presetCommands && this.presetCommands.output[cmd]) {
+    checkPresetAndCustomCommands(cmd) {
+        if (this.presetCommands.output[cmd]) {
             this.output(this.presetCommands.output[cmd], 'info');
             return true;
         }
 
-        // 检查预设跳转指令
-        if (this.presetCommands && this.presetCommands.redirect[cmd]) {
+        if (this.presetCommands.redirect[cmd]) {
             this.output(`正在跳转到: ${this.presetCommands.redirect[cmd]}`, 'info');
-            setTimeout(() => {
-                window.open(this.presetCommands.redirect[cmd], '_blank');
-            }, 500);
+            setTimeout(() => window.open(this.presetCommands.redirect[cmd], '_blank'), 300);
             return true;
         }
 
-        // 检查自定义输出指令
         const customOutputs = this.storage.getCustomOutputs();
         if (customOutputs[cmd]) {
             this.output(customOutputs[cmd], 'info');
             return true;
         }
 
-        // 检查自定义跳转指令
         const customRedirects = this.storage.getCustomRedirects();
         if (customRedirects[cmd]) {
             this.output(`正在跳转到: ${customRedirects[cmd]}`, 'info');
-            setTimeout(() => {
-                window.open(customRedirects[cmd], '_blank');
-            }, 500);
+            setTimeout(() => window.open(customRedirects[cmd], '_blank'), 300);
             return true;
         }
 
@@ -423,71 +469,23 @@ class CommandManager {
     shutdown() {
         const outputElement = document.getElementById('output');
         const inputLine = document.getElementById('input-line');
-
-        // 清屏
         outputElement.innerHTML = '';
 
-        // 创建关机动画
         const shutdownScreen = document.createElement('div');
-        shutdownScreen.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            z-index: 1000;
+        shutdownScreen.className = 'shutdown-screen';
+        shutdownScreen.innerHTML = `
+            <div class="shutdown-spinner"></div>
+            <div class="shutdown-text">正在关机...</div>
         `;
-
-        const spinner = document.createElement('div');
-        spinner.style.cssText = `
-            width: 40px;
-            height: 40px;
-            border: 4px solid #333;
-            border-top: 4px solid #00ff00;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        `;
-
-        const message = document.createElement('div');
-        message.textContent = '正在关机...';
-        message.style.cssText = `
-            font-size: 18px;
-            color: #00ff00;
-        `;
-
-        // 添加CSS动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        shutdownScreen.appendChild(spinner);
-        shutdownScreen.appendChild(message);
         document.body.appendChild(shutdownScreen);
-
-        // 隐藏输入行
         inputLine.style.display = 'none';
 
-        // 3秒后关闭页面
         setTimeout(() => {
             window.close();
-            // 如果窗口无法关闭，显示提示
             setTimeout(() => {
-                document.body.innerHTML = '<div style="color: #00ff00; font-family: Courier New; text-align: center; margin-top: 50px;">关机完成<br>刷新以重启</div>';
-            }, 1000);
-        }, 3000);
+                document.body.innerHTML = '<div style="color:#7ee787;font-family:Courier New,monospace;text-align:center;margin-top:50px">关机完成<br>刷新以重启</div>';
+            }, 800);
+        }, 2600);
     }
 
     addCustomOutput(args) {
@@ -495,18 +493,14 @@ class CommandManager {
             this.output('用法: 自定义输出 <指令> <输出内容>', 'error');
             return;
         }
-
         const command = args[0].toLowerCase();
-        const outputText = args.slice(1).join(' ');
-
-        // 检查是否与现有命令冲突
         if (this.isReservedCommand(command)) {
-            this.output(`指令 "${command}" 是保留命令，不能用作自定义指令`, 'error');
+            this.output(`指令 "${command}" 是保留命令`, 'error');
             return;
         }
-
+        const outputText = args.slice(1).join(' ');
         this.storage.addCustomOutput(command, outputText);
-        this.output(`自定义输出指令添加成功: ${command} -> "${outputText}"`, 'success');
+        this.output(`自定义输出已保存: ${command}`, 'success');
     }
 
     addCustomRedirect(args) {
@@ -514,409 +508,341 @@ class CommandManager {
             this.output('用法: 自定义跳转 <指令> <网址>', 'error');
             return;
         }
-
         const command = args[0].toLowerCase();
-        let url = args[1];
-
-        // 检查是否与现有命令冲突
         if (this.isReservedCommand(command)) {
-            this.output(`指令 "${command}" 是保留命令，不能用作自定义指令`, 'error');
+            this.output(`指令 "${command}" 是保留命令`, 'error');
             return;
         }
-
-        // 确保URL有协议前缀
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            url = 'https://' + url;
+        let url = args[1];
+        if (!/^https?:\/\//i.test(url)) {
+            url = `https://${url}`;
         }
-
         this.storage.addCustomRedirect(command, url);
-        this.output(`自定义跳转指令添加成功: ${command} -> ${url}`, 'success');
+        this.output(`自定义跳转已保存: ${command} -> ${url}`, 'success');
     }
 
     isReservedCommand(command) {
-        const reservedCommands = [
-            '帮助', 'help', '列表', 'ls', 'dir', '切换目录', 'cd', 'cd..',
-            '创建目录', 'mkdir', '删除', 'del', 'rm', '清屏', 'cls',
-            '创建文本文档', 'touch', '写入', 'write', '读取', 'type', 'cat',
-            'tree', '搜索博客', 'search', '启动', 'start', '工具', 'tools', '游戏', 'games',
-            '时间', 'time', '计算器', 'calc', '历史', 'history',
-            '自定义输出', '自定义跳转'
-        ];
-        return reservedCommands.includes(command);
+        return this.builtinCommands.includes(command) ||
+            ['帮助', '列表', '切换目录', '创建目录', '删除', '清屏', '创建文本文档', '写入', '读取', '搜索博客', '启动', '工具', '游戏', '时间', '计算器', '历史', '自定义输出', '自定义跳转'].includes(command);
     }
 
     help() {
         const helpText = `
-可用命令:<br><br>
+常用命令
 
-<strong>文件操作:</strong><br>
-&nbsp;&nbsp;列表/ls/dir [路径]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 显示目录内容<br>
-&nbsp;&nbsp;切换目录/cd &lt;目录&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 切换当前目录<br>
-&nbsp;&nbsp;cd..&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 切换到父目录<br>
-&nbsp;&nbsp;创建目录/mkdir &lt;目录名&gt;&nbsp;&nbsp;&nbsp;&nbsp;- 创建新目录<br>
-&nbsp;&nbsp;删除/del/rm &lt;名称&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 删除文件或目录<br>
-&nbsp;&nbsp;创建文本文档/touch &lt;文件名&gt; - 创建文本文件<br>
-&nbsp;&nbsp;写入/write &lt;文件名&gt; &lt;内容&gt; - 写入文件内容<br>
-&nbsp;&nbsp;读取/type/cat &lt;文件名&gt;&nbsp;&nbsp;&nbsp;&nbsp;- 读取文件内容<br>
-&nbsp;&nbsp;tree [路径]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 显示目录树<br><br>
+文件与目录:
+  ls [路径]           列出目录
+  pwd                 显示当前路径
+  cd <路径>           切换目录，支持 .. / ~
+  mkdir [-p] <目录>   创建目录
+  touch <文件>        创建文件
+  write <文件> [内容] 写入文件，省略内容则打开多行编辑
+  cat <文件>          查看文件
+  head/tail <文件>    查看文件头尾
+  cp <源> <目标>      复制文件或目录
+  mv <源> <目标>      移动或重命名
+  rm <路径>           删除文件或目录
+  tree [路径]         显示目录树
+  find <关键词>       按名称查找
+  grep <词> <文件>    在文件内搜索
+  wc <文件>           统计行数/词数/字符数
+  stat <路径>         查看路径元信息
 
-<strong>系统命令:</strong><br>
-&nbsp;&nbsp;清屏/cls&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 清除屏幕<br>
-&nbsp;&nbsp;帮助/help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 显示此帮助信息<br>
-&nbsp;&nbsp;历史/history&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 显示命令历史<br>
-&nbsp;&nbsp;shutdown&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 关闭终端<br><br>
+系统与交互:
+  echo <文本>         输出文本，支持 $HOME 变量
+  env                 查看环境变量
+  export KEY=value    设置环境变量
+  unset KEY           删除环境变量
+  history             查看命令历史
+  clear               清屏
+  date/time           显示时间
+  whoami / uname      系统信息
+  calc <表达式>       计算表达式
 
-<strong>特殊功能:</strong><br>
-&nbsp;&nbsp;搜索博客/search &lt;关键词&gt;&nbsp;&nbsp;&nbsp;- 搜索博客文章<br>
-&nbsp;&nbsp;启动/start &lt;网页链接&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 启动网页<br>
-&nbsp;&nbsp;工具/tools&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 打开工具页面<br>
-&nbsp;&nbsp;游戏/games&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 进入游戏页面<br>
-&nbsp;&nbsp;时间/time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 显示当前时间<br>
-&nbsp;&nbsp;计算器/calc &lt;表达式&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 计算数学表达式<br><br>
+LLM:
+  llm <消息>          直接和模型对话
+  llm-config          查看当前 API Key / Base URL / Model
+  llm-key <key>       设置 API Key
+  llm-base <url>      设置 Base URL
+  llm-model <model>   设置模型
+  llm-history         查看终端对话历史
+  llm-clear           清空终端对话历史
 
-<strong>自定义指令[存储在LocalStorage]:</strong><br>
-&nbsp;&nbsp;自定义输出 &lt;指令&gt; &lt;内容&gt;&nbsp;&nbsp;&nbsp;- 添加自定义输出指令<br>
-&nbsp;&nbsp;自定义跳转 &lt;指令&gt; &lt;网址&gt;&nbsp;&nbsp;&nbsp;- 添加自定义跳转指令<br>
-&nbsp;&nbsp;删除 自定义输出 &lt;指令&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 删除自定义输出指令<br>
-&nbsp;&nbsp;删除 自定义跳转 &lt;指令&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 删除自定义跳转指令<br><br>
+站内快捷入口:
+  search <关键词>     搜索博客
+  open <网址>         打开网页
+  tools               打开工具页
+  games               打开游戏页
+        `.trim();
 
-<strong>预设指令:</strong><br>
-&nbsp;&nbsp;你好/早上好/…………&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 输出预设文本<br>
-&nbsp;&nbsp;大富翁/dfw/…………&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 跳转到预设网页
-    `.trim();
-
-        // 创建一个div元素来显示帮助文本，使用innerHTML来解析HTML标签
-        const helpDiv = document.createElement('div');
-        helpDiv.innerHTML = helpText;
-        this.output(helpDiv);
+        this.output(this.createCodeBlock(helpText), 'info');
     }
 
     list(args) {
-        const path = args[0] || this.storage.getCurrentPath();
-        const resolvedPath = this.storage.resolvePath(path, this.storage.getCurrentPath());
+        const { options, values } = this.parseOptions(args);
+        const target = values[0] || this.storage.getCurrentPath();
+        const path = this.storage.resolvePath(target, this.storage.getCurrentPath());
+        const items = this.storage.listDirectory(path);
 
-        const items = this.storage.listDirectory(resolvedPath);
-
-        if (items.length === 0) {
-            this.output('目录为空');
+        if (!items.length) {
+            this.output('目录为空', 'info');
             return;
         }
 
-        this.output(`目录 ${resolvedPath}:`);
+        const lines = items
+            .filter((item) => options.has('a') || !item.name.startsWith('.'))
+            .map((item) => {
+                const typeMark = item.type === 'dir' ? 'd' : '-';
+                const size = String(item.size).padStart(6, ' ');
+                return `${typeMark} ${size} ${item.name}`;
+            });
 
-        const fileList = document.createElement('div');
-        fileList.className = 'file-list';
+        this.output(this.createCodeBlock(lines.join('\n')), 'info');
+    }
 
-        items.forEach(item => {
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-
-            const fileIcon = document.createElement('span');
-            fileIcon.className = 'file-icon';
-            fileIcon.textContent = item.type === 'dir' ? '📁' : '📄';
-
-            const fileName = document.createElement('span');
-            fileName.className = item.type === 'dir' ? 'dir-name' : 'file-name';
-            fileName.textContent = item.name;
-
-            const fileSize = document.createElement('span');
-            fileSize.className = 'file-size';
-            fileSize.textContent = item.type === 'file' ? `(${item.size} bytes)` : '';
-
-            fileItem.appendChild(fileIcon);
-            fileItem.appendChild(fileName);
-            fileItem.appendChild(fileSize);
-            fileList.appendChild(fileItem);
-        });
-
-        this.output(fileList);
+    printWorkingDirectory() {
+        this.output(this.storage.getCurrentPath(), 'success');
     }
 
     changeDirectory(args) {
-        if (args.length === 0) {
-            this.output('用法: 切换目录 <目录名>', 'error');
+        const target = args[0] || this.storage.getEnv().HOME || '/home';
+        const path = this.storage.resolvePath(target, this.storage.getCurrentPath());
+        if (!this.storage.fileExists(path) || !this.storage.isDirectory(path)) {
+            this.output(`目录不存在: ${path}`, 'error');
             return;
         }
-
-        const target = args[0];
-        const currentPath = this.storage.getCurrentPath();
-        let newPath;
-
-        if (target === '..') {
-            newPath = this.storage.getParentPath(currentPath);
-        } else if (target === '.') {
-            newPath = currentPath;
-        } else if (target === '/') {
-            newPath = '/';
-        } else {
-            newPath = this.storage.resolvePath(target, currentPath);
-        }
-
-        if (!this.storage.fileExists(newPath) || !this.storage.isDirectory(newPath)) {
-            this.output(`目录不存在: ${newPath}`, 'error');
-            return;
-        }
-
-        this.storage.setCurrentPath(newPath);
-        this.output(`当前目录: ${newPath}`, 'success');
+        this.storage.setCurrentPath(path);
+        this.output(`当前目录: ${path}`, 'success');
     }
 
     changeToParentDirectory() {
-        const currentPath = this.storage.getCurrentPath();
-
-        if (currentPath === '/') {
-            this.output('已经是根目录', 'warning');
-            return;
-        }
-
-        const parentPath = this.storage.getParentPath(currentPath);
-        this.storage.setCurrentPath(parentPath);
-        this.output(`切换到父目录: ${parentPath}`, 'success');
+        this.changeDirectory(['..']);
     }
 
     createDirectory(args) {
-        if (args.length === 0) {
-            this.output('用法: 创建目录 <目录名>', 'error');
+        const { options, values } = this.parseOptions(args);
+        if (!values.length) {
+            this.output('用法: mkdir [-p] <目录名>', 'error');
             return;
         }
-
-        const dirName = args[0];
-        const currentPath = this.storage.getCurrentPath();
-
-        this.storage.createDirectory(currentPath, dirName);
-        this.output(`目录创建成功: ${dirName}`, 'success');
+        const target = values[0];
+        const path = this.storage.createDirectory(this.storage.getCurrentPath(), target, options.has('p'));
+        this.output(`目录创建成功: ${path}`, 'success');
     }
 
     delete(args) {
-        if (args.length === 0) {
-            this.output('用法: 删除 <文件或目录名>', 'error');
+        if (!args.length) {
+            this.output('用法: rm <文件或目录>', 'error');
             return;
         }
 
-        // 检查是否是删除自定义指令
-        if (args[0] === '自定义输出' && args.length >= 2) {
-            const command = args[1].toLowerCase();
-            if (this.storage.deleteCustomOutput(command)) {
-                this.output(`自定义输出指令删除成功: ${command}`, 'success');
-            } else {
-                this.output(`自定义输出指令不存在: ${command}`, 'error');
-            }
+        if (args[0] === '自定义输出' && args[1]) {
+            const removed = this.storage.deleteCustomOutput(args[1].toLowerCase());
+            this.output(removed ? `已删除自定义输出: ${args[1]}` : `未找到自定义输出: ${args[1]}`, removed ? 'success' : 'error');
             return;
         }
 
-        if (args[0] === '自定义跳转' && args.length >= 2) {
-            const command = args[1].toLowerCase();
-            if (this.storage.deleteCustomRedirect(command)) {
-                this.output(`自定义跳转指令删除成功: ${command}`, 'success');
-            } else {
-                this.output(`自定义跳转指令不存在: ${command}`, 'error');
-            }
+        if (args[0] === '自定义跳转' && args[1]) {
+            const removed = this.storage.deleteCustomRedirect(args[1].toLowerCase());
+            this.output(removed ? `已删除自定义跳转: ${args[1]}` : `未找到自定义跳转: ${args[1]}`, removed ? 'success' : 'error');
             return;
         }
 
-        const target = args[0];
-        const currentPath = this.storage.getCurrentPath();
-        const targetPath = this.storage.resolvePath(target, currentPath);
-
+        const targetPath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         if (!this.storage.fileExists(targetPath)) {
-            this.output(`路径不存在: ${target}`, 'error');
+            this.output(`路径不存在: ${args[0]}`, 'error');
             return;
         }
-
-        // 安全确认
-        const confirmDelete = confirm(`确定要删除 ${targetPath} 吗？`);
-        if (!confirmDelete) {
-            this.output('删除操作已取消', 'info');
+        if (!confirm(`确定要删除 ${targetPath} 吗？`)) {
+            this.output('删除已取消', 'info');
             return;
         }
-
         this.storage.deletePath(targetPath);
-        this.output(`删除成功: ${target}`, 'success');
+        this.output(`已删除: ${targetPath}`, 'success');
     }
 
     clearScreen() {
-        const outputElement = document.getElementById('output');
-        outputElement.innerHTML = '';
+        document.getElementById('output').innerHTML = '';
     }
 
     createTextFile(args) {
-        if (args.length === 0) {
-            this.output('用法: 创建文本文档 <文件名>', 'error');
+        if (!args.length) {
+            this.output('用法: touch <文件名>', 'error');
             return;
         }
-
         const fileName = args[0];
         if (!fileName.includes('.')) {
-            this.output('/assets/pages/a/terminal/js/请指定文件扩展名，例如: .txt .md .js', 'warning');
+            this.output('请指定文件扩展名，例如 .txt / .md / .json', 'warning');
             return;
         }
-
+        if (args.length > 1) {
+            const content = args.slice(1).join(' ');
+            const filePath = this.storage.createFile(this.storage.getCurrentPath(), fileName, content);
+            this.output(`文件创建成功: ${filePath}`, 'success');
+            return;
+        }
         this.currentFileName = fileName;
         this.showMultilineInput('', (content) => {
-            const currentPath = this.storage.getCurrentPath();
-            this.storage.createFile(currentPath, fileName, content);
-            this.output(`文件创建成功: ${fileName}`, 'success');
+            const filePath = this.storage.createFile(this.storage.getCurrentPath(), fileName, content);
+            this.output(`文件创建成功: ${filePath}`, 'success');
             this.currentFileName = null;
         });
     }
 
     writeFile(args) {
-        if (args.length === 0) {
-            this.output('用法: 写入 <文件名> [内容]', 'error');
+        if (!args.length) {
+            this.output('用法: write <文件名> [内容]', 'error');
             return;
         }
 
-        const fileName = args[0];
-        const content = args.slice(1).join(' ');
-        const currentPath = this.storage.getCurrentPath();
-        const filePath = this.storage.resolvePath(fileName, currentPath);
-
+        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         if (!this.storage.fileExists(filePath)) {
-            this.output(`文件不存在: ${fileName}`, 'error');
+            this.output(`文件不存在: ${filePath}`, 'error');
             return;
         }
 
         if (args.length === 1) {
-            // 多行输入模式
             const currentContent = this.storage.readFile(filePath);
-            this.currentFileName = fileName;
+            this.currentFileName = args[0];
             this.showMultilineInput(currentContent, (newContent) => {
                 this.storage.writeFile(filePath, newContent);
-                this.output(`文件写入成功: ${fileName}`, 'success');
+                this.output(`文件写入成功: ${filePath}`, 'success');
                 this.currentFileName = null;
             });
-        } else {
-            // 单行写入
-            this.storage.writeFile(filePath, content);
-            this.output(`文件写入成功: ${fileName}`, 'success');
+            return;
         }
+
+        this.storage.writeFile(filePath, args.slice(1).join(' '));
+        this.output(`文件写入成功: ${filePath}`, 'success');
     }
 
     readFile(args) {
-        if (args.length === 0) {
-            this.output('用法: 读取 <文件名>', 'error');
+        if (!args.length) {
+            this.output('用法: cat <文件名>', 'error');
             return;
         }
-
-        const fileName = args[0];
-        const currentPath = this.storage.getCurrentPath();
-        const filePath = this.storage.resolvePath(fileName, currentPath);
-
-        if (!this.storage.fileExists(filePath)) {
-            this.output(`文件不存在: ${fileName}`, 'error');
-            return;
-        }
-
-        if (!this.storage.isFile(filePath)) {
-            this.output(`不是文件: ${fileName}`, 'error');
-            return;
-        }
-
+        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         const content = this.storage.readFile(filePath);
-        this.output(`文件内容(${fileName}): `);
-        this.output('─'.repeat(50));
-        this.output(content);
-        this.output('─'.repeat(50));
+        this.output(this.createCodeBlock(content || '(空文件)'), 'info');
+    }
+
+    head(args) {
+        this.outputSlice(args, 'head');
+    }
+
+    tail(args) {
+        this.outputSlice(args, 'tail');
+    }
+
+    outputSlice(args, mode) {
+        if (!args.length) {
+            this.output(`用法: ${mode} <文件名>`, 'error');
+            return;
+        }
+        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
+        const lines = this.storage.readFile(filePath).split('\n');
+        const sliced = mode === 'head' ? lines.slice(0, 10) : lines.slice(-10);
+        this.output(this.createCodeBlock(sliced.join('\n')), 'info');
+    }
+
+    wordCount(args) {
+        if (!args.length) {
+            this.output('用法: wc <文件名>', 'error');
+            return;
+        }
+        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
+        const content = this.storage.readFile(filePath);
+        const lines = content ? content.split('\n').length : 0;
+        const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+        const chars = content.length;
+        this.output(`${lines} ${words} ${chars} ${filePath}`, 'success');
+    }
+
+    grep(args) {
+        if (args.length < 2) {
+            this.output('用法: grep <关键词> <文件名>', 'error');
+            return;
+        }
+        const keyword = args[0].toLowerCase();
+        const filePath = this.storage.resolvePath(args[1], this.storage.getCurrentPath());
+        const lines = this.storage.readFile(filePath).split('\n');
+        const matches = lines
+            .map((line, index) => ({ line, index: index + 1 }))
+            .filter((item) => item.line.toLowerCase().includes(keyword))
+            .map((item) => `${item.index}: ${item.line}`);
+
+        if (!matches.length) {
+            this.output('没有匹配结果', 'info');
+            return;
+        }
+        this.output(this.createCodeBlock(matches.join('\n')), 'info');
+    }
+
+    find(args) {
+        if (!args.length) {
+            this.output('用法: find <关键词> [起始目录]', 'error');
+            return;
+        }
+        const keyword = args[0];
+        const startPath = args[1] ? this.storage.resolvePath(args[1], this.storage.getCurrentPath()) : this.storage.getCurrentPath();
+        const matches = this.storage.findByName(keyword, startPath);
+        if (!matches.length) {
+            this.output('没有找到匹配路径', 'info');
+            return;
+        }
+        const text = matches.map((item) => `${item.type === 'dir' ? 'dir ' : 'file'} ${item.path}`).join('\n');
+        this.output(this.createCodeBlock(text), 'info');
     }
 
     tree(args) {
-        const path = args[0] || this.storage.getCurrentPath();
-        const resolvedPath = this.storage.resolvePath(path, this.storage.getCurrentPath());
-
-        if (!this.storage.fileExists(resolvedPath) || !this.storage.isDirectory(resolvedPath)) {
-            this.output(`目录不存在: ${resolvedPath}`, 'error');
-            return;
-        }
-
+        const target = args[0] || this.storage.getCurrentPath();
+        const resolvedPath = this.storage.resolvePath(target, this.storage.getCurrentPath());
         const treeItems = this.storage.getDirectoryTree(resolvedPath);
+        const lines = [resolvedPath];
 
-        this.output(`目录树 ${resolvedPath}: `);
-
-        const treeElement = document.createElement('div');
-        treeElement.className = 'tree';
-
-        treeItems.forEach(item => {
-            const treeItem = document.createElement('div');
-            treeItem.className = 'tree-item';
-
-            const treeLine = document.createElement('div');
-            treeLine.className = 'tree-line';
-
-            // 缩进
-            for (let i = 0; i < item.level; i++) {
-                const indent = document.createElement('span');
-                indent.className = 'tree-indent';
-                indent.textContent = '    ';
-                treeLine.appendChild(indent);
-            }
-
-            // 分支符号
-            const branch = document.createElement('span');
-            branch.className = 'tree-branch';
-            branch.textContent = item.isLast ? '└── ' : '├── ';
-            treeLine.appendChild(branch);
-
-            // 文件/目录图标和名称
-            const icon = document.createElement('span');
-            icon.className = 'file-icon';
-            icon.textContent = item.type === 'dir' ? '📁' : '📄';
-            treeLine.appendChild(icon);
-
-            const name = document.createElement('span');
-            name.className = item.type === 'dir' ? 'dir-name' : 'file-name';
-            name.textContent = item.name;
-            treeLine.appendChild(name);
-
-            treeItem.appendChild(treeLine);
-            treeElement.appendChild(treeItem);
+        treeItems.forEach((item) => {
+            const indent = '    '.repeat(item.level);
+            const branch = item.isLast ? '└── ' : '├── ';
+            lines.push(`${indent}${branch}${item.name}${item.type === 'dir' ? '/' : ''}`);
         });
 
-        this.output(treeElement);
+        this.output(this.createCodeBlock(lines.join('\n')), 'info');
     }
 
-    searchBlog(args) {
-        if (args.length === 0) {
-            this.output('用法: 搜索博客 <关键词>', 'error');
+    copy(args) {
+        if (args.length < 2) {
+            this.output('用法: cp <源路径> <目标路径>', 'error');
             return;
         }
-
-        const keyword = encodeURIComponent(args.join(' '));
-        const url = `/posts?search=${keyword}`;
-
-        this.output(`正在打开博客搜索: ${args.join(' ')}`, 'info');
-        setTimeout(() => {
-            window.open(url, '_blank');
-        }, 500);
+        const source = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
+        const destination = this.storage.resolvePath(args[1], this.storage.getCurrentPath());
+        const target = this.storage.copyPath(source, destination);
+        this.output(`复制成功: ${source} -> ${target}`, 'success');
     }
 
-
-    web(args) {
-        if (args.length === 0) {
-            this.output('用法: 启动/start <网页链接>', 'error');
+    move(args) {
+        if (args.length < 2) {
+            this.output('用法: mv <源路径> <目标路径>', 'error');
             return;
         }
-
-        const keyword = encodeURIComponent(args.join(' '));
-        const url = `https://${keyword}`;
-
-        this.output(`正在打开: ${args.join(' ')}`, 'info');
-        setTimeout(() => {
-            window.open(url, '_blank');
-        }, 500);
+        const source = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
+        const destination = this.storage.resolvePath(args[1], this.storage.getCurrentPath());
+        const target = this.storage.movePath(source, destination);
+        this.output(`移动成功: ${source} -> ${target}`, 'success');
     }
 
-    openTools() {
-        this.output('正在打开工具页面...', 'info');
-        setTimeout(() => {
-            window.open('/tool', '_blank');
-        }, 500);
+    echo(args) {
+        this.output(args.join(' '), 'info');
     }
 
-    openGames() {
-        this.output('正在进入游戏页面...', 'info');
-        setTimeout(() => {
-            window.location.href = '/games';
-        }, 500);
+    showHistory() {
+        const history = this.storage.getCommandHistory();
+        if (!history.length) {
+            this.output('命令历史为空', 'info');
+            return;
+        }
+        const lines = history.map((cmd, index) => `${index + 1}`.padStart(4, ' ') + `  ${cmd}`);
+        this.output(this.createCodeBlock(lines.join('\n')), 'info');
     }
 
     showTime() {
@@ -930,74 +856,264 @@ class CommandManager {
             second: '2-digit',
             weekday: 'long'
         });
-
-        this.output(`当前时间: ${timeString}`, 'info');
+        this.output(timeString, 'info');
     }
 
     calculator(args) {
-        if (args.length === 0) {
-            this.output('用法: 计算器 <数学表达式>', 'error');
+        if (!args.length) {
+            this.output('用法: calc <数学表达式>', 'error');
             return;
         }
-
         const expression = args.join(' ');
-
+        const safeExpression = expression.replace(/[^0-9+\-*/().%\s]/g, '');
         try {
-            // 安全地计算表达式
-            const result = this.safeEval(expression);
+            const result = Function(`"use strict"; return (${safeExpression})`)();
             this.output(`${expression} = ${result}`, 'success');
         } catch (error) {
-            this.output(`计算错误: ${error.message}`, 'error');
+            this.output('无效的数学表达式', 'error');
         }
     }
 
-    safeEval(expression) {
-        // 移除危险字符，只允许数学表达式
-        const safeExpression = expression.replace(/[^0-9+\-*/().\s]/g, '');
-
-        // 使用 Function 构造函数而不是 eval
-        try {
-            return Function(`"use strict"; return (${safeExpression})`)();
-        } catch (error) {
-            throw new Error('无效的数学表达式');
+    searchBlog(args) {
+        if (!args.length) {
+            this.output('用法: search <关键词>', 'error');
+            return;
         }
+        const keyword = encodeURIComponent(args.join(' '));
+        const url = `/posts?search=${keyword}`;
+        this.output(`正在打开博客搜索: ${args.join(' ')}`, 'info');
+        setTimeout(() => window.open(url, '_blank'), 300);
     }
 
-    showHistory() {
-        const history = this.storage.getCommandHistory();
+    openWeb(args) {
+        if (!args.length) {
+            this.output('用法: open <网址>', 'error');
+            return;
+        }
+        let url = args.join(' ');
+        if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
+            url = `https://${url}`;
+        }
+        this.output(`正在打开: ${url}`, 'info');
+        setTimeout(() => window.open(url, '_blank'), 300);
+    }
 
-        if (history.length === 0) {
-            this.output('命令历史为空', 'info');
+    openTools() {
+        this.output('正在打开工具页...', 'info');
+        setTimeout(() => window.open('/tool', '_blank'), 300);
+    }
+
+    openGames() {
+        this.output('正在进入游戏页...', 'info');
+        setTimeout(() => {
+            window.location.href = '/games';
+        }, 300);
+    }
+
+    printEnv(args) {
+        const env = this.storage.getEnv();
+        if (args.length === 1) {
+            this.output(env[args[0]] || '', 'info');
+            return;
+        }
+        const lines = Object.keys(env)
+            .sort()
+            .map((key) => `${key}=${env[key]}`);
+        this.output(this.createCodeBlock(lines.join('\n')), 'info');
+    }
+
+    setEnv(args) {
+        if (!args.length) {
+            this.output('用法: export KEY=value', 'error');
             return;
         }
 
-        this.output('命令历史:');
-        history.forEach((cmd, index) => {
-            this.output(`${index + 1}. ${cmd}`);
+        args.forEach((entry) => {
+            if (!entry.includes('=')) {
+                throw new Error(`环境变量格式错误: ${entry}`);
+            }
+            const [key, ...rest] = entry.split('=');
+            this.storage.setEnvVar(key, rest.join('='));
         });
+        this.output('环境变量已更新', 'success');
+    }
+
+    unsetEnv(args) {
+        if (!args.length) {
+            this.output('用法: unset KEY', 'error');
+            return;
+        }
+        args.forEach((key) => this.storage.unsetEnvVar(key));
+        this.output('环境变量已删除', 'success');
+    }
+
+    async chatWithLlm(args) {
+        if (!args.length) {
+            this.output('用法: llm <消息>', 'error');
+            this.output('也可以先在 /a/ds 设置 API Key，然后回来直接使用。', 'info');
+            return;
+        }
+
+        const settings = window.QuarkLLMConfig.getSettings();
+        if (!settings.apiKey) {
+            this.output('未检测到 API Key。请先执行 llm-key <你的key>，或前往 /a/ds 保存。', 'error');
+            return;
+        }
+
+        const prompt = args.join(' ');
+        const history = this.storage.getLlmHistory()
+            .slice(-this.contextLimit)
+            .flatMap((entry) => [
+                { role: 'user', content: entry.prompt },
+                { role: 'assistant', content: entry.answer }
+            ]);
+
+        this.output('正在连接 LLM...', 'info');
+
+        const response = await fetch(window.QuarkLLMConfig.buildChatEndpoint(settings.baseUrl), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${settings.apiKey}`
+            },
+            body: JSON.stringify({
+                model: settings.model,
+                messages: [...history, { role: 'user', content: prompt }],
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response));
+        }
+
+        const data = await response.json();
+        const answer = data?.choices?.[0]?.message?.content?.trim();
+        if (!answer) {
+            throw new Error('LLM 未返回有效内容');
+        }
+
+        this.storage.addLlmHistory({ prompt, answer, model: settings.model });
+        this.output(`模型: ${settings.model}`, 'success');
+        this.output(this.createCodeBlock(answer, 'terminal-llm'), 'info');
+    }
+
+    showLlmConfig() {
+        const settings = window.QuarkLLMConfig.getSettings();
+        const source = localStorage.getItem(window.QuarkLLMConfig.STORAGE_KEYS.legacyApiKey) ? 'localStorage (/a/ds 联动已启用)' : 'localStorage';
+        this.output(this.createDefinitionList([
+            ['API Key', window.QuarkLLMConfig.maskApiKey(settings.apiKey)],
+            ['Base URL', settings.baseUrl],
+            ['Model', settings.model],
+            ['Source', source]
+        ]), 'info');
+    }
+
+    setLlmKey(args) {
+        if (!args.length) {
+            this.output('用法: llm-key <api-key>', 'error');
+            return;
+        }
+        window.QuarkLLMConfig.saveSettings({ apiKey: args.join(' ') });
+        this.output('LLM API Key 已保存，并已同步给 /a/ds。', 'success');
+    }
+
+    setLlmBase(args) {
+        if (!args.length) {
+            this.output('用法: llm-base <base-url>', 'error');
+            return;
+        }
+        const settings = window.QuarkLLMConfig.saveSettings({ baseUrl: args[0] });
+        this.output(`Base URL 已更新为: ${settings.baseUrl}`, 'success');
+    }
+
+    setLlmModel(args) {
+        if (!args.length) {
+            this.output('用法: llm-model <model>', 'error');
+            return;
+        }
+        const settings = window.QuarkLLMConfig.saveSettings({ model: args[0] });
+        this.output(`模型已更新为: ${settings.model}`, 'success');
+    }
+
+    clearLlmHistory() {
+        this.storage.clearLlmHistory();
+        this.output('终端 LLM 对话历史已清空。', 'success');
+    }
+
+    showLlmHistory() {
+        const history = this.storage.getLlmHistory();
+        if (!history.length) {
+            this.output('终端 LLM 对话历史为空。', 'info');
+            return;
+        }
+        const lines = history.map((entry, index) => {
+            return `${index + 1}. [${entry.model}] ${entry.prompt}`;
+        });
+        this.output(this.createCodeBlock(lines.join('\n')), 'info');
+    }
+
+    stat(args) {
+        if (!args.length) {
+            this.output('用法: stat <路径>', 'error');
+            return;
+        }
+        const path = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
+        const stats = this.storage.getStats(path);
+        this.output(this.createDefinitionList([
+            ['Path', stats.path],
+            ['Type', stats.type],
+            ['Size', `${stats.size} bytes`],
+            ['Created', stats.created || '-'],
+            ['Modified', stats.modified || '-'],
+            ['Children', String(stats.children)]
+        ]), 'info');
     }
 
     showMultilineInput(initialContent, callback) {
         this.multilineCallback = callback;
         const modal = document.getElementById('multiline-modal');
         const textarea = document.getElementById('multiline-textarea');
-
         textarea.value = initialContent;
         modal.style.display = 'block';
         textarea.focus();
     }
 
     hideMultilineInput() {
-        const modal = document.getElementById('multiline-modal');
-        modal.style.display = 'none';
+        document.getElementById('multiline-modal').style.display = 'none';
         this.multilineCallback = null;
     }
 
     saveMultilineContent() {
-        if (this.multilineCallback) {
-            const textarea = document.getElementById('multiline-textarea');
-            this.multilineCallback(textarea.value);
-            this.hideMultilineInput();
+        if (!this.multilineCallback) return;
+        const textarea = document.getElementById('multiline-textarea');
+        this.multilineCallback(textarea.value);
+        this.hideMultilineInput();
+    }
+
+    getAutocompleteCandidates(input) {
+        const raw = String(input || '');
+        const tokens = raw.split(/\s+/);
+        const currentToken = tokens[tokens.length - 1] || '';
+        const isFirstToken = tokens.length <= 1 && !raw.endsWith(' ');
+
+        if (isFirstToken) {
+            return this.builtinCommands
+                .filter((command) => command.startsWith(currentToken.toLowerCase()))
+                .sort();
         }
+
+        const currentPath = this.storage.getCurrentPath();
+        const basePath = currentToken.includes('/')
+            ? this.storage.getParentPath(this.storage.resolvePath(currentToken, currentPath))
+            : currentPath;
+        const prefix = currentToken.includes('/') ? currentToken.split('/').pop() || '' : currentToken;
+
+        return this.storage.listDirectory(basePath)
+            .filter((item) => item.name.toLowerCase().startsWith(prefix.toLowerCase()))
+            .map((item) => currentToken.includes('/')
+                ? `${currentToken.slice(0, currentToken.lastIndexOf('/') + 1)}${item.name}${item.type === 'dir' ? '/' : ''}`
+                : `${item.name}${item.type === 'dir' ? '/' : ''}`)
+            .sort();
     }
 }
