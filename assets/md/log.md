@@ -4,9 +4,41 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-04-23
+
+优化 - 优化终端 LLM 连续对话与 Markdown 渲染
+
+修复 - terminal初始化递归导致黑屏
+
+更新 - bug-list.md
+
+更新 - 大幅优化terminal并接入LLM联动
+
+修复 - 兼容新的 api.json 配置路径
+
+修复 - 统一 OJ 与相关页面跳转路径
+
+# 2026-04-22
+
+更新 - AGENTS.md
+
+修复 - 首页打字机回退残留字符
+
+更新 - 修复和更新了一些功能
+
+更新 - 2604.md
+
+更新 - 更新了页面模板说明
+
 # 2026-04-21
 
+更新 - 更新了说明文档
+
+更新 - 更新了项目文档
+
 更新 - 更新了AGENTS.md
+
+优化 - 优化了updatelog流程
 
 新增 - 新增了Agents.md
 
