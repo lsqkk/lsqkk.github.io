@@ -21,8 +21,31 @@
         return window.QuarkFirebaseReady;
     }
 
+    function waitFor(checker, timeout = 15000, interval = 120) {
+        return new Promise((resolve, reject) => {
+            const started = Date.now();
+            const timer = window.setInterval(() => {
+                try {
+                    const result = checker();
+                    if (result) {
+                        window.clearInterval(timer);
+                        resolve(result);
+                        return;
+                    }
+                } catch {
+                    // ignore checker errors while waiting
+                }
+                if (Date.now() - started > timeout) {
+                    window.clearInterval(timer);
+                    reject(new Error('等待资源超时'));
+                }
+            }, interval);
+        });
+    }
+
     async function waitForAppCheck() {
-}
+        return Promise.resolve();
+    }
 
     function sleep(ms) {
         return new Promise((resolve) => {
@@ -185,6 +208,35 @@
         return map;
     }
 
+    function getPreviewComments(comments) {
+        return getCommentsSorted(comments)
+            .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+            .slice(0, 3);
+    }
+
+    function renderCommentPreview(comment) {
+        return `
+            <div class="dynamic-preview-comment">
+                <div class="dynamic-preview-comment-meta">
+                    <strong>${renderDisplayName(comment.nickname, comment.login, comment.loginType, comment.uid)}</strong>
+                    <span>${escapeHtml(formatTime(comment.timestamp))}</span>
+                </div>
+                <div class="dynamic-preview-comment-text">${renderCommentText(comment.text || '')}</div>
+            </div>
+        `;
+    }
+
+    function renderCommentPreviewList(card, previewComments) {
+        if (!(card instanceof HTMLElement)) return;
+        const previewEl = card.querySelector('[data-dynamic-comment-preview]');
+        if (!(previewEl instanceof HTMLElement)) return;
+        if (!Array.isArray(previewComments) || previewComments.length === 0) {
+            previewEl.innerHTML = '<div class="dynamic-preview-empty">暂无评论，欢迎来抢沙发。</div>';
+            return;
+        }
+        previewEl.innerHTML = previewComments.map((comment) => renderCommentPreview(comment)).join('');
+    }
+
     /**
      * @returns {Promise<any>}
      */
@@ -196,55 +248,13 @@
         }
 
         bootPromise = (async () => {
-            let config = getFirebaseHelper().getConfig();
-            if (!config || !config.projectId) {
-                let lastError = null;
-                const maxAttempts = 3;
-                for (let i = 1; i <= maxAttempts; i++) {
-                    try {
-                        await getFirebaseHelper().loadConfigScript({
-                            id: `dynamic-firebase-config-${i}`,
-                            force: true,
-                            timeout: 12000
-                        });
-                    } catch (error) {
-                        lastError = error;
-                    }
-
-                    try {
-                        config = await getFirebaseHelper().waitForConfig(12000);
-                        break;
-                    } catch {
-                        // continue retry
-                    }
-                    await sleep(900 * i);
-                }
-
-                if (!config || !config.projectId) {
-                    try {
-                        config = await getFirebaseHelper().waitForConfig(45000);
-                    } catch {
-                        if (lastError) throw lastError;
-                        throw new Error('Firebase配置加载失败');
-                    }
-                }
-            }
-
-            if (!window.firebase || !window.firebase.database) {
-                try {
-                    await waitFor(() => window.firebase && window.firebase.database, 15000);
-                } catch {
-                    // ignore
-                }
-            }
-            if (!window.firebase || !window.firebase.database) {
-                throw new Error('Firebase代理未就绪');
-            }
-            if (!window.firebase.apps || !window.firebase.apps.length) {
-                window.firebase.initializeApp(config);
-            }
+            const db = await getFirebaseHelper().ensureDatabase({
+                scriptId: 'dynamic-firebase-config-loader',
+                timeout: 20000
+            });
+            await waitFor(() => window.firebase && window.firebase.database, 15000).catch(() => null);
             await waitForAppCheck();
-            rootRef = window.firebase.database().ref(DB_ROOT);
+            rootRef = db.ref(DB_ROOT);
         })();
 
         await bootPromise;
@@ -270,11 +280,16 @@
         document.querySelectorAll('[data-dynamic-id]').forEach((card) => {
             if (!(card instanceof HTMLElement)) return;
             const id = card.dataset.dynamicId || '';
-            const stats = latestStatsMap[id] || { likes: 0, comments: 0 };
+            const stats = latestStatsMap[id] || { likes: 0, comments: 0, liked: false, previewComments: [] };
             const likeEl = card.querySelector('[data-dynamic-like-count]');
             const commentEl = card.querySelector('[data-dynamic-comment-count]');
             if (likeEl) likeEl.textContent = String(stats.likes);
             if (commentEl) commentEl.textContent = String(stats.comments);
+            const likeBtn = card.querySelector('[data-dynamic-like-btn]');
+            if (likeBtn instanceof HTMLElement) {
+                likeBtn.textContent = `${stats.liked ? '取消点赞' : '点赞'} (${stats.likes})`;
+            }
+            renderCommentPreviewList(card, stats.previewComments);
         });
     }
 
@@ -300,7 +315,9 @@
                     const item = snapshot.val() || {};
                     latestStatsMap[id] = {
                         likes: getLikeCount(item.likesBy),
-                        comments: getCommentCount(item.comments)
+                        comments: getCommentCount(item.comments),
+                        liked: Boolean(item.likesBy && item.likesBy[getDeviceId()]),
+                        previewComments: getPreviewComments(item.comments)
                     };
                     refreshCardStats();
                 };
@@ -320,6 +337,37 @@
         });
     }
 
+    function bindListCardLikeButtons() {
+        document.querySelectorAll('[data-dynamic-id] [data-dynamic-like-btn]').forEach((btn) => {
+            if (!(btn instanceof HTMLButtonElement) || btn.dataset.likeBound === '1') return;
+            const card = btn.closest('[data-dynamic-id]');
+            if (!(card instanceof HTMLElement)) return;
+            const dynamicId = card.dataset.dynamicId || '';
+            if (!dynamicId) return;
+
+            btn.dataset.likeBound = '1';
+            btn.addEventListener('click', async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                try {
+                    const dbRef = await getRootRef();
+                    const uid = getDeviceId();
+                    await dbRef.child(dynamicId).child('likesBy').transaction((likesBy) => {
+                        const next = likesBy || {};
+                        if (next[uid]) {
+                            delete next[uid];
+                        } else {
+                            next[uid] = true;
+                        }
+                        return next;
+                    });
+                } catch (error) {
+                    console.error('主页动态点赞失败:', error);
+                }
+            });
+        });
+    }
+
     function bindListAndHomeCounts() {
         if (document.querySelector('[data-dynamic-comments-panel]')) {
             return;
@@ -328,6 +376,7 @@
         refreshCardStats();
         if (document.querySelector('[data-dynamic-id]')) {
             syncCardListeners();
+            bindListCardLikeButtons();
         }
 
         const observedContainers = [
@@ -345,6 +394,7 @@
                 if (!document.querySelector('[data-dynamic-id]')) return;
                 refreshCardStats();
                 syncCardListeners();
+                bindListCardLikeButtons();
             });
         });
         observedContainers.forEach((container) => {
@@ -352,6 +402,12 @@
         });
 
         window.setTimeout(() => observer.disconnect(), 30000);
+
+        window.addEventListener('firebase-config-loaded', () => {
+            refreshCardStats();
+            syncCardListeners();
+            bindListCardLikeButtons();
+        });
     }
 
     function bindDetailInteractions() {

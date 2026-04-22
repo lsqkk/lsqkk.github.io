@@ -221,6 +221,13 @@
             border-top-color: var(--primary-color);
             animation: spin 1s ease-in-out infinite;
         }
+        .error {
+            text-align: center;
+            padding: 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+        }
         @keyframes spin {
             to {
                 transform: rotate(360deg);
@@ -241,5 +248,63 @@
             }
             .projects-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            :root {
+                --primary-color: #0f6bdc;
+                --secondary-color: #12b886;
+                --dark-color: #eaf4ff;
+                --light-color: #163252;
+                --glass-bg: rgba(255, 255, 255, 0.72);
+                --card-bg: rgba(255, 255, 255, 0.82);
+            }
+            body {
+                color: #163252;
+            }
+            .hero h1 {
+                text-shadow: none;
+            }
+            .hero p,
+            .project-card p,
+            .footer-links a,
+            .copyright,
+            .error {
+                color: rgba(22, 50, 82, 0.82);
+            }
+            .category-title,
+            .section-title,
+            .project-card h3,
+            .project-card h4 {
+                color: #12345b;
+            }
+            .project-card {
+                background: rgba(255, 255, 255, 0.88);
+                border-color: rgba(15, 107, 220, 0.12);
+                box-shadow: 0 18px 34px rgba(73, 112, 168, 0.14);
+            }
+            .project-card:hover {
+                background: rgba(255, 255, 255, 0.96);
+                box-shadow: 0 22px 40px rgba(73, 112, 168, 0.18);
+            }
+            .project-link,
+            .footer-column h3 {
+                color: #0f6bdc;
+            }
+            footer {
+                background: rgba(255, 255, 255, 0.78);
+                border-top-color: rgba(15, 107, 220, 0.12);
+                backdrop-filter: blur(10px);
+            }
+            .footer-links a:hover,
+            .project-link:hover {
+                color: #0e9f76;
+            }
+            .copyright {
+                border-top-color: rgba(15, 107, 220, 0.1);
+            }
+            .spinner {
+                border-color: rgba(15, 107, 220, 0.14);
+                border-top-color: var(--primary-color);
             }
         }

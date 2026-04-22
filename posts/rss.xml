@@ -5,7 +5,15 @@
     <description>夸克博客</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 14 Apr 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 21 Apr 2026 16:00:00 GMT</lastBuildDate>
+    <item>
+      <title>在不买Mac的情况下 如何把iPad变成临时生产力工具</title>
+      <link>https://lsqkk.github.io/posts/2026/2604</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2604</guid>
+      <pubDate>Tue, 21 Apr 2026 16:00:00 GMT</pubDate>
+      <description>开发, iPad</description>
+      <content:encoded><![CDATA[在不买Mac的情况下 如何把iPad变成临时生产力工具 我因为记笔记、打音游和一些杂七杂八的需求买了一台iPad，用了一个月发现它几乎可以取代我的轻薄本。自从有了iPad之后，出门听网课、追番、记笔记、开线上会议、处理官号的直播任务、改PPT和文档，甚至做一些基础的Git管理和服务器运维，全都是用iPad来完成的。基本上我的轻薄本就待在宿舍里再也没拿出去过。 如果你也和我一样，暂时买不起Mac又懒得每天背着笔记本出门，那么这篇文章或许能]]></content:encoded>
+    </item>
     <item>
       <title>机器学习基础笔记（4）：高级优化方法与模型诊断</title>
       <link>https://lsqkk.github.io/posts/ml/4</link>

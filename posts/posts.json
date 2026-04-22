@@ -1,5 +1,18 @@
 [
     {
+        "title": "在不买Mac的情况下 如何把iPad变成临时生产力工具",
+        "description": "一些关于iPad的使用心得",
+        "file": "2026/2604.md",
+        "date": "2026-04-22",
+        "tags": [
+            "开发",
+            "iPad"
+        ],
+        "columns": [],
+        "wordCount": 3757,
+        "cover": "https://cn.bing.com/th?id=OHR.BeaverDenali_ZH-CN8736013851_1366x768.jpg"
+    },
+    {
         "title": "机器学习基础笔记（4）：高级优化方法与模型诊断",
         "description": "吴恩达机器学习笔记整理版",
         "file": "ml/4.md",

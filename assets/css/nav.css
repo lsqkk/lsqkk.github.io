@@ -698,7 +698,7 @@
     display: block;
     visibility: hidden;
     position: absolute;
-    top: calc(100% + 2px);
+    top: calc(100% + 10px);
     left: 0;
     min-width: 160px;
     max-width: 220px;
@@ -713,6 +713,15 @@
     pointer-events: none;
     transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
     z-index: 1200;
+}
+
+.nav-hover-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 14px;
 }
 
 .nav-hover-item.open .nav-hover-menu {

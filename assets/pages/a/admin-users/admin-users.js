@@ -14,6 +14,7 @@
         passwordInput: document.getElementById('adminPassword'),
         refreshBtn: document.getElementById('adminRefreshBtn'),
         searchInput: document.getElementById('adminSearchInput'),
+        exportRegisteredBtn: document.getElementById('exportRegisteredBtn'),
         exportUsersBtn: document.getElementById('exportUsersBtn'),
         exportEventsBtn: document.getElementById('exportEventsBtn'),
         viewFilter: document.getElementById('adminViewFilter'),
@@ -24,7 +25,9 @@
         summaryOnline: document.getElementById('summaryOnline'),
         summaryLogins: document.getElementById('summaryLogins'),
         summaryViews: document.getElementById('summaryViews'),
+        summaryRegistered: document.getElementById('summaryRegistered'),
         usersBody: document.getElementById('adminUsersBody'),
+        registeredBody: document.getElementById('adminRegisteredBody'),
         loginFeed: document.getElementById('adminLoginFeed'),
         activityFeed: document.getElementById('adminActivityFeed')
     };
@@ -163,6 +166,10 @@
         return Object.values(map).filter((item) => item && typeof item === 'object');
     }
 
+    function isRegisteredEntry(entry) {
+        return Boolean(entry?.profile?.login && String(entry.profile.login).trim());
+    }
+
     function toCsv(rows) {
         return rows.map((row) => row.map((cell) => {
             const value = cell === null || cell === undefined ? '' : String(cell);
@@ -224,6 +231,12 @@
         });
         setText(el.summaryLogins, String(recentLogins));
         setText(el.summaryViews, String(recentViews));
+
+        const registeredCount = userEntries.filter(([, user]) => {
+            const login = user?.profile?.login;
+            return Boolean(login && String(login).trim());
+        }).length;
+        setText(el.summaryRegistered, String(registeredCount));
     }
 
     function renderUsers(users, presence) {
@@ -340,6 +353,43 @@
         });
     }
 
+    function renderRegisteredUsers(entries) {
+        if (!el.registeredBody) return;
+        const registered = entries.filter((entry) => isRegisteredEntry(entry));
+        if (registered.length === 0) {
+            el.registeredBody.innerHTML = '<div class="feed-secondary">暂无注册用户</div>';
+            return;
+        }
+
+        el.registeredBody.innerHTML = registered.map((entry) => {
+            const name = getDisplayName(entry.profile.nickname, entry.profile.login, entry.uid);
+            const login = entry.profile.login || '';
+            const loginType = entry.profile.loginType === 'local' ? '夸克账号' : 'GitHub';
+            const avatarUrl = entry.profile.avatarUrl || '';
+            const avatarHtml = avatarUrl
+                ? `<img src="${avatarUrl}" alt="${name}">`
+                : `<span>${getInitial(name)}</span>`;
+            const locationText = [entry.presenceItem?.province || entry.profile.province, entry.presenceItem?.city || entry.profile.city]
+                .filter(Boolean)
+                .join(' ');
+
+            return `
+                <div class="registered-user-item">
+                    <div class="admin-avatar registered-user-avatar">${avatarHtml}</div>
+                    <div class="registered-user-main">
+                        <div class="registered-user-name">${name}</div>
+                        <div class="registered-user-login">@${login}</div>
+                    </div>
+                    <div class="registered-user-meta">
+                        <span>${loginType}</span>
+                        <span>${locationText || '位置未知'}</span>
+                        <span>最近活跃 ${formatShortTime(entry.lastSeen)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
     function renderLoginFeed(users) {
         if (!el.loginFeed) return;
         const items = [];
@@ -428,6 +478,32 @@
         downloadCsv(`admin-users-${Date.now()}.csv`, rows);
     }
 
+    function exportRegisteredUsers() {
+        const registeredEntries = filteredEntries.filter((entry) => isRegisteredEntry(entry));
+        if (!registeredEntries.length) return;
+        const rows = [
+            ['uid', 'nickname', 'login', 'loginType', 'avatarUrl', 'profileUrl', 'province', 'city', 'ip', 'lastLogin', 'lastEvent', 'currentPath', 'lastSeen']
+        ];
+        registeredEntries.forEach((entry) => {
+            rows.push([
+                entry.uid,
+                entry.profile.nickname || '',
+                entry.profile.login || '',
+                entry.profile.loginType || '',
+                entry.profile.avatarUrl || '',
+                entry.profile.profileUrl || '',
+                entry.profile.province || entry.presenceItem?.province || '',
+                entry.profile.city || entry.presenceItem?.city || '',
+                entry.profile.ip || entry.presenceItem?.ip || '',
+                formatTime(entry.lastLogin),
+                formatTime(entry.lastEvent),
+                entry.presenceItem?.path || '',
+                formatTime(entry.presenceItem?.lastSeen || 0)
+            ]);
+        });
+        downloadCsv(`admin-registered-users-${Date.now()}.csv`, rows);
+    }
+
     function exportEvents() {
         const rows = [
             ['uid', 'nickname', 'login', 'province', 'city', 'ip', 'path', 'title', 'time']
@@ -470,11 +546,13 @@
             };
             renderSummary(lastData.users, lastData.presence);
             renderUsers(lastData.users, lastData.presence);
+            renderRegisteredUsers(filteredEntries);
             renderLoginFeed(lastData.users);
             renderActivityFeed(lastData.users);
         } catch (error) {
             console.error('加载用户活动失败:', error);
             if (el.usersBody) el.usersBody.innerHTML = '<div class="feed-secondary">数据加载失败</div>';
+            if (el.registeredBody) el.registeredBody.innerHTML = '<div class="feed-secondary">数据加载失败</div>';
         }
     }
 
@@ -497,13 +575,16 @@
         if (el.searchInput instanceof HTMLInputElement) {
             el.searchInput.addEventListener('input', () => {
                 renderUsers(lastData.users, lastData.presence);
+                renderRegisteredUsers(filteredEntries);
             });
         }
         if (el.viewFilter instanceof HTMLSelectElement) {
             el.viewFilter.addEventListener('change', () => {
                 renderUsers(lastData.users, lastData.presence);
+                renderRegisteredUsers(filteredEntries);
             });
         }
+        if (el.exportRegisteredBtn) el.exportRegisteredBtn.addEventListener('click', () => exportRegisteredUsers());
         if (el.exportUsersBtn) el.exportUsersBtn.addEventListener('click', () => exportUsers());
         if (el.exportEventsBtn) el.exportEventsBtn.addEventListener('click', () => exportEvents());
     }

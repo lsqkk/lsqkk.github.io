@@ -187,9 +187,9 @@ body.admin-users-body {
 }
 
 .admin-summary {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
 }
 
 .summary-card {
@@ -376,6 +376,51 @@ body.admin-users-body {
   gap: 20px;
 }
 
+.registered-user-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(18, 30, 50, 0.7);
+  border: 1px solid rgba(120, 145, 185, 0.2);
+}
+
+.registered-user-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.registered-user-main {
+  min-width: 0;
+}
+
+.registered-user-name {
+  font-weight: 600;
+}
+
+.registered-user-login {
+  color: var(--admin-muted);
+  font-size: 0.86rem;
+  margin-top: 2px;
+}
+
+.registered-user-meta {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--admin-muted);
+  font-size: 0.82rem;
+}
+
+.registered-user-meta span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(110, 168, 255, 0.12);
+}
+
 @media (max-width: 1024px) {
   .admin-login-panel,
   .admin-grid {
@@ -463,10 +508,16 @@ body.admin-users-body {
   body.admin-users-body .admin-control-group label,
   body.admin-users-body .admin-card-hint,
   body.admin-users-body .admin-user-login,
+  body.admin-users-body .registered-user-login,
   body.admin-users-body .admin-user-meta,
+  body.admin-users-body .registered-user-meta,
   body.admin-users-body .event-meta,
   body.admin-users-body .event-items,
   body.admin-users-body .feed-secondary {
     color: var(--admin-muted) !important;
+  }
+
+  body.admin-users-body .registered-user-meta span {
+    background: rgba(37, 99, 235, 0.1) !important;
   }
 }

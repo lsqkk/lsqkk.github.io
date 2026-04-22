@@ -345,11 +345,17 @@ const homePreloaded = {
                       ></div>
                       {galleryHtml && <Fragment set:html={galleryHtml} />}
                       <div class="dynamic-entry-footer">
-                        <a class="dynamic-detail-link" href={`/blog/dt/${dynamicId}`}>查看详情</a>
+                        <div class="dynamic-entry-actions">
+                          <button class="dynamic-like-btn" type="button" data-dynamic-like-btn>点赞 (0)</button>
+                          <a class="dynamic-detail-link" href={`/blog/dt/${dynamicId}`}>查看详情</a>
+                        </div>
                         <div class="dynamic-entry-stats">
                           <span>点赞 <span data-dynamic-like-count>0</span></span>
                           <span>评论 <span data-dynamic-comment-count>0</span></span>
                         </div>
+                      </div>
+                      <div class="dynamic-comment-preview" data-dynamic-comment-preview>
+                        <div class="dynamic-preview-empty">评论加载中...</div>
                       </div>
                     </div>
                   );
