@@ -23,9 +23,9 @@ const currentYear = new Date().getFullYear();
       const searchInput = document.getElementById("oj-search-input");
       const searchValue = searchInput.value.trim();
       if (searchValue) {
-        window.location.href = `problem-list.html?search=${encodeURIComponent(searchValue)}`;
+        window.location.href = buildOjUrl("list", { search: searchValue });
       } else {
-        window.location.href = `problem-list.html`;
+        window.location.href = buildOjUrl("list");
       }
     }
   </script>
@@ -68,11 +68,11 @@ const currentYear = new Date().getFullYear();
 
         <section class="oj-stats-panel glass-card">
           <ul>
-            <li><a href="train.html" class="oj-nav-link" style="background: none;">从第一题开始</a></li>
-            <li><a href="problem-list.html" class="oj-nav-link" style="background: none;">查看完整题库</a></li>
-            <li><a href="discussion.html" class="oj-nav-link" style="background: none;">当前讨论</a></li>
-            <li><a href="submission-record.html" class="oj-nav-link" style="background: none;">我的提交记录</a></li>
-            <li><a href="problem-list.html" class="oj-nav-link" style="background: none;">题库当前总题目数: <strong id="total-problems">加载中...</strong></a></li>
+            <li><a href="/a/oj/train" class="oj-nav-link" style="background: none;">从第一题开始</a></li>
+            <li><a href="/a/oj/problem-list" class="oj-nav-link" style="background: none;">查看完整题库</a></li>
+            <li><a href="/a/oj/discussion" class="oj-nav-link" style="background: none;">当前讨论</a></li>
+            <li><a href="/a/oj/submission-record" class="oj-nav-link" style="background: none;">我的提交记录</a></li>
+            <li><a href="/a/oj/problem-list" class="oj-nav-link" style="background: none;">题库当前总题目数: <strong id="total-problems">加载中...</strong></a></li>
           </ul>
         </section>
       </div>

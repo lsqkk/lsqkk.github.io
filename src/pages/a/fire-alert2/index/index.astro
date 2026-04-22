@@ -121,7 +121,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
       </div>
       <p style="margin-bottom: 15px; font-size: 14px;">发现火情请立即上报</p>
-      <button class="admin-btn" style="width: 100%;" onclick="location.href='report.html'">上报火情</button>
+      <button class="admin-btn" style="width: 100%;" onclick="location.href='/a/fire-alert2/report'">上报火情</button>
       <div style="margin-top: 15px; font-size: 14px; color: var(--text-gray);">
         <p>今日上报: <span id="todayReports">0</span> 起</p>
         <p>处理中: <span id="pendingReports">0</span> 起</p>
@@ -158,22 +158,22 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   </div>
 
   <div class="nav-cards">
-    <a href="dashboard.html" class="nav-card">
+    <a href="/a/fire-alert2/dashboard" class="nav-card">
       <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
       <div class="nav-title">数据仪表盘</div>
       <div class="nav-desc">查看详细数据和统计分析</div>
     </a>
-    <a href="satellite.html" class="nav-card">
+    <a href="/a/fire-alert2/satellite" class="nav-card">
       <div class="nav-icon"><i class="fas fa-satellite"></i></div>
       <div class="nav-title">卫星监测</div>
       <div class="nav-desc">实时卫星图像与火点识别</div>
     </a>
-    <a href="forecast.html" class="nav-card">
+    <a href="/a/fire-alert2/forecast" class="nav-card">
       <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
       <div class="nav-title">火险预报</div>
       <div class="nav-desc">火险等级预测与蔓延</div>
     </a>
-    <a href="report.html" class="nav-card">
+    <a href="/a/fire-alert2/report" class="nav-card">
       <div class="nav-icon"><i class="fas fa-exclamation-circle"></i></div>
       <div class="nav-title">灾情上报</div>
       <div class="nav-desc">上报火情与查看处理进度</div>

@@ -26,6 +26,13 @@ const $resultError = document.getElementById('result-error');
 
 let problemData = null; // 存储加载的题目数据
 
+function buildTrainProblemUrl(problemId) {
+    if (typeof buildOjUrl === 'function') {
+        return buildOjUrl('train', { p: problemId });
+    }
+    return `/a/oj/train?p=${encodeURIComponent(problemId)}`;
+}
+
 /**
  * 规范化样例文本中的转义换行符
  * @param {string} text
@@ -121,9 +128,9 @@ function renderProblemUI(data) {
     $sampleInput.textContent = normalizeSampleText(data.sample_input);
     $sampleOutput.textContent = normalizeSampleText(data.sample_output);
 
-    const currentLink = document.querySelector(`.oj-nav-link[href="train.html"]`);
+    const currentLink = document.querySelector('.oj-nav-link[href="/a/oj/train"]');
     if (currentLink) {
-        currentLink.href = `train.html?p=${data.id}`;
+        currentLink.href = buildTrainProblemUrl(data.id);
     }
 }
 

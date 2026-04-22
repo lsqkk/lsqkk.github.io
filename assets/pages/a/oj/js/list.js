@@ -15,6 +15,13 @@ let filteredProblems = [];
 // 🏆 默认分页设置
 const DEFAULT_PAGE_SIZE = 30;
 
+function buildTrainProblemUrl(problemId) {
+    if (typeof buildOjUrl === 'function') {
+        return buildOjUrl('train', { p: problemId });
+    }
+    return `/a/oj/train?p=${encodeURIComponent(problemId)}`;
+}
+
 /**
  * 1. 从 URL 获取当前页码和每页显示数量
  * 依赖 utils.js 中的 getUrlParam 函数
@@ -84,8 +91,8 @@ async function renderProblemList() {
         html += `
             <tr class="oj-list-row">
                 <td><span class="oj-status-badge ${statusClass}">${status}</span></td>
-                <td><a href="train.html?p=${problem.id}" class="oj-problem-link">${problem.id}</a></td>
-                <td><a href="train.html?p=${problem.id}" class="oj-problem-link">${problem.title}</a></td>
+                <td><a href="${buildTrainProblemUrl(problem.id)}" class="oj-problem-link">${problem.id}</a></td>
+                <td><a href="${buildTrainProblemUrl(problem.id)}" class="oj-problem-link">${problem.title}</a></td>
                 <td class="oj-difficulty-${problem.difficulty}">${problem.difficulty}</td>
             </tr>
         `;

@@ -5,16 +5,23 @@ interface Props {
 }
 
 const { active, includeAdminLogin = false } = Astro.props as Props;
+const ojRoutes = {
+  home: "/a/oj",
+  train: "/a/oj/train",
+  list: "/a/oj/problem-list",
+  discussion: "/a/oj/discussion",
+  record: "/a/oj/submission-record",
+};
 ---
 <aside class="oj-sidebar-panel glass-card">
   <h2 class="oj-sidebar-title">QUARK OJ</h2>
   <nav class="oj-sidebar-nav">
     <ul>
-      <li><a href="index.html" class={`oj-nav-link ${active === "home" ? "active" : ""}`}>首页</a></li>
-      <li><a href="train.html" class={`oj-nav-link ${active === "train" ? "active" : ""}`}>刷题</a></li>
-      <li><a href="problem-list.html" class={`oj-nav-link ${active === "list" ? "active" : ""}`}>题库</a></li>
-      <li><a href="discussion.html" class={`oj-nav-link ${active === "discussion" ? "active" : ""}`}>讨论区</a></li>
-      <li><a href="submission-record.html" class={`oj-nav-link ${active === "record" ? "active" : ""}`}>提交记录</a></li>
+      <li><a href={ojRoutes.home} class={`oj-nav-link ${active === "home" ? "active" : ""}`}>首页</a></li>
+      <li><a href={ojRoutes.train} class={`oj-nav-link ${active === "train" ? "active" : ""}`}>刷题</a></li>
+      <li><a href={ojRoutes.list} class={`oj-nav-link ${active === "list" ? "active" : ""}`}>题库</a></li>
+      <li><a href={ojRoutes.discussion} class={`oj-nav-link ${active === "discussion" ? "active" : ""}`}>讨论区</a></li>
+      <li><a href={ojRoutes.record} class={`oj-nav-link ${active === "record" ? "active" : ""}`}>提交记录</a></li>
     </ul>
   </nav>
   <hr class="oj-sidebar-divider" />

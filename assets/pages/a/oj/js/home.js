@@ -207,16 +207,23 @@ window.jumpToRandomProblem = function () {
     const minId = window.MIN_PROBLEM_ID || 1001;
     const maxId = window.MAX_PROBLEM_ID || 1140;
     const randomId = getRandomInt(minId, maxId);
-    // 跳转到题目详情页，假设题目详情页的 URL 格式是 problem.html?p=ID
-    window.location.href = `train.html?p=${randomId}`;
+    window.location.href = typeof buildOjUrl === 'function'
+        ? buildOjUrl('train', { p: randomId })
+        : `/a/oj/train?p=${randomId}`;
 };
 
 // --- 页面初始化及数据加载 ---
+let homePageInitialized = false;
 
 /**
  * 页面初始化函数
  */
 window.initializeHomePage = async function () {
+    if (homePageInitialized) {
+        return;
+    }
+    homePageInitialized = true;
+
     // 1. 设置运势功能
     setupFortuneFeature();
 
@@ -232,6 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof getUrlParam === 'function') {
         initializeHomePage();
     } else {
-        console.error("缺少必要的依赖文件 utils.js！请确保已在 index.html 中正确加载。");
+        console.error("缺少必要的依赖文件 utils.js！请确保已在 /a/oj 页面中正确加载。");
     }
 });

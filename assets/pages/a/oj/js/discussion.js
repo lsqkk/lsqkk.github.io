@@ -766,7 +766,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         discussionsRef = firebase.database().ref(BOARD_NAME);
     } else {
         const container = document.getElementById('discussionsContainer');
-        if (container) container.innerHTML = '<div style="color: red; padding: 20px;">Firebase 初始化失败，请检查 discussion.html 头部脚本和配置。</div>';
+        if (container) container.innerHTML = '<div style="color: red; padding: 20px;">Firebase 初始化失败，请检查 /a/oj/discussion 页面头部脚本和配置。</div>';
         return;
     }
 

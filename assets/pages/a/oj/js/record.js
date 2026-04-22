@@ -11,6 +11,13 @@ const $modalTitle = document.getElementById('modal-title');
 const $modalLangInfo = document.getElementById('modal-lang-info');
 const $modalCodeDisplay = document.getElementById('modal-code-display');
 
+function buildTrainProblemUrl(problemId) {
+    if (typeof buildOjUrl === 'function') {
+        return buildOjUrl('train', { p: problemId });
+    }
+    return `/a/oj/train?p=${encodeURIComponent(problemId)}`;
+}
+
 
 /**
  * 映射 Judge0 语言 ID 到名称
@@ -96,7 +103,7 @@ function renderSubmissionRecords() {
         // 操作按钮：跳转到题目 + 查看代码按钮
         html += `
             <tr class="oj-list-row">
-                <td><a href="train.html?p=${id}" class="oj-problem-link">${id}</a></td>
+                <td><a href="${buildTrainProblemUrl(id)}" class="oj-problem-link">${id}</a></td>
                 <td><span class="oj-status-badge ${statusClass}">${record.status}</span></td>
                 <td>${time}</td>
                 <td>${memory}</td>

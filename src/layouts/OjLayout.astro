@@ -9,6 +9,13 @@ interface Props {
 const { title, description = "", extraStyles = [], extraHeadScripts = [] } = Astro.props;
 import { SITE_LOGO_URL } from "@siteConfig";
 import GlowFollow from "../components/GlowFollow.astro";
+const ojRoutes = {
+  home: "/a/oj",
+  train: "/a/oj/train",
+  list: "/a/oj/problem-list",
+  discussion: "/a/oj/discussion",
+  record: "/a/oj/submission-record",
+};
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -21,6 +28,25 @@ import GlowFollow from "../components/GlowFollow.astro";
     <link rel="stylesheet" href="/assets/css/basic.css" />
     {extraStyles.map((href) => <link rel="stylesheet" href={href} />)}
     {extraHeadScripts.map((src) => <script is:inline src={src}></script>)}
+    <script is:inline define:vars={{ ojRoutes }}>
+      window.__OJ_ROUTES__ = ojRoutes;
+      window.buildOjUrl = function (routeKey, params) {
+        const routeMap = window.__OJ_ROUTES__ || {};
+        const basePath = routeMap[routeKey] || routeKey || routeMap.home || "/a/oj";
+        const url = new URL(basePath, window.location.origin);
+
+        if (params && typeof params === "object") {
+          Object.entries(params).forEach(([key, value]) => {
+            if (value === undefined || value === null || value === "") {
+              return;
+            }
+            url.searchParams.set(key, String(value));
+          });
+        }
+
+        return `${url.pathname}${url.search}`;
+      };
+    </script>
     <slot name="head"></slot>
   </head>
   <body>
