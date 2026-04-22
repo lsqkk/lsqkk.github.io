@@ -141,7 +141,8 @@ class Terminal {
     getPrompt() {
         const currentPath = this.storage.getCurrentPath();
         const dirName = currentPath === '/' ? '/' : currentPath.split('/').pop() || '/';
-        return `[quark@terminal ${dirName}]$`;
+        const llmMode = this.commands && this.commands.isLlmSessionActive() ? ' llm' : '';
+        return `[quark@terminal${llmMode} ${dirName}]$`;
     }
 
     navigateHistory(direction) {
@@ -207,6 +208,7 @@ class Terminal {
 Quark Terminal v2
 ${hasApiKey}
 输入 help 查看命令，支持 pwd / ls / grep / find / cp / mv / llm 等常见 shell 指令。
+输入 llm 可进入连续对话模式，之后可直接聊天；需要执行普通命令时使用 !help / !ls。
         `.trim();
 
         this.output(this.commands.createCodeBlock(welcomeText), 'info');

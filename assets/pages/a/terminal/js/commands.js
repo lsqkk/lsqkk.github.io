@@ -7,13 +7,16 @@ class CommandManager {
         this.presetCommands = { output: {}, redirect: {} };
         this.dangerAttempts = 0;
         this.contextLimit = 8;
+        this.llmSessionActive = false;
+        this.llmSessionBusy = false;
         this.builtinCommands = [
             'help', 'man', 'ls', 'dir', 'pwd', 'cd', 'cd..', 'mkdir', 'rm', 'del', 'unlink',
             'touch', 'write', 'cat', 'type', 'less', 'head', 'tail', 'wc', 'grep', 'find',
             'cp', 'mv', 'rename', 'echo', 'clear', 'cls', 'tree', 'history', 'time', 'date',
             'calc', 'expr', 'search', 'start', 'open', 'tools', 'games', 'whoami', 'uname',
             'env', 'printenv', 'export', 'set', 'unset', 'llm', 'chat', 'ask', 'llm-config',
-            'llm-key', 'llm-base', 'llm-model', 'llm-clear', 'llm-history', 'stat'
+            'llm-key', 'llm-base', 'llm-model', 'llm-clear', 'llm-history', 'llm-on', 'llm-off',
+            'exit', 'quit', 'bye', 'stat'
         ];
 
         this.loadPresetCommands();
@@ -136,12 +139,139 @@ class CommandManager {
         return wrapper;
     }
 
+    escapeHtml(text) {
+        return String(text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    sanitizeHtml(html) {
+        const template = document.createElement('template');
+        template.innerHTML = String(html || '');
+        const blockedSelectors = ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'];
+
+        template.content.querySelectorAll(blockedSelectors.join(',')).forEach((node) => node.remove());
+        template.content.querySelectorAll('*').forEach((node) => {
+            [...node.attributes].forEach((attr) => {
+                const name = attr.name.toLowerCase();
+                const value = String(attr.value || '').trim().toLowerCase();
+                if (name.startsWith('on')) {
+                    node.removeAttribute(attr.name);
+                    return;
+                }
+                if ((name === 'href' || name === 'src') && value.startsWith('javascript:')) {
+                    node.removeAttribute(attr.name);
+                }
+            });
+        });
+
+        return template.innerHTML;
+    }
+
+    renderMarkdownToElement(text) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'terminal-block terminal-llm terminal-markdown';
+
+        const source = String(text || '').trim();
+        if (!source) {
+            wrapper.textContent = '(空响应)';
+            return wrapper;
+        }
+
+        if (window.marked && typeof window.marked.parse === 'function') {
+            const rawHtml = window.marked.parse(source, {
+                gfm: true,
+                breaks: true
+            });
+            wrapper.innerHTML = this.sanitizeHtml(rawHtml);
+            return wrapper;
+        }
+
+        wrapper.innerHTML = `<p>${this.escapeHtml(source).replace(/\n/g, '<br>')}</p>`;
+        return wrapper;
+    }
+
+    isLlmSessionCommand(raw) {
+        return /^(llm|chat|ask|llm-on)\b/i.test(String(raw || '').trim());
+    }
+
+    isLlmSessionActive() {
+        return this.llmSessionActive;
+    }
+
+    isLlmSessionBusy() {
+        return this.llmSessionBusy;
+    }
+
+    shouldHandleAsLlmSession(raw) {
+        const input = String(raw || '').trim();
+        if (!this.llmSessionActive || !input) {
+            return false;
+        }
+        if (input.startsWith('!')) {
+            return false;
+        }
+        return true;
+    }
+
+    async handleLlmSessionInput(raw) {
+        const input = String(raw || '').trim();
+        const lowered = input.toLowerCase();
+
+        if (!input) {
+            return;
+        }
+
+        if (this.llmSessionBusy) {
+            this.output('LLM 仍在回复上一条消息，请稍候再试。', 'warning');
+            return;
+        }
+
+        if (['exit', 'quit', 'bye', 'llm-off'].includes(lowered)) {
+            this.disableLlmSession();
+            return;
+        }
+
+        await this.requestLlm(input);
+    }
+
+    enableLlmSession() {
+        if (this.llmSessionActive) {
+            this.output('LLM 连续对话模式已开启，直接输入内容即可继续聊天。', 'info');
+            return;
+        }
+        this.llmSessionActive = true;
+        this.output('已进入 LLM 连续对话模式。直接输入内容即可发送。', 'success');
+        this.output('输入 exit / quit / bye / llm-off 退出；输入 !help、!ls 这类命令可临时执行普通终端指令。', 'info');
+    }
+
+    disableLlmSession() {
+        if (!this.llmSessionActive) {
+            this.output('LLM 连续对话模式当前未开启。', 'info');
+            return;
+        }
+        this.llmSessionActive = false;
+        this.output('已退出 LLM 连续对话模式。', 'success');
+    }
+
     async execute(commandLine) {
         const raw = String(commandLine || '').trim();
         if (!raw) return;
 
+        if (this.shouldHandleAsLlmSession(raw)) {
+            await this.handleLlmSessionInput(raw);
+            return;
+        }
+
+        if (raw.startsWith('!') && raw.trim().length > 1) {
+            commandLine = raw.slice(1);
+        }
+
         if (this.storage.getDangerMode()) {
-            this.handleDangerMode(raw);
+            this.handleDangerMode(String(commandLine || '').trim());
             return;
         }
 
@@ -150,14 +280,14 @@ class CommandManager {
             return;
         }
 
-        if (this.storage.checkDangerousCommand(raw)) {
-            this.handleDangerousCommand(raw);
+        if (this.storage.checkDangerousCommand(String(commandLine || '').trim())) {
+            this.handleDangerousCommand(String(commandLine || '').trim());
             return;
         }
 
         let tokens;
         try {
-            tokens = this.tokenize(raw);
+            tokens = this.tokenize(commandLine);
         } catch (error) {
             this.output(`错误: ${error.message}`, 'error');
             return;
@@ -309,6 +439,15 @@ class CommandManager {
                 case 'chat':
                 case 'ask':
                     await this.chatWithLlm(args);
+                    break;
+                case 'llm-on':
+                    this.enableLlmSession();
+                    break;
+                case 'llm-off':
+                case 'exit':
+                case 'quit':
+                case 'bye':
+                    this.disableLlmSession();
                     break;
                 case 'llm-config':
                     this.showLlmConfig();
@@ -561,12 +700,16 @@ class CommandManager {
 
 LLM:
   llm <消息>          直接和模型对话
+  llm                 进入连续对话模式
+  llm-on / llm-off    开启 / 关闭连续对话模式
+  exit / quit / bye   在连续对话模式中退出聊天
   llm-config          查看当前 API Key / Base URL / Model
   llm-key <key>       设置 API Key
   llm-base <url>      设置 Base URL
   llm-model <model>   设置模型
   llm-history         查看终端对话历史
   llm-clear           清空终端对话历史
+  !<命令>             在连续对话模式中执行普通终端命令
 
 站内快捷入口:
   search <关键词>     搜索博客
@@ -880,7 +1023,7 @@ LLM:
             return;
         }
         const keyword = encodeURIComponent(args.join(' '));
-        const url = `/posts?search=${keyword}`;
+        const url = `/search?q=${keyword}`;
         this.output(`正在打开博客搜索: ${args.join(' ')}`, 'info');
         setTimeout(() => window.open(url, '_blank'), 300);
     }
@@ -947,20 +1090,13 @@ LLM:
         this.output('环境变量已删除', 'success');
     }
 
-    async chatWithLlm(args) {
-        if (!args.length) {
-            this.output('用法: llm <消息>', 'error');
-            this.output('也可以先在 /a/ds 设置 API Key，然后回来直接使用。', 'info');
-            return;
-        }
-
+    async requestLlm(prompt) {
         const settings = window.QuarkLLMConfig.getSettings();
         if (!settings.apiKey) {
             this.output('未检测到 API Key。请先执行 llm-key <你的key>，或前往 /a/ds 保存。', 'error');
             return;
         }
 
-        const prompt = args.join(' ');
         const history = this.storage.getLlmHistory()
             .slice(-this.contextLimit)
             .flatMap((entry) => [
@@ -968,34 +1104,48 @@ LLM:
                 { role: 'assistant', content: entry.answer }
             ]);
 
+        this.llmSessionBusy = true;
         this.output('正在连接 LLM...', 'info');
 
-        const response = await fetch(window.QuarkLLMConfig.buildChatEndpoint(settings.baseUrl), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${settings.apiKey}`
-            },
-            body: JSON.stringify({
-                model: settings.model,
-                messages: [...history, { role: 'user', content: prompt }],
-                stream: false
-            })
-        });
+        try {
+            const response = await fetch(window.QuarkLLMConfig.buildChatEndpoint(settings.baseUrl), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${settings.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: settings.model,
+                    messages: [...history, { role: 'user', content: prompt }],
+                    stream: false
+                })
+            });
 
-        if (!response.ok) {
-            throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response));
+            if (!response.ok) {
+                throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response));
+            }
+
+            const data = await response.json();
+            const answer = data?.choices?.[0]?.message?.content?.trim();
+            if (!answer) {
+                throw new Error('LLM 未返回有效内容');
+            }
+
+            this.storage.addLlmHistory({ prompt, answer, model: settings.model });
+            this.output(`模型: ${settings.model}`, 'success');
+            this.output(this.renderMarkdownToElement(answer), 'info');
+        } finally {
+            this.llmSessionBusy = false;
+        }
+    }
+
+    async chatWithLlm(args) {
+        if (!args.length) {
+            this.enableLlmSession();
+            return;
         }
 
-        const data = await response.json();
-        const answer = data?.choices?.[0]?.message?.content?.trim();
-        if (!answer) {
-            throw new Error('LLM 未返回有效内容');
-        }
-
-        this.storage.addLlmHistory({ prompt, answer, model: settings.model });
-        this.output(`模型: ${settings.model}`, 'success');
-        this.output(this.createCodeBlock(answer, 'terminal-llm'), 'info');
+        await this.requestLlm(args.join(' '));
     }
 
     showLlmConfig() {

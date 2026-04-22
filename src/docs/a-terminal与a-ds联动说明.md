@@ -31,12 +31,20 @@
 ## `/a/terminal` 新增命令
 
 - `llm <message>`：直接发起对话
+- `llm` / `llm-on`：进入连续对话模式，之后可直接输入消息，无需每次再写 `llm`
+- `llm-off`：退出连续对话模式
 - `llm-config`：查看当前配置
 - `llm-key <api-key>`：保存 API Key
 - `llm-base <base-url>`：保存 Base URL
 - `llm-model <model>`：保存模型名
 - `llm-history`：查看终端侧近期开启的对话摘要
 - `llm-clear`：清空终端侧对话摘要
+
+补充说明：
+
+- 终端内 LLM 输出现已按 Markdown 渲染，常见的标题、列表、代码块、粗体等格式会直接显示为排版结果，而不是原始 `**` / 反引号标记
+- 连续对话模式下，若临时想执行普通终端命令，可在输入前加 `!`，例如 `!help`、`!ls`
+- 连续对话模式下可输入 `exit` / `quit` / `bye` 快速退出聊天
 
 ## 维护提醒
 
