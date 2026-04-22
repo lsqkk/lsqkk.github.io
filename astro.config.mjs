@@ -6,8 +6,11 @@ import sitemap from "@astrojs/sitemap";
 import rehypeRaw from "rehype-raw";
 
 const API_BASE_PLACEHOLDER = "__API_BASE__";
-const API_JSON_PATH = path.resolve("json", "api.json");
 const ROOT = process.cwd();
+const API_JSON_CANDIDATES = [
+  path.join(ROOT, "src", "config", "json", "api.json"),
+  path.join(ROOT, "json", "api.json"),
+];
 
 function toText(value) {
   if (value == null) return "";
@@ -111,10 +114,29 @@ function apiBaseInjector() {
       "astro:build:done": async ({ dir }) => {
         let apiBase = "https://api.130923.xyz";
         try {
-          const raw = await fs.readFile(API_JSON_PATH, "utf-8");
+          let raw = "";
+          let loadedPath = "";
+
+          for (const candidate of API_JSON_CANDIDATES) {
+            try {
+              raw = await fs.readFile(candidate, "utf-8");
+              loadedPath = candidate;
+              break;
+            } catch {
+              // Try the next candidate path.
+            }
+          }
+
+          if (!raw) {
+            throw new Error(`api.json not found in: ${API_JSON_CANDIDATES.join(", ")}`);
+          }
+
           const config = JSON.parse(raw);
           if (typeof config?.apiBase === "string" && config.apiBase.trim()) {
             apiBase = config.apiBase.trim();
+          }
+          if (loadedPath) {
+            console.log(`[api-base-injector] Loaded api base from ${path.relative(ROOT, loadedPath)}`);
           }
         } catch (err) {
           console.warn("[api-base-injector] Failed to read api.json, using default.", err);
