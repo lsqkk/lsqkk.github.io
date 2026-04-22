@@ -2,6 +2,7 @@
 
 Agent 应在必要时更新本文件，但必须非常慎重，确保内容与仓库现状一致。若发现文档与代码不符，应优先修正文档中的错误描述，而不是延续旧说法。
 
+- 应检查 `/src/docs/dev` 是否有未完成的 BUG 修复或功能更新任务
 - 在进行重大架构调整或引入了新的第三方服务/API等情况下，应同步更新`/posts/copyright.md`
 - 同样，在必要时检视项目介绍文档 `README.md` 并更新
 - 根据下述要求，在必要时于项目说明文档 `/src/docs` 处或其他合适位置更新、新建说明文档
@@ -44,6 +45,7 @@ lsqkk.github.io/
 │   │   └── site.js              # 从配置中派生站点标题 / logo / 背景
 │   ├── docs/                    # 项目说明文档
 │   │   ├── API/                 # serverless 与密钥相关文档
+│   │   ├── dev/                 # 待修复的 BUG 和待实现的功能新增或修改
 │   │   └── page_template/       # 页面模板与样式规范
 │   ├── layouts/                 # 页面布局，如 Post/OJ/FireAlert/RealtimeRoom
 │   ├── pages/                   # Astro 路由页面
@@ -64,10 +66,9 @@ lsqkk.github.io/
 
 ### 1. 项目文档
 - 添加或修改功能后，优先在以下位置补充说明：
+  - `src/docs/xxx.md`
   - `src/docs/API/`
   - `src/docs/page_template/`
-  - `src/docs/TypeScript规范说明.md`
-  - `src/docs/构建与数据产物说明.md`
 
 ### 2. 生成目录与禁止手改项
 - 以下目录/文件主要由构建或脚本生成，除非明确在修生成逻辑，否则不要直接手改：
@@ -249,7 +250,8 @@ npm run check:syntax
 - `修复 - 修复描述`
 - 其他前缀按实际情况补充
 
-### 修改后至少执行
+### 构建测试
+在涉及代码修改后，至少执行：
 ```bash
 npm run build
 ```
@@ -259,6 +261,8 @@ npm run build
 npm run typecheck
 npm run check:syntax
 ```
+
+在确认无问题后，可按上述Commit 格式提交 git push。
 
 ## Agent 工作提醒
 1. 优先相信代码与当前目录结构，不要延续旧文档中的过时路径。
