@@ -239,12 +239,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function typeWriter() {
             const currentPhrase = phrases[phraseIndex];
-            let displayText = currentPhrase.substring(0, charIndex);
+            const nextCharIndex = isDeleting
+                ? Math.max(charIndex - 1, 0)
+                : Math.min(charIndex, currentPhrase.length);
+            const displayText = currentPhrase.substring(0, nextCharIndex);
 
             safeTypewriterElement.innerHTML = displayText || '&nbsp;';
 
             if (isDeleting) {
-                charIndex--;
+                charIndex = nextCharIndex;
                 if (charIndex <= 0) {
                     isDeleting = false;
                     phraseIndex = (phraseIndex + 1) % phrases.length;
