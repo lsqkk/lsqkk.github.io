@@ -1,9 +1,9 @@
 :root {
     --bg-tint: rgba(6, 17, 33, 0.58);
-    --surface: rgba(252, 253, 255, 0.78);
-    --surface-strong: rgba(255, 255, 255, 0.88);
-    --surface-soft: rgba(246, 250, 255, 0.5);
-    --surface-tint: rgba(225, 238, 255, 0.36);
+    --surface: rgba(255, 255, 255, 0.9);
+    --surface-strong: rgba(255, 255, 255, 0.94);
+    --surface-soft: rgba(248, 251, 255, 0.72);
+    --surface-tint: rgba(225, 238, 255, 0.22);
     --text-main: #17304f;
     --text-subtle: #5b7391;
     --text-soft: #7690b0;
@@ -72,9 +72,7 @@ body.home-page .sidebar-index {
     position: relative;
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.28)),
-        var(--surface);
+    background: var(--surface);
     box-shadow: var(--shadow-main);
     backdrop-filter: blur(12px) saturate(128%);
     -webkit-backdrop-filter: blur(12px) saturate(128%);
@@ -94,16 +92,6 @@ body.home-page .sidebar-index {
     box-shadow: 0 24px 56px rgba(7, 24, 52, 0.18);
 }
 
-.home-panel::before,
-.sidebar-panel::before,
-.footer-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.32), transparent 52%);
-}
-
 .home-block,
 .index-sidebar-section {
     margin: 0;
@@ -113,9 +101,7 @@ body.home-page .sidebar-index {
     display: grid;
     gap: 18px;
     padding: 30px 28px 24px;
-    background:
-        radial-gradient(circle at top, rgba(73, 146, 255, 0.24), transparent 58%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(240, 247, 255, 0.76));
+    background: rgba(255, 255, 255, 0.92);
 }
 
 .intro-hero,
@@ -382,8 +368,8 @@ body.home-page .sidebar-index {
     text-decoration: none;
     cursor: pointer;
     transition: transform 0.28s ease, color 0.28s ease, background-color 0.32s ease, opacity 0.32s ease;
-    background: linear-gradient(90deg, transparent, rgba(35, 103, 215, 0));
-    border-radius: 14px;
+    background: transparent;
+    border-radius: 0;
 }
 
 .post-item-link:first-child,
@@ -392,18 +378,17 @@ body.home-page .sidebar-index {
 }
 
 .post-item-link:hover,
-.dynamic-card:hover,
 .friend-link-item:hover,
 .online-preview-card:hover {
-    transform: translateX(2px);
-    background: linear-gradient(90deg, rgba(35, 103, 215, 0.05), rgba(35, 103, 215, 0));
+    transform: translateX(1px);
+    background: rgba(35, 103, 215, 0.035);
 }
 
 .post-item-link {
     grid-template-columns: minmax(0, 1fr) 148px;
     align-items: center;
     column-gap: 18px;
-    padding-inline: 8px;
+    padding-inline: 0;
 }
 
 .post-item-body {
@@ -492,8 +477,14 @@ body.home-page .sidebar-index {
 }
 
 .dynamic-card {
-    padding-right: 2px;
-    padding-left: 8px;
+    padding-right: 0;
+    padding-left: 0;
+    transition: color 0.28s ease, opacity 0.32s ease;
+}
+
+.dynamic-card:hover {
+    transform: none;
+    background: transparent;
 }
 
 .dynamic-title {
@@ -603,7 +594,7 @@ body.home-page .sidebar-index {
 
 .dynamic-preview-comment {
     padding: 0 0 8px;
-    border-bottom: 1px dashed rgba(44, 72, 111, 0.12);
+    border-bottom: 1px solid rgba(44, 72, 111, 0.12);
 }
 
 .dynamic-preview-comment:last-child {
@@ -669,9 +660,7 @@ body.home-page .sidebar-index {
 .sidebar-welcome-panel {
     display: grid;
     gap: 16px;
-    background:
-        radial-gradient(circle at top left, rgba(50, 126, 255, 0.18), transparent 52%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(242, 249, 255, 0.74));
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .sidebar-welcome-block {
@@ -757,8 +746,8 @@ body.home-page .sidebar-index {
     align-items: center;
     padding: 12px 0;
     text-decoration: none;
-    transition: transform 0.28s ease, color 0.28s ease, background-color 0.32s ease;
-    border-radius: 12px;
+    transition: transform 0.32s ease, color 0.3s ease, background-color 0.34s ease, border-color 0.34s ease;
+    border-radius: 10px;
 }
 
 .index-log-tag {
@@ -833,8 +822,8 @@ body.home-page .sidebar-index {
     padding: 12px 0;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.28s ease, background-color 0.32s ease;
-    border-radius: 12px;
+    transition: transform 0.32s ease, background-color 0.34s ease, border-color 0.34s ease, opacity 0.34s ease;
+    border-radius: 10px;
 }
 
 .online-preview-avatar {
@@ -1003,6 +992,13 @@ body.home-page .sidebar-index {
     padding: 12px 0;
     text-decoration: none;
     color: inherit;
+    transition: transform 0.34s ease, background-color 0.36s ease, opacity 0.34s ease;
+    border-radius: 10px;
+}
+
+.friend-link-item:hover {
+    transform: translateX(1px);
+    background: rgba(35, 103, 215, 0.03);
 }
 
 .friend-icon {
@@ -1338,10 +1334,10 @@ body.home-page .sidebar-index {
 @media (prefers-color-scheme: dark) {
     :root {
         --bg-tint: rgba(4, 10, 22, 0.74);
-        --surface: rgba(14, 24, 39, 0.86);
-        --surface-strong: rgba(18, 31, 49, 0.92);
-        --surface-soft: rgba(21, 35, 56, 0.62);
-        --surface-tint: rgba(66, 108, 170, 0.24);
+        --surface: rgba(13, 22, 36, 0.9);
+        --surface-strong: rgba(16, 28, 44, 0.94);
+        --surface-soft: rgba(21, 35, 56, 0.72);
+        --surface-tint: rgba(66, 108, 170, 0.16);
         --text-main: #e3ecfb;
         --text-subtle: #b8cde7;
         --text-soft: #97afcf;
@@ -1367,22 +1363,16 @@ body.home-page .sidebar-index {
     .home-panel,
     .sidebar-panel,
     .footer-card {
-        background:
-            linear-gradient(180deg, rgba(24, 38, 61, 0.88), rgba(11, 22, 36, 0.86)),
-            var(--surface) !important;
+        background: var(--surface) !important;
         box-shadow: var(--shadow-main);
     }
 
     .intro-combo-panel {
-        background:
-            radial-gradient(circle at top, rgba(55, 122, 214, 0.28), transparent 58%),
-            linear-gradient(180deg, rgba(22, 37, 60, 0.94), rgba(13, 24, 39, 0.92)) !important;
+        background: rgba(16, 28, 44, 0.92) !important;
     }
 
     .sidebar-welcome-panel {
-        background:
-            radial-gradient(circle at top left, rgba(44, 98, 180, 0.24), transparent 52%),
-            linear-gradient(180deg, rgba(21, 35, 56, 0.94), rgba(12, 22, 37, 0.9)) !important;
+        background: rgba(16, 28, 44, 0.9) !important;
     }
 
     .hero-title,
@@ -1416,11 +1406,10 @@ body.home-page .sidebar-index {
     }
 
     .post-item-link:hover,
-    .dynamic-card:hover,
     .friend-link-item:hover,
     .online-preview-card:hover,
     .index-log-item:hover {
-        background: linear-gradient(90deg, rgba(122, 176, 255, 0.1), rgba(122, 176, 255, 0.01));
+        background: rgba(122, 176, 255, 0.06);
     }
 
     .post-tag {
@@ -1473,6 +1462,11 @@ body.home-page .sidebar-index {
     .social-link:hover {
         background: rgba(36, 56, 88, 0.94) !important;
         border-color: rgba(138, 173, 220, 0.42) !important;
+    }
+
+    .dynamic-card:hover {
+        background: transparent !important;
+        transform: none;
     }
 
     .post-cover-wrap::after {

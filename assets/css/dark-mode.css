@@ -450,6 +450,11 @@
         box-shadow: none !important;
     }
 
+    body.home-page .dynamic-feed .dynamic-card:hover {
+        background: transparent !important;
+        transform: none !important;
+    }
+
     body.home-page .footer-card {
         border-radius: 28px !important;
         overflow: hidden !important;
