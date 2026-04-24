@@ -46,6 +46,7 @@ lsqkk.github.io/
 │   ├── docs/                    # 项目说明文档
 │   │   ├── API/                 # serverless 与密钥相关文档
 │   │   ├── dev/                 # 待修复的 BUG 和待实现的功能新增或修改
+│   │   ├── UI/                  # 可复用的界面风格与布局规范
 │   │   └── page_template/       # 页面模板与样式规范
 │   ├── layouts/                 # 页面布局，如 Post/OJ/FireAlert/RealtimeRoom
 │   ├── pages/                   # Astro 路由页面
@@ -68,6 +69,7 @@ lsqkk.github.io/
 - 添加或修改功能后，优先在以下位置补充说明：
   - `src/docs/xxx.md`
   - `src/docs/API/`
+  - `src/docs/UI/`
   - `src/docs/page_template/`
 
 ### 2. 生成目录与禁止手改项
@@ -196,6 +198,8 @@ quark serve
 - 页面模板与 UI 规范参考：
   - `src/docs/page_template/page_template.astro`
   - `src/docs/page_template/astro页面构建说明.md`
+- 若涉及首页、聚合列表、侧栏等扁平玻璃风格改造，优先参考：
+  - `src/docs/UI/FlatUI.md`
 - 本仓库遵循统一的 Aero / 玻璃拟态视觉风格，新增页面应尽量保持导航、字体、背景、视差体验一致
 
 ### 专属资源目录
@@ -271,4 +275,5 @@ npm run check:syntax
    - `/search`
    - 相关功能聚合页
 3. 若新增可复用约定或修复了容易误判的结构，优先补充 `AGENTS.md` 或 `src/docs/`。
-4. 不要把 `private/`、`.env`、`public/`、`dist/` 当作普通源码目录处理。
+4. 若修改首页、文章列表、侧栏聚合区等页面的结构与视觉层级，优先检查 `src/docs/UI/FlatUI.md` 是否也需要同步更新。
+5. 不要把 `private/`、`.env`、`public/`、`dist/` 当作普通源码目录处理。
