@@ -162,6 +162,8 @@ const sidebarSectionKeys = Object.keys(indexConfig.sidebar || {}).filter(
 const footerSectionKeys = Object.keys(indexConfig.footer || {}).filter(
   (key) => indexConfig.footer?.[key]
 );
+const hasMainSection = (key: string) => mainSectionKeys.includes(key);
+const hasSidebarSection = (key: string) => sidebarSectionKeys.includes(key);
 
 const postsTotal = Array.isArray(posts) ? posts.length : 0;
 const dynamicTotal = parseDynamicEntries(dynamicMd).length;
@@ -233,52 +235,62 @@ const homePreloaded = {
 
     <div class="main-layout">
       <main class="main-content">
-        {mainSectionKeys.map((key) => (
-          key === "avatar_nickname" ? (
-            <section class="home-block home-panel hero-panel hero-section">
-              <a class="hero-avatar-link" href="/posts/about">
-                <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
-              </a>
-              <h1 class="hero-title" id="Nickname">{escapeHtml(homeConfig.Nickname || "")}</h1>
-            </section>
-          ) : key === "contact_links" ? (
-            <section class="home-block home-panel compact-panel contact-section">
-              {contactItems.length > 0 && (
-                <div class="contact-chips" id="contact-chips">
-                  {contactItems.map((item) => (
-                    <a class="contact-chip" href={escapeHtml(item.href)} target={item.target || undefined}>
-                      <span class="contact-icon"><i class={item.icon}></i></span>
-                      <span class="contact-text">
-                        <span class="contact-label">{escapeHtml(item.label)}</span>
-                        <span class="contact-value">{escapeHtml(item.value)}</span>
-                      </span>
-                    </a>
-                  ))}
+        {(hasMainSection("avatar_nickname") ||
+          hasMainSection("welcome_section") ||
+          hasMainSection("typewriter") ||
+          hasMainSection("contact_links") ||
+          hasMainSection("social_links")) && (
+            <section class="home-block home-panel intro-combo-panel">
+              {hasMainSection("avatar_nickname") && (
+                <div class="intro-hero hero-section">
+                  <a class="hero-avatar-link" href="/posts/about">
+                    <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
+                  </a>
+                  <h1 class="hero-title" id="Nickname">{escapeHtml(homeConfig.Nickname || "")}</h1>
+                </div>
+              )}
+              {hasMainSection("welcome_section") && (
+                <div class="intro-copy intro-section">
+                  <h2 class="welcome-title" id="welcome-title">{escapeHtml(homeConfig.welcomeTitle || "")}</h2>
+                  <p class="welcome-text" id="welcome-text">{escapeHtml(homeConfig.welcomeText || "")}</p>
+                </div>
+              )}
+              {hasMainSection("typewriter") && (
+                <div class="intro-type typewriter-section">
+                  <div class="typewriter-container">
+                    <div id="typewriter" class="typewriter"></div>
+                  </div>
+                </div>
+              )}
+              {(hasMainSection("contact_links") || hasMainSection("social_links")) && (
+                <div class="intro-links">
+                  {hasMainSection("contact_links") && contactItems.length > 0 && (
+                    <div class="contact-chips" id="contact-chips">
+                      {contactItems.map((item) => (
+                        <a class="contact-chip" href={escapeHtml(item.href)} target={item.target || undefined}>
+                          <span class="contact-icon"><i class={item.icon}></i></span>
+                          <span class="contact-text">
+                            <span class="contact-label">{escapeHtml(item.label)}</span>
+                            <span class="contact-value">{escapeHtml(item.value)}</span>
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  {hasMainSection("social_links") && (
+                    <div class="social-icons" id="social-icons-container">
+                      {socialLinks.map((item: any) => (
+                        <a class="social-link" href={escapeHtml(item.url)} target="_blank" rel="noreferrer">
+                          <img class="social-link-icon" src={escapeHtml(item.icon)} alt={escapeHtml(item.alt)} />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </section>
-          ) : key === "social_links" ? (
-            <section class="home-block home-panel compact-panel social-section">
-              <div class="social-icons" id="social-icons-container">
-                {socialLinks.map((item: any) => (
-                  <a class="social-link" href={escapeHtml(item.url)} target="_blank" rel="noreferrer">
-                    <img class="social-link-icon" src={escapeHtml(item.icon)} alt={escapeHtml(item.alt)} />
-                  </a>
-                ))}
-              </div>
-            </section>
-          ) : key === "welcome_section" ? (
-            <section class="home-block home-panel intro-panel intro-section">
-              <h2 class="welcome-title" id="welcome-title">{escapeHtml(homeConfig.welcomeTitle || "")}</h2>
-              <p class="welcome-text" id="welcome-text">{escapeHtml(homeConfig.welcomeText || "")}</p>
-            </section>
-          ) : key === "typewriter" ? (
-            <section class="home-block home-panel compact-panel typewriter-section">
-              <div class="typewriter-container">
-                <div id="typewriter" class="typewriter"></div>
-              </div>
-            </section>
-          ) : key === "recent_articles" ? (
+        )}
+        {hasMainSection("recent_articles") && (
             <section class="home-block home-panel content-section">
               <div class="section-head recent-header">
                 <h2 class="section-title-link">
@@ -320,7 +332,8 @@ const homePreloaded = {
               </div>
               <a href="/posts" class="more-link">更多</a>
             </section>
-          ) : key === "dynamic_feed" ? (
+        )}
+        {hasMainSection("dynamic_feed") && (
             <section class="home-block home-panel content-section dynamic-feed">
               <div class="section-head recent-header">
                 <h2 class="section-title-link"><a href="/blog/dt/">动态 Life Updates</a></h2>
@@ -365,26 +378,33 @@ const homePreloaded = {
               </div>
               <a href="/blog/dt" class="more-link">更多</a>
             </section>
-          ) : null
-        ))}
+        )}
       </main>
       <aside class="sidebar-index">
-        {sidebarSectionKeys.map((key) => (
-          key === "datetime_display" ? (
-            <section class="index-sidebar-section sidebar-panel sidebar-time-panel">
-              <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
-              <div class="date" id="date">2025年5月14日星期三</div>
+        {(hasSidebarSection("datetime_display") ||
+          hasSidebarSection("greeting_tip") ||
+          hasSidebarSection("ip_greeting")) && (
+            <section class="index-sidebar-section sidebar-panel sidebar-welcome-panel">
+              {hasSidebarSection("datetime_display") && (
+                <div class="sidebar-welcome-block sidebar-time-panel">
+                  <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
+                  <div class="date" id="date">2025年5月14日星期三</div>
+                </div>
+              )}
+              {hasSidebarSection("greeting_tip") && (
+                <div class="sidebar-welcome-block">
+                  <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
+                  <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
+                </div>
+              )}
+              {hasSidebarSection("ip_greeting") && (
+                <div class="sidebar-welcome-block">
+                  <div class="info" id="welcome-info"></div>
+                </div>
+              )}
             </section>
-          ) : key === "ip_greeting" ? (
-            <section class="index-sidebar-section sidebar-panel">
-              <div class="info" id="welcome-info"></div>
-            </section>
-          ) : key === "greeting_tip" ? (
-            <section class="index-sidebar-section sidebar-panel">
-              <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
-              <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
-            </section>
-          ) : key === "online_preview" ? (
+        )}
+        {hasSidebarSection("online_preview") && (
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title online-preview-title">在线 Online <span class="online-preview-count" id="online-preview-count">0</span></h3>
               <div id="online-preview">
@@ -392,13 +412,15 @@ const homePreloaded = {
               </div>
               <div class="sidebar-more-wrap"><a href="/a/online" class="sidebar-more-link">查看在线</a></div>
             </section>
-          ) : key === "github_promo" ? (
+        )}
+        {hasSidebarSection("github_promo") && (
             <section class="index-sidebar-section sidebar-panel">
               <div class="github-promo" id="github-promo-card">
                 <div class="github-promo-loading">GitHub 数据加载中...</div>
               </div>
             </section>
-          ) : key === "latest_updates" ? (
+        )}
+        {hasSidebarSection("latest_updates") && (
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">最近更新 Recent Logs</h3>
               {recentLogs.length === 0 ? (
@@ -418,7 +440,8 @@ const homePreloaded = {
                 </>
               )}
             </section>
-          ) : key === "announcement" ? (
+        )}
+        {hasSidebarSection("announcement") && (
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">公告 Announcement</h3>
               <div class="index-announcement" id="announcement-container">
@@ -428,7 +451,8 @@ const homePreloaded = {
                 </div>
               </div>
             </section>
-          ) : key === "latest_video" ? (
+        )}
+        {hasSidebarSection("latest_video") && (
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">新视频 Latest Video</h3>
               <div id="latest-video-container" class="latest-video-container">
@@ -436,7 +460,8 @@ const homePreloaded = {
               </div>
               <div class="sidebar-more-wrap"><a href="qtv" class="sidebar-more-link">查看更多</a></div>
             </section>
-          ) : key === "comments" ? (
+        )}
+        {hasSidebarSection("comments") && (
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">留言 Comment</h3>
               <div id="recent-messages">
@@ -444,7 +469,8 @@ const homePreloaded = {
               </div>
               <div class="sidebar-more-wrap"><a href="/blog/lyb" class="sidebar-more-link">查看更多 / 写留言</a></div>
             </section>
-          ) : key === "friend_links" ? (
+        )}
+        {hasSidebarSection("friend_links") && (
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">友链 Friends</h3>
               <div id="friend-links" data-preloaded="true">
@@ -467,8 +493,7 @@ const homePreloaded = {
                 <a href="/blog/lyb" class="sidebar-more-link">在留言板留言</a>
               </div>
             </section>
-          ) : null
-        ))}
+        )}
       </aside>
     </div>
     <div class="footer-container">

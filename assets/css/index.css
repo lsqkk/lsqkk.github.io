@@ -32,6 +32,20 @@ body.home-page {
     color: var(--text-main);
 }
 
+body.home-page .main-layout {
+    display: grid !important;
+}
+
+body.home-page .main-content,
+body.home-page .sidebar-index {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
 .parallax-bg {
     pointer-events: none;
 }
@@ -62,14 +76,22 @@ body.home-page {
         linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.28)),
         var(--surface);
     box-shadow: var(--shadow-main);
-    backdrop-filter: blur(14px) saturate(135%);
-    -webkit-backdrop-filter: blur(14px) saturate(135%);
+    backdrop-filter: blur(12px) saturate(128%);
+    -webkit-backdrop-filter: blur(12px) saturate(128%);
+    transition: transform 0.34s ease, box-shadow 0.34s ease, border-color 0.34s ease, background-color 0.4s ease;
 }
 
 .home-panel,
 .sidebar-panel {
     padding: 22px;
     overflow: hidden;
+}
+
+.home-panel:hover,
+.sidebar-panel:hover,
+.footer-card:hover {
+    border-color: var(--line-strong);
+    box-shadow: 0 24px 56px rgba(7, 24, 52, 0.18);
 }
 
 .home-panel::before,
@@ -87,17 +109,36 @@ body.home-page {
     margin: 0;
 }
 
-.compact-panel {
-    padding-top: 18px;
-    padding-bottom: 18px;
-}
-
-.hero-panel {
-    padding: 34px 28px 30px;
-    text-align: center;
+.intro-combo-panel {
+    display: grid;
+    gap: 18px;
+    padding: 30px 28px 24px;
     background:
         radial-gradient(circle at top, rgba(73, 146, 255, 0.24), transparent 58%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(240, 247, 255, 0.72));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(240, 247, 255, 0.76));
+}
+
+.intro-hero,
+.intro-copy,
+.intro-type,
+.intro-links {
+    position: relative;
+    z-index: 1;
+}
+
+.intro-hero {
+    text-align: center;
+}
+
+.intro-copy {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.intro-links {
+    display: grid;
+    gap: 14px;
 }
 
 .hero-avatar-link {
@@ -120,12 +161,6 @@ body.home-page {
     line-height: 1.08;
     letter-spacing: 0.04em;
     color: #102d4e;
-}
-
-.intro-panel {
-    background:
-        linear-gradient(180deg, rgba(248, 252, 255, 0.88), rgba(240, 248, 255, 0.72)),
-        var(--surface);
 }
 
 .welcome-title {
@@ -173,7 +208,7 @@ body.home-page {
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    transition: transform 0.24s ease, border-color 0.24s ease, background-color 0.24s ease;
+    transition: transform 0.28s ease, border-color 0.28s ease, background-color 0.32s ease, box-shadow 0.32s ease, opacity 0.32s ease;
 }
 
 .contact-chip {
@@ -199,6 +234,7 @@ body.home-page {
     border-color: rgba(35, 103, 215, 0.24);
     background: rgba(249, 252, 255, 0.88);
     transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(35, 103, 215, 0.1);
 }
 
 .contact-icon {
@@ -210,6 +246,7 @@ body.home-page {
     color: var(--accent);
     font-size: 1.06rem;
     flex-shrink: 0;
+    transform: translateX(3px);
 }
 
 .contact-text {
@@ -256,6 +293,7 @@ body.home-page {
 .social-link:hover {
     transform: translateY(-2px);
     border-color: rgba(35, 103, 215, 0.24);
+    box-shadow: 0 10px 20px rgba(35, 103, 215, 0.09);
 }
 
 .social-link-icon {
@@ -313,6 +351,7 @@ body.home-page {
 .content-list {
     display: grid;
     gap: 0;
+    padding-inline: 6px;
 }
 
 .content-row,
@@ -342,7 +381,9 @@ body.home-page {
     padding: 16px 0;
     text-decoration: none;
     cursor: pointer;
-    transition: transform 0.22s ease, color 0.22s ease;
+    transition: transform 0.28s ease, color 0.28s ease, background-color 0.32s ease, opacity 0.32s ease;
+    background: linear-gradient(90deg, transparent, rgba(35, 103, 215, 0));
+    border-radius: 14px;
 }
 
 .post-item-link:first-child,
@@ -355,12 +396,14 @@ body.home-page {
 .friend-link-item:hover,
 .online-preview-card:hover {
     transform: translateX(2px);
+    background: linear-gradient(90deg, rgba(35, 103, 215, 0.05), rgba(35, 103, 215, 0));
 }
 
 .post-item-link {
     grid-template-columns: minmax(0, 1fr) 148px;
     align-items: center;
     column-gap: 18px;
+    padding-inline: 8px;
 }
 
 .post-item-body {
@@ -450,6 +493,7 @@ body.home-page {
 
 .dynamic-card {
     padding-right: 2px;
+    padding-left: 8px;
 }
 
 .dynamic-title {
@@ -554,7 +598,7 @@ body.home-page {
     display: grid;
     gap: 8px;
     padding-top: 12px;
-    border-top: 1px dashed var(--line-strong);
+    border-top: 1px solid rgba(44, 72, 111, 0.12);
 }
 
 .dynamic-preview-comment {
@@ -614,8 +658,7 @@ body.home-page {
 }
 
 .sidebar-index {
-    position: sticky;
-    top: 20px;
+    align-content: start;
 }
 
 .sidebar-panel {
@@ -623,10 +666,17 @@ body.home-page {
     padding-bottom: 18px;
 }
 
-.sidebar-time-panel {
+.sidebar-welcome-panel {
+    display: grid;
+    gap: 16px;
     background:
         radial-gradient(circle at top left, rgba(50, 126, 255, 0.18), transparent 52%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(242, 249, 255, 0.72));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(242, 249, 255, 0.74));
+}
+
+.sidebar-welcome-block {
+    display: grid;
+    gap: 6px;
 }
 
 .time {
@@ -707,6 +757,8 @@ body.home-page {
     align-items: center;
     padding: 12px 0;
     text-decoration: none;
+    transition: transform 0.28s ease, color 0.28s ease, background-color 0.32s ease;
+    border-radius: 12px;
 }
 
 .index-log-tag {
@@ -781,6 +833,8 @@ body.home-page {
     padding: 12px 0;
     text-decoration: none;
     color: inherit;
+    transition: transform 0.28s ease, background-color 0.32s ease;
+    border-radius: 12px;
 }
 
 .online-preview-avatar {
@@ -1004,6 +1058,8 @@ body.home-page {
 
 .footer-card {
     padding: 22px 24px;
+    overflow: hidden;
+    border-radius: 28px;
 }
 
 .footer-head {
@@ -1184,7 +1240,6 @@ body.home-page {
     }
 
     .sidebar-index {
-        position: static;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: start;
     }
@@ -1200,6 +1255,10 @@ body.home-page {
     .sidebar-panel {
         padding: 18px;
         border-radius: 20px;
+    }
+
+    .intro-combo-panel {
+        padding: 24px 18px 20px;
     }
 
     .sidebar-index {
@@ -1279,27 +1338,51 @@ body.home-page {
 @media (prefers-color-scheme: dark) {
     :root {
         --bg-tint: rgba(4, 10, 22, 0.74);
-        --surface: rgba(17, 29, 47, 0.72);
-        --surface-strong: rgba(20, 33, 53, 0.84);
-        --surface-soft: rgba(19, 31, 52, 0.5);
-        --surface-tint: rgba(56, 90, 142, 0.2);
+        --surface: rgba(14, 24, 39, 0.86);
+        --surface-strong: rgba(18, 31, 49, 0.92);
+        --surface-soft: rgba(21, 35, 56, 0.62);
+        --surface-tint: rgba(66, 108, 170, 0.24);
         --text-main: #e3ecfb;
-        --text-subtle: #b6cae4;
-        --text-soft: #9fb6d3;
-        --accent: #7ab0ff;
-        --accent-2: #59d0b7;
+        --text-subtle: #b8cde7;
+        --text-soft: #97afcf;
+        --accent: #84b7ff;
+        --accent-2: #71dcc8;
         --accent-soft: rgba(122, 176, 255, 0.18);
-        --line: rgba(134, 171, 226, 0.26);
-        --line-strong: rgba(134, 171, 226, 0.36);
+        --line: rgba(134, 171, 226, 0.22);
+        --line-strong: rgba(134, 171, 226, 0.34);
         --line-soft: rgba(171, 199, 241, 0.3);
-        --shadow-main: 0 18px 38px rgba(0, 0, 0, 0.36);
-        --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.28);
+        --shadow-main: 0 20px 42px rgba(0, 0, 0, 0.42);
+        --shadow-soft: 0 12px 26px rgba(0, 0, 0, 0.32);
     }
 
-    .hero-panel {
+    body.home-page {
+        background:
+            radial-gradient(circle at top left, rgba(66, 120, 210, 0.2), transparent 34%),
+            radial-gradient(circle at top right, rgba(44, 167, 155, 0.12), transparent 32%),
+            linear-gradient(160deg, var(--bg-tint), rgba(4, 12, 24, 0.82)),
+            url('/assets/img/bg.png') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .home-panel,
+    .sidebar-panel,
+    .footer-card {
+        background:
+            linear-gradient(180deg, rgba(24, 38, 61, 0.88), rgba(11, 22, 36, 0.86)),
+            var(--surface) !important;
+        box-shadow: var(--shadow-main);
+    }
+
+    .intro-combo-panel {
         background:
             radial-gradient(circle at top, rgba(55, 122, 214, 0.28), transparent 58%),
-            linear-gradient(180deg, rgba(21, 35, 58, 0.88), rgba(15, 26, 43, 0.78));
+            linear-gradient(180deg, rgba(22, 37, 60, 0.94), rgba(13, 24, 39, 0.92)) !important;
+    }
+
+    .sidebar-welcome-panel {
+        background:
+            radial-gradient(circle at top left, rgba(44, 98, 180, 0.24), transparent 52%),
+            linear-gradient(180deg, rgba(21, 35, 56, 0.94), rgba(12, 22, 37, 0.9)) !important;
     }
 
     .hero-title,
@@ -1320,6 +1403,24 @@ body.home-page {
 
     .typewriter {
         color: #dce9ff;
+    }
+
+    .welcome-text,
+    .dynamic-content,
+    .message-preview-text,
+    .index-announcement-text,
+    .tip,
+    .info,
+    .github-promo-desc {
+        color: var(--text-subtle);
+    }
+
+    .post-item-link:hover,
+    .dynamic-card:hover,
+    .friend-link-item:hover,
+    .online-preview-card:hover,
+    .index-log-item:hover {
+        background: linear-gradient(90deg, rgba(122, 176, 255, 0.1), rgba(122, 176, 255, 0.01));
     }
 
     .post-tag {
@@ -1358,6 +1459,24 @@ body.home-page {
 
     .index-log-tag.default {
         background: #6f8fb2;
+    }
+
+    .contact-chip,
+    .social-link {
+        background: rgba(27, 42, 67, 0.84) !important;
+        border-color: rgba(138, 173, 220, 0.28) !important;
+        box-shadow: none;
+    }
+
+    .contact-chip:hover,
+    .contact-chip.is-open,
+    .social-link:hover {
+        background: rgba(36, 56, 88, 0.94) !important;
+        border-color: rgba(138, 173, 220, 0.42) !important;
+    }
+
+    .post-cover-wrap::after {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.24));
     }
 
     .popup-container {
