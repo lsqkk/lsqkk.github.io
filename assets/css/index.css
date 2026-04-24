@@ -46,6 +46,17 @@ body.home-page .sidebar-index {
     -webkit-backdrop-filter: none !important;
 }
 
+body.home-page .recent-posts .post-item {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 16px 0 !important;
+}
+
 .parallax-bg {
     pointer-events: none;
 }
@@ -389,6 +400,7 @@ body.home-page .sidebar-index {
     align-items: center;
     column-gap: 18px;
     padding-inline: 0;
+    box-shadow: none;
 }
 
 .post-item-body {
@@ -1334,9 +1346,9 @@ body.home-page .sidebar-index {
 @media (prefers-color-scheme: dark) {
     :root {
         --bg-tint: rgba(4, 10, 22, 0.74);
-        --surface: rgba(13, 22, 36, 0.9);
-        --surface-strong: rgba(16, 28, 44, 0.94);
-        --surface-soft: rgba(21, 35, 56, 0.72);
+        --surface: rgba(17, 28, 46, 0.68);
+        --surface-strong: rgba(18, 30, 50, 0.72);
+        --surface-soft: rgba(21, 35, 56, 0.62);
         --surface-tint: rgba(66, 108, 170, 0.16);
         --text-main: #e3ecfb;
         --text-subtle: #b8cde7;
@@ -1365,14 +1377,15 @@ body.home-page .sidebar-index {
     .footer-card {
         background: var(--surface) !important;
         box-shadow: var(--shadow-main);
+        border-color: rgba(138, 173, 220, 0.32);
     }
 
     .intro-combo-panel {
-        background: rgba(16, 28, 44, 0.92) !important;
+        background: rgba(18, 30, 50, 0.72) !important;
     }
 
     .sidebar-welcome-panel {
-        background: rgba(16, 28, 44, 0.9) !important;
+        background: rgba(18, 30, 50, 0.7) !important;
     }
 
     .hero-title,
@@ -1467,6 +1480,15 @@ body.home-page .sidebar-index {
     .dynamic-card:hover {
         background: transparent !important;
         transform: none;
+    }
+
+    body.home-page .recent-posts .post-item {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-radius: 0 !important;
     }
 
     .post-cover-wrap::after {
