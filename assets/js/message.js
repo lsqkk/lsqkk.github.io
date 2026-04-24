@@ -35,24 +35,11 @@ async function loadRecentMessagesWithInfiniteWait() {
     try {
         if (container instanceof HTMLElement) {
             container.innerHTML = `
-                <div class="index-announcement" style="text-align: center; padding: 15px;">
-                    <div style="display: inline-flex; align-items: center; gap: 8px; color: #666;">
-                        <div class="loading-spinner" style="
-                            width: 16px;
-                            height: 16px;
-                            border: 2px solid #f3f3f3;
-                            border-top: 2px solid #3498db;
-                            border-radius: 50%;
-                            animation: spin 1s linear infinite;
-                        "></div>
+                <div class="index-announcement">
+                    <p class="index-announcement-text" style="display:inline-flex;align-items:center;gap:8px;">
+                        <span class="loading-spinner"></span>
                         <span>留言加载中...</span>
-                    </div>
-                    <style>
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                        }
-                    </style>
+                    </p>
                 </div>
             `;
         }
@@ -131,7 +118,7 @@ function displayRecentMessages(messages) {
     if (messages.length === 0) {
         container.innerHTML = `
             <div class="index-announcement">
-                <p style="margin: 0; color: #666;">
+                <p class="index-announcement-text">
                     <i class="fas fa-comment" style="margin-right: 5px;"></i>
                     暂无留言
                 </p>
@@ -140,7 +127,7 @@ function displayRecentMessages(messages) {
         return;
     }
 
-    let html = '';
+    let html = '<div class="message-preview-list">';
     messages.forEach((message) => {
         const renderShared = window.CommentRenderShared;
         const timeStr = renderShared && typeof renderShared.formatTime === 'function'
@@ -165,14 +152,15 @@ function displayRecentMessages(messages) {
                 : `${baseName}${guestUid ? `<span class="login-badge guest-badge">@访客${String(guestUid).slice(-4)}</span>` : ''}`);
 
         html += `
-            <div class="index-announcement" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: rgba(0,0,0,0.03);">
-                <div style="font-weight: bold; margin-bottom: 5px;">${displayName}</div>
-                <div style="font-size: 0.9em; color: #666;">${content}</div>
-                <div style="font-size: 0.8em; color: #dcdcdc; margin-top: 5px;">${timeStr}</div>
+            <div class="message-preview-item">
+                <div class="message-preview-author">${displayName}</div>
+                <div class="message-preview-text">${content}</div>
+                <div class="message-preview-time">${timeStr}</div>
             </div>
         `;
     });
 
+    html += '</div>';
     container.innerHTML = html;
 }
 
@@ -183,11 +171,11 @@ function showErrorMessage(message) {
     const container = document.getElementById('recent-messages');
     if (container instanceof HTMLElement) {
         container.innerHTML = `
-            <div class="index-announcement" style="text-align: center; padding: 15px;">
+            <div class="index-announcement">
                 <div style="color: #f44336; margin-bottom: 8px;">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>
-                <p style="margin: 0; font-size: 0.9em; color: #666;">${message}</p>
+                <p class="index-announcement-text">${message}</p>
             </div>
         `;
     }
@@ -200,6 +188,12 @@ function initMessages() {
     const style = document.createElement('style');
     style.textContent = `
         .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(35, 103, 215, 0.14);
+            border-top-color: #3498db;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin {

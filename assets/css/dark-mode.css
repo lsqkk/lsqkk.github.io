@@ -433,4 +433,18 @@
     .message-form textarea::placeholder {
         color: rgba(198, 217, 244, 0.74) !important;
     }
+
+    body.home-page .main-content,
+    body.home-page .sidebar-index {
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    body.home-page .dynamic-feed .dynamic-card,
+    body.home-page .recent-posts .post-item-link {
+        background: transparent !important;
+        border-color: rgba(138, 173, 220, 0.26) !important;
+        box-shadow: none !important;
+    }
 }

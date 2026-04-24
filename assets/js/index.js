@@ -104,7 +104,7 @@ async function loadRecentPosts() {
         const recentPosts = posts.slice(0, showPostNum);
 
         const list = recentPosts.map(post => `
-                    <div class="post-item post-item-link" data-href="/posts/${post.file.replace('.md', '')}">
+                    <article class="post-item post-item-link content-row" data-href="/posts/${post.file.replace('.md', '')}">
                         <div class="post-item-body">
                             <div class="post-title">
                                 ${post.title}
@@ -121,7 +121,7 @@ async function loadRecentPosts() {
                                 <img class="post-cover" src="${post.cover}" alt="${post.title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
                             </div>
                         ` : ''}
-                    </div>
+                    </article>
                 `).join('');
 
         if (recentPostsElement) {
@@ -132,7 +132,7 @@ async function loadRecentPosts() {
         console.error('加载最近文章失败:', error);
         const recentPostsElement = document.getElementById('recent-posts');
         if (recentPostsElement && recentPostsElement.dataset.preloaded !== 'true') {
-            recentPostsElement.innerHTML = '<div class="post-item">文章加载失败</div>';
+            recentPostsElement.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">文章加载失败</p></div>';
         }
     }
 }
@@ -803,7 +803,7 @@ async function loadDynamicFeed() {
         const dynamicEntriesElement = document.getElementById('dynamic-entries');
         if (dynamicEntriesElement) {
             dynamicEntriesElement.innerHTML =
-                '<div class="dynamic-card">动态加载中...</div>';
+                '<div class="index-announcement"><p class="index-announcement-text">动态加载中...</p></div>';
         }
     }
 }
@@ -873,7 +873,7 @@ function renderDynamicEntries(entries) {
             : '';
 
         return `
-        <div class="dynamic-card" data-dynamic-id="${dynamicId}" data-dynamic-link="/blog/dt/${dynamicId}">
+        <article class="dynamic-card content-row" data-dynamic-id="${dynamicId}" data-dynamic-link="/blog/dt/${dynamicId}">
             <div class="dynamic-title">${entry.title}</div>
             ${entry.date ? `<div class="dynamic-date"><i class="fa-regular fa-calendar"></i>${entry.date}</div>` : ''}
             <div class="dynamic-content">${htmlContent}</div>
@@ -891,7 +891,7 @@ function renderDynamicEntries(entries) {
             <div class="dynamic-comment-preview" data-dynamic-comment-preview>
                 <div class="dynamic-preview-empty">评论加载中...</div>
             </div>
-        </div>
+        </article>
         `;
     }).join('');
     if (window.DynamicGallery && typeof window.DynamicGallery.hydrateStaticGalleries === 'function') {
@@ -1260,7 +1260,7 @@ async function loadFriendLinks() {
         const friendLinksElement = document.getElementById('friend-links');
         if (friendLinksElement && friendLinksElement.dataset.preloaded !== 'true') {
             friendLinksElement.innerHTML =
-                '<div class="index-announcement"><p style="margin: 0;">友链加载失败</p></div>';
+                '<div class="index-announcement"><p class="index-announcement-text">友链加载失败</p></div>';
         }
     }
 }
@@ -1274,7 +1274,7 @@ function displayFriendLinks(friends) {
     if (!container) return;
 
     if (!friends || friends.length === 0) {
-        container.innerHTML = '<div class="index-announcement"><p style="margin: 0;">暂无友链</p></div>';
+        container.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">暂无友链</p></div>';
         return;
     }
 
@@ -1303,9 +1303,8 @@ function renderHomeConfig(config) {
     const socialContainer = document.getElementById('social-icons-container');
     if (socialContainer && config.socialLinks) {
         socialContainer.innerHTML = config.socialLinks.map(link => `
-            <a href="${link.url}" target="_blank">
-                <img src="${link.icon}" alt="${link.alt}" 
-                     style="height:30px; width:30px; border-radius: 50%;">
+            <a class="social-link" href="${link.url}" target="_blank" rel="noreferrer">
+                <img class="social-link-icon" src="${link.icon}" alt="${link.alt}">
             </a>
         `).join('');
     }
@@ -1337,9 +1336,8 @@ function setDefaultContent() {
     const socialContainer = document.getElementById('social-icons-container');
     if (socialContainer) {
         socialContainer.innerHTML = `
-            <a href="https://github.com/lsqkk" target="_blank">
-                <img src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" 
-                     style="height:30px; width:30px; border-radius: 50%;">
+            <a class="social-link" href="https://github.com/lsqkk" target="_blank" rel="noreferrer">
+                <img class="social-link-icon" src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" alt="GitHub">
             </a>
             <!-- 其他默认社交图标 -->
         `;

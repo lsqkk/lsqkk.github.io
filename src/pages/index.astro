@@ -228,21 +228,21 @@ const homePreloaded = {
     <meta name="referrer" content="never" />
   </head>
 
-  <body>
+  <body class="home-page">
     <ShichaBackground />
 
     <div class="main-layout">
-      <div class="main-content">
+      <main class="main-content">
         {mainSectionKeys.map((key) => (
           key === "avatar_nickname" ? (
-            <section class="home-block hero-section">
+            <section class="home-block home-panel hero-panel hero-section">
               <a class="hero-avatar-link" href="/posts/about">
                 <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
               </a>
               <h1 class="hero-title" id="Nickname">{escapeHtml(homeConfig.Nickname || "")}</h1>
             </section>
           ) : key === "contact_links" ? (
-            <section class="home-block contact-section">
+            <section class="home-block home-panel compact-panel contact-section">
               {contactItems.length > 0 && (
                 <div class="contact-chips" id="contact-chips">
                   {contactItems.map((item) => (
@@ -258,7 +258,7 @@ const homePreloaded = {
               )}
             </section>
           ) : key === "social_links" ? (
-            <section class="home-block social-section">
+            <section class="home-block home-panel compact-panel social-section">
               <div class="social-icons" id="social-icons-container">
                 {socialLinks.map((item: any) => (
                   <a class="social-link" href={escapeHtml(item.url)} target="_blank" rel="noreferrer">
@@ -268,62 +268,64 @@ const homePreloaded = {
               </div>
             </section>
           ) : key === "welcome_section" ? (
-            <section class="home-block intro-section">
+            <section class="home-block home-panel intro-panel intro-section">
               <h2 class="welcome-title" id="welcome-title">{escapeHtml(homeConfig.welcomeTitle || "")}</h2>
               <p class="welcome-text" id="welcome-text">{escapeHtml(homeConfig.welcomeText || "")}</p>
             </section>
           ) : key === "typewriter" ? (
-            <section class="home-block typewriter-section">
+            <section class="home-block home-panel compact-panel typewriter-section">
               <div class="typewriter-container">
                 <div id="typewriter" class="typewriter"></div>
               </div>
             </section>
           ) : key === "recent_articles" ? (
-            <section class="home-block content-section">
-              <h2 class="recent-header">
-                <a href="/posts">文章 Articles</a>
+            <section class="home-block home-panel content-section">
+              <div class="section-head recent-header">
+                <h2 class="section-title-link">
+                  <a href="/posts">文章 Articles</a>
+                </h2>
                 <a href="/posts/rss.xml" class="rss-link" aria-label="RSS订阅">
                   <i class="fa-solid fa-rss rss-icon"></i>
                 </a>
-              </h2>
-              <div class="recent-posts">
-                <div id="recent-posts" data-preloaded="true">
-                  {recentPosts.map((post: any) => (
-                    <div class="post-item post-item-link" data-href={`/posts/${post.file.replace(".md", "")}`}>
-                      <div class="post-item-body">
-                        <div class="post-title">{escapeHtml(post.title)}</div>
-                        <div class="post-date">{escapeHtml(post.date)}</div>
-                        <div class="post-tags">
-                          <span class="post-tag read-time">
-                            {String(post.wordCount || 0)}字·{Math.ceil((post.wordCount || 0) / 400)}min
-                          </span>
-                          {(post.columns || []).map((column: string) => (
-                            <a class="post-tag post-tag-col tag-link" href={`/posts?columns=${encodeURIComponent(column)}`}>
-                              <i class="fa-solid fa-folder"></i>{column}
-                            </a>
-                          ))}
-                          {(post.tags || ["未分类"]).map((tag: string) => (
-                            <a class="post-tag tag-link" href={`/posts?tag=${encodeURIComponent(tag)}`}>
-                              <i class="fa-solid fa-tag"></i>{tag}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                      {post.cover && (
-                        <div class="post-cover-wrap">
-                          <img class="post-cover" src={post.cover} alt={post.title} loading="lazy" decoding="async" referrerpolicy="no-referrer" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <a href="/posts" class="more-link">更多</a>
               </div>
+              <div id="recent-posts" class="content-list recent-posts" data-preloaded="true">
+                {recentPosts.map((post: any) => (
+                  <article class="post-item post-item-link content-row" data-href={`/posts/${post.file.replace(".md", "")}`}>
+                    <div class="post-item-body">
+                      <div class="post-title">{escapeHtml(post.title)}</div>
+                      <div class="post-date">{escapeHtml(post.date)}</div>
+                      <div class="post-tags">
+                        <span class="post-tag read-time">
+                          {String(post.wordCount || 0)}字·{Math.ceil((post.wordCount || 0) / 400)}min
+                        </span>
+                        {(post.columns || []).map((column: string) => (
+                          <a class="post-tag post-tag-col tag-link" href={`/posts?columns=${encodeURIComponent(column)}`}>
+                            <i class="fa-solid fa-folder"></i>{column}
+                          </a>
+                        ))}
+                        {(post.tags || ["未分类"]).map((tag: string) => (
+                          <a class="post-tag tag-link" href={`/posts?tag=${encodeURIComponent(tag)}`}>
+                            <i class="fa-solid fa-tag"></i>{tag}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                    {post.cover && (
+                      <div class="post-cover-wrap">
+                        <img class="post-cover" src={post.cover} alt={post.title} loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+              <a href="/posts" class="more-link">更多</a>
             </section>
           ) : key === "dynamic_feed" ? (
-            <section class="home-block content-section dynamic-feed">
-              <h2 class="recent-header"><a href="/blog/dt/">动态 Life Updates</a></h2>
-              <div id="dynamic-entries" data-preloaded="true">
+            <section class="home-block home-panel content-section dynamic-feed">
+              <div class="section-head recent-header">
+                <h2 class="section-title-link"><a href="/blog/dt/">动态 Life Updates</a></h2>
+              </div>
+              <div id="dynamic-entries" class="content-list dynamic-list" data-preloaded="true">
                 {dynamicEntries.map((entry, index) => {
                   const dynamicId = entry.id || `${entry.date || "undated"}-${index + 1}`;
                   const rawContent = (entry.content || []).join("\n");
@@ -331,7 +333,7 @@ const homePreloaded = {
                   const htmlContent = renderPlainLines(extracted.text);
                   const galleryHtml = buildDynamicGallery(extracted.images, `pre-${dynamicId}`);
                   return (
-                    <div class="dynamic-card" data-dynamic-id={dynamicId} data-dynamic-link={`/blog/dt/${dynamicId}`}>
+                    <article class="dynamic-card content-row" data-dynamic-id={dynamicId} data-dynamic-link={`/blog/dt/${dynamicId}`}>
                       <div class="dynamic-title">{escapeHtml(entry.title)}</div>
                       {entry.date && (
                         <div class="dynamic-date">
@@ -357,7 +359,7 @@ const homePreloaded = {
                       <div class="dynamic-comment-preview" data-dynamic-comment-preview>
                         <div class="dynamic-preview-empty">评论加载中...</div>
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -365,39 +367,39 @@ const homePreloaded = {
             </section>
           ) : null
         ))}
-      </div>
-      <div class="sidebar-index">
+      </main>
+      <aside class="sidebar-index">
         {sidebarSectionKeys.map((key) => (
           key === "datetime_display" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel sidebar-time-panel">
               <div class="time"> <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span></div>
               <div class="date" id="date">2025年5月14日星期三</div>
-            </div>
+            </section>
           ) : key === "ip_greeting" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <div class="info" id="welcome-info"></div>
-            </div>
+            </section>
           ) : key === "greeting_tip" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <div class="greeting" id="greeting">祝你早安 午安 晚安</div>
               <div class="tip" id="tip">欢迎访问 Quark Blog ~</div>
-            </div>
+            </section>
           ) : key === "online_preview" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title online-preview-title">在线 Online <span class="online-preview-count" id="online-preview-count">0</span></h3>
               <div id="online-preview">
                 <div class="index-announcement"><p class="index-announcement-text">在线加载中...</p></div>
               </div>
               <div class="sidebar-more-wrap"><a href="/a/online" class="sidebar-more-link">查看在线</a></div>
-            </div>
+            </section>
           ) : key === "github_promo" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <div class="github-promo" id="github-promo-card">
                 <div class="github-promo-loading">GitHub 数据加载中...</div>
               </div>
-            </div>
+            </section>
           ) : key === "latest_updates" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">最近更新 Recent Logs</h3>
               {recentLogs.length === 0 ? (
                 <div class="index-announcement"><p class="index-announcement-text">暂无更新内容</p></div>
@@ -415,9 +417,9 @@ const homePreloaded = {
                   <div class="sidebar-more-wrap"><a href="/blog/log" class="sidebar-more-link">查看更多</a></div>
                 </>
               )}
-            </div>
+            </section>
           ) : key === "announcement" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">公告 Announcement</h3>
               <div class="index-announcement" id="announcement-container">
                 <div class="index-announcement-text">
@@ -425,25 +427,25 @@ const homePreloaded = {
                   <span class="index-announcement-body" set:html={announcementContent}></span>
                 </div>
               </div>
-            </div>
+            </section>
           ) : key === "latest_video" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">新视频 Latest Video</h3>
               <div id="latest-video-container" class="latest-video-container">
                 <div class="loading-placeholder">视频加载中...</div>
               </div>
               <div class="sidebar-more-wrap"><a href="qtv" class="sidebar-more-link">查看更多</a></div>
-            </div>
+            </section>
           ) : key === "comments" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">留言 Comment</h3>
               <div id="recent-messages">
                 <div class="index-announcement"><p class="index-announcement-text">留言加载中...</p></div>
               </div>
               <div class="sidebar-more-wrap"><a href="/blog/lyb" class="sidebar-more-link">查看更多 / 写留言</a></div>
-            </div>
+            </section>
           ) : key === "friend_links" ? (
-            <div class="index-sidebar-section">
+            <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">友链 Friends</h3>
               <div id="friend-links" data-preloaded="true">
                 {Array.isArray(friends) && friends.length > 0 ? (
@@ -464,13 +466,13 @@ const homePreloaded = {
                 <a href="/blog/friends" class="sidebar-more-link">查看更多</a> / 添加友链请
                 <a href="/blog/lyb" class="sidebar-more-link">在留言板留言</a>
               </div>
-            </div>
+            </section>
           ) : null
         ))}
-      </div>
+      </aside>
     </div>
     <div class="footer-container">
-      <div class="footer-card">
+      <footer class="footer-card">
         <div class="footer-head">
           <div>
             <div class="footer-kicker">{footerTitleEn}</div>
@@ -536,7 +538,7 @@ const homePreloaded = {
             <div class="footer-stat-meta">自 2025-01-31 起</div>
           </a>
         </div>
-      </div>
+      </footer>
     </div>
     <br /><br />
 
