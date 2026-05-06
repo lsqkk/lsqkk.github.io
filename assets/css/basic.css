@@ -17,12 +17,12 @@
 /* 更新后的全局字体设置 */
 * {
     /* 原字体: 'XWWK' - 已注释保留 */
-    font-family: Roboto, "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-family: "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
 body {
     /* 原字体: 'XWWK' - 已注释保留 */
-    font-family: Roboto, "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-family: "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
 
 .login-badge {
