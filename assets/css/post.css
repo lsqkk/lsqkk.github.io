@@ -206,6 +206,120 @@ body {
     margin-bottom: 1.2em;
 }
 
+.post-footnote-ref-wrap,
+.post-content sup:has(a[data-footnote-ref]) {
+    scroll-margin-top: 90px;
+}
+
+.post-footnote-ref,
+.post-content a[data-footnote-ref] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35em;
+    height: 1.35em;
+    margin: 0 0.08em;
+    padding: 0 0.25em;
+    border-radius: 999px;
+    border: 1px solid rgba(37, 99, 235, 0.18) !important;
+    background: rgba(37, 99, 235, 0.08);
+    color: #1d4ed8 !important;
+    font-size: 0.72em;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none !important;
+    vertical-align: super;
+}
+
+.post-footnote-ref:hover,
+.post-footnote-ref:focus-visible,
+.post-content a[data-footnote-ref]:hover,
+.post-content a[data-footnote-ref]:focus-visible {
+    background: rgba(37, 99, 235, 0.16);
+    border-color: rgba(37, 99, 235, 0.34) !important;
+    outline: none;
+}
+
+.post-footnotes,
+.post-content .footnotes[data-footnotes] {
+    margin-top: 44px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(15, 23, 42, 0.12);
+    scroll-margin-top: 90px;
+}
+
+.post-footnotes-title,
+.post-content .footnotes[data-footnotes] #footnote-label {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+    margin: 0 0 14px !important;
+    color: #0f172a;
+    font-size: 0;
+    line-height: 1.35;
+}
+
+.post-footnotes-title {
+    font-size: 1.35rem;
+}
+
+.post-content .footnotes[data-footnotes] #footnote-label::before {
+    content: "参考文献";
+    font-size: 1.35rem;
+}
+
+.post-footnotes-list,
+.post-content .footnotes[data-footnotes] ol {
+    margin: 0;
+    padding-left: 1.6em;
+}
+
+.post-footnote-item,
+.post-content .footnotes[data-footnotes] li {
+    margin: 0.72em 0;
+    padding-left: 0.2em;
+    color: #334155;
+    line-height: 1.75;
+    scroll-margin-top: 90px;
+}
+
+.post-footnote-content > :first-child {
+    margin-top: 0;
+}
+
+.post-footnote-content > :last-child {
+    margin-bottom: 0;
+}
+
+.post-footnote-backref,
+.post-content a[data-footnote-backref] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.45em;
+    height: 1.45em;
+    margin-left: 0.35em;
+    border: 1px solid rgba(37, 99, 235, 0.18) !important;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.45);
+    color: #2563eb !important;
+    font-size: 0.78em;
+    line-height: 1;
+    text-decoration: none !important;
+}
+
+.post-footnote-backref:hover,
+.post-footnote-backref:focus-visible,
+.post-content a[data-footnote-backref]:hover,
+.post-content a[data-footnote-backref]:focus-visible {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.32) !important;
+    outline: none;
+}
+
 .post-content .post-inline-card {
     display: grid;
     grid-template-columns: 148px minmax(0, 1fr);
@@ -636,6 +750,35 @@ img {
 
     .post-inline-card-intro {
         color: #cbd5e1;
+    }
+
+    .post-footnote-ref,
+    .post-content a[data-footnote-ref] {
+        border-color: rgba(147, 197, 253, 0.28) !important;
+        background: rgba(96, 165, 250, 0.14);
+        color: #bfdbfe !important;
+    }
+
+    .post-footnotes,
+    .post-content .footnotes[data-footnotes] {
+        border-top-color: rgba(148, 163, 184, 0.22);
+    }
+
+    .post-footnotes-title,
+    .post-content .footnotes[data-footnotes] #footnote-label {
+        color: #e2e8f0;
+    }
+
+    .post-footnote-item,
+    .post-content .footnotes[data-footnotes] li {
+        color: #cbd5e1;
+    }
+
+    .post-footnote-backref,
+    .post-content a[data-footnote-backref] {
+        border-color: rgba(147, 197, 253, 0.26) !important;
+        background: rgba(15, 23, 42, 0.56);
+        color: #bfdbfe !important;
     }
 }
 

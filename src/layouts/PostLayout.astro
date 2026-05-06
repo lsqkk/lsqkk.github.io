@@ -236,6 +236,34 @@ function buildTagHref(tagName: string): string {
     <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script>
     <script is:inline src="/assets/js/post-standalone.js"></script>
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", () => {
+        const content = document.getElementById("content");
+        const footnotes = content?.querySelector(".footnotes[data-footnotes]");
+        if (!footnotes) return;
+
+        footnotes.id = "post-footnotes";
+        footnotes.classList.add("post-footnotes");
+        footnotes.setAttribute("aria-label", "参考文献");
+
+        const title = footnotes.querySelector("#footnote-label");
+        if (title) {
+          title.textContent = "参考文献";
+          title.className = "post-footnotes-title";
+        }
+
+        footnotes.querySelector("ol")?.classList.add("post-footnotes-list");
+        footnotes.querySelectorAll("li").forEach((item) => item.classList.add("post-footnote-item"));
+
+        content.querySelectorAll("a[data-footnote-ref]").forEach((link) => {
+          link.classList.add("post-footnote-ref");
+          link.closest("sup")?.classList.add("post-footnote-ref-wrap");
+        });
+        footnotes.querySelectorAll("a[data-footnote-backref]").forEach((link) => {
+          link.classList.add("post-footnote-backref");
+        });
+      });
+    </script>
 
     <div class="morenpost">
       <div class="giscus"></div>
