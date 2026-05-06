@@ -180,11 +180,11 @@ async function submitMessage() {
         identityInstance.refreshFromInputs();
         syncIdentityState();
     }
-    const nickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
+    const currentNickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
     const content = contentInput.value.trim();
     const useMarkdown = markdownInput.checked;
 
-    if (!nickname || !content) {
+    if (!currentNickname || !content) {
         alert('请填写昵称和留言内容');
         return;
     }
@@ -192,7 +192,7 @@ async function submitMessage() {
     // 保存昵称到本地存储
     const message = {
         text: content,
-        nickname: nickname,
+        nickname: currentNickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
@@ -512,11 +512,11 @@ async function submitReply() {
         identityInstance.refreshFromInputs();
         syncIdentityState();
     }
-    const nickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
+    const currentNickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
     const content = replyContentInput.value.trim();
     const useMarkdown = replyMarkdownInput.checked;
 
-    if (!nickname || !content) {
+    if (!currentNickname || !content) {
         alert('请填写昵称和回复内容');
         return;
     }
@@ -524,7 +524,7 @@ async function submitReply() {
     const reply = {
         id: Date.now().toString(), // 简单ID生成
         text: content,
-        nickname: nickname,
+        nickname: currentNickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'

@@ -5,6 +5,7 @@ const ROOT = process.cwd();
 const PUBLIC_DIR = path.join(ROOT, "public");
 const INDEX_JSON_PATH = path.join(ROOT, "src", "config", "json", "index.json");
 const API_JSON_PATH = path.join(ROOT, "src", "config", "json", "api.json");
+const FONT_JSON_PATH = path.join(ROOT, "src", "config", "json", "font.json");
 const POSTS_JSON_PATH = path.join(ROOT, "posts", "posts.json");
 const SHICHA_BG_PLACEHOLDER = "__SHICHA_BACKGROUND__";
 const API_BASE_PLACEHOLDER = "__API_BASE__";
@@ -76,6 +77,163 @@ function shouldCopyFile(srcAbs) {
   return true;
 }
 
+function cssString(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function cssFamily(value) {
+  const family = String(value ?? "").trim();
+  if (!family) return "";
+  if (/^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-serif|ui-sans-serif|ui-monospace|emoji|math|fangsong|BlinkMacSystemFont)$/i.test(family) ||
+    family.startsWith("-")) {
+    return family;
+  }
+  return `'${cssString(family)}'`;
+}
+
+function normalizePublicUrl(source) {
+  const value = String(source ?? "").trim();
+  if (!value) return "";
+  if (/^(https?:)?\/\//i.test(value) || value.startsWith("/") || value.startsWith("data:")) return value;
+  return `/${value.replace(/^\.?\//, "")}`;
+}
+
+function inferFontFormat(source) {
+  const pathname = source.split("?")[0].split("#")[0].toLowerCase();
+  if (pathname.endsWith(".woff2")) return "woff2";
+  if (pathname.endsWith(".woff")) return "woff";
+  return "";
+}
+
+function isCssSource(source) {
+  return source.split("?")[0].split("#")[0].toLowerCase().endsWith(".css");
+}
+
+function isFontSource(source) {
+  const pathname = source.split("?")[0].split("#")[0].toLowerCase();
+  return pathname.endsWith(".woff2") || pathname.endsWith(".woff");
+}
+
+function sourceToLocalAssetsPath(source) {
+  const value = String(source ?? "").trim().replace(/\\/g, "/");
+  if (!value || /^(https?:)?\/\//i.test(value) || value.startsWith("data:")) return "";
+  const normalized = value.startsWith("/") ? value.slice(1) : value.replace(/^\.?\//, "");
+  return path.join(ROOT, normalized);
+}
+
+async function isUsableConfiguredSource(source) {
+  const localPath = sourceToLocalAssetsPath(source);
+  if (!localPath) return true;
+  return exists(localPath);
+}
+
+async function generateFontConfigCss() {
+  /** @type {{ preferred?: Array<Record<string, unknown>>, includeAssetsFonts?: boolean, systemFallbacks?: string[] }} */
+  let fontConfig = {};
+  if (await exists(FONT_JSON_PATH)) {
+    try {
+      fontConfig = JSON.parse(await fs.readFile(FONT_JSON_PATH, "utf-8"));
+    } catch (err) {
+      console.warn("Failed to load font.json, using default font fallbacks.", err);
+    }
+  }
+
+  const imports = [];
+  const fontFaces = [];
+  const familyStack = [];
+  const configuredFonts = Array.isArray(fontConfig.preferred) ? fontConfig.preferred : [];
+
+  for (const item of configuredFonts) {
+    const family = typeof item?.family === "string" ? item.family.trim() : "";
+    const source = normalizePublicUrl(item?.source);
+    if (!family || !source || !(await isUsableConfiguredSource(source))) continue;
+
+    if (isCssSource(source)) {
+      imports.push(`@import url('${cssString(source)}');`);
+      familyStack.push(family);
+      continue;
+    }
+
+    if (isFontSource(source)) {
+      const format = inferFontFormat(source);
+      fontFaces.push([
+        "@font-face {",
+        `    font-family: ${cssFamily(family)};`,
+        `    src: url('${cssString(source)}')${format ? ` format('${format}')` : ""};`,
+        `    font-weight: ${item.weight || "normal"};`,
+        `    font-style: ${item.style || "normal"};`,
+        "    font-display: swap;",
+        "}",
+      ].join("\n"));
+      familyStack.push(family);
+    }
+  }
+
+  if (fontConfig.includeAssetsFonts !== false) {
+    const fontDir = path.join(ROOT, "assets", "fonts");
+    if (await exists(fontDir)) {
+      const entries = await fs.readdir(fontDir, { withFileTypes: true });
+      const fontFiles = entries
+        .filter((entry) => entry.isFile() && isFontSource(entry.name))
+        .map((entry) => entry.name)
+        .sort((a, b) => a.localeCompare(b, "zh-CN"));
+
+      fontFiles.forEach((fileName, index) => {
+        const ext = path.extname(fileName);
+        const baseName = path.basename(fileName, ext);
+        const family = `QuarkLocalFont${index + 1}`;
+        const source = `/assets/fonts/${fileName}`;
+        const format = inferFontFormat(source);
+        fontFaces.push([
+          "@font-face {",
+          `    font-family: '${family}';`,
+          `    src: url('${cssString(source)}')${format ? ` format('${format}')` : ""};`,
+          "    font-weight: normal;",
+          "    font-style: normal;",
+          "    font-display: swap;",
+          "}",
+        ].join("\n"));
+        familyStack.push(family);
+
+        if (baseName === "霞鹜文楷") {
+          fontFaces.push([
+            "@font-face {",
+            "    font-family: 'XWWK';",
+            `    src: url('${cssString(source)}')${format ? ` format('${format}')` : ""};`,
+            "    font-weight: normal;",
+            "    font-style: normal;",
+            "    font-display: swap;",
+            "}",
+          ].join("\n"));
+          familyStack.push("XWWK");
+        }
+      });
+    }
+  }
+
+  const systemFallbacks = Array.isArray(fontConfig.systemFallbacks) && fontConfig.systemFallbacks.length
+    ? fontConfig.systemFallbacks
+    : ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Microsoft YaHei", "sans-serif"];
+  const stack = [...familyStack, ...systemFallbacks]
+    .map(cssFamily)
+    .filter(Boolean)
+    .filter((family, index, array) => array.indexOf(family) === index);
+
+  const css = [
+    "/* This file is generated by scripts/sync-public.mjs from src/config/json/font.json and assets/fonts/. */",
+    ...imports,
+    ...fontFaces,
+    ":root {",
+    `    --site-font-family: ${stack.join(", ")};`,
+    "}",
+    "",
+  ].filter(Boolean).join("\n\n");
+
+  const target = path.join(PUBLIC_DIR, "assets", "css", "font-config.css");
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, css, "utf-8");
+}
+
 async function copyTree(srcRel, dstRel) {
   const srcRoot = path.join(ROOT, srcRel);
   if (!(await exists(srcRoot))) return;
@@ -107,6 +265,7 @@ async function main() {
     await copyTree(dir, path.join("public", dir));
   }
   await copyTree(path.join("src", "config", "json"), path.join("public", "json"));
+  await generateFontConfigCss();
 
   for (const file of COPY_FILES) {
     const src = path.join(ROOT, file);

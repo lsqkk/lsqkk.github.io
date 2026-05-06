@@ -1,28 +1,13 @@
 @import url('/assets/css/dark-mode.css');
 @import url('/assets/css/cursor.css');
+@import url('/assets/css/font-config.css');
 
-/* 原字体
-@font-face {
-    font-family: 'XWWK';
-    src: url('/assets/fonts/霞鹜文楷.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-*/
-
-/* 新增字体加载 (来自CDN) */
-@import url('https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-neo-zhi-song-chs-regular-lxgw-neo-zhi-song/font.css');
-
-/* 更新后的全局字体设置 */
 * {
-    /* 原字体: 'XWWK' - 已注释保留 */
-    font-family: "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-family: var(--site-font-family, "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif);
 }
 
 body {
-    /* 原字体: 'XWWK' - 已注释保留 */
-    font-family: "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-family: var(--site-font-family, "LXGW Neo ZhiSong CHS", 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif);
 }
 
 .login-badge {
