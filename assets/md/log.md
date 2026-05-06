@@ -4,7 +4,15 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-05-06
+
+更新 - 更新了2026年五一推文
+
 # 2026-04-24
+
+更新 - Delete commits.py
+
+更新 - log.md
 
 更新 - 完善FlatUI参考指南
 

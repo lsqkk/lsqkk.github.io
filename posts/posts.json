@@ -1,5 +1,20 @@
 [
     {
+        "title": "一个字的重量——在2026年国际劳工节之际",
+        "description": "2026年劳工节推文",
+        "file": "2026/2605.md",
+        "date": "2026-05-01",
+        "tags": [
+            "劳工节",
+            "史政"
+        ],
+        "columns": [
+            "五一推文"
+        ],
+        "wordCount": 4103,
+        "cover": "https://cn.bing.com/th?id=OHR.LacMontagnon_ZH-CN8301464080_1366x768.jpg"
+    },
+    {
         "title": "在不买Mac的情况下 如何把iPad变成临时生产力工具",
         "description": "一些关于iPad的使用心得",
         "file": "2026/2604.md",
@@ -320,13 +335,16 @@
     },
     {
         "title": "从血与火中诞生的国际劳工节：被篡改的历史与未竟的斗争",
-        "description": "从血与火中诞生的国际劳工节：被篡改的历史与未竟的斗争",
+        "description": "2025年劳工节推文",
         "file": "2025/2508.md",
         "date": "2025-05-01",
         "tags": [
+            "劳工节",
             "史政"
         ],
-        "columns": [],
+        "columns": [
+            "五一推文"
+        ],
         "wordCount": 6067,
         "cover": "https://cn.bing.com/th?id=OHR.PoconosMaze_ZH-CN4696904367_1366x768.jpg"
     },
