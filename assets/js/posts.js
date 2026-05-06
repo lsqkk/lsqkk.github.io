@@ -213,7 +213,7 @@ function performSearch(searchTerm) {
                     <div class="post-date">${post.date}</div>
                     <div class="post-tags">
                         <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
-                        ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                        ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts/${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
                         ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
                     </div>
                 </div>
@@ -381,7 +381,7 @@ function renderPosts() {
                         <div class="post-date">${post.date}</div>
                         <div class="post-tags">
                             <span class="post-tag read-time">${post.wordCount || 0}字·${readTime}min</span>
-                            ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts?columns=${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
+                            ${(post.columns || []).map(column => `<a class="post-tag post-tag-column tag-link" href="/posts/${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
                             ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
                         </div>
                     </div>

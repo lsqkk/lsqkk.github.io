@@ -311,7 +311,7 @@ const homePreloaded = {
                           {String(post.wordCount || 0)}字·{Math.ceil((post.wordCount || 0) / 400)}min
                         </span>
                         {(post.columns || []).map((column: string) => (
-                          <a class="post-tag post-tag-col tag-link" href={`/posts?columns=${encodeURIComponent(column)}`}>
+                          <a class="post-tag post-tag-col tag-link" href={`/posts/${encodeURIComponent(column)}`}>
                             <i class="fa-solid fa-folder"></i>{column}
                           </a>
                         ))}

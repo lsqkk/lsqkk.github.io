@@ -327,7 +327,7 @@ async function runSearch(keyword, fulltextEnabled) {
             .map((tag) => `<a class="search-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`)
             .join('');
         const columnHtml = columns.slice(0, 3)
-            .map((col) => `<a class="search-tag search-tag-col tag-link" href="/posts?columns=${encodeURIComponent(col)}"><i class="fa-solid fa-folder"></i>${col}</a>`)
+            .map((col) => `<a class="search-tag search-tag-col tag-link" href="/posts/${encodeURIComponent(col)}"><i class="fa-solid fa-folder"></i>${col}</a>`)
             .join('');
         const metaHtml = meta ? `
             <div class="search-result-tags">

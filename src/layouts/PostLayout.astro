@@ -39,7 +39,7 @@ import GlowFollow from "../components/GlowFollow.astro";
 const currentYear = new Date().getFullYear();
 
 function buildColumnHref(columnName: string): string {
-  return `/posts?columns=${encodeURIComponent(columnName)}`;
+  return `/posts/${encodeURIComponent(columnName)}`;
 }
 function buildTagHref(tagName: string): string {
   return `/posts?tag=${encodeURIComponent(tagName)}`;
