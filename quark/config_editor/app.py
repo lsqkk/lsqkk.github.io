@@ -19,13 +19,7 @@ def create_app(json_dir):
     # 确保JSON目录存在
     json_dir = Path(json_dir)
     project_root = json_dir.parents[2] if len(json_dir.parents) >= 3 else Path.cwd()
-    editable_roots = [
-        json_dir,
-        project_root / 'assets' / 'pages' / 'a',
-        project_root / 'assets' / 'pages' / 'blog',
-        project_root / 'assets' / 'pages' / 'games',
-        project_root / 'assets' / 'pages' / 'tool'
-    ]
+    editable_roots = [json_dir]
     command_map = {
         'build': ['npm', 'run', 'build'],
         'typecheck': ['npm', 'run', 'typecheck'],

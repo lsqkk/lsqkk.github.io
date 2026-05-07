@@ -4,7 +4,17 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-05-08
+
+更新 - "删除：移除深浅色模式设置项及全部主题覆盖代码"
+
+更新 - "fix-theme-bug-and-quark-webui-redesign"
+
 # 2026-05-07
+
+新增 - 网站设置与Quark管理面板
+
+更新 - log.md
 
 优化 - 修改了专栏跳转地址
 

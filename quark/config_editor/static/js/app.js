@@ -72,7 +72,7 @@
             return;
         }
         dom.fileList.innerHTML = list.map(f => {
-            const id = escapeAttr(f.id || f.name);
+            const id = escAttr(f.id || f.name);
             const isActive = currentFileId === (f.id || f.name);
             return `<div class="file-item${isActive ? ' active' : ''}" data-file-id="${id}">
                 <div class="file-item-icon"><i class="fas fa-file-code"></i></div>
