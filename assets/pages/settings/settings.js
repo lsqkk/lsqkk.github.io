@@ -16,7 +16,6 @@
 
     function cache() {
         el.language = document.getElementById('settingLanguage');
-        el.theme = document.getElementById('settingTheme');
         el.font = document.getElementById('settingFont');
         el.motion = document.getElementById('settingMotion');
         el.cursorTrail = document.getElementById('settingCursorTrail');
@@ -48,8 +47,7 @@
     function readForm() {
         return {
             language: el.language instanceof HTMLSelectElement ? el.language.value : 'chinese_simplified',
-            theme: el.theme instanceof HTMLSelectElement ? el.theme.value : 'system',
-            font: el.font instanceof HTMLSelectElement ? el.font.value : 'xwwk',
+            font: el.font instanceof HTMLSelectElement ? el.font.value : 'serif',
             motion: el.motion instanceof HTMLSelectElement ? el.motion.value : 'full',
             cursorTrail: el.cursorTrail instanceof HTMLInputElement ? el.cursorTrail.checked : true
         };
@@ -57,8 +55,7 @@
 
     function writeForm(prefs) {
         if (el.language instanceof HTMLSelectElement) el.language.value = prefs.language || 'chinese_simplified';
-        if (el.theme instanceof HTMLSelectElement) el.theme.value = prefs.theme || 'system';
-        if (el.font instanceof HTMLSelectElement) el.font.value = prefs.font || 'xwwk';
+        if (el.font instanceof HTMLSelectElement) el.font.value = prefs.font || 'serif';
         if (el.motion instanceof HTMLSelectElement) el.motion.value = prefs.motion || 'full';
         if (el.cursorTrail instanceof HTMLInputElement) el.cursorTrail.checked = prefs.cursorTrail !== false;
     }
@@ -76,8 +73,7 @@
         setStatus('恢复中...');
         const prefs = await window.QuarkUserPreferences.update({
             language: 'chinese_simplified',
-            theme: 'system',
-            font: 'xwwk',
+            font: 'serif',
             motion: 'full',
             cursorTrail: true
         });
@@ -86,7 +82,7 @@
     }
 
     function bind() {
-        [el.language, el.theme, el.font, el.motion, el.cursorTrail].forEach((item) => {
+        [el.language, el.font, el.motion, el.cursorTrail].forEach((item) => {
             if (!item) return;
             item.addEventListener('change', () => {
                 if (!window.QuarkUserPreferences) return;
