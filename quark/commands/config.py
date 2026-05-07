@@ -17,9 +17,9 @@ import re
 @click.option('--debug', '-d', is_flag=True, help='调试模式')
 def cli(port, no_browser, host, debug):
     """
-    启动JSON配置编辑器Web界面
+    启动 Quark 管理面板 Web UI
     
-    打开浏览器访问 http://localhost:5050 查看和编辑 src/config/json/ 目录下的所有JSON文件
+    打开浏览器访问 http://localhost:5050，可编辑站点 JSON 配置并执行常用维护命令
     """
     
     try:
@@ -42,8 +42,9 @@ def cli(port, no_browser, host, debug):
             return
         
         # 显示启动信息
-        click.echo("🚀 启动JSON配置编辑器...")
-        click.echo(f"📂 JSON目录: {json_dir}")
+        click.echo("🚀 启动 Quark 管理面板 Web UI...")
+        click.echo(f"📂 项目目录: {blog_root}")
+        click.echo(f"📂 默认配置目录: {json_dir}")
         click.echo(f"🌐 访问地址: http://{host}:{port}")
         click.echo("🛑 按 Ctrl+C 停止服务器")
         

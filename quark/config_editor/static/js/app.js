@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const fileStatus = document.getElementById('fileStatus');
     const statusMessage = document.getElementById('statusMessage');
     const searchInput = document.getElementById('searchInput');
+    const commandList = document.getElementById('commandList');
+    const commandOutput = document.getElementById('commandOutput');
+    const clearCommandOutput = document.getElementById('clearCommandOutput');
 
     // 按钮
     const refreshBtn = document.getElementById('refreshBtn');
@@ -93,8 +96,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         filesToRender.forEach(file => {
             const fileItem = document.createElement('div');
+            const fileId = file.id || file.name;
             fileItem.className = 'file-item';
-            if (currentFile === file.name) {
+            if (currentFile === fileId) {
                 fileItem.classList.add('active');
             }
 
@@ -116,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         ${hasError ? '<i class="fas fa-exclamation-circle" style="color: #f56565;"></i>' : ''}
                     </div>
                     <div class="file-meta">
+                        <span>${file.group || ''}</span>
                         <span>${size}</span>
                         <span>${timeString}</span>
                         ${hasError ? '<span style="color: #f56565;">错误</span>' :
@@ -123,10 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 </div>
                 <div class="file-actions">
-                    <button class="file-action-btn" data-action="validate" data-file="${file.name}" title="验证">
+                    <button class="file-action-btn" data-action="validate" data-file="${fileId}" title="验证">
                         <i class="fas fa-check-circle"></i>
                     </button>
-                    <button class="file-action-btn" data-action="delete" data-file="${file.name}" title="删除">
+                    <button class="file-action-btn" data-action="delete" data-file="${fileId}" title="删除">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -135,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // 点击文件项
             fileItem.addEventListener('click', (e) => {
                 if (!e.target.closest('.file-action-btn')) {
-                    selectFile(file.name);
+                    selectFile(fileId);
                 }
             });
 
@@ -201,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // 高亮当前文件项
                     document.querySelectorAll('.file-item').forEach(item => {
                         item.classList.remove('active');
-                        if (item.querySelector(`[data-file="${filename}"]`)) {
+                        if (item.querySelector(`[data-file="${CSS.escape(filename)}"]`)) {
                             item.classList.add('active');
                         }
                     });
@@ -299,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function createNewFile() {
         const fileNameInput = document.getElementById('fileName');
         const templateSelect = document.getElementById('templateSelect');
+        const rootSelect = document.getElementById('rootSelect');
 
         // 显示模态框
         createModal.classList.add('active');
@@ -366,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify({
                     filename: filename,
+                    root: rootSelect ? rootSelect.value : 'src/config/json',
                     content: content
                 })
             })
@@ -382,9 +389,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         }, 500);
 
                         // 重置表单
-                        fileNameInput.value = '';
-                        templateSelect.value = 'empty';
-                    } else {
+                    fileNameInput.value = '';
+                    templateSelect.value = 'empty';
+                    if (rootSelect) rootSelect.value = 'src/config/json';
+                } else {
                         showError(`创建失败: ${data.error}`);
                     }
                 })
@@ -563,6 +571,8 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 const filtered = files.filter(file =>
                     file.name.toLowerCase().includes(query) ||
+                    (file.id && file.id.toLowerCase().includes(query)) ||
+                    (file.group && file.group.toLowerCase().includes(query)) ||
                     (file.keys && file.keys.some(key => key.toLowerCase().includes(query)))
                 );
                 renderFileList(filtered);
@@ -618,6 +628,61 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 编辑器模式
         setupEditorModes();
+
+        if (clearCommandOutput) {
+            clearCommandOutput.addEventListener('click', () => {
+                if (commandOutput) commandOutput.textContent = '等待执行命令...';
+            });
+        }
+    }
+
+    function loadCommands() {
+        if (!commandList) return;
+        fetch('/api/commands')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) throw new Error(data.error || '加载命令失败');
+                renderCommands(data.data || []);
+            })
+            .catch(error => {
+                commandList.innerHTML = `<div class="command-error">${error.message}</div>`;
+            });
+    }
+
+    function renderCommands(commands) {
+        if (!commandList) return;
+        commandList.innerHTML = commands.map(command => `
+            <button class="command-card" data-command="${command.id}">
+                <strong>${command.label}</strong>
+                <span>${command.description || ''}</span>
+            </button>
+        `).join('');
+        commandList.querySelectorAll('[data-command]').forEach(button => {
+            button.addEventListener('click', () => {
+                const commandId = button.getAttribute('data-command');
+                if (commandId) runCommand(commandId, button);
+            });
+        });
+    }
+
+    function runCommand(commandId, button) {
+        if (button) button.disabled = true;
+        if (commandOutput) commandOutput.textContent = `正在执行 ${commandId}...\n`;
+        fetch(`/api/commands/${encodeURIComponent(commandId)}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                const status = data.success ? '完成' : '失败';
+                const code = typeof data.returnCode === 'number' ? `（退出码 ${data.returnCode}）` : '';
+                if (commandOutput) commandOutput.textContent = `[${status}] ${commandId} ${code}\n\n${data.output || data.error || ''}`;
+                showNotification(`${commandId} ${status}`, data.success ? 'success' : 'error');
+            })
+            .catch(error => {
+                if (commandOutput) commandOutput.textContent = `命令执行失败：${error.message}`;
+                showNotification('命令执行失败', 'error');
+            })
+            .finally(() => {
+                if (button) button.disabled = false;
+            });
     }
 
     // 初始化应用
@@ -625,6 +690,7 @@ document.addEventListener('DOMContentLoaded', function () {
         initJSONEditor();
         initEventListeners();
         loadFileList();
+        loadCommands();
 
         // 显示欢迎消息
         setTimeout(() => {

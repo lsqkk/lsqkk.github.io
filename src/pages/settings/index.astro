@@ -1,0 +1,91 @@
+---
+import fs from "node:fs/promises";
+import path from "node:path";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import LuxuryBackground from "../../components/LuxuryBackground.astro";
+
+const navConfigPath = path.join(process.cwd(), "src", "config", "json", "nav.json");
+const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>网站设置 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/assets/pages/settings/settings.css" />
+    <script is:inline define:vars={{ navConfig }}>
+      window.__NAV_CONFIG__ = navConfig;
+    </script>
+    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline src="/assets/js/firebase-ready.js"></script>
+    <script is:inline src="/assets/js/comment-shared.js"></script>
+    <script is:inline src="/assets/js/user-profile.js"></script>
+    <script is:inline src="/assets/js/user-preferences.js"></script>
+    <script is:inline src="/assets/js/nav.js"></script>
+  </head>
+  <body class="settings-body luxury-body">
+    <LuxuryBackground />
+    <main class="settings-shell">
+      <header class="settings-hero">
+        <p class="settings-kicker">Site Preferences</p>
+        <h1>网站设置</h1>
+        <p id="settingsSyncHint">设置会保存在本机；登录后会同步到账号。</p>
+      </header>
+
+      <section class="settings-panel">
+        <div class="settings-section">
+          <div>
+            <h2>基础偏好</h2>
+            <p>这些选项会影响全站导航、阅读和基础交互。</p>
+          </div>
+          <div class="settings-grid">
+            <label class="setting-field">
+              <span>默认语言</span>
+              <select id="settingLanguage"></select>
+            </label>
+            <label class="setting-field">
+              <span>深浅色</span>
+              <select id="settingTheme">
+                <option value="system">跟随系统</option>
+                <option value="light">浅色</option>
+                <option value="dark">深色</option>
+              </select>
+            </label>
+            <label class="setting-field">
+              <span>站点字体</span>
+              <select id="settingFont"></select>
+            </label>
+            <label class="setting-field">
+              <span>动效强度</span>
+              <select id="settingMotion">
+                <option value="full">完整动效</option>
+                <option value="reduce">减少动效</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section compact">
+          <label class="toggle-card">
+            <input id="settingCursorTrail" type="checkbox" />
+            <span>
+              <strong>指针轨迹</strong>
+              <small>关闭后会隐藏全站鼠标跟随光效。</small>
+            </span>
+          </label>
+        </div>
+
+        <footer class="settings-actions">
+          <button class="btn primary" id="saveSettings" type="button">保存设置</button>
+          <button class="btn ghost" id="resetSettings" type="button">恢复默认</button>
+          <span id="settingsStatus">等待操作</span>
+        </footer>
+      </section>
+    </main>
+    <script is:inline src="/assets/pages/settings/settings.js"></script>
+  </body>
+</html>

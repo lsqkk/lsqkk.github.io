@@ -75,6 +75,18 @@
   will-change: transform, opacity;
 }
 
+body.cursor-trail-disabled,
+body.cursor-trail-disabled * {
+  cursor: auto !important;
+}
+
+body.cursor-trail-disabled .custom-cursor,
+body.cursor-trail-disabled .cursor-follower,
+body.cursor-trail-disabled .cursor-particle,
+body.cursor-trail-disabled .cursor-burst-particle {
+  display: none !important;
+}
+
 @keyframes particle-flow {
   0% {
     transform: scale(1) translate(0, 0);

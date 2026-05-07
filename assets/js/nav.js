@@ -14,6 +14,22 @@ const profileScript = document.createElement('script');
 profileScript.src = '/assets/js/user-profile.js';
 profileScript.defer = true;
 document.head.appendChild(profileScript);
+if (!document.querySelector('script[src="/assets/js/comment-shared.js"]')) {
+    const sharedScript = document.createElement('script');
+    sharedScript.src = '/assets/js/comment-shared.js';
+    sharedScript.defer = true;
+    document.head.appendChild(sharedScript);
+}
+if (!document.querySelector('script[src="/assets/js/firebase-ready.js"]')) {
+    const firebaseReadyScript = document.createElement('script');
+    firebaseReadyScript.src = '/assets/js/firebase-ready.js';
+    firebaseReadyScript.defer = true;
+    document.head.appendChild(firebaseReadyScript);
+}
+const preferenceScript = document.createElement('script');
+preferenceScript.src = '/assets/js/user-preferences.js';
+preferenceScript.defer = true;
+document.head.appendChild(preferenceScript);
 const activityScript = document.createElement('script');
 activityScript.src = '/assets/js/user-activity.js';
 activityScript.defer = true;
@@ -94,6 +110,10 @@ function getStoredLanguage() {
 function persistLanguagePreference(language) {
     try {
         localStorage.setItem(LANGUAGE_STORAGE_KEY, normalizeLanguageCode(language));
+        const pref = window.QuarkUserPreferences;
+        if (pref && typeof pref.update === 'function') {
+            void pref.update({ language: normalizeLanguageCode(language) });
+        }
     } catch {
         // ignore storage errors
     }
@@ -253,6 +273,9 @@ function generateNavHTML(config) {
                     <input type="text" id="searchInput" placeholder="搜索站内...">
                     <button onclick="handleGlobalSearch()">搜索</button>
                 </div>
+                <a class="nav-settings-btn" href="${buildLocalizedUrl('/settings')}" aria-label="网站设置" title="网站设置">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
                 <div class="header-login nav-login" id="header-login">
                     <a href="${buildLocalizedUrl(config.login.url)}">登录</a>
                     <div class="nav-login-tip">登录后享受更多权益</div>
@@ -282,6 +305,10 @@ function generateNavHTML(config) {
                 <button onclick="handleMobileSearch()">搜索</button>
             </div>
             <div class="navsidebar-controls">
+                <a class="navsidebar-settings" href="${buildLocalizedUrl('/settings')}">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>网站设置</span>
+                </a>
                 <div class="navsidebar-language">
                     <div class="language-picker" data-language-picker>
                         <button class="language-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
@@ -841,6 +868,7 @@ function renderUserProfile() {
             </div>
             <div class="nav-user-actions">
                 <a href="${buildLocalizedUrl('/a/account')}"><i class="fa-regular fa-user"></i><span>账号中心</span></a>
+                <a href="${buildLocalizedUrl('/settings')}"><i class="fa-solid fa-gear"></i><span>网站设置</span></a>
                 <a href="${buildLocalizedUrl(spaceUrl)}"><i class="fa-regular fa-id-badge"></i><span>我的主页</span></a>
                 <button type="button" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>退出登录</span></button>
             </div>
@@ -898,6 +926,12 @@ window.renderNavUserProfile = renderUserProfile;
 
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
+    if (window.QuarkUserPreferences && typeof window.QuarkUserPreferences.get === 'function') {
+        const prefLanguage = window.QuarkUserPreferences.get().language;
+        if (prefLanguage && prefLanguage !== currentLanguage) {
+            currentLanguage = normalizeLanguageCode(prefLanguage);
+        }
+    }
     updateDocumentLanguage(currentLanguage);
     initializeLanguagePickers();
     initializeTranslation();
@@ -929,13 +963,25 @@ function initializeAll() {
     window.addEventListener('quark-user-updated', () => {
         checkLoginStatus();
     });
+    window.addEventListener('quark-preferences-updated', (event) => {
+        const nextLanguage = event && event.detail ? normalizeLanguageCode(event.detail.language) : getStoredLanguage();
+        if (nextLanguage && nextLanguage !== currentLanguage) {
+            performLanguageChange(nextLanguage, { force: true });
+        } else {
+            syncLanguagePickers(currentLanguage);
+        }
+        initializeNavThemeMode();
+    });
 }
 
 function initializeNavThemeMode() {
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     const applyTheme = () => {
-        const isDark = darkModeQuery.matches;
+        const preference = window.QuarkUserPreferences && typeof window.QuarkUserPreferences.get === 'function'
+            ? window.QuarkUserPreferences.get()
+            : null;
+        const isDark = preference ? preference.isDark : darkModeQuery.matches;
         const header = document.querySelector('.header');
         const mobileSidebar = document.getElementById('mobilenavsidebar');
 

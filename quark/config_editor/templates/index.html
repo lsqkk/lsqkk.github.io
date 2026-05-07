@@ -5,8 +5,8 @@
     <!-- 标题栏 -->
     <header class="header">
         <div class="header-left">
-            <h1><i class="fas fa-cogs"></i> JSON 配置编辑器</h1>
-            <p class="subtitle">编辑和管理博客的JSON配置文件</p>
+            <h1><i class="fas fa-gauge-high"></i> Quark 管理面板</h1>
+            <p class="subtitle">编辑站点配置，执行常用维护命令</p>
         </div>
         <div class="header-right">
             <button id="refreshBtn" class="btn btn-icon" title="刷新">
@@ -43,7 +43,7 @@
             <div class="sidebar-footer">
                 <div class="directory-info">
                     <i class="fas fa-folder"></i>
-                    <span id="directoryPath">/src/config/json/</span>
+                    <span id="directoryPath">项目配置目录</span>
                 </div>
             </div>
         </aside>
@@ -88,6 +88,18 @@
         </main>
     </div>
 
+    <section class="command-panel">
+        <div class="command-head">
+            <div>
+                <h2><i class="fas fa-terminal"></i> 维护命令</h2>
+                <p>在本地仓库中执行 Quark 和 npm 常用命令。</p>
+            </div>
+            <button id="clearCommandOutput" class="btn btn-secondary">清空输出</button>
+        </div>
+        <div id="commandList" class="command-list"></div>
+        <pre id="commandOutput" class="command-output">等待执行命令...</pre>
+    </section>
+
     <!-- 模态框 - 新建文件 -->
     <div class="modal" id="createModal">
         <div class="modal-content">
@@ -100,6 +112,16 @@
                     <label for="fileName">文件名</label>
                     <input type="text" id="fileName" placeholder="例如: config.json" autocomplete="off">
                     <div class="form-hint">不需要输入.json后缀，会自动添加</div>
+                </div>
+                <div class="form-group">
+                    <label for="rootSelect">保存目录</label>
+                    <select id="rootSelect">
+                        <option value="src/config/json">src/config/json</option>
+                        <option value="assets/pages/a">assets/pages/a</option>
+                        <option value="assets/pages/blog">assets/pages/blog</option>
+                        <option value="assets/pages/games">assets/pages/games</option>
+                        <option value="assets/pages/tool">assets/pages/tool</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="templateSelect">模板</label>

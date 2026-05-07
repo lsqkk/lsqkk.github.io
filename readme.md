@@ -31,6 +31,7 @@
 - Firebase RTDB 支持留言、评论、在线状态、实时互动等动态能力
 - 支持 GitHub OAuth、站内账号、Turnstile、人机验证、邮件验证码等认证能力
 - 提供自定义、可扩展的 Quark CLI，封装构建、文章创建、日志更新与推送流程
+- 提供 `quark web` 本地管理面板，可视化编辑站点 JSON 配置并执行常用维护命令
 
 > 更多技术细节及本站使用服务清单，欢迎查看[更新日志](/assets/md/log.md)、[Agent文档](AGENTS.md)以及[关于本站](/posts/copyright.md)。
 
@@ -106,6 +107,7 @@ quark serve
 quark new          # 新建文章
 quark build        # 完整构建
 quark serve        # 预览 dist
+quark web          # 打开本地管理面板 Web UI
 quark updatelog    # 根据 Git 提交刷新日志
 
 npm run build
@@ -115,7 +117,7 @@ npm run check:syntax
 
 ### 配置入口
 
-常见站点配置集中于 `src/config/json/`:
+常见站点配置集中于 `src/config/json/`，可通过 `quark web` 打开本地管理面板编辑，也可继续手动维护:
 
 - `api.json`: 前端注入的 API 基地址
 - `nav.json`: 导航、标题、GitHub OAuth 地址、Turnstile site key

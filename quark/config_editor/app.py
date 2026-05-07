@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_from_directory
 import traceback
+import subprocess
+import sys
 
 def create_app(json_dir):
     """创建Flask应用"""
@@ -15,8 +17,45 @@ def create_app(json_dir):
     
     # 确保JSON目录存在
     json_dir = Path(json_dir)
+    project_root = json_dir.parents[2] if len(json_dir.parents) >= 3 else Path.cwd()
+    editable_roots = [
+        json_dir,
+        project_root / 'assets' / 'pages' / 'a',
+        project_root / 'assets' / 'pages' / 'blog',
+        project_root / 'assets' / 'pages' / 'games',
+        project_root / 'assets' / 'pages' / 'tool'
+    ]
+    command_map = {
+        'build': ['npm', 'run', 'build'],
+        'typecheck': ['npm', 'run', 'typecheck'],
+        'syntax': ['npm', 'run', 'check:syntax'],
+        'updateposts': [sys.executable, '-m', 'quark.cli', 'updateposts'],
+        'updatelog': [sys.executable, '-m', 'quark.cli', 'updatelog'],
+        'status': ['git', 'status', '--short']
+    }
+
     if not json_dir.exists():
         json_dir.mkdir(parents=True, exist_ok=True)
+
+    def encode_file_id(file_path):
+        try:
+            return file_path.relative_to(project_root).as_posix()
+        except ValueError:
+            return file_path.name
+
+    def resolve_file(file_id):
+        if '..' in file_id or file_id.startswith('/') or file_id.startswith('\\'):
+            raise ValueError('无效的文件名')
+        target = (project_root / file_id).resolve()
+        if target.suffix.lower() != '.json':
+            raise ValueError('仅允许编辑 JSON 文件')
+        allowed = any(
+            target == root.resolve() or root.resolve() in target.parents
+            for root in editable_roots
+        )
+        if not allowed:
+            raise ValueError('文件不在可编辑目录中')
+        return target
     
     @app.route('/')
     def index():
@@ -28,36 +67,45 @@ def create_app(json_dir):
         """获取所有JSON文件列表"""
         try:
             files = []
-            for file_path in sorted(json_dir.glob('*.json')):
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        # 尝试解析以验证JSON格式
-                        data = json.loads(content)
-                        
+            for root in editable_roots:
+                if not root.exists():
+                    continue
+                for file_path in sorted(root.rglob('*.json')):
+                    if any(part.startswith('.') for part in file_path.relative_to(root).parts):
+                        continue
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                            data = json.loads(content)
+                        rel = encode_file_id(file_path)
                         files.append({
                             'name': file_path.name,
+                            'id': rel,
                             'path': str(file_path),
+                            'group': str(file_path.parent.relative_to(project_root)),
                             'size': file_path.stat().st_size,
                             'lastModified': file_path.stat().st_mtime,
                             'keys': list(data.keys()) if isinstance(data, dict) else ['array']
                         })
-                except Exception as e:
-                    # 即使是损坏的JSON也列出，但标记为错误
-                    files.append({
-                        'name': file_path.name,
-                        'path': str(file_path),
-                        'size': file_path.stat().st_size,
-                        'lastModified': file_path.stat().st_mtime,
-                        'error': str(e),
-                        'keys': []
-                    })
+                    except Exception as e:
+                        rel = encode_file_id(file_path)
+                        files.append({
+                            'name': file_path.name,
+                            'id': rel,
+                            'path': str(file_path),
+                            'group': str(file_path.parent.relative_to(project_root)),
+                            'size': file_path.stat().st_size,
+                            'lastModified': file_path.stat().st_mtime,
+                            'error': str(e),
+                            'keys': []
+                        })
             
             return jsonify({
                 'success': True,
                 'data': files,
                 'count': len(files),
-                'directory': str(json_dir)
+                'directory': str(project_root),
+                'roots': [str(root.relative_to(project_root)) for root in editable_roots if root.exists()]
             })
         except Exception as e:
             return jsonify({
@@ -66,15 +114,11 @@ def create_app(json_dir):
                 'traceback': traceback.format_exc()
             }), 500
     
-    @app.route('/api/file/<filename>')
+    @app.route('/api/file/<path:filename>')
     def get_file(filename):
         """获取单个JSON文件内容"""
         try:
-            # 安全检查：防止目录遍历
-            if '..' in filename or '/' in filename:
-                return jsonify({'success': False, 'error': '无效的文件名'}), 400
-            
-            file_path = json_dir / filename
+            file_path = resolve_file(filename)
             
             if not file_path.exists():
                 return jsonify({'success': False, 'error': '文件不存在'}), 404
@@ -107,15 +151,11 @@ def create_app(json_dir):
                 'traceback': traceback.format_exc()
             }), 500
     
-    @app.route('/api/file/<filename>', methods=['POST'])
+    @app.route('/api/file/<path:filename>', methods=['POST'])
     def save_file(filename):
         """保存JSON文件"""
         try:
-            # 安全检查
-            if '..' in filename or '/' in filename:
-                return jsonify({'success': False, 'error': '无效的文件名'}), 400
-            
-            file_path = json_dir / filename
+            file_path = resolve_file(filename)
             
             # 获取JSON数据
             data = request.get_json()
@@ -150,27 +190,23 @@ def create_app(json_dir):
                 'traceback': traceback.format_exc()
             }), 500
     
-    @app.route('/api/file/<filename>', methods=['DELETE'])
+    @app.route('/api/file/<path:filename>', methods=['DELETE'])
     def delete_file(filename):
         """删除JSON文件"""
         try:
-            # 安全检查
-            if '..' in filename or '/' in filename:
-                return jsonify({'success': False, 'error': '无效的文件名'}), 400
-            
-            file_path = json_dir / filename
+            file_path = resolve_file(filename)
             
             if not file_path.exists():
                 return jsonify({'success': False, 'error': '文件不存在'}), 404
             
             # 备份到回收站或直接删除
-            backup_dir = json_dir / '.deleted'
+            backup_dir = file_path.parent / '.deleted'
             backup_dir.mkdir(exist_ok=True)
             
             import shutil
             import time
             timestamp = int(time.time())
-            backup_path = backup_dir / f"{filename}.{timestamp}.bak"
+            backup_path = backup_dir / f"{file_path.name}.{timestamp}.bak"
             
             shutil.move(file_path, backup_path)
             
@@ -199,12 +235,17 @@ def create_app(json_dir):
             filename = data['filename']
             if not filename.endswith('.json'):
                 filename += '.json'
-            
-            # 安全检查
-            if '..' in filename or '/' in filename:
+
+            target_root = data.get('root') or 'src/config/json'
+            if '..' in target_root:
+                return jsonify({'success': False, 'error': '无效的目录'}), 400
+            base_dir = (project_root / target_root).resolve()
+            if not any(base_dir == root.resolve() for root in editable_roots):
+                return jsonify({'success': False, 'error': '不允许在该目录创建文件'}), 400
+            if '..' in filename or '/' in filename or '\\' in filename:
                 return jsonify({'success': False, 'error': '无效的文件名'}), 400
-            
-            file_path = json_dir / filename
+
+            file_path = base_dir / filename
             
             if file_path.exists():
                 return jsonify({'success': False, 'error': '文件已存在'}), 400
@@ -238,14 +279,11 @@ def create_app(json_dir):
                 'traceback': traceback.format_exc()
             }), 500
     
-    @app.route('/api/validate/<filename>')
+    @app.route('/api/validate/<path:filename>')
     def validate_file(filename):
         """验证JSON文件格式"""
         try:
-            if '..' in filename or '/' in filename:
-                return jsonify({'success': False, 'error': '无效的文件名'}), 400
-            
-            file_path = json_dir / filename
+            file_path = resolve_file(filename)
             
             if not file_path.exists():
                 return jsonify({'success': False, 'error': '文件不存在'}), 404
@@ -276,6 +314,44 @@ def create_app(json_dir):
                 'success': False,
                 'error': str(e)
             }), 500
+
+    @app.route('/api/commands')
+    def list_commands():
+        return jsonify({
+            'success': True,
+            'data': [
+                {'id': 'build', 'label': 'npm run build', 'description': '完整构建'},
+                {'id': 'typecheck', 'label': 'npm run typecheck', 'description': '类型检查'},
+                {'id': 'syntax', 'label': 'npm run check:syntax', 'description': '脚本语法检查'},
+                {'id': 'updateposts', 'label': 'quark updateposts', 'description': '刷新文章数据'},
+                {'id': 'updatelog', 'label': 'quark updatelog', 'description': '刷新更新日志'},
+                {'id': 'status', 'label': 'git status --short', 'description': '查看工作区状态'}
+            ]
+        })
+
+    @app.route('/api/commands/<command_id>', methods=['POST'])
+    def run_command(command_id):
+        if command_id not in command_map:
+            return jsonify({'success': False, 'error': '未知命令'}), 400
+        try:
+            result = subprocess.run(
+                command_map[command_id],
+                cwd=project_root,
+                text=True,
+                capture_output=True,
+                timeout=180
+            )
+            output = (result.stdout or '') + (('\n' + result.stderr) if result.stderr else '')
+            return jsonify({
+                'success': result.returncode == 0,
+                'returnCode': result.returncode,
+                'output': output[-12000:] if output else '(无输出)'
+            })
+        except subprocess.TimeoutExpired as e:
+            output = ((e.stdout or '') + '\n' + (e.stderr or '')).strip()
+            return jsonify({'success': False, 'error': '命令超时', 'output': output[-12000:]}), 408
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
     
     def describe_structure(data, depth=0):
         """描述JSON结构"""

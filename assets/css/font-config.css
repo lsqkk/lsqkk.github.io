@@ -6,6 +6,14 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'HYTangMeiRen';
+    src: url('/assets/fonts/HYTangMeiRen55W.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --site-font-family: 'XWWK', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }
