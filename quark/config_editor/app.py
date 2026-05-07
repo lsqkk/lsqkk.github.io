@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 import traceback
 import subprocess
 import sys
+from .form_schemas import get_schema, list_schema_files
 
 def create_app(json_dir):
     """创建Flask应用"""
@@ -352,6 +353,23 @@ def create_app(json_dir):
             return jsonify({'success': False, 'error': '命令超时', 'output': output[-12000:]}), 408
         except Exception as e:
             return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/schema/<path:filename>')
+    def get_schema_for_file(filename):
+        """获取指定文件的表单 schema"""
+        try:
+            schema = get_schema(filename)
+            if schema:
+                return jsonify({'success': True, 'data': schema, 'filename': filename})
+            return jsonify({'success': True, 'data': None, 'filename': filename,
+                          'message': '该文件暂无定制表单，将使用通用编辑器'})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/schemas')
+    def list_schemas():
+        """列出所有有 schema 的文件"""
+        return jsonify({'success': True, 'data': list_schema_files()})
     
     def describe_structure(data, depth=0):
         """描述JSON结构"""
