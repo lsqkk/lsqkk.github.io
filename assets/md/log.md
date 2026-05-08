@@ -6,6 +6,8 @@
 
 # 2026-05-08
 
+更新 - 更新了若干功能
+
 更新 - "删除：移除深浅色模式设置项及全部主题覆盖代码"
 
 更新 - "fix-theme-bug-and-quark-webui-redesign"
