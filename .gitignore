@@ -1,4 +1,5 @@
 private
+quark/qqexport/resource/
 .env
 .env.local
 .env.*.local

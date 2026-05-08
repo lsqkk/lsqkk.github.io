@@ -17,4 +17,5 @@ Quark 博客管理工具 - 帮助
   quark map                      兼容命令（已弃用；sitemap 随 build 自动生成）
   quark ppush [MESSAGE]          一键构建 + 推送
   quark push MESSAGE [--remote REMOTE] [--branch BRANCH]
+  quark qqexport                 从 QQ 空间导出说说并更新 assets/md/dt.md
 """)
