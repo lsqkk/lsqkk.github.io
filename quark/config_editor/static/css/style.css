@@ -234,6 +234,11 @@ body {
     color: #fff;
 }
 
+.sidebar-sep {
+    margin: 8px 14px;
+    border-top: 1px solid var(--q-border);
+}
+
 .sidebar-footer {
     padding: 12px 18px;
     border-top: 1px solid var(--q-border);
@@ -587,42 +592,11 @@ body {
 .flat-array-item .form-input,
 .flat-array-item .form-textarea { flex: 1; }
 
-/* ── 命令面板 ──────────────────────────────────────────────── */
-.command-panel {
-    border-top: 1px solid var(--q-border);
-    background: var(--q-surface);
-    padding: 18px 24px;
-    flex-shrink: 0;
-}
-
-.command-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-}
-
-.command-head h2 {
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.command-head h2 i { color: var(--q-primary); }
-
-.command-head p {
-    font-size: 13px;
-    color: var(--q-text-muted);
-    margin-top: 2px;
-}
-
+/* ── 命令（内嵌在 panelBody 中）──────────────────────────── */
 .command-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 14px;
 }
 
 .command-card {

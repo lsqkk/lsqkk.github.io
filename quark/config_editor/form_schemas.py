@@ -273,6 +273,40 @@ SCHEMAS['src/config/json/popups.json'] = {
     }
 }
 
+# ── font.json ───────────────────────────────────────────────────────
+SCHEMAS['src/config/json/font.json'] = {
+    'title': '字体配置',
+    'description': '配置站点的自定义字体来源与系统回退字族。',
+    'sections': [
+        {
+            'title': '首选字体',
+            'description': '按优先级排列，排在前面的字体优先加载。',
+            'type': 'array',
+            'key': 'preferred',
+            'item_schema': {
+                'family': {'label': '字体名称', 'type': 'text', 'description': 'CSS font-family 名称'},
+                'source': {'label': '加载地址', 'type': 'url', 'description': 'CSS 文件的 CDN 地址'},
+            }
+        },
+        {
+            'title': '系统回退字体',
+            'description': '当首选字体加载失败时依次尝试的系统字体。',
+            'type': 'array',
+            'key': 'systemFallbacks',
+            'item_schema': {
+                'value': {'label': '字体名称', 'type': 'text'},
+            },
+            'flat': True
+        },
+        {
+            'title': '其他',
+            'fields': {
+                'includeAssetsFonts': {'label': '加载本地字体文件', 'type': 'toggle', 'description': '是否引入 assets/fonts 目录下的字体'},
+            }
+        }
+    ]
+}
+
 # ── city-banter.json ────────────────────────────────────────────────
 SCHEMAS['src/config/json/city-banter.json'] = {
     'title': '城市欢迎语配置',
