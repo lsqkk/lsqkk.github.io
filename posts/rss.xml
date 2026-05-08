@@ -5,7 +5,31 @@
     <description>夸克博客</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 30 Apr 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 07 May 2026 16:00:00 GMT</lastBuildDate>
+    <item>
+      <title>2026 年中总结</title>
+      <link>https://lsqkk.github.io/posts/2026/2606</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2606</guid>
+      <pubDate>Thu, 07 May 2026 16:00:00 GMT</pubDate>
+      <description>杂谈, 报告</description>
+      <content:encoded><![CDATA[2026 年中总结 2026年5月8日，距离我的十八岁生日也就剩下短短十天了。这一年上半年是我成年之前最后的一段时光，也是我在少年班预科转入自动化专业大一之后的第二个学期。好像一切都是平稳流淌的，没什么惊天动地的剧变，但回头仔细想想，许多细小的变化已经悄悄扎下根来。我想趁这个机会把上半年在学业、科研、项目、兴趣以及内心的一些思考做一次小结，也算是对即将成年的自己交出一份诚实的交代。 课业上的时间分配，这半年来我逐渐摸索出一个让自己舒服的]]></content:encoded>
+    </item>
+    <item>
+      <title>镜头即构成</title>
+      <link>https://lsqkk.github.io/posts/2026/2608</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2608</guid>
+      <pubDate>Sun, 03 May 2026 16:00:00 GMT</pubDate>
+      <description>摄影, 论文, 构成主义</description>
+      <content:encoded><![CDATA[镜头即构成 ——从2026航天日组图看构成主义如何重塑摄影与美术的边界 今年4月24日，在“中国航天日”到来之际，央视军事发布了一组航天主题海报，由设计师游佳完成。这组由多张独立画面组成的海报作品一经发布就在B站等社交媒体上引发热烈反响，相关视频播放量迅速逼近二十万，评论区中“审美倒退五十年（褒义）”成为高频共识。 这组海报令人耳目一新，它主动偏离了满屏绚烂的星云与火焰这种主流的的宏大写实路径，而是用克制而果断的视觉语言，强几何结构铺陈]]></content:encoded>
+    </item>
+    <item>
+      <title>神经自动化：面向具身智能的控制系统范式重构</title>
+      <link>https://lsqkk.github.io/posts/2026/2607</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2607</guid>
+      <pubDate>Sat, 02 May 2026 16:00:00 GMT</pubDate>
+      <description>自动化, 论文</description>
+      <content:encoded><![CDATA[神经自动化：面向具身智能的控制系统范式重构 摘 要 工业自动化正面临从确定性执行向自主适应的深层转型。本文提出了“神经自动化”这一概念，用以刻画一种以脉冲神经网络为计算基元、以神经形态硬件为执行载体、通过端到端学习贯通感知与控制的控制系统新范式。此范式的核心主张在于，当神经网络足以同时承担环境建模、策略生成与实时控制时，它便不应再被视为控制回路中的辅助模块，而应当成为控制系统本身的本体结构。文章通过回溯控制论传统、分析传统PID与PLC]]></content:encoded>
+    </item>
     <item>
       <title>一个字的重量——在2026年国际劳工节之际</title>
       <link>https://lsqkk.github.io/posts/2026/2605</link>

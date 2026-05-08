@@ -249,6 +249,9 @@ function generateNavHTML(config) {
                         <div class="nav-hover-menu" id="nav-hover-${hoverKey}"></div>
                     </li>`;
         }
+        if (item.name === "视频") {
+            return `<li class="nav-video-item"><a href="${buildLocalizedUrl(item.link)}" target="${target}">${item.name}</a></li>`;
+        }
         return `<li><a href="${buildLocalizedUrl(item.link)}" target="${target}">${item.name}</a></li>`;
                     }).join('')}
                     <!-- 语言切换器 - 不会被翻译 -->
@@ -295,9 +298,12 @@ function generateNavHTML(config) {
             </div>
             <div class="navsidebar-nav">
                 <ul>
-                    ${config.navItems.map(item =>
-        `<li><a href="${buildLocalizedUrl(item.link)}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`
-    ).join('')}
+                    ${config.navItems.map(item => {
+        if (item.name === "视频") {
+            return `<li class="nav-video-item"><a href="${buildLocalizedUrl(item.link)}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`;
+        }
+        return `<li><a href="${buildLocalizedUrl(item.link)}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`;
+    }).join('')}
                 </ul>
             </div>
             <div class="navsidebar-search">
@@ -336,6 +342,26 @@ function generateNavHTML(config) {
 // 获取配置并写入导航栏
 const navConfig = getNavConfig();
 document.write(generateNavHTML(navConfig));
+
+// 检查视频API是否可用，不可用则隐藏导航中的"视频"项
+(async function checkVideoApi() {
+    try {
+        const apiUrl = 'https://uapis.cn/api/v1/social/bilibili/archives';
+        const params = new URLSearchParams({
+            mid: '2105459088',
+            pn: '1',
+            ps: '1',
+            orderby: 'pubdate'
+        });
+        const response = await fetch(`${apiUrl}?${params}`);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        if (!data.videos || data.videos.length === 0) throw new Error('No videos');
+    } catch (e) {
+        console.warn('视频API不可用，隐藏视频导航项:', e);
+        document.querySelectorAll('.nav-video-item').forEach(el => el.remove());
+    }
+})();
 
 // 全局搜索处理函数
 function handleGlobalSearch() {

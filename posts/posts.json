@@ -1,5 +1,47 @@
 [
     {
+        "title": "2026 年中总结",
+        "description": "2026年中总结",
+        "file": "2026/2606.md",
+        "date": "2026-05-08",
+        "tags": [
+            "杂谈",
+            "报告"
+        ],
+        "columns": [
+            "阶段总结"
+        ],
+        "wordCount": 4465,
+        "cover": "https://cn.bing.com/th?id=OHR.SouthDownsSheep_ZH-CN8986424729_1366x768.jpg"
+    },
+    {
+        "title": "镜头即构成",
+        "description": "《摄影艺术与实践》论文",
+        "file": "2026/2608.md",
+        "date": "2026-05-04",
+        "tags": [
+            "摄影",
+            "论文",
+            "构成主义"
+        ],
+        "columns": [],
+        "wordCount": 5515,
+        "cover": "https://cn.bing.com/th?id=OHR.ChateauBeynac_ZH-CN8777586167_1366x768.jpg"
+    },
+    {
+        "title": "神经自动化：面向具身智能的控制系统范式重构",
+        "description": "《自动化专业概论》报告",
+        "file": "2026/2607.md",
+        "date": "2026-05-03",
+        "tags": [
+            "自动化",
+            "论文"
+        ],
+        "columns": [],
+        "wordCount": 9035,
+        "cover": "https://cn.bing.com/th?id=OHR.RockHouse_ZH-CN7318310409_1366x768.jpg"
+    },
+    {
         "title": "一个字的重量——在2026年国际劳工节之际",
         "description": "2026年劳工节推文",
         "file": "2026/2605.md",
@@ -130,7 +172,9 @@
             "杂谈",
             "报告"
         ],
-        "columns": [],
+        "columns": [
+            "阶段总结"
+        ],
         "wordCount": 1281,
         "cover": "https://cn.bing.com/th?id=OHR.SantaPark_ZH-CN7444715899_1366x768.jpg"
     },
