@@ -45,6 +45,7 @@ lsqkk.github.io/
 │   │   └── site.js              # 从配置中派生站点标题 / logo / 背景
 │   ├── docs/                    # 项目说明文档
 │   │   ├── API/                 # serverless 与密钥相关文档
+│   │   ├── 页面与功能/           # 页面功能相关文档
 │   │   ├── dev/                 # 待修复的 BUG 和待实现的功能新增或修改
 │   │   ├── UI/                  # 可复用的界面风格与布局规范
 │   │   └── page_template/       # 页面模板与样式规范
@@ -121,7 +122,7 @@ lsqkk.github.io/
 - `quark ppush`：构建并推送
 - `quark push`：普通推送，不构建
 - `quark updateposts`：兼容别名，当前实际转到 `quark build`
-- `quark config`：启动 JSON 配置编辑器 Web UI
+- `quark web`：启动管理面板 Web UI
 - `quark checkassets`：检查 `assets/css`、`assets/js` 是否被页面引用
 
 ### 本地开发
@@ -185,6 +186,8 @@ quark serve
 | `manifest.json` | PWA 配置 |
 | `nav.json` | 导航栏、标题、logo 等 |
 | `popups.json` | 首页弹窗信息 |
+
+当新增或修改此目录下配置项类别时，应同步修改Quark Web UI以保证功能正常。
 
 ### 其他关键文件
 - `astro.config.mjs`：Astro 配置、Markdown 插件、构建后注入、`site-pages.json` 生成
