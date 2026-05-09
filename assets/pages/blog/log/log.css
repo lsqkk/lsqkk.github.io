@@ -28,6 +28,7 @@ body {
 .update-card {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: 16px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -36,11 +37,30 @@ body {
     transition: all 0.3s ease;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.9);
+    position: relative;
+    overflow: hidden;
+}
+
+.update-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.update-card:hover::before {
+    opacity: 1;
 }
 
 .update-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 h1.title {
@@ -177,6 +197,45 @@ h1.title {
         padding: 4px 12px;
         font-size: 0.85em;
     }
+}
+
+/* Commit hash 链接样式 */
+.update-card a[href*="/commit/"] {
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 0.78em;
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    margin-left: 4px;
+}
+
+.update-card a[href*="/commit/"]::before {
+    content: "" !important;
+    margin: 0 !important;
+}
+
+.update-card a[href*="/commit/"]:hover {
+    background: rgba(52, 152, 219, 0.25);
+    border-color: rgba(52, 152, 219, 0.4);
+    color: #7ec8ff;
+    transform: none;
+    box-shadow: 0 0 12px rgba(52, 152, 219, 0.2);
+}
+
+/* 条目分割线 */
+.update-card .content > p {
+    padding: 6px 0;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.update-card .content > p:last-child {
+    border-bottom: none;
 }
 
 .tag {

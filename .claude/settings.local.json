@@ -13,7 +13,10 @@
       "Bash(npx astro *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(python -m quark.commands.updatelog cli --dry-run --stdout)",
+      "Bash(python -m quark updatelog --dry-run --stdout)",
+      "Bash(python quark/cli.py updatelog --dry-run --stdout)"
     ]
   }
 }

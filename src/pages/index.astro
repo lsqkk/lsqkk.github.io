@@ -45,6 +45,11 @@ function escapeHtml(text: unknown): string {
 }
 
 
+function stripMarkdownLinks(text: string): string {
+  // \u53bb\u6389 markdown \u94fe\u63a5 [text](url) \u6216 [`code`](url)\uff0c\u53ea\u4fdd\u7559\u663e\u793a\u6587\u672c
+  return text.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
+}
+
 function parseRecentLogs(content: string, maxItems: number) {
   const lines = content.split(/\r?\n/);
   const items: Array<{ type: string; detail: string; date: string }> = [];
@@ -61,7 +66,7 @@ function parseRecentLogs(content: string, maxItems: number) {
     if (!itemMatch) continue;
     items.push({
       type: itemMatch[1].trim(),
-      detail: itemMatch[2].trim(),
+      detail: stripMarkdownLinks(itemMatch[2].trim()),
       date: currentDate,
     });
     if (items.length >= maxItems) break;

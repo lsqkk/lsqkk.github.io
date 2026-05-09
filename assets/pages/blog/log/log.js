@@ -264,10 +264,13 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-// 卡片点击效果
+// 卡片点击效果（不干扰链接点击）
 document.addEventListener('click', (e) => {
-    if (e.target.closest('.update-card')) {
-        e.target.closest('.update-card').classList.toggle('active');
+    // 如果点击的是链接或其子元素，不触发卡片切换
+    if (e.target.closest('a')) return;
+    const card = e.target.closest('.update-card');
+    if (card) {
+        card.classList.toggle('active');
     }
 });
 

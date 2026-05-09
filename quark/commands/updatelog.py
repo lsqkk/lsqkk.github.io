@@ -9,6 +9,8 @@ import click
 
 from ..utils import get_blog_root
 
+GITHUB_REPO = "https://github.com/lsqkk/lsqkk.github.io"
+
 DATE_HEADING_RE = re.compile(r"^#\s+(\d{4}-\d{2}-\d{2})\s*$")
 FORMATTED_ENTRY_RE = re.compile(r"^(新增|更新|优化|修复)\s*-\s*(.+)$")
 PREFIX_SPLIT_RE = re.compile(
@@ -105,14 +107,15 @@ def clean_detail(detail: str) -> str:
     return cleaned or DEFAULT_DETAIL
 
 
-def fetch_git_commits(blog_root: Path, since_date: str, until_date: str) -> list[tuple[str, str]]:
+def fetch_git_commits(blog_root: Path, since_date: str, until_date: str) -> list[tuple[str, str, str]]:
     command = [
         "git",
         "log",
         f"--since={since_date} 00:00:00",
         f"--until={until_date} 23:59:59",
-        "--pretty=format:%ad\t%s",
+        "--pretty=format:%h\t%ad\t%s",
         "--date=short",
+        "--abbrev=6",
     ]
     result = subprocess.run(
         command,
@@ -127,28 +130,31 @@ def fetch_git_commits(blog_root: Path, since_date: str, until_date: str) -> list
     if result.returncode != 0:
         raise click.ClickException(result.stderr.strip() or "git log 执行失败")
 
-    commits: list[tuple[str, str]] = []
+    commits: list[tuple[str, str, str]] = []
     for line in result.stdout.splitlines():
-        if "\t" not in line:
+        parts = line.split("\t", 2)
+        if len(parts) < 3:
             continue
-        commit_date, subject = line.split("\t", 1)
-        commits.append((commit_date.strip(), subject.strip()))
+        commit_hash, commit_date, subject = parts
+        commits.append((commit_hash.strip(), commit_date.strip(), subject.strip()))
     return commits
 
 
-def build_generated_sections(commits: list[tuple[str, str]]) -> list[tuple[str, list[str]]]:
+def build_generated_sections(commits: list[tuple[str, str, str]]) -> list[tuple[str, list[str]]]:
     grouped: dict[str, list[str]] = {}
     seen: set[tuple[str, str]] = set()
 
-    for commit_date, subject in commits:
+    for commit_hash, commit_date, subject in commits:
         normalized = normalize_commit_message(subject)
         if not normalized:
             continue
-        unique_key = (commit_date, normalized)
+        # 追加 commit hash markdown 链接
+        entry_with_hash = f'{normalized} [`{commit_hash}`]({GITHUB_REPO}/commit/{commit_hash})'
+        unique_key = (commit_date, entry_with_hash)
         if unique_key in seen:
             continue
         seen.add(unique_key)
-        grouped.setdefault(commit_date, []).append(normalized)
+        grouped.setdefault(commit_date, []).append(entry_with_hash)
 
     return [(commit_date, entries) for commit_date, entries in grouped.items() if entries]
 
