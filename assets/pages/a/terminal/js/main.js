@@ -197,7 +197,7 @@ class Terminal {
 
     showWelcome() {
         const settings = window.QuarkLLMConfig.getSettings();
-        const hasApiKey = settings.apiKey ? '已检测到共享 API Key，可直接使用 llm 对话' : '未检测到 API Key，可执行 llm-key <key> 或前往 /a/ds 设置';
+        const hasApiKey = settings.apiKey ? '已检测到共享 API Key，可直接使用 llm 对话' : '未检测到 API Key，可执行 llm-key <key> 或前往 /a/qai 设置';
         const welcomeText = `
   ____                  __      ______                        _             __
  / __ \\__  ______ _____/ /__   /_  __/__  _________ ___  ____(_)___  ____ _/ /

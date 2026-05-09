@@ -1,10 +1,10 @@
-# `/a/terminal` 与 `/a/ds` 联动说明
+# `/a/terminal` 与 `/a/qai` 联动说明
 
 更新时间：2026-05-09
 
 ## 概述
 
-`/a/terminal` 与 `/a/ds` 现已共用一套浏览器本地 LLM 配置，目标是让用户在任一页面保存 API Key / Base URL / Model 后，另一侧可直接读取并发起对话，无需重复配置。
+`/a/terminal` 与 `/a/qai` 现已共用一套浏览器本地 LLM 配置，目标是让用户在任一页面保存 API Key / Base URL / Model 后，另一侧可直接读取并发起对话，无需重复配置。
 
 ## localStorage 键位
 
@@ -18,19 +18,19 @@
 - `ds_api_key`
 
 说明：
-- `/a/ds` 保存配置时会同时写入共享键位和旧的 `ds_api_key`
+- `/a/qai` 保存配置时会同时写入共享键位和旧的 `ds_api_key`
 - `/a/terminal` 优先读取共享键位，若不存在则回退读取 `ds_api_key`
 
-### 高级参数（仅 `/a/ds` 使用）
+### 高级参数（仅 `/a/qai` 使用）
 
 - `quark_llm_params` — JSON 对象，包含 temperature、top_p、top_k、presence_penalty、frequency_penalty、stop、contextWindow、maxTokens、stream 等参数
 
-### 预设管理（仅 `/a/ds` 使用）
+### 预设管理（仅 `/a/qai` 使用）
 
 - `quark_llm_profiles` — JSON 数组，保存多个模型配置预设
 - `quark_llm_active_profile` — 当前激活的预设 ID
 
-### 人格管理（仅 `/a/ds` 使用）
+### 人格管理（仅 `/a/qai` 使用）
 
 - `quark_llm_personas` — JSON 数组，保存多个人格（系统提示词）
 - `quark_llm_active_persona` — 当前激活的人格 ID
@@ -45,7 +45,7 @@
 
 `Base URL` 会在前端请求时自动拼接为 OpenAI 兼容的 `/chat/completions` 接口。
 
-## `/a/ds` 功能说明
+## `/a/qai` 功能说明
 
 ### 设置弹窗（多标签）
 - **连接**：服务商选择、API Key、Base URL、模型选择、上下文消息数、最大输出 Token、测试连接、获取模型列表
@@ -82,7 +82,7 @@
 
 - 若未来新增第三个 LLM 页面，优先继续复用 `assets/js/llm-shared.js`
 - 若修改存储键名，必须同步更新：
-  - `/a/ds`
+  - `/a/qai`
   - `/a/terminal`
   - 本文档
 - 新增高级参数时，只需修改 `llm-shared.js` 中的 `DEFAULTS` 和 `STORAGE_KEYS`

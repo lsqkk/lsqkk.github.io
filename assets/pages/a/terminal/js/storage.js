@@ -50,7 +50,7 @@ class StorageManager {
                 '/home/欢迎.txt': {
                     type: 'file',
                     name: '欢迎.txt',
-                    content: '欢迎使用夸克终端 v2。\n现在支持更完整的 shell 常用命令，并可直接调用 LLM 对话。\n如果你之前在 /a/ds 保存过 API Key，这里会直接读取。',
+                    content: '欢迎使用夸克终端 v2。\n现在支持更完整的 shell 常用命令，并可直接调用 LLM 对话。\n如果你之前在 /a/qai 保存过 API Key，这里会直接读取。',
                     size: 75,
                     created: now,
                     modified: now

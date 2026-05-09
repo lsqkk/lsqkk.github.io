@@ -7,9 +7,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeepSeek WebUI - {SITE_TITLE}</title>
+  <title>Q-AI WebUI - {SITE_TITLE}</title>
   <link rel="stylesheet" href="/assets/css/cursor.css">
-  <link rel="stylesheet" href="/assets/css/ds.css">
+  <link rel="stylesheet" href="/assets/css/qai.css">
   <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
@@ -21,7 +21,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <!-- ===== 侧栏 ===== -->
     <aside id="sidebar">
       <div id="sidebar-header">
-        <span class="brand-text">AI CHAT {SITE_TITLE}</span>
+        <span class="brand-text">Q-AI WebUI</span>
         <button id="theme-toggle" class="icon-btn" title="切换主题">
           <svg viewBox="0 0 24 24" width="18" height="18">
             <path fill="currentColor" d="M12 3V4.35A7.65 7.65 0 1 0 19.65 12H21A9 9 0 1 1 12 3z" />
@@ -285,7 +285,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
       <!-- Tab 4: 关于 -->
       <div class="tab-content" id="tab-about">
         <div class="about-section">
-          <h4>AI Chat WebUI</h4>
+          <h4>Q-AI WebUI</h4>
           <p>基于 OpenAI API 兼容接口的聊天界面</p>
           <p>与 <a href="/a/terminal" target="_blank">Quark Terminal</a> 共享 API 配置</p>
           <hr>
@@ -376,7 +376,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   <!-- ===== App scripts ===== -->
   <script is:inline src="/assets/js/cursor-trail.js"></script>
   <script is:inline src="/assets/js/llm-shared.js"></script>
-  <script is:inline src="/assets/js/ds.js"></script>
+  <script is:inline src="/assets/js/qai.js"></script>
 </body>
 
 </html>

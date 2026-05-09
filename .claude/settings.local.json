@@ -8,7 +8,7 @@
       "Bash(.venv/Scripts/quark qqexport *)",
       "Bash(.venv/Scripts/python *)",
       "Bash(.venv/Scripts/quark *)",
-      "Bash(node -c assets/js/ds.js)",
+      "Bash(node -c assets/js/qai.js)",
       "Bash(node *)",
       "Bash(npx astro *)",
       "Bash(git add *)",
@@ -16,7 +16,8 @@
       "Bash(git push *)",
       "Bash(python -m quark.commands.updatelog cli --dry-run --stdout)",
       "Bash(python -m quark updatelog --dry-run --stdout)",
-      "Bash(python quark/cli.py updatelog --dry-run --stdout)"
+      "Bash(python quark/cli.py updatelog --dry-run --stdout)",
+      "Bash(git mv *)"
     ]
   }
 }

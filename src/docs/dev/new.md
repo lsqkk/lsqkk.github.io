@@ -12,4 +12,4 @@
 
 - [x] 大幅优化 `/a/terminal`，补充常见 shell 指令并接入 LLM 对话能力
 完成时间：2026-04-23
-完成说明：已重构 `/a/terminal` 的路径解析、文件系统与命令执行层，补充 `pwd`、`echo`、`find`、`grep`、`wc`、`head`、`tail`、`cp`、`mv`、`stat`、`env/export/unset` 等常见 shell 指令，并新增 `llm`、`llm-config`、`llm-key`、`llm-base`、`llm-model`、`llm-history` 等命令；同时让 `/a/ds` 与 `/a/terminal` 共用同一套 localStorage LLM 配置，若已在 `/a/ds` 保存 API Key / Base URL / Model，终端可直接读取后对话。
+完成说明：已重构 `/a/terminal` 的路径解析、文件系统与命令执行层，补充 `pwd`、`echo`、`find`、`grep`、`wc`、`head`、`tail`、`cp`、`mv`、`stat`、`env/export/unset` 等常见 shell 指令，并新增 `llm`、`llm-config`、`llm-key`、`llm-base`、`llm-model`、`llm-history` 等命令；同时让 `/a/qai` 与 `/a/terminal` 共用同一套 localStorage LLM 配置，若已在 `/a/qai` 保存 API Key / Base URL / Model，终端可直接读取后对话。

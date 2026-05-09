@@ -1093,7 +1093,7 @@ LLM:
     async requestLlm(prompt) {
         const settings = window.QuarkLLMConfig.getSettings();
         if (!settings.apiKey) {
-            this.output('未检测到 API Key。请先执行 llm-key <你的key>，或前往 /a/ds 保存。', 'error');
+            this.output('未检测到 API Key。请先执行 llm-key <你的key>，或前往 /a/qai 保存。', 'error');
             return;
         }
 
@@ -1150,7 +1150,7 @@ LLM:
 
     showLlmConfig() {
         const settings = window.QuarkLLMConfig.getSettings();
-        const source = localStorage.getItem(window.QuarkLLMConfig.STORAGE_KEYS.legacyApiKey) ? 'localStorage (/a/ds 联动已启用)' : 'localStorage';
+        const source = localStorage.getItem(window.QuarkLLMConfig.STORAGE_KEYS.legacyApiKey) ? 'localStorage (/a/qai 联动已启用)' : 'localStorage';
         this.output(this.createDefinitionList([
             ['API Key', window.QuarkLLMConfig.maskApiKey(settings.apiKey)],
             ['Base URL', settings.baseUrl],
@@ -1165,7 +1165,7 @@ LLM:
             return;
         }
         window.QuarkLLMConfig.saveSettings({ apiKey: args.join(' ') });
-        this.output('LLM API Key 已保存，并已同步给 /a/ds。', 'success');
+        this.output('LLM API Key 已保存，并已同步给 /a/qai。', 'success');
     }
 
     setLlmBase(args) {
