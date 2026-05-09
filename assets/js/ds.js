@@ -103,6 +103,13 @@ function setupEventListeners() {
     if (e.target.files[0]) importChats(e.target.files[0]);
     e.target.value = '';
   };
+
+  // Search
+  byId('search-input').oninput = function () {
+    byId('search-clear-btn').style.display = this.value ? 'flex' : 'none';
+    loadHistoryList();
+  };
+  byId('search-clear-btn').onclick = clearSearch;
 }
 
 function byId(id) { return document.getElementById(id); }
@@ -690,6 +697,20 @@ async function sendMessage() {
     const wasNewChat = currentChatId === null;
     saveToLocalStorage(fullPrompt, rawText, rawReasoning);
 
+    // Data attributes for controls after save (indices now known)
+    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    if (chats[currentChatId]) {
+      const msgCount = chats[currentChatId].messages.length;
+      const allUserMsgs = qsa('#chat-history .user-msg');
+      if (allUserMsgs.length > 0) {
+        allUserMsgs[allUserMsgs.length - 1].dataset.chatIndex = currentChatId;
+        allUserMsgs[allUserMsgs.length - 1].dataset.msgIndex = msgCount - 2;
+      }
+      botMsgDiv.dataset.chatIndex = currentChatId;
+      botMsgDiv.dataset.msgIndex = msgCount - 1;
+      addMessageControls();
+    }
+
     // Auto-generate title for new conversations
     if (wasNewChat) generateTitle(fullPrompt, rawText);
   } catch (err) {
@@ -880,7 +901,7 @@ function saveToLocalStorage(userMsg, botMsg, botReasoning) {
 
   if (currentChatId === null) {
     const title = userMsg.substring(0, 30) || "新会话";
-    chats.unshift({ title, messages: msgPair });
+    chats.unshift({ title, messages: msgPair, createdAt: new Date().toISOString() });
     currentChatId = 0;
   } else {
     chats[currentChatId].messages.push(...msgPair);
@@ -892,18 +913,92 @@ function saveToLocalStorage(userMsg, botMsg, botReasoning) {
 function loadHistoryList() {
   const list = byId('history-list');
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
-  list.innerHTML = "";
 
+  // Migration: assign createdAt to existing chats that don't have it
+  let needsMigrate = false;
+  const now = Date.now();
   chats.forEach((chat, i) => {
-    const div = document.createElement('div');
-    div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
-    div.innerHTML = `
-      <span class="history-title">${escHtml(chat.title || '新会话')}</span>
-      <button onclick="deleteChat(${i}, event)">×</button>
-    `;
-    div.onclick = () => { switchChat(i); };
-    list.appendChild(div);
+    if (!chat.createdAt) {
+      // Distribute over past year based on position (index 0 = newest)
+      const estDays = Math.round((i / Math.max(chats.length, 1)) * 180);
+      chat.createdAt = new Date(now - estDays * 86400000).toISOString();
+      needsMigrate = true;
+    }
   });
+  if (needsMigrate) localStorage.setItem('deepseekChats', JSON.stringify(chats));
+
+  const query = byId('search-input').value.trim().toLowerCase();
+
+  // Filter by search
+  let filtered = chats;
+  if (query) {
+    filtered = chats.filter(chat => {
+      if ((chat.title || '').toLowerCase().includes(query)) return true;
+      return (chat.messages || []).some(m => (m.content || '').toLowerCase().includes(query));
+    });
+  }
+
+  // Group by date
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+  const yesterdayStart = new Date(todayStart - 86400000);
+  const weekStart = new Date(todayStart - 7 * 86400000);
+  const monthStart = new Date(todayStart - 30 * 86400000);
+
+  const groups = { '今天': [], '昨天': [], '最近7天': [], '最近30天': [], '更早': [] };
+  const keys = ['今天', '昨天', '最近7天', '最近30天', '更早'];
+
+  filtered.forEach(chat => {
+    const date = chat.createdAt ? new Date(chat.createdAt) : null;
+    let key = '更早';
+    if (date) {
+      if (date >= todayStart) key = '今天';
+      else if (date >= yesterdayStart) key = '昨天';
+      else if (date >= weekStart) key = '最近7天';
+      else if (date >= monthStart) key = '最近30天';
+    }
+    groups[key].push(chat);
+  });
+
+  // Render
+  list.innerHTML = '';
+  let hasAny = false;
+
+  keys.forEach(key => {
+    const items = groups[key];
+    if (items.length === 0) return;
+    hasAny = true;
+
+    const header = document.createElement('div');
+    header.className = 'history-group-header';
+    header.textContent = key;
+    list.appendChild(header);
+
+    items.forEach(chat => {
+      const i = chats.indexOf(chat);
+      const div = document.createElement('div');
+      div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
+      div.innerHTML = `
+        <span class="history-title">${escHtml(chat.title || '新会话')}</span>
+        <button onclick="deleteChat(${i}, event)">×</button>
+      `;
+      div.onclick = () => { switchChat(i); };
+      list.appendChild(div);
+    });
+  });
+
+  if (!hasAny) {
+    if (query) {
+      list.innerHTML = `<p class="empty-hint" style="padding:16px;text-align:center;font-size:12px;">未找到匹配"${escHtml(query)}"的对话</p>`;
+    } else {
+      list.innerHTML = '<p class="empty-hint" style="padding:16px;text-align:center;font-size:12px;">暂无对话</p>';
+    }
+  }
+}
+
+function clearSearch() {
+  byId('search-input').value = '';
+  byId('search-clear-btn').style.display = 'none';
+  loadHistoryList();
 }
 
 function switchChat(index) {
@@ -919,16 +1014,18 @@ function renderChat(chat) {
   historyBox.innerHTML = "";
   byId('chat-title').textContent = chat.title;
 
-  chat.messages.forEach((msg) => {
+  chat.messages.forEach((msg, i) => {
     if (msg.role === 'user') {
-      appendMessageUI('user', msg.content);
+      appendMessageUI('user', msg.content, null, currentChatId, i);
     } else if (msg.role === 'assistant') {
-      appendMessageUI('bot', msg.content, msg.reasoning);
+      appendMessageUI('bot', msg.content, msg.reasoning, currentChatId, i);
     } else if (msg.role === 'system') {
       // Skip system messages in display
     }
   });
 
+  // Add edit/regenerate controls after all messages
+  if (currentChatId !== null) addMessageControls();
   historyBox.scrollTop = historyBox.scrollHeight;
 }
 
@@ -956,9 +1053,11 @@ function createNewChat() {
 
 // ===== UI Helpers =====
 
-function appendMessageUI(role, text, reasoning) {
+function appendMessageUI(role, text, reasoning, chatIndex, msgIndex) {
   const div = document.createElement('div');
   div.className = `${role}-msg`;
+  if (chatIndex !== undefined) div.dataset.chatIndex = chatIndex;
+  if (msgIndex !== undefined) div.dataset.msgIndex = msgIndex;
   if (role === 'bot') {
     const reasoningHtml = reasoning
       ? `<div class="reasoning-box">${escHtml(reasoning)}</div>`
@@ -1194,41 +1293,36 @@ async function renderMermaid(container) {
   const blocks = container.querySelectorAll('pre code.language-mermaid');
   if (blocks.length === 0) return;
 
-  // Update theme if user toggled dark mode
   const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'default';
-  try { mermaid.setParseErrorHandler?.(() => {}); } catch {}
 
-  const nodes = [];
-  blocks.forEach(code => {
-    const pre = code.closest('pre');
-    if (!pre || pre.querySelector('svg') || pre.dataset.mermaidProcessed) return;
-    pre.classList.add('mermaid');
-    pre.dataset.mermaidProcessed = '1';
-    nodes.push(pre);
-  });
-
-  if (nodes.length === 0) return;
-
+  // Re-initialize with current theme before rendering
   try {
-    await mermaid.run({ nodes });
-    // Wrap each rendered SVG in mermaid-container for styling
-    nodes.forEach(pre => {
-      const svg = pre.querySelector('svg');
-      if (svg) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'mermaid-container';
-        wrapper.style.cssText = `background:${currentTheme === 'dark' ? '#2d2d2d' : 'white'};border-radius:8px;padding:16px;margin:16px 0;overflow-x:auto;text-align:center;`;
-        pre.parentNode.replaceChild(wrapper, pre);
-        wrapper.appendChild(svg);
-      }
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: currentTheme === 'dark' ? 'dark' : 'default',
+      securityLevel: 'loose'
     });
-  } catch (e) {
-    // Fallback: show source code
-    nodes.forEach(pre => {
-      if (pre.querySelector('svg')) return;
-      const source = pre.textContent || '';
+  } catch (e) {}
+
+  for (const code of blocks) {
+    const pre = code.closest('pre');
+    if (!pre || pre.dataset.mermaidProcessed) continue;
+    pre.dataset.mermaidProcessed = '1';
+
+    const source = (code.textContent || '').trim();
+    if (!source) { pre.outerHTML = `<pre class="mermaid-fallback"><code></code></pre>`; continue; }
+
+    try {
+      const id = 'm-' + Math.random().toString(36).slice(2, 10);
+      const { svg } = await mermaid.render(id, source);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'mermaid-container';
+      wrapper.style.cssText = `background:${currentTheme === 'dark' ? '#2d2d2d' : 'white'};border-radius:8px;padding:16px;margin:16px 0;overflow-x:auto;text-align:center;`;
+      wrapper.innerHTML = svg;
+      pre.replaceWith(wrapper);
+    } catch (e) {
       pre.outerHTML = `<pre class="mermaid-fallback"><code>${escHtml(source)}</code></pre>`;
-    });
+    }
   }
 }
 
@@ -1358,6 +1452,333 @@ function startRenameChat() {
     if (e.key === 'Escape') { finishRename(false); }
   };
   input.onblur = () => finishRename(true);
+}
+
+// ===== Message Controls (Edit / Regenerate / Version Nav) =====
+
+function addMessageControls() {
+  if (currentChatId === null) return;
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[currentChatId];
+  if (!chat) return;
+
+  // User messages: edit button + version nav
+  document.querySelectorAll('#chat-history .user-msg').forEach(div => {
+    if (div.querySelector('.msg-actions')) return;
+    const ci = parseInt(div.dataset.chatIndex);
+    const mi = parseInt(div.dataset.msgIndex);
+    if (isNaN(ci) || isNaN(mi)) return;
+    const msg = chat.messages[mi];
+    if (!msg || msg.role !== 'user') return;
+
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+
+    // Version nav for edits
+    const editCount = (msg._edits ? msg._edits.length : 0) + 1;
+    if (editCount > 1) {
+      const v = document.createElement('span');
+      v.className = 'version-nav';
+      v.innerHTML = `<button class="nav-btn" data-action="prev-edit" title="上一个版本">&#8249;</button><span class="version-idx">${editCount}/${editCount}</span><button class="nav-btn" data-action="next-edit" title="下一个版本">&#8250;</button>`;
+      v.querySelector('[data-action="prev-edit"]').onclick = () => navigateUserEdit(ci, mi, -1);
+      v.querySelector('[data-action="next-edit"]').onclick = () => navigateUserEdit(ci, mi, 1);
+      actions.appendChild(v);
+    }
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'msg-action-btn edit-msg-btn';
+    editBtn.textContent = '编辑';
+    editBtn.onclick = () => startEditMessage(div, ci, mi);
+    actions.appendChild(editBtn);
+    div.appendChild(actions);
+  });
+
+  // Assistant messages: regenerate button + version nav
+  document.querySelectorAll('#chat-history .bot-msg').forEach(div => {
+    if (div.querySelector('.msg-actions')) return;
+    const ci = parseInt(div.dataset.chatIndex);
+    const mi = parseInt(div.dataset.msgIndex);
+    if (isNaN(ci) || isNaN(mi)) return;
+    const msg = chat.messages[mi];
+    if (!msg || msg.role !== 'assistant') return;
+
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+
+    // Version nav for regenerations
+    const verCount = (msg._versions ? msg._versions.length : 0) + 1;
+    if (verCount > 1) {
+      const v = document.createElement('span');
+      v.className = 'version-nav';
+      v.innerHTML = `<button class="nav-btn" data-action="prev-version" title="上一个版本">&#8249;</button><span class="version-idx">${verCount}/${verCount}</span><button class="nav-btn" data-action="next-version" title="下一个版本">&#8250;</button>`;
+      v.querySelector('[data-action="prev-version"]').onclick = () => navigateAIVersion(ci, mi, -1);
+      v.querySelector('[data-action="next-version"]').onclick = () => navigateAIVersion(ci, mi, 1);
+      actions.appendChild(v);
+    }
+
+    const regenBtn = document.createElement('button');
+    regenBtn.className = 'msg-action-btn regen-msg-btn';
+    regenBtn.innerHTML = '&#x21bb; 重新生成';
+    regenBtn.onclick = () => regenerateResponse(ci, mi);
+    actions.appendChild(regenBtn);
+    div.appendChild(actions);
+  });
+}
+
+function startEditMessage(div, chatIndex, msgIndex) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[chatIndex];
+  if (!chat) return;
+  const msg = chat.messages[msgIndex];
+  if (!msg || msg.role !== 'user') return;
+
+  const currentText = msg.content;
+  div.textContent = '';
+
+  const textarea = document.createElement('textarea');
+  textarea.className = 'edit-textarea';
+  textarea.value = currentText;
+  div.appendChild(textarea);
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'edit-actions';
+  btnRow.innerHTML = `<button class="primary-btn" id="edit-save-btn">保存并重新生成</button><button class="secondary-btn" id="edit-cancel-btn">取消</button>`;
+  div.appendChild(btnRow);
+
+  textarea.focus();
+  const len = textarea.value.length;
+  textarea.setSelectionRange(len, len);
+
+  byId('edit-save-btn').onclick = async () => {
+    const newText = textarea.value.trim();
+    if (!newText) { showToast('内容不能为空'); return; }
+
+    if (!msg._edits) msg._edits = [];
+    if (msg.content !== newText) msg._edits.push(msg.content);
+    msg.content = newText;
+
+    // Truncate everything after this message
+    chat.messages = chat.messages.slice(0, msgIndex + 1);
+    localStorage.setItem('deepseekChats', JSON.stringify(chats));
+
+    currentChatId = chatIndex;
+    renderChat(chat);
+    continueFromMessage(chatIndex, msgIndex);
+  };
+
+  byId('edit-cancel-btn').onclick = () => { renderChat(chat); };
+}
+
+async function continueFromMessage(chatIndex, userMsgIndex) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[chatIndex];
+  if (!chat) return;
+
+  const settings = C.getSettings();
+  if (!settings.apiKey) { showToast('请先设置 API Key'); return; }
+
+  const params = loadParams();
+  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+
+  // Build API messages from context up to and including userMsgIndex
+  const activePersona = C.getActivePersona();
+  const apiMessages = [];
+  if (activePersona && activePersona.systemPrompt) {
+    apiMessages.push({ role: "system", content: activePersona.systemPrompt });
+  }
+  const contextWindow = params.contextWindow || CONTEXT_LIMIT;
+  const startIdx = Math.max(0, userMsgIndex - contextWindow + 1);
+  for (let i = startIdx; i <= userMsgIndex; i++) {
+    const m = chat.messages[i];
+    if (m) apiMessages.push({ role: m.role, content: m.content });
+  }
+
+  const requestBody = buildRequestBody(settings.model, apiMessages, params);
+  const historyBox = byId('chat-history');
+
+  const botMsgDiv = document.createElement('div');
+  botMsgDiv.className = 'bot-msg';
+  botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content">...</div>`;
+  historyBox.appendChild(botMsgDiv);
+  historyBox.scrollTop = historyBox.scrollHeight;
+
+  const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
+  const contentBox = botMsgDiv.querySelector('.markdown-content');
+
+  try {
+    let result;
+    currentChatId = chatIndex;
+    if (params.stream !== false) {
+      result = await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+    } else {
+      result = await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
+    }
+
+    const rawText = result.text || '';
+    const rawReasoning = result.reasoning || '';
+
+    // Append to localStorage
+    const assistantMsg = { role: "assistant", content: rawText };
+    if (rawReasoning) assistantMsg.reasoning = rawReasoning;
+    chat.messages.push(assistantMsg);
+    localStorage.setItem('deepseekChats', JSON.stringify(chats));
+
+    const newIdx = chat.messages.length - 1;
+    botMsgDiv.dataset.chatIndex = chatIndex;
+    botMsgDiv.dataset.msgIndex = newIdx;
+    addCopyButton(botMsgDiv, rawText, contentBox);
+    addMessageControls();
+    historyBox.scrollTop = historyBox.scrollHeight;
+  } catch (err) {
+    contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
+  }
+}
+
+async function regenerateResponse(chatIndex, msgIndex) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[chatIndex];
+  if (!chat) return;
+  const msg = chat.messages[msgIndex];
+  if (!msg || msg.role !== 'assistant') return;
+
+  // Save current version
+  if (!msg._versions) msg._versions = [];
+  msg._versions.push({ content: msg.content || '', reasoning: msg.reasoning || '' });
+
+  const userMsgIndex = msgIndex - 1;
+  if (userMsgIndex < 0) return;
+
+  // Find existing bot-msg DOM element
+  const botMsgDiv = document.querySelector(`#chat-history .bot-msg[data-chat-index="${chatIndex}"][data-msg-index="${msgIndex}"]`);
+  if (!botMsgDiv) return;
+
+  const contentBox = botMsgDiv.querySelector('.markdown-content');
+  const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
+  if (contentBox) contentBox.innerHTML = '...';
+  if (reasoningBox) { reasoningBox.style.display = 'none'; reasoningBox.textContent = ''; }
+
+  // Remove existing controls
+  const oldActions = botMsgDiv.querySelector('.msg-actions');
+  if (oldActions) oldActions.remove();
+
+  const settings = C.getSettings();
+  if (!settings.apiKey) { showToast('请先设置 API Key'); return; }
+
+  const params = loadParams();
+  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+
+  // Build messages (same context as before but without the old response)
+  const activePersona = C.getActivePersona();
+  const apiMessages = [];
+  if (activePersona && activePersona.systemPrompt) {
+    apiMessages.push({ role: "system", content: activePersona.systemPrompt });
+  }
+  const contextWindow = params.contextWindow || CONTEXT_LIMIT;
+  const startIdx = Math.max(0, userMsgIndex - contextWindow + 1);
+  for (let i = startIdx; i <= userMsgIndex; i++) {
+    const m = chat.messages[i];
+    if (m) apiMessages.push({ role: m.role, content: m.content });
+  }
+
+  const requestBody = buildRequestBody(settings.model, apiMessages, params);
+  const historyBox = byId('chat-history');
+
+  try {
+    let result;
+    currentChatId = chatIndex;
+    if (params.stream !== false) {
+      result = await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+    } else {
+      result = await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
+    }
+
+    const rawText = result.text || '';
+    const rawReasoning = result.reasoning || '';
+
+    // Update localStorage (replace current content)
+    msg.content = rawText;
+    msg.reasoning = rawReasoning;
+    localStorage.setItem('deepseekChats', JSON.stringify(chats));
+
+    addCopyButton(botMsgDiv, rawText, contentBox);
+    addMessageControls();
+    historyBox.scrollTop = historyBox.scrollHeight;
+  } catch (err) {
+    if (contentBox) contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
+  }
+}
+
+function navigateUserEdit(chatIndex, msgIndex, direction) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[chatIndex];
+  if (!chat) return;
+  const msg = chat.messages[msgIndex];
+  if (!msg || !msg._edits) return;
+
+  const div = document.querySelector(`#chat-history .user-msg[data-chat-index="${chatIndex}"][data-msg-index="${msgIndex}"]`);
+  if (!div) return;
+
+  const total = msg._edits.length + 1;
+  let idx = parseInt(div.dataset.displayEdit) || msg._edits.length;
+  idx = (idx + direction + total) % total;
+  div.dataset.displayEdit = idx;
+
+  // Update displayed text
+  if (idx < msg._edits.length) {
+    div.childNodes.forEach(c => { if (c.nodeType === 3) c.remove(); });
+    div.insertBefore(document.createTextNode(msg._edits[idx]), div.firstChild);
+  } else {
+    div.childNodes.forEach(c => { if (c.nodeType === 3) c.remove(); });
+    div.insertBefore(document.createTextNode(msg.content), div.firstChild);
+  }
+
+  const idxSpan = div.querySelector('.version-idx');
+  if (idxSpan) idxSpan.textContent = `${idx + 1}/${total}`;
+}
+
+function navigateAIVersion(chatIndex, msgIndex, direction) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[chatIndex];
+  if (!chat) return;
+  const msg = chat.messages[msgIndex];
+  if (!msg || !msg._versions) return;
+
+  const div = document.querySelector(`#chat-history .bot-msg[data-chat-index="${chatIndex}"][data-msg-index="${msgIndex}"]`);
+  if (!div) return;
+
+  const total = msg._versions.length + 1;
+  let idx = parseInt(div.dataset.displayVersion) || msg._versions.length;
+  idx = (idx + direction + total) % total;
+  div.dataset.displayVersion = idx;
+
+  let verContent, verReasoning;
+  if (idx < msg._versions.length) {
+    verContent = msg._versions[idx].content || '';
+    verReasoning = msg._versions[idx].reasoning || '';
+  } else {
+    verContent = msg.content || '';
+    verReasoning = msg.reasoning || '';
+  }
+
+  const contentBox = div.querySelector('.markdown-content');
+  const reasoningBox = div.querySelector('.reasoning-box');
+
+  if (contentBox) {
+    contentBox.innerHTML = marked.parse(verContent);
+    enhanceRenderedContent(contentBox);
+  }
+  if (reasoningBox) {
+    if (verReasoning) {
+      reasoningBox.style.display = 'block';
+      reasoningBox.textContent = verReasoning;
+      reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
+    } else {
+      reasoningBox.style.display = 'none';
+    }
+  }
+
+  const idxSpan = div.querySelector('.version-idx');
+  if (idxSpan) idxSpan.textContent = `${idx + 1}/${total}`;
 }
 
 // ===== Toast =====
