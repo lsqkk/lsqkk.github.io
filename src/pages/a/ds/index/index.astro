@@ -189,11 +189,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <label>搜索 API Key</label>
           <input type="password" id="search-api-key" placeholder="搜索服务的 API Key">
         </div>
-        <div class="input-group" id="cors-proxy-group" style="display:none">
-          <label>CORS 代理（跨域必填）</label>
-          <input type="url" id="cors-proxy-input" placeholder="https://corsproxy.io/?">
-        </div>
-        <p class="help-text">搜索 API 不支持浏览器跨域请求时，需填写 CORS 代理地址（如 https://corsproxy.io/?）。启用联网搜索后将自动使用搜索 API 地址作为聊天端点。</p>
+        <p class="help-text">请求将通过 Vercel 后端代理转发以解决跨域问题。需在搜索 API 地址填入千帆等 AI 搜索 API 的基础 URL。</p>
       </div>
 
       <!-- Tab 2: 参数 -->
