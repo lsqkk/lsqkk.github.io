@@ -77,6 +77,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <div class="header-right">
           <span id="active-persona-badge" class="badge" style="display:none"></span>
           <span id="active-profile-name" class="profile-badge"></span>
+          <span id="token-display" class="profile-badge" style="display:none"></span>
+        </div>
+        <div id="context-bar" class="context-bar" style="display:none">
+          <div id="context-bar-fill" class="context-bar-fill"></div>
+          <span id="context-bar-text" class="context-bar-text"></span>
         </div>
       </header>
 
@@ -164,6 +169,27 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <button id="test-connection-btn" class="secondary-btn">测试连接</button>
           <span id="connection-status" class="status-text"></span>
         </div>
+
+        <hr class="section-divider">
+        <h4 class="section-title">联网搜索</h4>
+
+        <div class="input-group">
+          <label>启用联网搜索</label>
+          <label class="toggle-label">
+            <input type="checkbox" id="web-search-toggle">
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">发送消息时自动搜索网络</span>
+          </label>
+        </div>
+        <div class="input-group">
+          <label>搜索 API 地址</label>
+          <input type="url" id="search-api-url" placeholder="https://api.baidu.com/search">
+        </div>
+        <div class="input-group">
+          <label>搜索 API Key</label>
+          <input type="password" id="search-api-key" placeholder="搜索服务的 API Key">
+        </div>
+        <p class="help-text">搜索 API 需接受 POST JSON 格式，返回包含 title、snippet、url 的结果数组。</p>
       </div>
 
       <!-- Tab 2: 参数 -->
@@ -226,6 +252,23 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <span class="toggle-text">启用流式输出</span>
           </label>
         </div>
+
+        <hr class="section-divider">
+        <h4 class="section-title">上下文管理</h4>
+
+        <div class="input-group">
+          <label>无限上下文模式</label>
+          <label class="toggle-label">
+            <input type="checkbox" id="infinite-context-toggle">
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">发送全部历史消息，不截断</span>
+          </label>
+        </div>
+        <div class="input-group">
+          <label>模型最大上下文 (tokens)</label>
+          <input type="number" id="max-model-context-input" min="1000" max="10000000" value="128000" placeholder="128000">
+        </div>
+        <p class="help-text">用于估算上下文使用率和进度条显示。常见值：DeepSeek 64K，GPT-4 128K，Claude 200K。</p>
       </div>
 
       <!-- Tab 3: 预设 -->
@@ -249,6 +292,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <p><strong>默认服务商：</strong>DeepSeek</p>
           <p>当前配置保存在浏览器 localStorage 中</p>
           <p>人格数据仅存储在本地，不会上传</p>
+          <hr>
+          <h4>Token 消耗统计</h4>
+          <p id="global-token-stats">加载中...</p>
         </div>
       </div>
 

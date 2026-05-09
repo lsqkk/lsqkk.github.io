@@ -9,7 +9,8 @@
       "Bash(.venv/Scripts/python *)",
       "Bash(.venv/Scripts/quark *)",
       "Bash(node -c assets/js/ds.js)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(npx astro *)"
     ]
   }
 }

@@ -241,6 +241,40 @@ a:hover { text-decoration: underline; }
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Context progress bar below header */
+.context-bar {
+  height: 3px;
+  background: var(--border);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.context-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s;
+  border-radius: 0 2px 2px 0;
+}
+
+.context-bar-fill.warn {
+  background: #f0ad4e;
+}
+
+.context-bar-fill.danger {
+  background: var(--danger);
+}
+
+.context-bar-text {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .header-left {
@@ -871,6 +905,40 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-muted);
 }
 
+/* --- Section Divider --- */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 12px;
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+
+.help-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: -8px;
+}
+
+.help-text code {
+  background: rgba(0,0,0,0.05);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.dark-mode .help-text code {
+  background: rgba(255,255,255,0.08);
+}
+
 /* --- Buttons Row --- */
 .btn-row {
   display: flex;
@@ -1299,25 +1367,31 @@ input[type="range"]::-moz-range-thumb {
   color: #fff;
 }
 
-/* ===== Copy Button with Dropdown ===== */
+/* ===== Message Button Group (Copy + Download) ===== */
 
-.copy-btn-wrapper {
+.msg-btn-group {
   position: absolute;
   bottom: 8px;
   right: 12px;
   display: flex;
-  align-items: stretch;
+  gap: 4px;
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 10;
 }
 
-.bot-msg:hover .copy-btn-wrapper,
-.user-msg:hover .copy-btn-wrapper {
+.bot-msg:hover .msg-btn-group,
+.user-msg:hover .msg-btn-group {
   opacity: 1;
 }
 
-.copy-btn-main {
+.btn-group {
+  display: flex;
+  align-items: stretch;
+  position: relative;
+}
+
+.msg-btn {
   padding: 4px 10px;
   font-size: 10px;
   font-weight: 600;
@@ -1328,13 +1402,14 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-muted);
   cursor: pointer;
   transition: 0.1s;
+  line-height: 1.6;
 }
 
-.copy-btn-main:hover {
+.msg-btn:hover {
   color: var(--accent);
 }
 
-.copy-btn-dropdown {
+.msg-btn-dropdown {
   padding: 4px 6px;
   font-size: 8px;
   background: var(--bg-main);
@@ -1346,12 +1421,12 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1;
 }
 
-.copy-btn-dropdown:hover {
+.msg-btn-dropdown:hover {
   color: var(--accent);
   border-color: var(--accent);
 }
 
-.copy-menu {
+.dropdown-menu {
   display: none;
   position: absolute;
   bottom: 100%;
@@ -1362,15 +1437,15 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 6px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  min-width: 130px;
+  min-width: 150px;
   z-index: 20;
 }
 
-.copy-menu.show {
+.dropdown-menu.show {
   display: block;
 }
 
-.copy-menu button {
+.dropdown-menu button {
   display: block;
   width: 100%;
   padding: 8px 14px;
@@ -1381,9 +1456,10 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-main);
   cursor: pointer;
   transition: 0.1s;
+  white-space: nowrap;
 }
 
-.copy-menu button:hover {
+.dropdown-menu button:hover {
   background: var(--accent-light);
   color: var(--accent);
 }

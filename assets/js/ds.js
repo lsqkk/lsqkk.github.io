@@ -41,7 +41,10 @@ function setupEventListeners() {
   byId('new-chat-btn').onclick = createNewChat;
   byId('sidebar-toggle').onclick = toggleSidebar;
   byId('theme-toggle').onclick = toggleTheme;
-  byId('settings-btn').onclick = () => toggleModal('settings-modal', true);
+  byId('settings-btn').onclick = () => {
+    toggleModal('settings-modal', true);
+    updateGlobalTokenStats();
+  };
   byId('close-settings').onclick = () => toggleModal('settings-modal', false);
   byId('cancel-settings').onclick = () => toggleModal('settings-modal', false);
   byId('save-settings').onclick = saveSettingsFromUI;
@@ -95,6 +98,28 @@ function setupEventListeners() {
 
   // Chat title rename (double-click)
   byId('chat-title').ondblclick = startRenameChat;
+
+  // Web search toggle -> show/hide API fields
+  byId('web-search-toggle').onchange = function () {
+    const visible = this.checked;
+    byId('search-api-url').closest('.input-group').style.display = visible ? 'block' : 'none';
+    byId('search-api-key').closest('.input-group').style.display = visible ? 'block' : 'none';
+  };
+  // Initial state
+  if (!byId('web-search-toggle').checked) {
+    byId('search-api-url').closest('.input-group').style.display = 'none';
+    byId('search-api-key').closest('.input-group').style.display = 'none';
+  }
+
+  // Infinite context toggle -> show/hide context window input
+  byId('infinite-context-toggle').onchange = function () {
+    const visible = !this.checked;
+    byId('context-window-input').closest('.input-group').style.display = visible ? 'block' : 'none';
+  };
+  // Initial state
+  if (byId('infinite-context-toggle').checked) {
+    byId('context-window-input').closest('.input-group').style.display = 'none';
+  }
 
   // Export / Import
   byId('export-chats-btn').onclick = exportChats;
@@ -212,6 +237,11 @@ function loadSettingsIntoUI() {
   byId('frequency-penalty-value').textContent = params.frequencyPenalty;
   byId('stop-input').value = (params.stop || []).join(', ');
   byId('stream-toggle').checked = params.stream !== false;
+  byId('infinite-context-toggle').checked = params.infiniteContext === true;
+  byId('max-model-context-input').value = params.maxModelContext || 128000;
+  byId('web-search-toggle').checked = params.webSearch === true;
+  byId('search-api-url').value = params.searchApiUrl || '';
+  byId('search-api-key').value = params.searchApiKey || '';
 }
 
 function loadParams() {
@@ -243,7 +273,12 @@ function saveSettingsFromUI() {
     stop: byId('stop-input').value.split(',').map(s => s.trim()).filter(Boolean),
     contextWindow: parseInt(byId('context-window-input').value) || 15,
     maxTokens: parseInt(byId('max-tokens-input').value) || 4096,
-    stream: byId('stream-toggle').checked
+    stream: byId('stream-toggle').checked,
+    infiniteContext: byId('infinite-context-toggle').checked,
+    maxModelContext: parseInt(byId('max-model-context-input').value) || 128000,
+    webSearch: byId('web-search-toggle').checked,
+    searchApiUrl: byId('search-api-url').value.trim(),
+    searchApiKey: byId('search-api-key').value.trim()
   };
   saveParams(params);
 
@@ -270,6 +305,11 @@ function loadDefaultSettings() {
   byId('frequency-penalty-value').textContent = C.DEFAULTS.frequencyPenalty;
   byId('stop-input').value = '';
   byId('stream-toggle').checked = true;
+  byId('infinite-context-toggle').checked = false;
+  byId('max-model-context-input').value = 128000;
+  byId('web-search-toggle').checked = false;
+  byId('search-api-url').value = '';
+  byId('search-api-key').value = '';
   showToast('已恢复默认设置');
 }
 
@@ -677,7 +717,27 @@ async function sendMessage() {
 
   const params = loadParams();
   const endpoint = C.buildChatEndpoint(settings.baseUrl);
-  const messages = buildMessages(fullPrompt);
+  let messages = buildMessages(fullPrompt);
+
+  // Web search: if enabled, search the web and inject results as context
+  if (params.webSearch && fullPrompt) {
+    const searchUrl = params.searchApiUrl || '';
+    const searchKey = params.searchApiKey || '';
+    if (searchUrl && searchKey) {
+      try {
+        const searchResult = await performWebSearch(fullPrompt, searchUrl, searchKey);
+        const searchContext = formatSearchResults(searchResult, fullPrompt);
+        if (searchContext) {
+          // Inject search results as a system-level context before the user message
+          messages.splice(messages.length - 1, 0, {
+            role: "system",
+            content: searchContext
+          });
+        }
+      } catch {}
+    }
+  }
+
   const requestBody = buildRequestBody(settings.model, messages, params);
 
   try {
@@ -691,11 +751,18 @@ async function sendMessage() {
     // Save raw markdown and reasoning (not rendered plain text)
     const rawText = result.text || '';
     const rawReasoning = result.reasoning || '';
+    const usage = result.usage || null;
 
     addCopyButton(botMsgDiv, rawText, contentBox);
 
     const wasNewChat = currentChatId === null;
     saveToLocalStorage(fullPrompt, rawText, rawReasoning);
+
+    // Track token usage
+    if (usage) trackTokenUsage(currentChatId, usage);
+
+    // Show context warning if approaching limit
+    showContextWarning();
 
     // Data attributes for controls after save (indices now known)
     const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
@@ -732,18 +799,64 @@ function buildMessages(userPrompt) {
     messages.push({ role: "system", content: activePersona.systemPrompt });
   }
 
-  // Add history context
+  // Add history context (infinite or limited)
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
   const params = loadParams();
-  const contextWindow = params.contextWindow || CONTEXT_LIMIT;
 
   if (currentChatId !== null && chats[currentChatId]) {
-    const history = chats[currentChatId].messages.slice(-contextWindow);
+    let history;
+    if (params.infiniteContext) {
+      history = chats[currentChatId].messages;
+    } else {
+      const contextWindow = params.contextWindow || CONTEXT_LIMIT;
+      history = chats[currentChatId].messages.slice(-contextWindow);
+    }
     messages.push(...history);
   }
 
   messages.push({ role: "user", content: userPrompt });
   return messages;
+}
+
+async function performWebSearch(query, apiUrl, apiKey) {
+  if (!apiUrl || !apiKey) {
+    // Try a simple generic search API format
+    if (!apiUrl) return null;
+  }
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({ query, num: 5 })
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function formatSearchResults(data, query) {
+  if (!data) return '';
+  // Try common response formats
+  const results = data.results || data.items || data.data || [];
+  if (Array.isArray(results) && results.length > 0) {
+    let context = '## 联网搜索结果\n\n以下是与用户问题相关的搜索结果，请基于这些信息回答：\n\n';
+    results.slice(0, 5).forEach((r, i) => {
+      const title = r.title || r.name || '';
+      const snippet = r.snippet || r.content || r.description || '';
+      const url = r.url || r.link || '';
+      context += `${i + 1}. **${title}**\n   ${snippet}\n   ${url}\n\n`;
+    });
+    return context;
+  }
+  // If the response is a single string
+  if (typeof data === 'string') return data;
+  return JSON.stringify(data);
 }
 
 function buildRequestBody(model, messages, params) {
@@ -835,6 +948,16 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
     } catch {}
   }
 
+  // Try to extract usage from final chunk
+  let usage = null;
+  try {
+    const finalStr = pendingChunk.replace(/^data: /, '');
+    if (finalStr) {
+      const finalData = JSON.parse(finalStr);
+      if (finalData?.usage) usage = finalData.usage;
+    }
+  } catch {}
+
   // Make reasoning box clickable to expand/collapse
   if (fullReasoning) {
     reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
@@ -845,7 +968,7 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
     enhanceRenderedContent(contentBox);
   }
 
-  return { text: fullText, reasoning: fullReasoning };
+  return { text: fullText, reasoning: fullReasoning, usage };
 }
 
 async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, historyBox) {
@@ -867,6 +990,7 @@ async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, hi
   const choice = data?.choices?.[0];
   const text = choice?.message?.content || '';
   const reasoning = choice?.message?.reasoning_content || '';
+  const usage = data?.usage || null;
 
   if (reasoning) {
     const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
@@ -881,7 +1005,123 @@ async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, hi
   // Enhance with syntax highlighting etc.
   if (text) enhanceRenderedContent(contentBox);
 
-  return { text, reasoning };
+  return { text, reasoning, usage };
+}
+
+// ===== Token Tracking =====
+
+function trackTokenUsage(chatIndex, usage) {
+  if (!usage || chatIndex === null) return;
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = chats[chatIndex];
+  if (!chat) return;
+
+  if (!chat.tokenUsage) chat.tokenUsage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
+  chat.tokenUsage.promptTokens += usage.prompt_tokens || 0;
+  chat.tokenUsage.completionTokens += usage.completion_tokens || 0;
+  chat.tokenUsage.totalTokens += usage.total_tokens || 0;
+  localStorage.setItem('deepseekChats', JSON.stringify(chats));
+
+  let global = { totalPromptTokens: 0, totalCompletionTokens: 0, totalTokens: 0 };
+  try { global = JSON.parse(localStorage.getItem('quark_llm_token_usage')) || global; } catch {}
+  global.totalPromptTokens += usage.prompt_tokens || 0;
+  global.totalCompletionTokens += usage.completion_tokens || 0;
+  global.totalTokens += usage.total_tokens || 0;
+  localStorage.setItem('quark_llm_token_usage', JSON.stringify(global));
+
+  updateTokenDisplay();
+  updateContextDisplay();
+}
+
+function updateTokenDisplay() {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = currentChatId !== null ? chats[currentChatId] : null;
+  const el = byId('token-display');
+  if (!el) return;
+  if (chat && chat.tokenUsage && chat.tokenUsage.totalTokens > 0) {
+    el.textContent = `${chat.tokenUsage.totalTokens} tokens`;
+    el.style.display = 'inline';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function getGlobalTokenStats() {
+  try { return JSON.parse(localStorage.getItem('quark_llm_token_usage')) || { totalTokens: 0 }; }
+  catch { return { totalTokens: 0 }; }
+}
+
+function updateGlobalTokenStats() {
+  const stats = getGlobalTokenStats();
+  const el = byId('global-token-stats');
+  if (!el) return;
+  const t = stats.totalTokens || 0;
+  const p = stats.totalPromptTokens || 0;
+  const c = stats.totalCompletionTokens || 0;
+  el.innerHTML = `
+    <strong>总计：</strong>${t.toLocaleString()} tokens<br>
+    <span style="font-size:12px;color:var(--text-muted)">提示: ${p.toLocaleString()} · 生成: ${c.toLocaleString()}</span>
+  `;
+}
+
+function estimateTokens(text) {
+  return Math.ceil((text || '').length / 2);
+}
+
+function estimateContextTokens(chat) {
+  if (!chat || !chat.messages) return 0;
+  let total = 0;
+  for (const m of chat.messages) {
+    total += estimateTokens(m.content || '');
+    if (m.reasoning) total += estimateTokens(m.reasoning);
+  }
+  return total;
+}
+
+function updateContextDisplay() {
+  const bar = byId('context-bar');
+  const fill = byId('context-bar-fill');
+  const text = byId('context-bar-text');
+  if (!bar || !fill || !text) return;
+
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = currentChatId !== null ? chats[currentChatId] : null;
+  if (!chat) { bar.style.display = 'none'; return; }
+
+  const params = loadParams();
+  const modelMax = params.maxModelContext || 128000;
+  const estimated = estimateContextTokens(chat);
+  const pct = Math.min(100, Math.round((estimated / modelMax) * 100));
+
+  if (estimated === 0) { bar.style.display = 'none'; return; }
+
+  bar.style.display = 'block';
+  fill.style.width = pct + '%';
+  fill.className = 'context-bar-fill' + (pct > 85 ? ' danger' : pct > 65 ? ' warn' : '');
+  text.textContent = `${estimated.toLocaleString()} / ${modelMax.toLocaleString()} (${pct}%)`;
+}
+
+function showContextWarning() {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const chat = currentChatId !== null ? chats[currentChatId] : null;
+  if (!chat) return;
+
+  const params = loadParams();
+  if (params.infiniteContext) return;
+
+  const contextWindow = params.contextWindow || CONTEXT_LIMIT;
+  const estimated = estimateContextTokens(chat);
+  const limit = contextWindow * 200; // rough token estimate per message
+  const pct = Math.round((estimated / limit) * 100);
+
+  if (pct > 70 && pct <= 90) {
+    const existing = qs('.context-toast');
+    if (!existing) {
+      showToast(`上下文使用约 ${pct}%，接近限制。建议在设置中启用「无限上下文模式」。`);
+    }
+  } else if (pct > 90) {
+    showToast(`⚠️ 上下文使用已达 ${pct}%，请启用「无限上下文模式」以避免截断！`);
+  }
 }
 
 // ===== History =====
@@ -1007,6 +1247,8 @@ function switchChat(index) {
   currentChatId = index;
   renderChat(chats[index]);
   loadHistoryList();
+  updateTokenDisplay();
+  updateContextDisplay();
 }
 
 function renderChat(chat) {
@@ -1049,6 +1291,8 @@ function createNewChat() {
   byId('chat-title').textContent = "新会话";
   loadHistoryList();
   showEmptyState();
+  updateTokenDisplay();
+  updateContextDisplay();
 }
 
 // ===== UI Helpers =====
@@ -1080,63 +1324,138 @@ function appendMessageUI(role, text, reasoning, chatIndex, msgIndex) {
 }
 
 function addCopyButton(parent, text, contentEl) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'copy-btn-wrapper';
+  const group = document.createElement('div');
+  group.className = 'msg-btn-group';
 
-  const mainBtn = document.createElement('button');
-  mainBtn.className = 'copy-btn-main';
-  mainBtn.textContent = '复制';
-  mainBtn.onclick = () => {
+  // === Copy button group ===
+  const copyGroup = document.createElement('div');
+  copyGroup.className = 'btn-group';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'msg-btn';
+  copyBtn.textContent = '复制';
+  copyBtn.onclick = () => {
     navigator.clipboard.writeText(text).then(() => {
-      mainBtn.textContent = '已复制 ✓';
-      setTimeout(() => { mainBtn.textContent = '复制'; }, 2000);
+      copyBtn.textContent = '已复制 ✓';
+      setTimeout(() => { copyBtn.textContent = '复制'; }, 2000);
     });
   };
 
-  const dropdownBtn = document.createElement('button');
-  dropdownBtn.className = 'copy-btn-dropdown';
-  dropdownBtn.textContent = '▼';
-  dropdownBtn.onclick = (e) => {
-    e.stopPropagation();
-    menu.classList.toggle('show');
-  };
+  const copyDropdownBtn = document.createElement('button');
+  copyDropdownBtn.className = 'msg-btn-dropdown';
+  copyDropdownBtn.textContent = '▼';
+  const copyMenu = document.createElement('div');
+  copyMenu.className = 'dropdown-menu';
 
-  const menu = document.createElement('div');
-  menu.className = 'copy-menu';
-  menu.innerHTML = `
-    <button data-format="markdown">复制 Markdown</button>
-    <button data-format="html">复制 HTML</button>
-    <button data-format="text">复制纯文本</button>
-  `;
-  menu.querySelectorAll('button').forEach(btn => {
+  const copyFormats = [
+    { key: 'markdown', label: '复制 Markdown' },
+    { key: 'html', label: '复制 HTML' },
+    { key: 'text', label: '复制纯文本' }
+  ];
+  copyFormats.forEach(f => {
+    const btn = document.createElement('button');
+    btn.textContent = f.label;
     btn.onclick = () => {
-      const format = btn.dataset.format;
       let copyText = text;
-      if (format === 'html' && contentEl) {
+      if (f.key === 'html' && contentEl) {
         copyText = contentEl.innerHTML;
-      } else if (format === 'text') {
+      } else if (f.key === 'text') {
         const temp = document.createElement('div');
         temp.innerHTML = marked.parse(text);
         copyText = temp.textContent || '';
       }
       navigator.clipboard.writeText(copyText).then(() => {
         btn.textContent = '✓ 已复制';
-        setTimeout(() => {
-          btn.textContent = btn.textContent.includes('Markdown') ? '复制 Markdown' :
-                           btn.textContent.includes('HTML') ? '复制 HTML' : '复制纯文本';
-        }, 1500);
+        setTimeout(() => { btn.textContent = f.label; }, 1500);
       });
-      menu.classList.remove('show');
+      copyMenu.classList.remove('show');
     };
+    copyMenu.appendChild(btn);
   });
 
-  wrapper.appendChild(mainBtn);
-  wrapper.appendChild(dropdownBtn);
-  wrapper.appendChild(menu);
-  parent.appendChild(wrapper);
+  copyDropdownBtn.onclick = (e) => { e.stopPropagation(); copyMenu.classList.toggle('show'); };
+  copyGroup.appendChild(copyBtn);
+  copyGroup.appendChild(copyDropdownBtn);
+  copyGroup.appendChild(copyMenu);
 
-  // Close menu on outside click
-  document.addEventListener('click', () => menu.classList.remove('show'));
+  // === Download button group ===
+  const dloadGroup = document.createElement('div');
+  dloadGroup.className = 'btn-group';
+
+  const dloadBtn = document.createElement('button');
+  dloadBtn.className = 'msg-btn';
+  dloadBtn.textContent = '下载';
+  dloadBtn.onclick = () => triggerDownload('markdown');
+
+  const dloadDropdownBtn = document.createElement('button');
+  dloadDropdownBtn.className = 'msg-btn-dropdown';
+  dloadDropdownBtn.textContent = '▼';
+  const dloadMenu = document.createElement('div');
+  dloadMenu.className = 'dropdown-menu';
+
+  const dloadFormats = [
+    { key: 'markdown', label: '下载 Markdown (.md)' },
+    { key: 'html', label: '下载 HTML (.html)' },
+    { key: 'text', label: '下载 纯文本 (.txt)' },
+    { key: 'word', label: '下载 Word (.doc)' }
+  ];
+  dloadFormats.forEach(f => {
+    const btn = document.createElement('button');
+    btn.textContent = f.label;
+    btn.onclick = () => { triggerDownload(f.key); dloadMenu.classList.remove('show'); };
+    dloadMenu.appendChild(btn);
+  });
+
+  dloadDropdownBtn.onclick = (e) => { e.stopPropagation(); dloadMenu.classList.toggle('show'); };
+  dloadGroup.appendChild(dloadBtn);
+  dloadGroup.appendChild(dloadDropdownBtn);
+  dloadGroup.appendChild(dloadMenu);
+
+  // === Close menus on outside click ===
+  document.addEventListener('click', () => { copyMenu.classList.remove('show'); dloadMenu.classList.remove('show'); });
+
+  group.appendChild(copyGroup);
+  group.appendChild(dloadGroup);
+  parent.appendChild(group);
+
+  function triggerDownload(format) {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    let content, filename, mimeType;
+
+    switch (format) {
+      case 'markdown':
+        content = text;
+        filename = `chat-${dateStr}.md`;
+        mimeType = 'text/markdown;charset=utf-8';
+        break;
+      case 'html':
+        content = (contentEl ? contentEl.innerHTML : marked.parse(text));
+        content = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Chat Export</title></head><body style="font-family:system-ui,sans-serif;line-height:1.7;padding:20px;max-width:800px;margin:0 auto">${content}</body></html>`;
+        filename = `chat-${dateStr}.html`;
+        mimeType = 'text/html;charset=utf-8';
+        break;
+      case 'text':
+        const t = document.createElement('div');
+        t.innerHTML = marked.parse(text);
+        content = t.textContent || '';
+        filename = `chat-${dateStr}.txt`;
+        mimeType = 'text/plain;charset=utf-8';
+        break;
+      case 'word':
+        const h = (contentEl ? contentEl.innerHTML : marked.parse(text));
+        content = `<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="utf-8"><title>Chat Export</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--><style>body{font-family:system-ui,-apple-system,sans-serif;font-size:12pt;line-height:1.6;padding:40px}</style></head><body>${h}</body></html>`;
+        filename = `chat-${dateStr}.doc`;
+        mimeType = 'application/msword';
+        break;
+    }
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 }
 
 function handleFileSelect(e) {
@@ -1479,7 +1798,9 @@ function addMessageControls() {
     if (editCount > 1) {
       const v = document.createElement('span');
       v.className = 'version-nav';
-      v.innerHTML = `<button class="nav-btn" data-action="prev-edit" title="上一个版本">&#8249;</button><span class="version-idx">${editCount}/${editCount}</span><button class="nav-btn" data-action="next-edit" title="下一个版本">&#8250;</button>`;
+      let curEdit = parseInt(div.dataset.displayEdit);
+      if (isNaN(curEdit)) curEdit = editCount - 1;
+      v.innerHTML = `<button class="nav-btn" data-action="prev-edit" title="上一个版本">&#8249;</button><span class="version-idx">${curEdit + 1}/${editCount}</span><button class="nav-btn" data-action="next-edit" title="下一个版本">&#8250;</button>`;
       v.querySelector('[data-action="prev-edit"]').onclick = () => navigateUserEdit(ci, mi, -1);
       v.querySelector('[data-action="next-edit"]').onclick = () => navigateUserEdit(ci, mi, 1);
       actions.appendChild(v);
@@ -1510,7 +1831,9 @@ function addMessageControls() {
     if (verCount > 1) {
       const v = document.createElement('span');
       v.className = 'version-nav';
-      v.innerHTML = `<button class="nav-btn" data-action="prev-version" title="上一个版本">&#8249;</button><span class="version-idx">${verCount}/${verCount}</span><button class="nav-btn" data-action="next-version" title="下一个版本">&#8250;</button>`;
+      let curVer = parseInt(div.dataset.displayVersion);
+      if (isNaN(curVer)) curVer = verCount - 1;
+      v.innerHTML = `<button class="nav-btn" data-action="prev-version" title="上一个版本">&#8249;</button><span class="version-idx">${curVer + 1}/${verCount}</span><button class="nav-btn" data-action="next-version" title="下一个版本">&#8250;</button>`;
       v.querySelector('[data-action="prev-version"]').onclick = () => navigateAIVersion(ci, mi, -1);
       v.querySelector('[data-action="next-version"]').onclick = () => navigateAIVersion(ci, mi, 1);
       actions.appendChild(v);
@@ -1700,6 +2023,11 @@ async function regenerateResponse(chatIndex, msgIndex) {
     msg.reasoning = rawReasoning;
     localStorage.setItem('deepseekChats', JSON.stringify(chats));
 
+    // Reset display to latest version
+    botMsgDiv.dataset.displayVersion = msg._versions.length;
+    // Remove any duplicate copy button wrappers
+    const wrappers = botMsgDiv.querySelectorAll('.copy-btn-wrapper');
+    for (let w = 1; w < wrappers.length; w++) wrappers[w].remove();
     addCopyButton(botMsgDiv, rawText, contentBox);
     addMessageControls();
     historyBox.scrollTop = historyBox.scrollHeight;
