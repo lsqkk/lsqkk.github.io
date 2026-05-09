@@ -58,9 +58,9 @@ body {
 }
 
 .update-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-    border-color: rgba(255, 255, 255, 0.25);
+    transform: none;
+    box-shadow: var(--shadow);
+    border-color: rgba(255, 255, 255, 0.18);
 }
 
 h1.title {
@@ -201,8 +201,16 @@ h1.title {
 
 /* Commit hash 链接样式 - 不套框，代码块本身提供浅灰背景 */
 .update-card a[href*="/commit/"] {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     font-family: "SF Mono", "Fira Code", "Consolas", monospace;
     font-size: 0.78em;
+    font-weight: inherit;
     color: rgba(255, 255, 255, 0.65);
     text-decoration: none;
     white-space: nowrap;
@@ -214,6 +222,10 @@ h1.title {
 }
 
 .update-card a[href*="/commit/"]:hover {
+    background: none;
+    border: none;
+    box-shadow: none;
+    transform: none;
     color: #7ec8ff;
 }
 
