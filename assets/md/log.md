@@ -4,7 +4,23 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-05-10
+
+更新 - qai.js [`f6b724`](https://github.com/lsqkk/lsqkk.github.io/commit/f6b724)
+
+更新 - qai.js [`a68fe0`](https://github.com/lsqkk/lsqkk.github.io/commit/a68fe0)
+
+优化 - 优化了qai功能 [`2012ca`](https://github.com/lsqkk/lsqkk.github.io/commit/2012ca)
+
 # 2026-05-09
+
+新增 - 又更新了一批qai功能 [`9c31d2`](https://github.com/lsqkk/lsqkk.github.io/commit/9c31d2)
+
+新增 - qai新增若干功能 [`8248f6`](https://github.com/lsqkk/lsqkk.github.io/commit/8248f6)
+
+更新 - ai chat升级 [`ad6eef`](https://github.com/lsqkk/lsqkk.github.io/commit/ad6eef)
+
+更新 - log.md [`b2b321`](https://github.com/lsqkk/lsqkk.github.io/commit/b2b321)
 
 优化 - 优化了更新日志 [`992ed4`](https://github.com/lsqkk/lsqkk.github.io/commit/992ed4)
 

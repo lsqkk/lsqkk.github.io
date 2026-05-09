@@ -741,7 +741,7 @@
         if (schema.type === 'keyval') return collectKeyVal();
         if (schema.type === 'keyval_obj') return collectKeyValObj(schema);
         if (schema.sections) {
-            var result = Array.isArray(currentData) ? [] : {};
+            var result = Array.isArray(currentData) ? currentData.slice() : Object.assign({}, currentData);
             for (var i = 0; i < schema.sections.length; i++) {
                 var section = schema.sections[i];
                 if (section.type === 'array' && section.key) {
@@ -788,7 +788,7 @@
         var items = container.querySelectorAll(isFlat ? '.flat-array-item' : '.array-item');
         items.forEach(function (item, idx) {
             if (isFlat) {
-                var input = item.querySelector('input');
+                var input = item.querySelector('input, textarea');
                 if (input) result.push(input.value);
             } else {
                 var obj = {};
