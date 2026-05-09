@@ -104,11 +104,13 @@ function setupEventListeners() {
     const visible = this.checked;
     byId('search-api-url').closest('.input-group').style.display = visible ? 'block' : 'none';
     byId('search-api-key').closest('.input-group').style.display = visible ? 'block' : 'none';
+    byId('cors-proxy-group').style.display = visible ? 'block' : 'none';
   };
   // Initial state
   if (!byId('web-search-toggle').checked) {
     byId('search-api-url').closest('.input-group').style.display = 'none';
     byId('search-api-key').closest('.input-group').style.display = 'none';
+    byId('cors-proxy-group').style.display = 'none';
   }
 
   // Infinite context toggle -> show/hide context window input
@@ -242,6 +244,8 @@ function loadSettingsIntoUI() {
   byId('web-search-toggle').checked = params.webSearch === true;
   byId('search-api-url').value = params.searchApiUrl || '';
   byId('search-api-key').value = params.searchApiKey || '';
+  byId('cors-proxy-input').value = params.corsProxy || '';
+  byId('web-search-toggle').dispatchEvent(new Event('change'));
 }
 
 function loadParams() {
@@ -278,7 +282,8 @@ function saveSettingsFromUI() {
     maxModelContext: parseInt(byId('max-model-context-input').value) || 128000,
     webSearch: byId('web-search-toggle').checked,
     searchApiUrl: byId('search-api-url').value.trim(),
-    searchApiKey: byId('search-api-key').value.trim()
+    searchApiKey: byId('search-api-key').value.trim(),
+    corsProxy: byId('cors-proxy-input').value.trim()
   };
   saveParams(params);
 
@@ -310,6 +315,8 @@ function loadDefaultSettings() {
   byId('web-search-toggle').checked = false;
   byId('search-api-url').value = '';
   byId('search-api-key').value = '';
+  byId('cors-proxy-input').value = '';
+  byId('web-search-toggle').dispatchEvent(new Event('change'));
   showToast('已恢复默认设置');
 }
 
@@ -717,7 +724,7 @@ async function sendMessage() {
 
   const params = loadParams();
   const endpoint = params.webSearch && params.searchApiUrl
-    ? buildSearchEndpoint(params.searchApiUrl)
+    ? buildSearchEndpoint(params.searchApiUrl, params.corsProxy)
     : C.buildChatEndpoint(settings.baseUrl);
   let messages = buildMessages(fullPrompt);
 
@@ -801,11 +808,16 @@ function buildMessages(userPrompt) {
   return messages;
 }
 
-function buildSearchEndpoint(searchApiUrl) {
-  const url = (searchApiUrl || '').replace(/\/+$/, '');
+function buildSearchEndpoint(searchApiUrl, corsProxy) {
+  let url = (searchApiUrl || '').replace(/\/+$/, '');
   if (!url) return '';
-  if (url.includes('/ai_search/') || /\/chat\/completions$/i.test(url)) return url;
-  return url + '/ai_search/chat/completions';
+  if (!url.includes('/ai_search/') && !/\/chat\/completions$/i.test(url)) {
+    url = url + '/ai_search/chat/completions';
+  }
+  if (corsProxy) {
+    url = corsProxy.replace(/\/+$/, '') + '/' + encodeURIComponent(url);
+  }
+  return url;
 }
 
 function buildRequestBody(model, messages, params) {
@@ -1852,7 +1864,7 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
 
   const params = loadParams();
   const endpoint = params.webSearch && params.searchApiUrl
-    ? buildSearchEndpoint(params.searchApiUrl)
+    ? buildSearchEndpoint(params.searchApiUrl, params.corsProxy)
     : C.buildChatEndpoint(settings.baseUrl);
 
   // Build API messages from context up to and including userMsgIndex
@@ -1941,7 +1953,7 @@ async function regenerateResponse(chatIndex, msgIndex) {
 
   const params = loadParams();
   const endpoint = params.webSearch && params.searchApiUrl
-    ? buildSearchEndpoint(params.searchApiUrl)
+    ? buildSearchEndpoint(params.searchApiUrl, params.corsProxy)
     : C.buildChatEndpoint(settings.baseUrl);
 
   // Build messages (same context as before but without the old response)

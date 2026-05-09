@@ -189,7 +189,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <label>搜索 API Key</label>
           <input type="password" id="search-api-key" placeholder="搜索服务的 API Key">
         </div>
-        <p class="help-text">搜索 API 需接受 POST JSON 格式，返回包含 title、snippet、url 的结果数组。</p>
+        <div class="input-group" id="cors-proxy-group" style="display:none">
+          <label>CORS 代理（跨域必填）</label>
+          <input type="url" id="cors-proxy-input" placeholder="https://corsproxy.io/?">
+        </div>
+        <p class="help-text">搜索 API 不支持浏览器跨域请求时，需填写 CORS 代理地址（如 https://corsproxy.io/?）。启用联网搜索后将自动使用搜索 API 地址作为聊天端点。</p>
       </div>
 
       <!-- Tab 2: 参数 -->
