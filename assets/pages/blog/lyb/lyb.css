@@ -16,9 +16,9 @@
     --divider: rgba(0, 0, 0, 0.07);
     --divider-light: rgba(0, 0, 0, 0.04);
 
-    --text: #2d3748;
-    --text-secondary: #718096;
-    --text-muted: #a0aec0;
+    --text: #1a202c;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
 
     --radius-sm: 8px;
     --radius: 12px;
@@ -71,10 +71,9 @@ header {
     gap: 12px;
 }
 
+/* page-title uses global style from basic.css; only override margin for flex layout */
 .page-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    margin-bottom: 0;
 }
 
 .header-toolbar {
@@ -853,8 +852,6 @@ header {
     .container { padding: 0 8px; margin-top: 70px; }
 
     header { flex-direction: column; align-items: flex-start; }
-
-    .page-title { font-size: 1.25rem; }
 
     .header-toolbar { width: 100%; flex-wrap: wrap; }
 

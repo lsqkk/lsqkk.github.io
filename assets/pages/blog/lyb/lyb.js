@@ -38,6 +38,13 @@ let loginType = '';
 let isLoggedUser = false;
 let identityInstance = null;
 
+// 消息缓存 + 实时监听
+/** @type {MessageItem[]} */
+let messagesCache = [];
+/** @type {((snapshot: any) => void) | null} */
+let messagesListener = null;
+let searchTermCache = ''; // 缓存搜索词，用于实时更新时重新过滤
+
 function getGuestUid() {
     const shared = window.CommentShared;
     return shared && typeof shared.getGuestUid === 'function' ? shared.getGuestUid() : '';
@@ -67,7 +74,7 @@ async function verifyAdminSession() {
     const token = getAdminToken();
     if (!token) {
         isAdmin = false;
-        updateAdminUI();
+        updateAdminUI(false);
         return false;
     }
 
@@ -85,8 +92,68 @@ async function verifyAdminSession() {
         isAdmin = false;
     }
 
-    updateAdminUI();
+    updateAdminUI(false);
     return isAdmin;
+}
+
+// 设置Firebase实时监听
+function setupRealtimeListener() {
+    if (!messagesRef) {
+        messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
+    }
+
+    // 清除旧监听
+    if (messagesListener) {
+        messagesRef.off('value', messagesListener);
+    }
+
+    messagesListener = messagesRef.on('value', function (snapshot) {
+        /** @type {MessageItem[]} */
+        const messages = [];
+        snapshot.forEach(function (childSnapshot) {
+            const message = childSnapshot.val();
+            message.id = childSnapshot.key;
+            messages.push(message);
+        });
+        messagesCache = messages;
+        applyFiltersAndRender();
+    });
+}
+
+// 从缓存中过滤、排序、渲染
+function applyFiltersAndRender() {
+    const searchInput = byId('searchInput');
+    const term = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : '';
+    searchTermCache = term;
+
+    let filtered = messagesCache;
+
+    // 搜索过滤
+    if (term) {
+        filtered = filtered.filter(function (m) {
+            return m.text.toLowerCase().includes(term) ||
+                m.nickname.toLowerCase().includes(term) ||
+                (m.login || '').toLowerCase().includes(term);
+        });
+    }
+
+    // 排序
+    if (sortMode === 'newest') {
+        filtered.sort(function (a, b) { return b.timestamp - a.timestamp; });
+    } else if (sortMode === 'oldest') {
+        filtered.sort(function (a, b) { return a.timestamp - b.timestamp; });
+    } else if (sortMode === 'hot') {
+        filtered.sort(function (a, b) { return (b.likes || 0) - (a.likes || 0) || (b.timestamp - a.timestamp); });
+    }
+
+    totalMessages = filtered.length;
+
+    // 更新留言数
+    const countEl = byId('messageCount');
+    if (countEl) countEl.textContent = String(totalMessages);
+
+    renderMessages(filtered);
+    renderPagination();
 }
 
 // DOM加载完成后初始化
@@ -111,18 +178,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.error('留言板 Firebase 引用初始化失败:', error);
     }
 
-    // 加载留言
-    await loadMessages();
-
-    // 初始化管理员状态
+    // 先验证管理员，再设置监听（避免 race condition）
     await verifyAdminSession();
 
-    // 监听搜索框输入
+    // 设置实时监听（自动加载并渲染留言）
+    setupRealtimeListener();
+
+    // 监听搜索框输入（去抖）
     const searchInput = byId('searchInput');
     if (searchInput instanceof HTMLInputElement) {
+        var debounceTimer = null;
         searchInput.addEventListener('input', function () {
-            currentPage = 1;
-            loadMessages();
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                currentPage = 1;
+                applyFiltersAndRender();
+            }, 250);
         });
     }
 
@@ -183,7 +254,7 @@ async function adminLogin() {
         if (response.ok && result.success && result.token) {
             isAdmin = true;
             setAdminToken(result.token);
-            updateAdminUI();
+            updateAdminUI(true);
             passwordInput.value = '';
         } else {
             alert('密码错误: ' + (result.error || ''));
@@ -199,16 +270,17 @@ async function adminLogin() {
 function logoutAdmin() {
     isAdmin = false;
     setAdminToken('');
-    updateAdminUI();
+    updateAdminUI(true);
 }
 
-function updateAdminUI() {
+function updateAdminUI(reloadMessages) {
     const loginForm = byId('adminLoginForm');
     const adminActions = byId('adminActions');
     if (!(loginForm instanceof HTMLElement) || !(adminActions instanceof HTMLElement)) return;
     loginForm.style.display = isAdmin ? 'none' : 'flex';
     adminActions.style.display = isAdmin ? 'flex' : 'none';
-    loadMessages();
+    // 不需要重新加载，如果数据变化监听器会自动更新
+    if (reloadMessages) applyFiltersAndRender();
 }
 
 // ---- Sort ----
@@ -222,7 +294,7 @@ function setSort(mode) {
         btn.classList.toggle('active', btn.getAttribute('data-sort') === mode);
     });
     currentPage = 1;
-    loadMessages();
+    applyFiltersAndRender();
 }
 
 // ---- Submit Message ----
@@ -270,7 +342,7 @@ async function submitMessage() {
     } finally {
         contentInput.value = '';
         if (sortMode === 'newest') currentPage = 1;
-        await loadMessages();
+        // 实时监听会自动更新列表，不需要手动调用
     }
 }
 
@@ -284,48 +356,6 @@ function syncIdentityState() {
     userAvatarType = state.avatarType || userAvatarType;
     userColor = state.avatarColor || userColor;
     userAvatarUrl = state.avatarUrl || userAvatarUrl;
-}
-
-// ---- Load Messages ----
-
-async function loadMessages() {
-    const searchInput = byId('searchInput');
-    const searchTerm = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : '';
-    if (!messagesRef) {
-        messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
-    }
-
-    return messagesRef.once('value').then((snapshot) => {
-        /** @type {MessageItem[]} */
-        const messages = [];
-        snapshot.forEach((childSnapshot) => {
-            const message = childSnapshot.val();
-            message.id = childSnapshot.key;
-            if (searchTerm &&
-                !message.text.toLowerCase().includes(searchTerm) &&
-                !message.nickname.toLowerCase().includes(searchTerm) &&
-                !(message.login || '').toLowerCase().includes(searchTerm)) return;
-            messages.push(message);
-        });
-
-        // 排序
-        if (sortMode === 'newest') {
-            messages.sort((a, b) => b.timestamp - a.timestamp);
-        } else if (sortMode === 'oldest') {
-            messages.sort((a, b) => a.timestamp - b.timestamp);
-        } else if (sortMode === 'hot') {
-            messages.sort((a, b) => (b.likes || 0) - (a.likes || 0) || (b.timestamp - a.timestamp));
-        }
-
-        totalMessages = messages.length;
-
-        // 更新留言数
-        const countEl = byId('messageCount');
-        if (countEl) countEl.textContent = String(totalMessages);
-
-        renderMessages(messages);
-        renderPagination();
-    });
 }
 
 // ---- Render Messages ----
@@ -344,13 +374,16 @@ function renderMessages(messages) {
     container.innerHTML = '';
 
     if (pageMessages.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>暂无留言</p></div>';
+        var emptyMsg = messagesCache.length === 0
+            ? '<i class="fas fa-comments"></i><p>暂无留言</p>'
+            : '<i class="fas fa-search"></i><p>没有匹配的留言</p>';
+        container.innerHTML = '<div class="empty-state">' + emptyMsg + '</div>';
         return;
     }
 
-    pageMessages.forEach(message => {
-        const messageElement = createMessageElement(message);
-        container.appendChild(messageElement);
+    pageMessages.forEach(function (message) {
+        var element = createMessageElement(message);
+        container.appendChild(element);
     });
 }
 
@@ -361,7 +394,7 @@ function renderMessages(messages) {
 function createMessageElement(message) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message-row';
-    messageDiv.id = `message-${message.id}`;
+    messageDiv.id = 'message-' + message.id;
 
     const renderShared = window.CommentRenderShared;
     const timeText = renderShared && typeof renderShared.formatTime === 'function'
@@ -373,15 +406,14 @@ function createMessageElement(message) {
         : String(message.text || '').replace(/\n/g, '<br>');
 
     // 构建回复HTML
-    let repliesHtml = '';
+    var repliesHtml = '';
     if (message.replies) {
-        const replyKeys = Object.keys(message.replies);
-        replyKeys.sort((a, b) => message.replies[a].timestamp - message.replies[b].timestamp);
+        var replyKeys = Object.keys(message.replies);
+        replyKeys.sort(function (a, b) { return message.replies[a].timestamp - message.replies[b].timestamp; });
         repliesHtml = '<div class="replies">';
-        replyKeys.forEach(key => {
-            const reply = message.replies[key];
-            repliesHtml += createReplyElement(reply);
-        });
+        for (var i = 0; i < replyKeys.length; i++) {
+            repliesHtml += createReplyElement(message.replies[replyKeys[i]]);
+        }
         repliesHtml += '</div>';
     }
 
@@ -396,54 +428,59 @@ function createMessageElement(message) {
     const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
         ? shared.escapeHtml(spaceUrl) : spaceUrl;
 
-    const avatarInner = `
-        <div class="message-avatar" style="${message.avatarType === 'color'
-            ? `background: ${message.avatar}`
-            : `background-image: url(${message.avatar})`}">
-            ${message.avatarType === 'color' ? (message.nickname || '访')[0].toUpperCase() : ''}
-        </div>`;
-    const avatarHtml = spaceUrl
-        ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarInner}</a>`
+    var avatarInner = '<div class="message-avatar" style="' +
+        (message.avatarType === 'color'
+            ? 'background: ' + message.avatar
+            : 'background-image: url(' + message.avatar + ')') +
+        '">' +
+        (message.avatarType === 'color' ? (message.nickname || '访')[0].toUpperCase() : '') +
+        '</div>';
+    var avatarHtml = spaceUrl
+        ? '<a class="user-avatar-link" href="' + safeSpaceUrl + '">' + avatarInner + '</a>'
         : avatarInner;
 
     // 回复内联表单（默认隐藏）
-    const replyFormHtml = `
-        <div class="reply-inline" id="reply-inline-${message.id}" style="display:none">
-            <textarea id="replyContent-${message.id}" rows="3" placeholder="写下您的回复..."></textarea>
-            <div class="reply-inline-footer">
-                <label class="markdown-toggle">
-                    <input type="checkbox" id="replyUseMarkdown-${message.id}" checked>
-                    <span>Markdown</span>
-                </label>
-                <div class="reply-inline-actions">
-                    <button class="cancel-btn" onclick="hideReplyForm('${message.id}')">取消</button>
-                    <button class="submit-btn" onclick="submitReply('${message.id}')">回复</button>
-                </div>
-            </div>
-        </div>`;
+    var replyFormHtml =
+        '<div class="reply-inline" id="reply-inline-' + message.id + '" style="display:none">' +
+            '<textarea id="replyContent-' + message.id + '" rows="3" placeholder="写下您的回复..."></textarea>' +
+            '<div class="reply-inline-footer">' +
+                '<label class="markdown-toggle">' +
+                    '<input type="checkbox" id="replyUseMarkdown-' + message.id + '" checked>' +
+                    '<span>Markdown</span>' +
+                '</label>' +
+                '<div class="reply-inline-actions">' +
+                    '<button class="cancel-btn" onclick="hideReplyForm(\'' + message.id + '\')">取消</button>' +
+                    '<button class="submit-btn" onclick="submitReply(\'' + message.id + '\')">回复</button>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
 
-    messageDiv.innerHTML = `
-        <div class="message-header">
-            ${avatarHtml}
-            <div class="message-info">
-                <div class="message-author">${authorHtml}</div>
-                <div class="message-time">${timeText}</div>
-            </div>
-            <div class="message-actions">
-                <button class="action-btn" onclick="likeMessage('${message.id}')">
-                    <i class="fas fa-heart"></i>
-                    <span>${message.likes || 0}</span>
-                </button>
-                <button class="action-btn" onclick="toggleReplyForm('${message.id}')">
-                    <i class="fas fa-reply"></i>
-                    <span>回复</span>
-                </button>
-                ${isAdmin ? `<button class="delete-btn" onclick="deleteMessage('${message.id}')">删除</button>` : ''}
-            </div>
-        </div>
-        <div class="message-content">${content}</div>
-        ${repliesHtml}
-        ${replyFormHtml}`;
+    var deleteBtn = isAdmin
+        ? '<button class="delete-btn" onclick="deleteMessage(\'' + message.id + '\')">删除</button>'
+        : '';
+
+    messageDiv.innerHTML =
+        '<div class="message-header">' +
+            avatarHtml +
+            '<div class="message-info">' +
+                '<div class="message-author">' + authorHtml + '</div>' +
+                '<div class="message-time">' + timeText + '</div>' +
+            '</div>' +
+            '<div class="message-actions">' +
+                '<button class="action-btn" onclick="likeMessage(\'' + message.id + '\')">' +
+                    '<i class="fas fa-heart"></i>' +
+                    '<span>' + (message.likes || 0) + '</span>' +
+                '</button>' +
+                '<button class="action-btn" onclick="toggleReplyForm(\'' + message.id + '\')">' +
+                    '<i class="fas fa-reply"></i>' +
+                    '<span>回复</span>' +
+                '</button>' +
+                deleteBtn +
+            '</div>' +
+        '</div>' +
+        '<div class="message-content">' + content + '</div>' +
+        repliesHtml +
+        replyFormHtml;
 
     return messageDiv;
 }
@@ -472,28 +509,32 @@ function createReplyElement(reply) {
     const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
         ? shared.escapeHtml(spaceUrl) : spaceUrl;
 
-    const avatarInner = `
-        <div class="reply-avatar" style="${reply.avatarType === 'color'
-            ? `background: ${reply.avatar}`
-            : `background-image: url(${reply.avatar})`}">
-            ${reply.avatarType === 'color' ? (reply.nickname || '访')[0].toUpperCase() : ''}
-        </div>`;
-    const avatarHtml = spaceUrl
-        ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarInner}</a>`
+    var avatarInner = '<div class="reply-avatar" style="' +
+        (reply.avatarType === 'color'
+            ? 'background: ' + reply.avatar
+            : 'background-image: url(' + reply.avatar + ')') +
+        '">' +
+        (reply.avatarType === 'color' ? (reply.nickname || '访')[0].toUpperCase() : '') +
+        '</div>';
+    var avatarHtml = spaceUrl
+        ? '<a class="user-avatar-link" href="' + safeSpaceUrl + '">' + avatarInner + '</a>'
         : avatarInner;
 
-    return `
-        <div class="reply-row">
-            <div class="reply-header">
-                ${avatarHtml}
-                <div class="message-info">
-                    <div class="message-author">${authorHtml}</div>
-                    <div class="message-time">${timeText}</div>
-                </div>
-                ${isAdmin ? `<button class="delete-btn" onclick="deleteReply('${reply.id}')">删除</button>` : ''}
-            </div>
-            <div class="message-content">${content}</div>
-        </div>`;
+    var deleteBtn = isAdmin
+        ? '<button class="delete-btn" onclick="deleteReply(\'' + reply.id + '\')">删除</button>'
+        : '';
+
+    return '<div class="reply-row">' +
+            '<div class="reply-header">' +
+                avatarHtml +
+                '<div class="message-info">' +
+                    '<div class="message-author">' + authorHtml + '</div>' +
+                    '<div class="message-time">' + timeText + '</div>' +
+                '</div>' +
+                deleteBtn +
+            '</div>' +
+            '<div class="message-content">' + content + '</div>' +
+        '</div>';
 }
 
 // ---- Inline Reply ----
@@ -502,12 +543,15 @@ function createReplyElement(reply) {
  * @param {string} messageId
  */
 function toggleReplyForm(messageId) {
-    const form = byId(`reply-inline-${messageId}`);
+    var form = byId('reply-inline-' + messageId);
     if (!form) return;
     // 隐藏其他打开的回复表单
-    document.querySelectorAll('.reply-inline').forEach(function (el) {
-        if (el.id !== `reply-inline-${messageId}`) el.style.display = 'none';
-    });
+    var allForms = document.querySelectorAll('.reply-inline');
+    for (var i = 0; i < allForms.length; i++) {
+        if (allForms[i].id !== 'reply-inline-' + messageId) {
+            allForms[i].style.display = 'none';
+        }
+    }
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -515,7 +559,7 @@ function toggleReplyForm(messageId) {
  * @param {string} messageId
  */
 function hideReplyForm(messageId) {
-    const form = byId(`reply-inline-${messageId}`);
+    var form = byId('reply-inline-' + messageId);
     if (form) form.style.display = 'none';
 }
 
@@ -524,8 +568,8 @@ function hideReplyForm(messageId) {
  */
 async function submitReply(messageId) {
     const nicknameInput = byId('nickname');
-    const replyContentInput = byId(`replyContent-${messageId}`);
-    const replyMarkdownInput = byId(`replyUseMarkdown-${messageId}`);
+    const replyContentInput = byId('replyContent-' + messageId);
+    const replyMarkdownInput = byId('replyUseMarkdown-' + messageId);
     if (!(nicknameInput instanceof HTMLInputElement) ||
         !(replyContentInput instanceof HTMLTextAreaElement) ||
         !(replyMarkdownInput instanceof HTMLInputElement)) return;
@@ -539,7 +583,7 @@ async function submitReply(messageId) {
     const useMarkdown = replyMarkdownInput.checked;
     if (!currentNickname || !content) { alert('请填写昵称和回复内容'); return; }
 
-    const reply = {
+    var reply = {
         id: Date.now().toString(),
         text: content,
         nickname: currentNickname,
@@ -553,14 +597,14 @@ async function submitReply(messageId) {
         isMarkdown: useMarkdown
     };
 
-    const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}/replies/${reply.id}`);
+    var replyRef = firebase.database().ref('chatrooms/' + BOARD_NAME + '/messages/' + messageId + '/replies/' + reply.id);
     try {
         await replyRef.set(reply);
     } catch (error) {
         console.error('提交回复失败:', error);
     } finally {
         hideReplyForm(messageId);
-        await loadMessages();
+        // 实时监听会自动更新
     }
 }
 
@@ -576,11 +620,10 @@ function renderPagination() {
         pageSize: PAGE_SIZE,
         current: currentPage,
         showArrows: true,
-        onChange: (page) => {
+        onChange: function (page) {
             currentPage = page;
-            loadMessages();
-            // 滚动到留言列表顶部
-            const area = byId('messagesContainer');
+            applyFiltersAndRender();
+            var area = byId('messagesContainer');
             if (area) area.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
@@ -589,22 +632,21 @@ function renderPagination() {
 // ---- Like ----
 
 async function likeMessage(messageId) {
-    const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
+    var msgRef = firebase.database().ref('chatrooms/' + BOARD_NAME + '/messages/' + messageId);
     const sharedList = window.CommentListShared;
     try {
         if (sharedList && typeof sharedList.incrementLike === 'function') {
-            await sharedList.incrementLike(messageRef.child('likes'));
+            await sharedList.incrementLike(msgRef.child('likes'));
         } else {
-            await messageRef.transaction(message => {
+            await msgRef.transaction(function (message) {
                 if (message) { message.likes = (message.likes || 0) + 1; }
                 return message;
             });
         }
     } catch (error) {
         console.error('点赞失败:', error);
-    } finally {
-        await loadMessages();
     }
+    // 实时监听自动更新
 }
 
 // ---- Admin Delete ----
@@ -612,14 +654,13 @@ async function likeMessage(messageId) {
 async function deleteMessage(messageId) {
     if (!isAdmin) { alert('无权限删除留言'); return; }
     if (confirm('确定要删除这条留言吗？')) {
-        const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
+        var ref = firebase.database().ref('chatrooms/' + BOARD_NAME + '/messages/' + messageId);
         try {
-            await messageRef.remove();
+            await ref.remove();
         } catch (error) {
             console.error('删除留言失败:', error);
-        } finally {
-            await loadMessages();
         }
+        // 实时监听自动更新
     }
 }
 
@@ -628,28 +669,25 @@ async function deleteReply(replyId) {
     if (!isAdmin) { alert('无权限删除回复'); return; }
     if (!messagesRef) { alert('留言板未就绪'); return; }
 
-    // 找到包含此回复的留言
-    const snapshot = await messagesRef.once('value');
-    let foundMessageId = null;
-    snapshot.forEach((childSnapshot) => {
-        if (foundMessageId) return;
-        const msg = childSnapshot.val();
-        if (msg.replies && msg.replies[replyId]) {
-            foundMessageId = childSnapshot.key;
+    // 从缓存中查找所属留言
+    var foundMessageId = null;
+    for (var i = 0; i < messagesCache.length; i++) {
+        if (messagesCache[i].replies && messagesCache[i].replies[replyId]) {
+            foundMessageId = messagesCache[i].id;
+            break;
         }
-    });
+    }
 
     if (!foundMessageId) { alert('未找到该回复'); return; }
     if (!confirm('确定要删除这条回复吗？')) return;
 
-    const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${foundMessageId}/replies/${replyId}`);
+    var ref = firebase.database().ref('chatrooms/' + BOARD_NAME + '/messages/' + foundMessageId + '/replies/' + replyId);
     try {
-        await replyRef.remove();
+        await ref.remove();
     } catch (error) {
         console.error('删除回复失败:', error);
-    } finally {
-        await loadMessages();
     }
+    // 实时监听自动更新
 }
 
 // ---- SHA256 ----
@@ -662,9 +700,9 @@ function sha256(message) {
     const crypto = window.crypto;
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
-    return crypto.subtle.digest('SHA-256', data).then(hash => {
+    return crypto.subtle.digest('SHA-256', data).then(function (hash) {
         return Array.from(new Uint8Array(hash))
-            .map(b => b.toString(16).padStart(2, '0'))
+            .map(function (b) { return b.toString(16).padStart(2, '0'); })
             .join('');
     });
 }
