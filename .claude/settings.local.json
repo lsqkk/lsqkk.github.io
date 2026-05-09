@@ -10,7 +10,10 @@
       "Bash(.venv/Scripts/quark *)",
       "Bash(node -c assets/js/ds.js)",
       "Bash(node *)",
-      "Bash(npx astro *)"
+      "Bash(npx astro *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
