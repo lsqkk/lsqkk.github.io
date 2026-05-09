@@ -15,6 +15,14 @@
       <content:encoded><![CDATA[2026 年中总结 2026年5月8日，距离我的十八岁生日也就剩下短短十天了。这一年上半年是我成年之前最后的一段时光，也是我在少年班预科转入自动化专业大一之后的第二个学期。好像一切都是平稳流淌的，没什么惊天动地的剧变，但回头仔细想想，许多细小的变化已经悄悄扎下根来。我想趁这个机会把上半年在学业、科研、项目、兴趣以及内心的一些思考做一次小结，也算是对即将成年的自己交出一份诚实的交代。 课业上的时间分配，这半年来我逐渐摸索出一个让自己舒服的]]></content:encoded>
     </item>
     <item>
+      <title>从&lt;think&gt;标签现象到大模型“自我意识”的一次边缘探讨</title>
+      <link>https://lsqkk.github.io/posts/2026/2609</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2609</guid>
+      <pubDate>Wed, 06 May 2026 16:00:00 GMT</pubDate>
+      <description>AI</description>
+      <content:encoded><![CDATA[从&lt;think 标签现象到大模型“自我意识”的一次边缘探讨 标签引发的异常行为 我向DeepSeek网页端快速模式（应该是v4 flash）发送了一个极其简单的输入： 。没有任何问题，没有任何指令，只有一个XML风格的标签。模型的回应出乎意料。它没有要求我澄清意图，没有礼貌地告诉我输入不完整，而是直接输出了一道完整的物理题解析——一个质量为1kg的物块以4m/s滑上静止的3kg小车，摩擦力2N，地面光滑，要求计算摩擦力对小车做的功。整个]]></content:encoded>
+    </item>
+    <item>
       <title>镜头即构成</title>
       <link>https://lsqkk.github.io/posts/2026/2608</link>
       <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2608</guid>

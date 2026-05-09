@@ -18,9 +18,6 @@ async function ensureDatabaseReady() {
     return firebaseReadyPromise;
 }
 
-async function waitForAppCheck() {
-}
-
 // 全局变量
 const BOARD_NAME = 'lsqkk-lyb';
 /** @type {any} */
@@ -28,10 +25,11 @@ let messagesRef = null;
 let currentPage = 1;
 const PAGE_SIZE = 20;
 let totalMessages = 0;
+let sortMode = 'newest'; // 'newest' | 'oldest' | 'hot'
 const ADMIN_TOKEN_KEY = 'lyb_admin_token';
 let isAdmin = false;
 /** @type {'color' | 'image'} */
-let userAvatarType = 'color'; // 'color' 或 'image'
+let userAvatarType = 'color';
 let userColor = '#4a6cf7';
 let userAvatarUrl = '';
 let nickname = localStorage.getItem('nickname') || '';
@@ -39,8 +37,6 @@ let loginName = '';
 let loginType = '';
 let isLoggedUser = false;
 let identityInstance = null;
-/** @type {string | null} */
-let replyingTo = null; // 当前回复的留言ID
 
 function getGuestUid() {
     const shared = window.CommentShared;
@@ -95,7 +91,6 @@ async function verifyAdminSession() {
 
 // DOM加载完成后初始化
 document.addEventListener('DOMContentLoaded', async function () {
-    // 初始化主题（自动跟随系统）
     initTheme();
 
     if (window.CommentInputShared && typeof window.CommentInputShared.init === 'function') {
@@ -108,8 +103,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     } catch (error) {
         console.error('留言板 Firebase 初始化失败:', error);
     }
-
-    await waitForAppCheck();
 
     // 初始化Firebase引用
     try {
@@ -128,6 +121,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const searchInput = byId('searchInput');
     if (searchInput instanceof HTMLInputElement) {
         searchInput.addEventListener('input', function () {
+            currentPage = 1;
             loadMessages();
         });
     }
@@ -135,27 +129,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     syncIdentityState();
 });
 
-// 初始化主题 - 自动跟随系统
+// 主题切换
 function initTheme() {
-    // 检查是否已保存主题
     const savedTheme = localStorage.getItem('theme');
     let theme;
-
     if (savedTheme) {
         theme = savedTheme;
     } else {
-        // 自动检测系统主题
         theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         localStorage.setItem('theme', theme);
     }
-
     document.body.className = theme + '-mode';
-
-    // 监听系统主题变化
     if (window.matchMedia) {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         mediaQuery.addEventListener('change', function (e) {
-            // 只有在没有手动设置过主题时才跟随系统
             if (!localStorage.getItem('theme')) {
                 const newTheme = e.matches ? 'dark' : 'light';
                 document.body.className = newTheme + '-mode';
@@ -165,16 +152,88 @@ function initTheme() {
     }
 }
 
-// 提交留言
+// ---- Admin ----
+
+function toggleAdminPanel() {
+    const panel = byId('adminPanel');
+    if (!panel) return;
+    const isVisible = panel.style.display !== 'none';
+    panel.style.display = isVisible ? 'none' : 'flex';
+}
+
+async function adminLogin() {
+    const passwordInput = byId('adminPassword');
+    if (!(passwordInput instanceof HTMLInputElement)) return;
+    const password = passwordInput.value.trim();
+    /** @type {HTMLButtonElement | null} */
+    const submitBtn = document.querySelector('.admin-btn[onclick="adminLogin()"]');
+    if (!password) { alert('请输入管理员密码'); return; }
+
+    let originalText = '登录';
+    if (submitBtn) { originalText = submitBtn.textContent || '登录'; submitBtn.disabled = true; submitBtn.textContent = '验证中...'; }
+
+    try {
+        const hash = await sha256(password);
+        const response = await fetch('__API_BASE__/api/admin-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ passwordHash: hash })
+        });
+        const result = await response.json();
+        if (response.ok && result.success && result.token) {
+            isAdmin = true;
+            setAdminToken(result.token);
+            updateAdminUI();
+            passwordInput.value = '';
+        } else {
+            alert('密码错误: ' + (result.error || ''));
+        }
+    } catch (error) {
+        console.error('登录过程出错:', error);
+        alert('登录失败：网络错误或验证服务异常，请稍后重试。');
+    } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
+    }
+}
+
+function logoutAdmin() {
+    isAdmin = false;
+    setAdminToken('');
+    updateAdminUI();
+}
+
+function updateAdminUI() {
+    const loginForm = byId('adminLoginForm');
+    const adminActions = byId('adminActions');
+    if (!(loginForm instanceof HTMLElement) || !(adminActions instanceof HTMLElement)) return;
+    loginForm.style.display = isAdmin ? 'none' : 'flex';
+    adminActions.style.display = isAdmin ? 'flex' : 'none';
+    loadMessages();
+}
+
+// ---- Sort ----
+
+/**
+ * @param {string} mode
+ */
+function setSort(mode) {
+    sortMode = mode;
+    document.querySelectorAll('.sort-btn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-sort') === mode);
+    });
+    currentPage = 1;
+    loadMessages();
+}
+
+// ---- Submit Message ----
+
 async function submitMessage() {
     const nicknameInput = byId('nickname');
     const contentInput = byId('messageContent');
     const markdownInput = byId('useMarkdown');
     if (!(nicknameInput instanceof HTMLInputElement) ||
         !(contentInput instanceof HTMLTextAreaElement) ||
-        !(markdownInput instanceof HTMLInputElement)) {
-        return;
-    }
+        !(markdownInput instanceof HTMLInputElement)) return;
 
     if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
         identityInstance.refreshFromInputs();
@@ -183,21 +242,15 @@ async function submitMessage() {
     const currentNickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
     const content = contentInput.value.trim();
     const useMarkdown = markdownInput.checked;
+    if (!currentNickname || !content) { alert('请填写昵称和留言内容'); return; }
 
-    if (!currentNickname || !content) {
-        alert('请填写昵称和留言内容');
-        return;
-    }
-
-    // 保存昵称到本地存储
     const message = {
         text: content,
         nickname: currentNickname,
         login: loginName || '',
         loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
         uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
-            ? window.QuarkUserProfile.getUid()
-            : '') : getGuestUid(),
+            ? window.QuarkUserProfile.getUid() : '') : getGuestUid(),
         avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
         avatarType: userAvatarType,
         timestamp: Date.now(),
@@ -205,11 +258,9 @@ async function submitMessage() {
         likes: 0
     };
 
-    // 确保messagesRef已初始化
     if (!messagesRef) {
         messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
     }
-
     try {
         if (messagesRef && typeof messagesRef.push === 'function') {
             await messagesRef.push(message);
@@ -218,6 +269,7 @@ async function submitMessage() {
         console.error('提交留言失败:', error);
     } finally {
         contentInput.value = '';
+        if (sortMode === 'newest') currentPage = 1;
         await loadMessages();
     }
 }
@@ -234,12 +286,11 @@ function syncIdentityState() {
     userAvatarUrl = state.avatarUrl || userAvatarUrl;
 }
 
-// 加载留言
+// ---- Load Messages ----
+
 async function loadMessages() {
     const searchInput = byId('searchInput');
     const searchTerm = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : '';
-
-    // 确保messagesRef已初始化
     if (!messagesRef) {
         messagesRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages`);
     }
@@ -250,28 +301,35 @@ async function loadMessages() {
         snapshot.forEach((childSnapshot) => {
             const message = childSnapshot.val();
             message.id = childSnapshot.key;
-
-            // 搜索过滤
             if (searchTerm &&
                 !message.text.toLowerCase().includes(searchTerm) &&
                 !message.nickname.toLowerCase().includes(searchTerm) &&
-                !(message.login || '').toLowerCase().includes(searchTerm)) {
-                return;
-            }
-
+                !(message.login || '').toLowerCase().includes(searchTerm)) return;
             messages.push(message);
         });
 
-        // 按时间倒序排列（新的在前）
-        messages.sort((a, b) => b.timestamp - a.timestamp);
+        // 排序
+        if (sortMode === 'newest') {
+            messages.sort((a, b) => b.timestamp - a.timestamp);
+        } else if (sortMode === 'oldest') {
+            messages.sort((a, b) => a.timestamp - b.timestamp);
+        } else if (sortMode === 'hot') {
+            messages.sort((a, b) => (b.likes || 0) - (a.likes || 0) || (b.timestamp - a.timestamp));
+        }
 
         totalMessages = messages.length;
+
+        // 更新留言数
+        const countEl = byId('messageCount');
+        if (countEl) countEl.textContent = String(totalMessages);
+
         renderMessages(messages);
         renderPagination();
     });
 }
 
-// 渲染留言
+// ---- Render Messages ----
+
 /**
  * @param {MessageItem[]} messages
  */
@@ -286,12 +344,7 @@ function renderMessages(messages) {
     container.innerHTML = '';
 
     if (pageMessages.length === 0) {
-        container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
-                        <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 16px;"></i>
-                        <p>暂无留言</p>
-                    </div>
-                `;
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>暂无留言</p></div>';
         return;
     }
 
@@ -301,14 +354,13 @@ function renderMessages(messages) {
     });
 }
 
-// 创建留言元素
 /**
  * @param {MessageItem} message
  * @returns {HTMLDivElement}
  */
 function createMessageElement(message) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'message-card';
+    messageDiv.className = 'message-row';
     messageDiv.id = `message-${message.id}`;
 
     const renderShared = window.CommentRenderShared;
@@ -316,7 +368,6 @@ function createMessageElement(message) {
         ? renderShared.formatTime(message.timestamp)
         : new Date(message.timestamp || Date.now()).toLocaleString();
 
-    // 渲染内容（Markdown或纯文本）
     const content = renderShared && typeof renderShared.renderMarkdown === 'function'
         ? renderShared.renderMarkdown(message.text, message.isMarkdown)
         : String(message.text || '').replace(/\n/g, '<br>');
@@ -326,7 +377,6 @@ function createMessageElement(message) {
     if (message.replies) {
         const replyKeys = Object.keys(message.replies);
         replyKeys.sort((a, b) => message.replies[a].timestamp - message.replies[b].timestamp);
-
         repliesHtml = '<div class="replies">';
         replyKeys.forEach(key => {
             const reply = message.replies[key];
@@ -335,54 +385,69 @@ function createMessageElement(message) {
         repliesHtml += '</div>';
     }
 
+    // 头像
     const sharedList = window.CommentListShared;
     const authorHtml = sharedList && typeof sharedList.getDisplayName === 'function'
         ? sharedList.getDisplayName(message.nickname, message.login, message.loginType, message.uid)
         : (message.nickname || '访客');
     const shared = window.CommentShared;
     const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
-        ? shared.getUserSpaceUrl(message.login, message.loginType)
-        : '';
+        ? shared.getUserSpaceUrl(message.login, message.loginType) : '';
     const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
-        ? shared.escapeHtml(spaceUrl)
-        : spaceUrl;
+        ? shared.escapeHtml(spaceUrl) : spaceUrl;
+
     const avatarInner = `
-                    <div class="message-avatar" style="${message.avatarType === 'color' ?
-            `background: ${message.avatar}` :
-            `background-image: url(${message.avatar})`}">
-                        ${message.avatarType === 'color' ? (message.nickname || '访')[0].toUpperCase() : ''}
-                    </div>
-                `;
+        <div class="message-avatar" style="${message.avatarType === 'color'
+            ? `background: ${message.avatar}`
+            : `background-image: url(${message.avatar})`}">
+            ${message.avatarType === 'color' ? (message.nickname || '访')[0].toUpperCase() : ''}
+        </div>`;
     const avatarHtml = spaceUrl
         ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarInner}</a>`
         : avatarInner;
-    messageDiv.innerHTML = `
-                <div class="message-header">
-                    ${avatarHtml}
-                    <div class="message-info">
-                        <div class="message-author">${authorHtml}</div>
-                        <div class="message-time">${timeText}</div>
-                    </div>
-                    <div class="message-actions">
-                        <button class="action-btn" onclick="likeMessage('${message.id}')">
-                            <i class="fas fa-heart"></i>
-                            <span>${message.likes || 0}</span>
-                        </button>
-                        <button class="action-btn" onclick="openReplyModal('${message.id}')">
-                            <i class="fas fa-reply"></i>
-                            <span>回复</span>
-                        </button>
-                        ${isAdmin ? `<button class="delete-btn" onclick="deleteMessage('${message.id}')">删除</button>` : ''}
-                    </div>
+
+    // 回复内联表单（默认隐藏）
+    const replyFormHtml = `
+        <div class="reply-inline" id="reply-inline-${message.id}" style="display:none">
+            <textarea id="replyContent-${message.id}" rows="3" placeholder="写下您的回复..."></textarea>
+            <div class="reply-inline-footer">
+                <label class="markdown-toggle">
+                    <input type="checkbox" id="replyUseMarkdown-${message.id}" checked>
+                    <span>Markdown</span>
+                </label>
+                <div class="reply-inline-actions">
+                    <button class="cancel-btn" onclick="hideReplyForm('${message.id}')">取消</button>
+                    <button class="submit-btn" onclick="submitReply('${message.id}')">回复</button>
                 </div>
-                <div class="message-content">${content}</div>
-                ${repliesHtml}
-            `;
+            </div>
+        </div>`;
+
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            ${avatarHtml}
+            <div class="message-info">
+                <div class="message-author">${authorHtml}</div>
+                <div class="message-time">${timeText}</div>
+            </div>
+            <div class="message-actions">
+                <button class="action-btn" onclick="likeMessage('${message.id}')">
+                    <i class="fas fa-heart"></i>
+                    <span>${message.likes || 0}</span>
+                </button>
+                <button class="action-btn" onclick="toggleReplyForm('${message.id}')">
+                    <i class="fas fa-reply"></i>
+                    <span>回复</span>
+                </button>
+                ${isAdmin ? `<button class="delete-btn" onclick="deleteMessage('${message.id}')">删除</button>` : ''}
+            </div>
+        </div>
+        <div class="message-content">${content}</div>
+        ${repliesHtml}
+        ${replyFormHtml}`;
 
     return messageDiv;
 }
 
-// 创建回复元素
 /**
  * @param {ReplyItem} reply
  * @returns {string}
@@ -393,7 +458,6 @@ function createReplyElement(reply) {
         ? renderShared.formatTime(reply.timestamp)
         : new Date(reply.timestamp || Date.now()).toLocaleString();
 
-    // 渲染内容（Markdown或纯文本）
     const content = renderShared && typeof renderShared.renderMarkdown === 'function'
         ? renderShared.renderMarkdown(reply.text, reply.isMarkdown)
         : String(reply.text || '').replace(/\n/g, '<br>');
@@ -404,37 +468,104 @@ function createReplyElement(reply) {
         : (reply.nickname || '访客');
     const shared = window.CommentShared;
     const spaceUrl = shared && typeof shared.getUserSpaceUrl === 'function'
-        ? shared.getUserSpaceUrl(reply.login, reply.loginType)
-        : '';
+        ? shared.getUserSpaceUrl(reply.login, reply.loginType) : '';
     const safeSpaceUrl = shared && typeof shared.escapeHtml === 'function'
-        ? shared.escapeHtml(spaceUrl)
-        : spaceUrl;
+        ? shared.escapeHtml(spaceUrl) : spaceUrl;
+
     const avatarInner = `
-                        <div class="reply-avatar" style="${reply.avatarType === 'color' ?
-            `background: ${reply.avatar}` :
-            `background-image: url(${reply.avatar})`}">
-                            ${reply.avatarType === 'color' ? (reply.nickname || '访')[0].toUpperCase() : ''}
-                        </div>
-                    `;
+        <div class="reply-avatar" style="${reply.avatarType === 'color'
+            ? `background: ${reply.avatar}`
+            : `background-image: url(${reply.avatar})`}">
+            ${reply.avatarType === 'color' ? (reply.nickname || '访')[0].toUpperCase() : ''}
+        </div>`;
     const avatarHtml = spaceUrl
         ? `<a class="user-avatar-link" href="${safeSpaceUrl}">${avatarInner}</a>`
         : avatarInner;
+
     return `
-                <div class="reply-card">
-                    <div class="reply-header">
-                        ${avatarHtml}
-                        <div class="message-info">
-                            <div class="message-author">${authorHtml}</div>
-                            <div class="message-time">${timeText}</div>
-                        </div>
-                        ${isAdmin ? `<button class="delete-btn" onclick="deleteReply('${reply.id}')">删除</button>` : ''}
-                    </div>
-                    <div class="message-content">${content}</div>
+        <div class="reply-row">
+            <div class="reply-header">
+                ${avatarHtml}
+                <div class="message-info">
+                    <div class="message-author">${authorHtml}</div>
+                    <div class="message-time">${timeText}</div>
                 </div>
-            `;
+                ${isAdmin ? `<button class="delete-btn" onclick="deleteReply('${reply.id}')">删除</button>` : ''}
+            </div>
+            <div class="message-content">${content}</div>
+        </div>`;
 }
 
-// 渲染分页
+// ---- Inline Reply ----
+
+/**
+ * @param {string} messageId
+ */
+function toggleReplyForm(messageId) {
+    const form = byId(`reply-inline-${messageId}`);
+    if (!form) return;
+    // 隐藏其他打开的回复表单
+    document.querySelectorAll('.reply-inline').forEach(function (el) {
+        if (el.id !== `reply-inline-${messageId}`) el.style.display = 'none';
+    });
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+/**
+ * @param {string} messageId
+ */
+function hideReplyForm(messageId) {
+    const form = byId(`reply-inline-${messageId}`);
+    if (form) form.style.display = 'none';
+}
+
+/**
+ * @param {string} messageId
+ */
+async function submitReply(messageId) {
+    const nicknameInput = byId('nickname');
+    const replyContentInput = byId(`replyContent-${messageId}`);
+    const replyMarkdownInput = byId(`replyUseMarkdown-${messageId}`);
+    if (!(nicknameInput instanceof HTMLInputElement) ||
+        !(replyContentInput instanceof HTMLTextAreaElement) ||
+        !(replyMarkdownInput instanceof HTMLInputElement)) return;
+
+    if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
+        identityInstance.refreshFromInputs();
+        syncIdentityState();
+    }
+    const currentNickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
+    const content = replyContentInput.value.trim();
+    const useMarkdown = replyMarkdownInput.checked;
+    if (!currentNickname || !content) { alert('请填写昵称和回复内容'); return; }
+
+    const reply = {
+        id: Date.now().toString(),
+        text: content,
+        nickname: currentNickname,
+        login: loginName || '',
+        loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
+        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
+            ? window.QuarkUserProfile.getUid() : '') : getGuestUid(),
+        avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
+        avatarType: userAvatarType,
+        timestamp: Date.now(),
+        isMarkdown: useMarkdown
+    };
+
+    const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}/replies/${reply.id}`);
+    try {
+        await replyRef.set(reply);
+    } catch (error) {
+        console.error('提交回复失败:', error);
+    } finally {
+        hideReplyForm(messageId);
+        await loadMessages();
+    }
+}
+
+// ---- Pagination ----
+
 function renderPagination() {
     const pagination = byId('pagination');
     const sharedList = window.CommentListShared;
@@ -448,11 +579,15 @@ function renderPagination() {
         onChange: (page) => {
             currentPage = page;
             loadMessages();
+            // 滚动到留言列表顶部
+            const area = byId('messagesContainer');
+            if (area) area.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 }
 
-// 点赞留言
+// ---- Like ----
+
 async function likeMessage(messageId) {
     const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
     const sharedList = window.CommentListShared;
@@ -461,9 +596,7 @@ async function likeMessage(messageId) {
             await sharedList.incrementLike(messageRef.child('likes'));
         } else {
             await messageRef.transaction(message => {
-                if (message) {
-                    message.likes = (message.likes || 0) + 1;
-                }
+                if (message) { message.likes = (message.likes || 0) + 1; }
                 return message;
             });
         }
@@ -474,177 +607,10 @@ async function likeMessage(messageId) {
     }
 }
 
-// 打开回复模态框
-function openReplyModal(messageId) {
-    replyingTo = messageId;
-    const replyModal = byId('replyModal');
-    if (replyModal instanceof HTMLElement) {
-        replyModal.style.display = 'flex';
-    }
-}
+// ---- Admin Delete ----
 
-// 关闭回复模态框
-function closeReplyModal() {
-    replyingTo = null;
-    const replyModal = byId('replyModal');
-    const replyContent = byId('replyContent');
-    if (replyModal instanceof HTMLElement) {
-        replyModal.style.display = 'none';
-    }
-    if (replyContent instanceof HTMLTextAreaElement) {
-        replyContent.value = '';
-    }
-}
-
-// 提交回复
-async function submitReply() {
-    if (!replyingTo) return;
-
-    const nicknameInput = byId('nickname');
-    const replyContentInput = byId('replyContent');
-    const replyMarkdownInput = byId('replyUseMarkdown');
-    if (!(nicknameInput instanceof HTMLInputElement) ||
-        !(replyContentInput instanceof HTMLTextAreaElement) ||
-        !(replyMarkdownInput instanceof HTMLInputElement)) {
-        return;
-    }
-    if (identityInstance && typeof identityInstance.refreshFromInputs === 'function') {
-        identityInstance.refreshFromInputs();
-        syncIdentityState();
-    }
-    const currentNickname = isLoggedUser ? (nickname || loginName || '已登录') : nicknameInput.value.trim();
-    const content = replyContentInput.value.trim();
-    const useMarkdown = replyMarkdownInput.checked;
-
-    if (!currentNickname || !content) {
-        alert('请填写昵称和回复内容');
-        return;
-    }
-
-    const reply = {
-        id: Date.now().toString(), // 简单ID生成
-        text: content,
-        nickname: currentNickname,
-        login: loginName || '',
-        loginType: isLoggedUser ? (loginType || localStorage.getItem('quark_login_type') || '') : '',
-        uid: isLoggedUser ? (window.QuarkUserProfile && typeof window.QuarkUserProfile.getUid === 'function'
-            ? window.QuarkUserProfile.getUid()
-            : '') : getGuestUid(),
-        avatar: userAvatarType === 'color' ? userColor : userAvatarUrl,
-        avatarType: userAvatarType,
-        timestamp: Date.now(),
-        isMarkdown: useMarkdown
-    };
-
-    const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${replyingTo}/replies/${reply.id}`);
-    try {
-        await replyRef.set(reply);
-    } catch (error) {
-        console.error('提交回复失败:', error);
-    } finally {
-        closeReplyModal();
-        await loadMessages();
-    }
-}
-
-// 管理员登录 (安全API版本)
-async function adminLogin() {
-    const passwordInput = byId('adminPassword');
-    if (!(passwordInput instanceof HTMLInputElement)) {
-        return;
-    }
-    const password = passwordInput.value.trim();
-    /** @type {HTMLButtonElement | null} */
-    const submitBtn = document.querySelector('button[onclick="adminLogin()"]');
-
-    if (!password) {
-        alert('请输入管理员密码');
-        return;
-    }
-
-    // 可选：添加防重复提交和加载状态
-    let originalBtnText = '登录';
-    if (submitBtn) {
-        originalBtnText = submitBtn.textContent || '登录';
-        submitBtn.disabled = true;
-        submitBtn.textContent = '验证中...';
-    }
-
-    try {
-        // 1. 计算用户输入密码的SHA-256哈希
-        const hash = await sha256(password);
-
-        // 2. 调用Vercel安全API进行验证
-        const response = await fetch('__API_BASE__/api/admin-auth', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ passwordHash: hash })
-        });
-
-        const result = await response.json();
-
-        // 3. 根据API返回结果处理
-        if (response.ok && result.success && result.token) {
-            // 登录成功
-            isAdmin = true;
-            setAdminToken(result.token);
-            updateAdminUI();
-            passwordInput.value = '';
-            alert('管理员登录成功');
-        } else {
-            // 登录失败
-            alert('密码错误: ' + (result.error || ''));
-        }
-
-    } catch (error) {
-        // 网络错误或API异常
-        console.error('登录过程出错:', error);
-        alert('登录失败：网络错误或验证服务异常，请稍后重试。');
-    } finally {
-        // 无论成功失败，都恢复按钮状态
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-        }
-    }
-}
-
-// 管理员退出
-function logoutAdmin() {
-    isAdmin = false;
-    setAdminToken('');
-    updateAdminUI();
-}
-
-// 更新管理员UI
-function updateAdminUI() {
-    const loginForm = byId('adminLoginForm');
-    const adminActions = byId('adminActions');
-    if (!(loginForm instanceof HTMLElement) || !(adminActions instanceof HTMLElement)) {
-        return;
-    }
-
-    if (isAdmin) {
-        loginForm.style.display = 'none';
-        adminActions.style.display = 'flex';
-    } else {
-        loginForm.style.display = 'flex';
-        adminActions.style.display = 'none';
-    }
-
-    // 重新加载留言以显示/隐藏删除按钮
-    loadMessages();
-}
-
-// 删除留言
 async function deleteMessage(messageId) {
-    if (!isAdmin) {
-        alert('无权限删除留言');
-        return;
-    }
-
+    if (!isAdmin) { alert('无权限删除留言'); return; }
     if (confirm('确定要删除这条留言吗？')) {
         const messageRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${messageId}`);
         try {
@@ -657,42 +623,45 @@ async function deleteMessage(messageId) {
     }
 }
 
-// 删除回复
+// 删除回复（通过遍历查找所属留言）
 async function deleteReply(replyId) {
-    if (!isAdmin) {
-        alert('无权限删除回复');
-        return;
-    }
+    if (!isAdmin) { alert('无权限删除回复'); return; }
+    if (!messagesRef) { alert('留言板未就绪'); return; }
 
-    if (!replyingTo) {
-        alert('无法确定回复所属的留言');
-        return;
-    }
-
-    if (confirm('确定要删除这条回复吗？')) {
-        const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${replyingTo}/replies/${replyId}`);
-        try {
-            await replyRef.remove();
-        } catch (error) {
-            console.error('删除回复失败:', error);
-        } finally {
-            await loadMessages();
+    // 找到包含此回复的留言
+    const snapshot = await messagesRef.once('value');
+    let foundMessageId = null;
+    snapshot.forEach((childSnapshot) => {
+        if (foundMessageId) return;
+        const msg = childSnapshot.val();
+        if (msg.replies && msg.replies[replyId]) {
+            foundMessageId = childSnapshot.key;
         }
+    });
+
+    if (!foundMessageId) { alert('未找到该回复'); return; }
+    if (!confirm('确定要删除这条回复吗？')) return;
+
+    const replyRef = firebase.database().ref(`chatrooms/${BOARD_NAME}/messages/${foundMessageId}/replies/${replyId}`);
+    try {
+        await replyRef.remove();
+    } catch (error) {
+        console.error('删除回复失败:', error);
+    } finally {
+        await loadMessages();
     }
 }
 
-// SHA256哈希函数
+// ---- SHA256 ----
+
 /**
  * @param {string} message
  * @returns {Promise<string>}
  */
 function sha256(message) {
-    // 简化版SHA256实现（实际项目中应使用更完整的实现或库）
-    // 这里仅用于演示，实际使用时建议使用成熟的加密库
     const crypto = window.crypto;
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
-
     return crypto.subtle.digest('SHA-256', data).then(hash => {
         return Array.from(new Uint8Array(hash))
             .map(b => b.toString(16).padStart(2, '0'))
