@@ -22,17 +22,29 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <aside id="sidebar">
       <div id="sidebar-header">
         <span class="brand-text">Q-AI WebUI</span>
-        <button id="theme-toggle" class="icon-btn" title="切换主题">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <path fill="currentColor" d="M12 3V4.35A7.65 7.65 0 1 0 19.65 12H21A9 9 0 1 1 12 3z" />
-          </svg>
-        </button>
+        <div class="sidebar-header-actions">
+          <button id="sidebar-close-mobile" class="icon-btn sidebar-close-btn" title="收起侧栏">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          </button>
+          <button id="theme-toggle" class="icon-btn" title="切换主题">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="currentColor" d="M12 3V4.35A7.65 7.65 0 1 0 19.65 12H21A9 9 0 1 1 12 3z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div id="search-wrapper">
         <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         <input type="text" id="search-input" placeholder="搜索对话...">
         <button id="search-clear-btn" class="icon-btn" style="display:none" title="清除搜索">✕</button>
+      </div>
+
+      <div id="category-bar">
+        <div id="category-list"></div>
+        <button id="manage-categories-btn" class="icon-btn" title="管理分类">⚙</button>
       </div>
 
       <div id="history-list"></div>
@@ -43,6 +55,18 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
           <span>人格</span>
+        </button>
+        <button id="templates-btn" class="footer-btn" title="提示词模板">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM6 20V4h5v7h7v9H6z"/>
+          </svg>
+          <span>模板</span>
+        </button>
+        <button id="starred-btn" class="footer-btn" title="星标消息">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          <span>星标</span>
         </button>
         <input type="file" id="import-chats-input" accept=".json" style="display:none">
         <button id="export-chats-btn" class="footer-btn" title="导出对话到JSON">
@@ -92,6 +116,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <p>已就绪：等待发送文件内容...</p>
         </div>
         <div id="input-wrapper">
+          <!-- Command autocomplete -->
+          <div id="cmd-autocomplete" class="cmd-autocomplete" style="display:none"></div>
+
           <button id="file-btn" class="icon-btn" title="上传文件">
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path fill="currentColor" d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.31 2.69 6 6 6s6-2.69 6-6V6h-1.5z" />
@@ -101,6 +128,16 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
           <textarea id="user-input" placeholder="输入消息（Shift+Enter换行，/ 触发命令）" rows="1"></textarea>
 
+          <button id="template-quick-btn" class="icon-btn" title="插入提示词模板" style="display:none">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM6 20V4h5v7h7v9H6z"/>
+            </svg>
+          </button>
+          <button id="stop-btn" class="icon-btn stop-btn" title="中断输出" style="display:none">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
+            </svg>
+          </button>
           <button id="send-btn" class="icon-btn send-active" title="发送">
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -345,6 +382,92 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <button id="clear-persona-btn" class="secondary-btn">不使用人格</button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 提示词模板弹窗 ===== -->
+  <div id="templates-modal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>提示词模板 / Prompt Templates</h3>
+        <button class="modal-close icon-btn" id="close-templates">✕</button>
+      </div>
+      <div class="templates-layout">
+        <div class="templates-sidebar">
+          <div class="templates-sidebar-header">
+            <span>模板列表</span>
+            <button id="new-template-btn" class="icon-btn" title="新建模板">+</button>
+          </div>
+          <div id="templates-list"></div>
+        </div>
+        <div class="templates-editor">
+          <div class="input-group">
+            <label>模板名称</label>
+            <input type="text" id="template-name-input" placeholder="例如：翻译助手">
+          </div>
+          <div class="input-group">
+            <label>标签（逗号分隔）</label>
+            <input type="text" id="template-tags-input" placeholder="翻译, 写作">
+          </div>
+          <div class="input-group">
+            <label>系统提示词 (System Prompt)</label>
+            <textarea id="template-prompt-input" rows="5" placeholder="将作为 system message 发送..."></textarea>
+          </div>
+          <div class="input-group">
+            <label>用户消息前缀 (可选)</label>
+            <textarea id="template-prefix-input" rows="2" placeholder="插入到用户消息前的文本..."></textarea>
+          </div>
+          <div class="templates-editor-actions">
+            <button id="apply-template-btn" class="primary-btn">应用到当前对话</button>
+            <button id="save-template-btn" class="secondary-btn">保存</button>
+            <button id="delete-template-btn" class="danger-btn">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 星标消息弹窗 ===== -->
+  <div id="starred-modal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>星标消息 / Starred Messages</h3>
+        <button class="modal-close icon-btn" id="close-starred">✕</button>
+      </div>
+      <div id="starred-list" class="starred-list">
+        <p class="empty-hint">暂无星标消息</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 分类管理弹窗 ===== -->
+  <div id="categories-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>管理分类 / Manage Categories</h3>
+        <button class="modal-close icon-btn" id="close-categories">✕</button>
+      </div>
+      <div id="categories-manage-list" class="categories-manage-list"></div>
+      <div class="modal-actions">
+        <button id="add-category-btn" class="primary-btn">+ 添加分类</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 备注弹窗 ===== -->
+  <div id="note-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>添加备注 / Add Note</h3>
+        <button class="modal-close icon-btn" id="close-note-modal">✕</button>
+      </div>
+      <div class="input-group" style="padding:16px">
+        <label>备注内容</label>
+        <textarea id="note-input" rows="4" placeholder="为这条消息添加备注..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button id="save-note-btn" class="primary-btn">保存</button>
       </div>
     </div>
   </div>

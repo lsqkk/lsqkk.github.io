@@ -5,6 +5,9 @@ const AI_SEARCH_PROXY = "https://api.130923.xyz/api/stream-proxy";
 let currentChatId = null;
 let currentAttachments = [];
 let currentPersonaId = null;
+let currentAbortController = null;
+let isGenerating = false;
+let currentCmdIndex = -1;
 
 // ===== Init =====
 
@@ -24,6 +27,10 @@ function initApp() {
   setupSliders();
   renderProfilesList();
   renderPersonaList();
+  renderCategoryChips();
+  renderTemplatesList();
+  initCommandSystem();
+  initMobileSidebar();
 
   // Initialize Mermaid once globally
   if (typeof mermaid !== 'undefined') {
@@ -78,11 +85,26 @@ function setupEventListeners() {
   userInput.oninput = function () {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+    handleCommandAutocomplete(this);
   };
   userInput.onkeydown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
+    } else if (e.key === 'Tab') {
+      const autocomplete = byId('cmd-autocomplete');
+      if (autocomplete.style.display !== 'none') {
+        e.preventDefault();
+        selectCommandSuggestion();
+      }
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const autocomplete = byId('cmd-autocomplete');
+      if (autocomplete.style.display !== 'none') {
+        e.preventDefault();
+        navigateCommandList(e.key === 'ArrowDown' ? 1 : -1);
+      }
+    } else if (e.key === 'Escape') {
+      byId('cmd-autocomplete').style.display = 'none';
     }
   };
 
@@ -136,6 +158,33 @@ function setupEventListeners() {
     loadHistoryList();
   };
   byId('search-clear-btn').onclick = clearSearch;
+
+  // Stop generation
+  byId('stop-btn').onclick = stopGeneration;
+
+  // Templates
+  byId('templates-btn').onclick = openTemplatesModal;
+  byId('close-templates').onclick = () => toggleModal('templates-modal', false);
+  byId('new-template-btn').onclick = createNewTemplate;
+  byId('save-template-btn').onclick = saveCurrentTemplate;
+  byId('apply-template-btn').onclick = applyTemplateFromEditor;
+  byId('delete-template-btn').onclick = deleteTemplate;
+
+  // Starred
+  byId('starred-btn').onclick = openStarredModal;
+  byId('close-starred').onclick = () => toggleModal('starred-modal', false);
+
+  // Categories
+  byId('manage-categories-btn').onclick = openCategoriesModal;
+  byId('close-categories').onclick = () => toggleModal('categories-modal', false);
+  byId('add-category-btn').onclick = addCategory;
+
+  // Note modal
+  byId('close-note-modal').onclick = () => toggleModal('note-modal', false);
+  byId('save-note-btn').onclick = saveNote;
+
+  // Template quick button
+  byId('template-quick-btn').onclick = () => openTemplatesModal();
 }
 
 function byId(id) { return document.getElementById(id); }
@@ -692,6 +741,18 @@ async function sendMessage() {
   const text = inputEl.value.trim();
 
   if (!text && currentAttachments.length === 0) return;
+
+  // Check for commands
+  if (text.startsWith('/') && currentAttachments.length === 0) {
+    const handled = handleCommand(text);
+    if (handled) {
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+      byId('cmd-autocomplete').style.display = 'none';
+      return;
+    }
+  }
+
   sendBtn.disabled = true;
 
   let fullPrompt = text;
@@ -704,6 +765,9 @@ async function sendMessage() {
   inputEl.value = '';
   inputEl.style.height = 'auto';
 
+  // Hide command autocomplete
+  byId('cmd-autocomplete').style.display = 'none';
+
   // Remove empty state
   const emptyState = qs('.empty-state');
   if (emptyState) emptyState.remove();
@@ -711,7 +775,7 @@ async function sendMessage() {
   const historyBox = byId('chat-history');
   const botMsgDiv = document.createElement('div');
   botMsgDiv.className = 'bot-msg';
-  botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content">...</div>`;
+  botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content"><span class="generating-indicator"></span>生成中...</div>`;
   historyBox.appendChild(botMsgDiv);
   historyBox.scrollTop = historyBox.scrollHeight;
 
@@ -728,12 +792,17 @@ async function sendMessage() {
 
   const requestBody = buildRequestBody(settings.model, messages, params);
 
+  // Setup abort controller for stop generation
+  currentAbortController = new AbortController();
+  isGenerating = true;
+  showStopButton();
+
   try {
     let result;
     if (params.stream !== false) {
-      result = await doStreamRequest(endpoint, effectiveKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+      result = await doStreamRequest(endpoint, effectiveKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox, currentAbortController.signal);
     } else {
-      result = await doNormalRequest(endpoint, effectiveKey, requestBody, contentBox, botMsgDiv, historyBox);
+      result = await doNormalRequest(endpoint, effectiveKey, requestBody, contentBox, botMsgDiv, historyBox, currentAbortController.signal);
     }
 
     // Save raw markdown and reasoning (not rendered plain text)
@@ -742,6 +811,7 @@ async function sendMessage() {
     const usage = result.usage || null;
 
     addCopyButton(botMsgDiv, rawText, contentBox);
+    addStarButton(botMsgDiv, rawText);
 
     const wasNewChat = currentChatId === null;
     saveToLocalStorage(fullPrompt, rawText, rawReasoning);
@@ -769,8 +839,25 @@ async function sendMessage() {
     // Auto-generate title for new conversations
     if (wasNewChat) generateTitle(fullPrompt, rawText);
   } catch (err) {
-    contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
+    if (err.name === 'AbortError') {
+      // User stopped generation - keep what we have
+      const partialText = contentBox.textContent || '';
+      const partialRaw = extractRawText(contentBox);
+      if (partialRaw) {
+        addCopyButton(botMsgDiv, partialRaw, contentBox);
+        addStarButton(botMsgDiv, partialRaw);
+        const wasNewChat = currentChatId === null;
+        saveToLocalStorage(fullPrompt, partialRaw, '');
+        if (wasNewChat) generateTitle(fullPrompt, partialRaw);
+      }
+      showToast('已中断输出');
+    } else {
+      contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
+    }
   } finally {
+    isGenerating = false;
+    currentAbortController = null;
+    hideStopButton();
     sendBtn.disabled = false;
     currentAttachments = [];
     byId('drop-area').classList.remove('active');
@@ -834,14 +921,15 @@ function buildRequestBody(model, messages, params) {
   return body;
 }
 
-async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox, botMsgDiv, historyBox) {
+async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox, botMsgDiv, historyBox, signal) {
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal: signal || null
   });
 
   if (!response.ok || !response.body) {
@@ -1012,7 +1100,7 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
   return { text: fullText, reasoning: fullReasoning, usage };
 }
 
-async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, historyBox) {
+async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, historyBox, signal) {
   body.stream = false;
   const response = await fetch(endpoint, {
     method: "POST",
@@ -1020,7 +1108,8 @@ async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, hi
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal: signal || null
   });
 
   if (!response.ok) {
@@ -1219,6 +1308,12 @@ function loadHistoryList() {
     });
   }
 
+  // Filter by category
+  const activeCat = localStorage.getItem('quark_llm_active_category') || 'all';
+  if (activeCat !== 'all') {
+    filtered = filtered.filter(chat => chat.categoryId === activeCat);
+  }
+
   // Group by date
   const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
   const yesterdayStart = new Date(todayStart - 86400000);
@@ -1258,11 +1353,19 @@ function loadHistoryList() {
       const i = chats.indexOf(chat);
       const div = document.createElement('div');
       div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
+      div.draggable = true;
+      div.dataset.chatIndex = i;
       div.innerHTML = `
         <span class="history-title">${escHtml(chat.title || '新会话')}</span>
         <button onclick="deleteChat(${i}, event)">×</button>
       `;
       div.onclick = () => { switchChat(i); };
+      // Drag and drop for categories
+      div.ondragstart = (e) => {
+        e.dataTransfer.setData('text/plain', i);
+        div.classList.add('dragging');
+      };
+      div.ondragend = () => div.classList.remove('dragging');
       list.appendChild(div);
     });
   });
@@ -1358,8 +1461,11 @@ function appendMessageUI(role, text, reasoning, chatIndex, msgIndex) {
     if (reasoningBox) {
       reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
     }
-    enhanceRenderedContent(contentBox);
+    if (contentBox) {
+      enhanceRenderedContent(contentBox);
+    }
     addCopyButton(div, text, contentBox);
+    addStarButton(div, text);
   }
   byId('chat-history').scrollTop = byId('chat-history').scrollHeight;
 }
@@ -1995,6 +2101,7 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
     botMsgDiv.dataset.chatIndex = chatIndex;
     botMsgDiv.dataset.msgIndex = newIdx;
     addCopyButton(botMsgDiv, rawText, contentBox);
+    addStarButton(botMsgDiv, rawText);
     addMessageControls();
     historyBox.scrollTop = historyBox.scrollHeight;
   } catch (err) {
@@ -2078,6 +2185,7 @@ async function regenerateResponse(chatIndex, msgIndex) {
     const wrappers = botMsgDiv.querySelectorAll('.copy-btn-wrapper');
     for (let w = 1; w < wrappers.length; w++) wrappers[w].remove();
     addCopyButton(botMsgDiv, rawText, contentBox);
+    addStarButton(botMsgDiv, rawText);
     addMessageControls();
     historyBox.scrollTop = historyBox.scrollHeight;
   } catch (err) {
@@ -2197,3 +2305,822 @@ function escHtml(str) {
 
 // Expose for inline onclick handlers
 window.deleteChat = deleteChat;
+
+// ===== 1. STOP GENERATION =====
+
+function stopGeneration() {
+  if (currentAbortController) {
+    currentAbortController.abort();
+  }
+}
+
+function showStopButton() {
+  byId('send-btn').style.display = 'none';
+  byId('stop-btn').style.display = 'flex';
+}
+
+function hideStopButton() {
+  byId('send-btn').style.display = 'flex';
+  byId('stop-btn').style.display = 'none';
+}
+
+function extractRawText(contentBox) {
+  if (!contentBox) return '';
+  // Try to get the original content from rendered markdown
+  return contentBox.textContent || '';
+}
+
+// ===== 2. COMMAND SYSTEM =====
+
+const COMMANDS = {
+  '/new': { description: '新建对话', handler: () => { createNewChat(); showToast('已创建新对话'); } },
+  '/clear': { description: '清空当前对话', handler: () => { if (confirm('确定清空当前对话？')) createNewChat(); } },
+  '/settings': { description: '打开设置', handler: () => toggleModal('settings-modal', true) },
+  '/persona': { description: '打开人格管理', handler: () => openPersonaModal() },
+  '/templates': { description: '打开提示词模板', handler: () => openTemplatesModal() },
+  '/export': { description: '导出所有对话', handler: () => exportChats() },
+  '/summarize': { description: '总结当前对话', handler: summarizeChat },
+  '/translate': { description: '翻译模式（可接文本）', handler: (args) => translateMode(args) },
+  '/starred': { description: '查看星标消息', handler: () => openStarredModal() },
+  '/help': { description: '显示所有可用命令', handler: showHelpCommands }
+};
+
+function initCommandSystem() {
+  // Command system initialized via event listeners
+}
+
+function handleCommand(text) {
+  const parts = text.split(' ');
+  const cmd = parts[0].toLowerCase();
+  const args = parts.slice(1).join(' ');
+
+  const command = COMMANDS[cmd];
+  if (command) {
+    command.handler(args);
+    return true;
+  }
+
+  // Check if it's a template invocation
+  if (cmd.startsWith('/')) {
+    const templateName = cmd.slice(1);
+    const templates = getTemplates();
+    const template = templates.find(t => t.name.toLowerCase() === templateName.toLowerCase());
+    if (template) {
+      applyTemplateToChat(template, args);
+      return true;
+    }
+    showToast(`未知命令: ${cmd}。输入 /help 查看可用命令`);
+    return true;
+  }
+
+  return false;
+}
+
+function handleCommandAutocomplete(input) {
+  const text = input.value;
+  const autocomplete = byId('cmd-autocomplete');
+
+  if (!text.startsWith('/') || text.includes(' ')) {
+    autocomplete.style.display = 'none';
+    return;
+  }
+
+  const query = text.toLowerCase();
+  const matches = Object.entries(COMMANDS).filter(([cmd]) => cmd.startsWith(query));
+
+  // Also match templates
+  const templates = getTemplates();
+  templates.forEach(t => {
+    const cmdName = '/' + t.name.toLowerCase();
+    if (cmdName.startsWith(query) && !matches.find(([c]) => c === cmdName)) {
+      matches.push([cmdName, { description: '📄 ' + (t.tags || ''), handler: null }]);
+    }
+  });
+
+  if (matches.length === 0 || text === '/') {
+    // Show all commands when just /
+    const allCommands = Object.entries(COMMANDS);
+    const allTemplates = templates.map(t => ['/' + t.name.toLowerCase(), { description: '📄 ' + (t.tags || ''), handler: null }]);
+    const all = [...allCommands, ...allTemplates];
+    renderCommandList(all, autocomplete);
+    if (all.length > 0) {
+      autocomplete.style.display = 'block';
+    } else {
+      autocomplete.style.display = 'none';
+    }
+    return;
+  }
+
+  renderCommandList(matches, autocomplete);
+  autocomplete.style.display = 'block';
+  currentCmdIndex = -1;
+}
+
+function renderCommandList(matches, container) {
+  container.innerHTML = matches.slice(0, 8).map(([cmd, info], i) =>
+    `<div class="cmd-autocomplete-item" data-index="${i}">
+      <span class="cmd-name">${escHtml(cmd)}</span>
+      <span class="cmd-desc">${escHtml(info.description || '')}</span>
+    </div>`
+  ).join('');
+
+  container.querySelectorAll('.cmd-autocomplete-item').forEach(el => {
+    el.onclick = () => {
+      const cmd = matches[parseInt(el.dataset.index)][0];
+      byId('user-input').value = cmd + ' ';
+      container.style.display = 'none';
+      byId('user-input').focus();
+    };
+  });
+}
+
+function navigateCommandList(dir) {
+  const items = qsa('.cmd-autocomplete-item');
+  if (items.length === 0) return;
+
+  // Remove current selection
+  items.forEach(el => el.classList.remove('selected'));
+
+  if (currentCmdIndex === -1) {
+    currentCmdIndex = dir > 0 ? 0 : items.length - 1;
+  } else {
+    currentCmdIndex = (currentCmdIndex + dir + items.length) % items.length;
+  }
+
+  items[currentCmdIndex].classList.add('selected');
+  items[currentCmdIndex].scrollIntoView({ block: 'nearest' });
+}
+
+function selectCommandSuggestion() {
+  const selected = qs('.cmd-autocomplete-item.selected');
+  if (selected) {
+    selected.click();
+  } else {
+    const first = qs('.cmd-autocomplete-item');
+    if (first) first.click();
+  }
+}
+
+function showHelpCommands() {
+  const list = Object.entries(COMMANDS).map(([cmd, info]) =>
+    `<div class="starred-item" style="cursor:default">
+      <div class="starred-item-header">
+        <span class="starred-item-chat">${escHtml(cmd)}</span>
+      </div>
+      <div class="starred-item-content" style="-webkit-line-clamp:2">${escHtml(info.description)}</div>
+    </div>`
+  ).join('');
+
+  const chatHistory = byId('chat-history');
+  chatHistory.innerHTML = `
+    <div class="empty-state">
+      <h2>可用命令</h2>
+      <div style="text-align:left;max-width:400px;margin-top:16px">${list}</div>
+      <p style="margin-top:16px;font-size:12px;color:var(--text-muted)">提示词模板也可作为命令使用：/<span style="font-family:var(--font-mono)">模板名称</span></p>
+    </div>
+  `;
+}
+
+function summarizeChat() {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  if (currentChatId === null || !chats[currentChatId]) {
+    showToast('没有当前对话可总结');
+    return;
+  }
+
+  const chat = chats[currentChatId];
+  const messages = chat.messages || [];
+  if (messages.length < 2) {
+    showToast('对话太短，无需总结');
+    return;
+  }
+
+  // Build a summary prompt
+  const conversationText = messages.map(m =>
+    `${m.role === 'user' ? '用户' : 'AI'}: ${(m.content || '').substring(0, 500)}`
+  ).join('\n\n');
+
+  byId('user-input').value = `/summarize\n请用3-5点总结以下对话的核心内容：\n\n${conversationText}`;
+  byId('user-input').dispatchEvent(new Event('input'));
+  sendMessage();
+}
+
+function translateMode(args) {
+  if (args) {
+    byId('user-input').value = `请将以下内容翻译成中文：\n\n${args}`;
+    byId('user-input').dispatchEvent(new Event('input'));
+    sendMessage();
+  } else {
+    byId('user-input').value = '/translate ';
+    byId('user-input').focus();
+    showToast('在 /translate 后输入要翻译的文本');
+  }
+}
+
+// ===== 3. CATEGORY SYSTEM =====
+
+function getCategories() {
+  try {
+    return JSON.parse(localStorage.getItem('quark_llm_categories')) || [];
+  } catch { return []; }
+}
+
+function saveCategories(cats) {
+  localStorage.setItem('quark_llm_categories', JSON.stringify(cats));
+}
+
+function getDefaultCategory() {
+  const cats = getCategories();
+  if (cats.length > 0) return cats[0].id;
+  return null;
+}
+
+function renderCategoryChips() {
+  const container = byId('category-list');
+  if (!container) return;
+  const cats = getCategories();
+  const activeCat = localStorage.getItem('quark_llm_active_category') || 'all';
+
+  let html = '<div class="category-chip ' + (activeCat === 'all' ? 'active' : '') + '" data-cat="all">全部</div>';
+  cats.forEach(c => {
+    html += '<div class="category-chip ' + (activeCat === c.id ? 'active' : '') + '" data-cat="' + c.id + '">' + escHtml(c.name) + '</div>';
+  });
+
+  container.innerHTML = html;
+
+  // Click handler
+  container.querySelectorAll('.category-chip').forEach(chip => {
+    chip.onclick = () => {
+      localStorage.setItem('quark_llm_active_category', chip.dataset.cat);
+      renderCategoryChips();
+      loadHistoryList();
+    };
+
+    // Drop handler for drag & drop
+    chip.ondragover = (e) => {
+      e.preventDefault();
+      chip.classList.add('drag-over');
+    };
+    chip.ondragleave = () => chip.classList.remove('drag-over');
+    chip.ondrop = (e) => {
+      e.preventDefault();
+      chip.classList.remove('drag-over');
+      const catId = chip.dataset.cat;
+      const chatIndex = parseInt(e.dataTransfer.getData('text/plain'));
+      if (!isNaN(chatIndex)) {
+        moveChatToCategory(chatIndex, catId);
+      }
+    };
+  });
+}
+
+function moveChatToCategory(chatIndex, catId) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  if (!chats[chatIndex]) return;
+  chats[chatIndex].categoryId = catId === 'all' ? undefined : catId;
+  localStorage.setItem('deepseekChats', JSON.stringify(chats));
+  loadHistoryList();
+  showToast('已移动对话');
+}
+
+function openCategoriesModal() {
+  renderCategoriesManageList();
+  toggleModal('categories-modal', true);
+}
+
+function renderCategoriesManageList() {
+  const container = byId('categories-manage-list');
+  const cats = getCategories();
+
+  container.innerHTML = cats.map((c, i) =>
+    '<div class="category-manage-item">' +
+      '<span class="cat-color" style="background:' + (c.color || '#10a37f') + '"></span>' +
+      '<input class="cat-name" value="' + escHtml(c.name) + '" data-id="' + c.id + '" data-index="' + i + '">' +
+      '<button class="icon-btn delete-cat-btn" data-id="' + c.id + '" title="删除分类">✕</button>' +
+    '</div>'
+  ).join('');
+
+  container.querySelectorAll('.cat-name').forEach(input => {
+    input.onchange = () => {
+      const cats = getCategories();
+      const idx = parseInt(input.dataset.index);
+      if (cats[idx]) {
+        cats[idx].name = input.value.trim() || cats[idx].name;
+        saveCategories(cats);
+        renderCategoryChips();
+        showToast('分类已重命名');
+      }
+    };
+  });
+
+  container.querySelectorAll('.delete-cat-btn').forEach(btn => {
+    btn.onclick = () => {
+      const cats = getCategories();
+      const newCats = cats.filter(c => c.id !== btn.dataset.id);
+      saveCategories(newCats);
+      renderCategoriesManageList();
+      renderCategoryChips();
+      loadHistoryList();
+      showToast('分类已删除');
+    };
+  });
+}
+
+function addCategory() {
+  const name = prompt('输入新分类名称：');
+  if (!name || !name.trim()) return;
+  const cats = getCategories();
+  const newCat = {
+    id: 'cat_' + Date.now().toString(36),
+    name: name.trim(),
+    color: '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0'),
+    createdAt: new Date().toISOString()
+  };
+  cats.push(newCat);
+  saveCategories(cats);
+  renderCategoriesManageList();
+  renderCategoryChips();
+  showToast('分类"' + name.trim() + '"已创建');
+}
+
+// ===== 4. STAR / NOTE SYSTEM =====
+
+function getStarredMessages() {
+  try {
+    return JSON.parse(localStorage.getItem('quark_llm_starred')) || [];
+  } catch { return []; }
+}
+
+function saveStarredMessages(msgs) {
+  localStorage.setItem('quark_llm_starred', JSON.stringify(msgs));
+}
+
+function addStarButton(parent, text) {
+  if (!parent || !text) return;
+
+  const starBtn = document.createElement('button');
+  starBtn.className = 'star-btn';
+  starBtn.innerHTML = '☆';
+  starBtn.title = '星标这条消息';
+  starBtn.style.cssText = 'position:absolute;bottom:8px;left:12px;z-index:10;';
+
+  // Check if already starred
+  const starred = getStarredMessages();
+  const chatTitle = byId('chat-title').textContent;
+  const isStarred = starred.some(s => s.chatId === currentChatId && s.text === text);
+  if (isStarred) {
+    starBtn.classList.add('starred');
+    starBtn.innerHTML = '★';
+  }
+
+  starBtn.onclick = (e) => {
+    e.stopPropagation();
+    toggleStar(currentChatId, text, chatTitle, starBtn);
+  };
+
+  const noteBtn = document.createElement('button');
+  noteBtn.className = 'note-btn';
+  noteBtn.innerHTML = '📝';
+  noteBtn.title = '添加备注';
+  noteBtn.style.cssText = 'position:absolute;bottom:8px;left:44px;z-index:10;';
+
+  const hasNote = starred.some(s => s.chatId === currentChatId && s.text === text && s.note);
+  if (hasNote) noteBtn.classList.add('has-note');
+
+  noteBtn.onclick = (e) => {
+    e.stopPropagation();
+    openNoteModal(currentChatId, text, chatTitle);
+  };
+
+  parent.appendChild(starBtn);
+  parent.appendChild(noteBtn);
+}
+
+function toggleStar(chatId, text, chatTitle, btn) {
+  const starred = getStarredMessages();
+  const idx = starred.findIndex(s => s.chatId === chatId && s.text === text);
+
+  if (idx >= 0) {
+    starred.splice(idx, 1);
+    btn.classList.remove('starred');
+    btn.innerHTML = '☆ 星标';
+    showToast('已取消星标');
+  } else {
+    starred.push({
+      chatId: chatId,
+      text: text,
+      chatTitle: chatTitle || '未知对话',
+      timestamp: new Date().toISOString(),
+      note: ''
+    });
+    btn.classList.add('starred');
+    btn.innerHTML = '★ 星标';
+    showToast('已添加星标');
+  }
+
+  saveStarredMessages(starred);
+}
+
+function openNoteModal(chatId, text, chatTitle) {
+  const starred = getStarredMessages();
+  const existing = starred.find(s => s.chatId === chatId && s.text === text);
+
+  // Ensure the message is starred
+  if (!existing) {
+    starred.push({
+      chatId, text,
+      chatTitle: chatTitle || '未知对话',
+      timestamp: new Date().toISOString(),
+      note: ''
+    });
+    saveStarredMessages(starred);
+  }
+
+  byId('note-input').value = existing ? (existing.note || '') : '';
+  byId('note-input').dataset.chatId = chatId;
+  byId('note-input').dataset.text = text;
+  byId('note-input').dataset.chatTitle = chatTitle || '';
+  toggleModal('note-modal', true);
+  byId('note-input').focus();
+}
+
+function saveNote() {
+  const note = byId('note-input').value.trim();
+  const chatId = byId('note-input').dataset.chatId;
+  const text = byId('note-input').dataset.text;
+  const chatTitle = byId('note-input').dataset.chatTitle;
+
+  const starred = getStarredMessages();
+  const existing = starred.find(s => s.chatId === chatId && s.text === text);
+
+  if (existing) {
+    existing.note = note;
+  } else {
+    starred.push({
+      chatId: chatId, text, chatTitle,
+      timestamp: new Date().toISOString(),
+      note
+    });
+  }
+
+  saveStarredMessages(starred);
+  toggleModal('note-modal', false);
+  showToast('备注已保存');
+}
+
+function openStarredModal() {
+  const container = byId('starred-list');
+  const starred = getStarredMessages();
+
+  if (starred.length === 0) {
+    container.innerHTML = '<p class="empty-hint">暂无星标消息</p>';
+    toggleModal('starred-modal', true);
+    return;
+  }
+
+  container.innerHTML = starred.map((s, i) =>
+    '<div class="starred-item" data-index="' + i + '">' +
+      '<div class="starred-item-header">' +
+        '<span class="starred-item-chat">' + escHtml(s.chatTitle || '未知对话') + '</span>' +
+        '<span>' + new Date(s.timestamp).toLocaleString() + '</span>' +
+      '</div>' +
+      '<div class="starred-item-content">' + escHtml((s.text || '').substring(0, 200)) + '</div>' +
+      (s.note ? '<div class="starred-item-note">📝 ' + escHtml(s.note) + '</div>' : '') +
+      '<div class="starred-item-actions">' +
+        '<button class="goto-starred-btn" data-index="' + i + '">跳转</button>' +
+        '<button class="unstar-btn" data-index="' + i + '">取消星标</button>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+
+  // Jump to the chat
+  container.querySelectorAll('.goto-starred-btn').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.index);
+      const s = starred[idx];
+      if (s && s.chatId !== null) {
+        toggleModal('starred-modal', false);
+        switchChat(parseInt(s.chatId));
+      } else {
+        showToast('该对话可能已被删除');
+      }
+    };
+  });
+
+  container.querySelectorAll('.unstar-btn').forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.index);
+      const s = starred[idx];
+      const chatTitle = byId('chat-title').textContent;
+      starred.splice(idx, 1);
+      saveStarredMessages(starred);
+      openStarredModal(); // Re-render
+      // Also update button state if visible
+      const btns = qsa('.star-btn.starred');
+      btns.forEach(b => {
+        if (b.closest('.bot-msg')) {
+          b.classList.remove('starred');
+          b.innerHTML = '☆ 星标';
+        }
+      });
+      showToast('已取消星标');
+    };
+  });
+
+  toggleModal('starred-modal', true);
+}
+
+// ===== 5. TEMPLATE SYSTEM =====
+
+function getTemplates() {
+  try {
+    return JSON.parse(localStorage.getItem('quark_llm_templates')) || [];
+  } catch { return []; }
+}
+
+function saveTemplates(templates) {
+  localStorage.setItem('quark_llm_templates', JSON.stringify(templates));
+}
+
+function renderTemplatesList() {
+  const container = byId('templates-list');
+  if (!container) return;
+  const templates = getTemplates();
+
+  if (templates.length === 0) {
+    container.innerHTML = '<p class="empty-hint" style="padding:16px;text-align:center;font-size:12px;">暂无模板<br>点击 + 新建</p>';
+    return;
+  }
+
+  container.innerHTML = templates.map(t =>
+    '<div class="template-list-item" data-id="' + t.id + '">' +
+      escHtml(t.name) +
+      (t.tags ? '<div class="template-tags">' + escHtml(t.tags) + '</div>' : '') +
+    '</div>'
+  ).join('');
+
+  container.querySelectorAll('.template-list-item').forEach(item => {
+    item.onclick = () => {
+      const template = getTemplates().find(t => t.id === item.dataset.id);
+      if (template) {
+        selectTemplateInList(template.id);
+        loadTemplateIntoEditor(template);
+      }
+    };
+  });
+}
+
+function selectTemplateInList(id) {
+  qsa('.template-list-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === id);
+  });
+}
+
+function clearTemplateEditor() {
+  byId('template-name-input').value = '';
+  byId('template-tags-input').value = '';
+  byId('template-prompt-input').value = '';
+  byId('template-prefix-input').value = '';
+  byId('template-name-input').dataset.templateId = '';
+}
+
+function loadTemplateIntoEditor(template) {
+  byId('template-name-input').value = template.name || '';
+  byId('template-tags-input').value = (template.tags || '').split(',').map(s => s.trim()).join(', ');
+  byId('template-prompt-input').value = template.systemPrompt || '';
+  byId('template-prefix-input').value = template.userPrefix || '';
+  byId('template-name-input').dataset.templateId = template.id;
+}
+
+function openTemplatesModal() {
+  renderTemplatesList();
+  toggleModal('templates-modal', true);
+  clearTemplateEditor();
+}
+
+function createNewTemplate() {
+  clearTemplateEditor();
+  selectTemplateInList('');
+  byId('template-name-input').focus();
+  showToast('填写信息后点击"保存"');
+}
+
+function saveCurrentTemplate() {
+  const name = byId('template-name-input').value.trim();
+  const tags = byId('template-tags-input').value.trim();
+  const systemPrompt = byId('template-prompt-input').value.trim();
+  const userPrefix = byId('template-prefix-input').value.trim();
+  const existingId = byId('template-name-input').dataset.templateId;
+
+  if (!name) { showToast('请输入模板名称'); return; }
+
+  if (existingId) {
+    const templates = getTemplates();
+    const idx = templates.findIndex(t => t.id === existingId);
+    if (idx >= 0) {
+      templates[idx] = { ...templates[idx], name, tags, systemPrompt, userPrefix, updatedAt: new Date().toISOString() };
+      saveTemplates(templates);
+      showToast('模板已更新');
+    }
+  } else {
+    const templates = getTemplates();
+    const newTemplate = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      name, tags, systemPrompt, userPrefix,
+      createdAt: new Date().toISOString()
+    };
+    templates.push(newTemplate);
+    saveTemplates(templates);
+    byId('template-name-input').dataset.templateId = newTemplate.id;
+    showToast('模板已创建');
+  }
+
+  renderTemplatesList();
+}
+
+function applyTemplateFromEditor() {
+  const name = byId('template-name-input').value.trim();
+  const systemPrompt = byId('template-prompt-input').value.trim();
+  const userPrefix = byId('template-prefix-input').value.trim();
+
+  // Auto-save if modified
+  const existingId = byId('template-name-input').dataset.templateId;
+  if (name && (systemPrompt || userPrefix)) {
+    if (existingId) {
+      const templates = getTemplates();
+      const idx = templates.findIndex(t => t.id === existingId);
+      if (idx >= 0) {
+        templates[idx] = { ...templates[idx], name, systemPrompt, userPrefix, updatedAt: new Date().toISOString() };
+        saveTemplates(templates);
+      }
+    } else {
+      const templates = getTemplates();
+      templates.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        name, tags: byId('template-tags-input').value.trim(), systemPrompt, userPrefix,
+        createdAt: new Date().toISOString()
+      });
+      saveTemplates(templates);
+    }
+    renderTemplatesList();
+  }
+
+  if (systemPrompt || userPrefix) {
+    applyTemplateToChat({ name, systemPrompt, userPrefix }, '');
+  }
+}
+
+function applyTemplateToChat(template, args) {
+  if (!template) return;
+
+  // Insert system prompt as first message or set as persona
+  if (template.systemPrompt) {
+    // Use the system prompt as a temporary persona for this message
+    const existingPersona = C.getActivePersona();
+    if (existingPersona && existingPersona.systemPrompt === template.systemPrompt) {
+      // Same system prompt already active
+    } else {
+      // Store template system prompt temporarily
+      C.saveSettings({ ...C.getSettings() }); // ensure settings exist
+      // We'll prepend system prompt via buildMessages mock
+      // Actually, we can just insert the system prompt into the user message
+    }
+  }
+
+  // Insert user prefix into the input
+  const input = byId('user-input');
+  let prefix = template.userPrefix || '';
+  if (args) {
+    prefix += ' ' + args;
+  }
+  if (prefix) {
+    input.value = prefix;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  }
+
+  // If there's a system prompt, prepend it to input as an instruction
+  if (template.systemPrompt) {
+    const notes = '请遵循以下系统指令：' + template.systemPrompt;
+    if (input.value) {
+      input.value = notes + '\n\n' + input.value;
+    } else {
+      input.value = notes + '\n\n';
+    }
+    input.dispatchEvent(new Event('input'));
+  }
+
+  toggleModal('templates-modal', false);
+  showToast('已应用模板: ' + template.name);
+}
+
+function deleteTemplate() {
+  const existingId = byId('template-name-input').dataset.templateId;
+  if (!existingId) { showToast('请先选择要删除的模板'); return; }
+
+  const templates = getTemplates();
+  const template = templates.find(t => t.id === existingId);
+  if (!template) return;
+  if (!confirm('确定删除模板"' + template.name + '"？')) return;
+
+  const newTemplates = templates.filter(t => t.id !== existingId);
+  saveTemplates(newTemplates);
+  clearTemplateEditor();
+  renderTemplatesList();
+  showToast('模板已删除');
+}
+
+// ===== 6. MOBILE SIDEBAR IMPROVEMENTS =====
+
+function initMobileSidebar() {
+  const sidebar = byId('sidebar');
+  const sidebarCloseBtn = byId('sidebar-close-mobile');
+  const sidebarToggle = byId('sidebar-toggle');
+  const chatContainer = byId('chat-container');
+
+  // Close button in sidebar (mobile)
+  if (sidebarCloseBtn) {
+    sidebarCloseBtn.onclick = () => {
+      sidebar.classList.add('collapsed');
+      updateSidebarToggleIcon();
+    };
+  }
+
+  // Sidebar toggle button in header
+  sidebarToggle.onclick = () => {
+    sidebar.classList.toggle('collapsed');
+    updateSidebarToggleIcon();
+  };
+
+  // Click outside sidebar to close (mobile only)
+  if (chatContainer) {
+    chatContainer.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+        // Don't collapse if clicking on something inside the sidebar
+        const target = e.target;
+        if (!sidebar.contains(target) && target !== sidebarToggle && !sidebarToggle.contains(target)) {
+          // But don't close if clicking the sidebar toggle
+          sidebar.classList.add('collapsed');
+          updateSidebarToggleIcon();
+        }
+      }
+    });
+  }
+
+  // Touch swipe to close sidebar (mobile)
+  let sidebarTouchStartX = 0;
+
+  sidebar.addEventListener('touchstart', (e) => {
+    sidebarTouchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  sidebar.addEventListener('touchend', (e) => {
+    if (window.innerWidth <= 768) {
+      const deltaX = sidebarTouchStartX - e.changedTouches[0].clientX;
+      if (deltaX > 80) {
+        sidebar.classList.add('collapsed');
+        updateSidebarToggleIcon();
+      }
+    }
+  }, { passive: true });
+
+  // Swipe right on main area to open sidebar
+  let mainTouchStartX = 0;
+
+  chatContainer.addEventListener('touchstart', (e) => {
+    mainTouchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  chatContainer.addEventListener('touchend', (e) => {
+    if (window.innerWidth <= 768 && sidebar.classList.contains('collapsed')) {
+      const deltaX = e.changedTouches[0].clientX - mainTouchStartX;
+      if (deltaX > 80 && mainTouchStartX < 30) {
+        sidebar.classList.remove('collapsed');
+        updateSidebarToggleIcon();
+      }
+    }
+  }, { passive: true });
+
+  // Initialize sidebar state for mobile
+  if (window.innerWidth <= 768) {
+    sidebar.classList.add('collapsed');
+  }
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+      if (!sidebar.classList.contains('collapsed')) {
+        // Keep as is
+      }
+    } else {
+      sidebar.classList.remove('collapsed');
+    }
+  });
+}
+
+function updateSidebarToggleIcon() {
+  const sidebar = byId('sidebar');
+  const toggle = byId('sidebar-toggle');
+  if (!toggle) return;
+  // Toggle button appearance is handled by CSS transition
+}

@@ -13,3 +13,13 @@
 - [x] 大幅优化 `/a/terminal`，补充常见 shell 指令并接入 LLM 对话能力
 完成时间：2026-04-23
 完成说明：已重构 `/a/terminal` 的路径解析、文件系统与命令执行层，补充 `pwd`、`echo`、`find`、`grep`、`wc`、`head`、`tail`、`cp`、`mv`、`stat`、`env/export/unset` 等常见 shell 指令，并新增 `llm`、`llm-config`、`llm-key`、`llm-base`、`llm-model`、`llm-history` 等命令；同时让 `/a/qai` 与 `/a/terminal` 共用同一套 localStorage LLM 配置，若已在 `/a/qai` 保存 API Key / Base URL / Model，终端可直接读取后对话。
+
+- [x] `/a/qai` 大版本更新：6 项新功能
+完成时间：2026-05-09
+完成说明：
+  1. **对话分类**：侧栏新增分类栏，支持创建/重命名/删除分类；对话可拖拽到分类标签上移动；按分类筛选显示
+  2. **移动端侧栏**：侧栏头部新增关闭按钮；点击右侧空白处收起侧栏；左滑/右滑手势
+  3. **消息星标备注**：每条 AI 回复可星标并添加备注；侧栏「星标」按钮查看/管理所有星标
+  4. **命令系统**：输入 `/` 触发自动补全；/new /clear /settings /persona /templates /export /summarize /translate /starred /help；Tab/方向键/Enter 操作
+  5. **提示词模板库**：管理提示词模板（含系统提示词和用户前缀）；可弹窗应用或通过 `/模板名` 命令调用；比人格更灵活
+  6. **AI 输出中断**：生成时显示红色停止按钮；点击中断保留已生成内容；可复制/下载/星标/重新生成
