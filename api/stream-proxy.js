@@ -136,6 +136,14 @@ async function handleAISearchProxy(req, res, requestOrigin) {
 
   const authHeader = req.headers.authorization || '';
 
+  // Parse body — Vercel sometimes provides a string, sometimes an object
+  let requestBody;
+  try {
+    requestBody = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  } catch {
+    return res.status(400).json({ error: 'Invalid JSON in request body' });
+  }
+
   try {
     const upstream = await fetch(targetUrl, {
       method: 'POST',
@@ -143,7 +151,7 @@ async function handleAISearchProxy(req, res, requestOrigin) {
         'Content-Type': 'application/json',
         ...(authHeader ? { 'Authorization': authHeader } : {}),
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(requestBody),
     });
 
     if (!upstream.ok) {
