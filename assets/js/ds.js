@@ -848,6 +848,28 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
     throw new Error(await C.parseErrorResponse(response));
   }
 
+  const contentType = response.headers.get('content-type') || '';
+
+  // Handle non-SSE responses (e.g., JSON from proxy when upstream doesn't support streaming)
+  if (!contentType.includes('text/event-stream')) {
+    const data = await response.json();
+    const choice = data?.choices?.[0];
+    const text = choice?.message?.content || '';
+    const reasoning = choice?.message?.reasoning_content || '';
+    const usage = data?.usage || null;
+
+    if (text) {
+      contentBox.innerHTML = marked.parse(text);
+      enhanceRenderedContent(contentBox);
+    }
+    if (reasoning) {
+      reasoningBox.style.display = "block";
+      reasoningBox.textContent = reasoning;
+      reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
+    }
+    return { text, reasoning, usage };
+  }
+
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let fullText = "";
