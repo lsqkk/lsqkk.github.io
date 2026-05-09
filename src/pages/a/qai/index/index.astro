@@ -160,6 +160,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <button class="tab-btn active" data-tab="connection">连接</button>
         <button class="tab-btn" data-tab="params">参数</button>
         <button class="tab-btn" data-tab="profiles">预设</button>
+        <button class="tab-btn" data-tab="features">功能</button>
         <button class="tab-btn" data-tab="about">关于</button>
       </div>
 
@@ -317,6 +318,38 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <div id="profiles-list" class="profiles-list">
           <p class="empty-hint">暂无保存的预设</p>
         </div>
+      </div>
+
+      <!-- Tab 5: 功能 -->
+      <div class="tab-content" id="tab-features">
+
+        <div class="input-group">
+          <label>聊天界面模式</label>
+          <label class="toggle-label">
+            <input type="checkbox" id="bubble-mode-toggle">
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">聊天气泡模式（用户右/ AI左）</span>
+          </label>
+        </div>
+
+        <div class="input-group">
+          <label>JSON 输出模式</label>
+          <label class="toggle-label">
+            <input type="checkbox" id="json-mode-toggle">
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">强制模型输出合法 JSON 并检验</span>
+          </label>
+        </div>
+
+        <div class="input-group">
+          <label>原始请求查看</label>
+          <label class="toggle-label">
+            <input type="checkbox" id="raw-request-toggle">
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">显示每轮发送给 API 的完整 JSON（调试用）</span>
+          </label>
+        </div>
+
       </div>
 
       <!-- Tab 4: 关于 -->

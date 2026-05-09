@@ -31,6 +31,7 @@ function initApp() {
   renderTemplatesList();
   initCommandSystem();
   initMobileSidebar();
+  initCollapsibleSidebar();
 
   // Initialize Mermaid once globally
   if (typeof mermaid !== 'undefined') {
@@ -185,6 +186,11 @@ function setupEventListeners() {
 
   // Template quick button
   byId('template-quick-btn').onclick = () => openTemplatesModal();
+
+  // Bubble mode toggle immediate effect
+  byId('bubble-mode-toggle').onchange = function () {
+    applyBubbleMode(this.checked);
+  };
 }
 
 function byId(id) { return document.getElementById(id); }
@@ -293,6 +299,14 @@ function loadSettingsIntoUI() {
   byId('search-api-url').value = params.searchApiUrl || '';
   byId('search-api-key').value = params.searchApiKey || '';
   byId('web-search-toggle').dispatchEvent(new Event('change'));
+
+  // New feature toggles
+  byId('bubble-mode-toggle').checked = params.bubbleMode === true;
+  byId('json-mode-toggle').checked = params.jsonMode === true;
+  byId('raw-request-toggle').checked = params.showRawRequest === true;
+
+  // Apply bubble mode class
+  applyBubbleMode(params.bubbleMode === true);
 }
 
 function loadParams() {
@@ -330,6 +344,9 @@ function saveSettingsFromUI() {
     webSearch: byId('web-search-toggle').checked,
     searchApiUrl: byId('search-api-url').value.trim(),
     searchApiKey: byId('search-api-key').value.trim(),
+    bubbleMode: byId('bubble-mode-toggle').checked,
+    jsonMode: byId('json-mode-toggle').checked,
+    showRawRequest: byId('raw-request-toggle').checked,
   };
   saveParams(params);
 
@@ -362,6 +379,13 @@ function loadDefaultSettings() {
   byId('search-api-url').value = '';
   byId('search-api-key').value = '';
   byId('web-search-toggle').dispatchEvent(new Event('change'));
+
+  // Reset new feature toggles
+  byId('bubble-mode-toggle').checked = false;
+  byId('json-mode-toggle').checked = false;
+  byId('raw-request-toggle').checked = false;
+  applyBubbleMode(false);
+
   showToast('已恢复默认设置');
 }
 
@@ -775,7 +799,9 @@ async function sendMessage() {
   const historyBox = byId('chat-history');
   const botMsgDiv = document.createElement('div');
   botMsgDiv.className = 'bot-msg';
-  botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content"><span class="generating-indicator"></span>生成中...</div>`;
+  const bubbleWrap = loadParams().bubbleMode ? '<div class="bubble">' : '';
+  const bubbleWrapEnd = loadParams().bubbleMode ? '</div>' : '';
+  botMsgDiv.innerHTML = `${bubbleWrap}<div class="reasoning-box" style="display:none"></div><div class="markdown-content"><span class="generating-indicator"></span>生成中...</div>${bubbleWrapEnd}`;
   historyBox.appendChild(botMsgDiv);
   historyBox.scrollTop = historyBox.scrollHeight;
 
@@ -821,6 +847,38 @@ async function sendMessage() {
 
     // Show context warning if approaching limit
     showContextWarning();
+
+    // Raw request viewer
+    if (params.showRawRequest) {
+      addRawRequestViewer(botMsgDiv, requestBody);
+    }
+
+    // JSON mode: validate and display
+    if (params.jsonMode) {
+      const jsonResult = validateAndFormatJSON(rawText);
+      if (jsonResult.valid && contentBox) {
+        contentBox.innerHTML = ''; // Clear markdown-rendered content
+        const jsonContainer = document.createElement('div');
+        jsonContainer.className = 'json-output-container';
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'json-copy-btn';
+        copyBtn.textContent = '复制';
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(jsonResult.formatted).then(() => {
+            copyBtn.textContent = '已复制';
+            setTimeout(() => { copyBtn.textContent = '复制'; }, 2000);
+          });
+        };
+        jsonContainer.textContent = jsonResult.formatted;
+        jsonContainer.prepend(copyBtn);
+        contentBox.appendChild(jsonContainer);
+      } else if (!jsonResult.valid) {
+        const errDiv = document.createElement('div');
+        errDiv.className = 'json-validation-error';
+        errDiv.textContent = 'JSON 验证失败: ' + jsonResult.error;
+        if (contentBox) contentBox.prepend(errDiv);
+      }
+    }
 
     // Data attributes for controls after save (indices now known)
     const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
@@ -874,9 +932,21 @@ function buildMessages(userPrompt) {
     messages.push({ role: "system", content: activePersona.systemPrompt });
   }
 
+  // Add JSON mode system prompt
+  const params = loadParams();
+  if (params.jsonMode) {
+    const jsonSchema = `你必须始终以合法的 JSON 格式输出，不要包含任何 markdown 代码块标记或额外说明。
+输出格式应为：
+{
+  "response": "你的回答文本",
+  "thinking": "你的思考过程（可选）",
+  "confidence": 0.0-1.0之间的置信度分数
+}`;
+    messages.push({ role: "system", content: jsonSchema });
+  }
+
   // Add history context (infinite or limited)
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
-  const params = loadParams();
 
   if (currentChatId !== null && chats[currentChatId]) {
     let history;
@@ -1439,20 +1509,36 @@ function createNewChat() {
   updateContextDisplay();
 }
 
+// ===== Bubble Mode =====
+
+function applyBubbleMode(enabled) {
+  document.body.classList.toggle('bubble-mode', enabled);
+}
+
 // ===== UI Helpers =====
 
 function appendMessageUI(role, text, reasoning, chatIndex, msgIndex) {
   const div = document.createElement('div');
   div.className = `${role}-msg`;
+  const p = loadParams();
+  const isBubble = p.bubbleMode === true;
   if (chatIndex !== undefined) div.dataset.chatIndex = chatIndex;
   if (msgIndex !== undefined) div.dataset.msgIndex = msgIndex;
   if (role === 'bot') {
     const reasoningHtml = reasoning
       ? `<div class="reasoning-box">${escHtml(reasoning)}</div>`
       : '';
-    div.innerHTML = `${reasoningHtml}<div class="markdown-content">${marked.parse(text)}</div>`;
+    if (isBubble) {
+      div.innerHTML = `<div class="bubble">${reasoningHtml}<div class="markdown-content">${marked.parse(text)}</div></div>`;
+    } else {
+      div.innerHTML = `${reasoningHtml}<div class="markdown-content">${marked.parse(text)}</div>`;
+    }
   } else {
-    div.textContent = text;
+    if (isBubble) {
+      div.innerHTML = `<div class="bubble">${escHtml(text)}</div>`;
+    } else {
+      div.textContent = text;
+    }
   }
   byId('chat-history').appendChild(div);
   if (role === 'bot') {
@@ -1986,11 +2072,36 @@ function addMessageControls() {
       actions.appendChild(v);
     }
 
+    // Regenerate dropdown with rewrite styles
+    const regenGroup = document.createElement('div');
+    regenGroup.className = 'btn-group';
     const regenBtn = document.createElement('button');
-    regenBtn.className = 'msg-action-btn regen-msg-btn';
+    regenBtn.className = 'msg-action-btn';
     regenBtn.innerHTML = '&#x21bb; 重新生成';
-    regenBtn.onclick = () => regenerateResponse(ci, mi);
-    actions.appendChild(regenBtn);
+    regenBtn.onclick = () => regenerateResponse(ci, mi, '');
+    const regenDropdownBtn = document.createElement('button');
+    regenDropdownBtn.className = 'msg-btn-dropdown';
+    regenDropdownBtn.textContent = '▼';
+    const regenMenu = document.createElement('div');
+    regenMenu.className = 'dropdown-menu';
+    const regenStyles = [
+      { key: '', label: '重新生成' },
+      { key: '更详细', label: '更详细' },
+      { key: '更简洁', label: '更简洁' },
+      { key: '更专业', label: '更专业' },
+      { key: '更口语日常', label: '更口语日常' }
+    ];
+    regenStyles.forEach(s => {
+      const b = document.createElement('button');
+      b.textContent = s.label;
+      b.onclick = () => { regenerateResponse(ci, mi, s.key); regenMenu.classList.remove('show'); };
+      regenMenu.appendChild(b);
+    });
+    regenDropdownBtn.onclick = (e) => { e.stopPropagation(); regenMenu.classList.toggle('show'); };
+    regenGroup.appendChild(regenBtn);
+    regenGroup.appendChild(regenDropdownBtn);
+    regenGroup.appendChild(regenMenu);
+    actions.appendChild(regenGroup);
     div.appendChild(actions);
   });
 }
@@ -2072,7 +2183,9 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
 
   const botMsgDiv = document.createElement('div');
   botMsgDiv.className = 'bot-msg';
-  botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content">...</div>`;
+  const bbl = loadParams().bubbleMode ? '<div class="bubble">' : '';
+  const bblEnd = loadParams().bubbleMode ? '</div>' : '';
+  botMsgDiv.innerHTML = `${bbl}<div class="reasoning-box" style="display:none"></div><div class="markdown-content">...</div>${bblEnd}`;
   historyBox.appendChild(botMsgDiv);
   historyBox.scrollTop = historyBox.scrollHeight;
 
@@ -2103,13 +2216,31 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
     addCopyButton(botMsgDiv, rawText, contentBox);
     addStarButton(botMsgDiv, rawText);
     addMessageControls();
+    // Raw request viewer
+    if (loadParams().showRawRequest) addRawRequestViewer(botMsgDiv, requestBody);
+    // JSON mode validation
+    if (loadParams().jsonMode && contentBox) {
+      const jr = validateAndFormatJSON(rawText);
+      if (jr.valid) {
+        contentBox.innerHTML = '';
+        const jc = document.createElement('div');
+        jc.className = 'json-output-container';
+        jc.textContent = jr.formatted;
+        contentBox.appendChild(jc);
+      } else if (!jr.valid) {
+        const ed = document.createElement('div');
+        ed.className = 'json-validation-error';
+        ed.textContent = 'JSON 验证失败: ' + jr.error;
+        contentBox.prepend(ed);
+      }
+    }
     historyBox.scrollTop = historyBox.scrollHeight;
   } catch (err) {
     contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
   }
 }
 
-async function regenerateResponse(chatIndex, msgIndex) {
+async function regenerateResponse(chatIndex, msgIndex, style) {
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
   const chat = chats[chatIndex];
   if (!chat) return;
@@ -2152,6 +2283,19 @@ async function regenerateResponse(chatIndex, msgIndex) {
   if (activePersona && activePersona.systemPrompt) {
     apiMessages.push({ role: "system", content: activePersona.systemPrompt });
   }
+  // Add rewrite style instruction if specified
+  if (style) {
+    const styleInstructions = {
+      '更详细': '请用更详细的方式重写你的上一条回答，补充更多细节、例子和解释，使内容更加丰富完整。',
+      '更简洁': '请用更简洁的方式重写你的上一条回答，去掉冗余内容，保留核心要点，使表达更加精炼。',
+      '更专业': '请用更专业的方式重写你的上一条回答，使用正式的学术或行业术语，语气严谨客观。',
+      '更口语日常': '请用更口语化、日常化的方式重写你的上一条回答，使用通俗易懂的语言，像朋友聊天一样自然。'
+    };
+    const instruction = styleInstructions[style];
+    if (instruction) {
+      apiMessages.push({ role: "system", content: instruction });
+    }
+  }
   const contextWindow = params.contextWindow || CONTEXT_LIMIT;
   const startIdx = Math.max(0, userMsgIndex - contextWindow + 1);
   for (let i = startIdx; i <= userMsgIndex; i++) {
@@ -2187,6 +2331,12 @@ async function regenerateResponse(chatIndex, msgIndex) {
     addCopyButton(botMsgDiv, rawText, contentBox);
     addStarButton(botMsgDiv, rawText);
     addMessageControls();
+    if (loadParams().showRawRequest) addRawRequestViewer(botMsgDiv, requestBody);
+    if (loadParams().jsonMode && contentBox) {
+      const jr = validateAndFormatJSON(rawText);
+      if (jr.valid) { contentBox.innerHTML = ''; const jc = document.createElement('div'); jc.className = 'json-output-container'; jc.textContent = jr.formatted; contentBox.appendChild(jc); }
+      else { const ed = document.createElement('div'); ed.className = 'json-validation-error'; ed.textContent = 'JSON 验证失败: ' + jr.error; contentBox.prepend(ed); }
+    }
     historyBox.scrollTop = historyBox.scrollHeight;
   } catch (err) {
     if (contentBox) contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
@@ -3123,4 +3273,234 @@ function updateSidebarToggleIcon() {
   const toggle = byId('sidebar-toggle');
   if (!toggle) return;
   // Toggle button appearance is handled by CSS transition
+}
+
+// ===== Raw Request Viewer =====
+
+function addRawRequestViewer(botMsgDiv, requestBody) {
+  if (!botMsgDiv || !requestBody) return;
+  const toggle = document.createElement('div');
+  toggle.className = 'raw-request-toggle';
+  toggle.innerHTML = '<span>▶</span> 查看原始请求';
+  toggle.onclick = () => {
+    const body = toggle.nextElementSibling;
+    if (body) {
+      body.classList.toggle('show');
+      toggle.innerHTML = body.classList.contains('show')
+        ? '<span>▼</span> 隐藏原始请求'
+        : '<span>▶</span> 查看原始请求';
+    }
+  };
+  const body = document.createElement('div');
+  body.className = 'raw-request-body';
+  body.textContent = JSON.stringify(requestBody, null, 2);
+  botMsgDiv.appendChild(toggle);
+  botMsgDiv.appendChild(body);
+}
+
+// ===== JSON Validation =====
+
+function validateAndFormatJSON(text) {
+  try {
+    // Try to extract JSON from the response (handle markdown code blocks)
+    let jsonStr = text.trim();
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1].trim();
+    }
+    const parsed = JSON.parse(jsonStr);
+    return { valid: true, data: parsed, formatted: JSON.stringify(parsed, null, 2), error: null };
+  } catch (e) {
+    return { valid: false, data: null, formatted: text, error: e.message };
+  }
+}
+
+// ===== Encrypted Export / Import =====
+
+async function deriveKey(password, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+
+async function encryptData(data, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password, salt);
+  const enc = new TextEncoder();
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(data))
+  );
+  // Combine salt + iv + ciphertext
+  const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+  combined.set(salt, 0);
+  combined.set(iv, salt.length);
+  combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+  return btoa(String.fromCharCode(...combined));
+}
+
+async function decryptData(encoded, password) {
+  try {
+    const combined = Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
+    const salt = combined.slice(0, 16);
+    const iv = combined.slice(16, 28);
+    const ciphertext = combined.slice(28);
+    const key = await deriveKey(password, salt);
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv }, key, ciphertext
+    );
+    const dec = new TextDecoder();
+    return JSON.parse(dec.decode(decrypted));
+  } catch (e) {
+    throw new Error('解密失败：密码错误或数据已损坏');
+  }
+}
+
+// Override export function with encryption
+const originalExportChats = exportChats;
+exportChats = async function() {
+  const data = localStorage.getItem('deepseekChats');
+  if (!data) { showToast('没有可导出的对话'); return; }
+  try {
+    const parsed = JSON.parse(data);
+    if (!parsed.length) { showToast('没有可导出的对话'); return; }
+
+    const password = prompt('请输入导出加密密码（留空则不加密）：');
+    let finalData;
+    let ext = '.json';
+    if (password) {
+      const confirmPwd = prompt('请再次输入密码确认：');
+      if (password !== confirmPwd) { showToast('两次密码输入不一致'); return; }
+      const encrypted = await encryptData(parsed, password);
+      finalData = JSON.stringify({ encrypted, version: 1, type: 'encrypted-chats' }, null, 2);
+      ext = '.encrypted.json';
+    } else {
+      finalData = JSON.stringify(parsed, null, 2);
+    }
+
+    const blob = new Blob([finalData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ds-chats-${new Date().toISOString().slice(0, 10)}${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`已导出 ${parsed.length} 个对话${password ? '（已加密）' : ''}`);
+  } catch {
+    showToast('导出失败');
+  }
+};
+
+// Override import function with decryption
+const originalImportChats = importChats;
+importChats = async function(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const raw = JSON.parse(e.target.result);
+
+      // Check if encrypted
+      if (raw.type === 'encrypted-chats' && raw.encrypted) {
+        const password = prompt('请输入解密密码：');
+        if (!password) { showToast('需要密码才能导入'); return; }
+        const decrypted = await decryptData(raw.encrypted, password);
+        if (!Array.isArray(decrypted)) throw new Error('解密后数据格式错误');
+        const existing = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+        const merged = [...decrypted, ...existing];
+        localStorage.setItem('deepseekChats', JSON.stringify(merged));
+        createNewChat();
+        loadHistoryList();
+        showToast(`已导入 ${decrypted.length} 个加密对话`);
+        return;
+      }
+
+      // Plain JSON import
+      const imported = raw;
+      if (!Array.isArray(imported)) throw new Error('格式错误');
+      imported.forEach((chat, i) => {
+        if (!chat.title || !Array.isArray(chat.messages)) throw new Error(`第 ${i + 1} 个对话格式无效`);
+      });
+      const existing = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+      const merged = [...imported, ...existing];
+      localStorage.setItem('deepseekChats', JSON.stringify(merged));
+      createNewChat();
+      loadHistoryList();
+      showToast(`已导入 ${imported.length} 个对话（共 ${merged.length} 个）`);
+    } catch (err) {
+      showToast(`导入失败: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
+};
+
+// ===== Collapsible Sidebar Sections =====
+
+function initCollapsibleSidebar() {
+  const sections = [
+    { id: 'persona-section', btnId: 'persona-btn', label: '人格管理', icon: '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>' },
+    { id: 'templates-section', btnId: 'templates-btn', label: '提示词模板', icon: '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM6 20V4h5v7h7v9H6z"/></svg>' },
+    { id: 'starred-section', btnId: 'starred-btn', label: '星标消息', icon: '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>' }
+  ];
+
+  const footer = byId('sidebar-footer');
+  if (!footer) return;
+
+  // Keep only the first 3 children (export, import, new chat, settings buttons)
+  // and insert collapsible sections before them
+  const exportBtn = byId('export-chats-btn');
+  const importBtn = byId('import-chats-btn');
+  const importInput = byId('import-chats-input');
+  const newChatBtn = byId('new-chat-btn');
+  const settingsBtn = byId('settings-btn');
+
+  // Create collapsible sections
+  sections.forEach((sec, idx) => {
+    const section = document.createElement('div');
+    section.className = 'sidebar-section';
+    section.id = sec.id;
+
+    const header = document.createElement('div');
+    header.className = 'sidebar-section-header';
+    const stateKey = 'quark_llm_section_' + idx;
+    const isCollapsed = localStorage.getItem(stateKey) === 'collapsed';
+    header.innerHTML = `
+      ${sec.icon}
+      <span style="flex:1;font-size:12px;font-weight:600">${sec.label}</span>
+      <span class="section-arrow">${isCollapsed ? '&#9660;' : '&#9660;'}</span>
+    `;
+    if (isCollapsed) header.classList.add('collapsed');
+
+    const body = document.createElement('div');
+    body.className = 'sidebar-section-body' + (isCollapsed ? ' collapsed' : '');
+
+    // Move the corresponding button into the section body
+    const btn = byId(sec.btnId);
+    if (btn && btn.parentNode === footer) {
+      const clone = btn.cloneNode(true);
+      clone.style.cssText = 'display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:8px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:0.15s;width:100%;';
+      clone.onclick = (e) => {
+        // Trigger the original button's click handlers
+        const origBtn = byId(sec.btnId);
+        if (origBtn) origBtn.click();
+      };
+      body.appendChild(clone);
+      btn.style.display = 'none';
+    }
+
+    header.onclick = () => {
+      const collapsed = header.classList.toggle('collapsed');
+      body.classList.toggle('collapsed');
+      localStorage.setItem(stateKey, collapsed ? 'collapsed' : 'expanded');
+    };
+
+    section.appendChild(header);
+    section.appendChild(body);
+    footer.insertBefore(section, exportBtn);
+  });
 }
