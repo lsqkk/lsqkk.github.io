@@ -876,6 +876,7 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
   let fullReasoning = "";
   let pendingChunk = "";
   let rawBuffer = "";       // accumulate ALL raw text for fallback parsing
+  let streamError = null;   // upstream API error embedded in SSE
   let debugLogged = false;  // log raw data only once
 
   while (true) {
