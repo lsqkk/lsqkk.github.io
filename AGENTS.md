@@ -123,6 +123,7 @@ lsqkk.github.io/
 - `quark push`：普通推送，不构建
 - `quark updateposts`：兼容别名，当前实际转到 `quark build`
 - `quark web`：启动管理面板 Web UI
+- `quark qqexport`：自动同步 qq 动态到博客动态
 - `quark checkassets`：检查 `assets/css`、`assets/js` 是否被页面引用
 
 ### 本地开发

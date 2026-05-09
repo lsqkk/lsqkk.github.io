@@ -11,14 +11,15 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   <link rel="stylesheet" href="/assets/css/cursor.css">
   <link rel="stylesheet" href="/assets/css/ds.css">
   <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png"></head>
+  <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+</head>
 
 <body>
   <div id="main-container">
+    <!-- ===== 侧栏 ===== -->
     <aside id="sidebar">
       <div id="sidebar-header">
-        <span class="brand-text">DEEPSEEK {SITE_TITLE}</span>
+        <span class="brand-text">AI CHAT {SITE_TITLE}</span>
         <button id="theme-toggle" class="icon-btn" title="切换主题">
           <svg viewBox="0 0 24 24" width="18" height="18">
             <path fill="currentColor" d="M12 3V4.35A7.65 7.65 0 1 0 19.65 12H21A9 9 0 1 1 12 3z" />
@@ -26,15 +27,21 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </button>
       </div>
 
-      <div id="history-list">
-      </div>
+      <div id="history-list"></div>
 
       <div id="sidebar-footer">
-        <button id="new-chat-btn" class="primary-btn">新对话 / NEW CHAT</button>
-        <button id="settings-btn" class="secondary-btn">API配置 / SETTINGS</button>
+        <button id="persona-btn" class="footer-btn" title="人格管理">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span>人格</span>
+        </button>
+        <button id="new-chat-btn" class="primary-btn">新对话</button>
+        <button id="settings-btn" class="secondary-btn">设置</button>
       </div>
     </aside>
 
+    <!-- ===== 主聊天区域 ===== -->
     <main id="chat-container">
       <header id="chat-header">
         <div class="header-left">
@@ -46,33 +53,29 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           <h1 id="chat-title">新会话</h1>
         </div>
 
-        <div id="model-controls">
-          <span class="model-info">REASONER / 推理</span>
-          <button class="model-toggle" id="model-toggle">
-            <div class="toggle-slider"></div>
-          </button>
+        <div class="header-right">
+          <span id="active-persona-badge" class="badge" style="display:none"></span>
+          <span id="active-profile-name" class="profile-badge"></span>
         </div>
       </header>
 
-      <div id="chat-history">
-      </div>
+      <div id="chat-history"></div>
 
       <footer id="input-area">
         <div class="drop-area" id="drop-area">
           <p>已就绪：等待发送文件内容...</p>
         </div>
         <div id="input-wrapper">
-          <button id="file-btn" class="icon-btn">
+          <button id="file-btn" class="icon-btn" title="上传文件">
             <svg viewBox="0 0 24 24" width="20" height="20">
-              <path fill="currentColor"
-                d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.31 2.69 6 6 6s6-2.69 6-6V6h-1.5z" />
+              <path fill="currentColor" d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.31 2.69 6 6 6s6-2.69 6-6V6h-1.5z" />
             </svg>
           </button>
-          <input type="file" id="file-input" accept=".txt,.md" style="display:none">
+          <input type="file" id="file-input" accept=".txt,.md,.py,.js,.html,.css,.json,.csv,.yaml,.yml,.xml" style="display:none" multiple>
 
-          <textarea id="user-input" placeholder="输入消息（Shift+Enter换行）" rows="1"></textarea>
+          <textarea id="user-input" placeholder="输入消息（Shift+Enter换行，/ 触发命令）" rows="1"></textarea>
 
-          <button id="send-btn" class="icon-btn send-active">
+          <button id="send-btn" class="icon-btn send-active" title="发送">
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
             </svg>
@@ -82,22 +85,199 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </main>
   </div>
 
+  <!-- ===== 设置弹窗（多标签） ===== -->
   <div id="settings-modal" class="modal">
-    <div class="modal-content">
-      <h3>API 密钥配置</h3>
-      <p class="modal-hint">配置会保存在本地浏览器 localStorage，并与 /a/terminal 共用</p>
-      <div class="input-group">
-        <input type="password" id="api-key-input" placeholder="请输入您的 DeepSeek API Key">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>设置 / Settings</h3>
+        <button class="modal-close icon-btn" id="close-settings">✕</button>
       </div>
-      <div class="input-group">
-        <input type="text" id="base-url-input" placeholder="Base URL，默认 https://api.deepseek.com/v1">
+
+      <div class="tabs-nav" id="settings-tabs">
+        <button class="tab-btn active" data-tab="connection">连接</button>
+        <button class="tab-btn" data-tab="params">参数</button>
+        <button class="tab-btn" data-tab="profiles">预设</button>
+        <button class="tab-btn" data-tab="about">关于</button>
       </div>
-      <div class="input-group">
-        <input type="text" id="model-input" placeholder="模型名，默认 deepseek-reasoner">
+
+      <!-- Tab 1: 连接 -->
+      <div class="tab-content active" id="tab-connection">
+        <div class="input-group">
+          <label>服务商</label>
+          <select id="provider-select">
+            <option value="deepseek">DeepSeek (默认)</option>
+            <option value="openai">OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="groq">Groq</option>
+            <option value="custom">自定义</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>API Key</label>
+          <div class="input-with-btn">
+            <input type="password" id="api-key-input" placeholder="sk-...">
+            <button id="toggle-key-visibility" class="icon-btn" title="显示/隐藏">👁</button>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Base URL</label>
+          <input type="url" id="base-url-input" placeholder="https://api.deepseek.com/v1">
+        </div>
+        <div class="input-group">
+          <label>模型</label>
+          <div class="input-with-btn">
+            <input type="text" id="model-input" placeholder="deepseek-reasoner" list="model-suggestions">
+            <datalist id="model-suggestions"></datalist>
+            <button id="fetch-models-btn" class="icon-btn" title="获取模型列表">🔄</button>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>上下文消息数</label>
+          <input type="number" id="context-window-input" min="1" max="100" value="15">
+        </div>
+        <div class="input-group">
+          <label>最大输出 Token</label>
+          <input type="number" id="max-tokens-input" min="1" max="131072" value="4096">
+        </div>
+        <div class="btn-row">
+          <button id="test-connection-btn" class="secondary-btn">测试连接</button>
+          <span id="connection-status" class="status-text"></span>
+        </div>
       </div>
+
+      <!-- Tab 2: 参数 -->
+      <div class="tab-content" id="tab-params">
+        <div class="param-group">
+          <div class="param-header">
+            <label>Temperature</label>
+            <span class="param-value" id="temp-value">0.7</span>
+          </div>
+          <input type="range" id="temperature-input" min="0" max="2" step="0.05" value="0.7">
+          <div class="param-labels"><span>精确 (0)</span><span>创意 (2)</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-header">
+            <label>Top P</label>
+            <span class="param-value" id="top-p-value">1.0</span>
+          </div>
+          <input type="range" id="top-p-input" min="0" max="1" step="0.05" value="1">
+          <div class="param-labels"><span>严格 (0)</span><span>多样 (1)</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-header">
+            <label>Top K</label>
+            <span class="param-value" id="top-k-value">0</span>
+          </div>
+          <input type="range" id="top-k-input" min="0" max="100" step="1" value="0">
+          <div class="param-labels"><span>关闭 (0)</span><span>严格 (1)</span><span>宽松 (100)</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-header">
+            <label>Presence Penalty</label>
+            <span class="param-value" id="presence-penalty-value">0</span>
+          </div>
+          <input type="range" id="presence-penalty-input" min="-2" max="2" step="0.1" value="0">
+          <div class="param-labels"><span>不变 (-2)</span><span>中立 (0)</span><span>惩罚 (2)</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-header">
+            <label>Frequency Penalty</label>
+            <span class="param-value" id="frequency-penalty-value">0</span>
+          </div>
+          <input type="range" id="frequency-penalty-input" min="-2" max="2" step="0.1" value="0">
+          <div class="param-labels"><span>不变 (-2)</span><span>中立 (0)</span><span>惩罚 (2)</span></div>
+        </div>
+
+        <div class="input-group">
+          <label>停止序列（逗号分隔多个值）</label>
+          <input type="text" id="stop-input" placeholder="stop1,stop2,...">
+        </div>
+
+        <div class="input-group">
+          <label>Stream 模式</label>
+          <label class="toggle-label">
+            <input type="checkbox" id="stream-toggle" checked>
+            <span class="toggle-track"><span class="toggle-knob"></span></span>
+            <span class="toggle-text">启用流式输出</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Tab 3: 预设 -->
+      <div class="tab-content" id="tab-profiles">
+        <div class="profiles-toolbar">
+          <button id="save-profile-btn" class="primary-btn">保存当前为预设</button>
+          <button id="load-defaults-btn" class="secondary-btn">恢复默认</button>
+        </div>
+        <div id="profiles-list" class="profiles-list">
+          <p class="empty-hint">暂无保存的预设</p>
+        </div>
+      </div>
+
+      <!-- Tab 4: 关于 -->
+      <div class="tab-content" id="tab-about">
+        <div class="about-section">
+          <h4>AI Chat WebUI</h4>
+          <p>基于 OpenAI API 兼容接口的聊天界面</p>
+          <p>与 <a href="/a/terminal" target="_blank">Quark Terminal</a> 共享 API 配置</p>
+          <hr>
+          <p><strong>默认服务商：</strong>DeepSeek</p>
+          <p>当前配置保存在浏览器 localStorage 中</p>
+          <p>人格数据仅存储在本地，不会上传</p>
+        </div>
+      </div>
+
       <div class="modal-actions">
-        <button id="save-settings" class="primary-btn">保存配置</button>
-        <button id="close-settings" class="secondary-btn">取消</button>
+        <button id="save-settings" class="primary-btn">保存设置</button>
+        <button id="cancel-settings" class="secondary-btn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 人格管理弹窗 ===== -->
+  <div id="persona-modal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>人格管理 / Personas</h3>
+        <button class="modal-close icon-btn" id="close-persona">✕</button>
+      </div>
+
+      <div class="persona-layout">
+        <div class="persona-sidebar">
+          <div class="persona-sidebar-header">
+            <span>人格列表</span>
+            <button id="new-persona-btn" class="icon-btn" title="新建人格">+</button>
+          </div>
+          <div id="persona-list"></div>
+          <div class="persona-upload-area">
+            <label class="upload-label">
+              <input type="file" id="persona-import-input" accept=".txt,.md" style="display:none">
+              <span class="secondary-btn upload-btn">📄 导入文件</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="persona-editor">
+          <div class="input-group">
+            <label>人格名称</label>
+            <input type="text" id="persona-name-input" placeholder="例如：博客助手">
+          </div>
+          <div class="input-group">
+            <label>系统提示词 (System Prompt)</label>
+            <textarea id="persona-prompt-input" rows="10" placeholder="输入系统提示词，将作为 system message 发送给 API..."></textarea>
+          </div>
+          <div class="persona-editor-actions">
+            <button id="apply-persona-btn" class="primary-btn">应用人格</button>
+            <button id="save-persona-btn" class="secondary-btn">保存修改</button>
+            <button id="export-persona-btn" class="secondary-btn">导出</button>
+            <button id="delete-persona-btn" class="danger-btn">删除</button>
+            <button id="clear-persona-btn" class="secondary-btn">不使用人格</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

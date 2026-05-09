@@ -1,307 +1,999 @@
+const C = window.QuarkLLMConfig;
 const CONTEXT_LIMIT = 15;
 
 let currentChatId = null;
-let currentModel = "deepseek-reasoner";
-let isDarkMode = false;
 let currentAttachments = [];
+let currentPersonaId = null;
 
-window.onload = () => {
-    initApp();
-};
+// ===== Init =====
+
+window.onload = () => { initApp(); };
 
 function initApp() {
-    document.getElementById('model-toggle').onclick = toggleModel;
-    document.getElementById('new-chat-btn').onclick = createNewChat;
-    document.getElementById('sidebar-toggle').onclick = toggleSidebar;
-    document.getElementById('theme-toggle').onclick = toggleTheme;
-    document.getElementById('settings-btn').onclick = () => toggleModal(true);
-    document.getElementById('close-settings').onclick = () => toggleModal(false);
-    document.getElementById('save-settings').onclick = saveApiSettings;
-    document.getElementById('send-btn').onclick = sendMessage;
+  setupEventListeners();
+  loadSettingsIntoUI();
+  loadHistoryList();
+  updateHeaderBadges();
+  showEmptyState();
 
-    const userInput = document.getElementById('user-input');
-    userInput.oninput = function () {
-        this.style.height = 'auto';
-        this.style.height = `${this.scrollHeight}px`;
-    };
-    userInput.onkeydown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    };
+  if (localStorage.getItem(C.STORAGE_KEYS.darkMode) === 'true') {
+    document.body.classList.add('dark-mode');
+  }
 
-    document.getElementById('file-btn').onclick = () => document.getElementById('file-input').click();
-    document.getElementById('file-input').onchange = handleFileSelect;
-
-    hydrateSettingsModal();
-    loadHistoryList();
-
-    if (localStorage.getItem('darkMode') === 'true') {
-        toggleTheme();
-    }
+  setupSliders();
+  renderProfilesList();
+  renderPersonaList();
 }
 
+function setupEventListeners() {
+  // Buttons
+  byId('new-chat-btn').onclick = createNewChat;
+  byId('sidebar-toggle').onclick = toggleSidebar;
+  byId('theme-toggle').onclick = toggleTheme;
+  byId('settings-btn').onclick = () => toggleModal('settings-modal', true);
+  byId('close-settings').onclick = () => toggleModal('settings-modal', false);
+  byId('cancel-settings').onclick = () => toggleModal('settings-modal', false);
+  byId('save-settings').onclick = saveSettingsFromUI;
+  byId('send-btn').onclick = sendMessage;
+  byId('file-btn').onclick = () => byId('file-input').click();
+  byId('file-input').onchange = handleFileSelect;
+  byId('test-connection-btn').onclick = testConnection;
+  byId('fetch-models-btn').onclick = fetchModels;
+  byId('save-profile-btn').onclick = saveCurrentAsProfile;
+  byId('load-defaults-btn').onclick = loadDefaultSettings;
+
+  // Persona
+  byId('persona-btn').onclick = openPersonaModal;
+  byId('close-persona').onclick = closePersonaModal;
+  byId('new-persona-btn').onclick = createNewPersona;
+  byId('save-persona-btn').onclick = saveCurrentPersona;
+  byId('apply-persona-btn').onclick = applyPersona;
+  byId('delete-persona-btn').onclick = deletePersona;
+  byId('export-persona-btn').onclick = exportPersona;
+  byId('clear-persona-btn').onclick = clearPersona;
+  byId('persona-import-input').onchange = importPersonaFile;
+
+  // Settings tabs
+  document.querySelectorAll('#settings-tabs .tab-btn').forEach(btn => {
+    btn.onclick = () => switchSettingsTab(btn.dataset.tab);
+  });
+
+  // User input
+  const userInput = byId('user-input');
+  userInput.oninput = function () {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+  };
+  userInput.onkeydown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  // Provider select -> auto-fill base URL
+  byId('provider-select').onchange = onProviderChange;
+
+  // API key visibility toggle
+  byId('toggle-key-visibility').onclick = toggleKeyVisibility;
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal').forEach(m => {
+    m.onclick = (e) => { if (e.target === m) m.classList.remove('show'); };
+  });
+}
+
+function byId(id) { return document.getElementById(id); }
+function qs(sel) { return document.querySelector(sel); }
+function qsa(sel) { return document.querySelectorAll(sel); }
+
+// ===== Sidebar & Theme =====
+
 function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('collapsed');
+  byId('sidebar').classList.toggle('collapsed');
 }
 
 function toggleTheme() {
-    isDarkMode = !isDarkMode;
-    document.body.classList.toggle('dark-mode', isDarkMode);
-    localStorage.setItem('darkMode', isDarkMode);
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem(C.STORAGE_KEYS.darkMode, document.body.classList.contains('dark-mode'));
 }
 
-function hydrateSettingsModal() {
-    const settings = window.QuarkLLMConfig.getSettings();
-    currentModel = settings.model;
-    document.getElementById('api-key-input').value = settings.apiKey;
-    document.getElementById('base-url-input').value = settings.baseUrl;
-    document.getElementById('model-input').value = settings.model;
+// ===== Modal =====
 
-    const toggle = document.getElementById('model-toggle');
-    const isChatMode = settings.model === 'deepseek-chat';
-    toggle.classList.toggle('off', isChatMode);
-    updateModelInfo();
+function toggleModal(id, show) {
+  byId(id).classList.toggle('show', show);
 }
 
-function updateModelInfo() {
-    const isChatMode = currentModel === 'deepseek-chat';
-    document.querySelector('.model-info').textContent = isChatMode ? "CHAT / 聊天" : "REASONER / 推理";
+// ===== Settings Tabs =====
+
+function switchSettingsTab(tabName) {
+  qsa('#settings-tabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+  qsa('.tab-content').forEach(t => t.classList.toggle('active', t.id === `tab-${tabName}`));
+}
+
+// ===== Sliders =====
+
+function setupSliders() {
+  ['temperature', 'top-p', 'top-k', 'presence-penalty', 'frequency-penalty'].forEach(name => {
+    const input = byId(`${name}-input`);
+    const display = byId(`${name}-value`);
+    if (input && display) {
+      input.oninput = () => { display.textContent = input.value; };
+    }
+  });
+}
+
+// ===== Provider =====
+
+function onProviderChange() {
+  const provider = byId('provider-select').value;
+  const preset = C.PROVIDER_PRESETS[provider];
+  if (preset && preset.baseUrl) {
+    byId('base-url-input').value = preset.baseUrl;
+  }
+  if (preset && preset.models && preset.models.length > 0) {
+    const datalist = byId('model-suggestions');
+    datalist.innerHTML = preset.models.map(m => `<option value="${m}">`).join('');
+  } else {
+    byId('model-suggestions').innerHTML = '';
+  }
+}
+
+function toggleKeyVisibility() {
+  const input = byId('api-key-input');
+  input.type = input.type === 'password' ? 'text' : 'password';
+  byId('toggle-key-visibility').textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+// ===== Settings: Load & Save =====
+
+function loadSettingsIntoUI() {
+  const s = C.getSettings();
+  const params = loadParams();
+
+  byId('api-key-input').value = s.apiKey;
+
+  // Detect provider from baseUrl
+  let detectedProvider = 'custom';
+  for (const [key, preset] of Object.entries(C.PROVIDER_PRESETS)) {
+    if (preset.baseUrl && s.baseUrl.includes(preset.baseUrl.replace(/\/v1$/, '').replace(/^https?:\/\//, '').split('/')[0])) {
+      detectedProvider = key;
+      break;
+    }
+  }
+  if (s.baseUrl.includes('deepseek')) detectedProvider = 'deepseek';
+  else if (s.baseUrl.includes('openai')) detectedProvider = 'openai';
+  else if (s.baseUrl.includes('openrouter')) detectedProvider = 'openrouter';
+  else if (s.baseUrl.includes('groq')) detectedProvider = 'groq';
+
+  byId('provider-select').value = detectedProvider;
+  byId('base-url-input').value = s.baseUrl;
+  byId('model-input').value = s.model;
+  byId('context-window-input').value = params.contextWindow;
+  byId('max-tokens-input').value = params.maxTokens;
+  byId('temperature-input').value = params.temperature;
+  byId('temp-value').textContent = params.temperature;
+  byId('top-p-input').value = params.topP;
+  byId('top-p-value').textContent = params.topP;
+  byId('top-k-input').value = params.topK;
+  byId('top-k-value').textContent = params.topK;
+  byId('presence-penalty-input').value = params.presencePenalty;
+  byId('presence-penalty-value').textContent = params.presencePenalty;
+  byId('frequency-penalty-input').value = params.frequencyPenalty;
+  byId('frequency-penalty-value').textContent = params.frequencyPenalty;
+  byId('stop-input').value = (params.stop || []).join(', ');
+  byId('stream-toggle').checked = params.stream !== false;
+}
+
+function loadParams() {
+  try {
+    const raw = localStorage.getItem('quark_llm_params');
+    return raw ? { ...C.DEFAULTS, ...JSON.parse(raw) } : { ...C.DEFAULTS };
+  } catch {
+    return { ...C.DEFAULTS };
+  }
+}
+
+function saveParams(params) {
+  localStorage.setItem('quark_llm_params', JSON.stringify(params));
+}
+
+function saveSettingsFromUI() {
+  const apiKey = byId('api-key-input').value.trim();
+  const baseUrl = byId('base-url-input').value.trim();
+  const model = byId('model-input').value.trim();
+
+  C.saveSettings({ apiKey, baseUrl, model });
+
+  const params = {
+    temperature: parseFloat(byId('temperature-input').value),
+    topP: parseFloat(byId('top-p-input').value),
+    topK: parseInt(byId('top-k-input').value),
+    presencePenalty: parseFloat(byId('presence-penalty-input').value),
+    frequencyPenalty: parseFloat(byId('frequency-penalty-input').value),
+    stop: byId('stop-input').value.split(',').map(s => s.trim()).filter(Boolean),
+    contextWindow: parseInt(byId('context-window-input').value) || 15,
+    maxTokens: parseInt(byId('max-tokens-input').value) || 4096,
+    stream: byId('stream-toggle').checked
+  };
+  saveParams(params);
+
+  updateHeaderBadges();
+  toggleModal('settings-modal', false);
+  showToast('设置已保存');
+}
+
+function loadDefaultSettings() {
+  byId('provider-select').value = 'deepseek';
+  byId('base-url-input').value = C.DEFAULTS.baseUrl;
+  byId('model-input').value = C.DEFAULTS.model;
+  byId('context-window-input').value = C.DEFAULTS.contextWindow;
+  byId('max-tokens-input').value = C.DEFAULTS.maxTokens;
+  byId('temperature-input').value = C.DEFAULTS.temperature;
+  byId('temp-value').textContent = C.DEFAULTS.temperature;
+  byId('top-p-input').value = C.DEFAULTS.topP;
+  byId('top-p-value').textContent = C.DEFAULTS.topP;
+  byId('top-k-input').value = C.DEFAULTS.topK;
+  byId('top-k-value').textContent = C.DEFAULTS.topK;
+  byId('presence-penalty-input').value = C.DEFAULTS.presencePenalty;
+  byId('presence-penalty-value').textContent = C.DEFAULTS.presencePenalty;
+  byId('frequency-penalty-input').value = C.DEFAULTS.frequencyPenalty;
+  byId('frequency-penalty-value').textContent = C.DEFAULTS.frequencyPenalty;
+  byId('stop-input').value = '';
+  byId('stream-toggle').checked = true;
+  showToast('已恢复默认设置');
+}
+
+// ===== Connection Test & Model Fetch =====
+
+async function testConnection() {
+  const btn = byId('test-connection-btn');
+  const status = byId('connection-status');
+  const apiKey = byId('api-key-input').value.trim();
+  const baseUrl = byId('base-url-input').value.trim();
+
+  if (!apiKey) { status.textContent = '请先输入 API Key'; status.className = 'status-text error'; return; }
+
+  btn.disabled = true;
+  btn.textContent = '测试中...';
+  status.textContent = '';
+
+  const result = await C.testConnection(baseUrl, apiKey);
+  btn.disabled = false;
+  btn.textContent = '测试连接';
+
+  if (result.ok) {
+    status.textContent = `✓ 连接成功 (${result.status})`;
+    status.className = 'status-text success';
+  } else {
+    status.textContent = `✗ ${result.error || '连接失败'}`;
+    status.className = 'status-text error';
+  }
+}
+
+async function fetchModels() {
+  const btn = byId('fetch-models-btn');
+  const apiKey = byId('api-key-input').value.trim();
+  const baseUrl = byId('base-url-input').value.trim();
+
+  if (!apiKey) { showToast('请先输入 API Key'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  byId('model-input').placeholder = '获取中...';
+
+  const result = await C.fetchModelList(baseUrl, apiKey);
+  btn.disabled = false;
+  btn.textContent = '🔄';
+
+  if (result.ok && result.models.length > 0) {
+    const datalist = byId('model-suggestions');
+    datalist.innerHTML = result.models.map(m => `<option value="${m}">`).join('');
+    byId('model-input').placeholder = '从下方列表选择或手动输入';
+    showToast(`获取到 ${result.models.length} 个模型`);
+  } else {
+    byId('model-input').placeholder = 'deepseek-reasoner';
+    showToast(result.error || '未能获取模型列表，请手动输入');
+  }
+}
+
+// ===== Profiles =====
+
+function renderProfilesList() {
+  const container = byId('profiles-list');
+  const profiles = C.getProfiles();
+  const activeProfile = C.getActiveProfile();
+
+  if (profiles.length === 0) {
+    container.innerHTML = '<p class="empty-hint">暂无保存的预设。调整参数后点击"保存当前为预设"。</p>';
+    return;
+  }
+
+  container.innerHTML = profiles.map(p => `
+    <div class="profile-card ${activeProfile && activeProfile.id === p.id ? 'active' : ''}">
+      <div class="profile-card-info">
+        <div class="profile-card-name">${escHtml(p.name || '未命名')}</div>
+        <div class="profile-card-meta">${escHtml(p.model || '')} · ${escHtml(p.baseUrl || '')}</div>
+      </div>
+      <div class="profile-card-actions">
+        <button class="load-profile-btn" data-id="${p.id}">加载</button>
+        <button class="delete-profile-btn danger-btn-sm" data-id="${p.id}">删除</button>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.load-profile-btn').forEach(btn => {
+    btn.onclick = () => loadProfile(btn.dataset.id);
+  });
+  container.querySelectorAll('.delete-profile-btn').forEach(btn => {
+    btn.onclick = () => deleteProfile(btn.dataset.id);
+  });
+}
+
+function saveCurrentAsProfile() {
+  const name = prompt('为当前预设命名：');
+  if (!name) return;
+
+  const s = C.getSettings();
+  const params = loadParams();
+
+  C.addProfile({
+    name,
+    apiKey: s.apiKey,
+    baseUrl: s.baseUrl,
+    model: s.model,
+    maxTokens: params.maxTokens,
+    temperature: params.temperature,
+    topP: params.topP,
+    topK: params.topK,
+    presencePenalty: params.presencePenalty,
+    frequencyPenalty: params.frequencyPenalty,
+    stop: params.stop,
+    contextWindow: params.contextWindow,
+    stream: params.stream
+  });
+
+  renderProfilesList();
+  showToast(`预设"${name}"已保存`);
+}
+
+function loadProfile(id) {
+  const profile = C.getProfiles().find(p => p.id === id);
+  if (!profile) return;
+
+  C.setActiveProfile(id);
+  C.saveSettings({
+    apiKey: profile.apiKey,
+    baseUrl: profile.baseUrl,
+    model: profile.model
+  });
+
+  saveParams({
+    temperature: profile.temperature ?? C.DEFAULTS.temperature,
+    topP: profile.topP ?? C.DEFAULTS.topP,
+    topK: profile.topK ?? C.DEFAULTS.topK,
+    presencePenalty: profile.presencePenalty ?? C.DEFAULTS.presencePenalty,
+    frequencyPenalty: profile.frequencyPenalty ?? C.DEFAULTS.frequencyPenalty,
+    stop: profile.stop || [],
+    contextWindow: profile.contextWindow ?? C.DEFAULTS.contextWindow,
+    maxTokens: profile.maxTokens ?? C.DEFAULTS.maxTokens,
+    stream: profile.stream !== false
+  });
+
+  loadSettingsIntoUI();
+  renderProfilesList();
+  updateHeaderBadges();
+  toggleModal('settings-modal', false);
+  showToast(`已加载预设"${profile.name}"`);
+}
+
+function deleteProfile(id) {
+  const profile = C.getProfiles().find(p => p.id === id);
+  if (!profile) return;
+  if (!confirm(`确定删除预设"${profile.name}"？`)) return;
+
+  C.deleteProfile(id);
+  renderProfilesList();
+  showToast(`预设"${profile.name}"已删除`);
+}
+
+// ===== Persona Management =====
+
+function openPersonaModal() {
+  renderPersonaList();
+  toggleModal('persona-modal', true);
+
+  // Select current persona if set
+  const activePersona = C.getActivePersona();
+  if (activePersona) {
+    selectPersonaInList(activePersona.id);
+    loadPersonaIntoEditor(activePersona);
+  } else {
+    clearPersonaEditor();
+  }
+}
+
+function closePersonaModal() {
+  toggleModal('persona-modal', false);
+}
+
+function renderPersonaList() {
+  const container = byId('persona-list');
+  const personas = C.getPersonas();
+  const activePersona = C.getActivePersona();
+
+  if (personas.length === 0) {
+    container.innerHTML = '<p class="empty-hint" style="padding:16px;text-align:center;font-size:12px;">暂无人格<br>点击 + 新建</p>';
+    return;
+  }
+
+  container.innerHTML = personas.map(p => `
+    <div class="persona-list-item ${activePersona && activePersona.id === p.id ? 'active' : ''}" data-id="${p.id}">
+      ${escHtml(p.name)}
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.persona-list-item').forEach(item => {
+    item.onclick = () => {
+      const persona = C.getPersonas().find(p => p.id === item.dataset.id);
+      if (persona) {
+        selectPersonaInList(persona.id);
+        loadPersonaIntoEditor(persona);
+      }
+    };
+  });
+}
+
+function selectPersonaInList(id) {
+  qsa('.persona-list-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === id);
+  });
+}
+
+function clearPersonaEditor() {
+  byId('persona-name-input').value = '';
+  byId('persona-prompt-input').value = '';
+  byId('persona-name-input').dataset.personaId = '';
+}
+
+function loadPersonaIntoEditor(persona) {
+  byId('persona-name-input').value = persona.name;
+  byId('persona-prompt-input').value = persona.systemPrompt;
+  byId('persona-name-input').dataset.personaId = persona.id;
+}
+
+function createNewPersona() {
+  clearPersonaEditor();
+  selectPersonaInList('');
+  byId('persona-name-input').focus();
+}
+
+function saveCurrentPersona() {
+  const name = byId('persona-name-input').value.trim();
+  const systemPrompt = byId('persona-prompt-input').value.trim();
+  const existingId = byId('persona-name-input').dataset.personaId;
+
+  if (!name) { showToast('请输入人格名称'); return; }
+  if (!systemPrompt) { showToast('请输入系统提示词'); return; }
+
+  if (existingId) {
+    C.updatePersona(existingId, { name, systemPrompt });
+    showToast(`人格"${name}"已更新`);
+  } else {
+    const newPersona = C.addPersona({ name, systemPrompt });
+    byId('persona-name-input').dataset.personaId = newPersona.id;
+    showToast(`人格"${name}"已创建`);
+  }
+
+  renderPersonaList();
+}
+
+function applyPersona() {
+  const name = byId('persona-name-input').value.trim();
+  const systemPrompt = byId('persona-prompt-input').value.trim();
+  const existingId = byId('persona-name-input').dataset.personaId;
+
+  // Auto-save if modified
+  if (name && systemPrompt) {
+    if (existingId) {
+      C.updatePersona(existingId, { name, systemPrompt });
+    } else {
+      const newPersona = C.addPersona({ name, systemPrompt });
+      byId('persona-name-input').dataset.personaId = newPersona.id;
+    }
+    renderPersonaList();
+  }
+
+  const personaId = byId('persona-name-input').dataset.personaId;
+  if (personaId) {
+    C.setActivePersona(personaId);
+    currentPersonaId = personaId;
+    updateHeaderBadges();
+    showToast(`已应用人格"${name}"`);
+  }
+  closePersonaModal();
+}
+
+function deletePersona() {
+  const existingId = byId('persona-name-input').dataset.personaId;
+  if (!existingId) return;
+
+  const persona = C.getPersonas().find(p => p.id === existingId);
+  if (!persona || !confirm(`确定删除人格"${persona.name}"？`)) return;
+
+  C.deletePersona(existingId);
+  clearPersonaEditor();
+  renderPersonaList();
+
+  if (currentPersonaId === existingId) {
+    currentPersonaId = null;
+    updateHeaderBadges();
+  }
+  showToast(`人格"${persona.name}"已删除`);
+}
+
+function exportPersona() {
+  const existingId = byId('persona-name-input').dataset.personaId;
+  if (!existingId) { showToast('请先选择或创建一个人格'); return; }
+
+  const persona = C.getPersonas().find(p => p.id === existingId);
+  if (persona) C.exportPersona(persona);
+}
+
+function clearPersona() {
+  C.setActivePersona(null);
+  currentPersonaId = null;
+  updateHeaderBadges();
+  closePersonaModal();
+  showToast('已清除人格');
+}
+
+function importPersonaFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const content = ev.target.result;
+    const name = file.name.replace(/\.(txt|md)$/i, '');
+    byId('persona-name-input').value = name;
+    byId('persona-prompt-input').value = content;
+    byId('persona-name-input').dataset.personaId = '';
+    showToast(`已导入文件: ${file.name}`);
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function updateHeaderBadges() {
+  const activePersona = C.getActivePersona();
+  const personaBadge = byId('active-persona-badge');
+  if (activePersona) {
+    personaBadge.textContent = `🧑 ${activePersona.name}`;
+    personaBadge.style.display = 'inline';
+    currentPersonaId = activePersona.id;
+  } else {
+    personaBadge.style.display = 'none';
+    currentPersonaId = null;
+  }
+
+  const activeProfile = C.getActiveProfile();
+  const profileBadge = byId('active-profile-name');
+  if (activeProfile) {
+    profileBadge.textContent = activeProfile.name;
+  } else {
+    const s = C.getSettings();
+    profileBadge.textContent = s.model;
+  }
+}
+
+// ===== Chat =====
+
+function showEmptyState() {
+  const history = byId('chat-history');
+  if (history.children.length === 0) {
+    history.innerHTML = `
+      <div class="empty-state">
+        <h2>AI Chat</h2>
+        <p>开始一段新的对话<br>在下方输入你的消息</p>
+        <div class="shortcuts">
+          <kbd>Enter</kbd> 发送 · <kbd>Shift+Enter</kbd> 换行<br>
+          点击 <kbd>📎</kbd> 上传文件<br>
+          左侧 <kbd>人格</kbd> 可管理系统提示词
+        </div>
+      </div>
+    `;
+  }
 }
 
 async function sendMessage() {
-    const settings = window.QuarkLLMConfig.getSettings();
-    if (!settings.apiKey) {
-        alert("请先设置 API Key");
-        toggleModal(true);
-        return;
+  const settings = C.getSettings();
+  if (!settings.apiKey) {
+    showToast('请先设置 API Key');
+    toggleModal('settings-modal', true);
+    return;
+  }
+
+  const inputEl = byId('user-input');
+  const sendBtn = byId('send-btn');
+  const text = inputEl.value.trim();
+
+  if (!text && currentAttachments.length === 0) return;
+  sendBtn.disabled = true;
+
+  let fullPrompt = text;
+  if (currentAttachments.length > 0) {
+    fullPrompt = currentAttachments.map(a => `[文件: ${a.name}]\n${a.content}`).join('\n\n');
+    if (text) fullPrompt += `\n\n${text}`;
+  }
+
+  appendMessageUI('user', text || '[发送文件]');
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+
+  // Remove empty state
+  const emptyState = qs('.empty-state');
+  if (emptyState) emptyState.remove();
+
+  const historyBox = byId('chat-history');
+  const botMsgDiv = document.createElement('div');
+  botMsgDiv.className = 'bot-msg';
+  botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content">...</div>`;
+  historyBox.appendChild(botMsgDiv);
+  historyBox.scrollTop = historyBox.scrollHeight;
+
+  const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
+  const contentBox = botMsgDiv.querySelector('.markdown-content');
+
+  const params = loadParams();
+  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+  const messages = buildMessages(fullPrompt);
+  const requestBody = buildRequestBody(settings.model, messages, params);
+
+  try {
+    if (params.stream !== false) {
+      await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+    } else {
+      await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
     }
 
-    const inputEl = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
-    const text = inputEl.value.trim();
-
-    if (!text && currentAttachments.length === 0) return;
-    sendBtn.disabled = true;
-
-    let fullPrompt = text;
-    if (currentAttachments.length > 0) {
-        fullPrompt = currentAttachments.map(a => `[文件: ${a.name}]\n${a.content}`).join('\n\n');
-        if (text) {
-            fullPrompt += `\n\n${text}`;
-        }
-    }
-
-    appendMessageUI('user', text || "[发送文件]");
-    inputEl.value = "";
-    inputEl.style.height = 'auto';
-
-    const historyBox = document.getElementById('chat-history');
-    const botMsgDiv = document.createElement('div');
-    botMsgDiv.className = 'bot-msg';
-    botMsgDiv.innerHTML = `<div class="reasoning-box" style="display:none"></div><div class="markdown-content">思考中...</div>`;
-    historyBox.appendChild(botMsgDiv);
-    historyBox.scrollTop = historyBox.scrollHeight;
-
-    const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
-    const contentBox = botMsgDiv.querySelector('.markdown-content');
-
-    try {
-        const response = await fetch(window.QuarkLLMConfig.buildChatEndpoint(settings.baseUrl), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${settings.apiKey}`
-            },
-            body: JSON.stringify({
-                model: currentModel,
-                messages: getContext(fullPrompt),
-                stream: true
-            })
-        });
-
-        if (!response.ok || !response.body) {
-            throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response));
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let fullText = "";
-        let fullReasoning = "";
-        let pendingChunk = "";
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            pendingChunk += decoder.decode(value, { stream: true });
-            const lines = pendingChunk.split('\n');
-            pendingChunk = lines.pop() || "";
-
-            for (const line of lines) {
-                if (!line.startsWith('data: ') || line === 'data: [DONE]') {
-                    continue;
-                }
-
-                try {
-                    const data = JSON.parse(line.substring(6));
-                    const delta = data?.choices?.[0]?.delta || {};
-
-                    if (delta.reasoning_content) {
-                        fullReasoning += delta.reasoning_content;
-                        reasoningBox.style.display = "block";
-                        reasoningBox.textContent = fullReasoning;
-                    }
-
-                    if (delta.content) {
-                        fullText += delta.content;
-                        contentBox.innerHTML = marked.parse(fullText);
-                    }
-
-                    historyBox.scrollTop = historyBox.scrollHeight;
-                } catch (error) {
-                    console.warn('解析流式响应失败:', error);
-                }
-            }
-        }
-
-        addCopyButton(botMsgDiv, fullText);
-        saveToLocalStorage(fullPrompt, fullText);
-    } catch (err) {
-        contentBox.innerHTML = `<span style="color:red">错误: ${err.message}</span>`;
-    } finally {
-        sendBtn.disabled = false;
-        currentAttachments = [];
-        document.getElementById('drop-area').classList.remove('active');
-        document.getElementById('drop-area').textContent = "已就绪：等待发送文件内容...";
-    }
+    const finalText = contentBox.textContent;
+    addCopyButton(botMsgDiv, finalText);
+    saveToLocalStorage(fullPrompt, finalText);
+  } catch (err) {
+    contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
+  } finally {
+    sendBtn.disabled = false;
+    currentAttachments = [];
+    byId('drop-area').classList.remove('active');
+    byId('drop-area').textContent = '已就绪：等待发送文件内容...';
+  }
 }
 
-function getContext(newPrompt) {
-    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
-    if (currentChatId !== null && chats[currentChatId]) {
-        const history = chats[currentChatId].messages.slice(-CONTEXT_LIMIT);
-        return [...history, { role: "user", content: newPrompt }];
+function buildMessages(userPrompt) {
+  const messages = [];
+
+  // Add system prompt if persona is active
+  const activePersona = C.getActivePersona();
+  if (activePersona && activePersona.systemPrompt) {
+    messages.push({ role: "system", content: activePersona.systemPrompt });
+  }
+
+  // Add history context
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const params = loadParams();
+  const contextWindow = params.contextWindow || CONTEXT_LIMIT;
+
+  if (currentChatId !== null && chats[currentChatId]) {
+    const history = chats[currentChatId].messages.slice(-contextWindow);
+    messages.push(...history);
+  }
+
+  messages.push({ role: "user", content: userPrompt });
+  return messages;
+}
+
+function buildRequestBody(model, messages, params) {
+  const body = {
+    model: model,
+    messages: messages,
+    temperature: params.temperature,
+    max_tokens: params.maxTokens,
+    top_p: params.topP,
+    stream: params.stream !== false
+  };
+
+  if (params.topK > 0) body.top_k = params.topK;
+  if (params.presencePenalty !== 0) body.presence_penalty = params.presencePenalty;
+  if (params.frequencyPenalty !== 0) body.frequency_penalty = params.frequencyPenalty;
+  if (params.stop && params.stop.length > 0) body.stop = params.stop;
+
+  return body;
+}
+
+async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox, botMsgDiv, historyBox) {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok || !response.body) {
+    throw new Error(await C.parseErrorResponse(response));
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = "";
+  let fullReasoning = "";
+  let pendingChunk = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    pendingChunk += decoder.decode(value, { stream: true });
+    const lines = pendingChunk.split('\n');
+    pendingChunk = lines.pop() || "";
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ') || line === 'data: [DONE]') continue;
+
+      try {
+        const data = JSON.parse(line.substring(6));
+        const delta = data?.choices?.[0]?.delta || {};
+
+        if (delta.reasoning_content) {
+          fullReasoning += delta.reasoning_content;
+          reasoningBox.style.display = "block";
+          reasoningBox.className = 'reasoning-box';
+          reasoningBox.textContent = fullReasoning;
+        }
+
+        if (delta.content) {
+          fullText += delta.content;
+          contentBox.innerHTML = marked.parse(fullText);
+        }
+
+        historyBox.scrollTop = historyBox.scrollHeight;
+      } catch (err) {
+        console.warn('SSE parse error:', err);
+      }
     }
-    return [{ role: "user", content: newPrompt }];
+  }
+
+  // If no content was received via delta, try the final message
+  if (!fullText) {
+    try {
+      const finalData = JSON.parse(pendingChunk.replace(/^data: /, ''));
+      const choice = finalData?.choices?.[0];
+      if (choice?.message?.content) {
+        fullText = choice.message.content;
+        contentBox.innerHTML = marked.parse(fullText);
+      }
+      if (choice?.message?.reasoning_content) {
+        fullReasoning = choice.message.reasoning_content;
+        reasoningBox.style.display = "block";
+        reasoningBox.textContent = fullReasoning;
+      }
+    } catch {}
+  }
+
+  // Make reasoning box clickable to expand/collapse
+  if (fullReasoning) {
+    reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
+  }
+}
+
+async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, historyBox) {
+  body.stream = false;
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    throw new Error(await C.parseErrorResponse(response));
+  }
+
+  const data = await response.json();
+  const choice = data?.choices?.[0];
+  const text = choice?.message?.content || '';
+
+  if (choice?.message?.reasoning_content) {
+    const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
+    reasoningBox.style.display = "block";
+    reasoningBox.textContent = choice.message.reasoning_content;
+    reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
+  }
+
+  contentBox.innerHTML = marked.parse(text);
+  historyBox.scrollTop = historyBox.scrollHeight;
+}
+
+// ===== History =====
+
+function getContext(newPrompt) {
+  return buildMessages(newPrompt);
 }
 
 function saveToLocalStorage(userMsg, botMsg) {
-    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
-    const msgPair = [{ role: "user", content: userMsg }, { role: "assistant", content: botMsg }];
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const msgPair = [
+    { role: "user", content: userMsg },
+    { role: "assistant", content: botMsg }
+  ];
 
-    if (currentChatId === null) {
-        const title = userMsg.substring(0, 15) || "新会话";
-        chats.unshift({ title, messages: msgPair });
-        currentChatId = 0;
-    } else {
-        chats[currentChatId].messages.push(...msgPair);
-    }
-    localStorage.setItem('deepseekChats', JSON.stringify(chats));
-    loadHistoryList();
+  if (currentChatId === null) {
+    const title = userMsg.substring(0, 30) || "新会话";
+    chats.unshift({ title, messages: msgPair });
+    currentChatId = 0;
+  } else {
+    chats[currentChatId].messages.push(...msgPair);
+  }
+  localStorage.setItem('deepseekChats', JSON.stringify(chats));
+  loadHistoryList();
 }
 
 function loadHistoryList() {
-    const list = document.getElementById('history-list');
-    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
-    list.innerHTML = "";
+  const list = byId('history-list');
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  list.innerHTML = "";
 
-    chats.forEach((chat, i) => {
-        const div = document.createElement('div');
-        div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
-        div.innerHTML = `<span>${chat.title}</span><button onclick="deleteChat(${i}, event)">×</button>`;
-        div.onclick = () => {
-            currentChatId = i;
-            renderChat(chat);
-            loadHistoryList();
-        };
-        list.appendChild(div);
-    });
+  chats.forEach((chat, i) => {
+    const div = document.createElement('div');
+    div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
+    div.innerHTML = `
+      <span class="history-title">${escHtml(chat.title || '新会话')}</span>
+      <button onclick="deleteChat(${i}, event)">×</button>
+    `;
+    div.onclick = () => { switchChat(i); };
+    list.appendChild(div);
+  });
+}
+
+function switchChat(index) {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  if (!chats[index]) return;
+  currentChatId = index;
+  renderChat(chats[index]);
+  loadHistoryList();
 }
 
 function renderChat(chat) {
-    const historyBox = document.getElementById('chat-history');
-    historyBox.innerHTML = "";
-    document.getElementById('chat-title').textContent = chat.title;
-    chat.messages.forEach((message) => appendMessageUI(message.role === 'user' ? 'user' : 'bot', message.content));
+  const historyBox = byId('chat-history');
+  historyBox.innerHTML = "";
+  byId('chat-title').textContent = chat.title;
+
+  chat.messages.forEach((msg) => {
+    if (msg.role === 'user') {
+      appendMessageUI('user', msg.content);
+    } else if (msg.role === 'assistant') {
+      appendMessageUI('bot', msg.content);
+    } else if (msg.role === 'system') {
+      // Skip system messages in display
+    }
+  });
+
+  historyBox.scrollTop = historyBox.scrollHeight;
 }
 
 function deleteChat(index, e) {
-    e.stopPropagation();
-    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
-    chats.splice(index, 1);
-    localStorage.setItem('deepseekChats', JSON.stringify(chats));
+  e.stopPropagation();
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  chats.splice(index, 1);
+  localStorage.setItem('deepseekChats', JSON.stringify(chats));
+
+  if (index === currentChatId) {
     createNewChat();
+  } else if (index < currentChatId) {
+    currentChatId--;
+  }
+  loadHistoryList();
 }
 
 function createNewChat() {
-    currentChatId = null;
-    document.getElementById('chat-history').innerHTML = "";
-    document.getElementById('chat-title').textContent = "新会话";
-    loadHistoryList();
+  currentChatId = null;
+  byId('chat-history').innerHTML = "";
+  byId('chat-title').textContent = "新会话";
+  loadHistoryList();
+  showEmptyState();
 }
 
+// ===== UI Helpers =====
+
 function appendMessageUI(role, text) {
-    const div = document.createElement('div');
-    div.className = `${role}-msg`;
-    div.innerHTML = role === 'bot' ? `<div class="markdown-content">${marked.parse(text)}</div>` : text;
-    document.getElementById('chat-history').appendChild(div);
-    if (role === 'bot') addCopyButton(div, text);
-    document.getElementById('chat-history').scrollTop = document.getElementById('chat-history').scrollHeight;
+  const div = document.createElement('div');
+  div.className = `${role}-msg`;
+  if (role === 'bot') {
+    div.innerHTML = `<div class="markdown-content">${marked.parse(text)}</div>`;
+  } else {
+    div.textContent = text;
+  }
+  byId('chat-history').appendChild(div);
+  if (role === 'bot') addCopyButton(div, text);
+  byId('chat-history').scrollTop = byId('chat-history').scrollHeight;
 }
 
 function addCopyButton(parent, text) {
-    const btn = document.createElement('button');
-    btn.className = 'copy-btn';
-    btn.textContent = 'COPY';
-    btn.onclick = () => {
-        navigator.clipboard.writeText(text);
-        btn.textContent = 'DONE';
-        setTimeout(() => {
-            btn.textContent = 'COPY';
-        }, 2000);
-    };
-    parent.appendChild(btn);
-}
-
-function toggleModel() {
-    const btn = document.getElementById('model-toggle');
-    btn.classList.toggle('off');
-    currentModel = btn.classList.contains('off') ? "deepseek-chat" : "deepseek-reasoner";
-    document.getElementById('model-input').value = currentModel;
-    updateModelInfo();
-}
-
-function saveApiSettings() {
-    const settings = window.QuarkLLMConfig.saveSettings({
-        apiKey: document.getElementById('api-key-input').value.trim(),
-        baseUrl: document.getElementById('base-url-input').value.trim(),
-        model: document.getElementById('model-input').value.trim() || currentModel
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = '复制';
+  btn.onclick = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '已复制 ✓';
+      setTimeout(() => { btn.textContent = '复制'; }, 2000);
+    }).catch(() => {
+      btn.textContent = '复制';
     });
-
-    currentModel = settings.model;
-    const toggle = document.getElementById('model-toggle');
-    toggle.classList.toggle('off', currentModel === 'deepseek-chat');
-    document.getElementById('model-input').value = currentModel;
-    updateModelInfo();
-    toggleModal(false);
-}
-
-function toggleModal(show) {
-    document.getElementById('settings-modal').style.display = show ? 'flex' : 'none';
+  };
+  parent.appendChild(btn);
 }
 
 function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+  const files = e.target.files;
+  if (!files.length) return;
 
+  const dropArea = byId('drop-area');
+  const fileNames = [];
+
+  Array.from(files).forEach(file => {
     const reader = new FileReader();
     reader.onload = (arg) => {
-        currentAttachments.push({ name: file.name, content: arg.target.result });
-        const dropArea = document.getElementById('drop-area');
-        dropArea.classList.add('active');
-        dropArea.textContent = `文件已就绪: ${file.name}`;
+      currentAttachments.push({ name: file.name, content: arg.target.result });
+      fileNames.push(file.name);
+      dropArea.classList.add('active');
+      dropArea.textContent = `文件已就绪: ${fileNames.join(', ')}`;
     };
     reader.readAsText(file);
+  });
+
+  e.target.value = '';
 }
+
+// ===== Toast Notification =====
+
+let toastTimer = null;
+
+function showToast(msg) {
+  let toast = byId('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: var(--text-main); color: var(--bg-main);
+      padding: 10px 24px; border-radius: 8px; font-size: 13px;
+      z-index: 9999; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none; max-width: 80vw; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    `;
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.style.opacity = '0';
+  }, 2500);
+}
+
+// ===== Utilities =====
+
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Expose for inline onclick handlers
+window.deleteChat = deleteChat;
