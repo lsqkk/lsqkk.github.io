@@ -279,8 +279,9 @@
 
   // ===== API Helpers =====
 
-  async function testConnection(baseUrl, apiKey) {
+  async function testConnection(baseUrl, apiKey, model) {
     const url = buildChatEndpoint(baseUrl);
+    const testModel = model || "deepseek-reasoner";
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -289,7 +290,7 @@
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "gpt-3.5-turbo",
+          model: testModel,
           messages: [{ role: "user", content: "hi" }],
           max_tokens: 1,
           stream: false

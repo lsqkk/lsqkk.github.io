@@ -81,6 +81,9 @@ function setupEventListeners() {
   document.querySelectorAll('.modal').forEach(m => {
     m.onclick = (e) => { if (e.target === m) m.classList.remove('show'); };
   });
+
+  // Chat title rename (double-click)
+  byId('chat-title').ondblclick = startRenameChat;
 }
 
 function byId(id) { return document.getElementById(id); }
@@ -251,6 +254,7 @@ async function testConnection() {
   const status = byId('connection-status');
   const apiKey = byId('api-key-input').value.trim();
   const baseUrl = byId('base-url-input').value.trim();
+  const model = byId('model-input').value.trim();
 
   if (!apiKey) { status.textContent = '请先输入 API Key'; status.className = 'status-text error'; return; }
 
@@ -258,7 +262,7 @@ async function testConnection() {
   btn.textContent = '测试中...';
   status.textContent = '';
 
-  const result = await C.testConnection(baseUrl, apiKey);
+  const result = await C.testConnection(baseUrl, apiKey, model);
   btn.disabled = false;
   btn.textContent = '测试连接';
 
@@ -658,7 +662,9 @@ async function sendMessage() {
     }
 
     const finalText = contentBox.textContent;
-    addCopyButton(botMsgDiv, finalText);
+    // Enhance with syntax highlighting, LaTeX, Mermaid after rendering
+    enhanceRenderedContent(contentBox);
+    addCopyButton(botMsgDiv, finalText, contentBox);
     saveToLocalStorage(fullPrompt, finalText);
   } catch (err) {
     contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
@@ -786,6 +792,11 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
   if (fullReasoning) {
     reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
   }
+
+  // After full text is rendered, enhance with syntax highlighting etc.
+  if (fullText) {
+    enhanceRenderedContent(contentBox);
+  }
 }
 
 async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, historyBox) {
@@ -816,6 +827,9 @@ async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, hi
 
   contentBox.innerHTML = marked.parse(text);
   historyBox.scrollTop = historyBox.scrollHeight;
+
+  // Enhance with syntax highlighting etc.
+  if (text) enhanceRenderedContent(contentBox);
 }
 
 // ===== History =====
@@ -918,23 +932,71 @@ function appendMessageUI(role, text) {
     div.textContent = text;
   }
   byId('chat-history').appendChild(div);
-  if (role === 'bot') addCopyButton(div, text);
+  if (role === 'bot') {
+    enhanceRenderedContent(div.querySelector('.markdown-content'));
+    addCopyButton(div, text, div.querySelector('.markdown-content'));
+  }
   byId('chat-history').scrollTop = byId('chat-history').scrollHeight;
 }
 
-function addCopyButton(parent, text) {
-  const btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.textContent = '复制';
-  btn.onclick = () => {
+function addCopyButton(parent, text, contentEl) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'copy-btn-wrapper';
+
+  const mainBtn = document.createElement('button');
+  mainBtn.className = 'copy-btn-main';
+  mainBtn.textContent = '复制';
+  mainBtn.onclick = () => {
     navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = '已复制 ✓';
-      setTimeout(() => { btn.textContent = '复制'; }, 2000);
-    }).catch(() => {
-      btn.textContent = '复制';
+      mainBtn.textContent = '已复制 ✓';
+      setTimeout(() => { mainBtn.textContent = '复制'; }, 2000);
     });
   };
-  parent.appendChild(btn);
+
+  const dropdownBtn = document.createElement('button');
+  dropdownBtn.className = 'copy-btn-dropdown';
+  dropdownBtn.textContent = '▼';
+  dropdownBtn.onclick = (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('show');
+  };
+
+  const menu = document.createElement('div');
+  menu.className = 'copy-menu';
+  menu.innerHTML = `
+    <button data-format="markdown">复制 Markdown</button>
+    <button data-format="html">复制 HTML</button>
+    <button data-format="text">复制纯文本</button>
+  `;
+  menu.querySelectorAll('button').forEach(btn => {
+    btn.onclick = () => {
+      const format = btn.dataset.format;
+      let copyText = text;
+      if (format === 'html' && contentEl) {
+        copyText = contentEl.innerHTML;
+      } else if (format === 'text') {
+        const temp = document.createElement('div');
+        temp.innerHTML = marked.parse(text);
+        copyText = temp.textContent || '';
+      }
+      navigator.clipboard.writeText(copyText).then(() => {
+        btn.textContent = '✓ 已复制';
+        setTimeout(() => {
+          btn.textContent = btn.textContent.includes('Markdown') ? '复制 Markdown' :
+                           btn.textContent.includes('HTML') ? '复制 HTML' : '复制纯文本';
+        }, 1500);
+      });
+      menu.classList.remove('show');
+    };
+  });
+
+  wrapper.appendChild(mainBtn);
+  wrapper.appendChild(dropdownBtn);
+  wrapper.appendChild(menu);
+  parent.appendChild(wrapper);
+
+  // Close menu on outside click
+  document.addEventListener('click', () => menu.classList.remove('show'));
 }
 
 function handleFileSelect(e) {
@@ -958,7 +1020,212 @@ function handleFileSelect(e) {
   e.target.value = '';
 }
 
-// ===== Toast Notification =====
+// ===== Enhanced Rendering (highlight.js + KaTeX + Mermaid) =====
+
+function enhanceRenderedContent(container) {
+  if (!container) return;
+
+  // 1. Syntax highlighting with highlight.js
+  highlightCodeBlocks(container);
+
+  // 2. Add code block headers (language labels + copy buttons)
+  addCodeHeaders(container);
+
+  // 3. Render LaTeX with KaTeX
+  renderLatex(container);
+
+  // 4. Render Mermaid diagrams
+  renderMermaid(container);
+}
+
+function highlightCodeBlocks(container) {
+  if (typeof hljs === 'undefined') return;
+  container.querySelectorAll('pre code').forEach(block => {
+    // Skip if already highlighted
+    if (block.classList.contains('hljs')) return;
+    try {
+      hljs.highlightElement(block);
+    } catch (e) {
+      // Language not available, add plaintext
+    }
+  });
+}
+
+const LANG_NAMES = {
+  python: 'Python', javascript: 'JavaScript', js: 'JavaScript',
+  typescript: 'TypeScript', ts: 'TypeScript',
+  html: 'HTML', css: 'CSS', java: 'Java', c: 'C',
+  cpp: 'C++', csharp: 'C#', cs: 'C#', go: 'Go',
+  rust: 'Rust', php: 'PHP', bash: 'Bash', shell: 'Shell',
+  sh: 'Shell', sql: 'SQL', json: 'JSON', yaml: 'YAML',
+  yml: 'YAML', markdown: 'Markdown', md: 'Markdown',
+  text: 'Text', plaintext: 'Text', xml: 'XML',
+  ruby: 'Ruby', rb: 'Ruby', swift: 'Swift',
+  kotlin: 'Kotlin', kt: 'Kotlin', scala: 'Scala',
+  r: 'R', dart: 'Dart', lua: 'Lua', perl: 'Perl',
+  diff: 'Diff', dockerfile: 'Dockerfile', docker: 'Dockerfile',
+  makefile: 'Makefile', make: 'Makefile',
+  mermaid: 'Mermaid'
+};
+
+function getLangName(lang) {
+  return LANG_NAMES[lang] || (lang ? lang.charAt(0).toUpperCase() + lang.slice(1) : 'Text');
+}
+
+function addCodeHeaders(container) {
+  container.querySelectorAll('pre').forEach(pre => {
+    if (pre.querySelector('.code-header')) return;
+
+    const code = pre.querySelector('code');
+    if (!code) return;
+
+    // Get language from class
+    let lang = 'text';
+    for (const cls of code.classList) {
+      if (cls.startsWith('language-')) {
+        lang = cls.replace('language-', '').toLowerCase();
+        break;
+      }
+    }
+
+    // Determine dot color based on language
+    const dotColors = {
+      python: '#3572A5', javascript: '#f0db4f', js: '#f0db4f',
+      typescript: '#3178c6', ts: '#3178c6',
+      html: '#e34c26', css: '#563d7c', java: '#b07219',
+      cpp: '#f34b7d', c: '#555555', csharp: '#178600',
+      go: '#00ADD8', rust: '#dea584', php: '#4F5D95',
+      bash: '#89e051', shell: '#89e051', sql: '#e38c00',
+      json: '#d4d4d4', yaml: '#cb171e', markdown: '#083fa1',
+      mermaid: '#00a8b5'
+    };
+
+    const header = document.createElement('div');
+    header.className = 'code-header';
+    header.innerHTML = `
+      <span class="code-lang-label">
+        <span class="code-lang-dot" style="background:${dotColors[lang] || '#888'}"></span>
+        ${escHtml(getLangName(lang))}
+      </span>
+      <button class="code-copy-btn">复制代码</button>
+    `;
+
+    const copyBtn = header.querySelector('.code-copy-btn');
+    copyBtn.onclick = () => {
+      const text = code.textContent || '';
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = '已复制 ✓';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = '复制代码';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      });
+    };
+
+    pre.classList.add('code-block-enhanced');
+    pre.prepend(header);
+  });
+}
+
+function renderLatex(container) {
+  if (typeof renderMathInElement === 'undefined') return;
+  try {
+    renderMathInElement(container, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false
+    });
+  } catch (e) {
+    // KaTeX auto-render failed silently
+  }
+}
+
+function renderMermaid(container) {
+  if (typeof mermaid === 'undefined') return;
+  const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid');
+  if (mermaidBlocks.length === 0) return;
+
+  try {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default',
+      securityLevel: 'sandbox'
+    });
+  } catch (e) {
+    return;
+  }
+
+  mermaidBlocks.forEach((codeBlock, index) => {
+    const pre = codeBlock.closest('pre');
+    if (!pre) return;
+    const source = codeBlock.textContent || '';
+
+    // Create a unique ID for the mermaid SVG
+    const id = `mermaid-${Date.now()}-${index}`;
+    const div = document.createElement('div');
+    div.className = 'mermaid-container';
+    div.id = id;
+    pre.replaceWith(div);
+
+    try {
+      mermaid.render(id, source).then(({ svg }) => {
+        div.innerHTML = svg;
+      }).catch(() => {
+        div.innerHTML = `<pre class="mermaid-fallback"><code>${escHtml(source)}</code></pre>`;
+      });
+    } catch {
+      div.innerHTML = `<pre class="mermaid-fallback"><code>${escHtml(source)}</code></pre>`;
+    }
+  });
+}
+
+// ===== Conversation Rename =====
+
+function startRenameChat() {
+  const titleEl = byId('chat-title');
+  const currentName = titleEl.textContent;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'rename-input';
+  input.value = currentName;
+  input.maxLength = 50;
+
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function finishRename(save) {
+    const newName = save ? input.value.trim() || currentName : currentName;
+    const titleEl = document.createElement('h1');
+    titleEl.id = 'chat-title';
+    titleEl.textContent = newName;
+    titleEl.ondblclick = startRenameChat;
+    input.replaceWith(titleEl);
+
+    if (save && newName !== currentName && currentChatId !== null) {
+      const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+      if (chats[currentChatId]) {
+        chats[currentChatId].title = newName;
+        localStorage.setItem('deepseekChats', JSON.stringify(chats));
+        loadHistoryList();
+      }
+    }
+  }
+
+  input.onkeydown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); finishRename(true); }
+    if (e.key === 'Escape') { finishRename(false); }
+  };
+  input.onblur = () => finishRename(true);
+}
+
+// ===== Toast =====
 
 let toastTimer = null;
 
