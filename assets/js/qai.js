@@ -8,6 +8,8 @@ let currentPersonaId = null;
 let currentAbortController = null;
 let isGenerating = false;
 let currentCmdIndex = -1;
+let isSelectionMode = false;
+let selectedChatIndices = new Set();
 
 // ===== Init =====
 
@@ -32,6 +34,7 @@ function initApp() {
   initCommandSystem();
   initMobileSidebar();
   initCollapsibleSidebar();
+  initSelectionMode();
 
   // Initialize Mermaid once globally
   if (typeof mermaid !== 'undefined') {
@@ -1422,20 +1425,39 @@ function loadHistoryList() {
     items.forEach(chat => {
       const i = chats.indexOf(chat);
       const div = document.createElement('div');
-      div.className = `history-item ${i === currentChatId ? 'active' : ''}`;
-      div.draggable = true;
+      div.className = `history-item ${i === currentChatId ? 'active' : ''}${selectedChatIndices.has(i) ? ' selected' : ''}`;
+      div.draggable = !isSelectionMode;
       div.dataset.chatIndex = i;
       div.innerHTML = `
+        <input type="checkbox" class="sel-checkbox" ${selectedChatIndices.has(i) ? 'checked' : ''}>
         <span class="history-title">${escHtml(chat.title || '新会话')}</span>
         <button onclick="deleteChat(${i}, event)">×</button>
       `;
-      div.onclick = () => { switchChat(i); };
-      // Drag and drop for categories
-      div.ondragstart = (e) => {
-        e.dataTransfer.setData('text/plain', i);
-        div.classList.add('dragging');
-      };
-      div.ondragend = () => div.classList.remove('dragging');
+      if (isSelectionMode) {
+        const cb = div.querySelector('.sel-checkbox');
+        cb.onchange = () => {
+          if (cb.checked) selectedChatIndices.add(i);
+          else selectedChatIndices.delete(i);
+          div.classList.toggle('selected', cb.checked);
+          updateSelectionUI();
+        };
+        div.onclick = (e) => {
+          if (e.target !== cb) {
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change'));
+          }
+        };
+      } else {
+        div.onclick = () => { switchChat(i); };
+      }
+      // Drag and drop for categories (only when not in selection mode)
+      if (!isSelectionMode) {
+        div.ondragstart = (e) => {
+          e.dataTransfer.setData('text/plain', i);
+          div.classList.add('dragging');
+        };
+        div.ondragend = () => div.classList.remove('dragging');
+      }
       list.appendChild(div);
     });
   });
@@ -3442,65 +3464,219 @@ importChats = async function(file) {
 // ===== Collapsible Sidebar Sections =====
 
 function initCollapsibleSidebar() {
-  const sections = [
-    { id: 'persona-section', btnId: 'persona-btn', label: '人格管理', icon: '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>' },
-    { id: 'templates-section', btnId: 'templates-btn', label: '提示词模板', icon: '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM6 20V4h5v7h7v9H6z"/></svg>' },
-    { id: 'starred-section', btnId: 'starred-btn', label: '星标消息', icon: '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>' }
-  ];
-
   const footer = byId('sidebar-footer');
   if (!footer) return;
 
-  // Keep only the first 3 children (export, import, new chat, settings buttons)
-  // and insert collapsible sections before them
   const exportBtn = byId('export-chats-btn');
-  const importBtn = byId('import-chats-btn');
   const importInput = byId('import-chats-input');
-  const newChatBtn = byId('new-chat-btn');
-  const settingsBtn = byId('settings-btn');
 
-  // Create collapsible sections
-  sections.forEach((sec, idx) => {
-    const section = document.createElement('div');
-    section.className = 'sidebar-section';
-    section.id = sec.id;
+  // Create ONE collapsible section wrapping all feature buttons
+  const section = document.createElement('div');
+  section.className = 'sidebar-section';
+  section.id = 'features-section';
 
-    const header = document.createElement('div');
-    header.className = 'sidebar-section-header';
-    const stateKey = 'quark_llm_section_' + idx;
-    const isCollapsed = localStorage.getItem(stateKey) === 'collapsed';
-    header.innerHTML = `
-      ${sec.icon}
-      <span style="flex:1;font-size:12px;font-weight:600">${sec.label}</span>
-      <span class="section-arrow">${isCollapsed ? '&#9660;' : '&#9660;'}</span>
-    `;
-    if (isCollapsed) header.classList.add('collapsed');
+  const header = document.createElement('div');
+  header.className = 'sidebar-section-header';
+  const stateKey = 'quark_llm_features_collapsed';
+  const isCollapsed = localStorage.getItem(stateKey) !== 'expanded'; // default to collapsed
+  if (isCollapsed) header.classList.add('collapsed');
+  header.innerHTML = `
+    <svg viewBox="0 0 24 24" width="16" height="16" style="flex-shrink:0"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+    <span style="flex:1;font-size:12px;font-weight:600">功能</span>
+    <span class="section-arrow">&#9660;</span>
+  `;
 
-    const body = document.createElement('div');
-    body.className = 'sidebar-section-body' + (isCollapsed ? ' collapsed' : '');
+  const body = document.createElement('div');
+  body.className = 'sidebar-section-body' + (isCollapsed ? ' collapsed' : '');
 
-    // Move the corresponding button into the section body
-    const btn = byId(sec.btnId);
+  // Move all 5 feature buttons into the single collapsible body
+  const btnIds = ['persona-btn', 'templates-btn', 'starred-btn', 'export-chats-btn', 'import-chats-btn'];
+  btnIds.forEach(id => {
+    const btn = byId(id);
     if (btn && btn.parentNode === footer) {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'padding:2px 8px';
       const clone = btn.cloneNode(true);
       clone.style.cssText = 'display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:8px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:0.15s;width:100%;';
       clone.onclick = (e) => {
-        // Trigger the original button's click handlers
-        const origBtn = byId(sec.btnId);
+        const origBtn = byId(id);
         if (origBtn) origBtn.click();
       };
-      body.appendChild(clone);
+      wrapper.appendChild(clone);
+      body.appendChild(wrapper);
       btn.style.display = 'none';
     }
-
-    header.onclick = () => {
-      const collapsed = header.classList.toggle('collapsed');
-      body.classList.toggle('collapsed');
-      localStorage.setItem(stateKey, collapsed ? 'collapsed' : 'expanded');
-    };
-
-    section.appendChild(header);
-    section.appendChild(body);
-    footer.insertBefore(section, exportBtn);
   });
+
+  header.onclick = () => {
+    const collapsed = header.classList.toggle('collapsed');
+    body.classList.toggle('collapsed');
+    localStorage.setItem(stateKey, collapsed ? 'collapsed' : 'expanded');
+  };
+
+  section.appendChild(header);
+  section.appendChild(body);
+  footer.insertBefore(section, exportBtn);
+}
+
+// ===== Selection Mode =====
+
+function initSelectionMode() {
+  const searchWrapper = byId('search-wrapper');
+  if (!searchWrapper) return;
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'sel-toggle-btn';
+  toggleBtn.id = 'sel-toggle-btn';
+  toggleBtn.textContent = '选择';
+  toggleBtn.onclick = toggleSelectionMode;
+  searchWrapper.appendChild(toggleBtn);
+
+  const toolbar = document.createElement('div');
+  toolbar.id = 'selection-toolbar';
+  toolbar.innerHTML = `
+    <input type="checkbox" id="sel-select-all" title="全选">
+    <span class="sel-count" id="sel-count">已选 0 个</span>
+    <button class="sel-btn danger" id="sel-delete-btn">删除</button>
+    <select class="sel-btn" id="sel-move-cat" style="font-size:11px;padding:3px 6px;max-width:100px;">
+      <option value="">移动分类...</option>
+    </select>
+    <button class="sel-btn primary-sel" id="sel-export-btn">导出选中</button>
+    <button class="sel-btn" id="sel-exit-btn">退出</button>
+  `;
+  const categoryBar = byId('category-bar');
+  const historyList = byId('history-list');
+  if (categoryBar && historyList) {
+    categoryBar.parentNode.insertBefore(toolbar, historyList);
+  }
+
+  byId('sel-select-all').onchange = function() {
+    const checked = this.checked;
+    document.querySelectorAll('#history-list .sel-checkbox').forEach(cb => {
+      cb.checked = checked;
+      cb.dispatchEvent(new Event('change'));
+    });
+  };
+  byId('sel-delete-btn').onclick = deleteSelectedChats;
+  byId('sel-export-btn').onclick = exportSelectedChats;
+  byId('sel-exit-btn').onclick = toggleSelectionMode;
+  byId('sel-move-cat').onchange = function() {
+    if (this.value) moveSelectedChats(this.value);
+  };
+}
+
+function toggleSelectionMode() {
+  isSelectionMode = !isSelectionMode;
+  const toggleBtn = byId('sel-toggle-btn');
+  const toolbar = byId('selection-toolbar');
+
+  if (isSelectionMode) {
+    toggleBtn.classList.add('active');
+    toggleBtn.textContent = '取消';
+    document.body.classList.add('selection-mode');
+    toolbar.classList.add('show');
+    populateMoveCategorySelect();
+  } else {
+    exitSelectionMode();
+  }
+  loadHistoryList();
+}
+
+function exitSelectionMode() {
+  isSelectionMode = false;
+  selectedChatIndices.clear();
+  const toggleBtn = byId('sel-toggle-btn');
+  const toolbar = byId('selection-toolbar');
+  if (toggleBtn) { toggleBtn.classList.remove('active'); toggleBtn.textContent = '选择'; }
+  if (toolbar) toolbar.classList.remove('show');
+  document.body.classList.remove('selection-mode');
+  byId('sel-select-all').checked = false;
+}
+
+function updateSelectionUI() {
+  const count = selectedChatIndices.size;
+  byId('sel-count').textContent = `已选 ${count} 个`;
+  const totalCbs = document.querySelectorAll('#history-list .sel-checkbox').length;
+  const checkedCbs = document.querySelectorAll('#history-list .sel-checkbox:checked').length;
+  byId('sel-select-all').checked = totalCbs > 0 && checkedCbs === totalCbs;
+  byId('sel-select-all').indeterminate = checkedCbs > 0 && checkedCbs < totalCbs;
+}
+
+function deleteSelectedChats() {
+  if (selectedChatIndices.size === 0) { showToast('请先选择对话'); return; }
+  if (!confirm(`确定删除选中的 ${selectedChatIndices.size} 个对话？`)) return;
+
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const sorted = [...selectedChatIndices].sort((a, b) => b - a);
+  for (const idx of sorted) {
+    chats.splice(idx, 1);
+    if (idx === currentChatId) {
+      currentChatId = null;
+    } else if (idx < currentChatId) {
+      currentChatId--;
+    }
+  }
+  localStorage.setItem('deepseekChats', JSON.stringify(chats));
+  selectedChatIndices.clear();
+  if (currentChatId === null) {
+    byId('chat-history').innerHTML = '';
+    byId('chat-title').textContent = '新会话';
+    showEmptyState();
+  } else {
+    const chats2 = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    renderChat(chats2[currentChatId]);
+  }
+  updateSelectionUI();
+  loadHistoryList();
+  showToast('已删除');
+}
+
+function populateMoveCategorySelect() {
+  const sel = byId('sel-move-cat');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">移动分类...</option>';
+  const cats = JSON.parse(localStorage.getItem('quark_llm_categories') || '[]');
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+}
+
+function moveSelectedChats(categoryId) {
+  if (selectedChatIndices.size === 0) { showToast('请先选择对话'); return; }
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  for (const idx of selectedChatIndices) {
+    if (chats[idx]) chats[idx].categoryId = categoryId;
+  }
+  localStorage.setItem('deepseekChats', JSON.stringify(chats));
+  selectedChatIndices.clear();
+  updateSelectionUI();
+  loadHistoryList();
+  byId('sel-move-cat').value = '';
+  showToast('已移动');
+}
+
+function exportSelectedChats() {
+  const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  let data;
+
+  if (selectedChatIndices.size > 0) {
+    data = chats.filter((_, i) => selectedChatIndices.has(i));
+    if (!data.length) { showToast('请先选择对话'); return; }
+  } else if (currentChatId !== null && chats[currentChatId]) {
+    data = [chats[currentChatId]];
+  } else {
+    showToast('没有可导出的对话');
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ds-chats-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`已导出 ${data.length} 个对话`);
 }

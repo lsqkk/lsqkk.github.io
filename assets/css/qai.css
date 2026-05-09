@@ -147,6 +147,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 6px;
   padding: 10px 12px;
   margin-bottom: 2px;
   border-radius: 6px;
@@ -2102,6 +2103,7 @@ label.toggle-label {
   background: transparent;
   border-bottom: none;
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   padding: 8px 10%;
 }
@@ -2110,6 +2112,7 @@ label.toggle-label {
   background: transparent;
   border-bottom: none;
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
   padding: 8px 10%;
 }
@@ -2143,12 +2146,32 @@ label.toggle-label {
   right: auto;
   opacity: 1;
   margin-top: 4px;
+  width: 100%;
+  display: flex;
+  gap: 4px;
+}
+
+.bubble-mode .user-msg .msg-btn-group {
+  justify-content: flex-end;
+}
+
+.bubble-mode .bot-msg .msg-btn-group {
+  justify-content: flex-start;
 }
 
 .bubble-mode .user-msg .msg-actions,
 .bubble-mode .bot-msg .msg-actions {
   opacity: 1;
   margin-top: 4px;
+  width: 100%;
+}
+
+.bubble-mode .user-msg .msg-actions {
+  justify-content: flex-end;
+}
+
+.bubble-mode .bot-msg .msg-actions {
+  justify-content: flex-start;
 }
 
 .bubble-mode .star-btn,
@@ -2238,6 +2261,98 @@ label.toggle-label {
   border-radius: 4px;
   margin: 4px 0;
   border-left: 3px solid var(--danger);
+}
+
+/* ===== Selection Mode ===== */
+#selection-toolbar {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+#selection-toolbar.show {
+  display: flex;
+}
+
+#selection-toolbar .sel-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: auto;
+}
+
+#selection-toolbar .sel-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: 0.1s;
+  white-space: nowrap;
+}
+
+#selection-toolbar .sel-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-main);
+}
+
+#selection-toolbar .sel-btn.danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+#selection-toolbar .sel-btn.primary-sel:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sel-toggle-btn {
+  font-size: 11px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: 0.1s;
+  flex-shrink: 0;
+}
+
+.sel-toggle-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-main);
+}
+
+.sel-toggle-btn.active {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.history-item .sel-checkbox {
+  display: none;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.selection-mode .history-item .sel-checkbox {
+  display: inline-block;
+}
+
+.history-item.selected {
+  background: var(--accent-light) !important;
+}
+
+.selection-mode .history-item {
+  cursor: default;
 }
 
 /* ===== Collapsible Sidebar Sections ===== */
