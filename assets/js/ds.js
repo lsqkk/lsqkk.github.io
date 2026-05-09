@@ -719,9 +719,11 @@ async function sendMessage() {
   const contentBox = botMsgDiv.querySelector('.markdown-content');
 
   const params = loadParams();
-  const endpoint = params.webSearch && params.searchApiUrl
+  const usingWebSearch = params.webSearch && params.searchApiUrl;
+  const endpoint = usingWebSearch
     ? AI_SEARCH_PROXY + '?target=' + encodeURIComponent(buildSearchEndpoint(params.searchApiUrl))
     : C.buildChatEndpoint(settings.baseUrl);
+  const effectiveKey = usingWebSearch && params.searchApiKey ? params.searchApiKey : settings.apiKey;
   let messages = buildMessages(fullPrompt);
 
   const requestBody = buildRequestBody(settings.model, messages, params);
@@ -729,9 +731,9 @@ async function sendMessage() {
   try {
     let result;
     if (params.stream !== false) {
-      result = await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+      result = await doStreamRequest(endpoint, effectiveKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
     } else {
-      result = await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
+      result = await doNormalRequest(endpoint, effectiveKey, requestBody, contentBox, botMsgDiv, historyBox);
     }
 
     // Save raw markdown and reasoning (not rendered plain text)
@@ -1856,9 +1858,11 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
   if (!settings.apiKey) { showToast('请先设置 API Key'); return; }
 
   const params = loadParams();
-  const endpoint = params.webSearch && params.searchApiUrl
+  const usingWebSearch = params.webSearch && params.searchApiUrl;
+  const endpoint = usingWebSearch
     ? AI_SEARCH_PROXY + '?target=' + encodeURIComponent(buildSearchEndpoint(params.searchApiUrl))
     : C.buildChatEndpoint(settings.baseUrl);
+  const effectiveKey = usingWebSearch && params.searchApiKey ? params.searchApiKey : settings.apiKey;
 
   // Build API messages from context up to and including userMsgIndex
   const activePersona = C.getActivePersona();
@@ -1889,9 +1893,9 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
     let result;
     currentChatId = chatIndex;
     if (params.stream !== false) {
-      result = await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+      result = await doStreamRequest(endpoint, effectiveKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
     } else {
-      result = await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
+      result = await doNormalRequest(endpoint, effectiveKey, requestBody, contentBox, botMsgDiv, historyBox);
     }
 
     const rawText = result.text || '';
@@ -1945,9 +1949,11 @@ async function regenerateResponse(chatIndex, msgIndex) {
   if (!settings.apiKey) { showToast('请先设置 API Key'); return; }
 
   const params = loadParams();
-  const endpoint = params.webSearch && params.searchApiUrl
+  const usingWebSearch = params.webSearch && params.searchApiUrl;
+  const endpoint = usingWebSearch
     ? AI_SEARCH_PROXY + '?target=' + encodeURIComponent(buildSearchEndpoint(params.searchApiUrl))
     : C.buildChatEndpoint(settings.baseUrl);
+  const effectiveKey = usingWebSearch && params.searchApiKey ? params.searchApiKey : settings.apiKey;
 
   // Build messages (same context as before but without the old response)
   const activePersona = C.getActivePersona();
@@ -1969,9 +1975,9 @@ async function regenerateResponse(chatIndex, msgIndex) {
     let result;
     currentChatId = chatIndex;
     if (params.stream !== false) {
-      result = await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+      result = await doStreamRequest(endpoint, effectiveKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
     } else {
-      result = await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
+      result = await doNormalRequest(endpoint, effectiveKey, requestBody, contentBox, botMsgDiv, historyBox);
     }
 
     const rawText = result.text || '';
