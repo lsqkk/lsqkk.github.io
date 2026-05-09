@@ -716,27 +716,10 @@ async function sendMessage() {
   const contentBox = botMsgDiv.querySelector('.markdown-content');
 
   const params = loadParams();
-  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+  const endpoint = params.webSearch && params.searchApiUrl
+    ? params.searchApiUrl
+    : C.buildChatEndpoint(settings.baseUrl);
   let messages = buildMessages(fullPrompt);
-
-  // Web search: if enabled, search the web and inject results as context
-  if (params.webSearch && fullPrompt) {
-    const searchUrl = params.searchApiUrl || '';
-    const searchKey = params.searchApiKey || '';
-    if (searchUrl && searchKey) {
-      try {
-        const searchResult = await performWebSearch(fullPrompt, searchUrl, searchKey);
-        const searchContext = formatSearchResults(searchResult, fullPrompt);
-        if (searchContext) {
-          // Inject search results as a system-level context before the user message
-          messages.splice(messages.length - 1, 0, {
-            role: "system",
-            content: searchContext
-          });
-        }
-      } catch {}
-    }
-  }
 
   const requestBody = buildRequestBody(settings.model, messages, params);
 
@@ -818,47 +801,6 @@ function buildMessages(userPrompt) {
   return messages;
 }
 
-async function performWebSearch(query, apiUrl, apiKey) {
-  if (!apiUrl || !apiKey) {
-    // Try a simple generic search API format
-    if (!apiUrl) return null;
-  }
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({ query, num: 5 })
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data;
-  } catch {
-    return null;
-  }
-}
-
-function formatSearchResults(data, query) {
-  if (!data) return '';
-  // Try common response formats
-  const results = data.results || data.items || data.data || [];
-  if (Array.isArray(results) && results.length > 0) {
-    let context = '## 联网搜索结果\n\n以下是与用户问题相关的搜索结果，请基于这些信息回答：\n\n';
-    results.slice(0, 5).forEach((r, i) => {
-      const title = r.title || r.name || '';
-      const snippet = r.snippet || r.content || r.description || '';
-      const url = r.url || r.link || '';
-      context += `${i + 1}. **${title}**\n   ${snippet}\n   ${url}\n\n`;
-    });
-    return context;
-  }
-  // If the response is a single string
-  if (typeof data === 'string') return data;
-  return JSON.stringify(data);
-}
-
 function buildRequestBody(model, messages, params) {
   const body = {
     model: model,
@@ -873,6 +815,7 @@ function buildRequestBody(model, messages, params) {
   if (params.presencePenalty !== 0) body.presence_penalty = params.presencePenalty;
   if (params.frequencyPenalty !== 0) body.frequency_penalty = params.frequencyPenalty;
   if (params.stop && params.stop.length > 0) body.stop = params.stop;
+  if (params.webSearch && params.searchApiUrl) body.search_source = params.search_source || "baidu_search_v2";
 
   return body;
 }
@@ -1901,7 +1844,9 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
   if (!settings.apiKey) { showToast('请先设置 API Key'); return; }
 
   const params = loadParams();
-  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+  const endpoint = params.webSearch && params.searchApiUrl
+    ? params.searchApiUrl
+    : C.buildChatEndpoint(settings.baseUrl);
 
   // Build API messages from context up to and including userMsgIndex
   const activePersona = C.getActivePersona();
@@ -1988,7 +1933,9 @@ async function regenerateResponse(chatIndex, msgIndex) {
   if (!settings.apiKey) { showToast('请先设置 API Key'); return; }
 
   const params = loadParams();
-  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+  const endpoint = params.webSearch && params.searchApiUrl
+    ? params.searchApiUrl
+    : C.buildChatEndpoint(settings.baseUrl);
 
   // Build messages (same context as before but without the old response)
   const activePersona = C.getActivePersona();

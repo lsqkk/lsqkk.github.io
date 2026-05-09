@@ -859,7 +859,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* --- Toggle Switch --- */
-.toggle-label {
+label.toggle-label {
   display: flex;
   align-items: center;
   gap: 10px;
