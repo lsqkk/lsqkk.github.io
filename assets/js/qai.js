@@ -3489,22 +3489,16 @@ function initCollapsibleSidebar() {
   const body = document.createElement('div');
   body.className = 'sidebar-section-body' + (isCollapsed ? ' collapsed' : '');
 
-  // Move all 5 feature buttons into the single collapsible body
+  // Move all 5 feature buttons directly into the collapsible body (preserves event listeners)
   const btnIds = ['persona-btn', 'templates-btn', 'starred-btn', 'export-chats-btn', 'import-chats-btn'];
   btnIds.forEach(id => {
     const btn = byId(id);
     if (btn && btn.parentNode === footer) {
+      btn.style.width = '100%';
       const wrapper = document.createElement('div');
       wrapper.style.cssText = 'padding:2px 8px';
-      const clone = btn.cloneNode(true);
-      clone.style.cssText = 'display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:8px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:0.15s;width:100%;';
-      clone.onclick = (e) => {
-        const origBtn = byId(id);
-        if (origBtn) origBtn.click();
-      };
-      wrapper.appendChild(clone);
+      wrapper.appendChild(btn);
       body.appendChild(wrapper);
-      btn.style.display = 'none';
     }
   });
 
@@ -3657,7 +3651,7 @@ function moveSelectedChats(categoryId) {
   showToast('已移动');
 }
 
-function exportSelectedChats() {
+async function exportSelectedChats() {
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
   let data;
 
@@ -3671,12 +3665,25 @@ function exportSelectedChats() {
     return;
   }
 
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const password = prompt('请输入导出加密密码（留空则不加密）：');
+  let finalData;
+  let ext = '.json';
+  if (password) {
+    const confirmPwd = prompt('请再次输入密码确认：');
+    if (password !== confirmPwd) { showToast('两次密码输入不一致'); return; }
+    const encrypted = await encryptData(data, password);
+    finalData = JSON.stringify({ encrypted, version: 1, type: 'encrypted-chats' }, null, 2);
+    ext = '.encrypted.json';
+  } else {
+    finalData = JSON.stringify(data, null, 2);
+  }
+
+  const blob = new Blob([finalData], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `ds-chats-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `ds-chats-${new Date().toISOString().slice(0, 10)}${ext}`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast(`已导出 ${data.length} 个对话`);
+  showToast(`已导出 ${data.length} 个对话${password ? '（已加密）' : ''}`);
 }
