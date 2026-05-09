@@ -655,17 +655,21 @@ async function sendMessage() {
   const requestBody = buildRequestBody(settings.model, messages, params);
 
   try {
+    let result;
     if (params.stream !== false) {
-      await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
+      result = await doStreamRequest(endpoint, settings.apiKey, requestBody, reasoningBox, contentBox, botMsgDiv, historyBox);
     } else {
-      await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
+      result = await doNormalRequest(endpoint, settings.apiKey, requestBody, contentBox, botMsgDiv, historyBox);
     }
 
-    const finalText = contentBox.textContent;
+    // Save raw markdown and reasoning (not rendered plain text)
+    const rawText = result.text || '';
+    const rawReasoning = result.reasoning || '';
+
     // Enhance with syntax highlighting, LaTeX, Mermaid after rendering
     enhanceRenderedContent(contentBox);
-    addCopyButton(botMsgDiv, finalText, contentBox);
-    saveToLocalStorage(fullPrompt, finalText);
+    addCopyButton(botMsgDiv, rawText, contentBox);
+    saveToLocalStorage(fullPrompt, rawText, rawReasoning);
   } catch (err) {
     contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
   } finally {
@@ -797,6 +801,8 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
   if (fullText) {
     enhanceRenderedContent(contentBox);
   }
+
+  return { text: fullText, reasoning: fullReasoning };
 }
 
 async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, historyBox) {
@@ -817,11 +823,12 @@ async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, hi
   const data = await response.json();
   const choice = data?.choices?.[0];
   const text = choice?.message?.content || '';
+  const reasoning = choice?.message?.reasoning_content || '';
 
-  if (choice?.message?.reasoning_content) {
+  if (reasoning) {
     const reasoningBox = botMsgDiv.querySelector('.reasoning-box');
     reasoningBox.style.display = "block";
-    reasoningBox.textContent = choice.message.reasoning_content;
+    reasoningBox.textContent = reasoning;
     reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
   }
 
@@ -830,6 +837,8 @@ async function doNormalRequest(endpoint, apiKey, body, contentBox, botMsgDiv, hi
 
   // Enhance with syntax highlighting etc.
   if (text) enhanceRenderedContent(contentBox);
+
+  return { text, reasoning };
 }
 
 // ===== History =====
@@ -838,11 +847,13 @@ function getContext(newPrompt) {
   return buildMessages(newPrompt);
 }
 
-function saveToLocalStorage(userMsg, botMsg) {
+function saveToLocalStorage(userMsg, botMsg, botReasoning) {
   const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+  const assistantMsg = { role: "assistant", content: botMsg };
+  if (botReasoning) assistantMsg.reasoning = botReasoning;
   const msgPair = [
     { role: "user", content: userMsg },
-    { role: "assistant", content: botMsg }
+    assistantMsg
   ];
 
   if (currentChatId === null) {
@@ -890,7 +901,7 @@ function renderChat(chat) {
     if (msg.role === 'user') {
       appendMessageUI('user', msg.content);
     } else if (msg.role === 'assistant') {
-      appendMessageUI('bot', msg.content);
+      appendMessageUI('bot', msg.content, msg.reasoning);
     } else if (msg.role === 'system') {
       // Skip system messages in display
     }
@@ -923,18 +934,26 @@ function createNewChat() {
 
 // ===== UI Helpers =====
 
-function appendMessageUI(role, text) {
+function appendMessageUI(role, text, reasoning) {
   const div = document.createElement('div');
   div.className = `${role}-msg`;
   if (role === 'bot') {
-    div.innerHTML = `<div class="markdown-content">${marked.parse(text)}</div>`;
+    const reasoningHtml = reasoning
+      ? `<div class="reasoning-box">${escHtml(reasoning)}</div>`
+      : '';
+    div.innerHTML = `${reasoningHtml}<div class="markdown-content">${marked.parse(text)}</div>`;
   } else {
     div.textContent = text;
   }
   byId('chat-history').appendChild(div);
   if (role === 'bot') {
-    enhanceRenderedContent(div.querySelector('.markdown-content'));
-    addCopyButton(div, text, div.querySelector('.markdown-content'));
+    const contentBox = div.querySelector('.markdown-content');
+    const reasoningBox = div.querySelector('.reasoning-box');
+    if (reasoningBox) {
+      reasoningBox.onclick = () => reasoningBox.classList.toggle('collapsed');
+    }
+    enhanceRenderedContent(contentBox);
+    addCopyButton(div, text, contentBox);
   }
   byId('chat-history').scrollTop = byId('chat-history').scrollHeight;
 }
@@ -1025,28 +1044,30 @@ function handleFileSelect(e) {
 function enhanceRenderedContent(container) {
   if (!container) return;
 
-  // 1. Syntax highlighting with highlight.js
+  // Mermaid MUST come first — it replaces pre>code.language-mermaid with SVG,
+  // so highlight.js and addCodeHeaders never see those blocks.
+  renderMermaid(container);
+
+  // Syntax highlighting with highlight.js (skips mermaid blocks internally)
   highlightCodeBlocks(container);
 
-  // 2. Add code block headers (language labels + copy buttons)
+  // Add code block headers (skips mermaid blocks internally)
   addCodeHeaders(container);
 
-  // 3. Render LaTeX with KaTeX
+  // Render LaTeX with KaTeX
   renderLatex(container);
-
-  // 4. Render Mermaid diagrams
-  renderMermaid(container);
 }
 
 function highlightCodeBlocks(container) {
   if (typeof hljs === 'undefined') return;
   container.querySelectorAll('pre code').forEach(block => {
-    // Skip if already highlighted
+    // Skip if already highlighted, or if it's a mermaid block
     if (block.classList.contains('hljs')) return;
+    if (block.classList.contains('language-mermaid')) return;
     try {
       hljs.highlightElement(block);
     } catch (e) {
-      // Language not available, add plaintext
+      // Language not available, skip
     }
   });
 }
@@ -1075,6 +1096,7 @@ function getLangName(lang) {
 function addCodeHeaders(container) {
   container.querySelectorAll('pre').forEach(pre => {
     if (pre.querySelector('.code-header')) return;
+    if (pre.querySelector('code.language-mermaid')) return;
 
     const code = pre.querySelector('code');
     if (!code) return;

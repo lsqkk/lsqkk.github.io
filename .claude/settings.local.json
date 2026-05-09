@@ -7,7 +7,9 @@
       "Bash(.venv/Scripts/python -m pip install requests Pillow qrcode pyzbar tqdm)",
       "Bash(.venv/Scripts/quark qqexport *)",
       "Bash(.venv/Scripts/python *)",
-      "Bash(.venv/Scripts/quark *)"
+      "Bash(.venv/Scripts/quark *)",
+      "Bash(node -c assets/js/ds.js)",
+      "Bash(node *)"
     ]
   }
 }
