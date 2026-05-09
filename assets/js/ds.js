@@ -875,20 +875,38 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
   let fullText = "";
   let fullReasoning = "";
   let pendingChunk = "";
+  let rawBuffer = "";       // accumulate ALL raw text for fallback parsing
+  let debugLogged = false;  // log raw data only once
 
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
 
-    pendingChunk += decoder.decode(value, { stream: true });
+    const chunkText = decoder.decode(value, { stream: true });
+    rawBuffer += chunkText;
+    pendingChunk += chunkText;
+
     const lines = pendingChunk.split('\n');
     pendingChunk = lines.pop() || "";
 
     for (const line of lines) {
-      if (!line.startsWith('data: ') || line === 'data: [DONE]') continue;
+      // Accept SSE lines with or without space after "data:"
+      // Also accept bare JSON lines (some APIs omit the "data: " prefix)
+      let jsonStr = null;
+      if (line.startsWith('data: ')) {
+        jsonStr = line.substring(6);
+      } else if (line.startsWith('data:')) {
+        jsonStr = line.substring(5);
+      } else if (line.trimStart().startsWith('{')) {
+        jsonStr = line;
+      }
+
+      if (!jsonStr) continue;
+      const trimmed = jsonStr.trim();
+      if (trimmed === '[DONE]') continue;
 
       try {
-        const data = JSON.parse(line.substring(6));
+        const data = JSON.parse(trimmed);
         const delta = data?.choices?.[0]?.delta || {};
 
         if (delta.reasoning_content) {
@@ -910,10 +928,33 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
     }
   }
 
-  // If no content was received via delta, try the final message
+  // Fallback: if no content from delta, try full raw response as JSON
   if (!fullText) {
-    try {
-      const finalData = JSON.parse(pendingChunk.replace(/^data: /, ''));
+    // Log raw response for debugging (first 1KB)
+    if (rawBuffer.length > 0) {
+      console.log('[SSE debug] Raw response start:', rawBuffer.substring(0, 1000));
+    }
+
+    // Strategy 1: try parsing pendingChunk (last incomplete line) as JSON
+    const tryParse = (str) => {
+      try {
+        return JSON.parse(str.trim());
+      } catch { return null; }
+    };
+
+    // Strategy 2: try the entire raw buffer
+    let finalData = null;
+    const cleanAll = rawBuffer
+      .split('\n')
+      .map(l => l.replace(/^data:\s*/, '').trim())
+      .filter(l => l && l !== '[DONE]')
+      .join('\n');
+
+    finalData = tryParse(pendingChunk.replace(/^data:\s*/, '').trim())
+      || tryParse(cleanAll)
+      || tryParse(rawBuffer.replace(/^data:\s*/m, '').trim());
+
+    if (finalData) {
       const choice = finalData?.choices?.[0];
       if (choice?.message?.content) {
         fullText = choice.message.content;
@@ -924,13 +965,20 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
         reasoningBox.style.display = "block";
         reasoningBox.textContent = fullReasoning;
       }
-    } catch {}
+      if (!fullText) {
+        // Different structure — log it
+        console.log('[SSE debug] Parsed JSON keys:', Object.keys(finalData));
+        console.log('[SSE debug] Full parsed data:', finalData);
+      }
+    } else {
+      console.log('[SSE debug] Raw full response:', rawBuffer);
+    }
   }
 
   // Try to extract usage from final chunk
   let usage = null;
   try {
-    const finalStr = pendingChunk.replace(/^data: /, '');
+    const finalStr = pendingChunk.replace(/^data:\s*/, '').trim();
     if (finalStr) {
       const finalData = JSON.parse(finalStr);
       if (finalData?.usage) usage = finalData.usage;
