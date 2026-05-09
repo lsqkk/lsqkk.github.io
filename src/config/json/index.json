@@ -1,24 +1,36 @@
 {
-  "note": "修改此配置以更新主页信息。",
   "Background": "/assets/img/bg.png",
-  "Nickname": "蓝色奇夸克",
   "Contact": {
-    "email": "jsxzznz@163.com",
-    "phone": "13092344080",
+    "academic": "https://lsqkk.github.io/academic-homepage",
     "cv": "https://lsqkk.github.io/academic-homepage/assets/files/Zhu_Enze_s_Resume_en_.pdf",
-    "academic": "https://lsqkk.github.io/academic-homepage"
+    "email": "jsxzznz@163.com",
+    "phone": "13092344080"
   },
-  "welcomeTitle": "Hello World",
-  "welcomeText": "学习历程 | 生活感悟 | 技术分享",
-  "showDynamicNum": 4,
-  "showPostNum": 5,
-  "showLogNum": 6,
+  "Nickname": "蓝色奇夸克",
+  "announcement": {
+    "content": "一个轻量好用、功能全面的LLM Web UI！现已支持：多模型一键切换、对话管理（文件夹/搜索/导入导出与加密）、消息编辑/重生成/复制/星标；精细参数（温度、Top P/K、惩罚、停止词、种子）；系统提示词预设、上下文token显示与透传、持久角色设定；输入含快捷指令与模板库，流式输出；渲染Markdown、代码高亮、LaTeX、Mermaid及思维链折叠；输出翻译、改写、多回复对比、JSON模式；深色主题，本地存储，API密钥与用量统计，自定义端点，场景预设，等等功能！开箱即用，隐私安全！<a href=\"https://lsqkk.github.io/a/qai\" target=\"_blank\" style=\"color: #007bff; font-weight: bold;\">点此</a>立即体验！",
+    "title": "QAI WebUI 正式发布！"
+  },
   "bloggerLat": 34.252705,
   "bloggerLon": 108.990221,
-  "announcement": {
-    "content": "<a href=\"https://lsqkk.github.io/posts/rss.xml\" target=\"_blank\" style=\"color: #007bff; font-weight: bold;\">点此</a>访问RSS订阅链接",
-    "title": "夸克博客支持RSS订阅"
-  },
+  "note": "修改此配置以更新主页信息。",
+  "phrases": [
+    "无穷的远方，无数的人们，都和我有关。",
+    "Idealists Need Timeless Journeys",
+    "比金钱更珍贵是知识，比知识更珍贵的是无休止的好奇心，而比好奇心更珍贵的，是我们头上的星空。",
+    "哲学家们只是用不同的方式解释世界，而问题在于改变世界。",
+    "人民，只有人民，才是创造世界历史的动力。",
+    "在黑暗里点灯的人，终将照亮整个时代。",
+    "如果风只吹向一个方向，那就改变风的轨迹。",
+    "理想不会老去，它只会等待新的战士。",
+    "你要成为改变世界的火焰，而非被世界熄灭的火星。",
+    "不要害怕理想太高，要害怕自己蹲得太低。",
+    "文明的进步，始于有人坚持“本该如此”。",
+    "即使翅膀被现实打湿，也要记得天空的存在。"
+  ],
+  "showDynamicNum": 4,
+  "showLogNum": 6,
+  "showPostNum": 5,
   "socialLinks": [
     {
       "alt": "GitHub",
@@ -51,20 +63,6 @@
       "url": "https://xhslink.com/m/7tZhd8cvzp9"
     }
   ],
-  "phrases": [
-    "无穷的远方，无数的人们，都和我有关。",
-    "Idealists Need Timeless Journeys",
-    "比金钱更珍贵是知识，比知识更珍贵的是无休止的好奇心，而比好奇心更珍贵的，是我们头上的星空。",
-    "哲学家们只是用不同的方式解释世界，而问题在于改变世界。",
-    "人民，只有人民，才是创造世界历史的动力。",
-    "在黑暗里点灯的人，终将照亮整个时代。",
-    "如果风只吹向一个方向，那就改变风的轨迹。",
-    "理想不会老去，它只会等待新的战士。",
-    "你要成为改变世界的火焰，而非被世界熄灭的火星。",
-    "不要害怕理想太高，要害怕自己蹲得太低。",
-    "文明的进步，始于有人坚持“本该如此”。",
-    "即使翅膀被现实打湿，也要记得天空的存在。"
-  ],
   "tips": [
     "欢迎来到这片绿洲。愿这里的文字能像星光一样，为你照亮未知的路径…",
     "在这里，我们谈论星辰、泥土，以及如何用双手构建乌托邦…",
@@ -74,5 +72,7 @@
     "欢迎来到这个角落。让我们一起保持天真，相信改变，相信微小事物的伟大…",
     "这里记录着对自由的注解、对爱的实验，以及永不熄灭的好奇心…",
     "你并非独自在深夜思考人类与宇宙。看，我们留下了这些灯火…"
-  ]
+  ],
+  "welcomeText": "学习历程 | 生活感悟 | 技术分享",
+  "welcomeTitle": "Hello World"
 }
