@@ -28,8 +28,18 @@ function processContent(text) {
         const match = text.match(/^([\u4e00-\u9fa5a-zA-Z]+) - /);
         if (match) {
             const tag = match[1];
-            const content = text.replace(/^[\u4e00-\u9fa5a-zA-Z]+ - /, '');
+            let content = text.replace(/^[\u4e00-\u9fa5a-zA-Z]+ - /, '');
             const tagClass = TAG_COLORS[tag] || 'default';
+
+            // \u68c0\u6d4b\u5e76\u79fb\u52a8 commit hash\uff08\u516d\u4f4d\u5341\u516d\u8fdb\u5236\uff09\u5230\u6700\u524d
+            const hashPattern = /\[`([a-f0-9]{6})`\]\([^)]+\)\s*$/;
+            const hashMatch = content.match(hashPattern);
+            if (hashMatch) {
+                const hashMd = hashMatch[0].trim();
+                content = content.replace(hashPattern, '').trim();
+                return `${hashMd} <span class="tag ${tagClass}">${tag}</span>${content}`;
+            }
+
             return `<span class="tag ${tagClass}">${tag}</span>${content}`;
         }
     }

@@ -199,19 +199,13 @@ h1.title {
     }
 }
 
-/* Commit hash 链接样式 */
+/* Commit hash 链接样式 - 不套框，代码块本身提供浅灰背景 */
 .update-card a[href*="/commit/"] {
     font-family: "SF Mono", "Fira Code", "Consolas", monospace;
     font-size: 0.78em;
-    padding: 1px 7px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
     color: rgba(255, 255, 255, 0.65);
     text-decoration: none;
-    transition: all 0.25s ease;
     white-space: nowrap;
-    margin-left: 4px;
 }
 
 .update-card a[href*="/commit/"]::before {
@@ -220,11 +214,7 @@ h1.title {
 }
 
 .update-card a[href*="/commit/"]:hover {
-    background: rgba(52, 152, 219, 0.25);
-    border-color: rgba(52, 152, 219, 0.4);
     color: #7ec8ff;
-    transform: none;
-    box-shadow: 0 0 12px rgba(52, 152, 219, 0.2);
 }
 
 /* 条目分割线 */

@@ -46,8 +46,10 @@ function escapeHtml(text: unknown): string {
 
 
 function stripMarkdownLinks(text: string): string {
-  // \u53bb\u6389 markdown \u94fe\u63a5 [text](url) \u6216 [`code`](url)\uff0c\u53ea\u4fdd\u7559\u663e\u793a\u6587\u672c
-  return text.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
+  let result = text.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
+  // \u79fb\u9664\u672b\u5c3e\u7684 commit hash \u4ee3\u7801\u6807\u8bb0\uff08`xxxxxx`\uff09\uff0c\u4fa7\u680f\u4e0d\u663e\u793a hash
+  result = result.replace(/`[a-f0-9]{6}`\s*$/, "");
+  return result.trim();
 }
 
 function parseRecentLogs(content: string, maxItems: number) {
