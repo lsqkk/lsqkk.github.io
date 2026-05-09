@@ -907,6 +907,13 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
 
       try {
         const data = JSON.parse(trimmed);
+
+        // Detect upstream API error embedded in SSE events
+        if (data?.code && data?.message) {
+          streamError = `[${data.code}] ${data.message}`;
+          break;
+        }
+
         const delta = data?.choices?.[0]?.delta || {};
 
         if (delta.reasoning_content) {
@@ -926,6 +933,12 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
         console.warn('SSE parse error:', err);
       }
     }
+    if (streamError) break;
+  }
+
+  // Throw upstream API error if detected in SSE stream
+  if (streamError) {
+    throw new Error(streamError);
   }
 
   // Fallback: if no content from delta, try full raw response as JSON
