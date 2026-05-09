@@ -3467,8 +3467,8 @@ function initCollapsibleSidebar() {
   const footer = byId('sidebar-footer');
   if (!footer) return;
 
-  const exportBtn = byId('export-chats-btn');
-  const importInput = byId('import-chats-input');
+  // Capture reference to elements that stay in footer (won't be moved)
+  const newChatBtn = byId('new-chat-btn');
 
   // Create ONE collapsible section wrapping all feature buttons
   const section = document.createElement('div');
@@ -3510,7 +3510,7 @@ function initCollapsibleSidebar() {
 
   section.appendChild(header);
   section.appendChild(body);
-  footer.insertBefore(section, exportBtn);
+  footer.insertBefore(section, newChatBtn);
 }
 
 // ===== Selection Mode =====
