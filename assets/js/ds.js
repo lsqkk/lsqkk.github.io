@@ -717,7 +717,7 @@ async function sendMessage() {
 
   const params = loadParams();
   const endpoint = params.webSearch && params.searchApiUrl
-    ? params.searchApiUrl
+    ? buildSearchEndpoint(params.searchApiUrl)
     : C.buildChatEndpoint(settings.baseUrl);
   let messages = buildMessages(fullPrompt);
 
@@ -799,6 +799,13 @@ function buildMessages(userPrompt) {
 
   messages.push({ role: "user", content: userPrompt });
   return messages;
+}
+
+function buildSearchEndpoint(searchApiUrl) {
+  const url = (searchApiUrl || '').replace(/\/+$/, '');
+  if (!url) return '';
+  if (url.includes('/ai_search/') || /\/chat\/completions$/i.test(url)) return url;
+  return url + '/ai_search/chat/completions';
 }
 
 function buildRequestBody(model, messages, params) {
@@ -1845,7 +1852,7 @@ async function continueFromMessage(chatIndex, userMsgIndex) {
 
   const params = loadParams();
   const endpoint = params.webSearch && params.searchApiUrl
-    ? params.searchApiUrl
+    ? buildSearchEndpoint(params.searchApiUrl)
     : C.buildChatEndpoint(settings.baseUrl);
 
   // Build API messages from context up to and including userMsgIndex
@@ -1934,7 +1941,7 @@ async function regenerateResponse(chatIndex, msgIndex) {
 
   const params = loadParams();
   const endpoint = params.webSearch && params.searchApiUrl
-    ? params.searchApiUrl
+    ? buildSearchEndpoint(params.searchApiUrl)
     : C.buildChatEndpoint(settings.baseUrl);
 
   // Build messages (same context as before but without the old response)
