@@ -38,6 +38,19 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
           </svg>
           <span>人格</span>
         </button>
+        <input type="file" id="import-chats-input" accept=".json" style="display:none">
+        <button id="export-chats-btn" class="footer-btn" title="导出对话到JSON">
+          <svg viewBox="0 0 24 24" width="16" height="16" style="transform:rotate(180deg)">
+            <path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          <span>导出</span>
+        </button>
+        <button id="import-chats-btn" class="footer-btn" title="从JSON导入对话">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          <span>导入</span>
+        </button>
         <button id="new-chat-btn" class="primary-btn">新对话</button>
         <button id="settings-btn" class="secondary-btn">设置</button>
       </div>

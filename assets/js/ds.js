@@ -23,6 +23,17 @@ function initApp() {
   setupSliders();
   renderProfilesList();
   renderPersonaList();
+
+  // Initialize Mermaid once globally
+  if (typeof mermaid !== 'undefined') {
+    try {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default',
+        securityLevel: 'loose'
+      });
+    } catch (e) {}
+  }
 }
 
 function setupEventListeners() {
@@ -84,6 +95,14 @@ function setupEventListeners() {
 
   // Chat title rename (double-click)
   byId('chat-title').ondblclick = startRenameChat;
+
+  // Export / Import
+  byId('export-chats-btn').onclick = exportChats;
+  byId('import-chats-btn').onclick = () => byId('import-chats-input').click();
+  byId('import-chats-input').onchange = (e) => {
+    if (e.target.files[0]) importChats(e.target.files[0]);
+    e.target.value = '';
+  };
 }
 
 function byId(id) { return document.getElementById(id); }
@@ -666,10 +685,13 @@ async function sendMessage() {
     const rawText = result.text || '';
     const rawReasoning = result.reasoning || '';
 
-    // Enhance with syntax highlighting, LaTeX, Mermaid after rendering
-    enhanceRenderedContent(contentBox);
     addCopyButton(botMsgDiv, rawText, contentBox);
+
+    const wasNewChat = currentChatId === null;
     saveToLocalStorage(fullPrompt, rawText, rawReasoning);
+
+    // Auto-generate title for new conversations
+    if (wasNewChat) generateTitle(fullPrompt, rawText);
   } catch (err) {
     contentBox.innerHTML = `<span style="color:var(--danger)">错误: ${escHtml(err.message)}</span>`;
   } finally {
@@ -1167,43 +1189,134 @@ function renderLatex(container) {
   }
 }
 
-function renderMermaid(container) {
+async function renderMermaid(container) {
   if (typeof mermaid === 'undefined') return;
-  const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid');
-  if (mermaidBlocks.length === 0) return;
+  const blocks = container.querySelectorAll('pre code.language-mermaid');
+  if (blocks.length === 0) return;
+
+  // Update theme if user toggled dark mode
+  const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'default';
+  try { mermaid.setParseErrorHandler?.(() => {}); } catch {}
+
+  const nodes = [];
+  blocks.forEach(code => {
+    const pre = code.closest('pre');
+    if (!pre || pre.querySelector('svg') || pre.dataset.mermaidProcessed) return;
+    pre.classList.add('mermaid');
+    pre.dataset.mermaidProcessed = '1';
+    nodes.push(pre);
+  });
+
+  if (nodes.length === 0) return;
 
   try {
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default',
-      securityLevel: 'sandbox'
+    await mermaid.run({ nodes });
+    // Wrap each rendered SVG in mermaid-container for styling
+    nodes.forEach(pre => {
+      const svg = pre.querySelector('svg');
+      if (svg) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'mermaid-container';
+        wrapper.style.cssText = `background:${currentTheme === 'dark' ? '#2d2d2d' : 'white'};border-radius:8px;padding:16px;margin:16px 0;overflow-x:auto;text-align:center;`;
+        pre.parentNode.replaceChild(wrapper, pre);
+        wrapper.appendChild(svg);
+      }
     });
   } catch (e) {
-    return;
+    // Fallback: show source code
+    nodes.forEach(pre => {
+      if (pre.querySelector('svg')) return;
+      const source = pre.textContent || '';
+      pre.outerHTML = `<pre class="mermaid-fallback"><code>${escHtml(source)}</code></pre>`;
+    });
   }
+}
 
-  mermaidBlocks.forEach((codeBlock, index) => {
-    const pre = codeBlock.closest('pre');
-    if (!pre) return;
-    const source = codeBlock.textContent || '';
+// ===== Auto Title Generation =====
 
-    // Create a unique ID for the mermaid SVG
-    const id = `mermaid-${Date.now()}-${index}`;
-    const div = document.createElement('div');
-    div.className = 'mermaid-container';
-    div.id = id;
-    pre.replaceWith(div);
+async function generateTitle(userMsg, aiMsg) {
+  const settings = C.getSettings();
+  if (!settings.apiKey || currentChatId !== 0) return;
 
-    try {
-      mermaid.render(id, source).then(({ svg }) => {
-        div.innerHTML = svg;
-      }).catch(() => {
-        div.innerHTML = `<pre class="mermaid-fallback"><code>${escHtml(source)}</code></pre>`;
-      });
-    } catch {
-      div.innerHTML = `<pre class="mermaid-fallback"><code>${escHtml(source)}</code></pre>`;
+  const endpoint = C.buildChatEndpoint(settings.baseUrl);
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${settings.apiKey}`
+      },
+      body: JSON.stringify({
+        model: settings.model,
+        messages: [
+          { role: "user", content: `为以下对话生成一个15字以内的标题，不要标点符号，只返回标题本身：\n用户：${(userMsg || '').substring(0, 100)}\nAI：${(aiMsg || '').substring(0, 200)}` }
+        ],
+        max_tokens: 30,
+        temperature: 0.3,
+        stream: false
+      })
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    const raw = (data?.choices?.[0]?.message?.content || '').trim();
+    const title = raw.replace(/[。，、！？：；""''「」『』【】《》（）—…··.,!?;:'"]/g, '').substring(0, 15);
+    if (!title) return;
+
+    const chats = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+    if (chats[0]) {
+      chats[0].title = title;
+      localStorage.setItem('deepseekChats', JSON.stringify(chats));
+      byId('chat-title').textContent = title;
+      loadHistoryList();
     }
-  });
+  } catch (e) {
+    // Silently fail — title generation is non-critical
+  }
+}
+
+// ===== Export / Import =====
+
+function exportChats() {
+  const data = localStorage.getItem('deepseekChats');
+  if (!data) { showToast('没有可导出的对话'); return; }
+  try {
+    const parsed = JSON.parse(data);
+    if (!parsed.length) { showToast('没有可导出的对话'); return; }
+    const blob = new Blob([JSON.stringify(parsed, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ds-chats-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`已导出 ${parsed.length} 个对话`);
+  } catch {
+    showToast('导出失败');
+  }
+}
+
+function importChats(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('格式错误');
+      // Basic validation
+      imported.forEach((chat, i) => {
+        if (!chat.title || !Array.isArray(chat.messages)) throw new Error(`第 ${i + 1} 个对话格式无效`);
+      });
+      const existing = JSON.parse(localStorage.getItem('deepseekChats') || '[]');
+      const merged = [...imported, ...existing];
+      localStorage.setItem('deepseekChats', JSON.stringify(merged));
+      createNewChat();
+      loadHistoryList();
+      showToast(`已导入 ${imported.length} 个对话（共 ${merged.length} 个）`);
+    } catch (err) {
+      showToast(`导入失败: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
 }
 
 // ===== Conversation Rename =====
