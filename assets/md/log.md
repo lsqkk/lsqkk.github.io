@@ -4,13 +4,73 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-05-09
+
+优化 - 优化了更新日志 [`992ed4`](https://github.com/lsqkk/lsqkk.github.io/commit/992ed4)
+
+修复 - streamError 变量声明和语法错误 [`3f183c`](https://github.com/lsqkk/lsqkk.github.io/commit/3f183c)
+
+修复 - SSE 错误检测：当千帆返回 code+message 时显示错误而非静默吞掉 [`db9a52`](https://github.com/lsqkk/lsqkk.github.io/commit/db9a52)
+
+更新 - 调试 - 添加 SSE 原始数据日志，支持多种 SSE 格式解析 [`48c9e0`](https://github.com/lsqkk/lsqkk.github.io/commit/48c9e0)
+
+修复 - 修复代理服务器 body 解析问题，req.body 可能是字符串导致双重编码 [`043185`](https://github.com/lsqkk/lsqkk.github.io/commit/043185)
+
+更新 - settings.local.json [`d81860`](https://github.com/lsqkk/lsqkk.github.io/commit/d81860)
+
+修复 - 修复了联网搜索无内容输出的问题 [`a71ea6`](https://github.com/lsqkk/lsqkk.github.io/commit/a71ea6)
+
+更新 - ds.js [`f1d6ac`](https://github.com/lsqkk/lsqkk.github.io/commit/f1d6ac)
+
+更新 - 更新了代理 [`1a30a0`](https://github.com/lsqkk/lsqkk.github.io/commit/1a30a0)
+
+更新 - 新增了跨域代理 [`3127cf`](https://github.com/lsqkk/lsqkk.github.io/commit/3127cf)
+
+更新 - ds.js [`e71215`](https://github.com/lsqkk/lsqkk.github.io/commit/e71215)
+
+修复 - 修复了ai chat联网搜索 [`9fb801`](https://github.com/lsqkk/lsqkk.github.io/commit/9fb801)
+
+更新 - 更新了一些功能 [`78849d`](https://github.com/lsqkk/lsqkk.github.io/commit/78849d)
+
+新增 - 新增了若干项ai chat功能 [`04a778`](https://github.com/lsqkk/lsqkk.github.io/commit/04a778)
+
+新增 - 新增了ai chat若干功能 [`5d8423`](https://github.com/lsqkk/lsqkk.github.io/commit/5d8423)
+
+优化 - 继续优化了web ui [`b05a0d`](https://github.com/lsqkk/lsqkk.github.io/commit/b05a0d)
+
+优化 - 优化了ai chat功能 [`985ddb`](https://github.com/lsqkk/lsqkk.github.io/commit/985ddb)
+
+优化 - 优化了deepseek WebUI功能 [`9fa1c9`](https://github.com/lsqkk/lsqkk.github.io/commit/9fa1c9)
+
+修复 - 修复了留言板已知问题 [`6f92fc`](https://github.com/lsqkk/lsqkk.github.io/commit/6f92fc)
+
+更新 - 更新了留言板UI [`19f2d4`](https://github.com/lsqkk/lsqkk.github.io/commit/19f2d4)
+
+更新 - 更新了qq动态导出的依赖和说明文档 [`39d421`](https://github.com/lsqkk/lsqkk.github.io/commit/39d421)
+
+新增 - 新增了自动导出qq动态脚本 [`ac7b26`](https://github.com/lsqkk/lsqkk.github.io/commit/ac7b26)
+
 # 2026-05-08
 
-更新 - 更新了若干功能
+修复 - 修复了主页偶现错误元素的bug，并更新了文章 [`f07721`](https://github.com/lsqkk/lsqkk.github.io/commit/f07721)
 
-更新 - "删除：移除深浅色模式设置项及全部主题覆盖代码"
+优化 - = 优化顶栏“视频”展示 [`52fd75`](https://github.com/lsqkk/lsqkk.github.io/commit/52fd75)
 
-更新 - "fix-theme-bug-and-quark-webui-redesign"
+修复 - 修正了文章日期meta信息 [`568edb`](https://github.com/lsqkk/lsqkk.github.io/commit/568edb)
+
+更新 - 更新了若干文章 [`314ee7`](https://github.com/lsqkk/lsqkk.github.io/commit/314ee7)
+
+优化 - 调整了说明文档表述和位置 [`288a30`](https://github.com/lsqkk/lsqkk.github.io/commit/288a30)
+
+更新 - log.md [`41dd35`](https://github.com/lsqkk/lsqkk.github.io/commit/41dd35)
+
+更新 - "优化-WebUI侧栏自然语言-font表单-命令面板改侧栏项" [`4a43c4`](https://github.com/lsqkk/lsqkk.github.io/commit/4a43c4)
+
+更新 - 更新了若干功能 [`c788dc`](https://github.com/lsqkk/lsqkk.github.io/commit/c788dc)
+
+更新 - "删除：移除深浅色模式设置项及全部主题覆盖代码" [`def910`](https://github.com/lsqkk/lsqkk.github.io/commit/def910)
+
+更新 - "fix-theme-bug-and-quark-webui-redesign" [`67f3e6`](https://github.com/lsqkk/lsqkk.github.io/commit/67f3e6)
 
 # 2026-05-07
 
