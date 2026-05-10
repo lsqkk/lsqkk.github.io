@@ -7,7 +7,6 @@ const database = firebase.database();
 let currentRoomCode = null;
 let localWebSocket = null;
 
-// DOM 元素引用
 const joinSection = document.getElementById('join-section-remote');
 const projectorView = document.getElementById('projector-view');
 const controllerView = document.getElementById('controller-view');
@@ -18,14 +17,21 @@ const localBridgeStatus = document.getElementById('local-bridge-status');
 const firebaseListenStatus = document.getElementById('firebase-listen-status');
 const statusDiv = document.getElementById('status-remote');
 
-
 // -----------------------------------------------------------
-// 3. 核心函数：实用工具
+// 3. 实用函数
 // -----------------------------------------------------------
 
-function logStatus(message) {
-    statusDiv.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}\n` + statusDiv.innerHTML;
-    if (statusDiv.scrollTop > 0) statusDiv.scrollTop = 0;
+function logStatus(message, type) {
+    const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+    const cls = type ? `log-${type}` : '';
+    const entry = document.createElement('span');
+    entry.className = 'log-entry';
+    entry.innerHTML = `<span class="log-time">${time}</span><span class="${cls}">${message}</span>`;
+    statusDiv.insertBefore(entry, statusDiv.firstChild);
+    // keep max ~30 entries
+    while (statusDiv.children.length > 30) {
+        statusDiv.removeChild(statusDiv.lastChild);
+    }
 }
 
 function generateRoomCode() {
@@ -38,7 +44,7 @@ function generateRoomCode() {
 }
 
 // -----------------------------------------------------------
-// 4. 放映端 (Projector) 逻辑 - 连接本地桥接程序
+// 4. 放映端 (Projector) 逻辑
 // -----------------------------------------------------------
 
 function setupProjector(code) {
@@ -46,30 +52,27 @@ function setupProjector(code) {
     joinSection.style.display = 'none';
     projectorView.style.display = 'block';
     projectorCodeDisplay.textContent = code;
-    logStatus(`放映端启动。尝试连接本地桥接程序 ws://localhost:8080 ...`);
+    logStatus(`放映端启动，房间 ${code}，连接桥接程序...`, 'info');
 
-    // 1. 启动 WebSocket 连接
     localWebSocket = new WebSocket('ws://localhost:8080');
 
     localWebSocket.onopen = () => {
         localBridgeStatus.textContent = '连接成功';
         localBridgeStatus.style.color = 'var(--main-green)';
-        logStatus('✅ 已连接本地桥接程序。');
+        logStatus('已连接本地桥接程序', 'ok');
 
-        // 2. 告知桥接程序房间码（桥接仅记录日志，Firebase 由浏览器直连处理）
         localWebSocket.send(JSON.stringify({
             type: 'CONNECT_ROOM',
             code: currentRoomCode
         }));
 
-        // 3. 浏览器直连 Firebase 监听遥控命令
         let lastTimestamp = 0;
         database.ref(`rooms/${currentRoomCode}/command`).on('value', (snapshot) => {
             if (!snapshot.exists()) return;
             const cmd = snapshot.val();
             if (cmd && cmd.action && cmd.timestamp > lastTimestamp) {
                 lastTimestamp = cmd.timestamp;
-                logStatus(`收到遥控命令: ${cmd.action}`);
+                logStatus(`桥接执行: ${cmd.action}`, 'action');
                 firebaseListenStatus.textContent = `已执行: ${cmd.action}`;
                 firebaseListenStatus.style.color = 'var(--main-green)';
                 if (localWebSocket.readyState === WebSocket.OPEN) {
@@ -88,9 +91,9 @@ function setupProjector(code) {
     localWebSocket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            logStatus(`桥接: ${data.message || data.status || event.data}`);
+            logStatus(`桥接: ${data.message || data.status || event.data}`, 'info');
         } catch (e) {
-            logStatus(`桥接: ${event.data}`);
+            logStatus(`桥接: ${event.data}`, 'info');
         }
     };
 
@@ -99,66 +102,76 @@ function setupProjector(code) {
         localBridgeStatus.style.color = 'var(--main-red)';
         firebaseListenStatus.textContent = '未启动';
         firebaseListenStatus.style.color = '#333';
-        logStatus('❌ 与本地桥接程序断开连接。请确保程序正在运行。');
-        // 清理 Firebase 监听
+        logStatus('与本地桥接程序断开连接', 'err');
         if (currentRoomCode) {
             database.ref(`rooms/${currentRoomCode}/command`).off('value');
         }
     };
 
-    localWebSocket.onerror = (error) => {
+    localWebSocket.onerror = () => {
         localBridgeStatus.textContent = '连接失败 (ws://localhost:8080)';
         localBridgeStatus.style.color = 'var(--main-red)';
-        logStatus(`❌ 本地 WebSocket 错误，请检查程序是否运行: ${error.message}`);
+        logStatus('桥接 WebSocket 连接失败，请确认程序已管理员身份运行', 'err');
     };
 }
 
+// -----------------------------------------------------------
+// 5. 遥控端 (Controller) 逻辑
+// -----------------------------------------------------------
 
-// -----------------------------------------------------------
-// 5. 遥控端 (Controller) 逻辑 - 发送命令
-// -----------------------------------------------------------
+/** 动作显示名称映射 */
+const ACTION_LABELS = {
+    next: '下一页', prev: '上一页', first: '首页', last: '尾页',
+    blank: '黑屏', white: '白屏', endshow: '退出放映',
+    pointer: '激光笔', pen: '笔模式', arrow: '箭头指针', eraser: '橡皮擦',
+    hideptr: '隐藏指针', showptr: '显示指针',
+    zoomin: '放大', zoomout: '缩小',
+};
 
 function setupController(code) {
     currentRoomCode = code;
     joinSection.style.display = 'none';
     controllerView.style.display = 'block';
     controllerCodeDisplay.textContent = code;
-    logStatus(`遥控端连接中。房间: ${code}`);
+    logStatus(`遥控端已连接，房间 ${code}`, 'ok');
 
-    // 检查房间状态
     database.ref(`rooms/${code}/command`).once('value').then(snapshot => {
-        const commandStatusP = document.getElementById('command-status');
+        const cmdStatus = document.getElementById('command-status');
         if (snapshot.exists()) {
-            commandStatusP.textContent = '状态: 连接成功，可开始控制';
+            cmdStatus.textContent = '状态: 连接成功，可开始控制';
         } else {
-            commandStatusP.textContent = '状态: 警告！等待放映端创建房间...';
+            cmdStatus.textContent = '状态: 等待放映端创建房间...';
         }
     });
 }
 
-/** 发送命令到 Firebase */
 function sendCommand(action) {
     if (!currentRoomCode) {
-        document.getElementById('command-status').textContent = '❌ 未连接房间。请重试。';
+        document.getElementById('command-status').textContent = '❌ 未连接房间';
+        logStatus('未连接房间，无法发送命令', 'err');
         return;
     }
 
+    const label = ACTION_LABELS[action] || action;
     const commandRef = database.ref(`rooms/${currentRoomCode}/command`);
     const commandPayload = {
         action: action,
         timestamp: Date.now()
     };
 
-    // 使用 set() 覆盖旧命令
     commandRef.set(commandPayload)
         .then(() => {
-            document.getElementById('command-status').textContent = `命令 ${action.toUpperCase()} 发送成功！`;
+            document.getElementById('command-status').textContent = `✓ ${label} 已发送`;
+            logStatus(`发送命令: ${label}`, 'ok');
         })
         .catch(error => {
-            document.getElementById('command-status').textContent = `❌ 命令发送失败: ${error.message}`;
-            logStatus(`❌ 命令发送失败: ${error.message}`);
+            document.getElementById('command-status').textContent = `❌ 发送失败`;
+            logStatus(`发送失败: ${error.message}`, 'err');
         });
 }
+
+// 暴露到全局供 onclick 调用
+window.sendCommand = sendCommand;
 
 // -----------------------------------------------------------
 // 6. 事件监听器
@@ -175,7 +188,7 @@ document.getElementById('start-projector-btn').addEventListener('click', () => {
 document.getElementById('join-controller-btn').addEventListener('click', () => {
     const roomCode = roomCodeInput.value.toUpperCase().trim();
     if (roomCode.length !== 3) {
-        logStatus('❌ 连接码必须是三位大写字母。');
+        logStatus('连接码必须是三位大写字母', 'err');
         return;
     }
     setupController(roomCode);

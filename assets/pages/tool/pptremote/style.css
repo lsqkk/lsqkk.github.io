@@ -1,8 +1,11 @@
 :root {
     --header-height: 60px;
     --main-blue: #248dfd;
-    --main-green: #7dd894;
+    --main-green: #34c759;
     --main-red: #ff5328;
+    --main-orange: #f7b731;
+    --main-purple: #af52de;
+    --main-teal: #5ac8fa;
     --card-bg-opacity: 0.2;
     --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     --card-border: 1px solid rgba(255, 255, 255, 0.3);
@@ -24,7 +27,6 @@ body {
     align-items: center;
     padding-bottom: 50px;
 }
-
 
 .container-remote {
     width: 90%;
@@ -51,7 +53,6 @@ h2 {
     color: #1a1a1a;
 }
 
-/* 避免与 nav.css 中的 input 冲突 */
 .remote-input {
     width: 100%;
     padding: 12px;
@@ -65,7 +66,6 @@ h2 {
     text-transform: uppercase;
 }
 
-/* 避免与 nav.css 中的 button 冲突 */
 .remote-button-primary {
     width: 100%;
     padding: 12px;
@@ -94,48 +94,71 @@ h2 {
     box-shadow: 0 1px 2px rgba(0, 122, 255, 0.4);
 }
 
+/* ── 控制面板布局 ── */
+.control-section {
+    margin-bottom: 16px;
+}
 
-.control-panel {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 15px;
-    margin-top: 20px;
+.control-section-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.control-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.control-grid.three-col {
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .control-btn {
-    width: 45%;
-    padding: 20px 10px;
-    font-size: 1.2em;
+    padding: 14px 6px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     color: white;
     border: none;
-    border-radius: 12px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.control-btn.next-slide {
-    background-color: var(--main-green);
-}
-
-.control-btn.prev-slide {
-    background-color: var(--main-blue);
-}
-
-.control-btn.blank-screen {
-    background-color: var(--main-red);
-}
-
-.control-btn.pointer-mode {
-    background-color: #f7b731;
+    border-radius: 10px;
+    transition: all 0.15s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
 }
 
 .control-btn:active {
     transform: translateY(2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
+
+/* 按钮颜色分组 */
+.control-btn.nav-next { background: var(--main-green); }
+.control-btn.nav-prev { background: var(--main-blue); }
+.control-btn.nav-edge { background: #555; }
+
+.control-btn.screen-black { background: #333; }
+.control-btn.screen-white { background: #999; color: #222; }
+.control-btn.screen-end   { background: var(--main-red); }
+
+.control-btn.ptr-laser { background: var(--main-orange); }
+.control-btn.ptr-pen   { background: #8e44ad; }
+.control-btn.ptr-arrow { background: #2c3e50; }
+.control-btn.ptr-eraser { background: #e67e22; }
+.control-btn.ptr-hide  { background: #636e72; }
+.control-btn.ptr-show  { background: #00b894; }
+
+.control-btn.zoom-in  { background: #0984e3; }
+.control-btn.zoom-out { background: #6c5ce7; }
 
 #projector-status-box {
     border: 2px solid var(--main-blue);
@@ -150,24 +173,53 @@ h2 {
     margin-top: 10px;
 }
 
+/* 实时日志 */
 #status-remote {
     margin-top: 15px;
-    padding: 15px;
+    padding: 12px 15px;
     background-color: rgba(245, 245, 245, 0.9);
     border-radius: 8px;
     text-align: left;
-    white-space: pre-wrap;
     word-break: break-all;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    font-size: 14px;
+    font-size: 12px;
     max-height: 150px;
     overflow-y: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    line-height: 1.6;
 }
 
+#status-remote .log-entry {
+    display: block;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 2px 0;
+}
+
+#status-remote .log-time {
+    color: #999;
+    margin-right: 6px;
+}
+
+#status-remote .log-ok {
+    color: var(--main-green);
+}
+
+#status-remote .log-err {
+    color: var(--main-red);
+}
+
+#status-remote .log-info {
+    color: var(--main-blue);
+}
+
+#status-remote .log-action {
+    color: var(--main-orange);
+    font-weight: 600;
+}
+
+/* ── 深色模式 ── */
 @media (prefers-color-scheme: dark) {
-    body {
-        color: #dce8fb;
-    }
+    body { color: #dce8fb; }
 
     .card-remote {
         background-color: rgba(17, 28, 46, 0.7);
@@ -175,9 +227,7 @@ h2 {
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
     }
 
-    h2 {
-        color: #e2ecff;
-    }
+    h2 { color: #e2ecff; }
 
     .remote-input {
         background-color: rgba(12, 20, 36, 0.92);
@@ -195,4 +245,6 @@ h2 {
         border-color: rgba(148, 163, 184, 0.25);
         color: #d6e6ff;
     }
+
+    .control-section-header { color: #8aa5c0; }
 }

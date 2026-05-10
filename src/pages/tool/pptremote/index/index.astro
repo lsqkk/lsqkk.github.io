@@ -48,20 +48,53 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                     <p>本地连接状态：<span id="local-bridge-status" class="alert-error">断开中 (ws://localhost:8080)</span></p>
                     <p>Firebase 监听状态：<span id="firebase-listen-status">未启动</span></p>
                 </div>
-                <p style="margin-top: 15px;">一旦连接成功，请切换到您的PowerPoint的演示模式<br>（仅支持.pptx，.ppt需转换后使用）<br>Firebase 由浏览器直连处理，桥接程序仅负责本地按键模拟<br>如遥控无响应请确认桥接程序正在运行</p>
+                <p style="margin-top: 15px;">连接成功后请切换到 PowerPoint 演示模式</p>
             </div>
 
             <div class="card-remote" id="controller-view" style="display: none;">
                 <h2>遥控端：控制面板</h2>
                 <p>当前房间：<span id="controller-code-display"
                         style="font-size: 1.2em; color: var(--main-blue); font-weight: bold;">---</span></p>
-                <div class="control-panel">
-                    <button class="control-btn prev-slide" onclick="sendCommand('prev')">⏮️ 上一页</button>
-                    <button class="control-btn next-slide" onclick="sendCommand('next')">下一页 ⏭️</button>
-                    <button class="control-btn blank-screen" onclick="sendCommand('blank')">◼️ 屏幕变黑/恢复</button>
-                    <button class="control-btn pointer-mode" onclick="sendCommand('pointer')">🖱️ 激光笔模式</button>
+                <p id="command-status" style="margin: 0 0 15px 0; color: #666; font-weight: 500;">状态: 已连接</p>
+
+                <div class="control-section">
+                    <div class="control-section-header">导航</div>
+                    <div class="control-grid">
+                        <button class="control-btn nav-prev" onclick="sendCommand('prev')">◀ 上一页</button>
+                        <button class="control-btn nav-next" onclick="sendCommand('next')">下一页 ▶</button>
+                        <button class="control-btn nav-edge" onclick="sendCommand('first')">⏮ 首页</button>
+                        <button class="control-btn nav-edge" onclick="sendCommand('last')">尾页 ⏭</button>
+                    </div>
                 </div>
-                <p id="command-status" style="margin-top: 15px; color: #666; font-weight: 500;">状态: 已连接</p>
+
+                <div class="control-section">
+                    <div class="control-section-header">屏幕</div>
+                    <div class="control-grid three-col">
+                        <button class="control-btn screen-black" onclick="sendCommand('blank')">⬛ 黑屏</button>
+                        <button class="control-btn screen-white" onclick="sendCommand('white')">⬜ 白屏</button>
+                        <button class="control-btn screen-end" onclick="sendCommand('endshow')">⏹ 退出</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="control-section-header">指针模式</div>
+                    <div class="control-grid three-col">
+                        <button class="control-btn ptr-laser" onclick="sendCommand('pointer')">🖱 激光笔</button>
+                        <button class="control-btn ptr-pen" onclick="sendCommand('pen')">🖊 笔模式</button>
+                        <button class="control-btn ptr-arrow" onclick="sendCommand('arrow')">➤ 箭头</button>
+                        <button class="control-btn ptr-eraser" onclick="sendCommand('eraser')">🧹 橡皮擦</button>
+                        <button class="control-btn ptr-hide" onclick="sendCommand('hideptr')">🙈 隐藏</button>
+                        <button class="control-btn ptr-show" onclick="sendCommand('showptr')">👁 显示</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="control-section-header">缩放</div>
+                    <div class="control-grid three-col" style="grid-template-columns: 1fr 1fr 1fr; max-width: 70%; margin: 0 auto;">
+                        <button class="control-btn zoom-in" onclick="sendCommand('zoomin')">🔍+ 放大</button>
+                        <button class="control-btn zoom-out" onclick="sendCommand('zoomout')">🔍− 缩小</button>
+                    </div>
+                </div>
             </div>
 
             <div class="card-remote">
