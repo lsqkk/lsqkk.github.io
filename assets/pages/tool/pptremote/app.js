@@ -54,22 +54,43 @@ function setupProjector(code) {
     localWebSocket.onopen = () => {
         localBridgeStatus.textContent = '连接成功';
         localBridgeStatus.style.color = 'var(--main-green)';
-        logStatus('✅ 已连接本地桥接程序。发送 Firebase 房间码。');
+        logStatus('✅ 已连接本地桥接程序。');
 
-        // 2. 发送命令给本地程序，让它去监听 Firebase
+        // 2. 告知桥接程序房间码（兼容旧版，桥接可能仍会尝试自己的 Firebase 连接）
         localWebSocket.send(JSON.stringify({
             type: 'CONNECT_ROOM',
             code: currentRoomCode
         }));
+
+        // 3. 浏览器直连 Firebase 监听遥控命令（绕过桥接程序自身的 Firebase 连接）
+        const listenStart = Date.now();
+        database.ref(`rooms/${currentRoomCode}/command`).on('value', (snapshot) => {
+            if (!snapshot.exists()) return;
+            const cmd = snapshot.val();
+            if (cmd && cmd.action && cmd.timestamp > listenStart - 2000) {
+                logStatus(`收到遥控命令: ${cmd.action}`);
+                firebaseListenStatus.textContent = `已执行: ${cmd.action}`;
+                firebaseListenStatus.style.color = 'var(--main-green)';
+                if (localWebSocket.readyState === WebSocket.OPEN) {
+                    localWebSocket.send(JSON.stringify({
+                        type: 'EXECUTE',
+                        action: cmd.action,
+                        timestamp: cmd.timestamp
+                    }));
+                }
+            }
+        });
+
+        firebaseListenStatus.textContent = `直连 Firebase 监听中 (房间 ${code})`;
+        firebaseListenStatus.style.color = 'var(--main-green)';
+        logStatus(`✅ 浏览器直连 Firebase，开始监听房间 ${code} 的遥控指令。`);
     };
 
     localWebSocket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
             if (data.status === 'LISTENING') {
-                firebaseListenStatus.textContent = `已开始监听 Firebase 房间 ${data.code}`;
-                firebaseListenStatus.style.color = 'var(--main-blue)';
-                logStatus(`本地桥接程序已确认监听 Firebase 房间 ${data.code}。`);
+                logStatus(`桥接程序已确认房间 ${data.code}。`);
             }
         } catch (e) {
             logStatus(`收到桥接程序信息: ${event.data}`);
@@ -82,6 +103,10 @@ function setupProjector(code) {
         firebaseListenStatus.textContent = '未启动';
         firebaseListenStatus.style.color = '#333';
         logStatus('❌ 与本地桥接程序断开连接。请确保程序正在运行。');
+        // 清理 Firebase 监听
+        if (currentRoomCode) {
+            database.ref(`rooms/${currentRoomCode}/command`).off('value');
+        }
     };
 
     localWebSocket.onerror = (error) => {

@@ -72,7 +72,8 @@ function isAllowedPath(path) {
     'qb_email_index',
     'pic_upload_limits',
     'user_space_likes',
-    'xjtu360'
+    'xjtu360',
+    'rooms'
   ];
   const clean = String(path || '').replace(/^\/+/, '');
   if (!clean) return false;

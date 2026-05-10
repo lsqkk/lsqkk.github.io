@@ -17,7 +17,8 @@
       "Bash(python -m quark.commands.updatelog cli --dry-run --stdout)",
       "Bash(python -m quark updatelog --dry-run --stdout)",
       "Bash(python quark/cli.py updatelog --dry-run --stdout)",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(npm install *)"
     ]
   }
 }
