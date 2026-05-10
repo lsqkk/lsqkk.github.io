@@ -20,7 +20,10 @@
       "Bash(git mv *)",
       "Bash(npm install *)",
       "Bash(taskkill /f /im quark-ppt-bridge-lite.exe)",
-      "Bash(taskkill /f /im ppt-remote-bridge.exe)"
+      "Bash(taskkill /f /im ppt-remote-bridge.exe)",
+      "Bash(git log *)",
+      "Bash(git ls-tree *)",
+      "Bash(npx pkg *)"
     ]
   }
 }
