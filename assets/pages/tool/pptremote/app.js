@@ -56,18 +56,19 @@ function setupProjector(code) {
         localBridgeStatus.style.color = 'var(--main-green)';
         logStatus('✅ 已连接本地桥接程序。');
 
-        // 2. 告知桥接程序房间码（兼容旧版，桥接可能仍会尝试自己的 Firebase 连接）
+        // 2. 告知桥接程序房间码（桥接仅记录日志，Firebase 由浏览器直连处理）
         localWebSocket.send(JSON.stringify({
             type: 'CONNECT_ROOM',
             code: currentRoomCode
         }));
 
-        // 3. 浏览器直连 Firebase 监听遥控命令（绕过桥接程序自身的 Firebase 连接）
-        const listenStart = Date.now();
+        // 3. 浏览器直连 Firebase 监听遥控命令
+        let lastTimestamp = 0;
         database.ref(`rooms/${currentRoomCode}/command`).on('value', (snapshot) => {
             if (!snapshot.exists()) return;
             const cmd = snapshot.val();
-            if (cmd && cmd.action && cmd.timestamp > listenStart - 2000) {
+            if (cmd && cmd.action && cmd.timestamp > lastTimestamp) {
+                lastTimestamp = cmd.timestamp;
                 logStatus(`收到遥控命令: ${cmd.action}`);
                 firebaseListenStatus.textContent = `已执行: ${cmd.action}`;
                 firebaseListenStatus.style.color = 'var(--main-green)';
@@ -81,19 +82,15 @@ function setupProjector(code) {
             }
         });
 
-        firebaseListenStatus.textContent = `直连 Firebase 监听中 (房间 ${code})`;
-        firebaseListenStatus.style.color = 'var(--main-green)';
-        logStatus(`✅ 浏览器直连 Firebase，开始监听房间 ${code} 的遥控指令。`);
+        firebaseListenStatus.textContent = `Firebase 监听中 (房间 ${code})`;
     };
 
     localWebSocket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            if (data.status === 'LISTENING') {
-                logStatus(`桥接程序已确认房间 ${data.code}。`);
-            }
+            logStatus(`桥接: ${data.message || data.status || event.data}`);
         } catch (e) {
-            logStatus(`收到桥接程序信息: ${event.data}`);
+            logStatus(`桥接: ${event.data}`);
         }
     };
 

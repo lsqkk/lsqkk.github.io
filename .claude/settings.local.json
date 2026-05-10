@@ -18,7 +18,9 @@
       "Bash(python -m quark updatelog --dry-run --stdout)",
       "Bash(python quark/cli.py updatelog --dry-run --stdout)",
       "Bash(git mv *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(taskkill /f /im quark-ppt-bridge-lite.exe)",
+      "Bash(taskkill /f /im ppt-remote-bridge.exe)"
     ]
   }
 }

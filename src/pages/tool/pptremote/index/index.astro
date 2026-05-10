@@ -49,8 +49,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                     <p>本地连接状态：<span id="local-bridge-status" class="alert-error">断开中 (ws://localhost:8080)</span></p>
                     <p>Firebase 监听状态：<span id="firebase-listen-status">未启动</span></p>
                 </div>
-                <p style="margin-top: 15px;">一旦连接成功，请切换到您的PowerPoint的演示模式<br>（仅支持.pptx，.ppt需转换后使用）<br>部分网络环境firebase
-                    RTDB连接可能不稳定<br>如程序显示连接失败 请配置科学环境或稍加等待后重试</p>
+                <p style="margin-top: 15px;">一旦连接成功，请切换到您的PowerPoint的演示模式<br>（仅支持.pptx，.ppt需转换后使用）<br>Firebase 由浏览器直连处理，桥接程序仅负责本地按键模拟<br>如遥控无响应请确认桥接程序正在运行</p>
             </div>
 
             <div class="card-remote" id="controller-view" style="display: none;">
