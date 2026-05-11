@@ -23,7 +23,13 @@
       "Bash(taskkill /f /im ppt-remote-bridge.exe)",
       "Bash(git log *)",
       "Bash(git ls-tree *)",
-      "Bash(npx pkg *)"
+      "Bash(npx pkg *)",
+      "Bash(python -c \"import boto3; print\\(boto3.__version__\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -c \"from quark.commands.pic import cli; print\\('模块加载成功'\\)\")",
+      "Bash(quark pic *)",
+      "Bash(curl *)",
+      "Bash(python -c \"from quark.commands.pic import _compute_object_key; print\\('OK'\\)\")"
     ]
   }
 }

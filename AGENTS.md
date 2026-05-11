@@ -125,6 +125,7 @@ lsqkk.github.io/
 - `quark updateposts`：兼容别名，当前实际转到 `quark build`
 - `quark web`：启动管理面板 Web UI
 - `quark qqexport`：自动同步 qq 动态到博客动态
+- `quark pic`：上传图片到 Cloudflare R2 图床，默认上传 `/private/pic/` 下的图片，支持 `--naming md5|ts|original` 三种命名模式，上传后自动移至 `/private/pic_done/`
 - `quark checkassets`：检查 `assets/css`、`assets/js` 是否被页面引用
 
 ### 本地开发
