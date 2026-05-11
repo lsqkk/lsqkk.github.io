@@ -4,7 +4,35 @@
 
 查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)
 
+# 2026-05-11
+
+新增 - Quark CLI 图床上传 [`3d2bf8`](https://github.com/lsqkk/lsqkk.github.io/commit/3d2bf8)
+
+更新 - quark-ppt-bridge-lite.exe [`3acb28`](https://github.com/lsqkk/lsqkk.github.io/commit/3acb28)
+
+更新 - 更新了pptremote功能 [`1df8c0`](https://github.com/lsqkk/lsqkk.github.io/commit/1df8c0)
+
+修复 - pptremote完整修复 [`3e9f70`](https://github.com/lsqkk/lsqkk.github.io/commit/3e9f70)
+
+更新 - 更新了ppt-remote [`2d8ceb`](https://github.com/lsqkk/lsqkk.github.io/commit/2d8ceb)
+
 # 2026-05-10
+
+更新 - quark-ppt-bridge-lite.exe [`767931`](https://github.com/lsqkk/lsqkk.github.io/commit/767931)
+
+修复 - 修复了pptremote连接问题 [`6afe5e`](https://github.com/lsqkk/lsqkk.github.io/commit/6afe5e)
+
+更新 - index.astro [`daff9a`](https://github.com/lsqkk/lsqkk.github.io/commit/daff9a)
+
+更新 - 更新了ppt-remote [`1c95a0`](https://github.com/lsqkk/lsqkk.github.io/commit/1c95a0)
+
+更新 - log.css [`6671d6`](https://github.com/lsqkk/lsqkk.github.io/commit/6671d6)
+
+优化 - 优化了log样式 [`91a758`](https://github.com/lsqkk/lsqkk.github.io/commit/91a758)
+
+更新 - index.json [`f25ca3`](https://github.com/lsqkk/lsqkk.github.io/commit/f25ca3)
+
+修复 - 修复了quark web面板配置保存问题 [`78a05a`](https://github.com/lsqkk/lsqkk.github.io/commit/78a05a)
 
 更新 - qai.js [`f6b724`](https://github.com/lsqkk/lsqkk.github.io/commit/f6b724)
 
