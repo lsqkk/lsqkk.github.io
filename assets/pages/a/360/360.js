@@ -1482,7 +1482,7 @@ async function verifyAdminSession() {
         return false;
     }
     try {
-        const response = await fetch(`${API_BASE}/api/admin-verify`, {
+        const response = await fetch(`${API_BASE}/api/admin?action=verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token })
@@ -1512,7 +1512,7 @@ async function adminLogin() {
 
     try {
         const hash = await sha256(password);
-        const response = await fetch(`${API_BASE}/api/admin-auth`, {
+        const response = await fetch(`${API_BASE}/api/admin?action=auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ passwordHash: hash })
@@ -1567,7 +1567,7 @@ async function verifyPassword() {
 
     try {
         const hash = await sha256(password);
-        const response = await fetch(`${API_BASE}/api/admin-auth`, {
+        const response = await fetch(`${API_BASE}/api/admin?action=auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ passwordHash: hash })

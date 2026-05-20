@@ -927,17 +927,15 @@ function applyDynamicClamp(container) {
 // 加载最新视频
 async function loadLatestVideo() {
     try {
-        const uid = '2105459088'; // 您的B站UID
-        const apiUrl = 'https://uapis.cn/api/v1/social/bilibili/archives';
-
-        const params = new URLSearchParams({
+        const uid = '2105459088';
+        const proxyUrl = '__API_BASE__/api/stream-proxy?mode=bili&url=';
+        const targetUrl = `https://uapis.cn/api/v1/social/bilibili/archives?${new URLSearchParams({
             mid: uid,
             pn: '1',
-            ps: '1', // 只获取最新1个视频
+            ps: '1',
             orderby: 'pubdate'
-        });
-
-        const response = await fetch(`${apiUrl}?${params}`);
+        })}`;
+        const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

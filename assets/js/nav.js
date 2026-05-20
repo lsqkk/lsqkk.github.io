@@ -346,14 +346,14 @@ document.write(generateNavHTML(navConfig));
 // 检查视频API是否可用，不可用则隐藏导航中的"视频"项
 (async function checkVideoApi() {
     try {
-        const apiUrl = 'https://uapis.cn/api/v1/social/bilibili/archives';
-        const params = new URLSearchParams({
+        const proxyUrl = '__API_BASE__/api/stream-proxy?mode=bili&url=';
+        const targetUrl = `https://uapis.cn/api/v1/social/bilibili/archives?${new URLSearchParams({
             mid: '2105459088',
             pn: '1',
             ps: '1',
             orderby: 'pubdate'
-        });
-        const response = await fetch(`${apiUrl}?${params}`);
+        })}`;
+        const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const data = await response.json();
         if (!data.videos || data.videos.length === 0) throw new Error('No videos');

@@ -109,7 +109,7 @@
             return false;
         }
         try {
-            const response = await fetch(`${API_BASE}/api/admin-verify`, {
+            const response = await fetch(`${API_BASE}/api/admin?action=verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token })
@@ -138,7 +138,7 @@
         setText(el.loginTip, '正在验证...');
         try {
             const hash = await sha256(password);
-            const response = await fetch(`${API_BASE}/api/admin-auth`, {
+            const response = await fetch(`${API_BASE}/api/admin?action=auth`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ passwordHash: hash })

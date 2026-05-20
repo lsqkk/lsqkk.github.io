@@ -341,7 +341,7 @@
     }
     setStatus(statusEl, '验证码发送中...');
     try {
-      const resp = await fetch(`${API_BASE}/api/email-send`, {
+      const resp = await fetch(`${API_BASE}/api/email?action=send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, purpose })
@@ -364,7 +364,7 @@
     const token = readEmailToken(purpose, email);
     if (!token) return false;
     try {
-      const resp = await fetch(`${API_BASE}/api/email-verify`, {
+      const resp = await fetch(`${API_BASE}/api/email?action=verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, token, purpose })

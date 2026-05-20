@@ -527,7 +527,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 }
 
                 try {
-                    const response = await fetch('__API_BASE__/api/admin-verify', {
+                    const response = await fetch('__API_BASE__/api/admin?action=verify', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ token }),
@@ -868,7 +868,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 const passwordHash = sha256(password);
 
                 // 4. 调用安全验证API
-                const response = await fetch('__API_BASE__/api/admin-auth', {
+                const response = await fetch('__API_BASE__/api/admin?action=auth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ passwordHash })

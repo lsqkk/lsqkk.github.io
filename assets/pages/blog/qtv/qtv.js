@@ -1,10 +1,10 @@
 // 配置信息
 const config = {
     uid: '2105459088',
-    apiUrl: 'https://uapis.cn/api/v1/social/bilibili/archives',
-    videoInfoApiUrl: 'https://uapis.cn/api/v1/social/bilibili/videoinfo',
     pageSize: 12
 };
+
+const BILI_PROXY = '__API_BASE__/api/stream-proxy?mode=bili&url=';
 
 // 状态管理
 const state = {
@@ -97,7 +97,8 @@ async function loadVideos() {
             params.append('keywords', state.keywords);
         }
 
-        const response = await fetch(`${config.apiUrl}?${params}`);
+        const targetUrl = `https://uapis.cn/api/v1/social/bilibili/archives?${params}`;
+        const response = await fetch(BILI_PROXY + encodeURIComponent(targetUrl));
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -129,7 +130,8 @@ async function loadVideoDetails(videos) {
     // 为每个视频获取详细信息
     const promises = videos.map(async (video) => {
         try {
-            const response = await fetch(`${config.videoInfoApiUrl}?bvid=${video.bvid}`);
+            const targetUrl = `https://uapis.cn/api/v1/social/bilibili/videoinfo?bvid=${video.bvid}`;
+            const response = await fetch(BILI_PROXY + encodeURIComponent(targetUrl));
             if (response.ok) {
                 const data = await response.json();
                 state.videoDetails[video.bvid] = data;

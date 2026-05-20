@@ -74,7 +74,7 @@
         setText(el.adminStatus, '验证中...');
         try {
             const passwordHash = await sha256(password);
-            const response = await fetch('https://api.130923.xyz/api/admin-auth', {
+            const response = await fetch('https://api.130923.xyz/api/admin?action=auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ passwordHash })

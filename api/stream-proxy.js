@@ -158,6 +158,61 @@ async function handleAISearchProxy(req, res, requestOrigin) {
   }
 }
 
+// ── Bilibili API proxy (mode=bili) ──
+// Proxies requests to uapis.cn (bilibili video API) server-side to avoid CORS issues.
+async function handleBiliProxy(req, res, requestOrigin) {
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Origin', requestOrigin || '*');
+
+  const rawUrl = String(req.query?.url || '').trim();
+  if (!rawUrl) {
+    return res.status(400).json({ error: 'Missing url' });
+  }
+
+  let targetUrl;
+  try {
+    targetUrl = new URL(rawUrl);
+  } catch {
+    return res.status(400).json({ error: 'Invalid url' });
+  }
+
+  if (!['http:', 'https:'].includes(targetUrl.protocol)) {
+    return res.status(400).json({ error: 'Unsupported protocol' });
+  }
+
+  try {
+    const upstream = await fetch(targetUrl.toString(), {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://www.bilibili.com/',
+        'Accept': 'application/json, text/plain, */*',
+      },
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!upstream.ok) {
+      return res.status(upstream.status).send(await upstream.text());
+    }
+
+    const contentType = upstream.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await upstream.json();
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
+      return res.status(200).json(data);
+    }
+
+    const text = await upstream.text();
+    res.setHeader('Content-Type', contentType || 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
+    return res.status(200).send(text);
+  } catch (error) {
+    console.error('bili-proxy error:', error);
+    return res.status(502).json({ error: 'Failed to fetch from upstream API' });
+  }
+}
+
 // ── Main handler ──
 export default async function handler(req, res) {
   const requestOrigin = resolveOrigin(req);
@@ -174,6 +229,10 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
+    // mode=bili → bilibili video API proxy (avoid CORS)
+    if (req.query?.mode === 'bili') {
+      return handleBiliProxy(req, res, requestOrigin);
+    }
     return handleMediaProxy(req, res, requestOrigin);
   }
 
