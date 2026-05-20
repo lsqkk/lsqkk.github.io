@@ -5,6 +5,9 @@
  * @property {number=} timestamp
  * @property {string=} text
  * @property {string=} nickname
+ * @property {string=} login
+ * @property {string=} uid
+ * @property {string=} loginType
  */
 
 let firebaseInitialized = false;

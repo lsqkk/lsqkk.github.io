@@ -20,7 +20,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
     <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/pages/login/login.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" />
     <script is:inline define:vars={{ navConfig, githubLoginUrl, turnstileSiteKey }}>
       window.__NAV_CONFIG__ = navConfig;
       window.__GITHUB_LOGIN_URL__ = githubLoginUrl;

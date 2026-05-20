@@ -14,7 +14,11 @@
     "assets/js/post-standalone.js",
     "assets/js/popup.js",
     "assets/js/message.js",
-    "blog/lyb/lyb.js",
+    "assets/js/nav.js",
+    "assets/js/comment-shared.js",
+    "assets/js/dynamic-interactions.js",
+    "assets/js/user-preferences.js",
+    "assets/js/site-search.js",
     "assets/js/**/*.d.ts"
   ],
   "exclude": [

@@ -4,6 +4,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import { parseDynamicEntries } from "../utils/dynamic-entries";
+import {
+  escapeHtml,
+  parseRecentLogs,
+  getLogTagClass,
+  extractDynamicImages,
+  buildDynamicGallery,
+  renderPlainLines,
+} from "../utils/home-utils";
 
 const PROJECT_ROOT = process.cwd();
 
@@ -35,88 +43,6 @@ const footerTitleCn = navConfig?.title?.text || "夸克博客";
 const footerTitleEn = navConfig?.title?.en || "Quark Blog";
 const footerLogo = navConfig?.logo?.url || SITE_LOGO_URL;
 
-function escapeHtml(text: unknown): string {
-  return String(text ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-
-function stripMarkdownLinks(text: string): string {
-  let result = text.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
-  // \u79fb\u9664\u672b\u5c3e\u7684 commit hash \u4ee3\u7801\u6807\u8bb0\uff08`xxxxxx`\uff09\uff0c\u4fa7\u680f\u4e0d\u663e\u793a hash
-  result = result.replace(/`[a-f0-9]{6}`\s*$/, "");
-  return result.trim();
-}
-
-function parseRecentLogs(content: string, maxItems: number) {
-  const lines = content.split(/\r?\n/);
-  const items: Array<{ type: string; detail: string; date: string }> = [];
-  let currentDate = "";
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line) continue;
-    const dateMatch = line.match(/^#\s+(\d{4}-\d{2}-\d{2})$/);
-    if (dateMatch) {
-      currentDate = dateMatch[1];
-      continue;
-    }
-    const itemMatch = line.match(/^([\u4e00-\u9fa5A-Za-z]+)\s*-\s*(.+)$/);
-    if (!itemMatch) continue;
-    items.push({
-      type: itemMatch[1].trim(),
-      detail: stripMarkdownLinks(itemMatch[2].trim()),
-      date: currentDate,
-    });
-    if (items.length >= maxItems) break;
-  }
-  return items;
-}
-
-function getLogTagClass(type: string): string {
-  if (type === "更新") return "update";
-  if (type === "优化") return "optimize";
-  if (type === "新增") return "add";
-  if (type === "修复") return "fix";
-  return "default";
-}
-
-function extractDynamicImages(content: string) {
-  const matches = Array.from(content.matchAll(/!\[.*?\]\((.*?)\)/g));
-  const images = matches.map((item) => item[1]).filter(Boolean);
-  const text = content.replace(/!\[.*?\]\((.*?)\)/g, "").trim();
-  return { text, images };
-}
-
-function buildDynamicGallery(images: string[], id: string) {
-  if (!images.length) return "";
-  const perRow = images.length <= 4 ? 2 : 3;
-  const rows = Math.ceil(images.length / perRow);
-  let html = `<div class="gallery-container" data-gallery-id="${id}" data-gallery-images='${escapeHtml(JSON.stringify(images))}'>`;
-  for (let row = 0; row < rows; row += 1) {
-    html += '<div class="gallery-row">';
-    const start = row * perRow;
-    const end = Math.min(start + perRow, images.length);
-    for (let i = start; i < end; i += 1) {
-      const image = images[i];
-      html += `
-        <button type="button" class="gallery-item" aria-label="查看图片 ${i + 1}" data-gallery-index="${i}">
-          <img src="${escapeHtml(image)}" alt="动态图片 ${i + 1}" loading="lazy">
-        </button>
-      `;
-    }
-    html += "</div>";
-  }
-  html += "</div>";
-  return html;
-}
-
-function renderPlainLines(text: string) {
-  return escapeHtml(text).replace(/\n/g, "<br>");
-}
 
 const socialLinks = Array.isArray(homeConfig?.socialLinks) ? homeConfig.socialLinks : [];
 const contact = homeConfig?.contact || homeConfig?.Contact || {};
@@ -232,7 +158,8 @@ const homePreloaded = {
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <script is:inline src="/assets/js/dynamic-gallery.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'" />
     <meta name="referrer" content="never" />
   </head>
 
@@ -377,7 +304,7 @@ const homePreloaded = {
                         </div>
                       </div>
                       <div class="dynamic-comment-preview" data-dynamic-comment-preview>
-                        <div class="dynamic-preview-empty">评论加载中...</div>
+                        <div class="dynamic-preview-empty"></div>
                       </div>
                     </article>
                   );
@@ -415,7 +342,7 @@ const homePreloaded = {
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title online-preview-title">在线 Online <span class="online-preview-count" id="online-preview-count">0</span></h3>
               <div id="online-preview">
-                <div class="index-announcement"><p class="index-announcement-text">在线加载中...</p></div>
+                <div class="index-announcement"><p class="index-announcement-text"></p></div>
               </div>
               <div class="sidebar-more-wrap"><a href="/a/online" class="sidebar-more-link">查看在线</a></div>
             </section>
@@ -423,7 +350,7 @@ const homePreloaded = {
         {hasSidebarSection("github_promo") && (
             <section class="index-sidebar-section sidebar-panel">
               <div class="github-promo" id="github-promo-card">
-                <div class="github-promo-loading">GitHub 数据加载中...</div>
+                <div class="github-promo-loading"></div>
               </div>
             </section>
         )}
@@ -463,7 +390,7 @@ const homePreloaded = {
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">新视频 Latest Video</h3>
               <div id="latest-video-container" class="latest-video-container">
-                <div class="loading-placeholder">视频加载中...</div>
+                <div class="loading-placeholder"></div>
               </div>
               <div class="sidebar-more-wrap"><a href="qtv" class="sidebar-more-link">查看更多</a></div>
             </section>
@@ -472,7 +399,7 @@ const homePreloaded = {
             <section class="index-sidebar-section sidebar-panel">
               <h3 class="sidebar-title">留言 Comment</h3>
               <div id="recent-messages">
-                <div class="index-announcement"><p class="index-announcement-text">留言加载中...</p></div>
+                <div class="index-announcement"><p class="index-announcement-text"></p></div>
               </div>
               <div class="sidebar-more-wrap"><a href="/blog/lyb" class="sidebar-more-link">查看更多 / 写留言</a></div>
             </section>
@@ -606,10 +533,8 @@ const homePreloaded = {
     <script is:inline>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("/assets/js/sw.js").then(function (registration) {
-            console.log("Service Worker 注册成功: ", registration);
-          }).catch(function (error) {
-            console.log("Service Worker 注册失败: ", error);
+          navigator.serviceWorker.register("/assets/js/sw.js").catch(function () {
+            // Service Worker registration failed silently
           });
         });
       }

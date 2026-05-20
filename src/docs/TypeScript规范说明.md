@@ -16,7 +16,24 @@
   - `if (el instanceof HTMLInputElement) { ... }`
 - 全局对象扩展统一写到：`/assets/js/globals.d.ts`
 
-## 3. 类型检查命令
+## 3. 当前覆盖范围
+
+当前 `jsconfig.json` include 列表包含以下 9 个核心脚本：
+
+- `assets/js/index.js`（首页逻辑）
+- `assets/js/message.js`（留言预览）
+- `assets/js/nav.js`（导航栏）
+- `assets/js/popup.js`（弹窗）
+- `assets/js/post-annotation.js`（文章脚注）
+- `assets/js/post-standalone.js`（文章页独立脚本）
+- `assets/js/comment-shared.js`（评论共享逻辑）
+- `assets/js/dynamic-interactions.js`（动态互动）
+- `assets/js/user-preferences.js`（用户偏好）
+- `assets/js/site-search.js`（站内搜索）
+
+`globals.d.ts` 已覆盖所有 window 全局扩展（Firebase、marked、DynamicGallery、QuarkFirebaseReady 等），新增全局变量必须先在此文件声明。
+
+## 4. 类型检查命令
 
 ```bash
 # 安装依赖
@@ -33,20 +50,20 @@ npm run check:syntax
 - `typecheck` 采用白名单策略，先保证已改造脚本稳定，再逐步扩展范围。
 - 每新增一个已完成改造的脚本，再加入 `jsconfig.json` 的 `include` 列表。
 
-## 4. 推荐改造顺序
+## 5. 推荐改造顺序
 
 1. 页面入口脚本（如 `index.js` / `post-standalone.js`）
 2. 业务状态复杂脚本（如评论、协同、实时模块）
 3. 工具类与通用模块
 4. 历史脚本与实验脚本
 
-## 5. 禁止事项
+## 6. 禁止事项
 
 - 不要在“未完成类型整理”的情况下直接把全仓 JS 一次性纳入 strict 检查。
 - 不要在无空值保护时直接访问 DOM 属性（如 `.value`、`.style`、`.checked`）。
 - 不要把全局变量随意挂在 `window`，若必须挂载，先补 `globals.d.ts` 声明。
 
-## 6. 新项目参考模板
+## 7. 新项目参考模板
 
 - 复制本仓库的 `package.json`、`jsconfig.json`、`assets/js/globals.d.ts`。
 - 首批只纳入 1~3 个核心脚本做 `typecheck`，通过后再扩展。

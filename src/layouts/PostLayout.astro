@@ -59,6 +59,30 @@ function buildTagHref(tagName: string): string {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={postTitle} />
     <meta name="twitter:description" content={postDescription} />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": {postTitle ? JSON.stringify(postTitle) : "未命名文章"},
+        "description": {postDescription ? JSON.stringify(postDescription) : "无描述"},
+        "datePublished": {date ? JSON.stringify(date) : "null"},
+        "wordCount": {wordCount || 0},
+        "author": {
+          "@type": "Person",
+          "name": "蓝色奇夸克",
+          "url": "https://github.com/lsqkk"
+        },
+        "publisher": {
+          "@type": "Person",
+          "name": "蓝色奇夸克"
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": {("https://lsqkk.github.io" + currentPostPath) ? JSON.stringify("https://lsqkk.github.io" + currentPostPath) : "null"}
+        },
+        "keywords": {tags && tags.length > 0 ? JSON.stringify(tags.join(", ")) : "null"}
+      }
+    </script>
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
@@ -67,7 +91,8 @@ function buildTagHref(tagName: string): string {
     <link id="dynamic-gallery-style" rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css" />
     <link rel="stylesheet" href="/assets/css/code.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'" />
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/copyright-injector.js"></script>
     <script is:inline async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script>
@@ -76,23 +101,6 @@ function buildTagHref(tagName: string): string {
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css"
     />
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
   </head>
 
   <body
@@ -278,9 +286,26 @@ function buildTagHref(tagName: string): string {
       </a>
     </div>
 
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
     <script is:inline src="/assets/js/code.js"></script>
-    <script is:inline src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+    <script is:inline defer src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
     <script
       is:inline
       src="https://giscus.app/client.js"

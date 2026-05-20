@@ -352,8 +352,13 @@ export default defineConfig({
   },
   build: {
     format: "file",
+    assets: "assets",
   },
   vite: {
+    build: {
+      cssMinify: "lightningcss",
+      minify: "esbuild",
+    },
     resolve: {
       alias: {
         "@siteConfig": path.resolve("src/config/site.js"),

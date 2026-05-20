@@ -3,7 +3,7 @@
 /**
  * @typedef {{url: string, icon: string, alt: string}} SocialLink
  * @typedef {{title: string, content: string}} AnnouncementConfig
- * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[], cover?: string}} PostItem
+ * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[], columns?: string[], cover?: string}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
  * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
  * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
@@ -28,7 +28,8 @@
  *   posts?: PostItem[],
  *   friends?: FriendLink[],
  *   cityBanter?: Record<string, string>,
- *   dynamicEntries?: DynamicEntry[]
+ *   dynamicEntries?: DynamicEntry[],
+ *   footerStats?: { postsTotal: number, dynamicTotal: number, toolsTotal: number, projectsTotal: number, gamesTotal: number }
  * }} HomePreloadedData
  */
 

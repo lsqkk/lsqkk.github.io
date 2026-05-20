@@ -40,7 +40,7 @@ import { SITE_LOGO_URL } from "@siteConfig";
     <title>{pageTitle}</title>
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" />
     {headStyles.map((href) => <link rel="stylesheet" href={href} />)}
     <link rel="stylesheet" href={pageCss} />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
