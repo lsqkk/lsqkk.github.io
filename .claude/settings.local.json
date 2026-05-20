@@ -29,7 +29,15 @@
       "Bash(python -c \"from quark.commands.pic import cli; print\\('模块加载成功'\\)\")",
       "Bash(quark pic *)",
       "Bash(curl *)",
-      "Bash(python -c \"from quark.commands.pic import _compute_object_key; print\\('OK'\\)\")"
+      "Bash(python -c \"from quark.commands.pic import _compute_object_key; print\\('OK'\\)\")",
+      "Bash(python *)",
+      "Bash(md2word posts/2026/2607.md -o \"C:/Users/hp/Desktop/2607.docx\" --theme academic)",
+      "Bash(md2word posts/2026/2601.md -o \"C:/Users/hp/Desktop/2601.docx\" --theme academic)",
+      "Bash(md2word posts/2026/2602.md -o \"C:/Users/hp/Desktop/2602.docx\" --theme academic)",
+      "Bash(sed -i '/console\\\\.log\\(/d' assets/js/qai.js)",
+      "Bash(sed -i '/console\\\\.log\\(/d' assets/js/sw.js)",
+      "Bash(sed -i '/console\\\\.log\\(/d' \"assets/js/shicha copy.js\")",
+      "Bash(npx http-server *)"
     ]
   }
 }

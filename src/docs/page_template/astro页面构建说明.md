@@ -170,7 +170,6 @@ const currentYear = new Date().getFullYear();
   </div>
 
   <script is:inline src="/assets/pages/xxx/xxx.js"></script>
-  <script is:inline src="/assets/js/disable-right-click.js"></script>
 </body>
 ```
 
@@ -226,16 +225,6 @@ const currentYear = new Date().getFullYear();
 ```astro
 <script is:inline src="/assets/pages/tool/demo/demo.js"></script>
 ```
-
-### 右键限制
-- 默认可保留：
-
-```astro
-<script is:inline src="/assets/js/disable-right-click.js"></script>
-```
-
-- 但如果页面涉及用户本地填写密钥、源码自检、透明安全说明等场景，应移除这行，让用户可右键查看源码
-
 ### 本地存储
 - 未要求接入 Firebase 或服务端时，用户个性化状态可使用 `localStorage`
 - 键名要专业、稳定、可读，例如：
