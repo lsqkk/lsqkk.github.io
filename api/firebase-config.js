@@ -1,45 +1,14 @@
+import { resolveOrigin } from './_cors.js';
+
 export default function handler(req, res) {
     // 1. 获取请求来源
     const referer = req.headers.referer || req.headers.referrer;
     const origin = req.headers.origin;
-    const allowedDomains = ['localhost:8000', 'lsqkk.github.io', 'api.130923.xyz'];
-    let isAllowed = false;
-    let requestOrigin = '';
+    let requestOrigin = resolveOrigin(req);
+    let isAllowed = Boolean(requestOrigin);
 
-    if (origin) {
-        try {
-            const originUrl = new URL(origin);
-            if (allowedDomains.some(domain => originUrl.hostname.includes(domain))) {
-                isAllowed = true;
-                requestOrigin = origin;
-            }
-        } catch (e) { }
-    }
-    if (!isAllowed && referer) {
-        try {
-            const refererUrl = new URL(referer);
-            if (allowedDomains.some(domain => refererUrl.hostname.includes(domain))) {
-                isAllowed = true;
-                requestOrigin = refererUrl.origin;
-            }
-        } catch (e) { }
-    }
-
-    // 在 if (!isAllowed) { 代码块内，修改为：
-    if (!isAllowed) {
-        const hasOriginOrReferer = Boolean(origin || referer);
-        if (hasOriginOrReferer) {
-            // 将调试信息返回，方便查看
-            return res.status(403).json({
-                error: 'Forbidden',
-                debug: {
-                    receivedOrigin: origin,
-                    receivedReferer: referer,
-                    allowedDomains: allowedDomains
-                }
-            });
-        }
-        // 允许无 Origin/Referer（如 referrer-policy: no-referrer 的脚本请求）
+    // 允许无 Origin/Referer（如 referrer-policy: no-referrer 的脚本请求）
+    if (!isAllowed && !origin && !referer) {
         isAllowed = true;
     }
 

@@ -1,8 +1,5 @@
 import crypto from 'node:crypto';
-
-const ipLimiter = new Map();
-const emailLimiter = new Map();
-const RATE_WINDOW_MS = 60 * 1000;
+import { allowOrigin } from './_cors.js';
 
 function buildToken(payload, secret) {
     const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
@@ -10,15 +7,22 @@ function buildToken(payload, secret) {
     return `${payloadBase64}.${signature}`;
 }
 
-function allowOrigin(req, res) {
-    const allowed = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
-    const origin = req.headers.origin;
-    if (origin && allowed.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        return true;
-    }
-    res.setHeader('Access-Control-Allow-Origin', 'false');
+const ipLimiter = new Map();
+const emailLimiter = new Map();
+const RATE_WINDOW_MS = 60 * 1000;
+
+function checkRateLimit(ip, email, purpose) {
+  const now = Date.now();
+  const ipKey = `ip:${ip}:${purpose}`;
+  const emailKey = `mail:${email}:${purpose}`;
+  const ipLast = ipLimiter.get(ipKey) || 0;
+  const mailLast = emailLimiter.get(emailKey) || 0;
+  if (now - ipLast < RATE_WINDOW_MS || now - mailLast < RATE_WINDOW_MS) {
     return false;
+  }
+  ipLimiter.set(ipKey, now);
+  emailLimiter.set(emailKey, now);
+  return true;
 }
 
 export default async function handler(req, res) {
@@ -46,17 +50,10 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid email' });
     }
 
-    const now = Date.now();
     const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').toString().split(',')[0].trim();
-    const ipKey = `ip:${ip}:${purpose}`;
-    const emailKey = `mail:${email}:${purpose}`;
-    const ipLast = ipLimiter.get(ipKey) || 0;
-    const mailLast = emailLimiter.get(emailKey) || 0;
-    if (now - ipLast < RATE_WINDOW_MS || now - mailLast < RATE_WINDOW_MS) {
+    if (!checkRateLimit(ip, email, purpose)) {
         return res.status(429).json({ error: 'Too many requests' });
     }
-    ipLimiter.set(ipKey, now);
-    emailLimiter.set(emailKey, now);
 
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.RESEND_FROM;

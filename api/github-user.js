@@ -1,35 +1,9 @@
 // /api/github-user.js - 通过 GitHub OAuth code 获取用户信息
+import { resolveOrigin } from './_cors.js';
+
 export default async function handler(req, res) {
-    const allowedDomains = ['localhost:8000', 'lsqkk.github.io'];
-    let isAllowed = false;
-    let requestOrigin = '';
-
-    const referer = req.headers.referer || req.headers.referrer;
-    const origin = req.headers.origin;
-
-    if (origin) {
-        try {
-            const originUrl = new URL(origin);
-            if (allowedDomains.some(domain => originUrl.host === domain)) {
-                isAllowed = true;
-                requestOrigin = originUrl.origin;
-            }
-        } catch (e) {
-            console.error('解析Origin出错:', e);
-        }
-    }
-
-    if (!isAllowed && referer) {
-        try {
-            const refererUrl = new URL(referer);
-            if (allowedDomains.some(domain => refererUrl.host === domain)) {
-                isAllowed = true;
-                requestOrigin = refererUrl.origin;
-            }
-        } catch (e) {
-            console.error('解析Referer出错:', e);
-        }
-    }
+    const requestOrigin = resolveOrigin(req);
+    const isAllowed = Boolean(requestOrigin);
 
     res.setHeader('Access-Control-Allow-Origin', isAllowed ? requestOrigin : 'false');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -40,14 +14,7 @@ export default async function handler(req, res) {
     }
 
     if (!isAllowed) {
-        return res.status(403).json({
-            error: 'Forbidden',
-            debug: {
-                receivedOrigin: origin,
-                receivedReferer: referer,
-                allowedDomains
-            }
-        });
+        return res.status(403).json({ error: 'Forbidden' });
     }
 
     if (req.method !== 'GET') {

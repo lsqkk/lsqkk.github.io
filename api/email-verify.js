@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { allowOrigin } from './_cors.js';
 
 function verifyToken(token, secret) {
     const parts = String(token || '').split('.');
@@ -12,17 +13,6 @@ function verifyToken(token, secret) {
     } catch {
         return null;
     }
-}
-
-function allowOrigin(req, res) {
-    const allowed = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
-    const origin = req.headers.origin;
-    if (origin && allowed.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        return true;
-    }
-    res.setHeader('Access-Control-Allow-Origin', 'false');
-    return false;
 }
 
 export default async function handler(req, res) {

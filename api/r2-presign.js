@@ -1,37 +1,7 @@
 // /api/r2-presign.js - generate presigned R2 upload URL
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
-const allowedDomains = ['localhost:8000', 'lsqkk.github.io', '130923.xyz', 'www.130923.xyz'];
-
-function resolveOrigin(req) {
-  const referer = req.headers.referer || req.headers.referrer;
-  const origin = req.headers.origin;
-
-  if (origin) {
-    try {
-      const originUrl = new URL(origin);
-      if (allowedDomains.some((domain) => originUrl.host === domain)) {
-        return originUrl.origin;
-      }
-    } catch (e) {
-      console.error('解析Origin出错:', e);
-    }
-  }
-
-  if (referer) {
-    try {
-      const refererUrl = new URL(referer);
-      if (allowedDomains.some((domain) => refererUrl.host === domain)) {
-        return refererUrl.origin;
-      }
-    } catch (e) {
-      console.error('解析Referer出错:', e);
-    }
-  }
-
-  return '';
-}
+import { resolveOrigin } from './_cors.js';
 
 function getEnv(name) {
   return String(process.env[name] || '').trim();

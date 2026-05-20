@@ -1,35 +1,9 @@
 // /api/keys.js - inject API keys for trusted origins
+import { resolveOrigin } from './_cors.js';
+
 export default function handler(req, res) {
-  const allowedDomains = ['localhost:8000', 'lsqkk.github.io'];
-  let isAllowed = false;
-  let requestOrigin = '';
-
-  const referer = req.headers.referer || req.headers.referrer;
-  const origin = req.headers.origin;
-
-  if (origin) {
-    try {
-      const originUrl = new URL(origin);
-      if (allowedDomains.some((domain) => originUrl.host === domain)) {
-        isAllowed = true;
-        requestOrigin = originUrl.origin;
-      }
-    } catch (e) {
-      console.error('解析Origin出错:', e);
-    }
-  }
-
-  if (!isAllowed && referer) {
-    try {
-      const refererUrl = new URL(referer);
-      if (allowedDomains.some((domain) => refererUrl.host === domain)) {
-        isAllowed = true;
-        requestOrigin = refererUrl.origin;
-      }
-    } catch (e) {
-      console.error('解析Referer出错:', e);
-    }
-  }
+  const requestOrigin = resolveOrigin(req);
+  const isAllowed = Boolean(requestOrigin);
 
   res.setHeader('Access-Control-Allow-Origin', isAllowed ? requestOrigin : 'false');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -40,7 +14,7 @@ export default function handler(req, res) {
   }
 
   if (!isAllowed) {
-    console.warn('非法来源访问被阻止:', { origin, referer, allowedDomains });
+    console.warn('非法来源访问被阻止:', { origin: req.headers.origin, referer: req.headers.referer || req.headers.referrer });
     return res.status(403).json({ error: 'Forbidden' });
   }
 

@@ -1,11 +1,9 @@
 import crypto from 'node:crypto';
+import { allowOrigin } from './_cors.js';
 
 export default function handler(req, res) {
-    const allowedOrigins = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
-    const requestOrigin = req.headers.origin;
-    const isOriginAllowed = requestOrigin && allowedOrigins.includes(requestOrigin);
+    const isOriginAllowed = allowOrigin(req, res);
 
-    res.setHeader('Access-Control-Allow-Origin', isOriginAllowed ? requestOrigin : 'false');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 

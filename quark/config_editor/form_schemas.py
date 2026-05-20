@@ -203,11 +203,87 @@ SCHEMAS['src/config/json/friends.json'] = {
 # ── api.json ────────────────────────────────────────────────────────
 SCHEMAS['src/config/json/api.json'] = {
     'title': 'API 配置',
-    'description': '后端 API 基础地址配置。',
+    'description': '后端 API 基础地址和站点 URL 配置。',
     'sections': [
         {
+            'title': 'API 地址',
             'fields': {
                 'apiBase': {'label': 'API 基础地址', 'type': 'url', 'description': 'Vercel serverless 函数的部署域名'},
+            }
+        },
+        {
+            'title': '站点 URL',
+            'fields': {
+                'siteUrl': {'label': '站点 URL', 'type': 'url', 'description': '网站的正式域名，用于 og:url 等元数据'},
+            }
+        }
+    ]
+}
+
+# ── giscus.json ────────────────────────────────────────────────────
+SCHEMAS['src/config/json/giscus.json'] = {
+    'title': 'Giscus 评论配置',
+    'description': '配置文章页底的 Giscus  GitHub 评论系统。',
+    'sections': [
+        {
+            'title': '仓库信息',
+            'fields': {
+                'repo': {'label': 'GitHub 仓库', 'type': 'text', 'description': '格式: owner/repo'},
+                'repoId': {'label': '仓库 ID', 'type': 'text'},
+                'category': {'label': '讨论分类名称', 'type': 'text'},
+                'categoryId': {'label': '讨论分类 ID', 'type': 'text'},
+            }
+        },
+        {
+            'title': '映射与行为',
+            'fields': {
+                'mapping': {'label': '页面映射方式', 'type': 'select', 'options': [
+                    {'value': 'url', 'label': 'URL'},
+                    {'value': 'title', 'label': '标题'},
+                    {'value': 'og:title', 'label': 'OG 标题'},
+                    {'value': 'specific', 'label': '指定编号'},
+                    {'value': 'number', 'label': '编号'},
+                    {'value': 'pathname', 'label': '路径名'},
+                ]},
+                'strict': {'label': '严格模式', 'type': 'select', 'options': [
+                    {'value': '0', 'label': '关闭'},
+                    {'value': '1', 'label': '开启'},
+                ]},
+                'reactionsEnabled': {'label': '启用表情反应', 'type': 'select', 'options': [
+                    {'value': '1', 'label': '开启'},
+                    {'value': '0', 'label': '关闭'},
+                ]},
+                'emitMetadata': {'label': '发送元数据', 'type': 'select', 'options': [
+                    {'value': '0', 'label': '关闭'},
+                    {'value': '1', 'label': '开启'},
+                ]},
+                'inputPosition': {'label': '输入框位置', 'type': 'select', 'options': [
+                    {'value': 'top', 'label': '顶部'},
+                    {'value': 'bottom', 'label': '底部'},
+                ]},
+            }
+        },
+        {
+            'title': '外观',
+            'fields': {
+                'theme': {'label': '主题', 'type': 'select', 'options': [
+                    {'value': 'preferred_color_scheme', 'label': '跟随系统'},
+                    {'value': 'light', 'label': '浅色'},
+                    {'value': 'dark', 'label': '深色'},
+                    {'value': 'transparent_dark', 'label': '透明深色'},
+                    {'value': 'light_high_contrast', 'label': '浅色高对比'},
+                    {'value': 'dark_high_contrast', 'label': '深色高对比'},
+                    {'value': 'light_protanopia', 'label': '浅色（红色盲）'},
+                    {'value': 'dark_protanopia', 'label': '深色（红色盲）'},
+                    {'value': 'light_tritanopia', 'label': '浅色（蓝色盲）'},
+                    {'value': 'dark_tritanopia', 'label': '深色（蓝色盲）'},
+                ]},
+                'lang': {'label': '语言', 'type': 'select', 'options': [
+                    {'value': 'zh-CN', 'label': '简体中文'},
+                    {'value': 'zh-TW', 'label': '繁體中文'},
+                    {'value': 'en', 'label': 'English'},
+                    {'value': 'ja', 'label': '日本語'},
+                ]},
             }
         }
     ]

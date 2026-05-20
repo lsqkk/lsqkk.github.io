@@ -342,7 +342,7 @@ function apiBaseInjector() {
 }
 
 export default defineConfig({
-  site: "https://lsqkk.github.io",
+  site: "https://lsqkk.github.io", // canonical URL (also in src/config/site.js)
   integrations: [sitemap(), apiBaseInjector()],
   markdown: {
     remarkRehype: {

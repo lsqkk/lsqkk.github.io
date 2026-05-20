@@ -33,8 +33,10 @@ const {
   nextPostUrl,
 } =
   Astro.props;
+import fs from "node:fs";
+import path from "node:path";
 const readTime = Math.ceil(wordCount / 400);
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from "@siteConfig";
 import GlowFollow from "../components/GlowFollow.astro";
 const currentYear = new Date().getFullYear();
 
@@ -44,6 +46,11 @@ function buildColumnHref(columnName: string): string {
 function buildTagHref(tagName: string): string {
   return `/posts?tag=${encodeURIComponent(tagName)}`;
 }
+
+let giscusConfig = {};
+try {
+  giscusConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), "src", "config", "json", "giscus.json"), "utf-8"));
+} catch { /* giscus unavailable */ }
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -57,7 +64,7 @@ function buildTagHref(tagName: string): string {
     <meta property="og:description" content={postDescription} />
     <meta property="og:type" content="article" />
     <meta property="og:image" content={SITE_LOGO_URL} />
-    <meta property="og:url" content={"https://lsqkk.github.io" + currentPostPath} />
+    <meta property="og:url" content={SITE_URL + currentPostPath} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={postTitle} />
     <meta name="twitter:description" content={postDescription} />
@@ -72,16 +79,16 @@ function buildTagHref(tagName: string): string {
         "wordCount": {wordCount || 0},
         "author": {
           "@type": "Person",
-          "name": "蓝色奇夸克",
-          "url": "https://github.com/lsqkk"
+          "name": {AUTHOR_NAME ? JSON.stringify(AUTHOR_NAME) : "null"},
+          "url": {AUTHOR_URL ? JSON.stringify(AUTHOR_URL) : "null"}
         },
         "publisher": {
           "@type": "Person",
-          "name": "蓝色奇夸克"
+          "name": {AUTHOR_NAME ? JSON.stringify(AUTHOR_NAME) : "null"}
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": {("https://lsqkk.github.io" + currentPostPath) ? JSON.stringify("https://lsqkk.github.io" + currentPostPath) : "null"}
+          "@id": {(SITE_URL + currentPostPath) ? JSON.stringify(SITE_URL + currentPostPath) : "null"}
         },
         "keywords": {tags && tags.length > 0 ? JSON.stringify(tags.join(", ")) : "null"}
       }
@@ -301,21 +308,20 @@ function buildTagHref(tagName: string): string {
     <script
       is:inline
       src="https://giscus.app/client.js"
-      data-repo="lsqkk/lsqkk.github.io"
-      data-repo-id="R_kgDONya5nQ"
-      data-category="Announcements"
-      data-category-id="DIC_kwDONya5nc4CnVr4"
-      data-mapping="url"
-      data-strict="0"
-      data-reactions-enabled="1"
-      data-emit-metadata="0"
-      data-input-position="top"
-      data-theme="preferred_color_scheme"
-      data-lang="zh-CN"
+      data-repo={giscusConfig.repo || "lsqkk/lsqkk.github.io"}
+      data-repo-id={giscusConfig.repoId || ""}
+      data-category={giscusConfig.category || "Announcements"}
+      data-category-id={giscusConfig.categoryId || ""}
+      data-mapping={giscusConfig.mapping || "url"}
+      data-strict={giscusConfig.strict || "0"}
+      data-reactions-enabled={giscusConfig.reactionsEnabled || "1"}
+      data-emit-metadata={giscusConfig.emitMetadata || "0"}
+      data-input-position={giscusConfig.inputPosition || "top"}
+      data-theme={giscusConfig.theme || "preferred_color_scheme"}
+      data-lang={giscusConfig.lang || "zh-CN"}
       crossorigin="anonymous"
       async
-    >
-    </script>
+    ></script>
 
     <div class="post-fab-stack">
       <button class="fab-btn sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="打开目录" aria-expanded="false">☰</button>

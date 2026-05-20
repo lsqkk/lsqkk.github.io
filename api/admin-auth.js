@@ -1,20 +1,12 @@
 import crypto from 'node:crypto';
 
 // /api/admin-auth.js - 返回短时管理员会话 token
+import { allowOrigin } from './_cors.js';
+
 export default async function handler(req, res) {
     // ----- 1. 处理 CORS 和 OPTIONS 预检请求 -----
-    // 定义允许访问的源（你的前端页面所在的域名）
-    const allowedOrigins = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
-    const requestOrigin = req.headers.origin;
+    const isOriginAllowed = allowOrigin(req, res);
 
-    // 检查请求来源是否在白名单中
-    let isOriginAllowed = false;
-    if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
-        isOriginAllowed = true;
-    }
-
-    // 设置 CORS 响应头。如果来源被允许，则动态设置；否则可以省略或设为 false。
-    res.setHeader('Access-Control-Allow-Origin', isOriginAllowed ? requestOrigin : 'false');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 

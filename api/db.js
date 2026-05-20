@@ -1,5 +1,6 @@
 // /api/db.js - minimal Firebase RTDB proxy (read-only for now)
 import admin from 'firebase-admin';
+import { resolveOrigin } from './_cors.js';
 
 let app;
 
@@ -30,36 +31,9 @@ function initAdmin() {
 }
 
 function isAllowedOrigin(req) {
-  const allowedDomains = ['localhost:8000', 'lsqkk.github.io'];
-  const referer = req.headers.referer || req.headers.referrer;
-  const origin = req.headers.origin;
-  let requestOrigin = '';
-
-  if (origin) {
-    try {
-      const originUrl = new URL(origin);
-      if (allowedDomains.some((domain) => originUrl.host === domain)) {
-        requestOrigin = originUrl.origin;
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  if (!requestOrigin && referer) {
-    try {
-      const refererUrl = new URL(referer);
-      if (allowedDomains.some((domain) => refererUrl.host === domain)) {
-        requestOrigin = refererUrl.origin;
-      }
-    } catch {
-      // ignore
-    }
-  }
-
+  const requestOrigin = resolveOrigin(req, ['localhost:8000', 'lsqkk.github.io']);
   return requestOrigin;
 }
-
 function isAllowedPath(path) {
   const allowedRoots = [
     'presence',

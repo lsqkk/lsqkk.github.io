@@ -1,7 +1,7 @@
 ---
 import fs from "node:fs/promises";
 import path from "node:path";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, SITE_DOMAIN } from "@siteConfig";
 import { parseDynamicEntries } from "../../utils/dynamic-entries";
 import LuxuryBackground from "../../components/LuxuryBackground.astro";
 
@@ -117,7 +117,7 @@ const fulltextIndex = {
         </label>
       </div>
       <div class="search-actions">
-        <a id="bingSearchLink" class="bing-link" href="https://cn.bing.com/search?q=site%3Alsqkk.github.io" target="_blank" rel="noreferrer">使用必应全站搜索</a>
+        <a id="bingSearchLink" class="bing-link" href={`https://cn.bing.com/search?q=site%3A${SITE_DOMAIN}`} target="_blank" rel="noreferrer">使用必应全站搜索</a>
       </div>
       <div id="siteSearchStatus" class="search-status">请输入关键词开始搜索</div>
       <div id="siteSearchResults" class="search-results"></div>

@@ -1,35 +1,7 @@
 // /api/stream-proxy.js - CORS-safe proxy for m3u8/ts/aac streams & AI search API
 // GET  ?url=...  → media stream proxy (m3u8/ts/aac)
 // POST ?target=... → AI search API proxy (Qianfan etc.)
-
-function isAllowed(req) {
-  const allowedDomains = ['localhost:8000', 'lsqkk.github.io', 'api.130923.xyz'];
-  const referer = req.headers.referer || req.headers.referrer;
-  const origin = req.headers.origin;
-
-  let requestOrigin = '';
-  if (origin) {
-    try {
-      const originUrl = new URL(origin);
-      if (allowedDomains.some((domain) => originUrl.host === domain)) {
-        requestOrigin = originUrl.origin;
-      }
-    } catch {
-      // ignore
-    }
-  }
-  if (!requestOrigin && referer) {
-    try {
-      const refererUrl = new URL(referer);
-      if (allowedDomains.some((domain) => refererUrl.host === domain)) {
-        requestOrigin = refererUrl.origin;
-      }
-    } catch {
-      // ignore
-    }
-  }
-  return requestOrigin;
-}
+import { resolveOrigin } from './_cors.js';
 
 // ── Media stream proxy (m3u8/ts/aac) ──
 async function handleMediaProxy(req, res, requestOrigin) {
@@ -188,7 +160,7 @@ async function handleAISearchProxy(req, res, requestOrigin) {
 
 // ── Main handler ──
 export default async function handler(req, res) {
-  const requestOrigin = isAllowed(req);
+  const requestOrigin = resolveOrigin(req);
 
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', requestOrigin || '*');

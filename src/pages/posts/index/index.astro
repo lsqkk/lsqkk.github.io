@@ -9,7 +9,7 @@ const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
 
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const postsData = JSON.parse(await fs.readFile(postsPath, "utf8"));
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from "@siteConfig";
 const currentYear = new Date().getFullYear();
 ---
 
@@ -40,7 +40,7 @@ const currentYear = new Date().getFullYear();
       <h1 class="page-title">文章 / POSTS</h1>
       <h2 class="page-subtitle">
         <i class="fa-solid fa-rss"></i>
-        RSS订阅链接: <a href="https://lsqkk.github.io/posts/rss.xml" target="_blank">https://lsqkk.github.io/posts/rss.xml</a>
+        RSS订阅链接: <a href={SITE_URL + "/posts/rss.xml"} target="_blank">{SITE_URL}/posts/rss.xml</a>
       </h2>
       <div id="searchResults" class="search-results"></div>
       <div class="posts-fold-panel" id="tagFilterPanel">

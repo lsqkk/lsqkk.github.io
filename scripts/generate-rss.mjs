@@ -1,12 +1,32 @@
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
 const POSTS_JSON = path.join(ROOT, "posts", "posts.json");
 const POSTS_DIR = path.join(ROOT, "posts");
 const OUTPUT = path.join(POSTS_DIR, "rss.xml");
-const SITE_URL = "https://lsqkk.github.io";
 const MAX_ITEMS = 50;
+
+// Read site config
+let SITE_URL = "https://lsqkk.github.io";
+let SITE_TITLE = "Quark Blog";
+let SITE_DESC = "夸克博客";
+try {
+  const apiRaw = fsSync.readFileSync(path.join(ROOT, "src", "config", "json", "api.json"), "utf-8");
+  const apiConfig = JSON.parse(apiRaw);
+  if (apiConfig?.siteUrl) SITE_URL = apiConfig.siteUrl;
+} catch { /* use default */ }
+try {
+  const navRaw = fsSync.readFileSync(path.join(ROOT, "src", "config", "json", "nav.json"), "utf-8");
+  const navConfig = JSON.parse(navRaw);
+  if (navConfig?.title?.en) SITE_TITLE = navConfig.title.en;
+} catch { /* use default */ }
+try {
+  const indexRaw = fsSync.readFileSync(path.join(ROOT, "src", "config", "json", "index.json"), "utf-8");
+  const indexConfig = JSON.parse(indexRaw);
+  if (indexConfig?.Nickname) SITE_DESC = indexConfig.Nickname + " - 分享技术、生活与思考。";
+} catch { /* use default */ }
 
 function escapeXml(input) {
   return String(input ?? "")
@@ -79,8 +99,8 @@ async function buildRss() {
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
   <channel>
-    <title>Quark Blog</title>
-    <description>夸克博客</description>
+    <title>${escapeXml(SITE_TITLE)}</title>
+    <description>${escapeXml(SITE_DESC)}</description>
     <link>${SITE_URL}/</link>
     <language>zh-cn</language>
     <lastBuildDate>${latestDate}</lastBuildDate>${items.join("")}
