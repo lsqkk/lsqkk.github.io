@@ -13,7 +13,6 @@ self.addEventListener('install', function (event) {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(function (cache) {
-                console.log('已打开缓存');
                 return cache.addAll(urlsToCache);
             })
     );

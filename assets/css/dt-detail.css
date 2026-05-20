@@ -15,15 +15,15 @@
 }
 
 .dynamic-entry-stats {
-    color: #607080;
+    color: var(--text-soft);
     font-size: 0.92rem;
 }
 
 .dynamic-action-btn,
 .dynamic-submit-btn {
-    border: 1px solid rgba(52, 152, 219, 0.4);
-    background: rgba(52, 152, 219, 0.15);
-    color: #1f4f74;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    color: var(--accent);
     border-radius: 10px;
     padding: 8px 12px;
     cursor: pointer;
@@ -36,16 +36,16 @@
 }
 
 .dynamic-comments-panel {
-    background: rgba(255, 255, 255, 0.22);
+    background: var(--surface-card);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--line);
     border-radius: 12px;
     padding: 1rem;
 }
 
 .dynamic-comments-panel h3 {
     margin: 0 0 0.8rem;
-    color: #2c3e50;
+    color: var(--text-main);
 }
 
 .dynamic-comment-form {
@@ -56,11 +56,11 @@
 
 .dynamic-comment-form input,
 .dynamic-comment-form textarea {
-    border: 1px solid rgba(0, 0, 0, 0.14);
+    border: 1px solid var(--line);
     border-radius: 10px;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.5);
-    color: #2c3e50;
+    background: var(--surface);
+    color: var(--text-main);
     font-size: 0.92rem;
 }
 
@@ -77,10 +77,10 @@
 }
 
 .dynamic-comment-item {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--line);
     border-radius: 10px;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.38);
+    background: var(--surface);
 }
 
 .dynamic-comment-actions {
@@ -90,9 +90,9 @@
 }
 
 .dynamic-comment-btn {
-    border: 1px solid rgba(52, 152, 219, 0.35);
-    background: rgba(52, 152, 219, 0.12);
-    color: #285275;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    color: var(--accent);
     border-radius: 999px;
     padding: 3px 10px;
     font-size: 0.8rem;
@@ -105,7 +105,7 @@
 
 .dynamic-reply-list {
     margin-top: 10px;
-    border-left: 2px solid rgba(52, 152, 219, 0.25);
+    border-left: 2px solid var(--accent-soft);
     padding-left: 10px;
     display: flex;
     flex-direction: column;
@@ -113,23 +113,23 @@
 }
 
 .dynamic-reply-item {
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--line);
     border-radius: 8px;
     padding: 8px 10px;
-    background: rgba(255, 255, 255, 0.32);
+    background: var(--surface);
 }
 
 .dynamic-reply-state {
     min-height: 20px;
     font-size: 0.84rem;
-    color: #4a5d71;
+    color: var(--text-soft);
 }
 
 .dynamic-reply-state button {
     margin-left: 8px;
     border: none;
     background: transparent;
-    color: #2f6edb;
+    color: var(--accent);
     cursor: pointer;
 }
 
@@ -142,9 +142,9 @@
 }
 
 .dynamic-page-btn {
-    border: 1px solid rgba(52, 152, 219, 0.35);
-    background: rgba(52, 152, 219, 0.12);
-    color: #285275;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    color: var(--accent);
     border-radius: 8px;
     padding: 5px 10px;
     font-size: 0.84rem;
@@ -162,7 +162,7 @@
     align-items: center;
     gap: 12px;
     font-size: 0.86rem;
-    color: #5b6873;
+    color: var(--text-soft);
     margin-bottom: 6px;
 }
 
@@ -176,11 +176,11 @@
     width: 30px;
     height: 30px;
     border-radius: 9px;
-    background: rgba(47, 110, 219, 0.15);
+    background: var(--accent-soft);
     display: grid;
     place-items: center;
     font-weight: 700;
-    color: #1f59b9;
+    color: var(--accent);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -194,17 +194,17 @@
 
 .dynamic-comment-time {
     font-size: 0.78rem;
-    color: #6a7c90;
+    color: var(--text-subtle);
 }
 
 .dynamic-comment-text {
-    color: #34495e;
+    color: var(--text-main);
     white-space: pre-wrap;
     line-height: 1.6;
 }
 
 .dynamic-comment-empty {
-    color: #5b6873;
+    color: var(--text-soft);
     font-size: 0.9rem;
 }
 
@@ -213,58 +213,4 @@
     justify-content: center;
     gap: 14px;
     flex-wrap: wrap;
-}
-
-@media (prefers-color-scheme: dark) {
-    .dynamic-entry-stats,
-    .dynamic-comment-empty,
-    .dynamic-comment-head,
-    .dynamic-reply-state {
-        color: #bcd0e8;
-    }
-
-    .dynamic-comment-avatar {
-        color: #cfe0ff;
-    }
-
-    .dynamic-comment-time {
-        color: #bcd0e8;
-    }
-
-    .dynamic-action-btn,
-    .dynamic-submit-btn {
-        background: rgba(86, 132, 196, 0.35);
-        border-color: rgba(138, 173, 220, 0.46);
-        color: #e4efff;
-    }
-
-    .dynamic-comments-panel,
-    .dynamic-comment-item,
-    .dynamic-reply-item {
-        background: rgba(18, 30, 50, 0.66);
-        border-color: rgba(138, 173, 220, 0.34);
-    }
-
-    .dynamic-comments-panel h3,
-    .dynamic-comment-text {
-        color: #e3edff;
-    }
-
-    .dynamic-comment-form input,
-    .dynamic-comment-form textarea {
-        background: rgba(30, 47, 74, 0.72);
-        border-color: rgba(138, 173, 220, 0.4);
-        color: #e3edff;
-    }
-
-    .dynamic-comment-btn,
-    .dynamic-page-btn {
-        background: rgba(86, 132, 196, 0.3);
-        border-color: rgba(138, 173, 220, 0.4);
-        color: #e4efff;
-    }
-
-    .dynamic-reply-list {
-        border-left-color: rgba(138, 173, 220, 0.35);
-    }
 }

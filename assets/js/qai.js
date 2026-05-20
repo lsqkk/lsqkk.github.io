@@ -1107,7 +1107,6 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
   if (!fullText) {
     // Log raw response for debugging (first 1KB)
     if (rawBuffer.length > 0) {
-      console.log('[SSE debug] Raw response start:', rawBuffer.substring(0, 1000));
     }
 
     // Strategy 1: try parsing pendingChunk (last incomplete line) as JSON
@@ -1142,11 +1141,8 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
       }
       if (!fullText) {
         // Different structure — log it
-        console.log('[SSE debug] Parsed JSON keys:', Object.keys(finalData));
-        console.log('[SSE debug] Full parsed data:', finalData);
       }
     } else {
-      console.log('[SSE debug] Raw full response:', rawBuffer);
     }
   }
 

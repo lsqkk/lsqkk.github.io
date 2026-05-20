@@ -103,10 +103,8 @@ function extractColumnsFromPosts(posts) {
 
 // 加载文章列表
 async function loadPosts() {
-    console.log('开始加载文章...');
     const preloadedPosts = Array.isArray(window.__POSTS_DATA__) ? window.__POSTS_DATA__ : null;
     allPosts = preloadedPosts || await fetch('/posts/posts.json').then(r => r.json());
-    console.log('获取到文章数量:', allPosts.length);
 
     // 确保所有文章都有tags数组
     allPosts.forEach(post => {
@@ -117,7 +115,6 @@ async function loadPosts() {
     // 从文章数据中提取标签
     allTags = extractTagsFromPosts(allPosts);
     allColumns = extractColumnsFromPosts(allPosts);
-    console.log('提取到的标签:', allTags);
 
     renderTagFilter();
     renderColumnFilter();
@@ -128,18 +125,14 @@ async function loadPosts() {
 
     // 检查URL参数，如果有搜索词则自动执行搜索
     const urlParams = getUrlParams();
-    console.log('URL参数:', urlParams);
 
     if (urlParams.search) {
-        console.log('检测到搜索参数:', urlParams.search);
 
         // 等待导航栏加载完成
         setTimeout(() => {
             const searchInput = document.getElementById('searchInput');
-            console.log('搜索框元素:', searchInput);
 
             if (searchInput) {
-                console.log('设置搜索框值为:', urlParams.search);
                 searchInput.value = urlParams.search;
                 // 直接调用搜索函数，不等待用户操作
                 performSearch(urlParams.search);

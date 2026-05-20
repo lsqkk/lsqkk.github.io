@@ -29,7 +29,6 @@
     // 工具函数：日志输出
     function log(...args) {
         if (CONFIG.debug) {
-            console.log('[Copyright Injector]', ...args);
         }
     }
 

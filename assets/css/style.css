@@ -1,9 +1,21 @@
 ::-webkit-scrollbar {
-    display: none;
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 120, 150, 0.3);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 120, 150, 0.5);
 }
 
 @media (max-width: 768px) {
-
     html,
     body {
         width: 100%;
@@ -30,7 +42,7 @@ body.sidebar-open {
 }
 
 .post-item {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--surface-card);
     backdrop-filter: blur(10px) saturate(100%);
     -webkit-backdrop-filter: blur(10px) saturate(100%);
     border-radius: 12px;
@@ -38,7 +50,7 @@ body.sidebar-open {
     margin: 15px 0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--line);
 }
 
 button {
@@ -52,25 +64,23 @@ button {
 }
 
 .search-result-item {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: var(--surface-card);
     margin: 10px;
     padding: 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--line);
     border-radius: 15px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow:
         0 4px 6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        inset 0 1px 0 var(--line-soft);
 }
 
 .search-result-item:hover {
-    background-color: #f9f9f9;
+    background-color: var(--surface-strong);
 }
 
 /* 侧栏样式 */
-/* 侧栏整体样式 */
 .sidebar {
     position: fixed;
     left: -300px;
@@ -82,36 +92,32 @@ button {
     overflow: hidden;
 }
 
-/* 侧栏内容容器 */
 .sidebar-content {
-    background: rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(5px) saturate(100%) !important;
-    -webkit-backdrop-filter: blur(5px) saturate(100%) !important;
+    background: var(--surface);
+    backdrop-filter: blur(5px) saturate(100%);
+    -webkit-backdrop-filter: blur(5px) saturate(100%);
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--line);
     position: relative;
 }
 
-/* 侧栏主要内容区域（可滚动） */
 .sidebar-main-content {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
     padding-right: 15px;
-    color: #1f2937;
+    color: var(--text-main);
     position: relative;
 }
 
-/* 侧栏底部固定区域 */
 .sidebar-footer {
     padding: 15px 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.4);
+    border-top: 1px solid var(--line);
+    background: var(--surface);
 }
 
-/* 侧栏切换按钮（外观由 fab 按钮接管） */
 .sidebar-toggle {
     display: none;
 }
@@ -130,8 +136,8 @@ button {
     width: 46px;
     height: 46px;
     border-radius: 14px;
-    border: 1px solid rgba(15, 23, 42, 0.15);
-    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid var(--line);
+    background: var(--surface-strong);
     backdrop-filter: blur(6px);
     display: inline-flex;
     align-items: center;
@@ -140,7 +146,7 @@ button {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     box-shadow: 0 10px 22px rgba(15, 23, 42, 0.2);
-    color: #0f172a;
+    color: var(--text-main);
     gap: 6px;
     padding: 0 10px;
     min-width: 46px;
@@ -148,7 +154,7 @@ button {
 
 .fab-btn:hover {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--surface);
 }
 
 .back-to-top {
@@ -167,7 +173,7 @@ button {
 /* 目录样式 */
 .sidebar h4 {
     margin: 0;
-    color: #0f172a;
+    color: var(--text-main);
     font-size: 1.05em;
 }
 
@@ -183,7 +189,7 @@ button {
 
 .toc-eyebrow {
     margin: 0 0 6px;
-    color: #64748b;
+    color: var(--text-soft);
     font-size: 0.72rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -204,8 +210,8 @@ button {
     height: 28px;
     padding: 0 9px;
     border-radius: 999px;
-    background: rgba(37, 99, 235, 0.12);
-    color: #2563eb;
+    background: var(--accent-soft);
+    color: var(--accent);
     font-size: 0.78rem;
     font-weight: 700;
 }
@@ -216,7 +222,7 @@ button {
 
 .toc-empty {
     margin: 0;
-    color: #94a3b8;
+    color: var(--text-soft);
     font-size: 0.86rem;
 }
 
@@ -231,7 +237,7 @@ button {
     align-items: flex-start;
     gap: 8px;
     padding: 6px 10px;
-    color: #334155;
+    color: var(--text-main);
     text-decoration: none;
     border-radius: 4px;
     transition: color 0.18s ease, transform 0.18s ease, background 0.18s ease;
@@ -240,13 +246,13 @@ button {
 }
 
 .toc-item a:hover {
-    color: #1d4ed8;
+    color: var(--accent);
     transform: translateX(2px);
-    background: rgba(255, 255, 255, 0.35);
+    background: var(--surface-tint);
 }
 
 .toc-item.active a {
-    color: #0f3ea8;
+    color: var(--accent);
     font-weight: 600;
 }
 
@@ -258,7 +264,7 @@ button {
 }
 
 .toc-item.active .toc-item-marker {
-    color: #2563eb;
+    color: var(--accent);
     transform: translateX(1px);
 }
 
@@ -283,12 +289,12 @@ button {
 .nav-arrows-container {
     margin-top: 18px;
     padding-top: 16px;
-    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    border-top: 1px solid var(--line);
 }
 
 .nav-arrows-title {
     margin-bottom: 10px;
-    color: #64748b;
+    color: var(--text-soft);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -298,33 +304,33 @@ button {
     display: block;
     margin: 6px 0;
     padding: 10px 12px;
-    color: #1d4ed8;
+    color: var(--accent);
     text-decoration: none;
     font-size: 0.88em;
     line-height: 1.5;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.28);
-    border: 1px solid rgba(59, 130, 246, 0.12);
+    background: var(--surface-tint);
+    border: 1px solid var(--accent-soft);
     transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
 }
 
 .nav-arrow:hover {
     opacity: 1;
     transform: translateX(2px);
-    background: rgba(255, 255, 255, 0.44);
+    background: var(--surface);
 }
 
 /* 底部链接样式 */
 .sidebar-footer a {
     display: block;
     padding: 6px 0;
-    color: #333;
+    color: var(--text-main);
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .sidebar-footer a:hover {
-    color: #007bff;
+    color: var(--accent);
 }
 
 .sidebar-backdrop {
@@ -414,51 +420,6 @@ button {
     background: rgba(0, 0, 0, 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
-    .sidebar-main-content {
-        color: #dbe7f5;
-    }
-
-    .sidebar h4,
-    .toc-item.active a {
-        color: #dce9ff;
-    }
-
-    .toc-eyebrow,
-    .nav-arrows-title {
-        color: #8ca1be;
-    }
-
-    .toc-count {
-        background: rgba(96, 165, 250, 0.16);
-        color: #9fc5ff;
-    }
-
-    .toc-item a {
-        color: #c5d3e7;
-    }
-
-    .toc-item a:hover,
-    .nav-arrow:hover {
-        background: rgba(148, 163, 184, 0.12);
-    }
-
-    .toc-highlight {
-        background: rgba(59, 130, 246, 0.2);
-        border-color: rgba(96, 165, 250, 0.18);
-    }
-
-    .nav-arrows-container {
-        border-top-color: rgba(148, 163, 184, 0.12);
-    }
-
-    .nav-arrow,
-    .sidebar-footer a {
-        color: #bfdbfe;
-        background: rgba(148, 163, 184, 0.08);
-    }
-}
-
 /* 标签分类样式 */
 .tag-filter {
     display: flex;
@@ -472,8 +433,8 @@ button {
 .tag-btn {
     padding: 5px 12px;
     border-radius: 15px;
-    background: rgba(93, 208, 255, 0.3);
-    color: #007bff;
+    background: var(--accent-soft);
+    color: var(--accent);
     border: none;
     cursor: pointer;
     transition: all 0.3s;
@@ -486,8 +447,8 @@ button {
 }
 
 .tag-btn.active {
-    background: #007bff;
-    color: white;
+    background: var(--accent);
+    color: var(--text-inverse);
 }
 
 .post-tags {
@@ -496,8 +457,6 @@ button {
     gap: 8px;
     margin-top: 8px;
 }
-
-
 
 .main-layout {
     display: flex;
@@ -509,22 +468,22 @@ button {
 }
 
 .main-content {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--surface-card);
     backdrop-filter: blur(15px) saturate(100%);
     -webkit-backdrop-filter: blur(15px) saturate(100%);
     border-radius: 15px;
     padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--line);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-index {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--surface-card);
     backdrop-filter: blur(15px) saturate(100%);
     -webkit-backdrop-filter: blur(15px) saturate(100%);
     border-radius: 15px;
     padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--line);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     flex: 0 0 300px;
     align-self: flex-start;
@@ -544,7 +503,7 @@ button {
 
 .time {
     font-size: 24px;
-    color: #007bff;
+    color: var(--accent);
     text-align: center;
     margin-bottom: 10px;
 }
@@ -576,38 +535,33 @@ button {
 }
 
 .highlight {
-    color: #007bff;
+    color: var(--accent);
     font-weight: bold;
 }
 
 /* 底部容器样式 */
 .footer-container {
     max-width: 1200px;
-    /* 与.main-layout同宽 */
     margin: 20px auto;
-    /* 居中 */
     padding: 0 20px;
-    /* 与主内容区相同的左右内边距 */
 }
 
 .footer-content {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--surface-card);
     backdrop-filter: blur(12px) saturate(100%);
     -webkit-backdrop-filter: blur(12px) saturate(100%);
     border-radius: 15px;
     padding: 20px;
     margin-top: 20px;
     text-align: center;
-    color: #AAA;
+    color: var(--text-soft);
     font-size: 0.9em;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--line);
 }
 
-/* 确保在移动端也能正确显示 */
 @media (max-width: 768px) {
     .footer-container {
         padding: 0 15px;
-        /* 移动端稍小的内边距 */
     }
 
     .footer-content {

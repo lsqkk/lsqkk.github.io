@@ -57,7 +57,6 @@ class TrueParallax {
         darkModeMediaQuery.addEventListener('change', (e) => {
             this.isDarkMode = e.matches;
             this.applyDarkModeStyles();
-            console.log(`系统主题已切换为: ${this.isDarkMode ? '黑暗模式' : '正常模式'}`);
         });
     }
 
@@ -100,7 +99,6 @@ class TrueParallax {
         };
 
         this.bgImage.onload = () => {
-            console.log('背景图片加载成功');
             this.setupImage();
             this.isImageLoaded = true;
             // 确保黑暗模式样式应用

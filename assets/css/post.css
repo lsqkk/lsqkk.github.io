@@ -14,7 +14,7 @@ body {
     border-radius: 18px 18px 0 0;
     overflow: hidden;
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--surface-card);
 }
 
 .post-hero::after {
@@ -53,12 +53,12 @@ body {
 .post-hero-title {
     margin: 0;
     font-size: clamp(2.1rem, 3.4vw, 3rem);
-    color: #0b1f3a;
+    color: var(--text-main);
     text-shadow: none;
     line-height: 1.15;
     padding: 10px 16px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--surface);
     box-shadow: 0 10px 24px rgba(10, 18, 35, 0.18);
     backdrop-filter: blur(8px) saturate(140%);
     -webkit-backdrop-filter: blur(8px) saturate(140%);
@@ -84,7 +84,7 @@ body {
     font-size: clamp(2rem, 2.8vw, 2.6rem);
     line-height: 1.2;
     margin: 0 0 10px;
-    color: #0f172a;
+    color: var(--text-main);
     letter-spacing: 0.02em;
     text-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
 }
@@ -97,9 +97,9 @@ body {
     width: 28px;
     height: 28px;
     border-radius: 999px;
-    border: 1px solid rgba(37, 99, 235, 0.24);
-    background: rgba(255, 255, 255, 0.82);
-    color: #2563eb;
+    border: 1px solid var(--accent-soft);
+    background: var(--surface);
+    color: var(--accent);
     box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
     cursor: help;
     transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
@@ -108,7 +108,7 @@ body {
 .post-description-trigger:hover,
 .post-description-trigger:focus-visible {
     transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.96);
+    background: var(--surface-strong);
     box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
     outline: none;
 }
@@ -172,7 +172,6 @@ body {
 
 .post-content {
     line-height: 1.8;
-    /* 建议调整为 1.6-1.8 */
 }
 
 .post-content table {
@@ -183,7 +182,7 @@ body {
 .post-content th,
 .post-content td {
     padding: 8px 10px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--line);
     text-align: left;
 }
 
@@ -221,9 +220,9 @@ body {
     margin: 0 0.08em;
     padding: 0 0.25em;
     border-radius: 999px;
-    border: 1px solid rgba(37, 99, 235, 0.18) !important;
-    background: rgba(37, 99, 235, 0.08);
-    color: #1d4ed8 !important;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    color: var(--accent);
     font-size: 0.72em;
     font-weight: 700;
     line-height: 1;
@@ -236,7 +235,7 @@ body {
 .post-content a[data-footnote-ref]:hover,
 .post-content a[data-footnote-ref]:focus-visible {
     background: rgba(37, 99, 235, 0.16);
-    border-color: rgba(37, 99, 235, 0.34) !important;
+    border-color: rgba(37, 99, 235, 0.34);
     outline: none;
 }
 
@@ -244,7 +243,7 @@ body {
 .post-content .footnotes[data-footnotes] {
     margin-top: 44px;
     padding-top: 18px;
-    border-top: 1px solid rgba(15, 23, 42, 0.12);
+    border-top: 1px solid var(--line);
     scroll-margin-top: 90px;
 }
 
@@ -257,7 +256,7 @@ body {
     clip: auto !important;
     white-space: normal !important;
     margin: 0 0 14px !important;
-    color: #0f172a;
+    color: var(--text-main);
     font-size: 0;
     line-height: 1.35;
 }
@@ -281,7 +280,7 @@ body {
 .post-content .footnotes[data-footnotes] li {
     margin: 0.72em 0;
     padding-left: 0.2em;
-    color: #334155;
+    color: var(--text-main);
     line-height: 1.75;
     scroll-margin-top: 90px;
 }
@@ -302,10 +301,10 @@ body {
     min-width: 1.45em;
     height: 1.45em;
     margin-left: 0.35em;
-    border: 1px solid rgba(37, 99, 235, 0.18) !important;
+    border: 1px solid var(--accent-soft);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.45);
-    color: #2563eb !important;
+    background: var(--surface);
+    color: var(--accent);
     font-size: 0.78em;
     line-height: 1;
     text-decoration: none !important;
@@ -316,7 +315,7 @@ body {
 .post-content a[data-footnote-backref]:hover,
 .post-content a[data-footnote-backref]:focus-visible {
     background: rgba(37, 99, 235, 0.12);
-    border-color: rgba(37, 99, 235, 0.32) !important;
+    border-color: rgba(37, 99, 235, 0.32);
     outline: none;
 }
 
@@ -328,13 +327,12 @@ body {
     margin: 24px 0;
     padding: 16px 18px;
     border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--line);
     background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.18)),
-        rgba(255, 255, 255, 0.22);
+        linear-gradient(135deg, var(--surface), var(--surface-card));
     box-shadow:
         0 10px 28px rgba(15, 23, 42, 0.10),
-        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        inset 0 1px 0 var(--line-soft);
     backdrop-filter: blur(12px) saturate(115%);
     -webkit-backdrop-filter: blur(12px) saturate(115%);
     overflow: hidden;
@@ -352,8 +350,8 @@ body {
     transform: translateY(-2px);
     box-shadow:
         0 16px 34px rgba(15, 23, 42, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.34);
-    border-color: rgba(255, 255, 255, 0.26);
+        inset 0 1px 0 var(--line-soft);
+    border-color: var(--line-strong);
     border-bottom: none !important;
     padding-bottom: 0 !important;
     text-decoration: none !important;
@@ -385,18 +383,18 @@ body {
 }
 
 .post-inline-card-chip.is-tag {
-    background: rgba(37, 99, 235, 0.12);
-    color: #1d4ed8;
+    background: var(--accent-soft);
+    color: var(--accent);
 }
 
 .post-inline-card-chip.is-description {
     background: rgba(15, 23, 42, 0.08);
-    color: #334155;
+    color: var(--text-subtle);
 }
 
 .post-inline-card-title {
     margin: 0;
-    color: #0f172a;
+    color: var(--text-main);
     font-size: clamp(1.08rem, 1.7vw, 1.28rem);
     line-height: 1.22;
     letter-spacing: 0.01em;
@@ -404,7 +402,7 @@ body {
 
 .post-inline-card-intro {
     margin: 6px 0 0;
-    color: #475569;
+    color: var(--text-subtle);
     line-height: 1.62;
     font-size: 0.95rem;
 }
@@ -421,7 +419,7 @@ body {
     height: 108px;
     object-fit: cover;
     border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    border: 1px solid var(--line);
     box-shadow: 0 8px 20px rgba(15, 23, 42, 0.10);
 }
 
@@ -433,17 +431,19 @@ body {
 }
 
 code {
-    background-color: #f6f8fa;
+    background-color: var(--code-bg);
+    color: var(--code-color);
     padding: 2px 4px;
     border-radius: 4px;
 }
 
 pre {
-    background-color: #f6f8fa;
+    background-color: rgba(30, 41, 59, 0.8);
     padding: 16px;
     overflow: auto;
     border-radius: 6px;
     line-height: 1.45;
+    border: 1px solid var(--line);
 }
 
 .back-link {
@@ -457,12 +457,12 @@ pre {
     border-radius: 8px;
     text-decoration: none;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--line);
     transition: all 0.3s;
 }
 
 .share-button:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--surface);
     transform: translateY(-2px);
 }
 
@@ -477,7 +477,7 @@ pre {
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    color: #333333;
+    color: var(--text-main);
     font-size: 0.9em;
     margin-bottom: 18px;
 }
@@ -509,7 +509,7 @@ pre {
 
 .post-column-note {
     margin: 6px 0 12px;
-    color: #4b5563;
+    color: var(--text-subtle);
     font-size: 0.9em;
 }
 
@@ -530,8 +530,8 @@ pre {
 .post-tag {
     padding: 4px 10px;
     border-radius: 10px;
-    background: rgba(47, 110, 219, 0.14);
-    color: #2f6edb;
+    background: var(--tag-bg);
+    color: var(--tag-color);
     font-size: 0.75em;
     font-weight: 500;
     white-space: nowrap;
@@ -557,15 +557,15 @@ pre {
 }
 
 .post-tag-link:hover {
-    background: rgba(3, 102, 214, 0.18);
-    border-color: rgba(3, 102, 214, 0.4);
+    background: var(--accent-soft);
+    border-color: var(--accent-soft);
     border-bottom: none;
 }
 
 /* 阅读时长标签特殊样式 */
 .post-tag.read-time {
-    background: rgba(255, 193, 7, 0.2) !important;
-    color: #ff9800 !important;
+    background: var(--tag-time-bg);
+    color: var(--tag-time-color);
     border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
@@ -573,34 +573,27 @@ pre {
     line-height: 1.3em;
     margin-bottom: 1.3em;
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(8px) saturate(100%) !important;
-    -webkit-backdrop-filter: blur(8px) saturate(100%) !important;
+    background: var(--surface-card);
+    backdrop-filter: blur(8px) saturate(100%);
+    -webkit-backdrop-filter: blur(8px) saturate(100%);
     padding: 40px;
     margin: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--line);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
 .morenpost a {
-    /* 基础颜色和下划线 */
-    color: #2563eb;
+    color: var(--accent);
     text-decoration: none;
-    border-bottom: 1px solid #2563eb;
-
-    /* 平滑过渡效果 */
+    border-bottom: 1px solid var(--accent);
     transition: all 0.2s ease;
-
-    /* 内边距保持美观 */
     padding-bottom: 1px;
 }
 
 .morenpost a:hover {
-    /* 悬停效果：颜色变深，虚线效果 */
-    color: #1d4ed8;
-    border-bottom: 1px dashed #1d4ed8;
+    color: var(--accent);
+    border-bottom: 1px dashed var(--accent);
     padding-bottom: 0;
-    /* 补偿线宽变化 */
 }
 
 .donate-section {
@@ -610,7 +603,7 @@ pre {
 
 .donate-text {
     margin: 0 0 10px;
-    color: #4b5563;
+    color: var(--text-subtle);
     font-size: 0.88em;
     line-height: 1.5;
 }
@@ -634,10 +627,8 @@ pre {
 
 img {
     width: 100%;
-    /* 使图片填充整个容器 */
     height: auto;
     border-radius: 5px;
-    /* 高度自适应 */
 }
 
 @media (max-width: 640px) {
@@ -705,80 +696,6 @@ img {
     .post-inline-card-image {
         width: min(180px, 100%);
         height: 112px;
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    .post-hero::after {
-        background: linear-gradient(180deg, rgba(10, 16, 28, 0.25), rgba(5, 10, 20, 0.65));
-    }
-
-    .post-hero-title {
-        color: #e6f1ff;
-        background: rgba(10, 18, 35, 0.68);
-        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
-    }
-
-    .post-description-trigger {
-        background: rgba(10, 18, 35, 0.74);
-        color: #8db5ff;
-        border-color: rgba(96, 165, 250, 0.24);
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
-    }
-
-    .post-content .post-inline-card {
-        border-color: rgba(96, 165, 250, 0.18);
-        background:
-            linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(20, 30, 48, 0.94)),
-            rgba(15, 23, 42, 0.92);
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    .post-inline-card-chip.is-tag {
-        background: rgba(96, 165, 250, 0.16);
-        color: #93c5fd;
-    }
-
-    .post-inline-card-chip.is-description {
-        background: rgba(255, 255, 255, 0.08);
-        color: #cbd5e1;
-    }
-
-    .post-inline-card-title {
-        color: #e2e8f0;
-    }
-
-    .post-inline-card-intro {
-        color: #cbd5e1;
-    }
-
-    .post-footnote-ref,
-    .post-content a[data-footnote-ref] {
-        border-color: rgba(147, 197, 253, 0.28) !important;
-        background: rgba(96, 165, 250, 0.14);
-        color: #bfdbfe !important;
-    }
-
-    .post-footnotes,
-    .post-content .footnotes[data-footnotes] {
-        border-top-color: rgba(148, 163, 184, 0.22);
-    }
-
-    .post-footnotes-title,
-    .post-content .footnotes[data-footnotes] #footnote-label {
-        color: #e2e8f0;
-    }
-
-    .post-footnote-item,
-    .post-content .footnotes[data-footnotes] li {
-        color: #cbd5e1;
-    }
-
-    .post-footnote-backref,
-    .post-content a[data-footnote-backref] {
-        border-color: rgba(147, 197, 253, 0.26) !important;
-        background: rgba(15, 23, 42, 0.56);
-        color: #bfdbfe !important;
     }
 }
 

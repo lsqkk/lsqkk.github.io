@@ -1,256 +1,256 @@
-       :root {
-           --primary-color: rgba(52, 152, 219, 0.8);
-           --glass-bg: rgba(255, 255, 255, 0.2);
-           --shadow: 0 8px 32px 0 rgba(5, 7, 26, 0.2);
-       }
+:root {
+    --primary-color: rgba(52, 152, 219, 0.8);
+    --glass-bg: var(--surface-card);
+    --shadow: 0 8px 32px 0 rgba(5, 7, 26, 0.2);
+}
 
-       body {
-           min-height: 100vh;
-           padding: 2rem;
-       }
+body {
+    min-height: 100vh;
+    padding: 2rem;
+}
 
-       .dynamic-container {
-           max-width: 800px;
-           margin: 0 auto;
-       }
+.dynamic-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-       .dynamic-header {
-           text-align: center;
-           margin-bottom: 2rem;
-       }
+.dynamic-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
 
-       .dynamic-card {
-           background: var(--glass-bg);
-           backdrop-filter: blur(12px);
-           border-radius: 12px;
-           padding: 1.5rem;
-           margin-bottom: 1.5rem;
-           box-shadow: var(--shadow);
-           transition: transform 0.3s ease;
-           border: 1px solid rgba(0, 0, 0, 0.1);
-       }
+.dynamic-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--line);
+}
 
-       .dynamic-card:hover {
-           transform: translateY(-3px);
-       }
+.dynamic-card:hover {
+    transform: translateY(-3px);
+}
 
-       .dynamic-title {
-           color: #2c3e50;
-           font-size: 1.4rem;
-           margin-bottom: 0.5rem;
-       }
+.dynamic-title {
+    color: var(--text-main);
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
 
-       .dynamic-date {
-           color: #c5cdcd;
-           font-size: 0.9rem;
-           margin-bottom: 1rem;
-           display: inline-flex;
-           align-items: center;
-           gap: 6px;
-       }
+.dynamic-date {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
 
-       .dynamic-content {
-           color: #34495e;
-           line-height: 1.7;
-       }
+.dynamic-content {
+    color: var(--text-main);
+    line-height: 1.7;
+}
 
-       .dynamic-entry-footer {
-           margin-top: 12px;
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           gap: 10px;
-       }
+.dynamic-entry-footer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
 
-       .dynamic-detail-link {
-           color: #2f6edb;
-           text-decoration: none;
-           font-weight: 600;
-           font-size: 0.9rem;
-       }
+.dynamic-detail-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
 
-       .dynamic-entry-stats {
-           display: flex;
-           gap: 10px;
-           color: #6b7d8d;
-           font-size: 0.84rem;
-       }
+.dynamic-entry-stats {
+    display: flex;
+    gap: 10px;
+    color: var(--text-soft);
+    font-size: 0.84rem;
+}
 
-       .dynamic-content img {
-           max-width: 100%;
-           border-radius: 8px;
-           margin: 1rem 0;
-           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-       }
+.dynamic-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-       .back-home {
-           display: block;
-           text-align: center;
-           margin: 2rem 0;
-           color: #3498db;
-           text-decoration: none;
-           font-weight: 500;
-       }
+.back-home {
+    display: block;
+    text-align: center;
+    margin: 2rem 0;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
 
-       .dynamic-layout {
-           display: flex;
-           gap: 20px;
-           max-width: 1200px;
-           margin: 0 auto;
-       }
+.dynamic-layout {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-       /* 主内容区域 */
-       .dynamic-main {
-           flex: 1;
-           min-width: 0;
-       }
+/* 主内容区域 */
+.dynamic-main {
+    flex: 1;
+    min-width: 0;
+}
 
-       /* 侧边栏 */
-       .dynamic-sidebar {
-           width: 220px;
-           flex-shrink: 0;
-       }
+/* 侧边栏 */
+.dynamic-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+}
 
-       /* 分页样式 */
-       .pagination-container {
-           margin-top: 30px;
-           text-align: center;
-       }
+/* 分页样式 */
+.pagination-container {
+    margin-top: 30px;
+    text-align: center;
+}
 
-       .pagination {
-           display: inline-flex;
-           gap: 5px;
-           background: var(--glass-bg);
-           backdrop-filter: blur(12px);
-           border-radius: 8px;
-           padding: 8px;
-           box-shadow: var(--shadow);
-       }
+.pagination {
+    display: inline-flex;
+    gap: 5px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: var(--shadow);
+}
 
-       .page-btn {
-           min-width: 36px;
-           height: 36px;
-           border: none;
-           background: transparent;
-           border-radius: 6px;
-           color: #2c3e50;
-           font-size: 14px;
-           cursor: pointer;
-           transition: all 0.3s ease;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-       }
+.page-btn {
+    min-width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-       .page-btn:hover {
-           background: rgba(52, 152, 219, 0.1);
-       }
+.page-btn:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
 
-       .page-btn.active {
-           background: var(--primary-color);
-           color: white;
-       }
+.page-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
 
-       .page-btn:disabled {
-           opacity: 0.5;
-           cursor: not-allowed;
-       }
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
-       .page-info {
-           margin-top: 10px;
-           color: #7f8c8d;
-           font-size: 14px;
-       }
+.page-info {
+    margin-top: 10px;
+    color: var(--text-soft);
+    font-size: 14px;
+}
 
-       /* 月历样式 */
-       .calendar-widget {
-           background: var(--glass-bg);
-           backdrop-filter: blur(12px);
-           border-radius: 12px;
-           padding: 1rem;
-           box-shadow: var(--shadow);
-           margin-bottom: 1.5rem;
-           border: 1px solid rgba(0, 0, 0, 0.1);
-       }
+/* 月历样式 */
+.calendar-widget {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--line);
+}
 
-       .calendar-title {
-           color: #2c3e50;
-           font-size: 1.2rem;
-           margin-bottom: 1rem;
-           text-align: center;
-           font-weight: 500;
-           display: inline-flex;
-           align-items: center;
-           justify-content: center;
-           gap: 8px;
-       }
+.calendar-title {
+    color: var(--text-main);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
 
-       .month-list {
-           display: flex;
-           flex-direction: column;
-           gap: 10px;
-       }
+.month-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-       .month-item {
-           padding: 12px 15px;
-           background: rgba(255, 255, 255, 0.5);
-           border-radius: 8px;
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           cursor: pointer;
-           transition: all 0.3s ease;
-           text-decoration: none;
-           color: #34495e;
-       }
+.month-item {
+    padding: 12px 15px;
+    background: var(--surface);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--text-main);
+}
 
-       .month-item:hover {
-           background: rgba(52, 152, 219, 0.1);
-           transform: translateX(5px);
-       }
+.month-item:hover {
+    background: rgba(52, 152, 219, 0.1);
+    transform: translateX(5px);
+}
 
-       .month-name {
-           font-size: 15px;
-           font-weight: 500;
-       }
+.month-name {
+    font-size: 15px;
+    font-weight: 500;
+}
 
-       .month-count {
-           background: var(--primary-color);
-           color: white;
-           padding: 2px 8px;
-           border-radius: 10px;
-           font-size: 12px;
-           min-width: 20px;
-           text-align: center;
-       }
+.month-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    min-width: 20px;
+    text-align: center;
+}
 
-       .month-item.active {
-           background: var(--primary-color);
-           color: white;
-       }
+.month-item.active {
+    background: var(--primary-color);
+    color: white;
+}
 
-       .month-item.active .month-count {
-           background: rgba(255, 255, 255, 0.3);
-           color: white;
-       }
+.month-item.active .month-count {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
 
-       /* 响应式设计 */
-       @media (max-width: 768px) {
-           .dynamic-layout {
-               flex-direction: column;
-           }
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .dynamic-layout {
+        flex-direction: column;
+    }
 
-           .dynamic-sidebar {
-               width: 100%;
-               order: -1;
-           }
+    .dynamic-sidebar {
+        width: 100%;
+        order: -1;
+    }
 
-           .calendar-widget {
-               margin-top: 20px;
-           }
+    .calendar-widget {
+        margin-top: 20px;
+    }
 
-           .pagination {
-               flex-wrap: wrap;
-               justify-content: center;
-           }
-       }
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

@@ -17,7 +17,6 @@ function getFirebaseHelper() {
 }
 
 function reloadFirebaseConfig() {
-    console.log('🔄 重新加载Firebase配置...');
     const helper = getFirebaseHelper();
     return helper.loadConfigScript({ id: 'firebase-config-loader', force: true, timeout: 15000 });
 }
@@ -25,7 +24,6 @@ function reloadFirebaseConfig() {
 // 完全静候的加载函数
 async function loadRecentMessagesWithInfiniteWait() {
     if (isWaiting) {
-        console.log('⏳ 已经在等待加载中...');
         return;
     }
 
@@ -44,33 +42,26 @@ async function loadRecentMessagesWithInfiniteWait() {
             `;
         }
 
-        console.log('🚀 开始静候加载流程...');
 
         const config = getFirebaseHelper().getConfig();
         if (config && config.projectId) {
-            console.log('✅ 使用现有Firebase配置');
             await initializeAndLoadMessages();
             return;
         }
 
-        console.log('⏳ 进入静候模式...');
 
         try {
             await reloadFirebaseConfig();
-            console.log('✅ 配置重新加载成功');
         } catch (reloadError) {
-            console.log('⚠️ 重新加载失败，继续静候现有配置:', reloadError);
         }
 
         await getFirebaseHelper().waitForConfig(15000);
-        console.log('🎉 配置加载成功，开始初始化...');
         await initializeAndLoadMessages();
     } catch (error) {
         console.error('💥 加载过程出错:', error);
         showErrorMessage('留言加载失败，稍后会自动重试...');
 
         window.setTimeout(() => {
-            console.log('🔄 自动重试加载...');
             isWaiting = false;
             void loadRecentMessagesWithInfiniteWait();
         }, 30000);
@@ -84,7 +75,6 @@ async function initializeAndLoadMessages() {
     });
     if (!firebaseInitialized) {
         firebaseInitialized = true;
-        console.log('✅ Firebase初始化成功');
     }
     const messagesRef = database.ref('chatrooms/lsqkk-lyb/messages');
     const snapshot = await messagesRef
@@ -183,7 +173,6 @@ function showErrorMessage(message) {
 
 // 初始化（完全静候）
 function initMessages() {
-    console.log('🔧 初始化消息模块...');
 
     const style = document.createElement('style');
     style.textContent = `
@@ -209,7 +198,6 @@ function initMessages() {
 
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && !firebaseInitialized) {
-            console.log('👀 页面重新可见，重试加载...');
             isWaiting = false;
             window.setTimeout(() => {
                 void loadRecentMessagesWithInfiniteWait();
@@ -218,7 +206,6 @@ function initMessages() {
     });
 
     window.addEventListener('online', () => {
-        console.log('🌐 网络恢复，重试加载...');
         if (!firebaseInitialized) {
             isWaiting = false;
             window.setTimeout(() => {

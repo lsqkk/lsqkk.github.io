@@ -524,30 +524,23 @@ function getDistance(lat1, lon1, lat2, lon2) {
  * @returns {string}
  */
 function getBanter(province, city) {
-    console.log('获取俏皮话，省份:', province, '城市:', city);
-    console.log('cityBanterData 状态:', window.cityBanterData ? '已加载' : '未加载');
 
     // 首先尝试加载并匹配市级俏皮话
     if (window.cityBanterData) {
-        console.log('cityBanterData 内容:', window.cityBanterData);
 
         // 先尝试匹配完整的城市名（如"徐州市"）
         if (city && window.cityBanterData[city]) {
-            console.log('匹配到市级俏皮话:', city);
             return window.cityBanterData[city];
         }
 
         // 如果城市名包含"市"字，尝试去除"市"字匹配（如"徐州"）
         if (city && city.endsWith('市')) {
             const cityWithoutSuffix = city.slice(0, -1);
-            console.log('尝试去除"市"字匹配:', cityWithoutSuffix);
             if (window.cityBanterData[cityWithoutSuffix]) {
-                console.log('匹配到市级俏皮话(无市字):', cityWithoutSuffix);
                 return window.cityBanterData[cityWithoutSuffix];
             }
         }
 
-        console.log('未找到市级俏皮话，回退到省级');
     }
 
     // 如果没有市级俏皮话，回退到省级俏皮话（使用现有逻辑）
@@ -656,17 +649,13 @@ function loadCityBanterData() {
             /** @type {Record<string, string>} */
             const cityBanterData = data;
             window.cityBanterData = cityBanterData;
-            console.log('市级俏皮话数据加载成功');
-            console.log('数据包含城市:', Object.keys(cityBanterData).filter(key => key.includes('州')));
 
             // 数据加载成功后，重新显示欢迎信息（如果已经显示过）
             if (window.visitorInfoDisplayed) {
-                console.log('重新显示欢迎信息');
                 showVisitorInfo(/** @type {VisitorInfo} */(window.cachedVisitorInfo));
             }
         })
         .catch(error => {
-            console.log('市级俏皮话数据加载失败，使用省级备用:', error);
             window.cityBanterData = null;
         });
 }
@@ -682,7 +671,6 @@ function showVisitorInfo(info) {
 
     // 获取俏皮话（使用新函数，传入省份和城市）
     const banter = getBanter(province, city);
-    console.log('最终使用的俏皮话:', banter);
 
     // 显示位置信息
     let locationText = `${province} ${city}`;
@@ -771,7 +759,6 @@ async function getVisitorInfo() {
                     const checkInterval = setInterval(() => {
                         if (window.cityBanterData && window.visitorInfoDisplayed) {
                             clearInterval(checkInterval);
-                            console.log('数据已加载，重新显示欢迎信息');
                             showVisitorInfo(/** @type {VisitorInfo} */(window.cachedVisitorInfo));
                         }
                     }, 100);

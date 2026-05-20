@@ -625,7 +625,6 @@ function initializeTranslation() {
         }
 
         // 2. 初始化完成后同步当前状态
-        console.log('Translate.js 初始化完成');
         syncLanguagePickers(currentLanguage);
         performLanguageChange(currentLanguage, { force: true });
     };
@@ -659,7 +658,6 @@ function performLanguageChange(targetLanguage, options = {}) {
 
     // 在切换前，特别是切回中文时，尝试清除该语种的缓存
     if (normalizedLanguage === DEFAULT_LANGUAGE) {
-        console.log('切换到中文，尝试清除缓存确保更新');
     }
 
     // 执行语言切换

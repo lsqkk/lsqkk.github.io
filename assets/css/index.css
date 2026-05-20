@@ -112,7 +112,7 @@ body.home-page .recent-posts .post-item {
     display: grid;
     gap: 18px;
     padding: 30px 28px 24px;
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--intro-bg);
 }
 
 .intro-hero,
@@ -157,12 +157,12 @@ body.home-page .recent-posts .post-item {
     font-size: clamp(2rem, 3vw, 2.5rem);
     line-height: 1.08;
     letter-spacing: 0.04em;
-    color: #102d4e;
+    color: var(--hero-title-color);
 }
 
 .welcome-title {
     margin: 0 0 10px;
-    color: #153764;
+    color: var(--section-title-color);
     font-size: 1.26rem;
     line-height: 1.3;
 }
@@ -312,7 +312,7 @@ body.home-page .recent-posts .post-item {
 .section-title-link,
 .sidebar-title {
     margin: 0;
-    color: #153764;
+    color: var(--section-title-color);
     font-size: 1.06rem;
     line-height: 1.3;
 }
@@ -409,7 +409,7 @@ body.home-page .recent-posts .post-item {
 
 .post-title {
     margin-bottom: 6px;
-    color: #113f73;
+    color: var(--post-title-color);
     font-size: 1.06rem;
     font-weight: 700;
     line-height: 1.45;
@@ -500,7 +500,7 @@ body.home-page .recent-posts .post-item {
 }
 
 .dynamic-title {
-    color: #113b68;
+    color: var(--dynamic-title-color);
     font-weight: 700;
     font-size: 1.04rem;
     line-height: 1.45;
@@ -672,7 +672,7 @@ body.home-page .recent-posts .post-item {
 .sidebar-welcome-panel {
     display: grid;
     gap: 16px;
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--sidebar-welcome-bg);
 }
 
 .sidebar-welcome-block {
@@ -1091,7 +1091,7 @@ body.home-page .recent-posts .post-item {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: #163a67;
+    color: var(--footer-title-color);
     font-size: 1.32rem;
     font-weight: 700;
 }
@@ -1134,7 +1134,7 @@ body.home-page .recent-posts .post-item {
 }
 
 .footer-stat-value {
-    color: #1d58ba;
+    color: var(--footer-stat-value);
     font-size: 1.34rem;
     font-weight: 700;
 }
@@ -1344,25 +1344,6 @@ body.home-page .recent-posts .post-item {
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --bg-tint: rgba(4, 10, 22, 0.74);
-        --surface: rgba(17, 28, 46, 0.68);
-        --surface-strong: rgba(18, 30, 50, 0.72);
-        --surface-soft: rgba(21, 35, 56, 0.62);
-        --surface-tint: rgba(66, 108, 170, 0.16);
-        --text-main: #e3ecfb;
-        --text-subtle: #b8cde7;
-        --text-soft: #97afcf;
-        --accent: #84b7ff;
-        --accent-2: #71dcc8;
-        --accent-soft: rgba(122, 176, 255, 0.18);
-        --line: rgba(134, 171, 226, 0.22);
-        --line-strong: rgba(134, 171, 226, 0.34);
-        --line-soft: rgba(171, 199, 241, 0.3);
-        --shadow-main: 0 20px 42px rgba(0, 0, 0, 0.42);
-        --shadow-soft: 0 12px 26px rgba(0, 0, 0, 0.32);
-    }
-
     body.home-page {
         background:
             radial-gradient(circle at top left, rgba(66, 120, 210, 0.2), transparent 34%),
@@ -1375,17 +1356,17 @@ body.home-page .recent-posts .post-item {
     .home-panel,
     .sidebar-panel,
     .footer-card {
-        background: var(--surface) !important;
+        background: var(--surface);
         box-shadow: var(--shadow-main);
-        border-color: rgba(138, 173, 220, 0.32);
+        border-color: var(--line);
     }
 
     .intro-combo-panel {
-        background: rgba(18, 30, 50, 0.72) !important;
+        background: var(--intro-bg);
     }
 
     .sidebar-welcome-panel {
-        background: rgba(18, 30, 50, 0.7) !important;
+        background: var(--sidebar-welcome-bg);
     }
 
     .hero-title,
@@ -1404,9 +1385,7 @@ body.home-page .recent-posts .post-item {
         color: var(--text-main);
     }
 
-    .typewriter {
-        color: #dce9ff;
-    }
+    .typewriter { color: #dce9ff; }
 
     .welcome-text,
     .dynamic-content,
@@ -1425,20 +1404,9 @@ body.home-page .recent-posts .post-item {
         background: rgba(122, 176, 255, 0.06);
     }
 
-    .post-tag {
-        background: rgba(88, 129, 195, 0.28);
-        color: #d8e8ff;
-    }
-
-    .post-tag.read-time {
-        background: rgba(188, 139, 45, 0.28);
-        color: #ffe1a6;
-    }
-
-    .post-tag-col {
-        background: rgba(152, 129, 229, 0.24);
-        color: #ebdeff;
-    }
+    .post-tag { background: var(--tag-bg); color: var(--tag-color); }
+    .post-tag.read-time { background: var(--tag-time-bg); color: var(--tag-time-color); }
+    .post-tag-col { background: var(--tag-col-bg); color: var(--tag-col-color); }
 
     .dynamic-content.is-clamped::before {
         background: linear-gradient(90deg, rgba(12, 20, 35, 0), rgba(13, 22, 38, 0.96));
@@ -1446,72 +1414,174 @@ body.home-page .recent-posts .post-item {
 
     .dynamic-content.is-clamped::after {
         background: rgba(13, 22, 38, 0.96);
-        color: #cfe0ff;
+        color: var(--accent);
     }
 
     .dynamic-like-btn {
         background: rgba(88, 129, 195, 0.22);
-        border-color: rgba(138, 173, 220, 0.3);
-        color: #e1ecff;
+        border-color: var(--line);
+        color: var(--text-main);
     }
 
-    .dynamic-like-btn:hover {
-        background: rgba(88, 129, 195, 0.34);
-    }
+    .dynamic-like-btn:hover { background: rgba(88, 129, 195, 0.34); }
 
-    .index-log-tag.default {
-        background: #6f8fb2;
-    }
+    .index-log-tag.default { background: #6f8fb2; }
 
     .contact-chip,
     .social-link {
-        background: rgba(27, 42, 67, 0.84) !important;
-        border-color: rgba(138, 173, 220, 0.28) !important;
+        background: rgba(27, 42, 67, 0.84);
+        border-color: var(--line);
         box-shadow: none;
     }
 
     .contact-chip:hover,
     .contact-chip.is-open,
     .social-link:hover {
-        background: rgba(36, 56, 88, 0.94) !important;
-        border-color: rgba(138, 173, 220, 0.42) !important;
+        background: rgba(36, 56, 88, 0.94);
+        border-color: var(--line-strong);
     }
 
-    .dynamic-card:hover {
-        background: transparent !important;
-        transform: none;
-    }
+    .dynamic-card:hover { background: transparent; transform: none; }
 
     body.home-page .recent-posts .post-item {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        border-radius: 0 !important;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border-radius: 0;
     }
 
     .post-cover-wrap::after {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.24));
     }
 
-    .popup-container {
-        background: rgba(15, 24, 41, 0.88);
-    }
-
-    .popup-header,
-    .popup-footer {
-        border-color: rgba(140, 173, 221, 0.28);
-    }
-
-    .popup-content {
-        color: #c8daf2;
-    }
+    .popup-container { background: var(--popup-container-bg); }
+    .popup-header, .popup-footer { border-color: var(--popup-border); }
+    .popup-content { color: var(--popup-text); }
 
     .popup-close-btn,
     .popup-confirm-btn {
         background: rgba(58, 86, 126, 0.4);
-        border-color: rgba(141, 176, 227, 0.44);
-        color: #dceafd;
+        border-color: var(--line);
+        color: var(--text-main);
     }
+}
+
+body.dark-mode body.home-page {
+    background:
+        radial-gradient(circle at top left, rgba(66, 120, 210, 0.2), transparent 34%),
+        radial-gradient(circle at top right, rgba(44, 167, 155, 0.12), transparent 32%),
+        linear-gradient(160deg, var(--bg-tint), rgba(4, 12, 24, 0.82)),
+        url('/assets/img/bg.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+body.dark-mode .home-panel,
+body.dark-mode .sidebar-panel,
+body.dark-mode .footer-card {
+    background: var(--surface);
+    box-shadow: var(--shadow-main);
+    border-color: var(--line);
+}
+
+body.dark-mode .intro-combo-panel { background: var(--intro-bg); }
+body.dark-mode .sidebar-welcome-panel { background: var(--sidebar-welcome-bg); }
+
+body.dark-mode .hero-title,
+body.dark-mode .welcome-title,
+body.dark-mode .section-title-link,
+body.dark-mode .sidebar-title,
+body.dark-mode .post-title,
+body.dark-mode .dynamic-title,
+body.dark-mode .index-log-detail,
+body.dark-mode .online-preview-name,
+body.dark-mode .friend-nickname,
+body.dark-mode .github-promo-title,
+body.dark-mode .latest-video-title,
+body.dark-mode .footer-title,
+body.dark-mode .message-preview-author {
+    color: var(--text-main);
+}
+
+body.dark-mode .typewriter { color: #dce9ff; }
+
+body.dark-mode .welcome-text,
+body.dark-mode .dynamic-content,
+body.dark-mode .message-preview-text,
+body.dark-mode .index-announcement-text,
+body.dark-mode .tip,
+body.dark-mode .info,
+body.dark-mode .github-promo-desc {
+    color: var(--text-subtle);
+}
+
+body.dark-mode .post-item-link:hover,
+body.dark-mode .friend-link-item:hover,
+body.dark-mode .online-preview-card:hover,
+body.dark-mode .index-log-item:hover {
+    background: rgba(122, 176, 255, 0.06);
+}
+
+body.dark-mode .post-tag { background: var(--tag-bg); color: var(--tag-color); }
+body.dark-mode .post-tag.read-time { background: var(--tag-time-bg); color: var(--tag-time-color); }
+body.dark-mode .post-tag-col { background: var(--tag-col-bg); color: var(--tag-col-color); }
+
+body.dark-mode .dynamic-content.is-clamped::before {
+    background: linear-gradient(90deg, rgba(12, 20, 35, 0), rgba(13, 22, 38, 0.96));
+}
+
+body.dark-mode .dynamic-content.is-clamped::after {
+    background: rgba(13, 22, 38, 0.96);
+    color: var(--accent);
+}
+
+body.dark-mode .dynamic-like-btn {
+    background: rgba(88, 129, 195, 0.22);
+    border-color: var(--line);
+    color: var(--text-main);
+}
+
+body.dark-mode .dynamic-like-btn:hover { background: rgba(88, 129, 195, 0.34); }
+body.dark-mode .index-log-tag.default { background: #6f8fb2; }
+
+body.dark-mode .contact-chip,
+body.dark-mode .social-link {
+    background: rgba(27, 42, 67, 0.84);
+    border-color: var(--line);
+    box-shadow: none;
+}
+
+body.dark-mode .contact-chip:hover,
+body.dark-mode .contact-chip.is-open,
+body.dark-mode .social-link:hover {
+    background: rgba(36, 56, 88, 0.94);
+    border-color: var(--line-strong);
+}
+
+body.dark-mode .dynamic-card:hover { background: transparent; transform: none; }
+
+body.dark-mode .recent-posts .post-item {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+}
+
+body.dark-mode .post-cover-wrap::after {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.24));
+}
+
+body.dark-mode .popup-container { background: var(--popup-container-bg); }
+body.dark-mode .popup-header,
+body.dark-mode .popup-footer { border-color: var(--popup-border); }
+body.dark-mode .popup-content { color: var(--popup-text); }
+
+body.dark-mode .popup-close-btn,
+body.dark-mode .popup-confirm-btn {
+    background: rgba(58, 86, 126, 0.4);
+    border-color: var(--line);
+    color: var(--text-main);
 }
