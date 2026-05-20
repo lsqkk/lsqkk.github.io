@@ -1154,7 +1154,7 @@ async function doStreamRequest(endpoint, apiKey, body, reasoningBox, contentBox,
       const finalData = JSON.parse(finalStr);
       if (finalData?.usage) usage = finalData.usage;
     }
-  } catch {}
+  } catch (e) { console.warn('[qai] parse usage failed:', e); }
 
   // Make reasoning box clickable to expand/collapse
   if (fullReasoning) {
@@ -1222,7 +1222,7 @@ function trackTokenUsage(chatIndex, usage) {
   localStorage.setItem('deepseekChats', JSON.stringify(chats));
 
   let global = { totalPromptTokens: 0, totalCompletionTokens: 0, totalTokens: 0 };
-  try { global = JSON.parse(localStorage.getItem('quark_llm_token_usage')) || global; } catch {}
+  try { global = JSON.parse(localStorage.getItem('quark_llm_token_usage')) || global; } catch (e) { console.warn('[qai] parse token usage failed:', e); }
   global.totalPromptTokens += usage.prompt_tokens || 0;
   global.totalCompletionTokens += usage.completion_tokens || 0;
   global.totalTokens += usage.total_tokens || 0;

@@ -10,3 +10,6 @@ node_modules
 dist
 .quark-artifact
 public
+
+# Build artifacts
+*.pyc

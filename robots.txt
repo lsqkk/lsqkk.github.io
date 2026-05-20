@@ -1,8 +1,3 @@
-# robots.txt for d:\git\lsqkk\lsqkk.github.io
 User-agent: *
 Allow: /
 Sitemap: https://lsqkk.github.io/sitemap.xml
-
-# Crawl-delay: 10
-# Disallow: /private/
-# Disallow: /tmp/

@@ -165,3 +165,948 @@ body.dark-mode {
   --footer-stat-value: #9dc1ff;
   --popup-container-bg: rgba(15, 24, 41, 0.88);
 }
+
+/* ════════════════════════════════════════════════════
+   Dark Mode — Element Overrides
+   Merged from dark-mode.css into tokens.css to
+   eliminate a separate HTTP request.
+   ════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: dark) {
+
+  /* Base page */
+  body { color: var(--text-main); }
+
+  .page-title,
+  .page-subtitle,
+  .section-title,
+  .category-title {
+    color: var(--text-main);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  }
+
+  .copyright,
+  footer,
+  .footer-content,
+  .footer-links a,
+  .footer-column p,
+  .footer-column li {
+    color: var(--text-soft);
+  }
+
+  /* Posts container */
+  .posts-container .tag-filter,
+  .posts-container .posts-fold-panel,
+  .posts-container .post-item,
+  .posts-container .pagination,
+  .posts-container .search-results {
+    background: var(--surface-card);
+    border-color: var(--line);
+    box-shadow: var(--shadow-main);
+  }
+
+  .posts-container .posts-fold-toggle,
+  .posts-container .post-title {
+    color: var(--text-main);
+  }
+
+  .posts-container .post-date,
+  .posts-container .posts-fold-count {
+    color: var(--text-soft);
+  }
+
+  .posts-container .post-tag {
+    background: var(--tag-bg);
+    color: var(--tag-color);
+  }
+
+  .posts-container .post-tag.read-time {
+    background: var(--tag-time-bg);
+    color: var(--tag-time-color);
+    border-color: var(--line);
+  }
+
+  .posts-container .page-btn {
+    background: rgba(31, 49, 78, 0.72);
+    color: var(--text-main);
+    border-color: var(--line);
+  }
+
+  /* Post content */
+  .morenpost,
+  .sidebar-content,
+  .sidebar-footer {
+    background: var(--surface);
+    border-color: var(--line);
+    box-shadow: var(--shadow-main);
+  }
+
+  .morenpost,
+  .morenpost p,
+  .morenpost li,
+  .post-title-main,
+  .post-meta,
+  .post-column-note,
+  .donate-text,
+  .sidebar-main-content,
+  .sidebar-footer a {
+    color: var(--text-main);
+  }
+
+  .morenpost a,
+  .post-column-link {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .post-tag {
+    background: var(--tag-bg);
+    color: var(--tag-color);
+  }
+
+  .post-tag.read-time {
+    background: var(--tag-time-bg);
+    color: var(--tag-time-color);
+    border-color: var(--line);
+  }
+
+  .post-content table { color: var(--text-main); }
+
+  .post-content th,
+  .post-content td {
+    border-color: var(--line);
+  }
+
+  /* Sidebar / FAB */
+  .sidebar-toggle {
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    color: var(--text-main);
+    box-shadow: var(--shadow-main);
+  }
+
+  .sidebar-toggle:hover {
+    background: rgba(36, 52, 84, 0.9);
+  }
+
+  .fab-btn {
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    color: var(--text-main);
+    box-shadow: var(--shadow-main);
+  }
+
+  .fab-btn:hover {
+    background: rgba(36, 52, 84, 0.9);
+  }
+
+  .toc-highlight {
+    background: rgba(110, 168, 255, 0.2);
+    border-color: rgba(110, 168, 255, 0.35);
+  }
+
+  .sidebar-backdrop {
+    background: rgba(2, 6, 23, 0.55);
+  }
+
+  /* Post annotations */
+  .post-annotation-modal {
+    background: rgba(2, 6, 23, 0.68);
+  }
+
+  .post-annotation-popover,
+  .post-annotation-tooltip,
+  .post-annotation-modal-panel {
+    background: var(--surface-overlay);
+    border-color: var(--line);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    color: var(--text-main);
+  }
+
+  .post-annotation-modal-title,
+  .post-annotation-user,
+  .post-annotation-comment-text {
+    color: var(--text-main);
+  }
+
+  .post-annotation-quote {
+    color: var(--text-main);
+    background: rgba(30, 41, 59, 0.8);
+    border-left-color: rgba(96, 165, 250, 0.6);
+  }
+
+  .post-annotation-profile {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: var(--line);
+  }
+
+  .post-annotation-comment {
+    background: rgba(15, 23, 42, 0.82);
+    border-color: var(--line);
+  }
+
+  .post-annotation-comment-time {
+    color: var(--text-soft);
+  }
+
+  .post-annotation-comment-actions button {
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--text-main);
+    border-color: var(--line);
+  }
+
+  .post-annotation-form textarea,
+  .post-annotation-profile-row input[type="text"] {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .post-annotation-btn {
+    border-color: var(--line);
+  }
+
+  .post-annotation-close {
+    color: var(--text-soft);
+  }
+
+  .post-annotation-empty {
+    color: var(--text-soft);
+  }
+
+  .index-announcement-title,
+  .index-announcement-body {
+    color: var(--text-main);
+  }
+
+  /* Sidebar nav */
+  .sidebar h4,
+  .toc-item a,
+  .sidebar-footer a,
+  #toc-loading {
+    color: var(--text-main);
+  }
+
+  .toc-item a:hover {
+    color: #ffffff;
+  }
+
+  .contact-chip {
+    background: rgba(18, 30, 50, 0.66);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .latest-video-body {
+    background: rgba(18, 30, 50, 0.76);
+    border-top-color: var(--line);
+  }
+
+  .github-stat {
+    background: rgba(24, 38, 62, 0.72);
+    border-color: var(--line);
+  }
+
+  code {
+    background: var(--code-bg);
+    color: var(--code-color);
+  }
+
+  pre {
+    background: rgba(21, 35, 58, 0.8);
+    border: 1px solid var(--line);
+  }
+
+  /* Tool / Function / Project cards */
+  .tools-grid .tool-card,
+  .functions-grid .function-card,
+  .project-grid .project-card,
+  .friends-section .glass-card,
+  .info-section .glass-card,
+  .daily-section,
+  .calendar-container,
+  .filter-status,
+  .pagination-container,
+  .update-card,
+  .project-card,
+  .video-card,
+  .controls,
+  .user-info,
+  .messages-panel,
+  .user-panel,
+  .message,
+  .modal-content,
+  .message-form,
+  .message-card,
+  .admin-panel,
+  .reply-card,
+  .search-box input,
+  .board-selector select {
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--text-main);
+    box-shadow: var(--shadow-main);
+  }
+
+  .tool-name,
+  .function-name,
+  .function-desc,
+  .function-category,
+  .tool-category,
+  .project-title,
+  .project-desc,
+  .project-updated,
+  .friend-name,
+  .friend-desc,
+  .my-info-item .info-label,
+  .my-info-item .info-value,
+  .daily-header,
+  .article-title,
+  .article-meta,
+  .update-card,
+  .update-card h2,
+  .update-card p,
+  .update-card li,
+  .project-head p,
+  .video-title,
+  .video-meta,
+  .video-stats .stat,
+  .logo h1,
+  .message-content,
+  .message-time,
+  .form-group label,
+  .empty-state,
+  .calendar-header h3,
+  .weekday,
+  .pagination-info {
+    color: var(--text-main);
+  }
+
+  .tool-link,
+  .function-link,
+  .project-open,
+  .back-home,
+  .chat-link,
+  .notice-link,
+  .copy-hint,
+  .platform-title,
+  .update-time {
+    color: var(--accent);
+  }
+
+  .tool-link,
+  .function-link,
+  .project-open,
+  .sort-btn,
+  .pagination button,
+  .submit-btn,
+  .admin-btn,
+  .btn {
+    background: rgba(39, 67, 108, 0.62);
+    border-color: var(--line);
+  }
+
+  .game-section-title {
+    color: var(--text-main);
+    border-bottom-color: var(--line);
+  }
+
+  .game-card {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+  }
+
+  .game-card-overlay {
+    background: linear-gradient(transparent, rgba(4, 10, 20, 0.88));
+  }
+
+  .dynamic-card,
+  .calendar-widget,
+  .pagination,
+  .month-item {
+    background: var(--surface);
+    border-color: var(--line);
+  }
+
+  .dynamic-title,
+  .calendar-title,
+  .month-item,
+  .page-btn,
+  .page-info {
+    color: var(--text-main);
+  }
+
+  .dynamic-date {
+    color: var(--text-soft);
+  }
+
+  .dynamic-content {
+    color: var(--text-main);
+  }
+
+  .dynamic-content.is-clamped::before {
+    background: linear-gradient(90deg, rgba(9, 18, 35, 0), rgba(8, 16, 30, 0.85));
+  }
+
+  .dynamic-content.is-clamped::after {
+    color: var(--accent);
+    background: rgba(8, 16, 30, 0.9);
+  }
+
+  .dynamic-detail-link {
+    color: var(--accent);
+  }
+
+  .dynamic-entry-stats {
+    color: var(--text-soft);
+  }
+
+  .month-item.active,
+  .page-btn.active {
+    background: var(--accent-soft);
+    color: #ffffff;
+  }
+
+  .main-content,
+  .category-nav,
+  .content-area,
+  .platform-header {
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .category-item,
+  .platform-title,
+  #update-time,
+  .hot-item,
+  .hot-title,
+  .hot-meta,
+  .description {
+    color: var(--text-main);
+  }
+
+  .category-item:hover,
+  .category-item.active {
+    background: var(--accent-soft);
+  }
+
+  .admin-panel input,
+  .message-form input,
+  .message-form textarea,
+  .search-box input,
+  .board-selector select,
+  .calendar-day,
+  .page-number {
+    background: rgba(30, 47, 74, 0.66);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .search-box input::placeholder,
+  .message-form input::placeholder,
+  .message-form textarea::placeholder {
+    color: var(--text-soft);
+  }
+
+  /* Homepage overrides */
+  body.home-page .main-content,
+  body.home-page .sidebar-index {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  body.home-page .dynamic-feed .dynamic-card,
+  body.home-page .recent-posts .post-item-link {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  body.home-page .recent-posts .post-item {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  body.home-page .dynamic-feed .dynamic-card:hover {
+    background: transparent;
+    transform: none;
+  }
+
+  body.home-page .footer-card {
+    border-radius: 28px;
+    overflow: hidden;
+  }
+}
+
+/* ── Same rules for the manual class toggle ── */
+body.dark-mode {
+
+  body { color: var(--text-main); }
+
+  .page-title,
+  .page-subtitle,
+  .section-title,
+  .category-title {
+    color: var(--text-main);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  }
+
+  .copyright,
+  footer,
+  .footer-content,
+  .footer-links a,
+  .footer-column p,
+  .footer-column li {
+    color: var(--text-soft);
+  }
+
+  .posts-container .tag-filter,
+  .posts-container .posts-fold-panel,
+  .posts-container .post-item,
+  .posts-container .pagination,
+  .posts-container .search-results {
+    background: var(--surface-card);
+    border-color: var(--line);
+    box-shadow: var(--shadow-main);
+  }
+
+  .posts-container .posts-fold-toggle,
+  .posts-container .post-title {
+    color: var(--text-main);
+  }
+
+  .posts-container .post-date,
+  .posts-container .posts-fold-count {
+    color: var(--text-soft);
+  }
+
+  .posts-container .post-tag {
+    background: var(--tag-bg);
+    color: var(--tag-color);
+  }
+
+  .posts-container .post-tag.read-time {
+    background: var(--tag-time-bg);
+    color: var(--tag-time-color);
+    border-color: var(--line);
+  }
+
+  .posts-container .page-btn {
+    background: rgba(31, 49, 78, 0.72);
+    color: var(--text-main);
+    border-color: var(--line);
+  }
+
+  .morenpost,
+  .sidebar-content,
+  .sidebar-footer {
+    background: var(--surface);
+    border-color: var(--line);
+    box-shadow: var(--shadow-main);
+  }
+
+  .morenpost,
+  .morenpost p,
+  .morenpost li,
+  .post-title-main,
+  .post-meta,
+  .post-column-note,
+  .donate-text,
+  .sidebar-main-content,
+  .sidebar-footer a {
+    color: var(--text-main);
+  }
+
+  .morenpost a,
+  .post-column-link {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .post-tag {
+    background: var(--tag-bg);
+    color: var(--tag-color);
+  }
+
+  .post-tag.read-time {
+    background: var(--tag-time-bg);
+    color: var(--tag-time-color);
+    border-color: var(--line);
+  }
+
+  .post-content table { color: var(--text-main); }
+
+  .post-content th,
+  .post-content td {
+    border-color: var(--line);
+  }
+
+  .sidebar-toggle {
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    color: var(--text-main);
+    box-shadow: var(--shadow-main);
+  }
+
+  .sidebar-toggle:hover {
+    background: rgba(36, 52, 84, 0.9);
+  }
+
+  .fab-btn {
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    color: var(--text-main);
+    box-shadow: var(--shadow-main);
+  }
+
+  .fab-btn:hover {
+    background: rgba(36, 52, 84, 0.9);
+  }
+
+  .toc-highlight {
+    background: rgba(110, 168, 255, 0.2);
+    border-color: rgba(110, 168, 255, 0.35);
+  }
+
+  .sidebar-backdrop {
+    background: rgba(2, 6, 23, 0.55);
+  }
+
+  .post-annotation-modal {
+    background: rgba(2, 6, 23, 0.68);
+  }
+
+  .post-annotation-popover,
+  .post-annotation-tooltip,
+  .post-annotation-modal-panel {
+    background: var(--surface-overlay);
+    border-color: var(--line);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    color: var(--text-main);
+  }
+
+  .post-annotation-modal-title,
+  .post-annotation-user,
+  .post-annotation-comment-text {
+    color: var(--text-main);
+  }
+
+  .post-annotation-quote {
+    color: var(--text-main);
+    background: rgba(30, 41, 59, 0.8);
+    border-left-color: rgba(96, 165, 250, 0.6);
+  }
+
+  .post-annotation-profile {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: var(--line);
+  }
+
+  .post-annotation-comment {
+    background: rgba(15, 23, 42, 0.82);
+    border-color: var(--line);
+  }
+
+  .post-annotation-comment-time {
+    color: var(--text-soft);
+  }
+
+  .post-annotation-comment-actions button {
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--text-main);
+    border-color: var(--line);
+  }
+
+  .post-annotation-form textarea,
+  .post-annotation-profile-row input[type="text"] {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .post-annotation-btn {
+    border-color: var(--line);
+  }
+
+  .post-annotation-close {
+    color: var(--text-soft);
+  }
+
+  .post-annotation-empty {
+    color: var(--text-soft);
+  }
+
+  .index-announcement-title,
+  .index-announcement-body {
+    color: var(--text-main);
+  }
+
+  .sidebar h4,
+  .toc-item a,
+  .sidebar-footer a,
+  #toc-loading {
+    color: var(--text-main);
+  }
+
+  .toc-item a:hover {
+    color: #ffffff;
+  }
+
+  .contact-chip {
+    background: rgba(18, 30, 50, 0.66);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .latest-video-body {
+    background: rgba(18, 30, 50, 0.76);
+    border-top-color: var(--line);
+  }
+
+  .github-stat {
+    background: rgba(24, 38, 62, 0.72);
+    border-color: var(--line);
+  }
+
+  code {
+    background: var(--code-bg);
+    color: var(--code-color);
+  }
+
+  pre {
+    background: rgba(21, 35, 58, 0.8);
+    border: 1px solid var(--line);
+  }
+
+  .tools-grid .tool-card,
+  .functions-grid .function-card,
+  .project-grid .project-card,
+  .friends-section .glass-card,
+  .info-section .glass-card,
+  .daily-section,
+  .calendar-container,
+  .filter-status,
+  .pagination-container,
+  .update-card,
+  .project-card,
+  .video-card,
+  .controls,
+  .user-info,
+  .messages-panel,
+  .user-panel,
+  .message,
+  .modal-content,
+  .message-form,
+  .message-card,
+  .admin-panel,
+  .reply-card,
+  .search-box input,
+  .board-selector select {
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--text-main);
+    box-shadow: var(--shadow-main);
+  }
+
+  .tool-name,
+  .function-name,
+  .function-desc,
+  .function-category,
+  .tool-category,
+  .project-title,
+  .project-desc,
+  .project-updated,
+  .friend-name,
+  .friend-desc,
+  .my-info-item .info-label,
+  .my-info-item .info-value,
+  .daily-header,
+  .article-title,
+  .article-meta,
+  .update-card,
+  .update-card h2,
+  .update-card p,
+  .update-card li,
+  .project-head p,
+  .video-title,
+  .video-meta,
+  .video-stats .stat,
+  .logo h1,
+  .message-content,
+  .message-time,
+  .form-group label,
+  .empty-state,
+  .calendar-header h3,
+  .weekday,
+  .pagination-info {
+    color: var(--text-main);
+  }
+
+  .tool-link,
+  .function-link,
+  .project-open,
+  .back-home,
+  .chat-link,
+  .notice-link,
+  .copy-hint,
+  .platform-title,
+  .update-time {
+    color: var(--accent);
+  }
+
+  .tool-link,
+  .function-link,
+  .project-open,
+  .sort-btn,
+  .pagination button,
+  .submit-btn,
+  .admin-btn,
+  .btn {
+    background: rgba(39, 67, 108, 0.62);
+    border-color: var(--line);
+  }
+
+  .game-section-title {
+    color: var(--text-main);
+    border-bottom-color: var(--line);
+  }
+
+  .game-card {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+  }
+
+  .game-card-overlay {
+    background: linear-gradient(transparent, rgba(4, 10, 20, 0.88));
+  }
+
+  .dynamic-card,
+  .calendar-widget,
+  .pagination,
+  .month-item {
+    background: var(--surface);
+    border-color: var(--line);
+  }
+
+  .dynamic-title,
+  .calendar-title,
+  .month-item,
+  .page-btn,
+  .page-info {
+    color: var(--text-main);
+  }
+
+  .dynamic-date {
+    color: var(--text-soft);
+  }
+
+  .dynamic-content {
+    color: var(--text-main);
+  }
+
+  .dynamic-content.is-clamped::before {
+    background: linear-gradient(90deg, rgba(9, 18, 35, 0), rgba(8, 16, 30, 0.85));
+  }
+
+  .dynamic-content.is-clamped::after {
+    color: var(--accent);
+    background: rgba(8, 16, 30, 0.9);
+  }
+
+  .dynamic-detail-link {
+    color: var(--accent);
+  }
+
+  .dynamic-entry-stats {
+    color: var(--text-soft);
+  }
+
+  .month-item.active,
+  .page-btn.active {
+    background: var(--accent-soft);
+    color: #ffffff;
+  }
+
+  .main-content,
+  .category-nav,
+  .content-area,
+  .platform-header {
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .category-item,
+  .platform-title,
+  #update-time,
+  .hot-item,
+  .hot-title,
+  .hot-meta,
+  .description {
+    color: var(--text-main);
+  }
+
+  .category-item:hover,
+  .category-item.active {
+    background: var(--accent-soft);
+  }
+
+  .admin-panel input,
+  .message-form input,
+  .message-form textarea,
+  .search-box input,
+  .board-selector select,
+  .calendar-day,
+  .page-number {
+    background: rgba(30, 47, 74, 0.66);
+    border-color: var(--line);
+    color: var(--text-main);
+  }
+
+  .search-box input::placeholder,
+  .message-form input::placeholder,
+  .message-form textarea::placeholder {
+    color: var(--text-soft);
+  }
+
+  body.home-page .main-content,
+  body.home-page .sidebar-index {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  body.home-page .dynamic-feed .dynamic-card,
+  body.home-page .recent-posts .post-item-link {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  body.home-page .recent-posts .post-item {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  body.home-page .dynamic-feed .dynamic-card:hover {
+    background: transparent;
+    transform: none;
+  }
+
+  body.home-page .footer-card {
+    border-radius: 28px;
+    overflow: hidden;
+  }
+}

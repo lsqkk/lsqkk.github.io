@@ -7,7 +7,6 @@ const PRECACHE_URLS = [
   '/assets/css/basic.css',
   '/assets/css/style.css',
   '/assets/css/index.css',
-  '/assets/css/dark-mode.css',
   '/assets/css/cursor.css',
   '/assets/css/dynamic-gallery.css',
   '/assets/js/index.js',

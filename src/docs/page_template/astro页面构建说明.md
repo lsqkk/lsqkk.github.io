@@ -99,8 +99,8 @@ const currentYear = new Date().getFullYear();
 - `cursor.css` + `cursor-trail.js`
   - 页面有明显交互、视觉氛围需要统一时可启用
   - 如果页面更强调简洁、专业工具属性，可省略
-- `dark-mode.css`
-  - 页面包含自定义卡片、输入框、文本块时通常应引入
+- `dark-mode.css`（已合并到 `tokens.css`，不再单独引入）
+  - 暗色模式样式已通过 `basic.css` → `tokens.css` 自动加载
 - `style.css`
   - 首页或沿用全站若干常见样式时再引入
 - Font Awesome CDN

@@ -15,7 +15,6 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>网站设置 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
-    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/pages/settings/settings.css" />
     <script is:inline define:vars={{ navConfig }}>
       window.__NAV_CONFIG__ = navConfig;

@@ -56,9 +56,12 @@ function buildTagHref(tagName: string): string {
     <meta property="og:title" content={postTitle} />
     <meta property="og:description" content={postDescription} />
     <meta property="og:type" content="article" />
+    <meta property="og:image" content={SITE_LOGO_URL} />
+    <meta property="og:url" content={"https://lsqkk.github.io" + currentPostPath} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={postTitle} />
     <meta name="twitter:description" content={postDescription} />
+    <link rel="alternate" type="application/rss+xml" title="夸克博客 RSS" href="/posts/rss.xml" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -87,7 +90,6 @@ function buildTagHref(tagName: string): string {
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" href="/assets/css/post.css" />
-    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link id="dynamic-gallery-style" rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css" />
     <link rel="stylesheet" href="/assets/css/code.css" />
@@ -231,8 +233,10 @@ function buildTagHref(tagName: string): string {
             <p class="donate-text">如果这篇文章对你有帮助，欢迎赞赏支持。</p>
             <img src="/assets/img/buymeacoffee.png" alt="赞赏码" class="donate-qr" loading="lazy" />
           </div>
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css" />
-          <div class="social-share" data-sites="weibo, qq, qzone,wechat"></div>
+          <div class="native-share">
+            <button class="share-button" onclick="window.open('https://service.weibo.com/share/share.php?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href),'_blank','width=600,height=500')">分享到微博</button>
+            <button class="share-button" onclick="window.open('https://connect.qq.com/widget/shareqq/index.html?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href),'_blank','width=600,height=500')">分享到QQ</button>
+          </div>
         </center>
       </div>
     </div>
@@ -290,22 +294,10 @@ function buildTagHref(tagName: string): string {
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/csharp.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/php.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/sql.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/html.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/css.min.js"></script>
+    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/nginx.min.js"></script>
     <script is:inline src="/assets/js/code.js"></script>
-    <script is:inline defer src="https://apps.bdimg.com/libs/jquery/1.8.2/jquery.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
     <script
       is:inline
       src="https://giscus.app/client.js"

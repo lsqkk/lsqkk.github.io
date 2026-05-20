@@ -209,6 +209,18 @@ quark serve
   - `src/docs/UI/FlatUI.md`
 - 本仓库遵循统一的 Aero / 玻璃拟态视觉风格，新增页面应尽量保持导航、字体、背景、视差体验一致
 
+### CSS 架构说明（2025-05 重构）
+- **`dark-mode.css` 已合并到 `tokens.css` 并删除源文件**：所有暗色模式样式已迁移到 `tokens.css` 底部，`dark-mode.css` 源文件已删除
+  - 新页面只需引入 `basic.css`（已 `@import tokens.css`），暗色模式通过 CSS 变量自动生效
+  - 不要在 Astro 页面中引用 `dark-mode.css`，它已不存在
+- **CSS 变量优先**：避免硬编码颜色值，使用 `tokens.css` 中定义的 `var(--accent)`、`var(--surface)`、`var(--text-main)` 等变量
+- 渐变色等场景可使用 `color-mix(in srgb, var(--accent) 12%, transparent)` 代替 `rgba` 硬编码
+
+### JS 依赖说明（2025-05 重构）
+- **jQuery 已移除**：页面不再依赖 jQuery，旧有 `social-share.js` 已替换为原生分享按钮
+- 公共脚本仍在 `assets/js/` 中，页面专属脚本在 `assets/pages/` 中
+- 新页面优先使用原生 ES 模块，避免引入第三方库
+
 ### 专属资源目录
 - 各项目页的专属 JS/CSS/JSON 统一放在 `assets/pages/`
 - 当前主要分区：

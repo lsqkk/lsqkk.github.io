@@ -141,14 +141,15 @@ const homePreloaded = {
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>首页 | 蓝色奇夸克のBlog - {SITE_TITLE}</title>
+    <title>{SITE_TITLE} — 蓝色奇夸克</title>
     <link rel="manifest" href="/json/manifest.json" />
     <meta name="description" content={`${SITE_TITLE} | 蓝色奇夸克的个人博客，分享技术、生活与思考。`} />
+    <meta property="og:image" content={SITE_LOGO_URL} />
+    <link rel="alternate" type="application/rss+xml" title="夸克博客 RSS" href="/posts/rss.xml" />
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/index.css" />
-    <link rel="stylesheet" href="/assets/css/dark-mode.css" />
     <link rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <script is:inline define:vars={{ navConfig, homePreloaded, popups }}>
       window.__NAV_CONFIG__ = navConfig;

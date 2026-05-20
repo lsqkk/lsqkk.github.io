@@ -301,7 +301,7 @@ function applySouthFromPreview(type, id) {
 function loadUploadPreviewPanorama() {
     if (!el.previewPanorama) return;
     if (uploadObjectUrl) {
-        try { URL.revokeObjectURL(uploadObjectUrl); } catch { /* ignore */ }
+        try { URL.revokeObjectURL(uploadObjectUrl); } catch (e) { console.warn('[360] revokeObjectURL failed:', e); }
         uploadObjectUrl = null;
     }
     uploadObjectUrl = URL.createObjectURL(uploadFile);
@@ -577,7 +577,7 @@ function updateNearbyHotspots(scene) {
     if (typeof scene.lat !== 'number' || typeof scene.lng !== 'number') return;
     // 清理旧的热点
     nearbyHotspotIds.forEach((id) => {
-        try { currentViewer.removeHotSpot(id); } catch { /* ignore */ }
+        try { currentViewer.removeHotSpot(id); } catch (e) { console.warn('[360] removeHotSpot failed:', e); }
     });
     nearbyHotspotIds = new Set();
 

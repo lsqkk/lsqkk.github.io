@@ -1,5 +1,4 @@
 @import url('/assets/css/tokens.css');
-@import url('/assets/css/dark-mode.css');
 @import url('/assets/css/cursor.css');
 @import url('/assets/css/font-config.css');
 
@@ -19,23 +18,17 @@ body {
     border-radius: 999px;
     font-size: 0.75em;
     font-weight: 600;
-    color: #2563eb;
-    background: rgba(37, 99, 235, 0.12);
-    border: 1px solid rgba(37, 99, 235, 0.3);
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--line-strong);
     margin-left: 6px;
     vertical-align: middle;
 }
 
 .login-badge.guest-badge {
-    color: #0f766e;
-    background: rgba(13, 148, 136, 0.12);
-    border-color: rgba(13, 148, 136, 0.3);
-}
-
-.dark-mode .login-badge.guest-badge {
-    color: #5eead4;
-    background: rgba(13, 148, 136, 0.2);
-    border-color: rgba(45, 212, 191, 0.35);
+    color: var(--accent-2);
+    background: color-mix(in srgb, var(--accent-2) 15%, transparent);
+    border-color: color-mix(in srgb, var(--accent-2) 30%, transparent);
 }
 
 .login-badge .login-icon {
@@ -51,11 +44,7 @@ body {
     object-fit: contain;
 }
 
-.dark-mode .login-badge {
-    color: #93c5fd;
-    background: rgba(59, 130, 246, 0.18);
-    border-color: rgba(147, 197, 253, 0.35);
-}
+/* login-badge uses CSS variables from tokens.css — dark mode adapts automatically */
 
 .user-link {
     color: inherit;
@@ -74,7 +63,7 @@ body {
 }
 
 .page-title {
-    color: #fff;
+    color: var(--text-inverse);
     text-align: center;
     margin-bottom: 50px;
     font-size: 2.8rem;
@@ -84,7 +73,7 @@ body {
 }
 
 .page-subtitle {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-soft);
     text-align: center;
     margin-bottom: 60px;
     font-size: 1.2rem;
@@ -96,16 +85,16 @@ body {
 }
 
 .page-subtitle a {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-soft);
     text-decoration: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid var(--text-soft);
     transition: all 0.2s ease;
     padding-bottom: 1px;
 }
 
 .page-subtitle a:hover {
     color: rgba(230, 230, 230, 0.8);
-    border-bottom: 1px dashed rgba(230, 230, 230, 0.8);
+    border-bottom: 1px dashed var(--text-soft);
     padding-bottom: 0;
 }
 

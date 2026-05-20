@@ -40,9 +40,9 @@ body {
 }
 
 .tag-btn:hover {
-    background: rgba(93, 208, 255, 0.5);
+    background: var(--accent-soft);
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .tag-btn.active {
