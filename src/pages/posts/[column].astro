@@ -1,5 +1,5 @@
 ---
-import ShichaBackground from "../../components/ShichaBackground.astro";
+import LuxuryBackground from "../../components/LuxuryBackground.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -113,8 +113,8 @@ try {
     <link rel="stylesheet" href="/assets/css/posts.css" />
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
-  <body>
-    <ShichaBackground />
+  <body class="luxury-body">
+    <LuxuryBackground />
     <script is:inline src="/assets/js/nav.js"></script>
 
     <div class="posts-container">

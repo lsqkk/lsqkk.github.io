@@ -7,11 +7,9 @@ const { className = "" } = Astro.props;
   body.luxury-body {
     background-color: #f2f6fb;
     background-image:
-      radial-gradient(1200px circle at var(--glow-x, 50%) var(--glow-y, 42%), rgba(255, 238, 219, 0.65), transparent 62%),
-      radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.7), transparent 48%),
       radial-gradient(circle at 86% 22%, rgba(226, 240, 255, 0.62), transparent 55%),
       radial-gradient(circle at 20% 82%, rgba(214, 246, 240, 0.5), transparent 55%),
-      linear-gradient(165deg, rgba(255, 255, 255, 0.78), rgba(229, 236, 246, 0.88)),
+      linear-gradient(165deg, rgba(255, 255, 255, 0.28), rgba(229, 236, 246, 0.35)),
       url('/assets/img/bg.png');
     background-repeat: no-repeat;
     background-position: center center;
@@ -30,12 +28,8 @@ const { className = "" } = Astro.props;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background:
-      radial-gradient(900px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(206, 226, 255, 0.45), transparent 70%),
-      radial-gradient(circle at 18% 24%, rgba(148, 163, 184, 0.2), transparent 50%),
-      radial-gradient(circle at 86% 20%, rgba(96, 165, 250, 0.16), transparent 50%),
-      radial-gradient(circle at 30% 82%, rgba(94, 234, 212, 0.14), transparent 46%);
-    opacity: 0.55;
+    background: transparent;
+    opacity: 0;
   }
 
   @media (prefers-color-scheme: dark) {

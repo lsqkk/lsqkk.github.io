@@ -37,7 +37,7 @@ import fs from "node:fs";
 import path from "node:path";
 const readTime = Math.ceil(wordCount / 400);
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from "@siteConfig";
-import GlowFollow from "../components/GlowFollow.astro";
+import LuxuryBackground from "../components/LuxuryBackground.astro";
 const currentYear = new Date().getFullYear();
 
 function buildColumnHref(columnName: string): string {
@@ -112,13 +112,8 @@ try {
     />
   </head>
 
-  <body
-    style="background: url('/assets/img/bg.png') no-repeat center center; background-size: cover; position: relative; background-attachment: fixed;"
-  >
-    <link rel="stylesheet" href="/assets/css/shicha.css" />
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
-    <GlowFollow />
+  <body class="luxury-body">
+    <LuxuryBackground />
     <script is:inline src="/assets/js/cursor-trail.js" defer></script>
     <script id="dynamic-gallery-script" is:inline src="/assets/js/dynamic-gallery.js"></script>
     <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>

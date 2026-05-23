@@ -2,13 +2,20 @@
           --primary-color: #1e88e5;
           --primary-light: #64b5f6;
           --primary-dark: #1565c0;
-          --text-color: #333;
-          --text-light: #cbcbcb;
-          --card-bg: rgba(255, 255, 255, 0.3);
-          --card-bg-solid: #ffffff;
+          --text-color: #1a2a4a;
+          --text-light: #5b7391;
+          --card-bg: rgba(253, 250, 242, 0.55);
+          --card-bg-solid: rgba(253, 250, 242, 0.9);
           --border-color: rgba(224, 224, 224, 0.6);
-          --shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
-          --blur-bg: rgba(255, 255, 255, 0.2);
+          --shadow: 0 8px 32px rgba(5, 7, 26, 0.1);
+          --blur-bg: rgba(253, 250, 242, 0.5);
+        }
+
+        .dark-mode {
+          --card-bg: rgba(30, 41, 59, 0.6);
+          --card-bg-solid: rgba(30, 41, 59, 0.85);
+          --blur-bg: rgba(30, 41, 59, 0.4);
+          --border-color: rgba(134, 171, 226, 0.15);
         }
 
         * {
@@ -92,14 +99,13 @@
           padding: 1rem;
           background: var(--blur-bg);
           border-radius: 16px;
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(18px) saturate(130%);
+          -webkit-backdrop-filter: blur(18px) saturate(130%);
           box-shadow: var(--shadow);
           transition: all 0.3s;
           flex: 0 1 280px;
           min-width: 250px;
           margin: 0;
-          /* 移除之前的margin设置 */
         }
 
         .user-info:hover {
@@ -166,8 +172,8 @@
           padding: 1.5rem;
           background: var(--blur-bg);
           border-radius: 16px;
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(18px) saturate(130%);
+          -webkit-backdrop-filter: blur(18px) saturate(130%);
           box-shadow: var(--shadow);
         }
 
@@ -237,17 +243,19 @@
 
         .video-card {
           background-color: var(--card-bg);
-          backdrop-filter: blur(5px) saturate(100%) !important;
-          -webkit-backdrop-filter: blur(10px) saturate(100%) !important;
+          backdrop-filter: blur(18px) saturate(130%);
+          -webkit-backdrop-filter: blur(18px) saturate(130%);
           border-radius: 16px;
           overflow: hidden;
           box-shadow: var(--shadow);
           transition: transform 0.3s, box-shadow 0.3s;
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.5);
+          border: 1px solid var(--border-color);
           display: flex;
           flex-direction: column;
+        }
+
+        .dark-mode .video-card {
+          border-color: var(--border-color);
         }
 
         .video-card:hover {

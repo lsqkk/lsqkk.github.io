@@ -1,9 +1,7 @@
 ---
 import fs from "node:fs/promises";
 import path from "node:path";
-import ShichaBackground from "../../components/ShichaBackground.astro";
-// 如果页面更适合轻量搜索/检索视觉/面板页，可改用：
-// import LuxuryBackground from "../../components/LuxuryBackground.astro";
+import LuxuryBackground from "../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
 const PROJECT_ROOT = process.cwd();
@@ -51,10 +49,8 @@ const currentYear = new Date().getFullYear();
     <script is:inline src="/assets/js/nav.js"></script>
   </head>
 
-  <body>
-    <ShichaBackground />
-    <!-- 如果改用 LuxuryBackground，body 通常改成 class="luxury-body" -->
-    <!-- <LuxuryBackground /> -->
+  <body class="luxury-body">
+    <LuxuryBackground />
 
     <main class="container">
       <h1 class="page-title">{pageName} / {pageNameEn}</h1>

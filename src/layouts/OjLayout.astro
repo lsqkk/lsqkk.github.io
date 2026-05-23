@@ -8,7 +8,7 @@ interface Props {
 
 const { title, description = "", extraStyles = [], extraHeadScripts = [] } = Astro.props;
 import { SITE_LOGO_URL } from "@siteConfig";
-import GlowFollow from "../components/GlowFollow.astro";
+import LuxuryBackground from "../components/LuxuryBackground.astro";
 const ojRoutes = {
   home: "/a/oj",
   train: "/a/oj/train",
@@ -51,11 +51,8 @@ const ojRoutes = {
     </script>
     <slot name="head"></slot>
   </head>
-  <body>
-    <link rel="stylesheet" href="/assets/css/shicha.css" />
-    <div class="parallax-bg" id="parallaxBg"></div>
-    <script is:inline src="/assets/js/shicha.js"></script>
-    <GlowFollow />
+  <body class="luxury-body">
+    <LuxuryBackground />
     <slot />
   </body>
 </html>

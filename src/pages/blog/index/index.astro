@@ -1,5 +1,5 @@
 ---
-import ShichaBackground from "../../../components/ShichaBackground.astro";
+import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -29,8 +29,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/js/nav.js"></script>
   </head>
 
-  <body>
-    <ShichaBackground />
+  <body class="luxury-body">
+    <LuxuryBackground />
     <div class="container">
       <h1 class="page-title">功能导航</h1>
       <div id="functions-container"></div>

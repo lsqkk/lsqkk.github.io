@@ -1,5 +1,5 @@
 ---
-import ShichaBackground from "../../../components/ShichaBackground.astro";
+import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
@@ -54,8 +54,8 @@ const { entry } = Astro.props as {
   <style>
     body { background: url('/assets/img/bg.png') no-repeat center center fixed; background-size: cover; }
   </style>
-  <body>
-    <ShichaBackground />
+  <body class="luxury-body">
+    <LuxuryBackground />
 
     <div class="dynamic-container dynamic-detail-container">
       <div class="dynamic-header"><h1 class="page-title">动态详情 / Update Detail</h1></div>

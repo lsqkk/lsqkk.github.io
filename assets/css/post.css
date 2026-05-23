@@ -578,13 +578,15 @@ pre {
     line-height: 1.3em;
     margin-bottom: 1.3em;
     border-radius: 20px;
-    background: var(--surface-card);
-    backdrop-filter: blur(8px) saturate(100%);
-    -webkit-backdrop-filter: blur(8px) saturate(100%);
+    background: rgba(253, 250, 242, 0.55);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.45);
     padding: 40px;
     margin: 20px;
     border: 1px solid var(--line);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
 .morenpost a {
@@ -749,4 +751,9 @@ body.dark-mode .post-hero-title {
         0 24px 56px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .morenpost {
+    background: var(--surface);
+    box-shadow: var(--shadow-main);
 }

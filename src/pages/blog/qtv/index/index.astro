@@ -1,5 +1,5 @@
 ---
-import ShichaBackground from "../../../../components/ShichaBackground.astro";
+import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 const currentYear = new Date().getFullYear();
 ---
@@ -25,8 +25,8 @@ const currentYear = new Date().getFullYear();
     </style>
 </head>
 
-<body>
-    <ShichaBackground />
+<body class="luxury-body">
+    <LuxuryBackground />
     <script is:inline src="/assets/js/nav.js"></script>
     <header>
         <link rel="stylesheet" href="/assets/css/basic.css">

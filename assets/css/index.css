@@ -66,6 +66,33 @@ body.home-page .recent-posts .post-item {
     transition: transform 0.34s ease, box-shadow 0.34s ease, border-color 0.34s ease, background-color 0.4s ease;
 }
 
+/* 温润浊玉玻璃 — 主页卡片更透、更润 */
+body.home-page .home-panel,
+body.home-page .sidebar-panel,
+body.home-page .footer-card {
+    background: rgba(253, 250, 242, 0.55);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    box-shadow:
+        0 22px 54px rgba(7, 24, 52, 0.12),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.5);
+}
+body.home-page .home-panel:hover,
+body.home-page .sidebar-panel:hover,
+body.home-page .footer-card:hover {
+    box-shadow:
+        0 24px 56px rgba(7, 24, 52, 0.18),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.7);
+}
+
+body.home-page .intro-combo-panel {
+    background: rgba(253, 250, 242, 0.6);
+}
+
+body.home-page .sidebar-welcome-panel {
+    background: rgba(253, 250, 242, 0.6);
+}
+
 .home-panel,
 .sidebar-panel {
     padding: 22px;
@@ -663,6 +690,7 @@ body.home-page .recent-posts .post-item {
     color: #194f9a;
     font-weight: 700;
     letter-spacing: 0.05em;
+    margin-top: 6px;
     margin-bottom: 8px;
 }
 
@@ -1459,6 +1487,11 @@ body.dark-mode .footer-card {
     background: var(--surface);
     box-shadow: var(--shadow-main);
     border-color: var(--line);
+}
+body.dark-mode .home-panel:hover,
+body.dark-mode .sidebar-panel:hover,
+body.dark-mode .footer-card:hover {
+    box-shadow: var(--shadow-main);
 }
 
 body.dark-mode .intro-combo-panel { background: var(--intro-bg); }

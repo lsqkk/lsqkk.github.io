@@ -42,7 +42,9 @@
       "Bash(rm assets/md/dt.md assets/md/log.md)",
       "Bash(rmdir assets/md)",
       "WebSearch",
-      "Bash(quark qqexport *)"
+      "Bash(quark qqexport *)",
+      "Bash(xargs grep -l \"ShichaBackground\")",
+      "Bash(xargs sed -i 's/ShichaBackground/LuxuryBackground/g')"
     ]
   }
 }

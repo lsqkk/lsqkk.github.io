@@ -2,17 +2,11 @@
 
 /* 网页主体样式 */
 body {
-    /* 设置默认博客背景图片 */
-    background-image: url('/assets/img/bg.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
     min-height: 100vh;
     margin: 0;
     padding: 0;
     position: relative;
-    color: #fff;
+    color: var(--text-main);
 }
 
 .page-content {
@@ -50,15 +44,23 @@ body {
 
 /* 液态毛玻璃卡片 */
 .glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px) saturate(120%);
-    -webkit-backdrop-filter: blur(15px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(253, 250, 242, 0.55);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--line);
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 8px 32px rgba(5, 7, 26, 0.1),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.45);
     padding: 25px;
     margin-bottom: 30px;
-    color: #fff;
+    color: var(--text-main);
+}
+
+body.dark-mode .glass-card {
+    background: rgba(17, 28, 46, 0.6);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-color: rgba(134, 171, 226, 0.15);
 }
 
 /* 我的信息网格布局 */
@@ -155,24 +157,35 @@ body {
 
 /* 友链卡片 */
 .friend-card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px) saturate(120%);
-    -webkit-backdrop-filter: blur(10px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(253, 250, 242, 0.55);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--line);
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
-    color: #fff;
+    color: var(--text-main);
     height: 100%;
     display: flex;
     flex-direction: column;
+    box-shadow: inset 0 0 0 1px rgba(255, 250, 235, 0.4);
 }
 
 .friend-card:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(253, 250, 242, 0.7);
+    border-color: var(--line-strong);
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.12),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.6);
+}
+
+body.dark-mode .friend-card {
+    background: rgba(17, 28, 46, 0.6);
+    border-color: rgba(134, 171, 226, 0.15);
+}
+body.dark-mode .friend-card:hover {
+    background: rgba(17, 28, 46, 0.7);
 }
 
 .friend-card-header {
@@ -352,6 +365,80 @@ body {
         gap: 8px;
         padding: 12px;
     }
+}
+
+/* Light mode overrides */
+body:not(.dark-mode) .section-title {
+    color: var(--text-main);
+    border-bottom-color: var(--line);
+    text-shadow: none;
+}
+body:not(.dark-mode) .section-title i {
+    color: var(--text-soft);
+}
+body:not(.dark-mode) .section-title .copy-hint {
+    color: var(--text-soft);
+}
+body:not(.dark-mode) .info-label {
+    color: var(--text-soft);
+}
+body:not(.dark-mode) .info-value {
+    color: var(--text-main);
+}
+body:not(.dark-mode) .copy-icon {
+    color: var(--text-soft);
+}
+body:not(.dark-mode) .my-info-note {
+    background: var(--accent-soft);
+    color: var(--text-main);
+}
+body:not(.dark-mode) .my-info-note i {
+    color: var(--accent);
+}
+body:not(.dark-mode) .friend-nickname {
+    color: var(--text-main);
+}
+body:not(.dark-mode) .friend-url {
+    color: var(--text-soft);
+}
+body:not(.dark-mode) .friend-describe {
+    color: var(--text-subtle);
+}
+body:not(.dark-mode) .friend-link {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: transparent;
+}
+body:not(.dark-mode) .friend-link:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+body:not(.dark-mode) .page-footer {
+    color: var(--text-soft);
+    border-top-color: var(--line);
+}
+body:not(.dark-mode) .page-footer a {
+    color: var(--text-subtle);
+}
+body:not(.dark-mode) .page-footer a:hover {
+    color: var(--accent);
+}
+body:not(.dark-mode) .my-info-item {
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+body:not(.dark-mode) .my-info-item:hover {
+    background: var(--accent-soft);
+    border-color: var(--line-strong);
+}
+body:not(.dark-mode) .friend-card-header {
+    border-bottom-color: var(--line);
+}
+body:not(.dark-mode) .friend-icon {
+    border-color: var(--line);
+}
+body:not(.dark-mode) .loading {
+    color: var(--text-subtle);
 }
 
 @media (max-width: 480px) {

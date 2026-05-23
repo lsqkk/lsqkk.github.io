@@ -52,7 +52,7 @@
 ---
 import fs from "node:fs/promises";
 import path from "node:path";
-import ShichaBackground from "../../../components/ShichaBackground.astro";
+import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
 const PROJECT_ROOT = process.cwd();
@@ -125,20 +125,13 @@ const currentYear = new Date().getFullYear();
 
 ## 5. 背景与整体视觉
 
-### 可用背景
-当前仓库主要有两类背景：
+### 背景
 
-1. `ShichaBackground`
-   - 适合大部分功能页、聚合页、文章列表页
-   - 带有统一视差背景与导航 hover 数据
-2. `LuxuryBackground`
-   - 适合搜索页、偏内容检索或视觉更轻的页面
-   - 通常配合 `body class="luxury-body"`
-
-### 选择建议
-- 默认优先 `ShichaBackground`
-- 页面本身信息密度较高、输入检索较多、希望减少视差干扰时，可选 `LuxuryBackground`
-- 不要自创第三种完全脱离站点风格的背景方案，除非用户明确要求且页面具有独立主题
+当前仓库统一使用 `LuxuryBackground` 组件：
+- 覆盖全站所有页面（功能页、聚合页、文章页、工具页等）
+- 带有渐变背景与导航 hover 数据
+- 需要配合 `body class="luxury-body"` 使用
+- 浅色模式下为柔和底纹，无大面积光晕干扰；深色模式下自动切换为深色背景
 
 ### 视觉风格要求
 - 延续本站 Aero / 玻璃拟态风格
@@ -160,7 +153,7 @@ const currentYear = new Date().getFullYear();
 
 ```astro
 <body>
-  <ShichaBackground />
+  <LuxuryBackground />
 
   <div class="container">
     <h1 class="page-title">页面名 / PAGE</h1>
@@ -296,7 +289,7 @@ npm run check:syntax
 2. 再规划 `assets/pages/...` 下的专属资源目录
 3. 复制 [page_template.astro](/d:/git/lsqkk/lsqkk.github.io/src/docs/page_template/page_template.astro) 作为初始模板
 4. 按页面是否需要构建期数据，决定 frontmatter 读取内容
-5. 按页面定位选择 `ShichaBackground` 或 `LuxuryBackground`
+5. 引入 `LuxuryBackground` 组件并给 `body` 添加 `class="luxury-body"`
 6. 接入脚本、样式、预载数据
 7. 检查聚合页、搜索与构建结果
 

@@ -1,5 +1,5 @@
 ---
-import ShichaBackground from "../../../../components/ShichaBackground.astro";
+import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -25,8 +25,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
-  <body>
-    <ShichaBackground />
+  <body class="luxury-body">
+    <LuxuryBackground />
     <div class="container">
       <h1 class="page-title">更新日志 / LOG</h1>
       <div id="changelog-container"></div>

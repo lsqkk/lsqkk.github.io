@@ -202,6 +202,11 @@ function renderDynamicEntries(entries) {
         </div>
         `;
     }).join('');
+
+    // Initialize skeleton loading for dynamically added images
+    if (typeof initSkeletonImages === 'function') {
+        initSkeletonImages(container);
+    }
 }
 
 // 渲染分页

@@ -224,7 +224,7 @@ async function loadRecentPosts() {
         console.error('加载最近文章失败:', error);
         const recentPostsElement = document.getElementById('recent-posts');
         if (recentPostsElement && recentPostsElement.dataset.preloaded !== 'true') {
-            recentPostsElement.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">文章加载失败</p></div>';
+            recentPostsElement.style.display = 'none';
         }
     }
 }
@@ -1264,7 +1264,7 @@ async function loadOnlinePreview() {
         initSkeletonImages(container);
     } catch (error) {
         console.error('在线预览加载失败:', error);
-        container.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">在线加载失败</p></div>';
+        container.style.display = 'none';
     }
 }
 
@@ -1349,8 +1349,8 @@ async function loadFriendLinks() {
         console.error('加载友链失败:', error);
         const friendLinksElement = document.getElementById('friend-links');
         if (friendLinksElement && friendLinksElement.dataset.preloaded !== 'true') {
-            friendLinksElement.innerHTML =
-                '<div class="index-announcement"><p class="index-announcement-text">友链加载失败</p></div>';
+            var sidebarSection = friendLinksElement.closest('.index-sidebar-section');
+            if (sidebarSection) sidebarSection.style.display = 'none';
         }
     }
 }

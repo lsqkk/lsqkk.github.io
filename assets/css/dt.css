@@ -4,6 +4,27 @@
     --shadow: 0 8px 32px 0 rgba(5, 7, 26, 0.2);
 }
 
+/* Warm jade glass for dynamic page */
+.dynamic-card,
+.calendar-widget,
+.pagination {
+    background: rgba(253, 250, 242, 0.55);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    box-shadow:
+        0 8px 32px rgba(5, 7, 26, 0.1),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.45);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+body.dark-mode .dynamic-card,
+body.dark-mode .calendar-widget,
+body.dark-mode .pagination {
+    background: var(--surface-card);
+    box-shadow: var(--shadow);
+}
+
 body {
     min-height: 100vh;
     padding: 2rem;
@@ -20,14 +41,9 @@ body {
 }
 
 .dynamic-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: var(--shadow);
     transition: transform 0.3s ease;
-    border: 1px solid var(--line);
 }
 
 .dynamic-card:hover {
@@ -120,11 +136,8 @@ body {
 .pagination {
     display: inline-flex;
     gap: 5px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
     border-radius: 8px;
     padding: 8px;
-    box-shadow: var(--shadow);
 }
 
 .page-btn {
@@ -164,13 +177,8 @@ body {
 
 /* 月历样式 */
 .calendar-widget {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    border-radius: 12px;
     padding: 1rem;
-    box-shadow: var(--shadow);
     margin-bottom: 1.5rem;
-    border: 1px solid var(--line);
 }
 
 .calendar-title {

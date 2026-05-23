@@ -1,5 +1,5 @@
 ---
-import ShichaBackground from "../components/ShichaBackground.astro";
+import LuxuryBackground from "../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from "@siteConfig";
@@ -163,9 +163,9 @@ const homePreloaded = {
     <meta name="referrer" content="never" />
   </head>
 
-  <body class="home-page">
+  <body class="home-page luxury-body">
     <script is:inline src="/assets/js/nav.js"></script>
-    <ShichaBackground />
+    <LuxuryBackground />
 
     <div class="main-layout">
       <main class="main-content">

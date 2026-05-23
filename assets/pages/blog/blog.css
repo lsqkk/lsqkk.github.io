@@ -210,3 +210,52 @@ body {
         padding: 4px 10px;
     }
 }
+
+/* Light mode overrides — fix hardcoded white text */
+body:not(.dark-mode) .category-title {
+    color: var(--text-main);
+    border-bottom-color: var(--line);
+    text-shadow: none;
+}
+body:not(.dark-mode) .function-name {
+    color: var(--text-main);
+}
+body:not(.dark-mode) .function-desc {
+    color: var(--text-subtle);
+}
+body:not(.dark-mode) .function-category {
+    color: var(--text-soft);
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+body:not(.dark-mode) .function-link {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+body:not(.dark-mode) .function-link:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+body:not(.dark-mode) .function-card {
+    background: rgba(253, 250, 242, 0.55);
+    border-color: var(--line);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 0 0 1px rgba(255, 250, 235, 0.4);
+}
+body:not(.dark-mode) .function-card::before {
+    background: linear-gradient(90deg, transparent, rgba(200, 210, 230, 0.3), transparent);
+}
+body:not(.dark-mode) .function-card:hover {
+    background: rgba(253, 250, 242, 0.7);
+    border-color: var(--line-strong);
+}
+body:not(.dark-mode) .repo-stat {
+    color: var(--text-soft);
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+body:not(.dark-mode) .loading {
+    color: var(--text-subtle);
+}
