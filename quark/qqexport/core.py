@@ -188,10 +188,13 @@ def run(verbose=True):
             continue
         all_pics = GetAllMoments.get_moment_all_pictures(uin, tid)
         if all_pics is not None and len(all_pics) > 0:
-            old_count = len(item[2].split(','))
-            if len(all_pics) > old_count:
-                print(f"  ✅ 详情API补充图片: {old_count}→{len(all_pics)}张")
-                item[2] = ','.join(all_pics)
+            old_urls = item[2].split(',')
+            old_set = set(old_urls)
+            # 只取详情API中尚未出现的新图片，避免前9张重复
+            extra_urls = [url for url in all_pics if url not in old_set]
+            if extra_urls:
+                print(f"  ✅ 详情API补充图片: {len(old_urls)}→{len(old_urls) + len(extra_urls)}张")
+                item[2] = ','.join(old_urls + extra_urls)
 
     # 4. 加载现有条目
     existing_entries = []

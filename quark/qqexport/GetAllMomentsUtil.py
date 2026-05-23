@@ -137,7 +137,14 @@ def get_moment_all_pictures(uin, tid):
             all_urls.extend(_extract(page_pics))
             page += 1
 
-        return all_urls
+        # 去重（详情分页可能和首页返回重叠）
+        seen = set()
+        deduped = []
+        for url in all_urls:
+            if url not in seen:
+                seen.add(url)
+                deduped.append(url)
+        return deduped
     except Exception as e:
         print(f"获取说说 {tid} 详情失败: {e}")
         if resp is not None:
