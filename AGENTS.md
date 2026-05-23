@@ -199,7 +199,7 @@ lsqkk.github.io/
 - `quark build --mode artifact`：额外导出 `.quark-artifact/`（不推荐使用）
 - `quark serve`：启动本地 `dist` 预览，默认端口 `8000`
 - `quark new`：创建文章；支持 `--draft`
-- `quark updatelog`：根据 Git 提交记录更新 `assets/md/log.md`，默认从现有日志最新日期开始刷新
+- `quark updatelog`：根据 Git 提交记录更新 `assets/data/log.json`，默认从现有日志最新日期开始刷新
 - `quark ppush`：构建并推送
 - `quark push`：普通推送，不构建
 - `quark updateposts`：兼容别名，当前实际转到 `quark build`
@@ -233,8 +233,8 @@ quark serve
 - 路由额外做了 slug 大小写兼容：见 `src/utils/post-case-map.ts`
 
 ### 动态与日志
-- `assets/md/dt.md`：动态内容源，构建与运行时均会读取
-- `assets/md/log.md`：更新日志源，首页“最近更新”和日志页会使用
+- `assets/data/dt.json`：动态内容源，构建与运行时均会读取
+- `assets/data/log.json`：更新日志源，首页”最近更新”和日志页会使用
 - 更新日志推荐通过 `quark updatelog` 维护；旧 `assets/md/commits.py` 仅保留为兼容转发入口
 - 动态解析逻辑见 `src/utils/dynamic-entries.ts`
 - 动态详情页为 `src/pages/blog/dt/[id].astro`

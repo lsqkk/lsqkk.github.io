@@ -15,9 +15,9 @@ async function loadDynamic() {
         if (preloaded.length > 0) {
             allEntries = normalizeEntries(preloaded);
         } else {
-            const response = await fetch('/assets/md/dt.md');
-            const mdContent = await response.text();
-            allEntries = parseDynamicEntries(mdContent);
+            const response = await fetch('/assets/data/dt.json');
+            const jsonData = await response.json();
+            allEntries = normalizeEntries(jsonData);
         }
 
         analyzeMonthData();
@@ -56,11 +56,7 @@ function normalizeEntries(preloaded) {
             : Array.isArray(entry.lines)
                 ? entry.lines.join('\n')
                 : '';
-        const imageMatches = content.match(/!\[.*?\]\((.*?)\)/g);
-        const images = imageMatches ? imageMatches.map((img) => {
-            const match = img.match(/!\[.*?\]\((.*?)\)/);
-            return match ? match[1] : null;
-        }).filter(Boolean) : [];
+        const images = Array.isArray(entry.images) ? entry.images : [];
 
         return {
             id: entry.id || '',
@@ -73,50 +69,6 @@ function normalizeEntries(preloaded) {
             images
         };
     });
-}
-
-function parseDynamicEntries(content) {
-    const dateCountMap = {};
-    return content.split(/\n(?=# )/g).map(entry => {
-        const [header, ...body] = entry.split('\n');
-        const titleMatch = header.match(/^# (.*)/);
-        const dateMatch = body.join('\n').match(/## 日期：(.+)/);
-
-        const imageMatches = body.join('\n').match(/!\[.*?\]\((.*?)\)/g);
-        const images = imageMatches ? imageMatches.map(img => {
-            const match = img.match(/!\[.*?\]\((.*?)\)/);
-            return match ? match[1] : null;
-        }).filter(Boolean) : [];
-
-        const dateStr = dateMatch ? dateMatch[1].trim() : '';
-        let monthKey = '';
-        let year = '';
-        let month = '';
-
-        if (dateStr) {
-            const date = new Date(dateStr);
-            if (!isNaN(date.getTime())) {
-                year = date.getFullYear();
-                month = date.getMonth() + 1;
-                monthKey = `${year}-${month.toString().padStart(2, '0')}`;
-            }
-        }
-
-        const dateKey = /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? dateStr : 'undated';
-        dateCountMap[dateKey] = (dateCountMap[dateKey] || 0) + 1;
-        const id = `${dateKey}-${dateCountMap[dateKey]}`;
-
-        return {
-            id,
-            title: titleMatch ? titleMatch[1].trim() : '未命名动态',
-            date: dateStr,
-            year,
-            month,
-            monthKey,
-            content: body.join('\n').replace(/## 日期：.+\n?/, '').trim(),
-            images
-        };
-    }).filter(entry => entry.title);
 }
 
 // 分析月份数据
@@ -222,11 +174,9 @@ function renderDynamicEntries(entries) {
     }
 
     container.innerHTML = entries.map((entry, index) => {
-        const extracted = window.DynamicGallery
-            ? window.DynamicGallery.extractImages(entry.content)
-            : { text: entry.content.replace(/!\[.*?\]\((.*?)\)/g, ''), images: entry.images || [] };
-        let contentWithoutImages = extracted.text;
-        let parsedContent = emotionParser.parse(contentWithoutImages);
+        const contentText = entry.content || '';
+        const entryImages = Array.isArray(entry.images) ? entry.images : [];
+        let parsedContent = emotionParser.parse(contentText);
         const htmlContent = marked.parse(parsedContent, {
             breaks: true,
             gfm: true
@@ -239,8 +189,8 @@ function renderDynamicEntries(entries) {
             <div class="dynamic-content">
                 ${htmlContent}
             </div>
-            ${extracted.images.length > 0 && window.DynamicGallery
-                ? window.DynamicGallery.createGalleryHtml(extracted.images)
+            ${entryImages.length > 0 && window.DynamicGallery
+                ? window.DynamicGallery.createGalleryHtml(entryImages)
                 : ''}
             <div class="dynamic-entry-footer">
                 <a href="/blog/dt/${entry.id}" class="dynamic-detail-link">查看详情</a>

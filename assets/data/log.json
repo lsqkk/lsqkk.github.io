@@ -1,0 +1,4286 @@
+[
+  {
+    "title": "更新日志说明",
+    "content": "基于仓库 `commits` 记录整理，部分更新可能不及时。\n\n查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)"
+  },
+  {
+    "date": "2026-05-20",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "缩减了serverless个数",
+        "commit": "27abb1"
+      },
+      {
+        "type": "更新",
+        "description": "更新了若干功能",
+        "commit": "d6cc90"
+      },
+      {
+        "type": "优化",
+        "description": "优化了若干功能",
+        "commit": "858fc3"
+      },
+      {
+        "type": "优化",
+        "description": "优化了若干功能",
+        "commit": "d538a6"
+      },
+      {
+        "type": "修复",
+        "description": "修复了文档右键残留",
+        "commit": "92ad6f"
+      },
+      {
+        "type": "优化",
+        "description": "深色模式全面适配，清理 console.log 和废弃文件",
+        "commit": "8c9437"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-11",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "log.md",
+        "commit": "997369"
+      },
+      {
+        "type": "新增",
+        "description": "Quark CLI 图床上传",
+        "commit": "3d2bf8"
+      },
+      {
+        "type": "更新",
+        "description": "quark-ppt-bridge-lite.exe",
+        "commit": "3acb28"
+      },
+      {
+        "type": "更新",
+        "description": "更新了pptremote功能",
+        "commit": "1df8c0"
+      },
+      {
+        "type": "修复",
+        "description": "pptremote完整修复",
+        "commit": "3e9f70"
+      },
+      {
+        "type": "更新",
+        "description": "更新了ppt-remote",
+        "commit": "2d8ceb"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-10",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "quark-ppt-bridge-lite.exe",
+        "commit": "767931"
+      },
+      {
+        "type": "修复",
+        "description": "修复了pptremote连接问题",
+        "commit": "6afe5e"
+      },
+      {
+        "type": "更新",
+        "description": "index.astro",
+        "commit": "daff9a"
+      },
+      {
+        "type": "更新",
+        "description": "更新了ppt-remote",
+        "commit": "1c95a0"
+      },
+      {
+        "type": "更新",
+        "description": "log.css",
+        "commit": "6671d6"
+      },
+      {
+        "type": "优化",
+        "description": "优化了log样式",
+        "commit": "91a758"
+      },
+      {
+        "type": "更新",
+        "description": "index.json",
+        "commit": "f25ca3"
+      },
+      {
+        "type": "修复",
+        "description": "修复了quark web面板配置保存问题",
+        "commit": "78a05a"
+      },
+      {
+        "type": "更新",
+        "description": "qai.js",
+        "commit": "f6b724"
+      },
+      {
+        "type": "更新",
+        "description": "qai.js",
+        "commit": "a68fe0"
+      },
+      {
+        "type": "优化",
+        "description": "优化了qai功能",
+        "commit": "2012ca"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-09",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "又更新了一批qai功能",
+        "commit": "9c31d2"
+      },
+      {
+        "type": "新增",
+        "description": "qai新增若干功能",
+        "commit": "8248f6"
+      },
+      {
+        "type": "更新",
+        "description": "ai chat升级",
+        "commit": "ad6eef"
+      },
+      {
+        "type": "更新",
+        "description": "log.md",
+        "commit": "b2b321"
+      },
+      {
+        "type": "优化",
+        "description": "优化了更新日志",
+        "commit": "992ed4"
+      },
+      {
+        "type": "修复",
+        "description": "streamError 变量声明和语法错误",
+        "commit": "3f183c"
+      },
+      {
+        "type": "修复",
+        "description": "SSE 错误检测：当千帆返回 code+message 时显示错误而非静默吞掉",
+        "commit": "db9a52"
+      },
+      {
+        "type": "更新",
+        "description": "调试 - 添加 SSE 原始数据日志，支持多种 SSE 格式解析",
+        "commit": "48c9e0"
+      },
+      {
+        "type": "修复",
+        "description": "修复代理服务器 body 解析问题，req.body 可能是字符串导致双重编码",
+        "commit": "043185"
+      },
+      {
+        "type": "更新",
+        "description": "settings.local.json",
+        "commit": "d81860"
+      },
+      {
+        "type": "修复",
+        "description": "修复了联网搜索无内容输出的问题",
+        "commit": "a71ea6"
+      },
+      {
+        "type": "更新",
+        "description": "ds.js",
+        "commit": "f1d6ac"
+      },
+      {
+        "type": "更新",
+        "description": "更新了代理",
+        "commit": "1a30a0"
+      },
+      {
+        "type": "更新",
+        "description": "新增了跨域代理",
+        "commit": "3127cf"
+      },
+      {
+        "type": "更新",
+        "description": "ds.js",
+        "commit": "e71215"
+      },
+      {
+        "type": "修复",
+        "description": "修复了ai chat联网搜索",
+        "commit": "9fb801"
+      },
+      {
+        "type": "更新",
+        "description": "更新了一些功能",
+        "commit": "78849d"
+      },
+      {
+        "type": "新增",
+        "description": "新增了若干项ai chat功能",
+        "commit": "04a778"
+      },
+      {
+        "type": "新增",
+        "description": "新增了ai chat若干功能",
+        "commit": "5d8423"
+      },
+      {
+        "type": "优化",
+        "description": "继续优化了web ui",
+        "commit": "b05a0d"
+      },
+      {
+        "type": "优化",
+        "description": "优化了ai chat功能",
+        "commit": "985ddb"
+      },
+      {
+        "type": "优化",
+        "description": "优化了deepseek WebUI功能",
+        "commit": "9fa1c9"
+      },
+      {
+        "type": "修复",
+        "description": "修复了留言板已知问题",
+        "commit": "6f92fc"
+      },
+      {
+        "type": "更新",
+        "description": "更新了留言板UI",
+        "commit": "19f2d4"
+      },
+      {
+        "type": "更新",
+        "description": "更新了qq动态导出的依赖和说明文档",
+        "commit": "39d421"
+      },
+      {
+        "type": "新增",
+        "description": "新增了自动导出qq动态脚本",
+        "commit": "ac7b26"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-08",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复了主页偶现错误元素的bug，并更新了文章",
+        "commit": "f07721"
+      },
+      {
+        "type": "优化",
+        "description": "= 优化顶栏“视频”展示",
+        "commit": "52fd75"
+      },
+      {
+        "type": "修复",
+        "description": "修正了文章日期meta信息",
+        "commit": "568edb"
+      },
+      {
+        "type": "更新",
+        "description": "更新了若干文章",
+        "commit": "314ee7"
+      },
+      {
+        "type": "优化",
+        "description": "调整了说明文档表述和位置",
+        "commit": "288a30"
+      },
+      {
+        "type": "更新",
+        "description": "log.md",
+        "commit": "41dd35"
+      },
+      {
+        "type": "更新",
+        "description": "\"优化-WebUI侧栏自然语言-font表单-命令面板改侧栏项\"",
+        "commit": "4a43c4"
+      },
+      {
+        "type": "更新",
+        "description": "更新了若干功能",
+        "commit": "c788dc"
+      },
+      {
+        "type": "更新",
+        "description": "\"删除：移除深浅色模式设置项及全部主题覆盖代码\"",
+        "commit": "def910"
+      },
+      {
+        "type": "更新",
+        "description": "\"fix-theme-bug-and-quark-webui-redesign\"",
+        "commit": "67f3e6"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-07",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "网站设置与Quark管理面板",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "log.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "修改了专栏跳转地址",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "文章脚注参考文献功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-05-06",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复留言板昵称提交与字体配置",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "basic.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了字体",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了2026年五一推文",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-24",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "Delete commits.py",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "log.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "完善FlatUI参考指南",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "校正首页文章分隔与深色样式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "细化首页玻璃质感与交互",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "继续打磨首页扁平布局",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "扁平化首页框架布局",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-23",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "log.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化终端 LLM 连续对话与 Markdown 渲染",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "terminal初始化递归导致黑屏",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "bug-list.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "大幅优化terminal并接入LLM联动",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "兼容新的 api.json 配置路径",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "统一 OJ 与相关页面跳转路径",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-22",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "AGENTS.md",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "首页打字机回退残留字符",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "修复和更新了一些功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "2604.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了页面模板说明",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-21",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了说明文档",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了项目文档",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了AGENTS.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了updatelog流程",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "新增了Agents.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-15",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "4.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-14",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "3.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-13",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "2.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了卡片样式",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "新增了卡片功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "增加了文章description，优化了目录样式",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-12",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "链接跳转",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "1.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-03",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-04-01",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "未补充说明",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了语言选择器功能样式",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-31",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "360.js",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "360°近处高度；地图预览",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "360附近点位名称常显",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "方向标注",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-30",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "360°附近200米",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了readme并移除了quark ds",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "调整了/json目录位置",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "未补充说明",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "移动说明文件位置",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了说明书",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了更新日志等",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新提示、地图放大等",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "放大地图",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "网盘，360安全校验",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "360.js",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "引入安全校验",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "网盘项目",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "未补充说明",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "360抽离单独页面",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "未补充说明",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "交大360更新",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了全局图片上传逻辑",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "app.js",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "顶栏跳转等",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.js",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-28",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "图床等待fb逻辑",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "新图床测试",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "主页构建",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "主页加载",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化Shicha背景；构建时等",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-17",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了文章",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些显示问题",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "扩展了鼠标光晕适配；一些优化",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-16",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了顶栏UI，优化了轻奢背景",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-15",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "stream-proxy.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.js",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化live未开播时页面",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化文章页标题",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化文顶头图显示",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "新增文章头图",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "LuxuryBackground.astro",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了readme等",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-13",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "主页联系方式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "FA图标",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "LuxuryBackground.astro",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "轻奢背景浅色模式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了账号中心和登录页",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了个人主页等",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了一批新功能",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化fb加载",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-12",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "package-lock.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "移除app check",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "app-check.js",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "app check",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-11",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复了代码块语言标注错误的Bug",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了香橙派开发笔记",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "文章页侧栏目录高亮、顶栏重复显示登录等Bug",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章页重要优化",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了顶栏布局",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-10",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "优化了在线人数页面Firebase加载",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了在线人数相关功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了用户查看和管理页等",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "适配更多头像昵称自动填充",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "导航栏不显示头像的Bug",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "GitHub Oauth登录",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "进行了多项优化：移除了API硬链接，深色模式微调等",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了动态",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了文章页显示和功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-09",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复了文章页深色Bug",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复了深色模式错误",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复了动态详情页加载问题",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "动态详情页+点赞评论功能",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了主页深色模式适配",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "深色模式适配",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了主页UI",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化了粒子效果",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "将最新功能改为最近更新",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "新增了“项目”板块",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-08",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复了主页版权信息当前年显示",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "readme.md 说明文档",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "主页画廊",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化顶栏下拉列表样式",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "顶栏加载功能",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章列表页样式",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "文章“专栏”分类",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章页和主页显示",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "管理员登录",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "赞赏码",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-07",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "继续移除站名硬编码",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "网页logo和标题抽离",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "修复了密钥等安全隐患，其他一些优化",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "继续 Astro 改造",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些Bug",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "nav.json",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-06",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "产物部署收口；",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "服务器脚本 serve",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "一批大优化",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "移除产物文件",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "改为源码部署",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了 N 批 Astro 并优化资源位置",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-05",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "改造一批 Astro 构建方式",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复vercel部署报错",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "清除多余文件",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "适配 Astro 的项目文档微调",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "主页 Astro",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-04",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "Astro 模块化改造",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复文章多次画线，后面划线显示位置偏移的问题",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "跳转",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "文章页作者链接",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新说明文件位置",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "TS 检查",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-03-03",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "文章划线",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "优化初始化",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "模板初始化命令",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "模板样例内容",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-27",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "优化实验室主页",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复了 `oj 换行 Bug",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "夸克图床",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "GITHUB令牌调用",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "使用codex新增 `checkassets` 命令",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-09",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了文章",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "API域名更新",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-07",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "主页模块化",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-06",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "全部市级欢迎语",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "删除多余nav.css引用",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化导航栏",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复lyb深色按钮Bug",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "README",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-05",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "CDN",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "github图床原图全部使用cdn加速",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新配置文件",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复站外image/目录图片失效",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "删除无效文件",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "图片",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "主页RSS标",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "优化RSS生成",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "移除重复的.page-title样式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化部分样式",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章列表页更新RSS链接",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "RSS订阅",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "第一版RSS订阅测试",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-03",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "Quark 配置编辑器",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新了文章",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "优化py脚本",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "dt.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-02-02",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "更新一批新背景",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-31",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "quark 路径问题",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`quark ds`",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "`quark push`中文支持",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "manifest.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`tool.json` 位置",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`quark-git` 命令扩展",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "使用 `quark` 包测试提交",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`Quark` 博客管理包",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-30",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新部分黑暗模式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化部分工具UI，适配黑暗模式",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "移除全站多余的 `font-family` 设置",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "浅色模式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "更新日志分页及背景",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "shicha.js",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化黑暗模式和视差范围",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "深色模式自动切换",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-29",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "版权页（字体）",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "视差滚动全更新",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "视差",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "视差滚动",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "文章页复制版权尾注",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章页代码高亮",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "主页动态样式",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "删除部分独立 `font-family`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化IP错误提示",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "光标样式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章链接样式",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "post.css",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "主页留言",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "博客字体样式",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "提示语等",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "主页元素挪配置文件",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "友链和首页 `welcome`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`serve` 脚本",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "主页留言加载",
+        "commit": ""
+      },
+      {
+        "type": "调试",
+        "description": "测试主页加载",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-28",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "日志页增加换行",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "版权页",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "调整文章页加载顺序",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "网站版权页",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新日志",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "`requiements.txt`及其更新脚本",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "调整 `posts.json` 位置",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章 `json` 自动生成，新增 `YAML` 数据",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章模板 `head`部分",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "修改私有文件夹名称，更新网站地图",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "项目仓库自动读取",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "单独的友链页面",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "弹窗系统抽离、换行修复",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "popups.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "一周年弹窗",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "README",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-27",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "LICENSE",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "README",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新 README 图",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "修改题目名称",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "ip.js",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "vercel 代理 IP",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-24",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新仓库列表",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-23",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "pptremote_for_github.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新网站地图及其生成脚本",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化网页模板说明表述",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "`admin-auth` 问题",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "天地图key来源检查",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新`404`页，提供相似网址选项",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "统一网页标题样式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化部分页面标题、调整 `nav.js` 主页地址",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-22",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新日志",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "添加部分网页 `description`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新网站地图",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "分离一批`js`和`css`，优化部分页面UI",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "夸克测试 等",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-21",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "知识答题",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "题库文件",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "分离一批`js`和`css`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "留言板UI",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-20",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "网站功能列表`json`文件",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "夸克贴吧更新",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "压缩 `qq-emotion-parser` 脚本",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "去天地图密钥",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "配置调用说明文档",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "夸克地图`map.js`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "隐藏天地图密钥",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "分离一批`css`和`js`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "西交图寻 UI",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "转盘抽取工具",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "古早游戏们",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "夸克热搜UI",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "夸克日报分页、懒加载、日历视图、更新内容",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新仓库功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-19",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "动态月历和分页加载",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "工具箱历史工具处理",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "qq表情渲染机制",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "动态画廊",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "qq动态图片引用问题",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "动态内容及主页动态多图显示",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-17",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "网页模板文件`html_template.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-16",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "顶栏搜索检测在列表页逻辑",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "生成文章使用`utf-8-sig`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "夸克日报",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章页直接包含文章内容而非读取文章",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新网页logo",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-15",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "工具：打字速度测试",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "顶栏添加logo",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "动态页",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "Qtv更新",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-14",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "换主页图",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "更新文章模板样式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章导航页调整",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-13",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "顶部导航栏`nav.js`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-06",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "思政抽测`ti.json`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "思政抽测`index.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-05",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "思政抽测`index.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2026-01-01",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "部分功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "博客功能页",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "新年第一次提交：一批新文章",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-31",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "夸克终端自毁",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "网站地图更新",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "管理员密码移除，托管在Vercel",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "admin-auth.js",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "前端隐藏firebase配置",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "firebase-config.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "DeepSeek WebUI重要更新",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "firebase配置合并转移",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-30",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "迎接新年，版权信息 2025→2026",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "去站名化",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复神人替换Bug",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "全站架构重大更新，创建资源目录`/assets`和博客基础功能目录`/blog`等",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-28",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "chat analyzer工具",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-23",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "favicon.ico",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-21",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-10",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "文章单独页面",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-07",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "地图更新",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-06",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "夸克会议功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "friends.json",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-05",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "远程桌面",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "大多数网页禁右键、本地不禁右键",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "夸克OJ小修",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-04",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "博客工具",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "OJ新主页",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "博客题目页",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "OJ列表分页",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "又一批新题",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "OJ搜索功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "OJ新题",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "夸克OJ渲染和功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "新增OJ题目",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "discussion.js",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "夸克OJ",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-03",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "projects.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "game.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "tool.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "夸克PPT遥控上线",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "ppt-remote.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "ball.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "ball.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-02",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "夸克闪传最终",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "夸克闪传上线",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-12-01",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "不蒜子计数逻辑",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "CNAME",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-30",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "terminal欢迎语微调",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "夸克终端重磅上线",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "IP修复",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-28",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "font-family管理",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.js",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-27",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "调整文章页`post.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章页",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "主页表述调整",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "部分页面视口问题",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-25",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "主页小修",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-24",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "主页玻璃改造",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "顶栏导航修复",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "移动侧栏",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修顶栏Bug",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "顶栏改为毛玻璃效果",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-23",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "热搜页 `hot.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-20",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "nav.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "禁选文字",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "warnings.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "禁用右键集成",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "首页弹窗",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-19",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "warnings.json",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-08",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "动态信息`dt.md`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-05",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "顶栏多语种功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-04",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "模拟苏联 OGAS 自动化系统 `ogas`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-11-02",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "projects.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "tool.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-31",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "text2audio.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-30",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "`本地服务器.bat`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章页`post.html`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "nav.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "projects.json",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-29",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "加载上次key",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "streamer.html",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "直播页面音频功能",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "直播 LIVE 上线",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "nav.js",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-28",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "fire-alert.js",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "火灾预警系统",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "优化博客搜索功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-27",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "实验室整合",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "PHYSICS项目上传",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`readme.md`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "网页图标大修改",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "单页光标+网页图标",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "补充全景图网页`css`和`js`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "实验室微小优化",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "projects.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "物理实验室更新",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "前端实验室更新",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-24",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "动态`dt.md`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "game.js",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "post.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "posts.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "post.css",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "post格式微小优化",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-23",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "全站格式调整",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "全站去`.html`化",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "tool.json",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "分离一批`js`和`css`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章列表页更新",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "主页小修",
+        "commit": ""
+      },
+      {
+        "type": "调整",
+        "description": "调整主页`js`位置",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复`post`页面Bug 等",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "两个调整补丁",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "全站大调整",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-13",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "tool.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "friends.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-10-01",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-09-27",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "scenes.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "交大 360° 功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-09-18",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "现代网页导航 Modern nav",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-09-11",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "新媒体领域自我介绍页 `me`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-09-10",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "夸克地图 `map`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-09-09",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "夸克地图 `map`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-09-02",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "新媒体领域自我介绍页 `me`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-08-06",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "a.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-06-16",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "1.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-06-13",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "文章列表 `posts.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "上传了新文章 `2514.md`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-06-03",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "视频列表 `videos.json`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "文章列表 `posts.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "若干篇新文章",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-29",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "2048 游戏",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "工具列表 `tool.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "图片转emoji工具 `image-emoji`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "`zy`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章列表页 `article-list`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-28",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "夸克自控若干功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "单人五子棋 `5ziqi-p`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "工具 多人协同 markdown 编辑 `co-md`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "对战房间样式抽离 `room.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-27",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "工具 多人协同 markdown 编辑 `co-md`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "工具 markdown 编辑 `tool-md`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-25",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-23",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "工具列表 `tool.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "图片混淆工具 `tphx`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-20",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "笔记列表 `notes.json`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-19",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-18",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "notes.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "notes.json",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-17",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "笔记页 `nts`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-15",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "动态 `dt.md`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "DeepSeek 对话 `ds`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-14",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "dt.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "DeepSeek 对话 `ds`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-13",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "DeepSeek 对话 `ds`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-10",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "文章显示页 `post`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-07",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-05-01",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-30",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-27",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "cursor.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "cursor-trail.js",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "统计页 `stats`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-25",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "工具列表 `tool.json`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "智能OCR",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "微调主页UI",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "加入萌国ICP备案",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-23",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "tool.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "copyright.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "2508.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "posts.json",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-11",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-06",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "readme.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "post.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-05",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "tool.json",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章显示页侧栏UI",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "404页面UI",
+        "commit": ""
+      },
+      {
+        "type": "修复",
+        "description": "修复了全站UI更新后文章显示页顶错位的Bug",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "高级科学计算器功能，支持基本计算、方程求解、求导、不定积分、定积分、级数、矩阵运算",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-04",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复访问量统计时区Bug",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "全站 UI 重大更新",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-03",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "夸克日报板块，每日分享知乎好文",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "基于不蒜子的前端博客访问量统计",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "抽离工具箱项目至`tool.json`，优化工具管理",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-02",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "Markdown-富文本转换器全面升级为夸克 Markdown 编辑器，升级UI并支持实时渲染、TeX和mermaid语法",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "更新番茄钟UI界面，增加50min选项，增加夜间模式",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "微调主页UI",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-04-01",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "文章列表Tag功能",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "升级工具箱UI界面",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "AIGC检测功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-31",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "美化交大图寻UI界面",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "交大图寻数据库",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-30",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新交大图寻数据库",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-29",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "交大图寻",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-28",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "减少使用 postimage.cc 图床",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "建设夸克图床功能",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "录音转文字功能",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-27",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "Bing Webmaster 搜索引擎上线",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "开屏广告显示",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-26",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "更换主页每日一句API",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-25",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "开屏广告跳转",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "更新`Readme`页",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-24",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "科技伦理立场光谱测试",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章列表页 `article-list`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-20",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "公式 `zy`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-11",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-10",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-09",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "五子棋对战 `5ziqi`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-06",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "五子棋对战 `5ziqi`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-05",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "网页聊天室",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-04",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "游戏页面判断页 `pd.html`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章显示页 `post.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-03",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "博客已有Bug",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章和游戏页面",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-02",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "网页钢琴相关功能",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章显示页 `post.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-03-01",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章显示页 `post.html`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "网页钢琴相关功能",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "styles.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "score.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "合成大西瓜游戏",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-28",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章列表 `posts.json`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "新文章 `2506.md`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "styles.css",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "网页DeepSeek对话 `ds`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-27",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "合成大西瓜游戏",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "游戏列表 `game.json`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章显示页 `post.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-25",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "post.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "article-list",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "tool.html",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "广告功能 `ad`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "posts.json",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-24",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "新文章 `2505.md`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "番茄钟",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "网页图标",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "样式 `styles.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-23",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-22",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "文章页",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "工具页面 `tool`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-21",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "文章页 `post.html`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "新文章 `2304.md`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-14",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "copyright.md",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "工具页 `tool`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "列表页 `article-list`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-06",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "新文章 2204.md",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-05",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "posts.json",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "2305.md",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "版权页 copyright",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章显示页 `post.html`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-04",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "基础样式 style.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "tool.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "列表页 `article-list.html`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "关于 about",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-03",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "style.css",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "index.html",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "markdown 编辑工具",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "番茄钟",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "文章列表页",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-02",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "markdown 编辑工具",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "工具页 `tool`",
+        "commit": ""
+      },
+      {
+        "type": "更新",
+        "description": "列表页 `article-list`",
+        "commit": ""
+      },
+      {
+        "type": "优化",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-02-01",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "主页 `index.html`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "关于 `about`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "第一篇文章 `2501`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "文章列表页 `article-list`",
+        "commit": ""
+      },
+      {
+        "type": "新增",
+        "description": "基础样式 `style.css`",
+        "commit": ""
+      }
+    ]
+  },
+  {
+    "date": "2025-01-31",
+    "entries": [
+      {
+        "type": "新增",
+        "description": "主页 `mainpage`",
+        "commit": ""
+      }
+    ]
+  }
+]

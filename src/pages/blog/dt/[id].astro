@@ -3,7 +3,6 @@ import ShichaBackground from "../../../components/ShichaBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-import { parseDynamicEntries } from "../../../utils/dynamic-entries";
 import DynamicCommentPanel from "../../../components/DynamicCommentPanel.astro";
 
 const PROJECT_ROOT = process.cwd();
@@ -11,10 +10,9 @@ const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 
 export async function getStaticPaths() {
-  const dynamicMdPath = path.join(process.cwd(), "assets", "md", "dt.md");
-  const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
-  const allEntries = parseDynamicEntries(dynamicMd);
-  return allEntries.map((entry) => ({
+  const dtDataPath = path.join(process.cwd(), "assets", "data", "dt.json");
+  const dtData = JSON.parse(await fs.readFile(dtDataPath, "utf8"));
+  return dtData.map((entry: any) => ({
     params: { id: entry.id },
     props: { entry },
   }));
@@ -26,6 +24,7 @@ const { entry } = Astro.props as {
     title: string;
     date: string;
     content: string;
+    images?: string[];
   };
 };
 ---

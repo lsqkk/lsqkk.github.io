@@ -21,6 +21,8 @@
     }
 
     /**
+     * Create gallery grid HTML. Shows up to 9 images with "+X" overlay on the 9th.
+     * Full image list is stored for modal viewing.
      * @param {string[]} images
      */
     function createGalleryHtml(images) {
@@ -29,19 +31,23 @@
         galleryStore.set(galleryId, images);
 
         const total = images.length;
-        const perRow = total <= 4 ? 2 : 3;
-        const rows = Math.ceil(total / perRow);
+        const displayCount = Math.min(total, 9);
+        const perRow = displayCount <= 4 ? 2 : 3;
+        const rows = Math.ceil(displayCount / perRow);
         let html = `<div class="gallery-container" data-gallery-id="${galleryId}">`;
 
+        let imgIdx = 0;
         for (let row = 0; row < rows; row += 1) {
             html += '<div class="gallery-row">';
             const start = row * perRow;
-            const end = Math.min(start + perRow, total);
-            for (let i = start; i < end; i += 1) {
-                const image = images[i];
+            const end = Math.min(start + perRow, displayCount);
+            for (let i = start; i < end; i += 1, imgIdx += 1) {
+                const image = images[imgIdx];
+                const isOverflow = imgIdx === 8 && total > 9;
                 html += `
-                    <button type="button" class="gallery-item" aria-label="查看图片 ${i + 1}" onclick="DynamicGallery.open('${galleryId}', ${i})">
-                        <img src="${image}" alt="动态图片 ${i + 1}" loading="lazy">
+                    <button type="button" class="gallery-item${isOverflow ? ' gallery-item-overflow' : ''}" aria-label="查看图片 ${imgIdx + 1}" onclick="DynamicGallery.open('${galleryId}', ${imgIdx})">
+                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy">
+                        ${isOverflow ? `<div class="gallery-overlay">+${total - 9}</div>` : ''}
                     </button>
                 `;
             }
@@ -99,6 +105,12 @@
         renderModal(galleryId, safeIndex);
     }
 
+    // --- Current modal state (for keyboard + touch) ---
+    let modalGalleryId = '';
+    let modalIndex = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
     /**
      * @param {string} galleryId
      * @param {number} index
@@ -110,18 +122,19 @@
         const existing = document.querySelector('.gallery-modal');
         if (existing) existing.remove();
 
+        modalGalleryId = galleryId;
+        modalIndex = index;
+
         const modal = document.createElement('div');
         modal.className = 'gallery-modal';
         modal.innerHTML = `
             <div class="gallery-modal-content">
                 <button type="button" class="close-btn" onclick="DynamicGallery.close()" aria-label="关闭预览">&times;</button>
-                <div class="gallery-modal-main">
+                <div class="gallery-modal-main" id="gallery-modal-main">
                     <img src="${images[index]}" class="current-image" alt="全屏图片">
-                    <div class="gallery-nav">
-                        <button type="button" class="nav-btn prev-btn" ${index === 0 ? 'style="visibility:hidden"' : ''} onclick="DynamicGallery.change('${galleryId}', ${index - 1})">❮</button>
-                        <span class="image-counter">${index + 1} / ${images.length}</span>
-                        <button type="button" class="nav-btn next-btn" ${index === images.length - 1 ? 'style="visibility:hidden"' : ''} onclick="DynamicGallery.change('${galleryId}', ${index + 1})">❯</button>
-                    </div>
+                    <button type="button" class="gallery-nav-btn gallery-prev-btn" ${index === 0 ? 'style="display:none"' : ''} onclick="DynamicGallery.change('${galleryId}', ${index - 1})" aria-label="上一张"><span>❮</span></button>
+                    <button type="button" class="gallery-nav-btn gallery-next-btn" ${index === images.length - 1 ? 'style="display:none"' : ''} onclick="DynamicGallery.change('${galleryId}', ${index + 1})" aria-label="下一张"><span>❯</span></button>
+                    <div class="gallery-counter">${index + 1} / ${images.length}</div>
                 </div>
                 <div class="gallery-thumbnails">
                     ${images.map((url, i) => `
@@ -139,8 +152,40 @@
             if (event.target === modal) closeGallery();
         });
 
+        // Touch swipe support
+        const mainArea = modal.querySelector('#gallery-modal-main');
+        if (mainArea) {
+            mainArea.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            mainArea.addEventListener('touchend', (e) => {
+                const currentImages = galleryStore.get(modalGalleryId);
+                if (!currentImages) return;
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+                    if (dx < 0 && modalIndex < currentImages.length - 1) {
+                        changeImage(modalGalleryId, modalIndex + 1);
+                    } else if (dx > 0 && modalIndex > 0) {
+                        changeImage(modalGalleryId, modalIndex - 1);
+                    }
+                }
+            }, { passive: true });
+        }
+
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
+
+        // Scroll thumbnail into view
+        requestAnimationFrame(() => {
+            const thumbs = modal.querySelector('.gallery-thumbnails');
+            const active = modal.querySelector('.thumbnail.active');
+            if (thumbs && active instanceof HTMLElement) {
+                thumbs.scrollLeft = active.offsetLeft - thumbs.offsetWidth / 2 + active.offsetWidth / 2;
+            }
+        });
     }
 
     function closeGallery() {
@@ -167,7 +212,21 @@
     }
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') closeGallery();
+        if (!document.querySelector('.gallery-modal')) return;
+
+        if (event.key === 'Escape') {
+            closeGallery();
+            return;
+        }
+
+        const currentImages = galleryStore.get(modalGalleryId);
+        if (!currentImages) return;
+
+        if (event.key === 'ArrowLeft' && modalIndex > 0) {
+            changeImage(modalGalleryId, modalIndex - 1);
+        } else if (event.key === 'ArrowRight' && modalIndex < currentImages.length - 1) {
+            changeImage(modalGalleryId, modalIndex + 1);
+        }
     });
 
     window.DynamicGallery = {

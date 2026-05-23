@@ -65,14 +65,8 @@ function shouldCopyFile(srcAbs) {
   // Skip Python/cache tooling files.
   if (ext === ".py" || ext === ".pyc") return false;
 
-  // Keep only markdown files that are fetched by frontend runtime.
-  if (ext === ".md") {
-    const allowedMarkdown = new Set([
-      "assets/md/dt.md",
-      "assets/md/log.md",
-    ]);
-    return allowedMarkdown.has(rel);
-  }
+  // Never copy markdown files (data is now stored in JSON under assets/data/).
+  if (ext === ".md") return false;
 
   return true;
 }

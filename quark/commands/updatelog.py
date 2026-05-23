@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 from datetime import date
@@ -11,7 +12,6 @@ from ..utils import get_blog_root
 
 GITHUB_REPO = "https://github.com/lsqkk/lsqkk.github.io"
 
-DATE_HEADING_RE = re.compile(r"^#\s+(\d{4}-\d{2}-\d{2})\s*$")
 FORMATTED_ENTRY_RE = re.compile(r"^(新增|更新|优化|修复)\s*-\s*(.+)$")
 PREFIX_SPLIT_RE = re.compile(
     r"^(?P<prefix>新增|更新|优化|修复|add|feat|feature|new|update|upgrade|bump|opt|optimize|optimization|improve|perf|refactor|fix|bugfix|hotfix|docs?)"
@@ -46,38 +46,80 @@ PREFIX_MAP = {
 
 DEFAULT_DETAIL = "未补充说明"
 
+LOG_HEADER_TITLE = "更新日志说明"
+LOG_HEADER_CONTENT = (
+    "基于仓库 `commits` 记录整理，部分更新可能不及时。\n\n"
+    "查看完整仓库 `commits` 记录，请前往"
+    f"[博客仓库]({GITHUB_REPO})"
+)
 
-def read_log_file(path: Path) -> tuple[str, list[tuple[str, str]]]:
+
+def read_log_file(path: Path) -> tuple[str, list[tuple[str, list[dict]]]]:
+    """
+    读取 log.json，返回 (header_text, [(date, structured_entries), ...])。
+
+    structured_entries = [{ type, description, commit }, ...]
+    header_text 是标题为"更新日志说明"的节的内容。
+    """
     if not path.exists():
         return "", []
 
-    content = path.read_text(encoding="utf-8")
-    pattern = re.compile(r"(?m)^#\s+(\d{4}-\d{2}-\d{2})\s*$")
-    matches = list(pattern.finditer(content))
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
 
-    if not matches:
-        return content, []
+    header_text = ""
+    sections: list[tuple[str, list[dict]]] = []
 
-    header = content[: matches[0].start()]
-    sections: list[tuple[str, str]] = []
+    for item in data:
+        title = item.get("title", "")
+        if item.get("entries"):
+            # New format: { date, entries: [{type, description, commit}] }
+            date_str = item.get("date", "")
+            if re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+                sections.append((date_str, item["entries"]))
+        elif re.match(r"^\d{4}-\d{2}-\d{2}$", title):
+            # Old format: { title: date, content: raw_text } → parse entries from text
+            entries = _parse_entries_from_text(item.get("content", ""))
+            if entries:
+                sections.append((title, entries))
+        elif not header_text:
+            header_text = item.get("content", "")
 
-    for index, match in enumerate(matches):
-        section_start = match.start()
-        section_end = matches[index + 1].start() if index + 1 < len(matches) else len(content)
-        section_date = match.group(1)
-        raw_section = content[section_start:section_end].rstrip()
-        sections.append((section_date, raw_section))
-
-    return header, sections
+    return header_text, sections
 
 
-def latest_logged_date(sections: list[tuple[str, str]]) -> str | None:
+def _parse_entries_from_text(text: str) -> list[dict]:
+    """Parse structured entries from raw text like 'type - desc [`hash`](url)'."""
+    entries = []
+    for line in text.split("\n"):
+        line = line.strip()
+        if not line:
+            continue
+        entry_match = re.match(r"^([一-龥A-Za-z]+)\s*-\s*(.+)$", line)
+        if not entry_match:
+            continue
+        entry_type = entry_match.group(1).strip()
+        detail = entry_match.group(2).strip()
+        # Extract trailing commit hash
+        hash_match = re.search(r"\[`([a-f0-9]{6})`\]\([^)]+\)\s*$", detail)
+        commit = hash_match.group(1) if hash_match else ""
+        if hash_match:
+            detail = detail[: hash_match.start()].strip()
+        entries.append({"type": entry_type, "description": detail, "commit": commit})
+    return entries
+
+
+def latest_logged_date(sections: list[tuple[str, list[dict]]]) -> str | None:
     for log_date, _ in sections:
         return log_date
     return None
 
 
-def normalize_commit_message(message: str) -> str | None:
+def _normalize_commit(message: str) -> tuple[str, str] | None:
+    """
+    Normalize a commit message to (type, description) pair.
+    Returns None if the message should be skipped (e.g. merge commits).
+    """
     text = re.sub(r"\s+", " ", message.strip())
     if not text:
         return None
@@ -89,20 +131,20 @@ def normalize_commit_message(message: str) -> str | None:
     formatted_match = FORMATTED_ENTRY_RE.match(text)
     if formatted_match:
         entry_type = formatted_match.group(1)
-        detail = clean_detail(formatted_match.group(2))
-        return f"{entry_type} - {detail}"
+        detail = _clean_detail(formatted_match.group(2))
+        return (entry_type, detail)
 
     prefix_match = PREFIX_SPLIT_RE.match(text)
     if prefix_match:
         raw_prefix = prefix_match.group("prefix").lower()
         entry_type = PREFIX_MAP.get(raw_prefix, "更新")
-        detail = clean_detail(prefix_match.group("detail"))
-        return f"{entry_type} - {detail}"
+        detail = _clean_detail(prefix_match.group("detail"))
+        return (entry_type, detail)
 
-    return f"更新 - {clean_detail(text)}"
+    return ("更新", _clean_detail(text))
 
 
-def clean_detail(detail: str) -> str:
+def _clean_detail(detail: str) -> str:
     cleaned = re.sub(r"\s+", " ", detail.strip(" -_:："))
     return cleaned or DEFAULT_DETAIL
 
@@ -140,78 +182,74 @@ def fetch_git_commits(blog_root: Path, since_date: str, until_date: str) -> list
     return commits
 
 
-def build_generated_sections(commits: list[tuple[str, str, str]]) -> list[tuple[str, list[str]]]:
-    grouped: dict[str, list[str]] = {}
+def build_generated_sections(commits: list[tuple[str, str, str]]) -> list[tuple[str, list[dict]]]:
+    """Build structured entries grouped by date: [(date, [{type, description, commit}])]"""
+    grouped: dict[str, list[dict]] = {}
     seen: set[tuple[str, str]] = set()
 
     for commit_hash, commit_date, subject in commits:
-        normalized = normalize_commit_message(subject)
+        normalized = _normalize_commit(subject)
         if not normalized:
             continue
-        # 追加 commit hash markdown 链接
-        entry_with_hash = f'{normalized} [`{commit_hash}`]({GITHUB_REPO}/commit/{commit_hash})'
-        unique_key = (commit_date, entry_with_hash)
+        entry_type, description = normalized
+        unique_key = (commit_date, commit_hash)
         if unique_key in seen:
             continue
         seen.add(unique_key)
-        grouped.setdefault(commit_date, []).append(entry_with_hash)
+        grouped.setdefault(commit_date, []).append(
+            {"type": entry_type, "description": description, "commit": commit_hash}
+        )
 
-    return [(commit_date, entries) for commit_date, entries in grouped.items() if entries]
-
-
-def render_generated_sections(generated_sections: list[tuple[str, list[str]]]) -> list[tuple[str, str]]:
-    rendered_sections: list[tuple[str, str]] = []
-    for log_date, entries in generated_sections:
-        if not entries:
-            continue
-        rendered_sections.append((log_date, f"# {log_date}\n\n" + "\n\n".join(entries)))
-    return rendered_sections
+    return [(date_str, entries) for date_str, entries in grouped.items() if entries]
 
 
 def merge_sections(
-    generated_sections: list[tuple[str, str]],
-    existing_sections: list[tuple[str, str]],
-) -> list[tuple[str, str]]:
-    replaced_dates = {section_date for section_date, _ in generated_sections}
-    merged = list(generated_sections)
+    generated: list[tuple[str, list[dict]]],
+    existing: list[tuple[str, list[dict]]],
+) -> list[tuple[str, list[dict]]]:
+    replaced_dates = {date_str for date_str, _ in generated}
+    merged = list(generated)
     merged.extend(
-        (section_date, raw_section)
-        for section_date, raw_section in existing_sections
-        if section_date not in replaced_dates
+        (date_str, entries)
+        for date_str, entries in existing
+        if date_str not in replaced_dates
     )
     return merged
 
 
-def render_log_markdown(header_text: str, sections: list[tuple[str, str]]) -> str:
-    chunks: list[str] = []
+def write_log_json(path: Path, header_text: str, sections: list[tuple[str, list[dict]]]) -> None:
+    """Write log data to log.json: [{title,content}, ...] + [{date, entries}, ...]"""
+    data: list[dict] = []
 
-    if header_text.strip():
-        chunks.append(header_text.rstrip())
+    stored_header = header_text.strip() or LOG_HEADER_CONTENT
+    data.append({"title": LOG_HEADER_TITLE, "content": stored_header})
 
-    for _, raw_section in sections:
-        if not raw_section.strip():
+    for log_date, entries in sections:
+        if not entries:
             continue
-        chunks.append(raw_section.rstrip())
+        data.append({"date": log_date, "entries": entries})
 
-    return "\n\n".join(chunk for chunk in chunks if chunk).rstrip() + "\n"
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
 
 
 @click.command()
-@click.option("--since", "since_date", help="起始日期，格式 YYYY-MM-DD；默认从 log.md 最新日期开始刷新。")
+@click.option("--since", "since_date", help="起始日期，格式 YYYY-MM-DD；默认从 log.json 最新日期开始刷新。")
 @click.option("--until", "until_date", help="截止日期，格式 YYYY-MM-DD；默认今天。")
-@click.option("--dry-run", is_flag=True, help="仅预览，不写入 log.md。")
-@click.option("--stdout", "print_stdout", is_flag=True, help="将合并后的 log.md 内容输出到终端。")
+@click.option("--dry-run", is_flag=True, help="仅预览，不写入 log.json。")
+@click.option("--stdout", "print_stdout", is_flag=True, help="将合并后的 log 内容以 JSON 形式输出到终端。")
 @click.option(
     "--log-file",
-    default="assets/md/log.md",
+    default="assets/data/log.json",
     show_default=True,
-    help="更新日志文件路径。",
+    help="更新日志 JSON 文件路径。",
 )
 def cli(since_date: str | None, until_date: str | None, dry_run: bool, print_stdout: bool, log_file: str):
     """
-    根据 Git 提交记录更新 assets/md/log.md
+    根据 Git 提交记录更新 assets/data/log.json
 
-    默认会读取现有 log.md 的最新日期，并从该日期开始重新生成，避免重复手工复制粘贴。
+    默认会读取现有 log.json 的最新日期，并从该日期开始重新生成，避免重复。
     """
 
     blog_root = Path(get_blog_root())
@@ -228,9 +266,7 @@ def cli(since_date: str | None, until_date: str | None, dry_run: bool, print_std
         click.echo(f"没有找到 {final_since} 到 {final_until} 之间可写入日志的新提交。")
         return
 
-    rendered_generated_sections = render_generated_sections(generated_sections)
-    merged_sections = merge_sections(rendered_generated_sections, existing_sections)
-    rendered = render_log_markdown(header_text, merged_sections)
+    merged_sections = merge_sections(generated_sections, existing_sections)
 
     click.echo(
         f"已整理 {len(generated_sections)} 个日期、"
@@ -240,12 +276,15 @@ def cli(since_date: str | None, until_date: str | None, dry_run: bool, print_std
     click.echo(f"目标文件: {log_path.relative_to(blog_root)}")
 
     if print_stdout:
-        click.echo()
-        click.echo(rendered.rstrip())
+        output_data = []
+        output_data.append({"title": LOG_HEADER_TITLE, "content": header_text.strip() or LOG_HEADER_CONTENT})
+        for log_date, entries in merged_sections:
+            output_data.append({"date": log_date, "entries": entries})
+        click.echo(json.dumps(output_data, ensure_ascii=False, indent=2))
 
     if dry_run:
         click.echo("dry-run 模式：未写入文件。")
         return
 
-    log_path.write_text(rendered, encoding="utf-8")
+    write_log_json(log_path, header_text, merged_sections)
     click.echo("√ 更新日志已写入。")

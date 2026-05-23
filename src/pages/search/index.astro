@@ -2,13 +2,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, SITE_DOMAIN } from "@siteConfig";
-import { parseDynamicEntries } from "../../utils/dynamic-entries";
 import LuxuryBackground from "../../components/LuxuryBackground.astro";
 
 const pageTitle = `站内搜索 - ${SITE_TITLE}`;
 const PROJECT_ROOT = process.cwd();
 const postsIndexPath = path.join(PROJECT_ROOT, "posts", "posts.json");
-const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
+const dtDataPath = path.join(PROJECT_ROOT, "assets", "data", "dt.json");
 
 function stripMarkdown(text: string): string {
   return String(text || "")
@@ -64,15 +63,14 @@ try {
 }
 
 try {
-  const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
-  const entries = parseDynamicEntries(dynamicMd);
-  dynamicFulltext = entries.map((entry) => ({
+  const dtData = JSON.parse(await fs.readFile(dtDataPath, "utf8"));
+  dynamicFulltext = (Array.isArray(dtData) ? dtData : []).map((entry: any) => ({
     type: "dynamic",
     id: entry.id,
     title: entry.title || entry.date,
     date: entry.date,
     path: `/blog/dt/${entry.id}`,
-    content: stripMarkdown(entry.lines.join("\n"))
+    content: stripMarkdown(entry.content || "")
   }));
 } catch {
   dynamicFulltext = [];

@@ -1,7 +1,8 @@
+import io
+import json
 import os
 import re
 import sys
-import io
 from datetime import datetime, date, timedelta
 
 from . import ConfigUtil as Config
@@ -13,17 +14,17 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 
 def _find_project_root():
-    """从 quark/qqexport/ 向上找到项目根目录（含 assets/md/dt.md）"""
+    """从 quark/qqexport/ 向上找到项目根目录（含 assets/data/dt.json）"""
     path = os.path.dirname(os.path.abspath(__file__))
     for _ in range(4):
         path = os.path.dirname(path)
-        if os.path.isfile(os.path.join(path, 'assets', 'md', 'dt.md')):
+        if os.path.isfile(os.path.join(path, 'assets', 'data', 'dt.json')):
             return path
     return None
 
 
 PROJECT_ROOT = _find_project_root()
-DT_MD_PATH = os.path.join(PROJECT_ROOT, 'assets', 'md', 'dt.md') if PROJECT_ROOT else None
+DT_JSON_PATH = os.path.join(PROJECT_ROOT, 'assets', 'data', 'dt.json') if PROJECT_ROOT else None
 
 
 def _parse_export_date(date_str):
@@ -52,22 +53,39 @@ def _parse_message_time(date_str):
 
 
 def get_latest_date_in_dt():
-    """解析 dt.md 中最新的日期，返回 date 对象；文件不存在则返回 None"""
-    if not DT_MD_PATH or not os.path.isfile(DT_MD_PATH):
-        return None
-    with open(DT_MD_PATH, 'r', encoding='utf-8') as f:
-        content = f.read()
-    matches = re.findall(r'## 日期：(\d{4}-\d{2}-\d{2})', content)
-    if not matches:
+    """解析 dt.json 中最新的日期，返回 date 对象；文件不存在或为空则返回 None"""
+    if not DT_JSON_PATH or not os.path.isfile(DT_JSON_PATH):
         return None
     try:
-        return datetime.strptime(matches[0], "%Y-%m-%d").date()
-    except ValueError:
+        with open(DT_JSON_PATH, 'r', encoding='utf-8') as f:
+            entries = json.load(f)
+        if not entries:
+            return None
+        date_str = entries[0].get('date', '')
+        if not date_str:
+            return None
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
+    except (json.JSONDecodeError, ValueError, IndexError):
         return None
 
 
-def generate_markdown(posts):
-    """生成新说说的 markdown 字符串（多条 block，reverse chronological）"""
+def _compute_next_id(existing_entries, date_key):
+    """计算给定日期的下一个可用序号"""
+    max_seq = 0
+    for entry in existing_entries:
+        eid = entry.get('id', '')
+        prefix = f"{date_key}-"
+        if eid.startswith(prefix):
+            try:
+                seq = int(eid[len(prefix):])
+                max_seq = max(max_seq, seq)
+            except ValueError:
+                pass
+    return max_seq + 1
+
+
+def generate_json_entries(posts, existing_entries):
+    """生成新说说的 JSON 条目列表（reverse chronological）"""
     if not posts:
         return None
 
@@ -77,7 +95,7 @@ def generate_markdown(posts):
         reverse=True
     )
 
-    md_blocks = []
+    new_entries = []
     for item in posts_sorted:
         time_str = item[0]
         content_raw = Tools.get_content_from_split(item[1])
@@ -97,29 +115,33 @@ def generate_markdown(posts):
         date_value = _parse_message_time(time_str)
         date_text = date_value.strftime("%Y-%m-%d") if date_value else time_str
 
-        block_lines = [f"# {title}", "", f"## 日期：{date_text}", ""]
-        if body:
-            block_lines.append(body)
-            block_lines.append("")
+        content = body or ""
 
+        # Collect image URLs (all of them, display capped at 9 in frontend)
         img_urls = str(item[2]).split(",")
-        img_index = 1
-        for img_url in img_urls:
-            img_url = img_url.strip()
-            if not img_url or not img_url.startswith("http"):
-                continue
-            block_lines.append(f"![img_{img_index}]({img_url})")
-            block_lines.append("")
-            img_index += 1
+        images = [
+            url.strip() for url in img_urls
+            if url.strip().startswith("http")
+        ]
 
-        md_blocks.append("\n".join(block_lines).rstrip())
+        # 计算ID
+        seq = _compute_next_id(existing_entries, date_text)
+        entry_id = f"{date_text}-{seq}"
 
-    return "\n\n".join(md_blocks).rstrip() + "\n"
+        new_entries.append({
+            "id": entry_id,
+            "title": title,
+            "date": date_text,
+            "content": content,
+            "images": images,
+        })
+
+    return new_entries
 
 
 def run(verbose=True):
     if not PROJECT_ROOT:
-        print("错误：找不到项目根目录（找不到 assets/md/dt.md）")
+        print("错误：找不到项目根目录（找不到 assets/data/dt.json）")
         sys.exit(1)
 
     # 1. 自动确定日期范围
@@ -129,7 +151,7 @@ def run(verbose=True):
     if latest:
         start_dt = datetime.combine(latest + timedelta(days=1), datetime.min.time())
         if start_dt.date() > today_date:
-            print("dt.md 已有最新数据，无需更新")
+            print("dt.json 已有最新数据，无需更新")
             return
     else:
         start_dt = None
@@ -156,22 +178,30 @@ def run(verbose=True):
     except Exception as err:
         print(f"获取QQ空间记录发生异常: {str(err)}")
 
-    # 4. 生成新内容并合并到 dt.md
-    new_md = generate_markdown(texts)
-    if not new_md:
+    # 4. 加载现有条目
+    existing_entries = []
+    if DT_JSON_PATH and os.path.isfile(DT_JSON_PATH):
+        try:
+            with open(DT_JSON_PATH, 'r', encoding='utf-8') as f:
+                existing_entries = json.load(f)
+        except json.JSONDecodeError:
+            existing_entries = []
+
+    # 5. 生成新条目
+    new_entries = generate_json_entries(texts, existing_entries)
+    if not new_entries:
         print('没有找到新的说说')
         return
 
     if verbose:
-        print(f'\n导出成功，共 {len(texts)} 条说说')
+        print(f'\n导出成功，共 {len(new_entries)} 条说说')
 
-    with open(DT_MD_PATH, 'r', encoding='utf-8') as f:
-        existing = f.read()
+    # 6. 合并（新内容在最前）
+    combined = new_entries + existing_entries
 
-    # 新内容在最前（新到旧），dt.md 也是新到旧排列
-    combined = new_md + "\n" + existing
-    with open(DT_MD_PATH, 'w', encoding='utf-8') as f:
-        f.write(combined)
+    with open(DT_JSON_PATH, 'w', encoding='utf-8') as f:
+        json.dump(combined, f, ensure_ascii=False, indent=2)
+        f.write("\n")
 
     if verbose:
-        print(f'已合并更新至 {DT_MD_PATH}')
+        print(f'已合并更新至 {DT_JSON_PATH}')

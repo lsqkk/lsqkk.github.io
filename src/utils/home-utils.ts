@@ -22,6 +22,12 @@ export interface LogEntry {
   date: string;
 }
 
+export interface LogSection {
+  title: string;
+  content: string;
+}
+
+/** Parse log entries from the old markdown format (for backward compatibility). */
 export function parseRecentLogs(content: string, maxItems: number): LogEntry[] {
   const lines = content.split(/\r?\n/);
   const items: LogEntry[] = [];
@@ -46,6 +52,49 @@ export function parseRecentLogs(content: string, maxItems: number): LogEntry[] {
   return items;
 }
 
+/** Parse log entries from the JSON format. Supports both old and new structures. */
+export function parseRecentLogsFromJson(logData: any[], maxItems: number): LogEntry[] {
+  const items: LogEntry[] = [];
+  for (const section of logData) {
+    let currentDate = "";
+    let entries: Array<{ type: string; detail: string }> = [];
+
+    if (section.entries) {
+      // New format: { date: "YYYY-MM-DD", entries: [{ type, description, commit }] }
+      currentDate = section.date || "";
+      if (!currentDate.match(/^\d{4}-\d{2}-\d{2}$/)) continue;
+      for (const entry of section.entries) {
+        entries.push({ type: entry.type, detail: entry.description || "" });
+      }
+    } else if (section.title) {
+      // Old format: { title: "YYYY-MM-DD", content: "type - desc\n..." }
+      const dateMatch = section.title.match(/^(\d{4}-\d{2}-\d{2})$/);
+      if (!dateMatch) continue;
+      currentDate = dateMatch[1];
+      const lines = (section.content || "").split(/\r?\n/);
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (!line) continue;
+        const itemMatch = line.match(/^([一-龥A-Za-z]+)\s*-\s*(.+)$/);
+        if (!itemMatch) continue;
+        entries.push({
+          type: itemMatch[1].trim(),
+          detail: stripMarkdownLinks(itemMatch[2].trim()),
+        });
+      }
+    } else {
+      continue;
+    }
+
+    for (const entry of entries) {
+      items.push({ type: entry.type, detail: entry.detail, date: currentDate });
+      if (items.length >= maxItems) break;
+    }
+    if (items.length >= maxItems) break;
+  }
+  return items;
+}
+
 export function getLogTagClass(type: string): string {
   if (type === "更新") return "update";
   if (type === "优化") return "optimize";
@@ -63,18 +112,23 @@ export function extractDynamicImages(content: string) {
 
 export function buildDynamicGallery(images: string[], id: string) {
   if (!images.length) return "";
-  const perRow = images.length <= 4 ? 2 : 3;
-  const rows = Math.ceil(images.length / perRow);
+  const total = images.length;
+  const displayCount = Math.min(total, 9);
+  const perRow = displayCount <= 4 ? 2 : 3;
+  const rows = Math.ceil(displayCount / perRow);
   let html = `<div class="gallery-container" data-gallery-id="${id}" data-gallery-images='${escapeHtml(JSON.stringify(images))}'>`;
+  let imgIdx = 0;
   for (let row = 0; row < rows; row += 1) {
     html += '<div class="gallery-row">';
     const start = row * perRow;
-    const end = Math.min(start + perRow, images.length);
-    for (let i = start; i < end; i += 1) {
-      const image = images[i];
+    const end = Math.min(start + perRow, displayCount);
+    for (let i = start; i < end; i += 1, imgIdx += 1) {
+      const image = images[imgIdx];
+      const isOverflow = imgIdx === 8 && total > 9;
       html += `
-        <button type="button" class="gallery-item" aria-label="查看图片 ${i + 1}" data-gallery-index="${i}">
-          <img src="${escapeHtml(image)}" alt="动态图片 ${i + 1}" loading="lazy">
+        <button type="button" class="gallery-item${isOverflow ? " gallery-item-overflow" : ""}" aria-label="查看图片 ${imgIdx + 1}" data-gallery-index="${imgIdx}">
+          <img src="${escapeHtml(image)}" alt="动态图片 ${imgIdx + 1}" loading="lazy">
+          ${isOverflow ? `<div class="gallery-overlay">+${total - 9}</div>` : ""}
         </button>
       `;
     }

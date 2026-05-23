@@ -3,12 +3,10 @@ import ShichaBackground from "../components/ShichaBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from "@siteConfig";
-import { parseDynamicEntries } from "../utils/dynamic-entries";
 import {
   escapeHtml,
-  parseRecentLogs,
+  parseRecentLogsFromJson,
   getLogTagClass,
-  extractDynamicImages,
   buildDynamicGallery,
   renderPlainLines,
 } from "../utils/home-utils";
@@ -21,8 +19,8 @@ const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json
 const popupsPath = path.join(PROJECT_ROOT, "src", "config", "json", "popups.json");
 const friendsPath = path.join(PROJECT_ROOT, "src", "config", "json", "friends.json");
 const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
-const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
-const logMdPath = path.join(PROJECT_ROOT, "assets", "md", "log.md");
+const dynamicDataPath = path.join(PROJECT_ROOT, "assets", "data", "dt.json");
+const logDataPath = path.join(PROJECT_ROOT, "assets", "data", "log.json");
 const toolPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "tool.json");
 const gamePath = path.join(PROJECT_ROOT, "assets", "pages", "games", "game.json");
 const projectPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.json");
@@ -33,8 +31,8 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
 const popups = JSON.parse(await fs.readFile(popupsPath, "utf8"));
 const friends = JSON.parse(await fs.readFile(friendsPath, "utf8"));
 const posts = JSON.parse(await fs.readFile(postsPath, "utf8"));
-const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
-const logMd = await fs.readFile(logMdPath, "utf8");
+const dtData = JSON.parse(await fs.readFile(dynamicDataPath, "utf8"));
+const logData = JSON.parse(await fs.readFile(logDataPath, "utf8"));
 const toolData = JSON.parse(await fs.readFile(toolPath, "utf8"));
 const gameData = JSON.parse(await fs.readFile(gamePath, "utf8"));
 const projectData = JSON.parse(await fs.readFile(projectPath, "utf8"));
@@ -84,7 +82,7 @@ const contactItems = [
 const announcementTitle = homeConfig?.announcement?.title || "";
 const announcementContent = homeConfig?.announcement?.content || "";
 const logCount = typeof homeConfig?.showLogNum === "number" ? homeConfig.showLogNum : 6;
-const recentLogs = parseRecentLogs(logMd, Math.max(1, logCount));
+const recentLogs = parseRecentLogsFromJson(logData, Math.max(1, logCount));
 
 const mainSectionKeys = Object.keys(indexConfig.main_content || {}).filter(
   (key) => indexConfig.main_content?.[key]
@@ -99,7 +97,7 @@ const hasMainSection = (key: string) => mainSectionKeys.includes(key);
 const hasSidebarSection = (key: string) => sidebarSectionKeys.includes(key);
 
 const postsTotal = Array.isArray(posts) ? posts.length : 0;
-const dynamicTotal = parseDynamicEntries(dynamicMd).length;
+const dynamicTotal = dtData.length;
 const toolsTotal = Array.isArray(toolData?.categories)
   ? toolData.categories.reduce((sum: number, cat: any) => sum + (cat.tools?.length || 0), 0)
   : 0;
@@ -112,11 +110,12 @@ const projectsTotal = Array.isArray(projectData?.categories)
   : 0;
 
 const showDynamicNum = typeof homeConfig.showDynamicNum === "number" ? homeConfig.showDynamicNum : 3;
-const dynamicEntries = parseDynamicEntries(dynamicMd).slice(0, showDynamicNum).map((entry) => ({
+const dynamicEntries = dtData.slice(0, showDynamicNum).map((entry: any) => ({
   id: entry.id,
   title: entry.title,
   date: entry.date,
-  content: entry.lines,
+  content: (entry.content || "").split("\n"),
+  images: entry.images || [],
 }));
 const showPostNum = typeof homeConfig.showPostNum === "number" ? homeConfig.showPostNum : 3;
 const recentPosts = posts.slice(0, showPostNum);
@@ -277,9 +276,8 @@ const homePreloaded = {
                 {dynamicEntries.map((entry, index) => {
                   const dynamicId = entry.id || `${entry.date || "undated"}-${index + 1}`;
                   const rawContent = (entry.content || []).join("\n");
-                  const extracted = extractDynamicImages(rawContent);
-                  const htmlContent = renderPlainLines(extracted.text);
-                  const galleryHtml = buildDynamicGallery(extracted.images, `pre-${dynamicId}`);
+                  const htmlContent = renderPlainLines(rawContent);
+                  const galleryHtml = buildDynamicGallery(entry.images || [], `pre-${dynamicId}`);
                   return (
                     <article class="dynamic-card content-row" data-dynamic-id={dynamicId} data-dynamic-link={`/blog/dt/${dynamicId}`}>
                       <div class="dynamic-title">{escapeHtml(entry.title)}</div>
@@ -290,7 +288,7 @@ const homePreloaded = {
                       )}
                       <div
                         class="dynamic-content"
-                        data-raw-md={escapeHtml(extracted.text)}
+                        data-raw-md={escapeHtml(rawContent)}
                         set:html={htmlContent}
                       ></div>
                       {galleryHtml && <Fragment set:html={galleryHtml} />}

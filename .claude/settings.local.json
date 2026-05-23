@@ -38,7 +38,9 @@
       "Bash(sed -i '/console\\\\.log\\(/d' assets/js/sw.js)",
       "Bash(sed -i '/console\\\\.log\\(/d' \"assets/js/shicha copy.js\")",
       "Bash(npx http-server *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(rm assets/md/dt.md assets/md/log.md)",
+      "Bash(rmdir assets/md)"
     ]
   }
 }

@@ -59,6 +59,14 @@ function processParagraph(text) {
     return processedText;
 }
 
+const GITHUB_REPO = 'https://github.com/lsqkk/lsqkk.github.io';
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
 // 渲染指定页面的内容
 function renderPage(pageNumber) {
     const container = document.getElementById('changelog-container');
@@ -69,19 +77,35 @@ function renderPage(pageNumber) {
     let html = '';
 
     pageSections.forEach(section => {
-        const title = section.title;
-        const content = section.content;
+        if (section.entries) {
+            // New structured format: { date, entries: [{ type, description, commit }] }
+            let sectionHtml = `<div class="update-card"><h2>${escapeHtml(section.date)}</h2><div class="content">`;
+            section.entries.forEach(entry => {
+                const tagClass = TAG_COLORS[entry.type] || 'default';
+                let lineHtml = '';
+                if (entry.commit) {
+                    lineHtml += `<a href="${GITHUB_REPO}/commit/${escapeHtml(entry.commit)}"><code>${escapeHtml(entry.commit)}</code></a> `;
+                }
+                lineHtml += `<span class="tag ${tagClass}">${escapeHtml(entry.type)}</span>`;
+                lineHtml += marked.parseInline ? marked.parseInline(entry.description || '') : marked.parse(entry.description || '');
+                sectionHtml += `<p>${lineHtml}</p>`;
+            });
+            sectionHtml += '</div></div>';
+            html += sectionHtml;
+        } else {
+            // Legacy format (header section with { title, content })
+            const title = section.title;
+            const content = section.content || '';
+            const processedContent = processParagraph(content);
+            const parsedContent = marked.parse(processedContent);
 
-        // 处理内容中的标签
-        const processedContent = processParagraph(content);
-        const parsedContent = marked.parse(processedContent);
-
-        html += `
-            <div class="update-card">
-                <h2>${title}</h2>
-                <div class="content">${parsedContent}</div>
-            </div>
-        `;
+            html += `
+                <div class="update-card">
+                    <h2>${escapeHtml(title)}</h2>
+                    <div class="content">${parsedContent}</div>
+                </div>
+            `;
+        }
     });
 
     container.innerHTML = html || '<div class="loading">暂无更新内容</div>';
@@ -203,29 +227,6 @@ function updatePaginationUI() {
     createPaginationButtons(totalPages);
 }
 
-// 解析markdown内容
-function parseMarkdownContent(text) {
-    const sections = text.split(/(?=^# )/m);
-    allSections = [];
-
-    sections.forEach(section => {
-        if (section.trim()) {
-            const titleMatch = section.match(/^# (.*)$/m);
-            if (titleMatch) {
-                const title = titleMatch[1];
-                const content = section.replace(/^# .*$/m, '').trim();
-
-                allSections.push({
-                    title: title,
-                    content: content
-                });
-            }
-        }
-    });
-
-    return allSections;
-}
-
 // 懒加载逻辑（后台处理）
 function lazyLoadContent() {
     // 这里可以添加懒加载逻辑，例如：
@@ -240,7 +241,6 @@ function lazyLoadContent() {
     if (nextPage <= totalPages) {
         // 这里可以预加载下一页的数据
         // 在实际应用中，可以从服务器预加载数据
-        console.log(`预加载第 ${nextPage} 页数据`);
     }
 }
 
@@ -249,13 +249,20 @@ window.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('changelog-container');
     container.innerHTML = '<div class="loading">正在加载更新日志...</div>';
 
-    fetch('/assets/md/log.md')
+    fetch('/assets/data/log.json')
         .then(response => {
             if (!response.ok) throw new Error('文件加载失败');
-            return response.text();
+            return response.json();
         })
-        .then(text => {
-            parseMarkdownContent(text);
+        .then(data => {
+            allSections = Array.isArray(data) ? data.map(s => {
+                if (s.entries) {
+                    // New structured format
+                    return { date: s.date, entries: s.entries };
+                }
+                // Legacy format (header or old-style)
+                return { title: s.title, content: s.content };
+            }) : [];
 
             if (allSections.length === 0) {
                 container.innerHTML = '<div class="loading">暂无更新内容</div>';

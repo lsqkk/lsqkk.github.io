@@ -2,14 +2,13 @@
 import ShichaBackground from "../../../../components/ShichaBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { parseDynamicEntries } from "../../../../utils/dynamic-entries";
+import type { DynamicEntry } from "../../../../utils/dynamic-entries";
 
 const PROJECT_ROOT = process.cwd();
 const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
-const dynamicMdPath = path.join(PROJECT_ROOT, "assets", "md", "dt.md");
-const dynamicMd = await fs.readFile(dynamicMdPath, "utf8");
-const dynamicEntries = parseDynamicEntries(dynamicMd);
+const dtDataPath = path.join(PROJECT_ROOT, "assets", "data", "dt.json");
+const dtData = JSON.parse(await fs.readFile(dtDataPath, "utf8"));
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 
@@ -26,9 +25,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <meta name="referrer" content="never" />
-    <script is:inline define:vars={{ navConfig, dynamicEntries }}>
+    <script is:inline define:vars={{ navConfig, dtData }}>
       window.__NAV_CONFIG__ = navConfig;
-      window.__DT_PRELOADED__ = dynamicEntries;
+      window.__DT_PRELOADED__ = dtData;
     </script>
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <script is:inline src="/assets/js/qq-emotion-parser.min.js"></script>
