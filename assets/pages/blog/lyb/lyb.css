@@ -44,11 +44,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--text);
     line-height: 1.6;
     padding: 20px;
     min-height: 100vh;
+    background-color: #f2f6fb;
+    background-image: url('/assets/img/bg.png');
+    background-size: cover;
+    background-attachment: fixed;
     transition: color var(--transition), background var(--transition);
 }
 
