@@ -51,6 +51,29 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+/* Skeleton loading: shimmer background on unloaded gallery items */
+.gallery-item:not(.is-loaded) {
+    background: linear-gradient(
+        90deg,
+        var(--surface) 25%,
+        var(--surface-tint) 50%,
+        var(--surface) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+.gallery-item.is-loaded {
+    background: transparent;
+    animation: none;
+}
+
+.gallery-item.is-loaded img {
+    opacity: 1;
 }
 
 /* ---- Modal ---- */
@@ -223,4 +246,26 @@
     opacity: 1;
     border: 3px solid #4dabf7;
     transform: scale(1.05);
+}
+
+@media (prefers-color-scheme: dark) {
+    .gallery-item:not(.is-loaded) {
+        background: linear-gradient(
+            90deg,
+            rgba(17, 28, 46, 0.5) 25%,
+            rgba(66, 108, 170, 0.12) 50%,
+            rgba(17, 28, 46, 0.5) 75%
+        );
+        background-size: 200% 100%;
+    }
+}
+
+body.dark-mode .gallery-item:not(.is-loaded) {
+    background: linear-gradient(
+        90deg,
+        rgba(17, 28, 46, 0.5) 25%,
+        rgba(66, 108, 170, 0.12) 50%,
+        rgba(17, 28, 46, 0.5) 75%
+    );
+    background-size: 200% 100%;
 }

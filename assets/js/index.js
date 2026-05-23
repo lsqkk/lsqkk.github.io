@@ -58,11 +58,101 @@ function getFooterStatsConfig() {
     return preload.footerStats || {};
 }
 
+/**
+ * Initialize skeleton loading for images with data-skeleton-img attribute.
+ * Shows a shimmer placeholder until the image fully loads.
+ * @param {ParentNode} [root=document]
+ */
+function initSkeletonImages(root) {
+    root = root || document;
+    root.querySelectorAll('img[data-skeleton-img]').forEach(function (img) {
+        if (!(img instanceof HTMLImageElement)) return;
+        if (img.dataset.skeletonInit === 'true') return;
+        img.dataset.skeletonInit = 'true';
+
+        var parent = img.parentElement;
+        if (!parent) return;
+
+        parent.classList.add('img-skeleton-wrap');
+
+        if (img.complete && img.naturalWidth > 0) {
+            parent.classList.add('is-loaded');
+            return;
+        }
+
+        img.addEventListener('load', function () {
+            parent.classList.add('is-loaded');
+        }, { once: true });
+
+        img.addEventListener('error', function () {
+            parent.classList.add('is-loaded');
+        }, { once: true });
+    });
+}
+
+/**
+ * Show structured skeleton HTML for a dynamically loaded section.
+ * @param {string} type - 'video' | 'github' | 'online' | 'messages' | 'announcement'
+ * @returns {string}
+ */
+function createSkeletonHTML(type) {
+    var skeletons = {
+        video: [
+            '<div class="video-skeleton">',
+            '  <div class="skeleton-cover skeleton-block"></div>',
+            '  <div class="skeleton-title skeleton-block"></div>',
+            '  <div class="skeleton-meta skeleton-block"></div>',
+            '</div>'
+        ].join('\n'),
+        github: [
+            '<div class="github-skeleton">',
+            '  <div class="skeleton-head">',
+            '    <div class="skeleton-repo-name skeleton-block"></div>',
+            '    <div class="skeleton-branch skeleton-block"></div>',
+            '  </div>',
+            '  <div class="skeleton-desc skeleton-block"></div>',
+            '  <div class="skeleton-stats">',
+            '    <div class="skeleton-stat-row"><div class="skeleton-stat-label skeleton-block"></div><div class="skeleton-stat-value skeleton-block"></div></div>',
+            '    <div class="skeleton-stat-row"><div class="skeleton-stat-label skeleton-block"></div><div class="skeleton-stat-value skeleton-block"></div></div>',
+            '    <div class="skeleton-stat-row"><div class="skeleton-stat-label skeleton-block"></div><div class="skeleton-stat-value skeleton-block"></div></div>',
+            '  </div>',
+            '  <div class="skeleton-foot">',
+            '    <div class="skeleton-updated skeleton-block"></div>',
+            '    <div class="skeleton-link skeleton-block"></div>',
+            '  </div>',
+            '</div>'
+        ].join('\n'),
+        online: [
+            '<div class="online-skeleton">',
+            '  <div class="online-skeleton-row"><div class="skeleton-avatar skeleton-block"></div><div><div class="skeleton-name skeleton-block"></div><div class="skeleton-location skeleton-block"></div></div></div>',
+            '  <div class="online-skeleton-row"><div class="skeleton-avatar skeleton-block"></div><div><div class="skeleton-name skeleton-block"></div><div class="skeleton-location skeleton-block"></div></div></div>',
+            '  <div class="online-skeleton-row"><div class="skeleton-avatar skeleton-block"></div><div><div class="skeleton-name skeleton-block"></div><div class="skeleton-location skeleton-block"></div></div></div>',
+            '</div>'
+        ].join('\n'),
+        messages: [
+            '<div class="messages-skeleton">',
+            '  <div class="msg-skeleton-item"><div class="msg-skeleton-author skeleton-block"></div><div class="msg-skeleton-text skeleton-block"></div><div class="msg-skeleton-text-short skeleton-block"></div><div class="msg-skeleton-time skeleton-block"></div></div>',
+            '  <div class="msg-skeleton-item"><div class="msg-skeleton-author skeleton-block"></div><div class="msg-skeleton-text skeleton-block"></div><div class="msg-skeleton-text-short skeleton-block"></div><div class="msg-skeleton-time skeleton-block"></div></div>',
+            '</div>'
+        ].join('\n'),
+        announcement: [
+            '<div class="announcement-skeleton">',
+            '  <div class="skeleton-title skeleton-block"></div>',
+            '  <div class="skeleton-body skeleton-block"></div>',
+            '</div>'
+        ].join('\n')
+    };
+    return skeletons[type] || '';
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const mainContent = document.querySelector('.main-content');
     if (mainContent instanceof HTMLElement) {
         mainContent.style.opacity = '1';
     }
+
+    // Initialize skeleton loading for images
+    initSkeletonImages();
 
     await loadHomeConfig();
 
@@ -127,6 +217,7 @@ async function loadRecentPosts() {
 
         if (recentPostsElement) {
             recentPostsElement.innerHTML = list;
+            initSkeletonImages(recentPostsElement);
             bindHomePostLinks(recentPostsElement);
         }
     } catch (error) {
@@ -885,6 +976,7 @@ function renderDynamicEntries(entries) {
     if (window.DynamicGallery && typeof window.DynamicGallery.hydrateStaticGalleries === 'function') {
         window.DynamicGallery.hydrateStaticGalleries(container);
     }
+    initSkeletonImages(container);
     enhanceDynamicMarkdown(container);
     applyDynamicClamp(container);
 }
@@ -926,6 +1018,10 @@ function applyDynamicClamp(container) {
 
 // 加载最新视频
 async function loadLatestVideo() {
+    var videoContainer = document.getElementById('latest-video-container');
+    if (videoContainer) {
+        videoContainer.innerHTML = createSkeletonHTML('video');
+    }
     try {
         const uid = '2105459088';
         const proxyUrl = '__API_BASE__/api/stream-proxy?mode=bili&url=';
@@ -982,9 +1078,10 @@ function renderLatestVideo(video) {
     container.innerHTML = `
         <div class="latest-video-card">
             <div class="latest-video-cover-wrap">
-                <img src="${proxyCoverUrl}" 
-                     alt="${video.title}" 
+                <img src="${proxyCoverUrl}"
+                     alt="${video.title}"
                      class="latest-video-cover"
+                     data-skeleton-img
                      onerror="this.src='https://via.placeholder.com/320x180/1e88e5/ffffff?text=封面加载中'">
                 <div class="latest-video-duration">
                     ${formatVideoDuration(video.duration)}
@@ -1001,6 +1098,10 @@ function renderLatestVideo(video) {
             </div>
         </div>
     `;
+
+    // Initialize skeleton for the newly rendered video cover
+    var newCover = container.querySelector('img[data-skeleton-img]');
+    if (newCover) initSkeletonImages(newCover.parentNode);
 
     // 添加点击事件，跳转到B站视频页面
     const videoCard = container.querySelector('.latest-video-card');
@@ -1114,6 +1215,7 @@ function setOnlineCount(value) {
 async function loadOnlinePreview() {
     const container = document.getElementById('online-preview');
     if (!container) return;
+    container.innerHTML = createSkeletonHTML('online');
     try {
         const db = await ensureOnlineFirebaseDatabase();
         const snap = await db.ref('presence').once('value');
@@ -1145,7 +1247,7 @@ async function loadOnlinePreview() {
         const name = getDisplayName(item.nickname, item.login, item.uid);
         const location = [item.province, item.city].filter(Boolean).join(' ');
         const avatar = item.avatarUrl
-            ? `<img src="${item.avatarUrl}" alt="${name}">`
+            ? `<img src="${item.avatarUrl}" alt="${name}" data-skeleton-img>`
             : `<span>${getOnlineInitial(name)}</span>`;
         return `
                         <a class="online-preview-card" href="/a/online">
@@ -1159,6 +1261,7 @@ async function loadOnlinePreview() {
         }).join('')}
             </div>
         `;
+        initSkeletonImages(container);
     } catch (error) {
         console.error('在线预览加载失败:', error);
         container.innerHTML = '<div class="index-announcement"><p class="index-announcement-text">在线加载失败</p></div>';
@@ -1168,6 +1271,7 @@ async function loadOnlinePreview() {
 async function loadGithubRepoCard() {
     const container = document.getElementById('github-promo-card');
     if (!container) return;
+    container.innerHTML = createSkeletonHTML('github');
 
     const repoUrl = 'https://github.com/lsqkk/lsqkk.github.io';
     const fallbackHtml = `
@@ -1278,6 +1382,7 @@ function displayFriendLinks(friends) {
     });
 
     container.innerHTML = html;
+    initSkeletonImages(container);
 }
 
 // 渲染主页配置
@@ -1290,9 +1395,10 @@ function renderHomeConfig(config) {
     if (socialContainer && config.socialLinks) {
         socialContainer.innerHTML = config.socialLinks.map(link => `
             <a class="social-link" href="${link.url}" target="_blank" rel="noreferrer">
-                <img class="social-link-icon" src="${link.icon}" alt="${link.alt}">
+                <img class="social-link-icon" src="${link.icon}" alt="${link.alt}" data-skeleton-img>
             </a>
         `).join('');
+        initSkeletonImages(socialContainer);
     }
 
     const nicknameElement = document.getElementById('Nickname');
@@ -1323,10 +1429,11 @@ function setDefaultContent() {
     if (socialContainer) {
         socialContainer.innerHTML = `
             <a class="social-link" href="https://github.com/lsqkk" target="_blank" rel="noreferrer">
-                <img class="social-link-icon" src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" alt="GitHub">
+                <img class="social-link-icon" src="https://cdn.pixabay.com/photo/2022/01/30/13/33/github-6980894_1280.png" alt="GitHub" data-skeleton-img>
             </a>
             <!-- 其他默认社交图标 -->
         `;
+        initSkeletonImages(socialContainer);
     }
 
     const announcementContainer = document.getElementById('announcement-container');

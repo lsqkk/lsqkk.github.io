@@ -178,7 +178,7 @@ const homePreloaded = {
               {hasMainSection("avatar_nickname") && (
                 <div class="intro-hero hero-section">
                   <a class="hero-avatar-link" href="/posts/about">
-                    <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" />
+                    <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" data-skeleton-img />
                   </a>
                   <h1 class="hero-title" id="Nickname">{escapeHtml(homeConfig.Nickname || "")}</h1>
                 </div>
@@ -258,7 +258,7 @@ const homePreloaded = {
                     </div>
                     {post.cover && (
                       <div class="post-cover-wrap">
-                        <img class="post-cover" src={post.cover} alt={post.title} loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                        <img class="post-cover" src={post.cover} alt={post.title} loading="lazy" decoding="async" referrerpolicy="no-referrer" data-skeleton-img />
                       </div>
                     )}
                   </article>
@@ -410,7 +410,9 @@ const homePreloaded = {
                 {Array.isArray(friends) && friends.length > 0 ? (
                   friends.map((friend: any) => (
                     <a href={friend.url} target="_blank" class="friend-link-item">
-                      <img src={friend.icon} alt={friend.nickname} class="friend-icon" onerror="this.src='assets/img/logo_blue.png'">
+                      <div class="friend-icon-wrap">
+                        <img src={friend.icon} alt={friend.nickname} class="friend-icon" onerror="this.src='assets/img/logo_blue.png'" data-skeleton-img />
+                      </div>
                       <div class="friend-info">
                         <div class="friend-nickname">{escapeHtml(friend.nickname)}</div>
                         <div class="friend-describe">{escapeHtml(friend.describe)}</div>
@@ -435,7 +437,7 @@ const homePreloaded = {
           <div>
             <div class="footer-kicker">{footerTitleEn}</div>
             <div class="footer-title">
-              <img class="footer-logo" src={footerLogo} alt="logo" />
+              <span class="footer-logo-wrap"><img class="footer-logo" src={footerLogo} alt="logo" data-skeleton-img /></span>
               <span>{footerTitleCn}</span>
             </div>
           </div>
@@ -455,7 +457,7 @@ const homePreloaded = {
                 </a>
               ) : key === "icp_record" ? (
                 <a class="footer-link footer-meta-item" href="https://icp.gov.moe/?keyword=20250234" target="_blank">
-                  <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon">萌ICP备20250234号
+                  <img src="assets/img/moe.png" alt="萌ICP备案图标" class="footer-record-icon" data-skeleton-img>萌ICP备20250234号
                 </a>
               ) : null
             ))}

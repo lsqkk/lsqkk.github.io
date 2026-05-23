@@ -46,7 +46,7 @@
                 const isOverflow = imgIdx === 8 && total > 9;
                 html += `
                     <button type="button" class="gallery-item${isOverflow ? ' gallery-item-overflow' : ''}" aria-label="查看图片 ${imgIdx + 1}" onclick="DynamicGallery.open('${galleryId}', ${imgIdx})">
-                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy">
+                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img>
                         ${isOverflow ? `<div class="gallery-overlay">+${total - 9}</div>` : ''}
                     </button>
                 `;
