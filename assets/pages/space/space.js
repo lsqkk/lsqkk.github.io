@@ -36,6 +36,13 @@
     likeStatus: document.getElementById('spaceLikeStatus')
   };
 
+  const SKELETON_LISTS = ['activity', 'dynamic', 'postComment', 'oj', 'recentList', 'list'];
+  const SKELETON_PROFILE_ELEMENTS = [
+    'nickname', 'handle', 'loginType', 'registerAt',
+    'location', 'lastSeen', 'recentPage',
+    'locationSummary', 'lastSeenSummary', 'recentPageSummary'
+  ];
+
   const privacyButtons = Array.from(document.querySelectorAll('[data-privacy-toggle]'));
   const privacyCards = Array.from(document.querySelectorAll('.space-card[data-privacy-key]'));
   const summaryItems = Array.from(document.querySelectorAll('.summary-item[data-privacy-key]'));
@@ -47,6 +54,21 @@
   let currentPrivacy = {};
   let isSelfUser = false;
   let likeState = { total: 0, todayCount: 0 };
+
+  function removeSkeleton(el) {
+    if (el) el.classList.remove('skeleton');
+  }
+
+  function showSkeletonList(listEl) {
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    listEl.classList.add('skeleton-placeholder');
+  }
+
+  function hideSkeletonList(listEl) {
+    if (!listEl) return;
+    listEl.classList.remove('skeleton-placeholder');
+  }
 
   function setText(target, value) {
     if (target) target.textContent = value;
@@ -239,12 +261,13 @@
 
   function renderSearchList(items) {
     if (!(el.list instanceof HTMLElement)) return;
+    hideSkeletonList(el.list);
     if (!items.length) {
       el.list.textContent = '未找到匹配用户';
       return;
     }
-    el.list.innerHTML = items.map((item) => `
-      <div class="space-item">
+    el.list.innerHTML = items.map((item, i) => `
+      <div class="space-item" style="--i:${i}">
         <strong>${escapeHtml(item.nickname || item.login)}</strong>
         <div>账号标识：${escapeHtml(item.identifier)}</div>
         <a href="/space?user=${encodeURIComponent(item.identifier)}">查看主页</a>
@@ -254,21 +277,25 @@
 
   function renderList(target, items, emptyText, builder) {
     if (!(target instanceof HTMLElement)) return;
+    hideSkeletonList(target);
     if (!items.length) {
       target.textContent = emptyText;
       return;
     }
-    target.innerHTML = items.map(builder).join('');
+    target.innerHTML = items.map(function (item, i) {
+      return builder(item).replace('<div', '<div style="--i:' + i + '"');
+    }).join('');
   }
 
   function renderRecent(events) {
     if (!(el.recentList instanceof HTMLElement)) return;
+    hideSkeletonList(el.recentList);
     if (!events.length) {
       el.recentList.textContent = '暂无浏览记录';
       return;
     }
-    el.recentList.innerHTML = events.map((item) => `
-      <div class="space-item">
+    el.recentList.innerHTML = events.map((item, i) => `
+      <div class="space-item" style="--i:${i}">
         <strong>${escapeHtml(item.title || '未命名页面')}</strong>
         <div>${formatDateTime(item.ts)}</div>
         <a href="${escapeHtml(item.path || '#')}">${escapeHtml(item.path || '链接')}</a>
@@ -297,6 +324,7 @@
       `);
     } catch (error) {
       console.error('加载发言失败:', error);
+      hideSkeletonList(el.activity);
       if (el.activity) el.activity.textContent = '加载失败';
     }
   }
@@ -340,6 +368,7 @@
       `);
     } catch (error) {
       console.error('加载动态评论失败:', error);
+      hideSkeletonList(el.dynamic);
       if (el.dynamic) el.dynamic.textContent = '加载失败';
     }
   }
@@ -377,6 +406,7 @@
       `);
     } catch (error) {
       console.error('加载文章评论失败:', error);
+      hideSkeletonList(el.postComment);
       if (el.postComment) el.postComment.textContent = '加载失败';
     }
   }
@@ -409,6 +439,7 @@
       `);
     } catch (error) {
       console.error('加载OJ讨论失败:', error);
+      hideSkeletonList(el.oj);
       if (el.oj) el.oj.textContent = '加载失败';
     }
   }
@@ -579,10 +610,22 @@
       if (el.selfActions) el.selfActions.style.display = 'none';
       return;
     }
-    setText(el.status, '加载中...');
+
+    // Show skeletons while loading
+    setText(el.status, '');
+    el.status.classList.add('skeleton', 'skeleton-line-sm');
+    SKELETON_PROFILE_ELEMENTS.forEach(function (id) {
+      var target = el[id];
+      if (target) target.classList.add('skeleton', 'skeleton-line-sm');
+    });
+    SKELETON_LISTS.forEach(function (key) { showSkeletonList(el[key]); });
+
     try {
       const result = await resolveUser(rawIdentifier);
       if (!result) {
+        removeSkeleton(el.status);
+        SKELETON_PROFILE_ELEMENTS.forEach(function (id) { removeSkeleton(el[id]); });
+        SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
         setText(el.status, '未找到用户');
         return;
       }
@@ -591,6 +634,10 @@
       currentUid = result.uid || '';
       currentPrivacy = profile.privacy || {};
       isSelfUser = isSelf(result.login, result.loginType);
+
+      // Remove profile skeletons
+      removeSkeleton(el.status);
+      SKELETON_PROFILE_ELEMENTS.forEach(function (id) { removeSkeleton(el[id]); });
 
       setText(el.status, '已加载');
       setText(el.nickname, profile.nickname || result.login);
@@ -658,6 +705,9 @@
       }
     } catch (error) {
       console.error('加载用户失败:', error);
+      removeSkeleton(el.status);
+      SKELETON_PROFILE_ELEMENTS.forEach(function (id) { removeSkeleton(el[id]); });
+      SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
       setText(el.status, '加载失败');
     }
   }
@@ -667,15 +717,17 @@
       renderSearchList([]);
       return;
     }
-    const lower = keyword.toLowerCase();
-    const [locals, activity] = await Promise.all([
-      fetchDb('qb_users').catch(() => ({})),
-      loadActivityCache()
-    ]);
-    const list = [];
-    const seen = new Set();
+    showSkeletonList(el.list);
+    try {
+      const lower = keyword.toLowerCase();
+      const [locals, activity] = await Promise.all([
+        fetchDb('qb_users').catch(() => ({})),
+        loadActivityCache()
+      ]);
+      const list = [];
+      const seen = new Set();
 
-    Object.entries(locals || {}).forEach(([login, data]) => {
+      Object.entries(locals || {}).forEach(([login, data]) => {
       const nickname = data && data.nickname ? data.nickname : login;
       if (login.toLowerCase().includes(lower) || String(nickname).toLowerCase().includes(lower)) {
         const identifier = `qb_${login}`;
@@ -700,7 +752,12 @@
       }
     });
 
-    renderSearchList(list.slice(0, 20));
+      renderSearchList(list.slice(0, 20));
+    } catch (error) {
+      console.error('搜索失败:', error);
+      hideSkeletonList(el.list);
+      if (el.list) el.list.textContent = '搜索失败';
+    }
   }
 
   function bindEvents() {

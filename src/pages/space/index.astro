@@ -79,7 +79,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
         <section class="space-card space-card--summary">
           <div class="card-header">
             <h2>账号概览</h2>
-            <p id="spaceProfileStatus">等待加载</p>
+            <p id="spaceProfileStatus" class="skeleton skeleton-line-sm">等待加载</p>
           </div>
           <div class="summary-grid">
             <div class="summary-item" data-privacy-key="showIdentifier">
@@ -123,7 +123,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <i class="fa-solid fa-eye"></i><span>展示中</span>
             </button>
           </div>
-          <div class="space-list" id="spaceActivityList">暂无数据</div>
+          <div class="space-list skeleton-placeholder" id="spaceActivityList"></div>
         </section>
 
         <section class="space-card" data-privacy-key="showDynamic">
@@ -136,7 +136,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <i class="fa-solid fa-eye"></i><span>展示中</span>
             </button>
           </div>
-          <div class="space-list" id="spaceDynamicList">暂无数据</div>
+          <div class="space-list skeleton-placeholder" id="spaceDynamicList"></div>
         </section>
 
         <section class="space-card" data-privacy-key="showPostComments">
@@ -149,7 +149,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <i class="fa-solid fa-eye"></i><span>展示中</span>
             </button>
           </div>
-          <div class="space-list" id="spacePostCommentList">暂无数据</div>
+          <div class="space-list skeleton-placeholder" id="spacePostCommentList"></div>
         </section>
 
         <section class="space-card" data-privacy-key="showOj">
@@ -162,7 +162,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <i class="fa-solid fa-eye"></i><span>展示中</span>
             </button>
           </div>
-          <div class="space-list" id="spaceOjList">暂无数据</div>
+          <div class="space-list skeleton-placeholder" id="spaceOjList"></div>
         </section>
 
         <section class="space-card" data-privacy-key="showRecentBrowse">
@@ -175,7 +175,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
               <i class="fa-solid fa-eye"></i><span>展示中</span>
             </button>
           </div>
-          <div class="space-list" id="spaceRecentList">暂无数据</div>
+          <div class="space-list skeleton-placeholder" id="spaceRecentList"></div>
         </section>
 
         <section class="space-card">
@@ -183,7 +183,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
             <h2>搜索结果</h2>
             <p>匹配的用户列表</p>
           </div>
-          <div class="space-list" id="spaceSearchList">请输入关键字搜索</div>
+          <div class="space-list skeleton-placeholder" id="spaceSearchList"></div>
         </section>
 
         <section class="space-card">
