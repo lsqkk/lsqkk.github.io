@@ -69,6 +69,82 @@ def get_user_qzone_info(page_size, offset=0):
     return json.dumps(json_dict, indent=2, ensure_ascii=False)
 
 
+def get_moment_all_pictures(uin, tid):
+    """获取单条说说的全部图片（列表接口只返回前9张，需通过详情接口获取全部）"""
+    cookie_jar = Request.get_cookies()
+    g_tk = Request.get_g_tk()
+    url = "https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msgdetail_v6"
+
+    cookie_str = '; '.join([f'{k}={v}' for k, v in cookie_jar.items()])
+
+    headers = {
+        'accept': '*/*',
+        'accept-language': 'en-US,en;q=0.9',
+        'cookie': cookie_str,
+        'referer': f'https://user.qzone.qq.com/{uin}/main',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
+    }
+    params = {
+        "uin": uin,
+        "tid": tid,
+        "g_tk": g_tk,
+        "format": "jsonp",
+        "callback": "_preloadCallback",
+    }
+    all_urls = []
+    try:
+        # 第1页：默认返回前9张
+        resp = requests.get(url, headers=headers, params=params, timeout=15)
+        raw = resp.text.strip()
+        if raw.startswith('_preloadCallback('):
+            raw = re.sub(r'^_preloadCallback\((.*)\);?$', r'\1', raw, flags=re.S)
+        data = json.loads(raw)
+
+        pic_list = data.get('pic')
+        pictotal = data.get('pictotal', 0)
+        if not isinstance(pic_list, list):
+            return None  # 响应格式不对，放弃补充
+
+        def _extract(pics):
+            urls = []
+            for pic in pics:
+                if isinstance(pic, str):
+                    urls.append(pic)
+                else:
+                    for k in ('url3', 'url2', 'url1'):
+                        v = pic.get(k)
+                        if v:
+                            urls.append(v)
+                            break
+            return urls
+
+        all_urls = _extract(pic_list)
+
+        # 分页获取剩余图片
+        page = 1
+        while len(all_urls) < pictotal:
+            page_params = dict(params)
+            page_params["picpos"] = str(page * 9)
+            page_params["picnum"] = "9"
+            resp = requests.get(url, headers=headers, params=page_params, timeout=15)
+            raw = resp.text.strip()
+            if raw.startswith('_preloadCallback('):
+                raw = re.sub(r'^_preloadCallback\((.*)\);?$', r'\1', raw, flags=re.S)
+            data = json.loads(raw)
+            page_pics = data.get('pic', [])
+            if not page_pics:
+                break
+            all_urls.extend(_extract(page_pics))
+            page += 1
+
+        return all_urls
+    except Exception as e:
+        print(f"获取说说 {tid} 详情失败: {e}")
+        if resp is not None:
+            print(f"  HTTP {resp.status_code}, body: {resp.text[:300]}")
+        return None
+
+
 def get_visible_moments_list(start_dt=None, end_dt=None):
     WORKDIR = _get_workdir()
     USER_QZONE_INFO = 'user_qzone_info.json'
@@ -163,5 +239,5 @@ def get_visible_moments_list(start_dt=None, end_dt=None):
                 comment_uin = commentToMe['uin']
                 comments.append([comment_create_time, comment_content, comment_nickname, comment_uin])
 
-        texts.append([create_time, f"{nickname} ：{content}", pictures, comments])
+        texts.append([create_time, f"{nickname} ：{content}", pictures, comments, item.get('tid', '')])
     return texts

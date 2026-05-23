@@ -40,7 +40,9 @@
       "Bash(npx http-server *)",
       "Bash(git *)",
       "Bash(rm assets/md/dt.md assets/md/log.md)",
-      "Bash(rmdir assets/md)"
+      "Bash(rmdir assets/md)",
+      "WebSearch",
+      "Bash(quark qqexport *)"
     ]
   }
 }

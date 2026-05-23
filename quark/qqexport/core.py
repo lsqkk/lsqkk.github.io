@@ -117,12 +117,14 @@ def generate_json_entries(posts, existing_entries):
 
         content = body or ""
 
-        # Collect image URLs (all of them, display capped at 9 in frontend)
+        # 收集全部图片 URL（前端展示限9张，画廊可浏览全部）
         img_urls = str(item[2]).split(",")
         images = [
             url.strip() for url in img_urls
             if url.strip().startswith("http")
         ]
+        if len(images) > 0:
+            print(f"  📷 {title} ({date_text}) → {len(images)} 张图片")
 
         # 计算ID
         seq = _compute_next_id(existing_entries, date_text)
@@ -177,6 +179,19 @@ def run(verbose=True):
             texts = user_moments
     except Exception as err:
         print(f"获取QQ空间记录发生异常: {str(err)}")
+
+    # 3.5 补充全部图片（列表接口只返回前9张，通过详情接口获取超过9张的图片）
+    uin = Request.get_uin()
+    for item in texts:
+        tid = item[4] if len(item) > 4 else ''
+        if not tid or not item[2]:
+            continue
+        all_pics = GetAllMoments.get_moment_all_pictures(uin, tid)
+        if all_pics is not None and len(all_pics) > 0:
+            old_count = len(item[2].split(','))
+            if len(all_pics) > old_count:
+                print(f"  ✅ 详情API补充图片: {old_count}→{len(all_pics)}张")
+                item[2] = ','.join(all_pics)
 
     # 4. 加载现有条目
     existing_entries = []
