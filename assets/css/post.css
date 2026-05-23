@@ -54,14 +54,19 @@ body {
     margin: 0;
     font-size: clamp(2.1rem, 3.4vw, 3rem);
     color: var(--text-main);
-    text-shadow: none;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     line-height: 1.15;
-    padding: 10px 16px;
-    border-radius: 12px;
-    background: var(--surface);
-    box-shadow: 0 10px 24px rgba(10, 18, 35, 0.18);
-    backdrop-filter: blur(8px) saturate(140%);
-    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    box-shadow:
+        0 4px 12px rgba(10, 18, 35, 0.04),
+        0 12px 36px rgba(10, 18, 35, 0.10),
+        0 24px 56px rgba(10, 18, 35, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.35);
     max-width: 95%;
 }
 
@@ -720,4 +725,28 @@ pre {
     .post-content .table-scroll {
         scrollbar-width: none;
     }
+}
+
+@media (prefers-color-scheme: dark) {
+    .post-hero-title {
+        background: rgba(17, 28, 46, 0.55);
+        border-color: rgba(134, 171, 226, 0.15);
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.12),
+            0 12px 36px rgba(0, 0, 0, 0.2),
+            0 24px 56px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+}
+
+body.dark-mode .post-hero-title {
+    background: rgba(17, 28, 46, 0.55);
+    border-color: rgba(134, 171, 226, 0.15);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.12),
+        0 12px 36px rgba(0, 0, 0, 0.2),
+        0 24px 56px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }

@@ -124,8 +124,32 @@ try {
     <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
     <div class="sidebar">
       <div class="sidebar-content" id="sidebarContent">
-        <div id="toc-loading" style="display: none;">目录加载中...</div>
-        <div class="sidebar-main-content"></div>
+        <div class="sidebar-main-content">
+          <div class="toc-skeleton">
+            <div class="toc-skeleton-header">
+              <div class="toc-skeleton-eyebrow skeleton-block"></div>
+              <div class="toc-skeleton-title-row">
+                <div class="toc-skeleton-title skeleton-block"></div>
+                <div class="toc-skeleton-count skeleton-block"></div>
+              </div>
+            </div>
+            <div class="toc-skeleton-list">
+              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
+              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
+              <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
+              <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
+              <div class="toc-skeleton-item toc-skeleton-item-nested2"><div class="toc-skeleton-line toc-skeleton-h3 skeleton-block"></div></div>
+              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
+              <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
+              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block" style="width: 55%;"></div></div>
+            </div>
+            <div class="toc-skeleton-nav">
+              <div class="toc-skeleton-nav-title skeleton-block"></div>
+              <div class="toc-skeleton-nav-btn skeleton-block"></div>
+              <div class="toc-skeleton-nav-btn skeleton-block" style="width: 60%;"></div>
+            </div>
+          </div>
+        </div>
         <div class="sidebar-footer">
           <a href="/index.html" style="text-decoration: none;">博客主页</a>
           <a href="/posts" style="text-decoration: none;">文章</a>

@@ -226,51 +226,52 @@ function renderMath() {
 
 // 4. 生成目录 (TOC)
 function generateTOC() {
-    const headings = Array.from(document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4'))
-        .filter((heading) => heading.getClientRects().length > 0);
     const tocContainer = document.querySelector('.sidebar-main-content');
     if (!tocContainer) return;
 
-    let html = `
-        <div class="toc-shell">
-            <div class="toc-header">
-                <p class="toc-eyebrow">On This Page</p>
-                <div class="toc-title-row">
-                    <h4 class="toc-title">文章目录</h4>
-                    <span class="toc-count">${headings.length}</span>
-                </div>
-            </div>
-            <div class="toc-list-wrap">
-    `;
+    var headings = Array.from(document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4'))
+        .filter(function (heading) { return heading.getClientRects().length > 0; });
+
+    var html = [
+        '<div class="toc-shell">',
+        '  <div class="toc-header">',
+        '    <p class="toc-eyebrow">On This Page</p>',
+        '    <div class="toc-title-row">',
+        '      <h4 class="toc-title">文章目录</h4>',
+        '      <span class="toc-count">' + headings.length + '</span>',
+        '    </div>',
+        '  </div>',
+        '  <div class="toc-list-wrap">'
+    ].join('\n');
+
     if (headings.length === 0) {
         html += '<p class="toc-empty">暂无目录</p>';
     }
 
-    headings.forEach((heading, index) => {
-        const level = heading.tagName.toLowerCase();
-        const id = `heading-${index}`;
+    headings.forEach(function (heading, index) {
+        var level = heading.tagName.toLowerCase();
+        var id = 'heading-' + index;
         heading.id = id;
-        html += `
-        <div class="toc-item ${level}" data-heading="${id}">
-            <a href="#${id}">
-                <span class="toc-item-marker">&gt;</span>
-                <span class="toc-item-text">${heading.textContent}</span>
-            </a>
-        </div>
-        `;
+        html += [
+            '<div class="toc-item ' + level + '" data-heading="' + id + '">',
+            '  <a href="#' + id + '">',
+            '    <span class="toc-item-marker">&gt;</span>',
+            '    <span class="toc-item-text">' + heading.textContent + '</span>',
+            '  </a>',
+            '</div>'
+        ].join('\n');
     });
 
     html += '</div>';
 
-    // 添加翻页导航按钮容器
-    html += `
-        <div class="nav-arrows-container">
-            <div class="nav-arrows-title">前后文章</div>
-            <a id="prevPost" class="nav-arrow nav-arrow-prev">← 加载中...</a>
-            <a id="nextPost" class="nav-arrow nav-arrow-next">加载中... →</a>
-        </div>
-        </div>
-    `;
+    html += [
+        '<div class="nav-arrows-container">',
+        '  <div class="nav-arrows-title">前后文章</div>',
+        '  <a id="prevPost" class="nav-arrow nav-arrow-prev">← 加载中...</a>',
+        '  <a id="nextPost" class="nav-arrow nav-arrow-next">加载中... →</a>',
+        '</div>',
+        '</div>'
+    ].join('\n');
 
     tocContainer.innerHTML = html;
 }
