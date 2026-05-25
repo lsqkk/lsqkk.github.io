@@ -45,6 +45,30 @@
   --tag-col-bg: rgba(120, 89, 203, 0.14);
   --tag-col-color: #6d4fc3;
 
+  /*
+   * Glass (温润浊玉) — 全站毛玻璃统一变量
+   * 用法：
+   *   background: var(--glass-bg);                    // 标准玻璃背景
+   *   background: var(--glass-bg-strong);              // 更实一些（hover 等）
+   *   background: var(--glass-bg-soft);                // 更透一些
+   *   background: var(--glass-bg-solid);               // 近乎实心
+   *   box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+   *   border: 1px solid var(--line);                   // 边框用 line token
+   *   backdrop-filter: blur(22px) saturate(135%);      // blur 值可自定义
+   *
+   * 新页面无需写 body.dark-mode 覆盖——变量自动适应深色模式。
+   * 详见 src/docs/UI/GlassSystem.md
+   */
+  --glass-bg: rgba(253, 250, 242, 0.55);
+  --glass-bg-strong: rgba(253, 250, 242, 0.6);
+  --glass-bg-soft: rgba(253, 250, 242, 0.5);
+  --glass-bg-solid: rgba(253, 250, 242, 0.9);
+  --glass-edge: rgba(255, 250, 235, 0.5);
+  --glass-edge-strong: rgba(255, 250, 235, 0.7);
+  --glass-edge-soft: rgba(255, 250, 235, 0.4);
+  --glass-shadow: rgba(7, 24, 52, 0.12);
+  --glass-shadow-hover: rgba(7, 24, 52, 0.18);
+
   /* Homepage specifics */
   --intro-bg: rgba(255, 255, 255, 0.92);
   --sidebar-welcome-bg: rgba(255, 255, 255, 0.9);
@@ -104,6 +128,16 @@
     --popup-border: rgba(140, 173, 221, 0.28);
     --popup-text: #c8daf2;
 
+    --glass-bg: rgba(17, 28, 46, 0.55);
+    --glass-bg-strong: rgba(17, 28, 46, 0.65);
+    --glass-bg-soft: rgba(17, 28, 46, 0.45);
+    --glass-bg-solid: rgba(17, 28, 46, 0.85);
+    --glass-edge: rgba(134, 171, 226, 0.12);
+    --glass-edge-strong: rgba(134, 171, 226, 0.2);
+    --glass-edge-soft: rgba(134, 171, 226, 0.08);
+    --glass-shadow: rgba(0, 0, 0, 0.42);
+    --glass-shadow-hover: rgba(0, 0, 0, 0.5);
+
     --intro-bg: rgba(18, 30, 50, 0.72);
     --sidebar-welcome-bg: rgba(18, 30, 50, 0.7);
     --hero-title-color: var(--text-main);
@@ -155,6 +189,16 @@ body.dark-mode {
   --popup-border: rgba(140, 173, 221, 0.28);
   --popup-text: #c8daf2;
 
+  --glass-bg: rgba(17, 28, 46, 0.55);
+  --glass-bg-strong: rgba(17, 28, 46, 0.65);
+  --glass-bg-soft: rgba(17, 28, 46, 0.45);
+  --glass-bg-solid: rgba(17, 28, 46, 0.85);
+  --glass-edge: rgba(134, 171, 226, 0.12);
+  --glass-edge-strong: rgba(134, 171, 226, 0.2);
+  --glass-edge-soft: rgba(134, 171, 226, 0.08);
+  --glass-shadow: rgba(0, 0, 0, 0.42);
+  --glass-shadow-hover: rgba(0, 0, 0, 0.5);
+
   --intro-bg: rgba(18, 30, 50, 0.72);
   --sidebar-welcome-bg: rgba(18, 30, 50, 0.7);
   --hero-title-color: var(--text-main);
@@ -194,17 +238,6 @@ body.dark-mode {
     color: var(--text-soft);
   }
 
-  /* Posts container */
-  .posts-container .tag-filter,
-  .posts-container .posts-fold-panel,
-  .posts-container .post-item,
-  .posts-container .pagination,
-  .posts-container .search-results {
-    background: var(--surface-card);
-    border-color: var(--line);
-    box-shadow: var(--shadow-main);
-  }
-
   .posts-container .posts-fold-toggle,
   .posts-container .post-title {
     color: var(--text-main);
@@ -236,7 +269,7 @@ body.dark-mode {
   .morenpost,
   .sidebar-content,
   .sidebar-footer {
-    background: var(--surface);
+    background: var(--glass-bg);
     border-color: var(--line);
     box-shadow: var(--shadow-main);
   }
@@ -667,16 +700,6 @@ body.dark-mode {
     color: var(--text-soft);
   }
 
-  .posts-container .tag-filter,
-  .posts-container .posts-fold-panel,
-  .posts-container .post-item,
-  .posts-container .pagination,
-  .posts-container .search-results {
-    background: var(--surface-card);
-    border-color: var(--line);
-    box-shadow: var(--shadow-main);
-  }
-
   .posts-container .posts-fold-toggle,
   .posts-container .post-title {
     color: var(--text-main);
@@ -707,7 +730,7 @@ body.dark-mode {
   .morenpost,
   .sidebar-content,
   .sidebar-footer {
-    background: var(--surface);
+    background: var(--glass-bg);
     border-color: var(--line);
     box-shadow: var(--shadow-main);
   }

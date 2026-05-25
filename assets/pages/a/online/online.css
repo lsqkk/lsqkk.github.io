@@ -1,7 +1,5 @@
 :root {
   --online-bg: #071321;
-  --online-surface: rgba(9, 19, 32, 0.8);
-  --online-card: rgba(12, 24, 41, 0.88);
   --online-border: rgba(124, 146, 186, 0.28);
   --online-text: #e4eefb;
   --online-muted: rgba(205, 222, 247, 0.72);
@@ -31,10 +29,10 @@ body.online-body {
   align-items: flex-end;
   gap: 20px;
   padding: 26px 28px;
-  background: var(--online-surface);
+  background: var(--glass-bg);
   border: 1px solid var(--online-border);
   border-radius: 20px;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 18px 44px var(--glass-shadow);
   backdrop-filter: blur(10px);
 }
 
@@ -65,8 +63,8 @@ body.online-body {
 
 .metric {
   padding: 12px 16px;
-  background: rgba(12, 24, 41, 0.7);
-  border: 1px solid rgba(124, 146, 186, 0.2);
+  background: var(--glass-bg);
+  border: 1px solid var(--online-border);
   border-radius: 14px;
   text-align: right;
 }
@@ -93,8 +91,8 @@ body.online-body {
   width: min(360px, 70vw);
   padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(124, 146, 186, 0.3);
-  background: rgba(10, 20, 35, 0.7);
+  border: 1px solid var(--online-border);
+  background: var(--glass-bg-soft);
   color: var(--online-text);
 }
 
@@ -110,7 +108,7 @@ body.online-body {
 
 .online-card {
   position: relative;
-  background: var(--online-card);
+  background: var(--glass-bg);
   border: 1px solid var(--online-border);
   border-radius: 18px;
   padding: 16px;
@@ -118,7 +116,7 @@ body.online-body {
   gap: 12px;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 14px 30px var(--glass-shadow);
 }
 
 .online-card:hover {
@@ -173,10 +171,10 @@ body.online-body {
 
 .online-detail {
   padding: 22px 24px;
-  background: rgba(10, 20, 35, 0.75);
+  background: var(--glass-bg);
   border: 1px solid var(--online-border);
   border-radius: 18px;
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 16px 30px var(--glass-shadow);
 }
 
 .online-detail h3 {
@@ -234,9 +232,7 @@ body.online-body {
 @media (prefers-color-scheme: light) {
   :root {
     --online-bg: #f5f7fb;
-    --online-surface: rgba(255, 255, 255, 0.9);
-    --online-card: rgba(255, 255, 255, 0.95);
-    --online-border: rgba(148, 163, 184, 0.35);
+    --online-border: var(--line);
     --online-text: #1e293b;
     --online-muted: rgba(71, 85, 105, 0.7);
   }
@@ -251,23 +247,25 @@ body.online-body {
   body.online-body .online-card,
   body.online-body .online-detail,
   body.online-body .metric {
-    background: var(--online-card) !important;
-    border-color: var(--online-border) !important;
-    color: var(--online-text) !important;
+    border-color: var(--online-border);
   }
 
   body.online-body .online-search input {
-    background: rgba(255, 255, 255, 0.9) !important;
-    color: var(--online-text) !important;
-    border-color: var(--online-border) !important;
+    background: var(--glass-bg-soft);
+    color: var(--online-text);
+    border-color: var(--online-border);
   }
+}
 
-  body.online-body .online-kicker,
-  body.online-body .online-subtitle,
-  body.online-body .metric-label,
-  body.online-body .online-login,
-  body.online-body .online-page,
-  body.online-body .detail-row {
-    color: var(--online-muted) !important;
-  }
+body.dark-mode.online-body {
+  background: radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.06), transparent 45%),
+    radial-gradient(circle at 88% 20%, rgba(99, 102, 241, 0.06), transparent 42%),
+    #071321;
+}
+
+body.dark-mode .online-hero,
+body.dark-mode .online-card,
+body.dark-mode .online-detail,
+body.dark-mode .metric {
+  border-color: var(--online-border);
 }

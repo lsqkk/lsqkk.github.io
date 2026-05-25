@@ -7,17 +7,17 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: #333;
+    color: var(--text-main);
 }
 
 .container {
     max-width: 600px;
     padding: 2.5rem;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--glass-bg-solid);
     border-radius: 16px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 40px var(--glass-shadow);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--glass-edge-soft);
 }
 
 h1 {
@@ -33,7 +33,7 @@ h1 {
 
 h2 {
     font-size: 1.5rem;
-    color: #5a7bb5;
+    color: var(--accent);
     margin-bottom: 1rem;
     font-weight: 600;
 }
@@ -41,7 +41,7 @@ h2 {
 p {
     font-size: 1.1rem;
     margin: 1rem 0 1.5rem;
-    color: #555;
+    color: var(--text-subtle);
     line-height: 1.6;
 }
 
@@ -215,4 +215,35 @@ p {
         width: 100%;
         max-width: 280px;
     }
+}
+
+body.dark-mode {
+    background: linear-gradient(135deg, #0d1420 0%, #1a1f2c 100%);
+}
+
+body.dark-mode .container {
+    background: var(--glass-bg);
+    border-color: var(--line);
+}
+
+body.dark-mode h1 {
+    color: #84b7ff;
+}
+
+body.dark-mode p {
+    color: var(--text-soft);
+}
+
+body.dark-mode .suggestion-item {
+    background: var(--glass-bg-soft);
+    border-color: var(--line);
+}
+
+body.dark-mode .suggestion-item:hover {
+    border-color: var(--accent);
+}
+
+body.dark-mode .countdown {
+    color: var(--text-soft);
+    border-top-color: var(--line);
 }

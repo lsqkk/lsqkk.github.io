@@ -7,18 +7,15 @@
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            --card-bg: rgba(253, 250, 242, 0.55);
-            --glass-bg: rgba(253, 250, 242, 0.5);
-            --glass-border: rgba(255, 250, 235, 0.4);
-            --shadow: 0 8px 32px rgba(5, 7, 26, 0.1);
+            --card-bg: var(--glass-bg);
+            --glass-bg: var(--glass-bg-soft);
+            --glass-border: var(--glass-edge-soft);
+            --shadow: 0 8px 32px var(--glass-shadow);
             --radius: 16px;
             --transition: all 0.3s ease;
         }
 
         .dark-mode {
-            --card-bg: rgba(30, 41, 59, 0.6);
-            --glass-bg: rgba(30, 41, 59, 0.4);
-            --glass-border: rgba(134, 171, 226, 0.15);
             --light-color: #1e293b;
             --dark-color: #f8fafc;
         }

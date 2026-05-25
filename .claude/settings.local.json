@@ -44,7 +44,13 @@
       "WebSearch",
       "Bash(quark qqexport *)",
       "Bash(xargs grep -l \"ShichaBackground\")",
-      "Bash(xargs sed -i 's/ShichaBackground/LuxuryBackground/g')"
+      "Bash(xargs sed -i 's/ShichaBackground/LuxuryBackground/g')",
+      "Bash(echo '')",
+      "Bash(echo 'body.dark-mode {')",
+      "Bash(echo '    color: var\\(--text-main\\);')",
+      "Bash(echo '}')",
+      "Bash(echo 'body.dark-mode nav {')",
+      "Bash(awk 'NR==7{print}' assets/pages/blog/qtv/style.css)"
     ]
   }
 }

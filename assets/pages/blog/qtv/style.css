@@ -4,18 +4,15 @@
           --primary-dark: #1565c0;
           --text-color: #1a2a4a;
           --text-light: #5b7391;
-          --card-bg: rgba(253, 250, 242, 0.55);
-          --card-bg-solid: rgba(253, 250, 242, 0.9);
-          --border-color: rgba(224, 224, 224, 0.6);
-          --shadow: 0 8px 32px rgba(5, 7, 26, 0.1);
-          --blur-bg: rgba(253, 250, 242, 0.5);
+          --card-bg: var(--glass-bg);
+          --card-bg-solid: var(--glass-bg-solid);
+          --border-color: var(--line);
+          --shadow: 0 8px 32px var(--glass-shadow);
+          --blur-bg: var(--glass-bg-soft);
         }
 
         .dark-mode {
-          --card-bg: rgba(30, 41, 59, 0.6);
-          --card-bg-solid: rgba(30, 41, 59, 0.85);
-          --blur-bg: rgba(30, 41, 59, 0.4);
-          --border-color: rgba(134, 171, 226, 0.15);
+          --border-color: var(--line);
         }
 
         * {

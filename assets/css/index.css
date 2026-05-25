@@ -66,31 +66,31 @@ body.home-page .recent-posts .post-item {
     transition: transform 0.34s ease, box-shadow 0.34s ease, border-color 0.34s ease, background-color 0.4s ease;
 }
 
-/* 温润浊玉玻璃 — 主页卡片更透、更润 */
+/* 温润浊玉玻璃 — 主页卡片更透、更润（通过 CSS 变量融入主题系统） */
 body.home-page .home-panel,
 body.home-page .sidebar-panel,
 body.home-page .footer-card {
-    background: rgba(253, 250, 242, 0.55);
+    background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
     -webkit-backdrop-filter: blur(22px) saturate(135%);
     box-shadow:
-        0 22px 54px rgba(7, 24, 52, 0.12),
-        inset 0 0 0 1px rgba(255, 250, 235, 0.5);
+        0 22px 54px var(--glass-shadow),
+        inset 0 0 0 1px var(--glass-edge);
 }
 body.home-page .home-panel:hover,
 body.home-page .sidebar-panel:hover,
 body.home-page .footer-card:hover {
     box-shadow:
-        0 24px 56px rgba(7, 24, 52, 0.18),
-        inset 0 0 0 1px rgba(255, 250, 235, 0.7);
+        0 24px 56px var(--glass-shadow-hover),
+        inset 0 0 0 1px var(--glass-edge-strong);
 }
 
 body.home-page .intro-combo-panel {
-    background: rgba(253, 250, 242, 0.6);
+    background: var(--glass-bg-strong);
 }
 
 body.home-page .sidebar-welcome-panel {
-    background: rgba(253, 250, 242, 0.6);
+    background: var(--glass-bg-strong);
 }
 
 .home-panel,
@@ -103,7 +103,7 @@ body.home-page .sidebar-welcome-panel {
 .sidebar-panel:hover,
 .footer-card:hover {
     border-color: var(--line-strong);
-    box-shadow: 0 24px 56px rgba(7, 24, 52, 0.18);
+    box-shadow: 0 24px 56px var(--glass-shadow-hover);
 }
 
 .home-block,
@@ -1357,22 +1357,6 @@ body.home-page .sidebar-welcome-panel {
         background-size: cover;
     }
 
-    .home-panel,
-    .sidebar-panel,
-    .footer-card {
-        background: var(--surface);
-        box-shadow: var(--shadow-main);
-        border-color: var(--line);
-    }
-
-    .intro-combo-panel {
-        background: var(--intro-bg);
-    }
-
-    .sidebar-welcome-panel {
-        background: var(--sidebar-welcome-bg);
-    }
-
     .hero-title,
     .welcome-title,
     .section-title-link,
@@ -1480,22 +1464,6 @@ body.dark-mode body.home-page {
         url('/assets/img/bg.png') no-repeat center center fixed;
     background-size: cover;
 }
-
-body.dark-mode .home-panel,
-body.dark-mode .sidebar-panel,
-body.dark-mode .footer-card {
-    background: var(--surface);
-    box-shadow: var(--shadow-main);
-    border-color: var(--line);
-}
-body.dark-mode .home-panel:hover,
-body.dark-mode .sidebar-panel:hover,
-body.dark-mode .footer-card:hover {
-    box-shadow: var(--shadow-main);
-}
-
-body.dark-mode .intro-combo-panel { background: var(--intro-bg); }
-body.dark-mode .sidebar-welcome-panel { background: var(--sidebar-welcome-bg); }
 
 body.dark-mode .hero-title,
 body.dark-mode .welcome-title,

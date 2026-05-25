@@ -275,11 +275,11 @@
 }
 
 .header:not(.nav-dark) .nav-user-menu {
-    background: rgba(253, 250, 242, 0.92);
+    background: var(--glass-bg-solid);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border-color: rgba(255, 250, 235, 0.5);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    border-color: var(--glass-edge);
+    box-shadow: 0 18px 40px var(--glass-shadow);
 }
 
 .header:not(.nav-dark) .nav-user-name {
@@ -739,12 +739,12 @@
     min-width: 160px;
     max-width: 220px;
     max-height: 360px;
-    background: rgba(253, 250, 242, 0.92);
+    background: var(--glass-bg-solid);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     border-radius: 12px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-    border: 1px solid rgba(255, 250, 235, 0.5);
+    box-shadow: 0 12px 28px var(--glass-shadow);
+    border: 1px solid var(--glass-edge);
     padding: 12px;
     opacity: 0;
     transform: translateY(-8px);

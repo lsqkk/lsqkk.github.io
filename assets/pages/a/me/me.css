@@ -36,9 +36,9 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: var(--glass-bg-solid);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 20px var(--glass-shadow);
             z-index: 1000;
             transition: all 0.3s ease;
         }
@@ -232,7 +232,7 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            background: white;
+            background: var(--glass-bg);
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
@@ -301,10 +301,10 @@
         }
 
         .skill-card {
-            background: white;
+            background: var(--glass-bg);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px var(--glass-shadow);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -364,10 +364,10 @@
         }
 
         .achievement-item {
-            background: white;
+            background: var(--glass-bg);
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px var(--glass-shadow);
             transition: all 0.3s ease;
         }
 
@@ -502,8 +502,8 @@
             margin: 40px 0;
             padding: 30px;
             border-radius: 15px;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            background: var(--glass-bg);
+            box-shadow: 0 10px 30px var(--glass-shadow);
             position: relative;
         }
 
@@ -530,10 +530,10 @@
             font-size: 1.2rem;
             line-height: 1.8;
             margin-bottom: 40px;
-            background: white;
+            background: var(--glass-bg);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px var(--glass-shadow);
         }
 
         /* 页脚 */
@@ -649,3 +649,28 @@
                 padding: 20px;
             }
         }
+
+body.dark-mode {
+    color: var(--text-main);
+}
+
+body.dark-mode nav {
+    background-color: var(--glass-bg);
+    box-shadow: 0 2px 20px var(--glass-shadow);
+}
+
+body.dark-mode .card,
+body.dark-mode .skill-bar,
+body.dark-mode .testimonial,
+body.dark-mode .project-card,
+body.dark-mode .timeline-item,
+body.dark-mode .contact-form,
+body.dark-mode .about-text,
+body.dark-mode .stat-item {
+    background: var(--glass-bg);
+    color: var(--text-main);
+}
+
+body.dark-mode footer {
+    background-color: #0d1a2e;
+}

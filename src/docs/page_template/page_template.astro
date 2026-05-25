@@ -39,6 +39,11 @@ const currentYear = new Date().getFullYear();
     <!-- 页面专属样式建议放在 assets/pages/... -->
     <link rel="stylesheet" href="/assets/pages/section/demo/demo.css" />
 
+    <!--
+      玻璃卡片系统：背景用 var(--glass-bg)，边框用 var(--line)，边缘光用 var(--glass-edge)
+      变量自动适应深色模式，无需写 body.dark-mode 覆盖。
+      完整文档见 src/docs/UI/GlassSystem.md
+    -->
     <!-- 如果页面脚本需要构建期预载数据，就在这里注入 -->
     <script is:inline define:vars={{ navConfig }}>
       window.__NAV_CONFIG__ = navConfig;
