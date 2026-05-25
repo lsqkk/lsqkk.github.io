@@ -194,12 +194,26 @@ header {
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: main-section-in 0.5s ease 0.05s forwards;
+}
+
+@keyframes main-section-in {
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* -------- Compose Area -------- */
 .compose-area {
     padding: 24px 24px 20px;
     border-bottom: 1px solid var(--divider);
+    opacity: 0;
+    transform: translateY(12px);
+    animation: compose-in 0.4s ease 0.08s forwards;
+}
+
+@keyframes compose-in {
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .compose-identity {
@@ -508,7 +522,23 @@ header {
 
 .message-row {
     padding: 20px 24px;
-    transition: background var(--transition);
+    transition: background var(--transition), transform 0.25s ease;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: msg-row-in 0.35s ease forwards;
+}
+.message-row:nth-child(1) { animation-delay: 0.04s; }
+.message-row:nth-child(2) { animation-delay: 0.08s; }
+.message-row:nth-child(3) { animation-delay: 0.12s; }
+.message-row:nth-child(4) { animation-delay: 0.16s; }
+.message-row:nth-child(5) { animation-delay: 0.20s; }
+.message-row:nth-child(6) { animation-delay: 0.24s; }
+.message-row:nth-child(7) { animation-delay: 0.28s; }
+.message-row:nth-child(8) { animation-delay: 0.32s; }
+.message-row:nth-child(9) { animation-delay: 0.36s; }
+.message-row:nth-child(10) { animation-delay: 0.40s; }
+@keyframes msg-row-in {
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .message-row + .message-row {
@@ -517,6 +547,7 @@ header {
 
 .message-row:hover {
     background: var(--divider-light);
+    transform: translateX(2px);
 }
 
 /* -------- Message Header -------- */
@@ -659,7 +690,8 @@ header {
 .reply-row {
     padding: 12px 0 12px 14px;
     border-left: 2px solid var(--divider);
-    transition: background var(--transition);
+    transition: background var(--transition), border-color 0.3s ease;
+    border-left-color: var(--divider);
 }
 
 .reply-row + .reply-row {
@@ -668,6 +700,36 @@ header {
 
 .reply-row:hover {
     background: var(--divider-light);
+    border-left-color: var(--primary);
+}
+
+.submit-btn:active {
+    transform: scale(0.96);
+}
+
+.page-btn:hover:not(.active) {
+    transform: translateY(-1px);
+}
+
+.page-btn.active {
+    transform: scale(1.05);
+}
+
+.search-input-inline:focus {
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .main-section, .compose-area, .message-row,
+    .reply-row, .page-btn, .submit-btn {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .message-row:hover { transform: none !important; }
+    .reply-row:hover { border-left-color: var(--divider) !important; }
+    .page-btn.active { transform: none !important; }
 }
 
 .reply-header {

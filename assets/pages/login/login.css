@@ -167,6 +167,35 @@
   background: #1e40af;
 }
 
+.github-btn i {
+  transition: transform 0.35s ease;
+}
+.github-btn:hover i {
+  transform: rotate(8deg) scale(1.15);
+}
+
+.login-logo {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.login-logo:hover {
+  transform: scale(1.04) rotate(-2deg);
+  box-shadow: 0 22px 48px var(--glass-shadow);
+}
+
+.tab-btn {
+  transition: all 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tab-btn:not(.active):hover {
+  transform: translateY(-1px);
+}
+.tab-btn.active {
+  transform: scale(1.02);
+}
+
+.mode-btn:not(.active):hover {
+  transform: translateY(-1px);
+}
+
 .btn.ghost {
   background: rgba(148, 163, 184, 0.25);
   color: #0f172a;

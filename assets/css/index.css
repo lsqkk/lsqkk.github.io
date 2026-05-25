@@ -567,6 +567,15 @@ body.home-page .sidebar-welcome-panel {
     color: inherit;
     text-decoration: none !important;
     border-bottom: none !important;
+    transition: transform 0.25s ease, padding 0.25s ease;
+}
+
+.post-tag:hover {
+    transform: translateY(-1px);
+}
+
+.post-tag.read-time:hover {
+    transform: none;
 }
 
 .post-cover-wrap {

@@ -28,11 +28,54 @@ body {
     align-items: center;
     gap: 10px;
     text-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 .section-title i {
     color: rgba(255, 255, 255, 0.7);
     font-size: 1.4rem;
+    transition: transform 0.4s ease, color 0.3s ease;
+}
+
+.section-title:hover i {
+    transform: rotate(15deg) scale(1.1);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.section-title:hover::after {
+    width: 120px;
+}
+
+.friend-icon {
+    transition: transform 0.4s ease, border-color 0.3s ease;
+}
+
+.friend-card:hover .friend-icon {
+    transform: scale(1.08) rotate(4deg);
+    border-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .friend-card, .section-title i, .section-title::after {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .friend-card:hover { transform: none !important; }
+    .friend-card:hover .friend-icon { transform: none !important; }
 }
 
 .section-title .copy-hint {
@@ -163,6 +206,20 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: inset 0 0 0 1px var(--glass-edge-soft);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: friend-card-in 0.45s ease forwards;
+}
+.friend-card:nth-child(1) { animation-delay: 0.04s; }
+.friend-card:nth-child(2) { animation-delay: 0.08s; }
+.friend-card:nth-child(3) { animation-delay: 0.12s; }
+.friend-card:nth-child(4) { animation-delay: 0.16s; }
+.friend-card:nth-child(5) { animation-delay: 0.20s; }
+.friend-card:nth-child(6) { animation-delay: 0.24s; }
+.friend-card:nth-child(7) { animation-delay: 0.28s; }
+.friend-card:nth-child(8) { animation-delay: 0.32s; }
+@keyframes friend-card-in {
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .friend-card:hover {

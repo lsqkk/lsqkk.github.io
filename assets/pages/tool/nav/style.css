@@ -56,6 +56,48 @@
             border-radius: var(--radius);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(-12px);
+            animation: nav-header-in 0.45s ease 0.05s forwards;
+        }
+        @keyframes nav-header-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo i {
+            transition: transform 0.4s ease;
+        }
+        .logo:hover i {
+            transform: rotate(-20deg) scale(1.1);
+        }
+
+        .search-box input {
+            transition: var(--transition), box-shadow 0.25s ease;
+        }
+        .search-box input:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .folder-item {
+            transition: all 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .folder-item:hover {
+            transform: translateX(4px);
+        }
+        .folder-item.active {
+            transform: scale(1.02);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            header, .bookmark-card, .folder-item, .logo i {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            .bookmark-card:hover { transform: none !important; }
+            .folder-item:hover { transform: none !important; }
+            .folder-item.active { transform: none !important; }
         }
 
         .logo {
@@ -238,6 +280,24 @@
             text-decoration: none;
             color: inherit;
             display: block;
+            opacity: 0;
+            transform: translateY(14px) scale(0.96);
+            animation: nav-card-in 0.35s ease forwards;
+        }
+        .bookmark-card:nth-child(1) { animation-delay: 0.02s; }
+        .bookmark-card:nth-child(2) { animation-delay: 0.04s; }
+        .bookmark-card:nth-child(3) { animation-delay: 0.06s; }
+        .bookmark-card:nth-child(4) { animation-delay: 0.08s; }
+        .bookmark-card:nth-child(5) { animation-delay: 0.10s; }
+        .bookmark-card:nth-child(6) { animation-delay: 0.12s; }
+        .bookmark-card:nth-child(7) { animation-delay: 0.14s; }
+        .bookmark-card:nth-child(8) { animation-delay: 0.16s; }
+        .bookmark-card:nth-child(9) { animation-delay: 0.18s; }
+        .bookmark-card:nth-child(10) { animation-delay: 0.20s; }
+        .bookmark-card:nth-child(11) { animation-delay: 0.22s; }
+        .bookmark-card:nth-child(12) { animation-delay: 0.24s; }
+        @keyframes nav-card-in {
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .bookmark-card:hover {

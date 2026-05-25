@@ -8,6 +8,11 @@
     "entries": [
       {
         "type": "优化",
+        "description": "优化了一些UI效果",
+        "commit": "2a7815"
+      },
+      {
+        "type": "优化",
         "description": "优化了部分页面UI效果",
         "commit": "2b0897"
       },

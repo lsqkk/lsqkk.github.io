@@ -37,6 +37,12 @@
             margin-bottom: 30px;
             padding: 20px 0;
             border-bottom: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: hot-header-in 0.45s ease 0.05s forwards;
+        }
+        @keyframes hot-header-in {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container h1 {
@@ -68,6 +74,12 @@
             height: fit-content;
             position: sticky;
             top: 20px;
+            opacity: 0;
+            transform: translateX(-14px);
+            animation: hot-nav-in 0.4s ease 0.12s forwards;
+        }
+        @keyframes hot-nav-in {
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .category-title {
@@ -147,6 +159,32 @@
             padding: 15px 20px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: hot-platform-in 0.35s ease 0.2s forwards;
+        }
+        @keyframes hot-platform-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-item {
+            transition: all 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .category-item:hover {
+            transform: translateX(4px) scale(1.02);
+        }
+        .category-item:active {
+            transform: scale(0.97);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            header, .category-nav, .platform-header, .hot-card {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            .hot-card:hover { transform: none !important; }
+            .category-item:hover { transform: none !important; }
         }
 
         .platform-title {
@@ -187,15 +225,33 @@
             border-radius: 12px;
             padding: 18px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(16px);
+            animation: hot-card-in 0.4s ease forwards;
+        }
+        .hot-card:nth-child(1) { animation-delay: 0.03s; }
+        .hot-card:nth-child(2) { animation-delay: 0.06s; }
+        .hot-card:nth-child(3) { animation-delay: 0.09s; }
+        .hot-card:nth-child(4) { animation-delay: 0.12s; }
+        .hot-card:nth-child(5) { animation-delay: 0.15s; }
+        .hot-card:nth-child(6) { animation-delay: 0.18s; }
+        .hot-card:nth-child(7) { animation-delay: 0.21s; }
+        .hot-card:nth-child(8) { animation-delay: 0.24s; }
+        @keyframes hot-card-in {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hot-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
+
+        .hot-card.rank-1 { animation-delay: 0.02s; }
+        .hot-card.rank-2 { animation-delay: 0.06s; }
+        .hot-card.rank-3 { animation-delay: 0.10s; }
 
         .hot-card.rank-1 {
             border-top: 4px solid var(--gold);

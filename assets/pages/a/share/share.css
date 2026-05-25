@@ -39,7 +39,40 @@ body {
     font-weight: 700;
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    /* 增加标题可读性 */
+    opacity: 0;
+    animation: share-title-in 0.5s ease 0.05s forwards;
+}
+@keyframes share-title-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.file-select-label {
+    transition: all 0.25s ease, transform 0.15s ease;
+}
+.file-select-label:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+
+.secondary-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+
+.zip-button:hover {
+    transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-title, .card, .app-button, .file-select-label {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .app-button:hover:not(:disabled) { transform: none !important; }
+    .file-select-label:hover { transform: none !important; }
 }
 
 /* 2. 容器和卡片样式 */
@@ -65,6 +98,14 @@ body {
     padding: 30px;
     text-align: center;
     margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: share-card-in 0.5s ease forwards;
+}
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+@keyframes share-card-in {
+    to { opacity: 1; transform: translateY(0); }
 }
 
 h2 {
@@ -124,13 +165,25 @@ h2 {
     border-radius: 8px;
     box-sizing: border-box;
     font-size: 16px;
-    transition: all 0.2s;
+    transition: all 0.25s ease, transform 0.15s ease;
     border: none;
     background-color: var(--main-blue);
     color: white;
     cursor: pointer;
     font-weight: 600;
     box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.app-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 122, 255, 0.35);
+}
+
+.app-button:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 122, 255, 0.4);
 }
 
 .app-button:disabled {
