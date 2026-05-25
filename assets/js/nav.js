@@ -598,6 +598,7 @@ function initializeNavHoverMenus() {
         }
 
         let closeTimer = null;
+        let menuLocked = false;
 
         const openMenu = async () => {
             if (closeTimer) {
@@ -605,7 +606,10 @@ function initializeNavHoverMenus() {
                 closeTimer = null;
             }
             item.classList.add('open');
-            _lockOverflow();
+            if (!menuLocked) {
+                menuLocked = true;
+                _lockOverflow();
+            }
             if (navHoverCache[key]) return;
             try {
                 const sections = await loadHoverSections(key);
@@ -620,7 +624,10 @@ function initializeNavHoverMenus() {
             if (closeTimer) clearTimeout(closeTimer);
             closeTimer = setTimeout(() => {
                 item.classList.remove('open');
-                _unlockOverflow();
+                if (menuLocked) {
+                    menuLocked = false;
+                    _unlockOverflow();
+                }
                 closeTimer = null;
             }, 300);
         };
@@ -708,6 +715,7 @@ function syncLanguagePickers(targetLanguage) {
 function initializeLanguagePickers() {
     const pickers = document.querySelectorAll('[data-language-picker]');
     if (pickers.length === 0) return;
+    let pickerLocked = false;
 
     const closeAll = () => {
         pickers.forEach(picker => {
@@ -715,7 +723,10 @@ function initializeLanguagePickers() {
             const trigger = picker.querySelector('.language-trigger');
             if (trigger) trigger.setAttribute('aria-expanded', 'false');
         });
-        _unlockOverflow();
+        if (pickerLocked) {
+            pickerLocked = false;
+            _unlockOverflow();
+        }
     };
 
     pickers.forEach(picker => {
@@ -744,7 +755,10 @@ function initializeLanguagePickers() {
                 if (!isOpen) {
                     picker.classList.add('is-open');
                     trigger.setAttribute('aria-expanded', 'true');
-                    _lockOverflow();
+                    if (!pickerLocked) {
+                        pickerLocked = true;
+                        _lockOverflow();
+                    }
                 }
             });
         }
@@ -1003,25 +1017,27 @@ function initNavScrollWheel() {
 
     let pos = 0;
 
-    const clamp = () => {
+    const applyClamp = () => {
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
         pos = Math.max(-maxScroll, Math.min(0, pos));
         navList.style.transform = `translateX(${pos}px)`;
     };
 
-    clamp();
+    applyClamp();
 
-    const ro = new ResizeObserver(clamp);
+    const ro = new ResizeObserver(applyClamp);
     ro.observe(navContainer);
 
     navContainer.addEventListener('wheel', (event) => {
-        const maxScroll = navList.scrollWidth - navContainer.clientWidth;
+        if (event.ctrlKey || event.metaKey) return;
+        const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
         if (maxScroll <= 0) return;
-        const dy = Math.abs(event.deltaY), dx = Math.abs(event.deltaX);
-        if (dx > dy) return;
-        pos = Math.max(-maxScroll, Math.min(0, pos - event.deltaY));
-        navList.style.transform = `translateX(${pos}px)`;
+        const absY = Math.abs(event.deltaY), absX = Math.abs(event.deltaX);
+        if (absX > absY) return;
         event.preventDefault();
+        const step = event.deltaMode === 1 ? event.deltaY * 30 : event.deltaY;
+        pos = Math.max(-maxScroll, Math.min(0, pos - step));
+        navList.style.transform = `translateX(${pos}px)`;
     }, { passive: false });
 }
 
