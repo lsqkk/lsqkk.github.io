@@ -101,14 +101,14 @@ quark build
 quark serve
 ```
 
-访问 `http://localhost:8000`，若页面正常渲染，说明本地构建链路可用。
+访问 `http://localhost:4321`，若页面正常渲染，说明本地构建链路可用。
 
 ### 常用命令
 
 ```bash
 quark new          # 新建文章
 quark build        # 完整构建
-quark serve        # 预览 dist
+quark serve        # 启动 Astro 开发服务器（HMR 热更新）
 quark web          # 打开本地管理面板 Web UI
 quark updatelog    # 根据 Git 提交刷新日志
 

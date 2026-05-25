@@ -19,12 +19,239 @@ body {
     padding: 2rem;
 }
 
-.container {
+/* ════════════════════════════════════════
+   Layout: two-column (main + sidebar)
+   ════════════════════════════════════════ */
+.log-layout {
+    display: flex;
+    gap: 24px;
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px;
     margin-top: 80px;
+    align-items: flex-start;
 }
 
+.log-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.log-sidebar {
+    width: 270px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.log-sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ════════════════════════════════════════
+   Sidebar widgets
+   ════════════════════════════════════════ */
+.log-sidebar-widget {
+    background: var(--glass-bg);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    box-shadow:
+        0 8px 32px var(--glass-shadow),
+        inset 0 0 0 1px var(--glass-edge-soft);
+    color: var(--text-main);
+}
+
+.log-sidebar-widget h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+/* ── Stats widget ── */
+.log-stats {
+    display: flex;
+    flex-direction: column;
+}
+
+.log-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.88rem;
+    color: var(--text-main);
+}
+
+.log-stat-item + .log-stat-item {
+    border-top: 1px solid var(--line);
+}
+
+.log-stat-value {
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* ── Month list (like /blog/dt) ── */
+.log-month-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.log-month-list::-webkit-scrollbar {
+    display: none;
+}
+
+.log-month-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.24s ease;
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 0.88rem;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+}
+
+.log-month-item:hover {
+    background: var(--accent-soft);
+    transform: translateX(3px);
+}
+
+.log-month-item.active {
+    background: var(--accent-soft);
+    font-weight: 600;
+}
+
+.log-month-count {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    min-width: 22px;
+    text-align: center;
+}
+
+.log-month-item.active .log-month-count {
+    background: var(--accent);
+    color: white;
+}
+
+/* ── Heatmap (GitHub-style contribution graph) ── */
+.heatmap-wrapper {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.heatmaplabels {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 4px;
+    padding-left: 20px;
+    font-size: 0.68rem;
+    color: var(--text-soft);
+    white-space: nowrap;
+}
+
+.heatmap-body {
+    display: flex;
+    gap: 0;
+}
+
+.heatmap-day-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding-right: 4px;
+    font-size: 0.62rem;
+    color: var(--text-soft);
+    line-height: 11px;
+    height: calc(11px * 7 + 2px * 6);
+    justify-content: space-around;
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 11px);
+    grid-auto-flow: column;
+    gap: 2px;
+}
+
+.heatmap-cell {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    position: relative;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.4);
+    z-index: 2;
+}
+
+.heatmap-cell.level-0 {
+    background: var(--surface);
+    opacity: 0.5;
+}
+.heatmap-cell.level-1 {
+    background: color-mix(in srgb, var(--accent) 25%, var(--surface));
+}
+.heatmap-cell.level-2 {
+    background: color-mix(in srgb, var(--accent) 45%, var(--surface));
+}
+.heatmap-cell.level-3 {
+    background: color-mix(in srgb, var(--accent) 65%, var(--surface));
+}
+.heatmap-cell.level-4 {
+    background: var(--accent);
+}
+
+body.dark-mode .heatmap-cell.level-0 { opacity: 0.6; }
+body.dark-mode .heatmap-cell.level-1 { opacity: 0.7; }
+body.dark-mode .heatmap-cell.level-2 { opacity: 0.85; }
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 6px;
+    justify-content: flex-end;
+    font-size: 0.62rem;
+    color: var(--text-soft);
+}
+
+.legend-cell {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+/* ════════════════════════════════════════
+   Update cards (existing styles preserved)
+   ════════════════════════════════════════ */
 .update-card {
     background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
@@ -51,11 +278,10 @@ body {
 .update-card:nth-child(4) { animation-delay: 0.26s; }
 .update-card:nth-child(5) { animation-delay: 0.33s; }
 .update-card:nth-child(6) { animation-delay: 0.40s; }
+
 @keyframes log-card-in {
     to { opacity: 1; transform: translateY(0); }
 }
-
-
 
 .update-card::before {
     content: '';
@@ -167,106 +393,35 @@ h1.title {
     font-size: 1.2rem;
 }
 
-@media (max-width: 768px) {
-    body {
-        padding: 1rem;
-    }
-
-    .update-card {
-        padding: 1rem;
-    }
-}
-
-
-/* MD链接样式 */
-.update-card a[href*=".md"],
-.update-card a[href*="github.com"] {
-    display: inline-block;
-    padding: 6px 14px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 0.9em;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin: 4px 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.update-card a[href*=".md"]:hover,
-.update-card a[href*="github.com"]:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.2));
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.update-card a[href*=".md"]:before,
-.update-card a[href*="github.com"]:before {
-    content: '🔗';
-    margin-right: 6px;
-    font-size: 0.9em;
-}
-
-/* 移动端调整 */
-@media (max-width: 768px) {
-
-    .update-card a[href*=".md"],
-    .update-card a[href*="github.com"] {
-        padding: 4px 12px;
-        font-size: 0.85em;
-    }
-}
-
-/* Commit hash 链接样式 - 不套框，代码块本身提供浅灰背景 */
-.update-card a[href*="/commit/"] {
-    display: inline;
-    padding: 0;
-    margin: 0;
-    background: none;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-    font-size: 0.78em;
-    font-weight: inherit;
-    color: rgba(255, 255, 255, 0.65);
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.update-card a[href*="/commit/"]::before {
-    content: "" !important;
-    margin: 0 !important;
-}
-
-.update-card a[href*="/commit/"]:hover {
-    background: none;
-    border: none;
-    box-shadow: none;
-    transform: none;
-    color: #7ec8ff;
-}
-
-/* 条目分割线 — flex确保标签与描述垂直对齐 */
-.update-card .content > p {
-    display: flex;
+/* ════════════════════════════════════════
+   Entry grid alignment — fix hash/tag/desc alignment
+   ════════════════════════════════════════ */
+.update-card .content > p:has(.entry-hash) {
+    display: grid;
+    grid-template-columns: 4.5em auto 1fr;
+    gap: 6px 6px;
     align-items: baseline;
-    gap: 6px;
     padding: 6px 0;
     margin: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    flex-wrap: wrap;
 }
 
-.update-card .content > p:last-child {
+.update-card .content > p:has(.entry-hash):last-child {
     border-bottom: none;
 }
 
-/* 列表内同样flex对齐 */
+.entry-hash {
+    display: inline-flex;
+    align-items: baseline;
+    min-width: 4.5em;
+}
+
+.entry-desc {
+    min-width: 0;
+    line-height: 1.6;
+}
+
+/* List inside cards (legacy) */
 .update-card li {
     display: flex;
     align-items: baseline;
@@ -274,13 +429,16 @@ h1.title {
     flex-wrap: wrap;
 }
 
+/* ════════════════════════════════════════
+   Tag styles
+   ════════════════════════════════════════ */
 .tag {
     display: inline-block;
     padding: 2px 10px;
     border-radius: 12px;
     font-size: 0.85em;
     font-weight: 600;
-    margin-right: 8px;
+    margin-right: 0;
     vertical-align: middle;
     line-height: 1.4;
     transition: all 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -321,51 +479,79 @@ h1.title {
     border: 1px solid #7f8c8d;
 }
 
-/* 标签行内flex辅助对齐 */
-.update-card .tag {
-    flex-shrink: 0;
+.entry-hash a[href*="/commit/"] {
+    display: inline;
 }
 
-/* 加强标签在暗色背景下的可见性 */
-.tag.update,
-.tag.optimize,
-.tag.add,
-.tag.fix,
-.tag.default {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+/* ════════════════════════════════════════
+   Link styles
+   ════════════════════════════════════════ */
+/* MD/gh links as pill buttons */
+.update-card a[href*=".md"],
+.update-card a[href*="github.com"] {
+    display: inline-block;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 4px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 悬停效果 */
-.tag:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.update-card a[href*=".md"]:hover,
+.update-card a[href*="github.com"]:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.2));
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* 确保标签后内容正确对齐 — content > p 已用 flex */
-.update-card p,
-.update-card li {
-    width: 100%;
+.update-card a[href*=".md"]:before,
+.update-card a[href*="github.com"]:before {
+    content: '🔗';
+    margin-right: 6px;
+    font-size: 0.9em;
 }
 
-/* 调整内容间距 */
-.update-card .content {
-    line-height: 1.8;
+/* Commit hash links — inline code style, not pill */
+.update-card a[href*="/commit/"] {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 0.78em;
+    font-weight: inherit;
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    white-space: nowrap;
 }
 
-/* 确保列表项内的标签和文本在同一行 */
-.update-card li {
-    margin-bottom: 8px;
+.update-card a[href*="/commit/"]::before {
+    content: "" !important;
+    margin: 0 !important;
 }
 
-/* 移动端调整 */
-@media (max-width: 768px) {
-    .tag {
-        padding: 1px 8px;
-        font-size: 0.8em;
-        margin-right: 6px;
-    }
+.update-card a[href*="/commit/"]:hover {
+    background: none;
+    border: none;
+    box-shadow: none;
+    transform: none;
+    color: #7ec8ff;
 }
 
+/* ════════════════════════════════════════
+   Pagination — NO background box
+   ════════════════════════════════════════ */
 .pagination-container {
     display: flex;
     justify-content: center;
@@ -374,6 +560,14 @@ h1.title {
     margin-bottom: 3rem;
     flex-wrap: wrap;
     gap: 0.5rem;
+}
+
+/* Override dark-mode tokens.css which applies a solid background box */
+body.dark-mode .pagination-container,
+.pagination-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .pagination-btn {
@@ -438,50 +632,60 @@ body.dark-mode .pagination-btn.active {
     color: var(--text-main);
 }
 
-/* Light mode overrides — fix hardcoded white text */
+/* ════════════════════════════════════════
+   Light mode overrides
+   ════════════════════════════════════════ */
 body:not(.dark-mode) h1.title {
     color: var(--text-main);
     text-shadow: none;
 }
+
 body:not(.dark-mode) .update-card h2 {
     color: var(--text-main);
 }
+
 body:not(.dark-mode) .update-card strong {
     color: var(--text-main);
 }
+
 body:not(.dark-mode) .update-card a[href*="/commit/"] {
     color: var(--text-soft);
 }
+
 body:not(.dark-mode) .update-card a[href*="/commit/"]:hover {
     color: var(--accent);
 }
+
 body:not(.dark-mode) .update-card blockquote {
     color: var(--text-subtle);
     border-left-color: var(--line-strong);
 }
+
 body:not(.dark-mode) .update-card a[href*=".md"],
 body:not(.dark-mode) .update-card a[href*="github.com"] {
     background: var(--accent-soft);
     color: var(--accent);
     border-color: transparent;
 }
+
 body:not(.dark-mode) .update-card a[href*=".md"]:hover,
 body:not(.dark-mode) .update-card a[href*="github.com"]:hover {
     background: var(--accent-soft);
     color: var(--accent);
     border-color: var(--accent);
 }
-body:not(.dark-mode) .update-card a[href*=".md"]:hover,
-body:not(.dark-mode) .update-card a[href*="github.com"]:hover {
-    color: var(--accent);
-}
+
 body:not(.dark-mode) .page-info {
     color: var(--text-soft);
 }
+
 body:not(.dark-mode) .loading {
     color: var(--text-subtle);
 }
 
+/* ════════════════════════════════════════
+   Reduced motion
+   ════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
     .update-card, .update-card h2::before, .tag {
         animation: none !important;
@@ -491,8 +695,38 @@ body:not(.dark-mode) .loading {
     .tag:hover { transform: none !important; }
 }
 
-/* 移动端调整 */
+/* ════════════════════════════════════════
+   Responsive
+   ════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .log-layout {
+        flex-direction: column;
+    }
+
+    .log-sidebar {
+        width: 100%;
+        position: static;
+        order: -1;
+    }
+
+    .log-sidebar-widget {
+        margin-bottom: 1rem;
+    }
+
+    .heatmap-wrapper {
+        overflow-x: auto;
+    }
+}
+
 @media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .update-card {
+        padding: 1rem;
+    }
+
     .pagination-container {
         gap: 0.3rem;
     }
@@ -506,5 +740,14 @@ body:not(.dark-mode) .loading {
     .pagination-info {
         font-size: 0.8rem;
         margin-right: 0;
+    }
+
+    .update-card .content > p:has(.entry-hash) {
+        grid-template-columns: 4em auto 1fr;
+        gap: 4px 4px;
+    }
+
+    .entry-hash {
+        min-width: 4em;
     }
 }

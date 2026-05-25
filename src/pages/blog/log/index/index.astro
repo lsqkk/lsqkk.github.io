@@ -27,10 +27,15 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   </head>
   <body class="luxury-body">
     <LuxuryBackground />
-    <div class="container">
-      <h1 class="page-title">更新日志 / LOG</h1>
-      <div id="changelog-container"></div>
-      <div id="pagination-container" class="pagination-container"></div>
+    <div class="log-layout">
+      <div class="log-main">
+        <h1 class="page-title">更新日志 / LOG</h1>
+        <div id="changelog-container"></div>
+        <div id="pagination-container" class="pagination-container"></div>
+      </div>
+      <aside class="log-sidebar">
+        <div id="log-sidebar-content"></div>
+      </aside>
     </div>
     <script is:inline src="https://cdn.bootcdn.net/ajax/libs/marked/4.0.0/marked.min.js"></script>
     <script is:inline src="/assets/pages/blog/log/log.js"></script>

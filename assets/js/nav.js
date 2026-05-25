@@ -274,7 +274,7 @@ function generateNavHTML(config) {
             <div class="header-right">
                 <div class="header-search">
                     <input type="text" id="searchInput" placeholder="搜索站内...">
-                    <button onclick="handleGlobalSearch()">搜索</button>
+                    <button onclick="handleGlobalSearch()"><i class="fa-solid fa-search"></i> 搜索</button>
                 </div>
                 <a class="nav-settings-btn" href="${buildLocalizedUrl('/settings')}" aria-label="网站设置" title="网站设置">
                     <i class="fa-solid fa-gear"></i>
@@ -948,6 +948,32 @@ function bindUserMenuHover(root) {
 
 window.renderNavUserProfile = renderUserProfile;
 
+function initNavCollapse() {
+    const header = document.querySelector('.header');
+    const search = document.querySelector('.header-search');
+    if (!header || !search) return;
+
+    const checkOverflow = () => {
+        if (!header.isConnected) return;
+        requestAnimationFrame(() => {
+            if (header.scrollWidth > header.clientWidth + 2) {
+                search.classList.add('search-collapsed');
+            } else {
+                search.classList.remove('search-collapsed');
+            }
+        });
+    };
+
+    let rafId = null;
+    const handleResize = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(checkOverflow);
+    };
+
+    setTimeout(checkOverflow, 300);
+    window.addEventListener('resize', handleResize, { passive: true });
+}
+
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
     if (window.QuarkUserPreferences && typeof window.QuarkUserPreferences.get === 'function') {
@@ -964,6 +990,7 @@ function initializeAll() {
     initializeNavThemeMode();
     initializeNavScrollBehavior();
     initializeSearchInputs();
+    initNavCollapse();
     updateLocalizedLinks();
 
     // 延迟执行登录状态检查，确保DOM完全加载

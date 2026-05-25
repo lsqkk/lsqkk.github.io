@@ -197,7 +197,7 @@ lsqkk.github.io/
 常用命令：
 - `quark build`：执行完整构建流程；默认 `source` 模式，只生成 `dist`
 - `quark build --mode artifact`：额外导出 `.quark-artifact/`（不推荐使用）
-- `quark serve`：启动本地 `dist` 预览，默认端口 `8000`
+- `quark serve`：启动 Astro 开发服务器（HMR 热更新），默认端口 `4321`
 - `quark new`：创建文章；支持 `--draft`
 - `quark updatelog`：根据 Git 提交记录更新 `assets/data/log.json`，默认从现有日志最新日期开始刷新
 - `quark ppush`：构建并推送

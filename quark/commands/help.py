@@ -7,7 +7,7 @@ def cli():
 Quark 博客管理工具 - 帮助
 
 基本命令:
-  quark serve [--port PORT]      启动本地服务器
+  quark serve [--port PORT] [--host]    启动 Astro 开发服务器（HMR 热更新）
   quark build [--mode MODE]      构建站点（默认 source，仅生成 dist）
                                artifact 模式导出到独立目录（默认 .quark-artifact）
   quark updatelog [--since DATE] [--until DATE]
