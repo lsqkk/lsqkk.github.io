@@ -4,6 +4,76 @@
     "content": "基于仓库 `commits` 记录整理，部分更新可能不及时。\n\n查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)"
   },
   {
+    "date": "2026-05-25",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "优化了部分页面UI效果",
+        "commit": "2b0897"
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些UI问题",
+        "commit": "b9b8b4"
+      },
+      {
+        "type": "优化",
+        "description": "优化了玻璃效果",
+        "commit": "9c2586"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-24",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "优化了space页面",
+        "commit": "bd1d68"
+      },
+      {
+        "type": "修复",
+        "description": "修复了留言板页面UI问题，更换了默认字体",
+        "commit": "e2f89e"
+      },
+      {
+        "type": "优化",
+        "description": "全站UI系统升级",
+        "commit": "e57e79"
+      },
+      {
+        "type": "优化",
+        "description": "优化了文章页占位符和UI",
+        "commit": "8fb6ab"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-23",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "增加了更多骨架动画适配",
+        "commit": "b76649"
+      },
+      {
+        "type": "修复",
+        "description": "修复了动态图片前九张重复的问题",
+        "commit": "701c6c"
+      },
+      {
+        "type": "优化",
+        "description": "qqexport支持更多图片",
+        "commit": "57ce03"
+      },
+      {
+        "type": "优化",
+        "description": "优化了dt和log存储机制，优化了画廊显示",
+        "commit": "eed994"
+      }
+    ]
+  },
+  {
     "date": "2026-05-20",
     "entries": [
       {

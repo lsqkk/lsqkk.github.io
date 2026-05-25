@@ -38,12 +38,29 @@ body {
     transition: all 0.3s;
     font-size: 0.9em;
     font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.tag-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .tag-btn:hover {
     background: var(--accent-soft);
     transform: translateY(-2px);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 20%, transparent);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.tag-btn:active {
+    transform: translateY(0) scale(0.96);
 }
 
 .tag-btn.active {
@@ -68,6 +85,22 @@ body {
     display: flex;
     align-items: stretch;
     gap: 16px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: post-item-in 0.4s ease forwards;
+}
+.post-item:nth-child(1) { animation-delay: 0.04s; }
+.post-item:nth-child(2) { animation-delay: 0.08s; }
+.post-item:nth-child(3) { animation-delay: 0.12s; }
+.post-item:nth-child(4) { animation-delay: 0.16s; }
+.post-item:nth-child(5) { animation-delay: 0.20s; }
+.post-item:nth-child(6) { animation-delay: 0.24s; }
+.post-item:nth-child(7) { animation-delay: 0.28s; }
+.post-item:nth-child(8) { animation-delay: 0.32s; }
+.post-item:nth-child(9) { animation-delay: 0.36s; }
+.post-item:nth-child(10) { animation-delay: 0.40s; }
+@keyframes post-item-in {
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .posts-fold-panel {
@@ -260,7 +293,7 @@ body {
     border: 1px solid var(--line);
     color: var(--text-main);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.25s ease, transform 0.2s ease;
     font-size: 0.9em;
     margin: 3px;
 }
@@ -269,6 +302,12 @@ body {
     background: var(--surface-strong);
     color: var(--accent);
     border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.12);
+}
+
+.page-btn:active {
+    transform: translateY(0) scale(0.96);
 }
 
 .page-btn.active {
@@ -311,7 +350,25 @@ body {
 .search-input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-soft);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    transform: scale(1.005);
+}
+
+.search-input {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+}
+
+.pagination {
+    opacity: 0;
+    animation: post-item-in 0.4s ease 0.3s forwards;
+}
+
+.posts-fold-toggle {
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+.posts-fold-toggle:hover {
+    background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+    border-radius: 8px;
 }
 
 /* 搜索结果样式 */
@@ -554,4 +611,15 @@ body.dark-mode .search-container,
 body.dark-mode .search-results {
     background: var(--surface-card);
     box-shadow: var(--shadow-main);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .post-item, .pagination, .tag-btn, .page-btn, .search-input {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .tag-btn:hover { padding: 8px 16px !important; }
+    .page-btn:hover { transform: none !important; }
 }

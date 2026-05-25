@@ -39,12 +39,18 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 5px 15px rgba(0, 168, 255, 0.3);
+            opacity: 0;
+            transform: translateY(-16px);
+            animation: hero-title-in 0.6s ease 0.1s forwards;
         }
         .hero p {
             font-size: 1.2rem;
             max-width: 700px;
             margin: 0 auto 30px;
             color: rgba(255, 255, 255, 0.7);
+            opacity: 0;
+            transform: translateY(12px);
+            animation: hero-p-in 0.5s ease 0.25s forwards;
         }
         .cta-button {
             display: inline-block;
@@ -55,11 +61,23 @@
             text-decoration: none;
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(0, 168, 255, 0.4);
-            transition: box-shadow 0.3s, filter 0.3s;
+            transition: box-shadow 0.3s, filter 0.3s, transform 0.3s ease;
+            opacity: 0;
+            animation: hero-btn-in 0.5s ease 0.4s forwards;
         }
         .cta-button:hover {
             filter: brightness(1.05);
             box-shadow: 0 7px 20px rgba(0, 168, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        @keyframes hero-title-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes hero-p-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes hero-btn-in {
+            to { opacity: 1; }
         }
         /* 项目展示区样式 */
         .projects-section {
@@ -78,6 +96,21 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            position: relative;
+        }
+        .category-title::after {
+            content: '';
+            position: absolute;
+            left: 17px;
+            bottom: -1px;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+            transition: width 0.35s ease;
+        }
+        .category-title:hover::after {
+            width: calc(100% - 17px);
         }
         .category-title::before {
             content: '';
@@ -91,6 +124,12 @@
             margin-bottom: 30px;
             text-align: center;
             position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: section-title-in 0.45s ease 0.15s forwards;
+        }
+        @keyframes section-title-in {
+            to { opacity: 1; transform: translateY(0); }
         }
         .section-title::after {
             content: '';
@@ -112,11 +151,25 @@
             background: var(--card-bg);
             border-radius: 15px;
             padding: 25px;
-            transition: box-shadow 0.3s, background-color 0.3s;
+            transition: box-shadow 0.3s, background-color 0.3s, transform 0.35s ease;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: project-card-in 0.5s ease forwards;
+        }
+        .project-card:nth-child(1) { animation-delay: 0.05s; }
+        .project-card:nth-child(2) { animation-delay: 0.12s; }
+        .project-card:nth-child(3) { animation-delay: 0.19s; }
+        .project-card:nth-child(4) { animation-delay: 0.26s; }
+        .project-card:nth-child(5) { animation-delay: 0.33s; }
+        .project-card:nth-child(6) { animation-delay: 0.40s; }
+        .project-card:nth-child(7) { animation-delay: 0.47s; }
+        .project-card:nth-child(8) { animation-delay: 0.54s; }
+        @keyframes project-card-in {
+            to { opacity: 1; transform: translateY(0); }
         }
         .project-card::before {
             content: '';
@@ -130,6 +183,7 @@
         .project-card:hover {
             background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
         }
         .project-icon {
             font-size: 2.5rem;
@@ -232,6 +286,15 @@
             to {
                 transform: rotate(360deg);
             }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero h1, .hero p, .cta-button,
+            .section-title, .project-card {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            .project-card:hover { transform: none !important; }
         }
         /* 响应式设计 */
         @media (max-width: 768px) {

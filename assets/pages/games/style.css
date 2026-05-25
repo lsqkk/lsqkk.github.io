@@ -21,6 +21,15 @@ body {
     padding-bottom: 10px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.3);
     position: relative;
+    opacity: 0;
+    transform: translateX(-12px);
+    animation: game-section-title-in 0.45s ease forwards;
+}
+.game-section-title:nth-child(1) { animation-delay: 0.1s; }
+.game-section-title:nth-child(2) { animation-delay: 0.2s; }
+.game-section-title:nth-child(3) { animation-delay: 0.3s; }
+@keyframes game-section-title-in {
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .game-section-title::after {
@@ -31,6 +40,11 @@ body {
     width: 100px;
     height: 2px;
     background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    transition: width 0.4s ease;
+}
+
+.game-section-title:hover::after {
+    width: 180px;
 }
 
 /* 游戏列表 */
@@ -49,11 +63,25 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     aspect-ratio: 1/1;
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    animation: game-card-in 0.45s ease forwards;
+}
+.game-card:nth-child(1) { animation-delay: 0.04s; }
+.game-card:nth-child(2) { animation-delay: 0.08s; }
+.game-card:nth-child(3) { animation-delay: 0.12s; }
+.game-card:nth-child(4) { animation-delay: 0.16s; }
+.game-card:nth-child(5) { animation-delay: 0.20s; }
+.game-card:nth-child(6) { animation-delay: 0.24s; }
+.game-card:nth-child(7) { animation-delay: 0.28s; }
+.game-card:nth-child(8) { animation-delay: 0.32s; }
+@keyframes game-card-in {
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .game-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
 }
 
 .game-card a {
@@ -113,4 +141,13 @@ body {
     .game-list {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .game-card, .game-section-title {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .game-card:hover { transform: none !important; }
 }

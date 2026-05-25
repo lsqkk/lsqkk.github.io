@@ -42,6 +42,22 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            transform: translateY(16px);
+            animation: tool-card-in 0.45s ease forwards;
+        }
+        .tool-card:nth-child(1) { animation-delay: 0.03s; }
+        .tool-card:nth-child(2) { animation-delay: 0.06s; }
+        .tool-card:nth-child(3) { animation-delay: 0.09s; }
+        .tool-card:nth-child(4) { animation-delay: 0.12s; }
+        .tool-card:nth-child(5) { animation-delay: 0.15s; }
+        .tool-card:nth-child(6) { animation-delay: 0.18s; }
+        .tool-card:nth-child(7) { animation-delay: 0.21s; }
+        .tool-card:nth-child(8) { animation-delay: 0.24s; }
+        .tool-card:nth-child(9) { animation-delay: 0.27s; }
+        .tool-card:nth-child(10) { animation-delay: 0.30s; }
+        @keyframes tool-card-in {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tool-card::before {
@@ -111,6 +127,29 @@
             content: '→';
             font-size: 1.1rem;
             opacity: 0.8;
+            transition: transform 0.25s ease;
+        }
+
+        .tool-link:hover::after {
+            transform: translateX(4px);
+        }
+
+        .category-title {
+            position: relative;
+        }
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 21px;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            transition: width 0.35s ease;
+        }
+        .category-title:hover::after {
+            width: calc(100% - 21px);
         }
 
         .loading {
@@ -222,4 +261,14 @@ body:not(.dark-mode) .tool-link {
 body:not(.dark-mode) .tool-link:hover {
     background: var(--accent-soft);
     border-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tool-card {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .tool-card:hover { transform: none !important; }
+    .tool-link::after { transition: none !important; }
 }
