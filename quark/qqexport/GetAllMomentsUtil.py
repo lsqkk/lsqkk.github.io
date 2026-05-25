@@ -93,15 +93,27 @@ def get_moment_all_pictures(uin, tid):
     }
     all_urls = []
     try:
-        # 第1页：默认返回前9张
         resp = requests.get(url, headers=headers, params=params, timeout=15)
         raw = resp.text.strip()
         if raw.startswith('_preloadCallback('):
             raw = re.sub(r'^_preloadCallback\((.*)\);?$', r'\1', raw, flags=re.S)
         data = json.loads(raw)
 
+        # 探索API响应结构
+        print(f"    [DEBUG] 响应顶层keys: {list(data.keys())}")
         pic_list = data.get('pic')
         pictotal = data.get('pictotal', 0)
+        if isinstance(pic_list, list) and len(pic_list) > 0:
+            print(f"    [DEBUG] pic[0]类型={type(pic_list[0]).__name__}, pic[0]keys={list(pic_list[0].keys()) if isinstance(pic_list[0], dict) else 'not dict'}")
+            print(f"    [DEBUG] 🖼️ pic[0] url1={pic_list[0].get('url1','')[:80] if isinstance(pic_list[0], dict) else pic_list[0][:80]}")
+        other_pic_fields = {k: data.get(k) for k in ('albumid','albumname','total','lloc','sloc','photos') if k in data}
+        print(f"    [DEBUG] 其他图片相关字段: {other_pic_fields}")
+        # 检查 conlist 是否包含全部图片
+        conlist = data.get('conlist')
+        if conlist:
+            print(f"    [DEBUG] conlist类型={type(conlist).__name__}, len={len(conlist) if isinstance(conlist, (list,dict)) else '?'}")
+        # 打印 pic_template
+        print(f"    [DEBUG] pic_template={data.get('pic_template')}")
         if not isinstance(pic_list, list):
             return None  # 响应格式不对，放弃补充
 
@@ -120,30 +132,55 @@ def get_moment_all_pictures(uin, tid):
 
         all_urls = _extract(pic_list)
 
-        # 分页获取剩余图片
-        page = 1
-        while len(all_urls) < pictotal:
-            page_params = dict(params)
-            page_params["picpos"] = str(page * 9)
-            page_params["picnum"] = "9"
-            resp = requests.get(url, headers=headers, params=page_params, timeout=15)
-            raw = resp.text.strip()
-            if raw.startswith('_preloadCallback('):
-                raw = re.sub(r'^_preloadCallback\((.*)\);?$', r'\1', raw, flags=re.S)
-            data = json.loads(raw)
-            page_pics = data.get('pic', [])
-            if not page_pics:
-                break
-            all_urls.extend(_extract(page_pics))
-            page += 1
+        # 从图片URL中提取相册ID前缀
+        # URL格式: https://photonjmaz.photo.store.qq.com/psc?/ALBUM_ID/PHOTO_KEY
+        album_prefix = None
+        if pic_list and isinstance(pic_list[0], dict):
+            u = pic_list[0].get('url1', '')
+            if '/psc?/' in u:
+                parts = u.split('/psc?/')
+                if len(parts) > 1 and '/' in parts[1]:
+                    album_prefix = parts[1].split('/')[0]
+                    print(f"    [DEBUG] 推测相册ID: {album_prefix}")
 
-        # 去重（详情分页可能和首页返回重叠）
+        # 如果详情API取不够，试相册API
+        if len(all_urls) < pictotal and album_prefix:
+            print(f"    [DEBUG] 详情API只取到{len(all_urls)}张，尝试相册API...")
+            album_url = "https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_photolist_v6"
+            album_params = {
+                "uin": uin,
+                "albumid": album_prefix,
+                "pos": "0",
+                "num": str(pictotal),
+                "g_tk": Request.get_g_tk(),
+                "format": "jsonp",
+                "callback": "_preloadCallback",
+            }
+            try:
+                resp = requests.get(album_url, headers=headers, params=album_params, timeout=15, allow_redirects=False)
+                raw = resp.text.strip()
+                print(f"    [DEBUG] 相册API HTTP {resp.status_code}, 响应前200字符: {raw[:200]}")
+                if raw.startswith('_preloadCallback('):
+                    raw = re.sub(r'^_preloadCallback\((.*)\);?$', r'\1', raw, flags=re.S)
+                album_data = json.loads(raw)
+                print(f"    [DEBUG] 相册API返回code={album_data.get('code')}, keys={list(album_data.keys())}")
+                album_pics = album_data.get('photos') or album_data.get('pic') or album_data.get('photoList') or []
+                if album_pics and isinstance(album_pics, list) and len(album_pics) > len(all_urls):
+                    print(f"    [DEBUG] 相册API返回{len(album_pics)}张图片!")
+                    all_urls = _extract(album_pics[:pictotal])
+            except Exception as e:
+                print(f"    [DEBUG] 相册API请求失败: {e}")
+
+        # 去重
         seen = set()
         deduped = []
         for url in all_urls:
             if url not in seen:
                 seen.add(url)
                 deduped.append(url)
+        if len(deduped) != len(all_urls):
+            print(f"    [DEBUG] 去重移除{len(all_urls) - len(deduped)}个重复URL")
+        print(f"    [DEBUG] 详情API共返回{len(deduped)}张不重复图片")
         return deduped
     except Exception as e:
         print(f"获取说说 {tid} 详情失败: {e}")

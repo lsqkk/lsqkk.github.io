@@ -13,6 +13,16 @@
 
 .settings-hero {
     padding: 42px 0 28px;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: settings-hero-in 0.5s ease 0.08s forwards;
+}
+
+@keyframes settings-hero-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .settings-kicker {
@@ -44,6 +54,16 @@
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: settings-panel-in 0.55s ease 0.18s forwards;
+}
+
+@keyframes settings-panel-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .settings-section {
@@ -52,6 +72,19 @@
     gap: 32px;
     padding: 32px;
     border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(12px);
+    animation: settings-section-in 0.45s ease forwards;
+}
+
+.settings-section:nth-child(1) { animation-delay: 0.22s; }
+.settings-section:nth-child(2) { animation-delay: 0.32s; }
+
+@keyframes settings-section-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .settings-section.compact {
@@ -91,6 +124,20 @@
     background: var(--glass-bg-strong);
     color: var(--text-main);
     font: inherit;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+}
+
+.setting-field select:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(31, 122, 106, 0.12);
+}
+
+.setting-field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 122, 106, 0.2);
+    transform: scale(1.01);
+    outline: none;
 }
 
 .toggle-card {
@@ -103,6 +150,16 @@
 .toggle-card input {
     width: 46px;
     height: 24px;
+    accent-color: #1f7a6a;
+    cursor: pointer;
+    transition: accent-color 0.3s ease, transform 0.2s ease;
+}
+
+.toggle-card input:hover {
+    transform: scale(1.08);
+}
+
+.toggle-card input:checked {
     accent-color: #1f7a6a;
 }
 
@@ -124,6 +181,14 @@
     align-items: center;
     gap: 12px;
     padding: 24px 32px;
+    opacity: 0;
+    animation: settings-actions-in 0.4s ease 0.42s forwards;
+}
+
+@keyframes settings-actions-in {
+    to {
+        opacity: 1;
+    }
 }
 
 .btn {
@@ -139,12 +204,34 @@
 .btn.primary {
     color: #fff;
     background: #1f7a6a;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(31, 122, 106, 0.25);
+    background: #166b5c;
+}
+
+.btn.primary:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .btn.ghost {
     color: var(--text-main);
     background: var(--glass-bg-soft);
     border-color: var(--line);
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.btn.ghost:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+    background: var(--glass-bg);
+}
+
+.btn.ghost:active {
+    transform: translateY(0) scale(0.98);
 }
 
 #settingsStatus {
@@ -206,4 +293,35 @@ body.dark-mode .btn.ghost {
         flex-wrap: wrap;
         padding: 20px 24px;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .settings-hero,
+    .settings-panel,
+    .settings-section,
+    .settings-actions {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .setting-field select,
+    .btn,
+    .toggle-card input {
+        transition: none !important;
+    }
+}
+
+body.reduce-motion .settings-hero,
+body.reduce-motion .settings-panel,
+body.reduce-motion .settings-section,
+body.reduce-motion .settings-actions {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+body.reduce-motion .setting-field select,
+body.reduce-motion .btn,
+body.reduce-motion .toggle-card input {
+    transition: none !important;
 }

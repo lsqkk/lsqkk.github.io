@@ -86,6 +86,24 @@
   padding: 24px;
   backdrop-filter: blur(18px);
   box-shadow: 0 20px 60px var(--glass-shadow);
+  opacity: 0;
+  transform: translateY(24px);
+  animation: login-card-in 0.65s ease forwards;
+}
+
+.login-card:first-child {
+  animation-delay: 0.1s;
+}
+
+.login-card:last-child {
+  animation-delay: 0.25s;
+}
+
+@keyframes login-card-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card-header h2 {
@@ -190,6 +208,18 @@
 
 .tab-panel.active {
   display: grid;
+  animation: tab-panel-in 0.35s ease both;
+}
+
+@keyframes tab-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mode-row {
@@ -223,6 +253,18 @@
 
 .login-mode.active {
   display: grid;
+  animation: login-mode-in 0.3s ease both;
+}
+
+@keyframes login-mode-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .forgot-row {
@@ -249,6 +291,26 @@
 
 .reset-panel.active {
   display: grid;
+  animation: reset-slide-down 0.35s ease both;
+  transform-origin: top center;
+  overflow: hidden;
+}
+
+@keyframes reset-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scaleY(0.95);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    max-height: 600px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
 }
 
 .field {
@@ -269,6 +331,14 @@
   padding: 10px 12px;
   font-size: 14px;
   outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+  transform: scale(1.01);
+  background: var(--glass-bg);
 }
 
 .helper {
@@ -397,6 +467,33 @@
 
 .dark-mode .reset-panel {
   border-color: var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .tab-panel.active,
+  .login-mode.active,
+  .reset-panel.active {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .field input {
+    transition: none !important;
+  }
+}
+
+body.reduce-motion .login-card,
+body.reduce-motion .tab-panel.active,
+body.reduce-motion .login-mode.active,
+body.reduce-motion .reset-panel.active {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body.reduce-motion .field input {
+  transition: none !important;
 }
 
 .dark-mode .status-row--ok {

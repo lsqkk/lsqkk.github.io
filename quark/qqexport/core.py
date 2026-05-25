@@ -180,21 +180,26 @@ def run(verbose=True):
     except Exception as err:
         print(f"获取QQ空间记录发生异常: {str(err)}")
 
-    # 3.5 补充全部图片（列表接口只返回前9张，通过详情接口获取超过9张的图片）
+    # 3.5 补充全部图片（列表接口只返回前9张，通过详情接口获取全部图片）
+    # 注意：列表API用 url1(缩略图)，详情API用 url3(原图)，URL格式不同，
+    # 因此直接替换为详情结果即可——URL不重复，且质量更高
     uin = Request.get_uin()
     for item in texts:
         tid = item[4] if len(item) > 4 else ''
         if not tid or not item[2]:
             continue
+        old_urls = item[2].split(',')
+        old_count = len(old_urls)
+        print(f"  [DEBUG] 说说{tid}: 列表API有{old_count}张 (首张: {old_urls[0][:60] if old_urls else '无'})")
         all_pics = GetAllMoments.get_moment_all_pictures(uin, tid)
         if all_pics is not None and len(all_pics) > 0:
-            old_urls = item[2].split(',')
-            old_set = set(old_urls)
-            # 只取详情API中尚未出现的新图片，避免前9张重复
-            extra_urls = [url for url in all_pics if url not in old_set]
-            if extra_urls:
-                print(f"  ✅ 详情API补充图片: {len(old_urls)}→{len(old_urls) + len(extra_urls)}张")
-                item[2] = ','.join(old_urls + extra_urls)
+            if len(all_pics) > old_count:
+                print(f"  ✅ 详情API补充图片: {old_count}→{len(all_pics)}张 (首张: {all_pics[0][:60]})")
+                item[2] = ','.join(all_pics)
+            else:
+                print(f"  ⏭ 详情API仅{len(all_pics)}张，未超列表API的{old_count}张，跳过替换")
+        else:
+            print(f"  ⚠ 详情API返回{all_pics}，无法补充")
 
     # 4. 加载现有条目
     existing_entries = []
