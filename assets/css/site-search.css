@@ -243,6 +243,32 @@
     }
 }
 
+body.dark-mode .search-page-title,
+body.dark-mode .search-result-title {
+    color: #e4edf9;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .search-tag {
+    background: rgba(110, 168, 255, 0.2);
+    color: #cfe2ff;
+}
+
+body.dark-mode .search-tag-date {
+    background: rgba(110, 168, 255, 0.24);
+    color: #cfe2ff;
+}
+
+body.dark-mode .search-tag-word {
+    background: rgba(188, 138, 46, 0.32);
+    color: #ffe2ad;
+}
+
+body.dark-mode .search-tag-col {
+    background: rgba(168, 140, 255, 0.26);
+    color: #e3d3ff;
+}
+
 @media (max-width: 720px) {
     .search-page-title {
         font-size: 1.8rem;

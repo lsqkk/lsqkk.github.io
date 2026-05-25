@@ -46,11 +46,7 @@ body {
     line-height: 1.6;
     padding: 20px;
     min-height: 100vh;
-    background-color: #f2f6fb;
-    background-image: url('/assets/img/bg.png');
-    background-size: cover;
-    background-attachment: fixed;
-    transition: color var(--transition), background var(--transition);
+    /* 背景由 LuxuryBackground 组件统一管理 */
 }
 
 /* -------- Container -------- */

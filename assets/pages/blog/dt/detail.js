@@ -17,5 +17,10 @@
             : '';
 
         container.innerHTML = `${htmlContent}${galleryHtml}`;
+
+        // Initialize skeleton loading for gallery images
+        if (window.DynamicGallery && typeof window.DynamicGallery.initSkeletonImages === 'function') {
+            window.DynamicGallery.initSkeletonImages(container);
+        }
     });
 })();

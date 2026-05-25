@@ -46,7 +46,7 @@
                 const isOverflow = imgIdx === 8 && total > 9;
                 html += `
                     <button type="button" class="gallery-item${isOverflow ? ' gallery-item-overflow' : ''}" aria-label="查看图片 ${imgIdx + 1}" onclick="DynamicGallery.open('${galleryId}', ${imgIdx})">
-                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img>
+                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img onload="this.closest('.gallery-item')?.classList.add('is-loaded')" onerror="this.closest('.gallery-item')?.classList.add('is-loaded')">
                         ${isOverflow ? `<div class="gallery-overlay">+${total - 9}</div>` : ''}
                     </button>
                 `;
@@ -229,11 +229,51 @@
         }
     });
 
+    /**
+     * Initialize skeleton loading: add is-loaded class when images finish loading.
+     * Handles both cached (already complete) and fresh images.
+     * @param {ParentNode} [root=document]
+     */
+    function initSkeletonImages(root) {
+        root = root || document;
+        root.querySelectorAll('img[data-skeleton-img]').forEach(function (img) {
+            if (!(img instanceof HTMLImageElement)) return;
+            if (img.dataset.skeletonInit === 'true') return;
+            img.dataset.skeletonInit = 'true';
+
+            var parent = img.closest('.gallery-item');
+            if (!parent) return;
+
+            if (img.complete && img.naturalWidth > 0) {
+                parent.classList.add('is-loaded');
+                return;
+            }
+
+            img.addEventListener('load', function () {
+                parent.classList.add('is-loaded');
+            }, { once: true });
+
+            img.addEventListener('error', function () {
+                parent.classList.add('is-loaded');
+            }, { once: true });
+        });
+    }
+
+    // Auto-initialize on DOMContentLoaded for already-rendered content
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            initSkeletonImages();
+        });
+    } else {
+        initSkeletonImages();
+    }
+
     window.DynamicGallery = {
         extractImages,
         createGalleryHtml,
         registerImages,
         hydrateStaticGalleries,
+        initSkeletonImages,
         open: openGallery,
         change: changeImage,
         close: closeGallery,

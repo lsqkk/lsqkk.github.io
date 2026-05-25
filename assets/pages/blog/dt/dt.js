@@ -206,6 +206,8 @@ function renderDynamicEntries(entries) {
     // Initialize skeleton loading for dynamically added images
     if (typeof initSkeletonImages === 'function') {
         initSkeletonImages(container);
+    } else if (window.DynamicGallery && typeof window.DynamicGallery.initSkeletonImages === 'function') {
+        window.DynamicGallery.initSkeletonImages(container);
     }
 }
 

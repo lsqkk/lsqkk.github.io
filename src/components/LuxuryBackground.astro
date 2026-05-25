@@ -4,8 +4,31 @@ import NavHoverData from "./NavHoverData.astro";
 const { className = "" } = Astro.props;
 ---
 <style is:global>
-  body.luxury-body {
+  /* ============================
+     背景方案：使用 .luxury-backdrop（position: fixed）承载背景
+     避免在 body 上使用 background-attachment: fixed，
+     防止 Chrome 首次渲染时背景不显示的 Bug
+     ============================ */
+
+  /* 兜底色：仅在 background-attachment 完全失败时可见 */
+  html {
     background-color: #f2f6fb;
+    min-height: 100%;
+  }
+
+  /* body 背景统一交由 .luxury-backdrop 处理，禁用各页面自己的 body 背景 */
+  body.luxury-body {
+    background: transparent !important;
+  }
+
+  /* ===== .luxury-backdrop：全屏固定背景 ===== */
+  .luxury-backdrop {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;  /* 在内容下方，避免遮挡正文 */
+
+    /* 浅色模式：渐变 + 底图 */
     background-image:
       radial-gradient(circle at 86% 22%, rgba(226, 240, 255, 0.62), transparent 55%),
       radial-gradient(circle at 20% 82%, rgba(214, 246, 240, 0.5), transparent 55%),
@@ -17,35 +40,43 @@ const { className = "" } = Astro.props;
     background-size: cover;
   }
 
-  body.dark-mode.luxury-body {
-    background: linear-gradient(160deg, rgba(5, 10, 22, 0.9), rgba(2, 6, 23, 0.94)),
-      url('/assets/img/bg.png') no-repeat center center fixed;
+  /* ===== 深色模式：JS 驱动（user-preferences 添加 .dark-mode） ===== */
+  body.dark-mode .luxury-backdrop,
+  body.dark-mode.luxury-body .luxury-backdrop {
+    background-image:
+      /* 发光层（跟随鼠标） */
+      radial-gradient(1000px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(110, 168, 255, 0.22), transparent 70%),
+      radial-gradient(circle at 18% 24%, rgba(148, 163, 184, 0.12), transparent 55%),
+      radial-gradient(circle at 86% 20%, rgba(96, 165, 250, 0.12), transparent 55%),
+      radial-gradient(circle at 30% 82%, rgba(94, 234, 212, 0.08), transparent 50%),
+      /* 深色遮罩 */
+      linear-gradient(160deg, rgba(5, 10, 22, 0.9), rgba(2, 6, 23, 0.94)),
+      /* 底图 */
+      url('/assets/img/bg.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
     background-size: cover;
   }
 
-  .luxury-backdrop {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background: transparent;
-    opacity: 0;
-  }
-
+  /* ===== 深色模式：系统偏好 ===== */
   @media (prefers-color-scheme: dark) {
-    body.luxury-body {
-      background: linear-gradient(160deg, rgba(5, 10, 22, 0.9), rgba(2, 6, 23, 0.94)),
-        url('/assets/img/bg.png') no-repeat center center fixed;
-      background-size: cover;
+    html {
+      background-color: #020617;
     }
 
     .luxury-backdrop {
-      background:
+      background-image:
         radial-gradient(1000px circle at var(--glow-x, 50%) var(--glow-y, 45%), rgba(110, 168, 255, 0.22), transparent 70%),
         radial-gradient(circle at 18% 24%, rgba(148, 163, 184, 0.12), transparent 55%),
         radial-gradient(circle at 86% 20%, rgba(96, 165, 250, 0.12), transparent 55%),
-        radial-gradient(circle at 30% 82%, rgba(94, 234, 212, 0.08), transparent 50%);
-      opacity: 0.4;
+        radial-gradient(circle at 30% 82%, rgba(94, 234, 212, 0.08), transparent 50%),
+        linear-gradient(160deg, rgba(5, 10, 22, 0.9), rgba(2, 6, 23, 0.94)),
+        url('/assets/img/bg.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
     }
   }
 </style>

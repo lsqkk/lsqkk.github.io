@@ -1006,9 +1006,12 @@ function initializeNavThemeMode() {
             ? window.QuarkUserPreferences.get()
             : null;
         const isDark = preference ? preference.isDark : darkModeQuery.matches;
+        const body = document.body;
         const header = document.querySelector('.header');
         const mobileSidebar = document.getElementById('mobilenavsidebar');
 
+        // 统一控制 body.dark-mode——触发全站所有深色模式 CSS 规则
+        if (body) body.classList.toggle('dark-mode', isDark);
         if (header) header.classList.toggle('nav-dark', isDark);
         if (mobileSidebar) mobileSidebar.classList.toggle('nav-dark', isDark);
     };
