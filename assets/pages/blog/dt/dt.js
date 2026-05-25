@@ -9,7 +9,22 @@ marked.setOptions({
     gfm: true
 });
 
+function showDtSkeleton() {
+    const container = document.getElementById('dynamic-content');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+        const card = document.createElement('div');
+        card.className = 'dt-skeleton-card';
+        card.innerHTML = '<div class="s-title"></div><div class="s-date"></div>' +
+            '<div class="s-line"></div><div class="s-line"></div><div class="s-line"></div>' +
+            '<div class="s-footer"><div class="s-btn"></div></div>';
+        container.appendChild(card);
+    }
+}
+
 async function loadDynamic() {
+    showDtSkeleton();
     try {
         const preloaded = Array.isArray(window.__DT_PRELOADED__) ? window.__DT_PRELOADED__ : [];
         if (preloaded.length > 0) {

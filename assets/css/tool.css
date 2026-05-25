@@ -272,3 +272,95 @@ body:not(.dark-mode) .tool-link:hover {
     .tool-card:hover { transform: none !important; }
     .tool-link::after { transition: none !important; }
 }
+
+/* ── Skeleton loading for tools grid ── */
+@keyframes tool-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.tool-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.tool-skeleton-card {
+    background: var(--glass-bg);
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tool-skeleton-card .s-category {
+    width: 80px;
+    height: 24px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: tool-shimmer 1.8s ease-in-out infinite;
+}
+
+.tool-skeleton-card .s-name {
+    width: 65%;
+    height: 28px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: tool-shimmer 1.8s ease-in-out infinite;
+}
+
+.tool-skeleton-card .s-desc {
+    width: 90%;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: tool-shimmer 1.8s ease-in-out infinite;
+}
+
+.tool-skeleton-card .s-desc-short {
+    width: 55%;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: tool-shimmer 1.8s ease-in-out infinite;
+}
+
+.tool-skeleton-card .s-btn {
+    width: 100px;
+    height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: tool-shimmer 1.8s ease-in-out infinite;
+    margin-top: auto;
+}
+
+.tool-skeleton-card .s-meta {
+    display: flex;
+    gap: 12px;
+}
+
+.tool-skeleton-card .s-meta-item {
+    width: 60px;
+    height: 22px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: tool-shimmer 1.8s ease-in-out infinite;
+}
+
+body.reduce-motion .tool-skeleton-card .s-category,
+body.reduce-motion .tool-skeleton-card .s-name,
+body.reduce-motion .tool-skeleton-card .s-desc,
+body.reduce-motion .tool-skeleton-card .s-desc-short,
+body.reduce-motion .tool-skeleton-card .s-btn,
+body.reduce-motion .tool-skeleton-card .s-meta-item {
+    animation: none;
+    background: var(--surface);
+}

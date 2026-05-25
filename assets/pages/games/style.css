@@ -151,3 +151,53 @@ body {
     }
     .game-card:hover { transform: none !important; }
 }
+
+/* ── Skeleton loading for games page ── */
+@keyframes game-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.game-skeleton {
+    margin-bottom: 40px;
+}
+
+.game-skeleton-title {
+    width: 200px;
+    height: 28px;
+    margin: 30px 0 15px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 75%);
+    background-size: 200% 100%;
+    animation: game-shimmer 1.8s ease-in-out infinite;
+}
+
+.game-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.game-skeleton-card {
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%);
+    background-size: 200% 100%;
+    animation: game-shimmer 1.8s ease-in-out infinite;
+}
+
+body:not(.dark-mode) .game-skeleton-title {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+}
+
+body:not(.dark-mode) .game-skeleton-card {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+}
+
+body.reduce-motion .game-skeleton-card,
+body.reduce-motion .game-skeleton-title {
+    animation: none;
+    background: var(--surface);
+}

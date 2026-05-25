@@ -1,6 +1,21 @@
+function showLabSkeleton(container) {
+    const grid = document.createElement('div');
+    grid.className = 'lab-skeleton-grid';
+    for (let i = 0; i < 6; i++) {
+        const card = document.createElement('div');
+        card.className = 'lab-skeleton-card';
+        card.innerHTML = '<div class="s-top"></div><div class="s-name"></div><div class="s-desc"></div><div class="s-link"></div>';
+        grid.appendChild(card);
+    }
+    container.innerHTML = '';
+    container.appendChild(grid);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const projectsContainer = document.getElementById('projects-container');
     const footerProjects = document.getElementById('footer-projects');
+
+    showLabSkeleton(projectsContainer);
 
     const loadPromise = window.__A_PROJECTS__
         ? Promise.resolve(window.__A_PROJECTS__)

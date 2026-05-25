@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${TOOL_PREFIX}${url.replace(/^\.?\//, '')}`;
     }
 
-    // 显示加载状态
-    container.innerHTML = '<div class="loading">正在加载工具箱数据...</div>';
+    // 骨架屏加载状态
+    container.innerHTML = '<div class="tool-skeleton-grid">' + Array(6).fill('<div class="tool-skeleton-card"><div class="s-category"></div><div class="s-name"></div><div class="s-desc"></div><div class="s-desc-short"></div><div class="s-btn"></div></div>').join('') + '</div>';
 
     // 读取配置文件（优先使用构建期注入）
     const loadPromise = window.__TOOLS_DATA__

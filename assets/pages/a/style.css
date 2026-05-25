@@ -296,6 +296,96 @@
             }
             .project-card:hover { transform: none !important; }
         }
+
+        /* ── Skeleton loading for lab projects ── */
+        @keyframes lab-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .lab-skeleton-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .lab-skeleton-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .lab-skeleton-card .s-top {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 75%);
+            background-size: 200% 100%;
+            animation: lab-shimmer 1.8s ease-in-out infinite;
+        }
+
+        .lab-skeleton-card .s-name {
+            width: 60%;
+            height: 22px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 75%);
+            background-size: 200% 100%;
+            animation: lab-shimmer 1.8s ease-in-out infinite;
+        }
+
+        .lab-skeleton-card .s-desc {
+            width: 90%;
+            height: 14px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 75%);
+            background-size: 200% 100%;
+            animation: lab-shimmer 1.8s ease-in-out infinite;
+        }
+
+        .lab-skeleton-card .s-link {
+            width: 100px;
+            height: 32px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 75%);
+            background-size: 200% 100%;
+            animation: lab-shimmer 1.8s ease-in-out infinite;
+        }
+
+        body:not(.dark-mode) .lab-skeleton-card {
+            background: rgba(255, 255, 255, 0.88);
+            border-color: rgba(15, 107, 220, 0.12);
+        }
+
+        body:not(.dark-mode) .lab-skeleton-card .s-top,
+        body:not(.dark-mode) .lab-skeleton-card .s-name,
+        body:not(.dark-mode) .lab-skeleton-card .s-desc,
+        body:not(.dark-mode) .lab-skeleton-card .s-link {
+            background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.06) 75%);
+            background-size: 200% 100%;
+        }
+
+        @media (prefers-color-scheme: light) {
+            .lab-skeleton-card .s-top,
+            .lab-skeleton-card .s-name,
+            .lab-skeleton-card .s-desc,
+            .lab-skeleton-card .s-link {
+                background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.12) 50%, rgba(0,0,0,0.06) 75%);
+                background-size: 200% 100%;
+            }
+        }
+
+        body.reduce-motion .lab-skeleton-card .s-top,
+        body.reduce-motion .lab-skeleton-card .s-name,
+        body.reduce-motion .lab-skeleton-card .s-desc,
+        body.reduce-motion .lab-skeleton-card .s-link {
+            animation: none;
+            background: rgba(255,255,255,0.08);
+        }
         /* 响应式设计 */
         @media (max-width: 768px) {
             .navbar {

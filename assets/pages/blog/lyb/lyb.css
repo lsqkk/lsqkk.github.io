@@ -732,6 +732,89 @@ header {
     .page-btn.active { transform: none !important; }
 }
 
+/* ── Skeleton loading for messages ── */
+@keyframes lyb-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.lyb-skeleton-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.lyb-skeleton-row {
+    padding: 20px 24px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.lyb-skeleton-row + .lyb-skeleton-row {
+    border-top: 1px solid var(--divider);
+}
+
+.lyb-skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
+    background-size: 200% 100%;
+    animation: lyb-shimmer 1.8s ease-in-out infinite;
+}
+
+.lyb-skeleton-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lyb-skeleton-body .s-author {
+    width: 100px;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
+    background-size: 200% 100%;
+    animation: lyb-shimmer 1.8s ease-in-out infinite;
+}
+
+.lyb-skeleton-body .s-text {
+    width: 85%;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
+    background-size: 200% 100%;
+    animation: lyb-shimmer 1.8s ease-in-out infinite;
+}
+
+.lyb-skeleton-body .s-text-short {
+    width: 55%;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
+    background-size: 200% 100%;
+    animation: lyb-shimmer 1.8s ease-in-out infinite;
+}
+
+.lyb-skeleton-body .s-time {
+    width: 30%;
+    height: 12px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
+    background-size: 200% 100%;
+    animation: lyb-shimmer 1.8s ease-in-out infinite;
+}
+
+body.reduce-motion .lyb-skeleton-avatar,
+body.reduce-motion .lyb-skeleton-body .s-author,
+body.reduce-motion .lyb-skeleton-body .s-text,
+body.reduce-motion .lyb-skeleton-body .s-text-short,
+body.reduce-motion .lyb-skeleton-body .s-time {
+    animation: none;
+}
+
 .reply-header {
     display: flex;
     align-items: center;

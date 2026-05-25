@@ -181,7 +181,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 先验证管理员，再设置监听（避免 race condition）
     await verifyAdminSession();
 
-    // 设置实时监听（自动加载并渲染留言）
+    // 骨架屏：Firebase 数据到达前显示加载占位
+    const msgContainer = byId('messagesContainer');
+    if (msgContainer) {
+        msgContainer.innerHTML = '';
+        for (let i = 0; i < 4; i++) {
+            const row = document.createElement('div');
+            row.className = 'lyb-skeleton-row';
+            row.innerHTML = '<div class="lyb-skeleton-avatar"></div><div class="lyb-skeleton-body"><div class="s-author"></div><div class="s-text"></div><div class="s-text-short"></div><div class="s-time"></div></div>';
+            msgContainer.appendChild(row);
+        }
+    }
+
+    // 设置实时监听（自动加载并渲染留言，会替换骨架屏）
     setupRealtimeListener();
 
     // 监听搜索框输入（去抖）

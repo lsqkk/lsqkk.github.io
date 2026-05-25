@@ -253,3 +253,73 @@ body {
         justify-content: center;
     }
 }
+
+/* ── Skeleton loading for dynamic page ── */
+@keyframes dt-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.dt-skeleton-card {
+    background: var(--glass-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dt-skeleton-card .s-title {
+    width: 55%;
+    height: 24px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: dt-shimmer 1.8s ease-in-out infinite;
+}
+
+.dt-skeleton-card .s-date {
+    width: 30%;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: dt-shimmer 1.8s ease-in-out infinite;
+}
+
+.dt-skeleton-card .s-line {
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: dt-shimmer 1.8s ease-in-out infinite;
+}
+
+.dt-skeleton-card .s-line:last-child {
+    width: 65%;
+}
+
+.dt-skeleton-card .s-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.dt-skeleton-card .s-btn {
+    width: 80px;
+    height: 32px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: dt-shimmer 1.8s ease-in-out infinite;
+}
+
+body.reduce-motion .dt-skeleton-card .s-title,
+body.reduce-motion .dt-skeleton-card .s-date,
+body.reduce-motion .dt-skeleton-card .s-line,
+body.reduce-motion .dt-skeleton-card .s-btn {
+    animation: none;
+    background: var(--surface);
+}

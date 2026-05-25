@@ -5,9 +5,25 @@ function resolveGameLink(link) {
     return `/games/${link.replace(/^\.?\//, '')}`;
 }
 
+function showGameSkeleton(container) {
+    const sections = ['对战专区', '单机游戏', '经典复刻'];
+    sections.forEach(title => {
+        const skel = document.createElement('div');
+        skel.className = 'game-skeleton';
+        skel.innerHTML = '<div class="game-skeleton-title"></div><div class="game-skeleton-grid">' +
+            Array(6).fill('<div class="game-skeleton-card"></div>').join('') + '</div>';
+        container.appendChild(skel);
+    });
+}
+
 async function loadGames() {
-    const data = window.__GAMES_DATA__ || await fetch('/assets/pages/games/game.json').then((response) => response.json());
     const gameContainer = document.getElementById('game-container');
+    showGameSkeleton(gameContainer);
+
+    const data = window.__GAMES_DATA__ || await fetch('/assets/pages/games/game.json').then((response) => response.json());
+
+    // 清除骨架
+    gameContainer.querySelectorAll('.game-skeleton').forEach(el => el.remove());
 
     // 创建对战专区
     createGameSection(gameContainer, '对战专区', data.multiplayer);
