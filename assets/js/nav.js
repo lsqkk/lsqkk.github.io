@@ -210,6 +210,22 @@ const defaultNavConfig = {
     }
 };
 
+// 共享 overflow 锁：下拉菜单显示时临时解除 overflow:hidden，用引用计数避免互相覆盖
+let _overflowRefCount = 0;
+const _getNavContainer = () => document.querySelector('.header-nav-container');
+function _lockOverflow() {
+    _overflowRefCount++;
+    const c = _getNavContainer();
+    if (c) c.style.overflow = 'visible';
+}
+function _unlockOverflow() {
+    _overflowRefCount = Math.max(0, _overflowRefCount - 1);
+    if (_overflowRefCount === 0) {
+        const c = _getNavContainer();
+        if (c) c.style.overflow = '';
+    }
+}
+
 // 获取导航配置（优先使用构建注入）
 function getNavConfig() {
     if (window.__NAV_CONFIG__) {
@@ -589,6 +605,7 @@ function initializeNavHoverMenus() {
                 closeTimer = null;
             }
             item.classList.add('open');
+            _lockOverflow();
             if (navHoverCache[key]) return;
             try {
                 const sections = await loadHoverSections(key);
@@ -603,6 +620,7 @@ function initializeNavHoverMenus() {
             if (closeTimer) clearTimeout(closeTimer);
             closeTimer = setTimeout(() => {
                 item.classList.remove('open');
+                _unlockOverflow();
                 closeTimer = null;
             }, 300);
         };
@@ -697,6 +715,7 @@ function initializeLanguagePickers() {
             const trigger = picker.querySelector('.language-trigger');
             if (trigger) trigger.setAttribute('aria-expanded', 'false');
         });
+        _unlockOverflow();
     };
 
     pickers.forEach(picker => {
@@ -725,6 +744,7 @@ function initializeLanguagePickers() {
                 if (!isOpen) {
                     picker.classList.add('is-open');
                     trigger.setAttribute('aria-expanded', 'true');
+                    _lockOverflow();
                 }
             });
         }

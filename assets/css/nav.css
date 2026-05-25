@@ -57,6 +57,7 @@
     justify-content: center;
     min-width: 0;
     flex-shrink: 1;
+    overflow: hidden;
 }
 
 .header-nav {
