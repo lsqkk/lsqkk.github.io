@@ -134,13 +134,7 @@ const currentYear = new Date().getFullYear();
 - 浅色模式下为柔和底纹，无大面积光晕干扰；深色模式下自动切换为深色背景
 
 ### 视觉风格要求
-- 延续本站 Aero / 玻璃拟态风格
-- 常见卡片以浅色高透明、适度模糊、轻圆角为主
-- 避免：
-  - 蓝紫高饱和渐变
-  - 夸张描边和侧边炫光线条
-  - 过大的圆角
-  - hover 上浮
+- 延续本站浊玉玻璃拟态风格，参考UI文档
 
 ### 字体与标题
 - 不在 `body` 上重新设置 `font-family`
@@ -185,23 +179,6 @@ const currentYear = new Date().getFullYear();
   - `search-shell`
   - `tool-card`
   - `weather-panel`
-
-### 玻璃卡片参考
-
-```css
-.glass-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-```
-
-说明：
-- 数值可按页面调整，不必机械照抄
-- 暗色模式下需同步检查边框、文本和阴影层级
 
 ### 响应式
 - 所有新页面都应至少检查移动端首屏
@@ -265,11 +242,11 @@ const currentYear = new Date().getFullYear();
 
 ### 必查项
 - 页面标题、描述、favicon 是否正确
-- 背景是否与站点风格一致
 - 移动端是否溢出
 - dark mode 下文字与卡片是否可读
 - 是否误用生成目录或错误路径
 - 是否需要同步聚合 JSON、导航或说明文档
+- 是否遵守了本说明和UI文档的其他要求
 
 ### 建议执行
 ```bash

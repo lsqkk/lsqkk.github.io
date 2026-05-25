@@ -273,8 +273,10 @@ function generateNavHTML(config) {
             </div>
             <div class="header-right">
                 <div class="header-search">
-                    <input type="text" id="searchInput" placeholder="搜索站内...">
-                    <button onclick="handleGlobalSearch()"><i class="fa-solid fa-search"></i> 搜索</button>
+                    <input type="text" id="searchInput" placeholder="搜索站内..." autocomplete="off">
+                    <button type="button" class="header-search-btn" onclick="handleGlobalSearch()" aria-label="搜索">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
                 </div>
                 <a class="nav-settings-btn" href="${buildLocalizedUrl('/settings')}" aria-label="网站设置" title="网站设置">
                     <i class="fa-solid fa-gear"></i>
@@ -580,6 +582,7 @@ function initializeNavHoverMenus() {
         }
 
         let closeTimer = null;
+        const navContainer = item.closest('.header-nav-container');
 
         const openMenu = async () => {
             if (closeTimer) {
@@ -587,6 +590,7 @@ function initializeNavHoverMenus() {
                 closeTimer = null;
             }
             item.classList.add('open');
+            if (navContainer) navContainer.style.overflow = 'visible';
             if (navHoverCache[key]) return;
             try {
                 const sections = await loadHoverSections(key);
@@ -601,6 +605,7 @@ function initializeNavHoverMenus() {
             if (closeTimer) clearTimeout(closeTimer);
             closeTimer = setTimeout(() => {
                 item.classList.remove('open');
+                if (navContainer) navContainer.style.overflow = '';
                 closeTimer = null;
             }, 300);
         };
@@ -974,6 +979,20 @@ function initNavCollapse() {
     window.addEventListener('resize', handleResize, { passive: true });
 }
 
+function initNavScrollWheel() {
+    const navContainer = document.querySelector('.header-nav-container');
+    if (!navContainer) return;
+
+    navContainer.addEventListener('wheel', (event) => {
+        if (navContainer.scrollWidth <= navContainer.clientWidth) return;
+        const absDeltaX = Math.abs(event.deltaX);
+        const absDeltaY = Math.abs(event.deltaY);
+        if (absDeltaX > absDeltaY) return;
+        navContainer.scrollLeft += event.deltaY;
+        event.preventDefault();
+    }, { passive: false });
+}
+
 // 页面加载完成后初始化翻译和登录状态检查
 function initializeAll() {
     if (window.QuarkUserPreferences && typeof window.QuarkUserPreferences.get === 'function') {
@@ -991,6 +1010,7 @@ function initializeAll() {
     initializeNavScrollBehavior();
     initializeSearchInputs();
     initNavCollapse();
+    initNavScrollWheel();
     updateLocalizedLinks();
 
     // 延迟执行登录状态检查，确保DOM完全加载

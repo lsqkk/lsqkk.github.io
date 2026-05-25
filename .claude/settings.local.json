@@ -56,7 +56,9 @@
       "Bash(xargs kill)",
       "Bash(quark --help)",
       "Bash(quark)",
-      "Bash(npx --yes astro --version)"
+      "Bash(npx --yes astro --version)",
+      "Bash(echo \"nav.js: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/assets/js/nav.js\\)\")",
+      "Bash(echo \"nav.css: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/assets/css/nav.css\\)\")"
     ]
   }
 }
