@@ -57,13 +57,10 @@
     justify-content: center;
     min-width: 0;
     flex-shrink: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
-.header-nav-container::-webkit-scrollbar {
-    display: none;
+
+.header-nav {
+    transition: transform 0.1s ease-out;
 }
 .header-right {
     display: flex;

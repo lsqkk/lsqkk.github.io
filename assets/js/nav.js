@@ -210,22 +210,6 @@ const defaultNavConfig = {
     }
 };
 
-// 共享 overflow 锁：hover 菜单和语言选择器共用，避免互相覆盖
-let _overflowRefCount = 0;
-const _getNavContainer = () => document.querySelector('.header-nav-container');
-function _lockOverflow() {
-    _overflowRefCount++;
-    const c = _getNavContainer();
-    if (c) c.style.overflow = 'visible';
-}
-function _unlockOverflow() {
-    _overflowRefCount = Math.max(0, _overflowRefCount - 1);
-    if (_overflowRefCount === 0) {
-        const c = _getNavContainer();
-        if (c) c.style.overflow = '';
-    }
-}
-
 // 获取导航配置（优先使用构建注入）
 function getNavConfig() {
     if (window.__NAV_CONFIG__) {
@@ -605,7 +589,6 @@ function initializeNavHoverMenus() {
                 closeTimer = null;
             }
             item.classList.add('open');
-            _lockOverflow();
             if (navHoverCache[key]) return;
             try {
                 const sections = await loadHoverSections(key);
@@ -620,7 +603,6 @@ function initializeNavHoverMenus() {
             if (closeTimer) clearTimeout(closeTimer);
             closeTimer = setTimeout(() => {
                 item.classList.remove('open');
-                _unlockOverflow();
                 closeTimer = null;
             }, 300);
         };
@@ -715,7 +697,6 @@ function initializeLanguagePickers() {
             const trigger = picker.querySelector('.language-trigger');
             if (trigger) trigger.setAttribute('aria-expanded', 'false');
         });
-        _unlockOverflow();
     };
 
     pickers.forEach(picker => {
@@ -744,7 +725,6 @@ function initializeLanguagePickers() {
                 if (!isOpen) {
                     picker.classList.add('is-open');
                     trigger.setAttribute('aria-expanded', 'true');
-                    _lockOverflow();
                 }
             });
         }
@@ -998,14 +978,29 @@ function initNavCollapse() {
 
 function initNavScrollWheel() {
     const navContainer = document.querySelector('.header-nav-container');
-    if (!navContainer) return;
+    const navList = navContainer?.querySelector('.header-nav');
+    if (!navContainer || !navList) return;
+
+    let pos = 0;
+
+    const clamp = () => {
+        const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
+        pos = Math.max(-maxScroll, Math.min(0, pos));
+        navList.style.transform = `translateX(${pos}px)`;
+    };
+
+    clamp();
+
+    const ro = new ResizeObserver(clamp);
+    ro.observe(navContainer);
 
     navContainer.addEventListener('wheel', (event) => {
-        if (navContainer.scrollWidth <= navContainer.clientWidth) return;
-        const absDeltaX = Math.abs(event.deltaX);
-        const absDeltaY = Math.abs(event.deltaY);
-        if (absDeltaX > absDeltaY) return;
-        navContainer.scrollLeft += event.deltaY;
+        const maxScroll = navList.scrollWidth - navContainer.clientWidth;
+        if (maxScroll <= 0) return;
+        const dy = Math.abs(event.deltaY), dx = Math.abs(event.deltaX);
+        if (dx > dy) return;
+        pos = Math.max(-maxScroll, Math.min(0, pos - event.deltaY));
+        navList.style.transform = `translateX(${pos}px)`;
         event.preventDefault();
     }, { passive: false });
 }
