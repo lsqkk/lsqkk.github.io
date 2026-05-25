@@ -5,6 +5,10 @@
       "source": "/assets/fonts/霞鹜文楷.woff2"
     },
     {
+      "family": "HYTangMeiRen",
+      "source": "/assets/fonts/HYTangMeiRen55W.woff2"
+    },
+    {
       "family": "LXGW Neo ZhiSong CHS",
       "source": "https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-neo-zhi-song-chs-regular-lxgw-neo-zhi-song/font.css"
     }

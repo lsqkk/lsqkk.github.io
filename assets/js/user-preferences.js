@@ -7,7 +7,7 @@
     const UPDATED_EVENT = 'quark-preferences-updated';
     const DEFAULTS = {
         language: 'chinese_simplified',
-        font: 'serif',
+        font: 'xwwk',
         motion: 'full',
         cursorTrail: true
     };
