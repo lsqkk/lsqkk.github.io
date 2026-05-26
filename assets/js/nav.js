@@ -163,16 +163,14 @@ function renderLanguageSelectOptions() {
     return LANGUAGE_OPTIONS.map(option => `<option value="${option.code}">${option.label}</option>`).join('');
 }
 
-// SVG icon helper: prefers __FA_ICONS__ (injected or script-loaded), falls back to FA classes
-function svgIcon(name) {
-  if (!window.__FA_ICONS__) {
-    // Lazy-load the icons script once
-    if (!document.querySelector('script[src*="fa-icons"]')) {
-      var s = document.createElement('script');
-      s.src = '/assets/js/fa-icons.js';
-      document.head.appendChild(s);
-    }
+// Sync-load FA icons before generating nav (uses document.write so it blocks)
+(function ensureFAIcons() {
+  if (typeof window.__FA_ICONS__ === 'undefined') {
+    document.write('<script src="/assets/js/fa-icons.js"><\/script>');
   }
+})();
+// SVG icon helper
+function svgIcon(name) {
   var icons = window.__FA_ICONS__;
   if (icons && icons[name]) return icons[name];
   // Fallback: use FA class if page has its own FA stylesheet

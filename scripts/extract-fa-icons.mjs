@@ -78,7 +78,12 @@ const FA5_RENAMES = {
   "balance-scale": "scale-balanced",
 };
 
+// Match FA class patterns: fa-solid fa-name, fas fa-name, fab fa-name, etc.
 const FA_RE = /(?:fa-solid|fas|fa-regular|far|fa-brands|fab)\s+(fa-[a-z][a-z0-9-]*)/gi;
+// Match helper calls: icon('name'), faIcon('name'), svgIcon('name'), and ${svgIcon('name')}
+const HELP_RE = /(?:icon|faIcon|svgIcon)\s*\(\s*['"]([a-z][a-z0-9-]*)['"]\s*\)/gi;
+// Match icon property assignments: icon: "name"
+const ICON_PROP_RE = /icon:\s*['"]([a-z][a-z0-9-]*)['"]/gi;
 
 function walk(dir, results) {
   results = results || [];
@@ -108,12 +113,23 @@ function discoverIcons() {
       try {
         const content = readFileSync(file, "utf8");
         let m;
+        // Discover FA class patterns (fa-solid fa-name, fas fa-name, etc.)
         while ((m = FA_RE.exec(content)) !== null) {
           const prefix = m[0].split(/\s+/)[0].toLowerCase();
           const style = STYLE_MAP[prefix];
           if (!style || !SUPPORTED.has(style)) continue;
           const rawName = m[1].replace(/^fa-/, "");
           if (!found.has(rawName)) found.set(rawName, style);
+        }
+        // Discover helper function calls: icon('name'), faIcon('name'), svgIcon('name')
+        while ((m = HELP_RE.exec(content)) !== null) {
+          const rawName = m[1];
+          if (!found.has(rawName)) found.set(rawName, "solid");
+        }
+        // Discover icon property assignments: icon: "name" (e.g. in contactItems)
+        while ((m = ICON_PROP_RE.exec(content)) !== null) {
+          const rawName = m[1];
+          if (!found.has(rawName)) found.set(rawName, "solid");
         }
       } catch { /* skip unreadable */ }
     }
