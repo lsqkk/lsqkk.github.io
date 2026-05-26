@@ -47,13 +47,17 @@ body {
 }
 
 .game-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
   margin-bottom: 40px;
 }
 
 .game-card {
+  flex: 1 1 250px;
+  max-width: 380px;
+  min-width: 200px;
   position: relative;
   border-radius: 14px;
   overflow: hidden;
@@ -168,12 +172,16 @@ body {
 }
 
 .game-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
 }
 
 .game-skeleton-card {
+  flex: 1 1 250px;
+  max-width: 380px;
+  min-width: 200px;
   aspect-ratio: 1/1;
   border-radius: 14px;
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
@@ -188,8 +196,13 @@ body {
   }
 
   .game-list {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
+  }
+
+  .game-card {
+    flex: 1 1 150px;
+    max-width: 320px;
+    min-width: 140px;
   }
 
   .game-section-title {

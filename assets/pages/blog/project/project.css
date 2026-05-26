@@ -32,12 +32,16 @@
 
 /* ── Grid ── */
 .project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
 }
 
 .project-card {
+  flex: 1 1 300px;
+  max-width: 420px;
+  min-width: 260px;
   background: var(--glass-bg);
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -204,12 +208,16 @@
 }
 
 .project-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
 }
 
 .project-skeleton-card {
+  flex: 1 1 300px;
+  max-width: 420px;
+  min-width: 260px;
   background: var(--glass-bg);
   border-radius: 18px;
   border: 1px solid var(--line);

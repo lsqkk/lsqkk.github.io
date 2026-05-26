@@ -1,3 +1,5 @@
+@import url('/assets/css/card-grid.css');
+
 .container {
   width: 100%;
   max-width: 1400px;
@@ -6,13 +8,17 @@
 }
 
 .tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 22px;
+  justify-content: center;
   margin-bottom: 60px;
 }
 
 .tool-card {
+  flex: 1 1 300px;
+  max-width: 420px;
+  min-width: 260px;
   background: var(--glass-bg);
   backdrop-filter: blur(22px) saturate(135%);
   -webkit-backdrop-filter: blur(22px) saturate(135%);
@@ -24,7 +30,6 @@
   position: relative;
   overflow: hidden;
   transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease, border-color 0.28s ease;
-  height: 100%;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -190,16 +195,20 @@
 }
 
 .tool-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 22px;
+  justify-content: center;
 }
 
 .tool-skeleton-card {
+  flex: 1 1 300px;
+  max-width: 420px;
+  min-width: 260px;
   background: var(--glass-bg);
   border-radius: 20px;
   border: 1px solid var(--line);
-  padding: 30px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;

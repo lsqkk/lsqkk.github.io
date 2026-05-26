@@ -1,0 +1,28 @@
+/* ── Shared card grid pattern ──
+   Use on any listing page where cards should wrap and center
+   when fewer cards than the column count.
+
+   Usage:
+     <div class="card-grid" style="--cg-min: 300px; --cg-gap: 22px;">
+       <div class="card-grid-item">...</div>
+       <div class="card-grid-item">...</div>
+     </div>
+
+   Override with:
+     --cg-min   card minimum width  (default 280px)
+     --cg-max   card maximum width  (default 420px)
+     --cg-gap   gap between cards   (default 22px)
+*/
+
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cg-gap, 22px);
+  justify-content: center;
+}
+
+.card-grid > * {
+  flex: 1 1 var(--cg-min, 280px);
+  max-width: var(--cg-max, 420px);
+  min-width: 240px;
+}
