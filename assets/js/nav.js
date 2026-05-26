@@ -210,20 +210,24 @@ const defaultNavConfig = {
     }
 };
 
-// 共享 overflow 锁：下拉菜单显示时临时解除 overflow:hidden，用引用计数避免互相覆盖
-let _overflowRefCount = 0;
-const _getNavContainer = () => document.querySelector('.header-nav-container');
-function _lockOverflow() {
-    _overflowRefCount++;
-    const c = _getNavContainer();
-    if (c) c.style.overflow = 'visible';
-}
-function _unlockOverflow() {
-    _overflowRefCount = Math.max(0, _overflowRefCount - 1);
-    if (_overflowRefCount === 0) {
-        const c = _getNavContainer();
-        if (c) c.style.overflow = '';
+// 固定定位下拉菜单：溢出 overflow:hidden 容器时使用 fixed 定位来避免被裁剪
+function _positionFixedDropdown(triggerEl, menuEl) {
+    if (!triggerEl || !menuEl) return;
+    const rect = triggerEl.getBoundingClientRect();
+    const menuWidth = menuEl.offsetWidth || 200;
+    let left = rect.left;
+    if (left + menuWidth > window.innerWidth - 12) {
+        left = Math.max(12, window.innerWidth - menuWidth - 12);
     }
+    menuEl.style.position = 'fixed';
+    menuEl.style.top = (rect.bottom + 10) + 'px';
+    menuEl.style.left = left + 'px';
+}
+function _resetFixedDropdown(menuEl) {
+    if (!menuEl) return;
+    menuEl.style.position = '';
+    menuEl.style.top = '';
+    menuEl.style.left = '';
 }
 
 // 获取导航配置（优先使用构建注入）
@@ -598,7 +602,6 @@ function initializeNavHoverMenus() {
         }
 
         let closeTimer = null;
-        let menuLocked = false;
 
         const openMenu = async () => {
             if (closeTimer) {
@@ -606,14 +609,14 @@ function initializeNavHoverMenus() {
                 closeTimer = null;
             }
             item.classList.add('open');
-            if (!menuLocked) {
-                menuLocked = true;
-                _lockOverflow();
-            }
+            // 用 fixed 定位避免被 overflow:hidden 容器裁剪
+            _positionFixedDropdown(item, menuEl);
             if (navHoverCache[key]) return;
             try {
                 const sections = await loadHoverSections(key);
                 renderHoverMenu(menuEl, key, sections);
+                // 内容加载后再校准一次位置
+                requestAnimationFrame(() => _positionFixedDropdown(item, menuEl));
             } catch (error) {
                 console.error(`加载${key}导航项失败:`, error);
                 menuEl.innerHTML = '<div class="nav-hover-empty">加载失败</div>';
@@ -624,10 +627,7 @@ function initializeNavHoverMenus() {
             if (closeTimer) clearTimeout(closeTimer);
             closeTimer = setTimeout(() => {
                 item.classList.remove('open');
-                if (menuLocked) {
-                    menuLocked = false;
-                    _unlockOverflow();
-                }
+                _resetFixedDropdown(menuEl);
                 closeTimer = null;
             }, 300);
         };
@@ -715,18 +715,18 @@ function syncLanguagePickers(targetLanguage) {
 function initializeLanguagePickers() {
     const pickers = document.querySelectorAll('[data-language-picker]');
     if (pickers.length === 0) return;
-    let pickerLocked = false;
 
     const closeAll = () => {
         pickers.forEach(picker => {
             picker.classList.remove('is-open');
             const trigger = picker.querySelector('.language-trigger');
             if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            // 恢复语言菜单定位
+            const menu = picker.querySelector('.language-menu');
+            if (menu instanceof HTMLElement) {
+                _resetFixedDropdown(menu);
+            }
         });
-        if (pickerLocked) {
-            pickerLocked = false;
-            _unlockOverflow();
-        }
     };
 
     pickers.forEach(picker => {
@@ -755,9 +755,10 @@ function initializeLanguagePickers() {
                 if (!isOpen) {
                     picker.classList.add('is-open');
                     trigger.setAttribute('aria-expanded', 'true');
-                    if (!pickerLocked) {
-                        pickerLocked = true;
-                        _lockOverflow();
+                    // 导航栏内的语言菜单使用 fixed 定位避免被裁剪
+                    const menu = picker.querySelector('.language-menu');
+                    if (menu instanceof HTMLElement && picker.closest('.header-nav-container')) {
+                        _positionFixedDropdown(trigger, menu);
                     }
                 }
             });
@@ -1018,26 +1019,48 @@ function initNavScrollWheel() {
     let pos = 0;
 
     const applyClamp = () => {
+        if (!navContainer.isConnected) return;
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
         pos = Math.max(-maxScroll, Math.min(0, pos));
         navList.style.transform = `translateX(${pos}px)`;
     };
 
+    const recalc = () => requestAnimationFrame(applyClamp);
     applyClamp();
 
-    const ro = new ResizeObserver(applyClamp);
+    // 监听容器和列表尺寸变化
+    const ro = new ResizeObserver(recalc);
     ro.observe(navContainer);
+    ro.observe(navList);
+
+    // 字体加载后重新计算（防止初始布局偏移）
+    if (document.fonts) {
+        document.fonts.ready.then(recalc);
+    }
+
+    // 多次布局稳定后重算
+    setTimeout(recalc, 300);
+    setTimeout(recalc, 1000);
 
     navContainer.addEventListener('wheel', (event) => {
         if (event.ctrlKey || event.metaKey) return;
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
         if (maxScroll <= 0) return;
-        const absY = Math.abs(event.deltaY), absX = Math.abs(event.deltaX);
-        if (absX > absY) return;
+        // 同时支持鼠标滚轮（垂直）和触控板横向滑动
+        let delta = 0;
+        if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+            delta = event.deltaX; // 触控板横向滑动
+        } else {
+            delta = event.deltaY; // 鼠标滚轮（转换为横向）
+        }
+        if (delta === 0) return;
         event.preventDefault();
-        const step = event.deltaMode === 1 ? event.deltaY * 30 : event.deltaY;
+        const step = event.deltaMode === 1 ? delta * 30 : delta;
+        const prevPos = pos;
         pos = Math.max(-maxScroll, Math.min(0, pos - step));
-        navList.style.transform = `translateX(${pos}px)`;
+        if (pos !== prevPos) {
+            navList.style.transform = `translateX(${pos}px)`;
+        }
     }, { passive: false });
 }
 
