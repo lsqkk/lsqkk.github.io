@@ -18,6 +18,7 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/pages/a/account/account.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script is:inline define:vars={{ navConfig, turnstileSiteKey }}>
       window.__NAV_CONFIG__ = navConfig;
       window.__TURNSTILE_SITE_KEY__ = turnstileSiteKey;
@@ -36,11 +37,20 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
   <body class="account-body luxury-body">
     <LuxuryBackground />
     <div class="account-shell">
-      <header class="account-hero">
-        <div>
-          <p class="account-kicker">Account Center</p>
-          <h1 class="account-title">账号中心</h1>
-          <p class="account-subtitle">管理你的昵称、头像与资料，同步到全站评论与展示。</p>
+
+      <!-- ════════════════════════════════
+           Unified Hero Header
+           ════════════════════════════════ -->
+      <header class="account-hero acc-anim">
+        <div class="account-hero-main">
+          <div class="account-hero-avatar">
+            <img id="heroAvatarImg" alt="avatar" />
+            <span class="hero-avatar-fallback" id="heroAvatarFallback">Q</span>
+          </div>
+          <div class="account-hero-text">
+            <h1>账号中心</h1>
+            <p id="loginTypeLabel">登录方式：<span class="skeleton-text skeleton-line-sm">-</span></p>
+          </div>
         </div>
         <div class="account-metrics">
           <div class="metric">
@@ -54,160 +64,208 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
         </div>
       </header>
 
+      <!-- ════════════════════════════════
+           Main Content Grid
+           ════════════════════════════════ -->
       <main class="account-grid">
-        <section class="account-card">
+
+        <!-- ═══ Left Column: Profile Editing ═══ -->
+        <div class="account-card account-card--main">
           <div class="card-header">
-            <h2>基础资料</h2>
-            <p>这些信息将同步到评论、动态与在线展示。</p>
+            <h2><i class="fa-regular fa-user"></i> 基础资料</h2>
+            <p>修改你的昵称、头像与个性签名，同步到全站展示</p>
           </div>
-          <div class="profile-row">
-            <div class="avatar-panel">
-              <div class="avatar-preview" id="avatarPreview">
-                <img id="avatarImage" alt="avatar" />
-                <span id="avatarFallback">Q</span>
-              </div>
+
+          <!-- Avatar Section -->
+          <div class="avatar-section">
+            <div class="avatar-preview" id="avatarPreview">
+              <img id="avatarImage" alt="avatar" />
+              <span id="avatarFallback">Q</span>
+            </div>
+            <div class="avatar-controls">
               <div class="avatar-actions">
-                <label class="btn primary">
-                  上传头像
+                <label class="btn primary sm">
+                  <i class="fa-solid fa-upload"></i> 上传头像
                   <input type="file" id="avatarFile" class="file-input" accept="image/*" />
                 </label>
-                <button class="btn ghost" id="avatarClear">清除头像</button>
-                <button class="btn ghost" id="avatarFromGithub">使用我的 GitHub 头像</button>
+                <button class="btn ghost sm" id="avatarClear"><i class="fa-regular fa-trash-can"></i> 清除</button>
+                <button class="btn ghost sm" id="avatarFromGithub"><i class="fa-brands fa-github"></i> GitHub 头像</button>
               </div>
-              <div class="crop-hint">上传后可裁剪头像，保存时会同步到全站。</div>
-              <div class="field">
+              <div class="crop-hint"><i class="fa-regular fa-circle-info"></i> 上传后可裁剪头像为正方形，保存后全站同步</div>
+              <div class="field" style="margin-bottom:0;">
                 <label for="avatarUrl">头像链接</label>
                 <input type="url" id="avatarUrl" placeholder="https://..." />
-                <div class="helper">支持粘贴链接，上传后将自动裁剪为正方形。</div>
               </div>
-            </div>
-            <div class="info-panel">
-              <div class="field">
-                <label>账号名</label>
-                <input type="text" id="githubLogin" disabled />
-                <div class="helper" id="loginTypeLabel">登录方式：-</div>
-              </div>
-              <div class="field">
-                <label for="nicknameInput">昵称</label>
-                <input type="text" id="nicknameInput" placeholder="输入昵称" />
-              </div>
-              <div class="field">
-                <label for="signatureInput">个性签名</label>
-                <textarea class="signature-textarea" id="signatureInput" placeholder="写一句个性签名…" maxlength="100"></textarea>
-                <div class="signature-count" id="signatureCount">0 / 100</div>
-                <div class="helper">显示在个人主页昵称下方。</div>
-              </div>
-              <div class="field">
-                <label>主页背景图</label>
-                <div class="bg-preview-wrap" id="bgPreviewWrap">
-                  <img id="bgPreviewImg" class="bg-preview-img" alt="background" />
-                  <span class="bg-preview-placeholder" id="bgPreviewPlaceholder">未设置背景图</span>
-                </div>
-                <div class="bg-actions">
-                  <label class="btn ghost">
-                    上传背景图
-                    <input type="file" id="bgFile" class="file-input" accept="image/*" />
-                  </label>
-                  <button class="btn ghost" id="bgClearBtn">清除背景</button>
-                </div>
-                <div class="field" style="margin-top:8px;">
-                  <input type="url" id="bgUrl" placeholder="或粘贴背景图链接 https://..." />
-                  <div class="helper">建议横图，会覆盖在个人主页横幅区域。</div>
-                </div>
-              </div>
-              <div class="email-bind-section" id="emailBindSection">
-                <div class="field">
-                  <label for="bindEmail">绑定邮箱</label>
-                  <input type="email" id="bindEmail" placeholder="name@example.com" />
-                  <div class="helper">绑定后可用于邮箱登录与找回密码。</div>
-                </div>
-                <div class="field">
-                  <label for="bindEmailCode">邮箱验证码</label>
-                  <div class="captcha-row">
-                    <input type="text" id="bindEmailCode" placeholder="输入验证码" />
-                    <button class="btn ghost" id="bindEmailSend" type="button">发送验证码</button>
-                  </div>
-                </div>
-                <div class="field">
-                  <label>安全校验</label>
-                  <div id="bindTurnstileContainer" class="turnstile-box" data-turnstile-kind="bind"></div>
-                </div>
-                <div class="action-row">
-                  <button class="btn primary" id="bindEmailApply">绑定邮箱</button>
-                  <button class="btn ghost" id="bindEmailEdit" type="button">修改绑定邮箱</button>
-                  <button class="btn ghost" id="bindEmailRemove" type="button">解绑邮箱</button>
-                </div>
-                <div class="status-row" id="bindEmailStatus">等待操作</div>
-              </div>
-              <div class="field">
-                <label>账户标识</label>
-                <input type="text" id="accountUid" disabled />                
-              </div>
-              <div class="field">
-                <label>本地同步</label>
-                <div class="toggle-row">
-                  <input type="checkbox" id="localSyncToggle" checked />
-                  <span>保存到本地，以便下次自动填充</span>
-                </div>
-              </div>
-              <div class="action-row">
-                <button class="btn primary" id="saveProfile">保存资料</button>
-                <button class="btn ghost" id="refreshProfile">从云端刷新</button>
-                <a class="btn ghost" id="accountSpaceLink" href="/space">我的主页</a>
-                <button class="btn ghost" id="accountLogout">退出登录</button>
-              </div>
-              <div class="status-row" id="saveStatus">等待操作</div>
             </div>
           </div>
-        </section>
 
-        <section class="account-card">
-          <div class="card-header">
-            <h2>账号记录</h2>
-            <p>最近的同步与活动信息。</p>
+          <hr class="card-divider" />
+
+          <!-- Form Fields -->
+          <div class="field">
+            <label for="githubLogin">账号名</label>
+            <input type="text" id="githubLogin" disabled />
           </div>
-          <div class="record-grid">
-            <div class="record-item">
-              <span>最近同步</span>
-              <strong id="lastSyncAt">-</strong>
+
+          <div class="field">
+            <label for="nicknameInput">昵称</label>
+            <input type="text" id="nicknameInput" placeholder="输入你的昵称" />
+            <div class="helper">昵称将显示在评论、动态及个人主页</div>
+          </div>
+
+          <div class="field">
+            <label for="signatureInput">个性签名</label>
+            <textarea class="signature-textarea" id="signatureInput" placeholder="写一句个性签名…" maxlength="100"></textarea>
+            <div class="signature-count" id="signatureCount">0 / 100</div>
+            <div class="helper">显示在个人主页昵称下方</div>
+          </div>
+
+          <hr class="card-divider" />
+
+          <!-- Background Image -->
+          <div class="field">
+            <label>主页背景图</label>
+            <div class="bg-preview-wrap" id="bgPreviewWrap">
+              <img id="bgPreviewImg" class="bg-preview-img" alt="background" />
+              <span class="bg-preview-placeholder" id="bgPreviewPlaceholder"><i class="fa-regular fa-image"></i> 未设置背景图</span>
             </div>
-            <div class="record-item">
-              <span>当前页面</span>
-              <strong id="currentPage">-</strong>
+            <div class="bg-actions" style="margin-top:8px;">
+              <label class="btn ghost sm">
+                <i class="fa-solid fa-upload"></i> 上传背景图
+                <input type="file" id="bgFile" class="file-input" accept="image/*" />
+              </label>
+              <button class="btn ghost sm" id="bgClearBtn"><i class="fa-regular fa-trash-can"></i> 清除</button>
             </div>
-            <div class="record-item">
-              <span>IP 属地</span>
-              <strong id="accountLocation">-</strong>
-            </div>
-            <div class="record-item">
-              <span>头像状态</span>
-              <strong id="avatarState">-</strong>
+            <div class="field" style="margin-top:8px;margin-bottom:0;">
+              <input type="url" id="bgUrl" placeholder="或粘贴背景图链接 https://..." />
+              <div class="helper"><i class="fa-regular fa-circle-info"></i> 建议横图，将作为个人主页横幅背景</div>
             </div>
           </div>
-          <div class="record-list" id="loginHistory">
-            <div class="record-list-title">
-              <span>设备登录记录</span>
-              <button class="record-toggle" id="loginHistoryToggle" type="button">展开</button>
-            </div>
-            <div class="record-list-body is-collapsed" id="loginHistoryBody">暂无记录</div>
+
+          <hr class="card-divider" />
+
+          <!-- Actions -->
+          <div class="action-row">
+            <button class="btn primary" id="saveProfile"><i class="fa-solid fa-check"></i> 保存资料</button>
+            <button class="btn ghost" id="refreshProfile"><i class="fa-solid fa-rotate"></i> 从云端刷新</button>
           </div>
-        </section>
+          <div class="action-row action-row-compact">
+            <a class="btn ghost" id="accountSpaceLink" href="/space"><i class="fa-regular fa-user"></i> 我的主页</a>
+            <button class="btn ghost" id="accountLogout"><i class="fa-solid fa-sign-out-alt"></i> 退出登录</button>
+          </div>
+          <div class="status-row" id="saveStatus"><i class="fa-regular fa-circle"></i> 等待操作</div>
+        </div>
+
+        <!-- ═══ Right Column: Info & Settings ═══ -->
+        <aside class="account-sidebar">
+
+          <!-- Account Info -->
+          <section class="account-card">
+            <div class="card-header">
+              <h2><i class="fa-regular fa-address-card"></i> 账号信息</h2>
+            </div>
+            <div class="record-grid">
+              <div class="record-item">
+                <span>最近同步</span>
+                <strong id="lastSyncAt">-</strong>
+              </div>
+              <div class="record-item">
+                <span>当前页面</span>
+                <strong id="currentPage">-</strong>
+              </div>
+              <div class="record-item">
+                <span><i class="fa-solid fa-location-dot"></i> IP 属地</span>
+                <strong id="accountLocation">-</strong>
+              </div>
+              <div class="record-item">
+                <span><i class="fa-regular fa-image"></i> 头像状态</span>
+                <strong id="avatarState">-</strong>
+              </div>
+            </div>
+            <div class="field" style="margin-top:16px;margin-bottom:0;">
+              <label>账户标识</label>
+              <input type="text" id="accountUid" disabled />
+              <div class="helper">用于在站内唯一标识你的账号</div>
+            </div>
+          </section>
+
+          <!-- Security: Email Binding (hidden for non-local accounts) -->
+          <section class="account-card email-bind-section" id="emailBindSection">
+            <div class="card-header">
+              <h2><i class="fa-regular fa-envelope"></i> 安全设置</h2>
+              <p>绑定邮箱可用于登录与找回密码</p>
+            </div>
+            <div class="field">
+              <label for="bindEmail">绑定邮箱</label>
+              <input type="email" id="bindEmail" placeholder="name@example.com" />
+              <div class="helper">绑定后可用于邮箱登录与找回密码</div>
+            </div>
+            <div class="field">
+              <label for="bindEmailCode">邮箱验证码</label>
+              <div class="captcha-row">
+                <input type="text" id="bindEmailCode" placeholder="输入验证码" />
+                <button class="btn ghost sm" id="bindEmailSend" type="button">发送验证码</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>安全校验</label>
+              <div id="bindTurnstileContainer" class="turnstile-box" data-turnstile-kind="bind"></div>
+            </div>
+            <div class="action-row">
+              <button class="btn primary sm" id="bindEmailApply">绑定邮箱</button>
+              <button class="btn ghost sm" id="bindEmailEdit" type="button">修改</button>
+              <button class="btn ghost sm danger" id="bindEmailRemove" type="button">解绑</button>
+            </div>
+            <div class="status-row" id="bindEmailStatus">等待操作</div>
+          </section>
+
+          <!-- Sync Settings -->
+          <section class="account-card">
+            <div class="card-header">
+              <h2><i class="fa-solid fa-cloud-arrow-up"></i> 同步设置</h2>
+            </div>
+            <div class="toggle-row">
+              <input type="checkbox" id="localSyncToggle" checked />
+              <span>保存到本地，以便下次自动填充</span>
+            </div>
+            <div class="tips">
+              <i class="fa-regular fa-circle-info"></i> 开启后，保存资料时会同步到浏览器本地存储
+            </div>
+          </section>
+
+          <!-- Login History -->
+          <section class="account-card">
+            <div class="card-header">
+              <h2><i class="fa-solid fa-clock-rotate-left"></i> 登录记录</h2>
+            </div>
+            <div class="record-list" id="loginHistory">
+              <div class="record-list-title">
+                <span>设备登录记录</span>
+                <button class="record-toggle" id="loginHistoryToggle" type="button"><i class="fa-solid fa-chevron-down"></i> 展开</button>
+              </div>
+              <div class="record-list-body is-collapsed" id="loginHistoryBody">暂无记录</div>
+            </div>
+            <div class="tips">最近 8 次登录、换设备记录</div>
+          </section>
+
+        </aside>
       </main>
     </div>
 
     <script is:inline src="/assets/pages/a/account/account.js"></script>
 
+    <!-- Cropper Modal -->
     <div class="cropper-modal" id="cropperModal">
       <div class="cropper-card">
         <div class="cropper-header">
           <h3>裁剪头像</h3>
-          <button class="btn ghost" id="cropperClose">关闭</button>
+          <button class="btn ghost" id="cropperClose"><i class="fa-regular fa-xmark"></i> 关闭</button>
         </div>
         <div class="cropper-body">
           <canvas id="cropperCanvas"></canvas>
         </div>
         <div class="cropper-controls">
-          <label>缩放</label>
+          <label for="cropperZoom">缩放</label>
           <input type="range" id="cropperZoom" min="1" max="3" step="0.01" value="1" />
           <div class="cropper-actions">
             <button class="btn ghost" id="cropperReset">重置</button>

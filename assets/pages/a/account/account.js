@@ -59,6 +59,8 @@
         el.bgPreviewPlaceholder = document.getElementById('bgPreviewPlaceholder');
         el.bgPreviewWrap = document.getElementById('bgPreviewWrap');
         el.bgClearBtn = document.getElementById('bgClearBtn');
+        el.heroAvatarImg = document.getElementById('heroAvatarImg');
+        el.heroAvatarFallback = document.getElementById('heroAvatarFallback');
     }
 
     let firebaseReady = false;
@@ -157,6 +159,21 @@
             el.avatarImage.style.display = 'none';
             el.avatarFallback.textContent = (name || 'Q').trim().slice(0, 1).toUpperCase();
             el.avatarFallback.style.display = 'block';
+        }
+        // Sync hero avatar
+        if (el.heroAvatarImg) {
+            if (clean) {
+                el.heroAvatarImg.src = clean;
+                el.heroAvatarImg.style.display = 'block';
+                if (el.heroAvatarFallback) el.heroAvatarFallback.style.display = 'none';
+            } else {
+                el.heroAvatarImg.removeAttribute('src');
+                el.heroAvatarImg.style.display = 'none';
+                if (el.heroAvatarFallback) {
+                    el.heroAvatarFallback.textContent = (name || 'Q').trim().slice(0, 1).toUpperCase();
+                    el.heroAvatarFallback.style.display = 'flex';
+                }
+            }
         }
         setText(el.avatarState, clean ? '已设置头像' : '使用默认头像');
     }
