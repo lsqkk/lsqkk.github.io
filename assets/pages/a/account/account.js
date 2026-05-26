@@ -685,7 +685,9 @@
     async function migrateLegacyUid() {
         const legacyUid = getLegacyUid();
         const targetUid = getUid();
+        console.log('[migrateLegacyUid] legacyUid:', legacyUid, 'targetUid:', targetUid);
         if (!legacyUid || !targetUid || legacyUid === targetUid) return;
+        console.log('[migrateLegacyUid] WILL RUN migration');
         try {
             const db = await ensureFirebase();
             const legacySnap = await db.ref('user_activity').child(legacyUid).once('value');
@@ -697,6 +699,9 @@
             const targetSnap = await db.ref('user_activity').child(targetUid).once('value');
             const targetData = targetSnap.val() || {};
             const mergedProfile = mergeProfileFields(legacyData.profile, targetData.profile);
+            console.log('[migrateLegacyUid] legacyProfile:', legacyData.profile);
+            console.log('[migrateLegacyUid] targetProfile:', targetData.profile);
+            console.log('[migrateLegacyUid] mergedProfile:', JSON.stringify(mergedProfile));
 
             await db.ref('user_activity').child(targetUid).update({
                 profile: mergedProfile,
@@ -1099,6 +1104,7 @@
     }
 
     async function init() {
+        console.log('[PAGE_LOAD] quark_uid:', localStorage.getItem('quark_uid'), 'github_login:', localStorage.getItem('github_login'));
         initThemeSync();
         cacheElements();
         fillStaticInfo();
