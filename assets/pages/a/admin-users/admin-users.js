@@ -584,14 +584,41 @@
         }
     }
 
-    // ── Badge Management (using Firebase SDK directly) ──
+    // ── Badge Management ──
+
+    async function badgeDbSet(path, value) {
+        var resp = await fetch(API_BASE + '/api/db', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ op: 'set', path: path, value: value })
+        });
+        if (!resp.ok) {
+            var text = '';
+            try { text = await resp.text(); } catch (e) {}
+            throw new Error('db set ' + resp.status + (text ? ': ' + text.slice(0, 100) : ''));
+        }
+    }
+
+    async function badgeDbRemove(path) {
+        var resp = await fetch(API_BASE + '/api/db', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ op: 'remove', path: path })
+        });
+        if (!resp.ok) {
+            var text = '';
+            try { text = await resp.text(); } catch (e) {}
+            throw new Error('db remove ' + resp.status + (text ? ': ' + text.slice(0, 100) : ''));
+        }
+    }
 
     async function loadBadgeList() {
         try {
-            var db = await ensureFirebase();
-            var snap = await db.ref('user_badges').once('value');
-            var badges = snap.val() || {};
-            if (typeof badges !== 'object') badges = {};
+            var resp = await fetch(API_BASE + '/api/db?path=user_badges');
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var data = await resp.json();
+            var badges = (data && data.data) ? data.data : {};
+            if (!badges || typeof badges !== 'object') badges = {};
             window.__USER_BADGES__ = badges;
             if (el.badgeList) {
                 var entries = Object.entries(badges);
@@ -635,8 +662,7 @@
         if (!badgeName) { setText(el.badgeTip, '请填写标识名称 (如 站主)'); return; }
         setText(el.badgeTip, '正在设置...');
         try {
-            var db = await ensureFirebase();
-            await db.ref('user_badges/' + userInput).set({ badge: badgeName, assignedAt: Date.now() });
+            await badgeDbSet('user_badges/' + userInput, { badge: badgeName, assignedAt: Date.now() });
             setText(el.badgeTip, '标识已设置');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
@@ -656,8 +682,7 @@
         if (!confirm('确定移除 ' + userInput + ' 的标识？')) return;
         setText(el.badgeTip, '正在移除...');
         try {
-            var db = await ensureFirebase();
-            await db.ref('user_badges/' + userInput).remove();
+            await badgeDbRemove('user_badges/' + userInput);
             setText(el.badgeTip, '标识已移除');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {

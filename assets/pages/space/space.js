@@ -77,19 +77,6 @@
     });
   }
 
-  function clearAllSkeletons() {
-    SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
-    SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
-    if (el.nickname) {
-      var s = el.nickname.querySelectorAll('.skeleton-text');
-      s.forEach(function (s2) { s2.remove(); });
-    }
-    if (el.handle) {
-      var s = el.handle.querySelectorAll('.skeleton-text');
-      s.forEach(function (s2) { s2.remove(); });
-    }
-  }
-
   function showSkeletonList(listEl) {
     if (!listEl) return;
     listEl.innerHTML = '';
@@ -606,7 +593,6 @@
   async function loadProfile() {
     var rawIdentifier = params.get('user') || '';
     if (!rawIdentifier) {
-      clearAllSkeletons();
       if (el.nickname) setText(el.nickname, '请输入用户后搜索');
       if (el.selfActions) el.selfActions.style.display = 'none';
       return;
@@ -615,7 +601,8 @@
     try {
       var result = await resolveUser(rawIdentifier);
       if (!result) {
-        clearAllSkeletons();
+        SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
+        SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
         setText(el.nickname, '未找到用户');
         return;
       }
@@ -683,7 +670,8 @@
       if (currentUid) await loadLikes(currentUid);
     } catch (error) {
       console.error('加载用户失败:', error);
-      clearAllSkeletons();
+      SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
+      SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
       setText(el.nickname, '加载失败');
     }
   }
@@ -790,13 +778,16 @@
     initTabs();
     bindEvents();
     void loadProfile();
-    // Safety net: force clear skeletons after 20s regardless
+    // Safety net: force clear skeletons after 25s
     setTimeout(function () {
-      clearAllSkeletons();
+      ['nickname', 'handle', 'loginType', 'registerAt', 'login', 'locationSummary', 'lastSeenSummary', 'recentPageSummary', 'location', 'lastSeen', 'recentPage'].forEach(function (key) {
+        var t = el[key];
+        if (t) { var s = t.querySelectorAll('.skeleton-text'); s.forEach(function (x) { x.remove(); }); }
+      });
       if (el.nickname && (!el.nickname.textContent || el.nickname.textContent === '' || el.nickname.textContent === '-')) {
-        setText(el.nickname, '加载超时，请刷新重试');
+        el.nickname.textContent = '加载超时，请刷新重试';
       }
-    }, 20000);
+    }, 25000);
   }
 
   if (document.readyState === 'loading') {
