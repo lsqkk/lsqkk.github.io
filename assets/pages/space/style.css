@@ -154,11 +154,35 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.25) 0%,
-    rgba(0,0,0,0.45) 100%
+    135deg,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0.55) 50%,
+    rgba(0,0,0,0.7) 100%
   );
   pointer-events: none;
+}
+
+/* Text colors when background image is present — switch to white for readability */
+.space-banner-bg.has-image ~ .space-banner-inner .space-nickname {
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+}
+.space-banner-bg.has-image ~ .space-banner-inner .space-handle,
+.space-banner-bg.has-image ~ .space-banner-inner .space-signature,
+.space-banner-bg.has-image ~ .space-banner-inner .space-meta-row,
+.space-banner-bg.has-image ~ .space-banner-inner .space-like-status {
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.4);
+}
+.space-banner-bg.has-image ~ .space-banner-inner .space-action-btn {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+}
+.space-banner-bg.has-image ~ .space-banner-inner .space-action-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
 }
 
 .space-banner-inner {
