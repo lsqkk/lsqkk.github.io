@@ -82,6 +82,8 @@ lsqkk.github.io/
   - `posts/posts.json`
   - `posts/rss.xml`
   - `public/json/posts.json`
+  - `public/assets/js/fa-icons.js`
+  - `public/assets/js/fa-icons.json`
   - `dist/json/site-pages.json`
 
 ### 3. 私有目录与敏感信息
