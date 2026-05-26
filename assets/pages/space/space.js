@@ -593,6 +593,8 @@
   async function loadProfile() {
     var rawIdentifier = params.get('user') || '';
     if (!rawIdentifier) {
+      SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
+      SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
       if (el.nickname) setText(el.nickname, '请输入用户后搜索');
       if (el.selfActions) el.selfActions.style.display = 'none';
       return;
@@ -784,6 +786,7 @@
         var t = el[key];
         if (t) { var s = t.querySelectorAll('.skeleton-text'); s.forEach(function (x) { x.remove(); }); }
       });
+      SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
       if (el.nickname && (!el.nickname.textContent || el.nickname.textContent === '' || el.nickname.textContent === '-')) {
         el.nickname.textContent = '加载超时，请刷新重试';
       }
