@@ -1,72 +1,72 @@
 body {
-    margin: 0;
-    min-height: 100vh;
-    background: url('/assets/img/bg.png') no-repeat center center fixed;
-    background-size: cover;
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text-main);
+  background: transparent;
 }
 
-/* 游戏内容区域 */
 .game-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    padding-top: 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 24px 60px;
 }
 
-/* 游戏分类标题 */
 .game-section-title {
-    color: white;
-    font-size: 24px;
-    margin: 30px 0 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-    opacity: 0;
-    transform: translateX(-12px);
-    animation: game-section-title-in 0.45s ease forwards;
+  color: var(--text-main);
+  font-size: 24px;
+  margin: 30px 0 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  opacity: 0;
+  transform: translateX(-12px);
+  animation: game-section-title-in 0.45s ease forwards;
 }
+
 .game-section-title:nth-child(1) { animation-delay: 0.1s; }
 .game-section-title:nth-child(2) { animation-delay: 0.2s; }
 .game-section-title:nth-child(3) { animation-delay: 0.3s; }
+
 @keyframes game-section-title-in {
-    to { opacity: 1; transform: translateX(0); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .game-section-title::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 100px;
-    height: 2px;
-    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-    transition: width 0.4s ease;
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.35s ease;
 }
 
 .game-section-title:hover::after {
-    width: 180px;
+  width: 180px;
 }
 
-/* 游戏列表 */
 .game-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
 }
 
-/* 游戏卡片 */
 .game-card {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    aspect-ratio: 1/1;
-    opacity: 0;
-    transform: translateY(18px) scale(0.97);
-    animation: game-card-in 0.45s ease forwards;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px var(--glass-shadow);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  aspect-ratio: 1/1;
+  opacity: 0;
+  transform: translateY(18px) scale(0.97);
+  animation: game-card-in 0.45s ease forwards;
+  background: var(--glass-bg-soft);
+  border: 1px solid var(--line);
 }
+
 .game-card:nth-child(1) { animation-delay: 0.04s; }
 .game-card:nth-child(2) { animation-delay: 0.08s; }
 .game-card:nth-child(3) { animation-delay: 0.12s; }
@@ -75,129 +75,180 @@ body {
 .game-card:nth-child(6) { animation-delay: 0.24s; }
 .game-card:nth-child(7) { animation-delay: 0.28s; }
 .game-card:nth-child(8) { animation-delay: 0.32s; }
+
 @keyframes game-card-in {
-    to { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .game-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 40px var(--glass-shadow-hover);
 }
 
 .game-card a {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-    color: white;
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: var(--text-inverse);
 }
 
 .game-card-bg {
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.5s ease;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+  background-color: var(--surface);
+}
+
+.game-card-bg.is-loaded {
+  background-color: transparent;
+}
+
+/* ── Image skeleton overlay ── */
+.game-card-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: game-img-shimmer 1.8s ease-in-out infinite;
+  z-index: 0;
+}
+
+.game-card-bg.is-loaded::before {
+  display: none;
+}
+
+@keyframes game-img-shimmer {
+  0% { background-position: 200% 0%; }
+  100% { background-position: -200% 0%; }
 }
 
 .game-card:hover .game-card-bg {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .game-card-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  z-index: 1;
 }
 
 .game-card-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .game-list {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-
-    .game-section-title {
-        font-size: 20px;
-        margin: 20px 0 10px;
-    }
-
-    .game-card-name {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .game-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .game-card, .game-section-title {
-        animation: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-    }
-    .game-card:hover { transform: none !important; }
-}
-
-/* ── Skeleton loading for games page ── */
+/* ── Skeleton loading ── */
 @keyframes game-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .game-skeleton {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
 
 .game-skeleton-title {
-    width: 200px;
-    height: 28px;
-    margin: 30px 0 15px;
-    border-radius: 6px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 75%);
-    background-size: 200% 100%;
-    animation: game-shimmer 1.8s ease-in-out infinite;
+  width: 200px;
+  height: 28px;
+  margin: 30px 0 15px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: game-shimmer 1.8s ease-in-out infinite;
 }
 
 .game-skeleton-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
 }
 
 .game-skeleton-card {
-    aspect-ratio: 1/1;
-    border-radius: 10px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%);
-    background-size: 200% 100%;
-    animation: game-shimmer 1.8s ease-in-out infinite;
+  aspect-ratio: 1/1;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: game-shimmer 1.8s ease-in-out infinite;
+  border: 1px solid var(--line);
 }
 
-body:not(.dark-mode) .game-skeleton-title {
-    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
-    background-size: 200% 100%;
+@media (max-width: 768px) {
+  .game-container {
+    padding: 100px 16px 40px;
+  }
+
+  .game-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .game-section-title {
+    font-size: 20px;
+    margin: 20px 0 10px;
+  }
+
+  .game-card-name {
+    font-size: 16px;
+  }
+
+  .game-card-overlay {
+    padding: 14px;
+  }
 }
 
-body:not(.dark-mode) .game-skeleton-card {
-    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
-    background-size: 200% 100%;
+@media (max-width: 480px) {
+  .game-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card,
+  .game-section-title {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .game-card:hover {
+    transform: none !important;
+  }
+  .game-skeleton-card,
+  .game-skeleton-title,
+  .game-card-bg::before {
+    animation: none;
+  }
+  .game-card-bg::before {
+    background: var(--surface);
+  }
+}
+
+body.reduce-motion .game-card,
+body.reduce-motion .game-section-title {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body.reduce-motion .game-card:hover {
+  transform: none !important;
 }
 
 body.reduce-motion .game-skeleton-card,
-body.reduce-motion .game-skeleton-title {
-    animation: none;
-    background: var(--surface);
+body.reduce-motion .game-skeleton-title,
+body.reduce-motion .game-card-bg::before {
+  animation: none;
+}
+
+body.reduce-motion .game-card-bg::before {
+  background: var(--surface);
 }

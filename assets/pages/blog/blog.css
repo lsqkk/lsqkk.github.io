@@ -1,11 +1,12 @@
 .container {
   width: 100%;
   max-width: 1200px;
-  margin-top: 40px;
+  margin: 0 auto;
+  padding: 110px 24px 60px;
 }
 
 .category-section {
-  margin-bottom: 60px;
+  margin-bottom: 50px;
 }
 
 .category-title {
@@ -193,8 +194,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 15px;
-    margin-top: 20px;
+    padding: 100px 16px 40px;
   }
 
   .functions-grid {
@@ -207,7 +207,7 @@
   }
 
   .function-card {
-    padding: 25px;
+    padding: 22px;
   }
 
   .repo-stats {
