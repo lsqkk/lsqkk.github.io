@@ -1227,6 +1227,7 @@ async function loadOnlinePreview() {
                 uid: item.uid || '',
                 nickname: item.nickname || '',
                 login: item.login || '',
+                loginType: item.loginType || '',
                 avatarUrl: item.avatarUrl || '',
                 province: item.province || '',
                 city: item.city || '',
@@ -1249,8 +1250,14 @@ async function loadOnlinePreview() {
         const avatar = item.avatarUrl
             ? `<img src="${item.avatarUrl}" alt="${name}" data-skeleton-img>`
             : `<span>${getOnlineInitial(name)}</span>`;
+        // Registered users link to their space, guests link to /a/online
+        const href = item.login
+            ? (window.CommentShared && typeof window.CommentShared.getUserSpaceUrl === 'function'
+                ? window.CommentShared.getUserSpaceUrl(item.login, item.loginType || '')
+                : `/space?user=${encodeURIComponent(item.loginType === 'local' ? 'qb_' + item.login : 'gh_' + item.login)}`)
+            : '/a/online';
         return `
-                        <a class="online-preview-card" href="/a/online">
+                        <a class="online-preview-card" href="${href}">
                             <div class="online-preview-avatar">${avatar}</div>
                             <div>
                                 <div class="online-preview-name">${name}</div>

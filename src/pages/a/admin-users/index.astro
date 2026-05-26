@@ -129,6 +129,24 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
             </div>
             <div class="admin-card-body" id="adminLoginFeed"></div>
           </div>
+          <div class="admin-card" id="admin-badge-panel">
+            <div class="admin-card-header">
+              <h3>用户标识管理</h3>
+              <span class="admin-card-hint">设置用户特殊标识（站主、VIP 等）</span>
+            </div>
+            <div class="admin-card-body" id="adminBadgeBody">
+              <div class="admin-badge-form">
+                <input type="text" id="badgeUserInput" placeholder="用户标识 (如 gh_lsqkk)" />
+                <input type="text" id="badgeNameInput" placeholder="标识名称 (如 站主)" />
+                <div class="admin-badge-actions">
+                  <button class="admin-btn" id="badgeSetBtn">设置标识</button>
+                  <button class="admin-btn ghost" id="badgeRemoveBtn">移除标识</button>
+                </div>
+                <div class="admin-badge-tip" id="badgeTip"></div>
+              </div>
+              <div class="admin-badge-list" id="badgeList"></div>
+            </div>
+          </div>
           <div class="admin-card" id="admin-activity-feed">
             <div class="admin-card-header">
               <h3>近期访问</h3>

@@ -60,7 +60,8 @@
       "Bash(echo \"nav.js: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/assets/js/nav.js\\)\")",
       "Bash(echo \"nav.css: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/assets/css/nav.css\\)\")",
       "Bash(echo \"Server: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/\\)\")",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(xargs grep -l -i \"space\\\\|user.*card\\\\|profile\\\\|user-card\\\\|userCard\")"
     ]
   }
 }

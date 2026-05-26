@@ -46,6 +46,29 @@ body {
 
 /* login-badge uses CSS variables from tokens.css — dark mode adapts automatically */
 
+/* ── User special badge (站主, etc.) ── */
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.7em;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+    margin-left: 4px;
+    margin-right: 2px;
+    vertical-align: middle;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .user-badge {
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+}
+
 .user-link {
     color: inherit;
     text-decoration: none;

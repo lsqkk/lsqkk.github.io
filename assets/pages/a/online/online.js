@@ -68,12 +68,34 @@
         `;
     }
 
+    function getBadgeHtml(login, loginType) {
+        var shared = window.CommentShared;
+        if (shared && typeof shared.renderBadge === 'function') {
+            var identifier = loginType === 'local' ? 'qb_' + login : 'gh_' + login;
+            return shared.renderBadge(identifier);
+        }
+        var badges = window.__USER_BADGES__ || {};
+        var key = loginType === 'local' ? 'qb_' + login : 'gh_' + login;
+        var data = badges[key];
+        if (data && data.badge) return '<span class="user-badge">' + data.badge + '</span>';
+        return '';
+    }
+
+    function getSpaceUrl(login, loginType) {
+        var shared = window.CommentShared;
+        if (shared && typeof shared.getUserSpaceUrl === 'function') {
+            return shared.getUserSpaceUrl(login, loginType);
+        }
+        var identifier = loginType === 'local' ? 'qb_' + login : 'gh_' + login;
+        return identifier ? '/space?user=' + encodeURIComponent(identifier) : '';
+    }
+
     function render() {
         if (!el.grid) return;
-        const keyword = (el.filter && el.filter.value || '').trim().toLowerCase();
-        const filtered = presenceItems.filter((item) => {
-            const text = `${item.nickname || ''} ${item.login || ''}`.toLowerCase();
-            return !keyword || text.includes(keyword);
+        var keyword = (el.filter && el.filter.value || '').trim().toLowerCase();
+        var filtered = presenceItems.filter(function (item) {
+            var text = (item.nickname || '') + ' ' + (item.login || '');
+            return !keyword || text.toLowerCase().includes(keyword);
         });
         setText(el.count, String(filtered.length));
         setText(el.updated, formatTime(Date.now()));
@@ -86,28 +108,37 @@
             return;
         }
 
-        el.grid.innerHTML = filtered.map((item, index) => {
-            const name = getDisplayName(item.nickname, item.login, item.uid);
-            const login = item.login ? `@${item.login}` : '';
-            const avatar = item.avatarUrl
-                ? `<img src="${item.avatarUrl}" alt="${name}">`
-                : `<span>${getInitial(name)}</span>`;
-            return `
-                <div class="online-card" data-index="${index}">
-                  <div class="online-avatar">${avatar}</div>
-                  <div>
-                    <div class="online-name">${name}</div>
-                    <div class="online-login">${login}</div>
-                  </div>
-                  <div class="online-page">${[item.province, item.city].filter(Boolean).join(' ') || (item.title || item.path || '')}</div>
-                </div>
-            `;
+        el.grid.innerHTML = filtered.map(function (item, index) {
+            var name = getDisplayName(item.nickname, item.login, item.uid);
+            var login = item.login ? '@' + item.login : '';
+            var badge = item.login ? getBadgeHtml(item.login, item.loginType || '') : '';
+            var avatar = item.avatarUrl
+                ? '<img src="' + item.avatarUrl + '" alt="' + name + '">'
+                : '<span>' + getInitial(name) + '</span>';
+            // Registered users go to their space, guests show detail
+            var isGuest = !item.login;
+            return '<div class="online-card" data-index="' + index + '" data-is-guest="' + isGuest + '">' +
+                '<div class="online-avatar">' + avatar + '</div>' +
+                '<div>' +
+                '<div class="online-name">' + name + badge + '</div>' +
+                '<div class="online-login">' + login + '</div>' +
+                '</div>' +
+                '<div class="online-page">' + ([item.province, item.city].filter(Boolean).join(' ') || (item.title || item.path || '')) + '</div>' +
+                '</div>';
         }).join('');
 
-        el.grid.querySelectorAll('.online-card').forEach((card) => {
-            card.addEventListener('click', () => {
-                const index = Number(card.getAttribute('data-index'));
-                const item = filtered[index];
+        el.grid.querySelectorAll('.online-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                var index = Number(card.getAttribute('data-index'));
+                var item = filtered[index];
+                if (!item) return;
+                var isGuest = card.getAttribute('data-is-guest') === 'true';
+                if (!isGuest && item.login) {
+                    // Registered user: go to their space page
+                    var url = getSpaceUrl(item.login, item.loginType || '');
+                    if (url) { window.location.href = url; return; }
+                }
+                // Guest or fallback: show detail
                 if (item) selectUser(item);
             });
         });
@@ -129,6 +160,7 @@
                     uid: item.uid || '',
                     nickname: item.nickname || '',
                     login: item.login || '',
+                    loginType: item.loginType || '',
                     avatarUrl: item.avatarUrl || '',
                     path: item.path || '',
                     title: item.title || '',

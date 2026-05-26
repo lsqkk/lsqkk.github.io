@@ -29,7 +29,13 @@
         usersBody: document.getElementById('adminUsersBody'),
         registeredBody: document.getElementById('adminRegisteredBody'),
         loginFeed: document.getElementById('adminLoginFeed'),
-        activityFeed: document.getElementById('adminActivityFeed')
+        activityFeed: document.getElementById('adminActivityFeed'),
+        badgeUserInput: document.getElementById('badgeUserInput'),
+        badgeNameInput: document.getElementById('badgeNameInput'),
+        badgeSetBtn: document.getElementById('badgeSetBtn'),
+        badgeRemoveBtn: document.getElementById('badgeRemoveBtn'),
+        badgeTip: document.getElementById('badgeTip'),
+        badgeList: document.getElementById('badgeList')
     };
 
     let firebaseReady = false;
@@ -262,6 +268,7 @@
         el.usersBody.innerHTML = filteredEntries.map((entry) => {
             const name = getDisplayName(entry.profile.nickname, entry.profile.login, entry.uid);
             const login = entry.profile.login ? `@${entry.profile.login}` : '';
+            const badge = entry.profile.login ? getBadgeHtml(entry.profile.login, entry.profile.loginType || '') : '';
             const avatarUrl = entry.profile.avatarUrl || '';
             const profileUrl = entry.profile.profileUrl || '';
             const presenceItem = entry.presenceItem || {};
@@ -305,7 +312,7 @@
 
             const header = `
                 <div class="admin-user-header">
-                  <div class="admin-user-name">${name}</div>
+                  <div class="admin-user-name">${name}${badge}</div>
                   <div class="admin-user-login">${login}</div>
                 </div>
             `;
@@ -353,40 +360,47 @@
         });
     }
 
+    function getBadgeHtml(login, loginType) {
+        var badges = window.__USER_BADGES__ || {};
+        var key = loginType === 'local' ? 'qb_' + login : 'gh_' + login;
+        var data = badges[key];
+        if (data && data.badge) return ' <span class="user-badge">' + data.badge + '</span>';
+        return '';
+    }
+
     function renderRegisteredUsers(entries) {
         if (!el.registeredBody) return;
-        const registered = entries.filter((entry) => isRegisteredEntry(entry));
+        var registered = entries.filter(function (entry) { return isRegisteredEntry(entry); });
         if (registered.length === 0) {
             el.registeredBody.innerHTML = '<div class="feed-secondary">暂无注册用户</div>';
             return;
         }
 
-        el.registeredBody.innerHTML = registered.map((entry) => {
-            const name = getDisplayName(entry.profile.nickname, entry.profile.login, entry.uid);
-            const login = entry.profile.login || '';
-            const loginType = entry.profile.loginType === 'local' ? '夸克账号' : 'GitHub';
-            const avatarUrl = entry.profile.avatarUrl || '';
-            const avatarHtml = avatarUrl
-                ? `<img src="${avatarUrl}" alt="${name}">`
-                : `<span>${getInitial(name)}</span>`;
-            const locationText = [entry.presenceItem?.province || entry.profile.province, entry.presenceItem?.city || entry.profile.city]
+        el.registeredBody.innerHTML = registered.map(function (entry) {
+            var name = getDisplayName(entry.profile.nickname, entry.profile.login, entry.uid);
+            var login = entry.profile.login || '';
+            var loginType = entry.profile.loginType === 'local' ? '夸克账号' : 'GitHub';
+            var avatarUrl = entry.profile.avatarUrl || '';
+            var avatarHtml = avatarUrl
+                ? '<img src="' + avatarUrl + '" alt="' + name + '">'
+                : '<span>' + getInitial(name) + '</span>';
+            var locationText = [entry.presenceItem?.province || entry.profile.province, entry.presenceItem?.city || entry.profile.city]
                 .filter(Boolean)
                 .join(' ');
+            var badgeHtml = entry.profile.login ? getBadgeHtml(entry.profile.login, entry.profile.loginType || '') : '';
 
-            return `
-                <div class="registered-user-item">
-                    <div class="admin-avatar registered-user-avatar">${avatarHtml}</div>
-                    <div class="registered-user-main">
-                        <div class="registered-user-name">${name}</div>
-                        <div class="registered-user-login">@${login}</div>
-                    </div>
-                    <div class="registered-user-meta">
-                        <span>${loginType}</span>
-                        <span>${locationText || '位置未知'}</span>
-                        <span>最近活跃 ${formatShortTime(entry.lastSeen)}</span>
-                    </div>
-                </div>
-            `;
+            return '<div class="registered-user-item">' +
+                '<div class="admin-avatar registered-user-avatar">' + avatarHtml + '</div>' +
+                '<div class="registered-user-main">' +
+                '<div class="registered-user-name">' + name + badgeHtml + '</div>' +
+                '<div class="registered-user-login">@' + login + '</div>' +
+                '</div>' +
+                '<div class="registered-user-meta">' +
+                '<span>' + loginType + '</span>' +
+                '<span>' + (locationText || '位置未知') + '</span>' +
+                '<span>最近活跃 ' + formatShortTime(entry.lastSeen) + '</span>' +
+                '</div>' +
+                '</div>';
         }).join('');
     }
 
@@ -556,8 +570,108 @@
         }
     }
 
+    // ── Badge Management ──
+
+    async function loadBadgeList() {
+        try {
+            var resp = await fetch(API_BASE + '/api/db?path=user_badges');
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var data = await resp.json();
+            var badges = (data && data.data) ? data.data : {};
+            window.__USER_BADGES__ = badges;
+            if (el.badgeList) {
+                var entries = Object.entries(badges);
+                if (entries.length === 0) {
+                    el.badgeList.innerHTML = '<div class="feed-secondary">暂无已设置的标识</div>';
+                    return;
+                }
+                el.badgeList.innerHTML = entries.map(function (pair) {
+                    var key = pair[0];
+                    var val = pair[1];
+                    return '<div class="badge-list-item">' +
+                        '<span class="badge-list-key">' + key + '</span>' +
+                        '<span class="user-badge">' + (val.badge || '') + '</span>' +
+                        '<button class="admin-btn ghost badge-edit-btn" data-badge-key="' + key + '" data-badge-name="' + (val.badge || '') + '">编辑</button>' +
+                        '</div>';
+                }).join('');
+                el.badgeList.querySelectorAll('.badge-edit-btn').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var key = btn.getAttribute('data-badge-key');
+                        var name = btn.getAttribute('data-badge-name');
+                        if (el.badgeUserInput instanceof HTMLInputElement) el.badgeUserInput.value = key;
+                        if (el.badgeNameInput instanceof HTMLInputElement) el.badgeNameInput.value = name;
+                        setText(el.badgeTip, '已填充，点击「设置标识」保存');
+                    });
+                });
+            }
+            return badges;
+        } catch (error) {
+            console.error('加载标识列表失败:', error);
+            if (el.badgeList) el.badgeList.innerHTML = '<div class="feed-secondary">加载失败</div>';
+            return {};
+        }
+    }
+
+    async function setBadge() {
+        var isAdmin = await verifyAdminSession();
+        if (!isAdmin) { setText(el.badgeTip, '需要管理员登录'); return; }
+        var userInput = el.badgeUserInput instanceof HTMLInputElement ? el.badgeUserInput.value.trim() : '';
+        var badgeName = el.badgeNameInput instanceof HTMLInputElement ? el.badgeNameInput.value.trim() : '';
+        if (!userInput || !badgeName) { setText(el.badgeTip, '请填写用户标识和标识名称'); return; }
+        setText(el.badgeTip, '正在设置...');
+        try {
+            var resp = await fetch(API_BASE + '/api/db', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    op: 'update',
+                    path: 'user_badges/' + userInput,
+                    value: { badge: badgeName, assignedAt: Date.now() }
+                })
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            setText(el.badgeTip, '标识已设置');
+            await loadBadgeList();
+            if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
+                void window.CommentShared.loadBadges();
+            }
+        } catch (error) {
+            console.error('设置标识失败:', error);
+            setText(el.badgeTip, '设置失败');
+        }
+    }
+
+    async function removeBadge() {
+        var isAdmin = await verifyAdminSession();
+        if (!isAdmin) { setText(el.badgeTip, '需要管理员登录'); return; }
+        var userInput = el.badgeUserInput instanceof HTMLInputElement ? el.badgeUserInput.value.trim() : '';
+        if (!userInput) { setText(el.badgeTip, '请填写用户标识'); return; }
+        if (!confirm('确定移除 ' + userInput + ' 的标识？')) return;
+        setText(el.badgeTip, '正在移除...');
+        try {
+            var resp = await fetch(API_BASE + '/api/db', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    op: 'update',
+                    path: 'user_badges/' + userInput,
+                    value: null
+                })
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            setText(el.badgeTip, '标识已移除');
+            await loadBadgeList();
+            if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
+                void window.CommentShared.loadBadges();
+            }
+        } catch (error) {
+            console.error('移除标识失败:', error);
+            setText(el.badgeTip, '移除失败');
+        }
+    }
+
     function startClock() {
-        const tick = () => {
+        var tick = function () {
             setText(el.nowTime, formatTime(Date.now()));
         };
         tick();
@@ -587,6 +701,9 @@
         if (el.exportRegisteredBtn) el.exportRegisteredBtn.addEventListener('click', () => exportRegisteredUsers());
         if (el.exportUsersBtn) el.exportUsersBtn.addEventListener('click', () => exportUsers());
         if (el.exportEventsBtn) el.exportEventsBtn.addEventListener('click', () => exportEvents());
+        // Badge management
+        if (el.badgeSetBtn) el.badgeSetBtn.addEventListener('click', () => { void setBadge(); });
+        if (el.badgeRemoveBtn) el.badgeRemoveBtn.addEventListener('click', () => { void removeBadge(); });
     }
 
     async function init() {
@@ -594,6 +711,10 @@
         bindEvents();
         await verifyAdminSession();
         await loadAllData();
+        await loadBadgeList();
+        if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
+            void window.CommentShared.loadBadges();
+        }
     }
 
     if (document.readyState === 'loading') {

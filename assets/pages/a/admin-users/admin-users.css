@@ -421,6 +421,93 @@ body.admin-users-body {
   background: rgba(110, 168, 255, 0.12);
 }
 
+/* ── User badge in admin panel ── */
+.admin-user-name .user-badge,
+.registered-user-name .user-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7em;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  margin-left: 4px;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+
+.badge-list-item .user-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+/* ── Badge management ── */
+.admin-badge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-badge-form input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 145, 185, 0.3);
+  background: rgba(15, 23, 42, 0.65);
+  color: var(--admin-text);
+}
+
+.admin-badge-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.admin-badge-tip {
+  color: var(--admin-muted);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.badge-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(18, 30, 50, 0.7);
+  border: 1px solid rgba(120, 145, 185, 0.15);
+  margin-bottom: 8px;
+}
+
+.badge-list-key {
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: var(--admin-muted);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge-edit-btn {
+  padding: 4px 12px !important;
+  font-size: 0.85rem !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .admin-badge-form input {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: var(--admin-text) !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .admin-login-panel,
   .admin-grid {

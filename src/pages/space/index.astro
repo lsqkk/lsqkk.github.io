@@ -31,184 +31,216 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
   <body class="space-body luxury-body">
     <LuxuryBackground />
     <div class="space-shell">
-      <header class="space-hero">
-        <div class="space-profile-head">
-          <div class="profile-avatar">
-            <img id="spaceAvatar" alt="avatar" />
-            <span id="spaceAvatarFallback">Q</span>
-          </div>
-          <div class="profile-info">
-            <div class="profile-name">
-              <span id="spaceNickname">-</span>
-              <span class="profile-handle" id="spaceHandle">@-</span>
-            </div>
-            <div class="profile-meta-row">
-              <span id="spaceLoginType">-</span>
-              <span id="spaceRegisterAt">注册时间：-</span>
-            </div>
-            <div class="profile-meta-row">
-              <span id="spaceLocation">IP 属地：-</span>
-              <span id="spaceLastSeen">最近在线：-</span>
-            </div>
-            <div class="profile-meta-row">
-              <span id="spaceRecentPage">最近浏览：-</span>
-            </div>
-            <div class="profile-actions" id="spaceSelfActions">
-              <a class="btn ghost" href="/a/account">账号中心</a>
-              <button class="btn ghost" id="spaceLogoutBtn">退出登录</button>
+
+      <!-- Profile Banner -->
+      <div class="space-banner">
+        <div class="space-banner-bg"></div>
+        <div class="space-banner-inner">
+          <div class="space-avatar-wrap">
+            <div class="space-avatar-img-wrap">
+              <img id="spaceAvatar" class="space-avatar-img skeleton-img" alt="avatar" />
+              <span id="spaceAvatarFallback" class="space-avatar-fallback">Q</span>
             </div>
           </div>
-          <div class="profile-like">
-            <button class="btn primary" id="spaceLikeBtn">
-              <i class="fa-solid fa-thumbs-up"></i> 点赞
-            </button>
-            <div class="profile-like-count">
+          <div class="space-banner-main">
+            <div class="space-name-row">
+              <h1 class="space-nickname" id="spaceNickname">
+                <span class="skeleton-text skeleton-line-sm">-</span>
+              </h1>
+              <span id="spaceBadge" class="space-badge-display"></span>
+              <span class="space-handle" id="spaceHandle">
+                <span class="skeleton-text skeleton-line-sm">@-</span>
+              </span>
+            </div>
+            <div class="space-meta-row" id="spaceLoginType">
+              <span class="skeleton-text skeleton-line-sm">-</span>
+            </div>
+            <div class="space-meta-row" id="spaceRegisterAt">
+              <span class="skeleton-text skeleton-line-sm">-</span>
+            </div>
+          </div>
+          <div class="space-banner-actions">
+            <button class="space-like-btn" id="spaceLikeBtn">
+              <i class="fa-solid fa-thumbs-up"></i>
               <span id="spaceLikeCount">0</span>
-              <span>赞</span>
+            </button>
+            <div class="space-like-status" id="spaceLikeStatus">点赞</div>
+            <div class="space-self-actions" id="spaceSelfActions">
+              <a class="space-action-btn" href="/a/account"><i class="fa-solid fa-user"></i> 账号中心</a>
+              <button class="space-action-btn" id="spaceLogoutBtn"><i class="fa-solid fa-sign-out-alt"></i> 退出</button>
             </div>
-            <div class="profile-like-status" id="spaceLikeStatus">今日可点赞 10 次</div>
           </div>
         </div>
-        <div class="space-search">
-          <input type="text" id="spaceSearchInput" placeholder="输入账号名或昵称" />
-          <button id="spaceSearchBtn" class="btn ghost">搜索用户</button>
+      </div>
+
+      <!-- Sub bar: tabs + search -->
+      <div class="space-subbar">
+        <nav class="space-tabs" id="spaceTabs">
+          <button class="space-tab is-active" data-tab="overview">概况</button>
+          <button class="space-tab" data-tab="activity">留言板</button>
+          <button class="space-tab" data-tab="dynamic">动态评论</button>
+          <button class="space-tab" data-tab="postComment">文章讨论</button>
+          <button class="space-tab" data-tab="oj">OJ 讨论</button>
+          <button class="space-tab" data-tab="recent">最近浏览</button>
+        </nav>
+        <div class="space-subbar-right">
+          <div class="space-search" id="spaceSearchWrap">
+            <i class="fa-solid fa-search space-search-icon"></i>
+            <input type="text" id="spaceSearchInput" placeholder="搜索用户..." />
+            <button id="spaceSearchBtn" class="space-search-btn">搜索</button>
+          </div>
         </div>
-      </header>
+      </div>
 
-      <main class="space-grid">
-        <section class="space-card space-card--summary">
-          <div class="card-header">
-            <h2>账号概览</h2>
-            <p id="spaceProfileStatus" class="skeleton skeleton-line-sm">等待加载</p>
-          </div>
-          <div class="summary-grid">
-            <div class="summary-item" data-privacy-key="showIdentifier">
-              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showIdentifier">
-                <i class="fa-solid fa-eye"></i><span>展示中</span>
-              </button>
-              <span>账号标识</span>
-              <strong id="spaceLogin">-</strong>
-            </div>
-            <div class="summary-item" data-privacy-key="showLocation">
-              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showLocation">
-                <i class="fa-solid fa-eye"></i><span>展示中</span>
-              </button>
-              <span>IP 属地</span>
-              <strong id="spaceLocationSummary">-</strong>
-            </div>
-            <div class="summary-item" data-privacy-key="showLastSeen">
-              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showLastSeen">
-                <i class="fa-solid fa-eye"></i><span>展示中</span>
-              </button>
-              <span>最近在线</span>
-              <strong id="spaceLastSeenSummary">-</strong>
-            </div>
-            <div class="summary-item" data-privacy-key="showRecentPage">
-              <button class="privacy-toggle summary-toggle" data-privacy-toggle="showRecentPage">
-                <i class="fa-solid fa-eye"></i><span>展示中</span>
-              </button>
-              <span>最近浏览</span>
-              <strong id="spaceRecentPageSummary">-</strong>
-            </div>
-          </div>
-        </section>
+      <!-- Tab content -->
+      <div class="space-content" id="spaceContent">
 
-        <section class="space-card" data-privacy-key="showActivity">
-          <div class="card-header">
-            <div>
-              <h2>留言板</h2>
-              <p>最近留言记录</p>
+        <!-- Overview tab (default) -->
+        <section class="space-tab-panel is-active" data-panel="overview">
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-chart-simple"></i> 数据概览</h2>
             </div>
-            <button class="privacy-toggle" data-privacy-toggle="showActivity">
-              <i class="fa-solid fa-eye"></i><span>展示中</span>
-            </button>
-          </div>
-          <div class="space-list skeleton-placeholder" id="spaceActivityList"></div>
-        </section>
-
-        <section class="space-card" data-privacy-key="showDynamic">
-          <div class="card-header">
-            <div>
-              <h2>动态评论</h2>
-              <p>来自动态页的最新评论</p>
-            </div>
-            <button class="privacy-toggle" data-privacy-toggle="showDynamic">
-              <i class="fa-solid fa-eye"></i><span>展示中</span>
-            </button>
-          </div>
-          <div class="space-list skeleton-placeholder" id="spaceDynamicList"></div>
-        </section>
-
-        <section class="space-card" data-privacy-key="showPostComments">
-          <div class="card-header">
-            <div>
-              <h2>文章段落讨论</h2>
-              <p>来自文章段落讨论的最新评论</p>
-            </div>
-            <button class="privacy-toggle" data-privacy-toggle="showPostComments">
-              <i class="fa-solid fa-eye"></i><span>展示中</span>
-            </button>
-          </div>
-          <div class="space-list skeleton-placeholder" id="spacePostCommentList"></div>
-        </section>
-
-        <section class="space-card" data-privacy-key="showOj">
-          <div class="card-header">
-            <div>
-              <h2>OJ 讨论</h2>
-              <p>最近回复记录</p>
-            </div>
-            <button class="privacy-toggle" data-privacy-toggle="showOj">
-              <i class="fa-solid fa-eye"></i><span>展示中</span>
-            </button>
-          </div>
-          <div class="space-list skeleton-placeholder" id="spaceOjList"></div>
-        </section>
-
-        <section class="space-card" data-privacy-key="showRecentBrowse">
-          <div class="card-header">
-            <div>
-              <h2>最近浏览</h2>
-              <p>最近访问的页面</p>
-            </div>
-            <button class="privacy-toggle" data-privacy-toggle="showRecentBrowse">
-              <i class="fa-solid fa-eye"></i><span>展示中</span>
-            </button>
-          </div>
-          <div class="space-list skeleton-placeholder" id="spaceRecentList"></div>
-        </section>
-
-        <section class="space-card">
-          <div class="card-header">
-            <h2>搜索结果</h2>
-            <p>匹配的用户列表</p>
-          </div>
-          <div class="space-list skeleton-placeholder" id="spaceSearchList"></div>
-        </section>
-
-        <section class="space-card">
-          <div class="card-header">
-            <h2>公开设置</h2>
-            <p>仅对你本人可见，用于控制展示内容。</p>
-          </div>
-          <div class="space-privacy-grid" id="spacePrivacyGrid">
-            <div class="space-privacy-item">
-              <i class="fa-solid fa-eye"></i>
-              <div>
-                <strong>资料与互动</strong>
-                <span>在各卡片右上角开关展示</span>
+            <div class="overview-grid">
+              <div class="overview-item" data-privacy-key="showIdentifier">
+                <span class="overview-label">账号标识</span>
+                <strong id="spaceLogin">
+                  <span class="skeleton-text skeleton-line-sm">-</span>
+                </strong>
+                <button class="privacy-badge" data-privacy-toggle="showIdentifier">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </div>
-            </div>
-            <div class="space-privacy-item">
-              <i class="fa-solid fa-shield"></i>
-              <div>
-                <strong>信息安全提示</strong>
-                <span>关闭展示后，访客将无法看到该模块。</span>
+              <div class="overview-item" data-privacy-key="showLocation">
+                <span class="overview-label">IP 属地</span>
+                <strong id="spaceLocationSummary">
+                  <span class="skeleton-text skeleton-line-sm">-</span>
+                </strong>
+                <button class="privacy-badge" data-privacy-toggle="showLocation">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+              <div class="overview-item" data-privacy-key="showLastSeen">
+                <span class="overview-label">最近在线</span>
+                <strong id="spaceLastSeenSummary">
+                  <span class="skeleton-text skeleton-line-sm">-</span>
+                </strong>
+                <button class="privacy-badge" data-privacy-toggle="showLastSeen">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+              <class class="overview-item" data-privacy-key="showRecentPage">
+                <span class="overview-label">最近浏览</span>
+                <strong id="spaceRecentPageSummary">
+                  <span class="skeleton-text skeleton-line-sm">-</span>
+                </strong>
+                <button class="privacy-badge" data-privacy-toggle="showRecentPage">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </div>
             </div>
           </div>
+
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-location-dot"></i> 详细位置</h2>
+            </div>
+            <div class="meta-detail-list">
+              <div class="meta-detail-item"><span>IP 属地</span><strong id="spaceLocation"><span class="skeleton-text skeleton-line-sm">-</span></strong></div>
+              <div class="meta-detail-item"><span>最近在线</span><strong id="spaceLastSeen"><span class="skeleton-text skeleton-line-sm">-</span></strong></div>
+              <div class="meta-detail-item"><span>最近浏览</span><strong id="spaceRecentPage"><span class="skeleton-text skeleton-line-sm">-</span></strong></div>
+            </div>
+          </div>
+
+          <!-- Search results (shown when searching) -->
+          <div class="space-card" id="spaceSearchCard" style="display:none;">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-users"></i> 搜索结果</h2>
+            </div>
+            <div class="space-list" id="spaceSearchList"></div>
+          </div>
         </section>
-      </main>
+
+        <!-- Activity tab -->
+        <section class="space-tab-panel" data-panel="activity">
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-comments"></i> 留言板</h2>
+              <span>最近留言记录</span>
+            </div>
+            <div class="space-list skeleton-placeholder" id="spaceActivityList"></div>
+          </div>
+        </section>
+
+        <!-- Dynamic comments tab -->
+        <section class="space-tab-panel" data-panel="dynamic">
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-message"></i> 动态评论</h2>
+              <span>来自动态页的最新评论</span>
+            </div>
+            <div class="space-list skeleton-placeholder" id="spaceDynamicList"></div>
+          </div>
+        </section>
+
+        <!-- Post comments tab -->
+        <section class="space-tab-panel" data-panel="postComment">
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-file-lines"></i> 文章段落讨论</h2>
+              <span>来自文章段落讨论的最新评论</span>
+            </div>
+            <div class="space-list skeleton-placeholder" id="spacePostCommentList"></div>
+          </div>
+        </section>
+
+        <!-- OJ discussions tab -->
+        <section class="space-tab-panel" data-panel="oj">
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-code"></i> OJ 讨论</h2>
+              <span>最近回复记录</span>
+            </div>
+            <div class="space-list skeleton-placeholder" id="spaceOjList"></div>
+          </div>
+        </section>
+
+        <!-- Recent browse tab -->
+        <section class="space-tab-panel" data-panel="recent">
+          <div class="space-card">
+            <div class="space-card-header">
+              <h2><i class="fa-solid fa-clock-rotate-left"></i> 最近浏览</h2>
+              <span>最近访问的页面</span>
+            </div>
+            <div class="space-list skeleton-placeholder" id="spaceRecentList"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Privacy settings (collapsible) -->
+      <details class="space-privacy-panel" id="spacePrivacyPanel">
+        <summary class="space-privacy-summary">
+          <i class="fa-solid fa-shield-halved"></i> 隐私设置
+          <span class="space-privacy-hint">仅你可见，控制各模块展示状态</span>
+        </summary>
+        <div class="space-privacy-grid" id="spacePrivacyGrid">
+          <div class="space-privacy-item">
+            <i class="fa-solid fa-eye"></i>
+            <div>
+              <strong>资料与互动</strong>
+              <span>在各卡片右上角开关展示</span>
+            </div>
+          </div>
+          <div class="space-privacy-item">
+            <i class="fa-solid fa-shield"></i>
+            <div>
+              <strong>信息安全提示</strong>
+              <span>关闭展示后，访客将无法看到该模块。</span>
+            </div>
+          </div>
+        </div>
+      </details>
+
     </div>
 
     <script is:inline src="/assets/pages/space/space.js"></script>

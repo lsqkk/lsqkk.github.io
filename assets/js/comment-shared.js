@@ -46,12 +46,56 @@
         return `/space?user=${encodeURIComponent(identifier)}`;
     }
 
+    function getBadgeKey(login, loginType) {
+        if (!login) return '';
+        return loginType === 'local' ? `qb_${login}` : `gh_${login}`;
+    }
+
+    const BADGE_API_BASE = '__API_BASE__';
+    let badgeCache = null;
+    let badgeLoading = false;
+    let badgeCallbacks = [];
+
+    async function loadBadges() {
+        if (badgeCache) return badgeCache;
+        if (badgeLoading) {
+            return new Promise((resolve) => { badgeCallbacks.push(resolve); });
+        }
+        badgeLoading = true;
+        try {
+            const resp = await fetch(`${BADGE_API_BASE}/api/db?path=user_badges`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            badgeCache = (data && data.data) ? data.data : {};
+            window.__USER_BADGES__ = badgeCache;
+        } catch (error) {
+            console.warn('加载用户标识失败:', error);
+            badgeCache = {};
+            window.__USER_BADGES__ = {};
+        }
+        badgeLoading = false;
+        badgeCallbacks.forEach((cb) => cb(badgeCache));
+        badgeCallbacks = [];
+        return badgeCache;
+    }
+
+    function renderBadge(identifier) {
+        if (!identifier || !badgeCache) return '';
+        const badgeData = badgeCache[identifier];
+        if (!badgeData || !badgeData.badge) return '';
+        const badgeText = String(badgeData.badge).trim();
+        if (!badgeText) return '';
+        return `<span class="user-badge">${escapeHtml(badgeText)}</span>`;
+    }
+
     function renderDisplayName(nickname, login, loginType, uid) {
         const base = escapeHtml(nickname || login || '访客');
         if (login) {
             const url = getUserSpaceUrl(login, loginType);
             const linked = url ? `<a class="user-link" href="${url}">${base}</a>` : base;
-            return `${linked}${renderLoginBadge(login, loginType)}`;
+            const badgeKey = getBadgeKey(login, loginType);
+            const badgeHtml = renderBadge(badgeKey);
+            return `${linked}${badgeHtml}${renderLoginBadge(login, loginType)}`;
         }
         return `${base}${renderGuestBadge(uid)}`;
     }
@@ -181,6 +225,13 @@
         }
     }
 
+    // Auto-load badges on init
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => { void loadBadges(); });
+    } else {
+        void loadBadges();
+    }
+
     window.CommentShared = {
         escapeHtml,
         getGuestUid,
@@ -192,6 +243,9 @@
         getAccountIdentifierFrom,
         getUserSpaceUrl,
         clearLoginStorage,
-        logout
+        logout,
+        loadBadges,
+        renderBadge,
+        getBadgeKey
     };
 })();
