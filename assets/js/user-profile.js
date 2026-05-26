@@ -58,6 +58,7 @@
         const githubUser = readGithubUser();
         const localUser = readLocalUser();
         const local = readLocalProfile();
+        const stored = readStoredProfile();
         const preferGithub = Boolean(githubUser && githubUser.login) && loginType !== 'local';
         const baseUser = preferGithub ? githubUser : (localUser || githubUser);
         const nickname = local.nickname || ((baseUser && baseUser.nickname) ? baseUser.nickname : '');
@@ -68,7 +69,9 @@
         const profileUrl = (preferGithub && githubUser && githubUser.profileUrl) ? githubUser.profileUrl : '';
         const updatedAt = local.updatedAt || 0;
         const resolvedType = preferGithub ? 'github' : (localUser ? 'local' : 'github');
-        return { nickname, login, loginType: resolvedType, avatarUrl, avatarType, avatarColor, profileUrl, updatedAt };
+        const signature = stored && typeof stored.signature === 'string' ? stored.signature : '';
+        const backgroundImage = stored && typeof stored.backgroundImage === 'string' ? stored.backgroundImage : '';
+        return { nickname, login, loginType: resolvedType, avatarUrl, avatarType, avatarColor, profileUrl, updatedAt, signature, backgroundImage };
     }
 
     function getUid() {
