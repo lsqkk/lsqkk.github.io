@@ -49,16 +49,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Cancel stale Pages deployments
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api repos/${{ github.repository }}/deployments \
-            --jq '.[] | select(.environment == "github-pages" and .state == "in_progress") | .id' \
-            | xargs -I {} gh api repos/${{ github.repository }}/deployments/{}/statuses \
-              -f state=inactive -f description="Superseded by newer deployment" \
-            || true
-
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
