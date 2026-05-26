@@ -11,7 +11,21 @@
     /** @type {Record<string, any>} */
     const el = {};
 
-    // ═══ Direct database write test (browser console: quarkTestWrite()) ═══
+    // ═══ Verify write after save (browser console: quarkVerifySave()) ═══
+    window.quarkVerifySave = async function () {
+        const uid = getUid();
+        console.log('[VERIFY] Reading Firebase profile for uid:', uid);
+        try {
+            const db = await ensureFirebase();
+            const snap = await db.ref('user_activity').child(uid).child('profile').once('value');
+            const result = snap.val() || {};
+            console.log('[VERIFY] Full profile:', result);
+            console.log('[VERIFY] Has signature?', 'signature' in result, 'value:', result.signature);
+            console.log('[VERIFY] Has backgroundImage?', 'backgroundImage' in result, 'value:', result.backgroundImage);
+        } catch (err) {
+            console.error('[VERIFY] Read failed:', err);
+        }
+    };
     window.quarkTestWrite = async function () {
         const uid = getUid();
         const ts = Date.now();
