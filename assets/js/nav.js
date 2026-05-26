@@ -216,16 +216,38 @@ const defaultNavConfig = {
 };
 
 // 固定定位下拉菜单：溢出 overflow:hidden 容器时使用 fixed 定位来避免被裁剪
+// 注意：backdrop-filter / transform / filter 会创建 fixed 定位的包含块，
+// 导致 position:fixed 相对于该元素而非视口，需要减去偏移量来补偿。
 function _positionFixedDropdown(triggerEl, menuEl) {
     if (!triggerEl || !menuEl) return;
     const rect = triggerEl.getBoundingClientRect();
     const menuWidth = menuEl.offsetWidth || 200;
-    let left = rect.left;
-    if (left + menuWidth > window.innerWidth - 12) {
-        left = Math.max(12, window.innerWidth - menuWidth - 12);
+
+    // 向上查找最近的 fixed 定位包含块（backdrop-filter / transform / filter）
+    let offX = 0, offY = 0;
+    let el = menuEl.parentElement;
+    while (el) {
+        const style = window.getComputedStyle(el);
+        if (
+            (style.transform !== 'none' && style.transform !== '') ||
+            (style.filter !== 'none' && style.filter !== '') ||
+            (style.backdropFilter !== 'none' && style.backdropFilter !== '')
+        ) {
+            const cb = el.getBoundingClientRect();
+            const pd = window.getComputedStyle(el);
+            offX = cb.left + (parseFloat(pd.paddingLeft) || 0);
+            offY = cb.top + (parseFloat(pd.paddingTop) || 0);
+            break;
+        }
+        el = el.parentElement;
+    }
+
+    let left = rect.left - offX;
+    if (left + menuWidth > window.innerWidth - offX - 12) {
+        left = Math.max(12 - offX, window.innerWidth - menuWidth - offX - 12);
     }
     menuEl.style.position = 'fixed';
-    menuEl.style.top = (rect.bottom + 10) + 'px';
+    menuEl.style.top = (rect.bottom - offY + 10) + 'px';
     menuEl.style.left = left + 'px';
 }
 function _resetFixedDropdown(menuEl) {

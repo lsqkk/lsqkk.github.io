@@ -83,7 +83,9 @@
       "WebFetch(domain:cdn.jsdelivr.net)",
       "Bash(npm pack *)",
       "Bash(cat node_modules/@fortawesome/fontawesome-free/svgs/solid/__TRACKED_VAR__.svg)",
-      "Bash(cat \"node_modules/@fortawesome/fontawesome-free/svgs/regular/calendar.svg\")"
+      "Bash(cat \"node_modules/@fortawesome/fontawesome-free/svgs/regular/calendar.svg\")",
+      "Bash(npm ls *)",
+      "Bash(NODE_PATH=/c/nvm4w/nodejs/node_modules node *)"
     ]
   }
 }
