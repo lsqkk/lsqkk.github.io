@@ -11,6 +11,32 @@
     /** @type {Record<string, any>} */
     const el = {};
 
+    // ═══ Direct database write test (browser console: quarkTestWrite()) ═══
+    window.quarkTestWrite = async function () {
+        const uid = getUid();
+        const ts = Date.now();
+        const testSig = '测试签名_' + ts;
+        const testBg = 'https://example.com/bg_' + ts + '.jpg';
+        console.log('[TEST] Writing to Firebase - uid:', uid);
+        console.log('[TEST] Writing signature:', testSig, 'bg:', testBg);
+        try {
+            const db = await ensureFirebase();
+            await db.ref('user_activity').child(uid).child('profile').update({
+                signature: testSig,
+                backgroundImage: testBg,
+                updatedAt: ts
+            });
+            console.log('[TEST] Write success! Now reading back...');
+            const snap = await db.ref('user_activity').child(uid).child('profile').once('value');
+            const result = snap.val() || {};
+            console.log('[TEST] Read back result:', result);
+            console.log('[TEST] signature field:', result.signature);
+            console.log('[TEST] backgroundImage field:', result.backgroundImage);
+        } catch (err) {
+            console.error('[TEST] Write/read failed:', err);
+        }
+    };
+
     function cacheElements() {
         el.nickname = document.getElementById('nicknameInput');
         el.githubLogin = document.getElementById('githubLogin');
