@@ -8,12 +8,6 @@
  * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
  * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
  * @typedef {{ip: string, province: string, city: string, district: string, latitude: number, longitude: number, distance: number | string}} VisitorInfo
-
-// SVG icon helper — reads from injected __FA_ICONS__
-function faIcon(name) {
-  var icons = window.__FA_ICONS__ || {};
-  return icons[name] || '';
-}
  * @typedef {{
  *   showPostNum?: number,
  *   showDynamicNum?: number,
@@ -38,6 +32,12 @@ function faIcon(name) {
  *   footerStats?: { postsTotal: number, dynamicTotal: number, toolsTotal: number, projectsTotal: number, gamesTotal: number }
  * }} HomePreloadedData
  */
+
+// SVG icon helper — reads from injected __FA_ICONS__
+function faIcon(name) {
+  var icons = window.__FA_ICONS__ || {};
+  return icons[name] || '';
+}
 
 /** @type {HomeConfig | null} */
 var config = null;
