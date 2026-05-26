@@ -501,6 +501,45 @@ body.admin-users-body {
   font-size: 0.85rem !important;
 }
 
+/* ── Admin feed scroll containers ── */
+.admin-card-body {
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+#adminLoginFeed,
+#adminActivityFeed {
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 768px) {
+  .admin-users-shell { padding: 100px 12px 40px; }
+  .admin-hero { flex-direction: column; align-items: flex-start; padding: 18px; }
+  .admin-title { font-size: 1.8rem; }
+  .admin-controls { grid-template-columns: 1fr; gap: 12px; }
+  .admin-login-panel { grid-template-columns: 1fr; }
+  .admin-summary { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .admin-grid { grid-template-columns: 1fr; }
+  .summary-card { padding: 12px; }
+  .summary-value { font-size: 1.4rem; }
+  .admin-card { padding: 14px; }
+  .admin-user { padding: 10px; }
+  .admin-user-meta { grid-template-columns: 1fr; }
+  .admin-badge-form input { font-size: 14px; }
+  .registered-user-item { grid-template-columns: 1fr; }
+  .registered-user-meta { grid-column: 1; }
+}
+
+@media (max-width: 480px) {
+  .admin-hero-actions { width: 100%; }
+  .admin-btn { width: 100%; text-align: center; }
+  .admin-summary { grid-template-columns: 1fr; }
+  .admin-control-group { padding: 10px 12px; }
+}
+
 @media (prefers-color-scheme: light) {
   .admin-badge-form input {
     background: rgba(255, 255, 255, 0.9) !important;

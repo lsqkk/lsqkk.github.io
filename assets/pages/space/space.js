@@ -77,6 +77,19 @@
     });
   }
 
+  function clearAllSkeletons() {
+    SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
+    SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
+    if (el.nickname) {
+      var s = el.nickname.querySelectorAll('.skeleton-text');
+      s.forEach(function (s2) { s2.remove(); });
+    }
+    if (el.handle) {
+      var s = el.handle.querySelectorAll('.skeleton-text');
+      s.forEach(function (s2) { s2.remove(); });
+    }
+  }
+
   function showSkeletonList(listEl) {
     if (!listEl) return;
     listEl.innerHTML = '';
@@ -179,10 +192,18 @@
         }
       });
     }
-    var resp = await fetch(API_BASE + '/api/db?' + urlParams.toString());
-    if (!resp.ok) throw new Error('DB ' + resp.status);
-    var data = await resp.json();
-    return data && data.data ? data.data : null;
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 15000);
+    try {
+      var resp = await fetch(API_BASE + '/api/db?' + urlParams.toString(), { signal: controller.signal });
+      clearTimeout(timer);
+      if (!resp.ok) throw new Error('DB ' + resp.status);
+      var data = await resp.json();
+      return data && data.data ? data.data : null;
+    } catch (error) {
+      clearTimeout(timer);
+      throw error;
+    }
   }
 
   async function postDb(op, path, value) {
@@ -601,8 +622,7 @@
     try {
       var result = await resolveUser(rawIdentifier);
       if (!result) {
-        SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
-        SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
+        clearAllSkeletons();
         setText(el.nickname, '未找到用户');
         return;
       }
@@ -670,8 +690,7 @@
       if (currentUid) await loadLikes(currentUid);
     } catch (error) {
       console.error('加载用户失败:', error);
-      SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
-      SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
+      clearAllSkeletons();
       setText(el.nickname, '加载失败');
     }
   }

@@ -265,7 +265,9 @@
             return;
         }
 
-        el.usersBody.innerHTML = filteredEntries.map((entry) => {
+        var maxShow = filteredEntries.length > 80 ? filteredEntries.length : 0;
+        var displayList = filteredEntries.slice(0, 80);
+        el.usersBody.innerHTML = displayList.map((entry) => {
             const name = getDisplayName(entry.profile.nickname, entry.profile.login, entry.uid);
             const login = entry.profile.login ? `@${entry.profile.login}` : '';
             const badge = entry.profile.login ? getBadgeHtml(entry.profile.login, entry.profile.loginType || '') : '';
@@ -331,7 +333,7 @@
                   </div>
                 </div>
             `;
-        }).join('');
+        }).join('') + (maxShow ? '<div class="feed-secondary" style="text-align:center;padding:8px;">仅显示前 80 条，共 ' + maxShow + ' 条</div>' : '');
     }
 
     function applyFilters(entries) {
@@ -406,66 +408,78 @@
 
     function renderLoginFeed(users) {
         if (!el.loginFeed) return;
-        const items = [];
-        Object.entries(users || {}).forEach(([uid, user]) => {
-            collectItems(user?.logins).forEach((login) => {
-                const fallbackName = getDisplayName(user?.profile?.nickname, user?.profile?.login, uid);
+        var items = [];
+        var entries = Object.entries(users || {});
+        for (var _i4 = 0; _i4 < entries.length && items.length < 120; _i4++) {
+            var entry = entries[_i4];
+            var uid = entry[0];
+            var user = entry[1];
+            var logins = collectItems(user?.logins);
+            for (var _j = 0; _j < logins.length && items.length < 120; _j++) {
+                var login = logins[_j];
+                var fallbackName = getDisplayName(user?.profile?.nickname, user?.profile?.login, uid);
                 items.push({
-                    uid,
+                    uid: uid,
                     ts: login.ts || 0,
                     nickname: login.nickname || user?.profile?.nickname || fallbackName,
                     login: login.login || user?.profile?.login || ''
                 });
-            });
-        });
-        items.sort((a, b) => b.ts - a.ts);
-        const display = items.slice(0, 20);
+            }
+        }
+        items.sort(function (a, b) { return b.ts - a.ts; });
+        var display = items.slice(0, 20);
         if (display.length === 0) {
             el.loginFeed.innerHTML = '<div class="feed-secondary">暂无登录记录</div>';
             return;
         }
-        el.loginFeed.innerHTML = display.map((item) => `
-            <div class="feed-item">
-              <div>
-                <div class="feed-primary">${item.nickname}${item.login ? ` · @${item.login}` : ''}</div>
-                <div class="feed-secondary">${item.uid}</div>
-              </div>
-              <div class="feed-secondary">${formatShortTime(item.ts)}</div>
-            </div>
-        `).join('');
+        el.loginFeed.innerHTML = display.map(function (item) {
+            return '<div class="feed-item">' +
+                '<div>' +
+                '<div class="feed-primary">' + item.nickname + (item.login ? ' · @' + item.login : '') + '</div>' +
+                '<div class="feed-secondary">' + item.uid + '</div>' +
+                '</div>' +
+                '<div class="feed-secondary">' + formatShortTime(item.ts) + '</div>' +
+                '</div>';
+        }).join('');
     }
 
     function renderActivityFeed(users) {
         if (!el.activityFeed) return;
-        const items = [];
-        Object.entries(users || {}).forEach(([uid, user]) => {
-            collectItems(user?.events).forEach((event) => {
-                const fallbackName = getDisplayName(user?.profile?.nickname, user?.profile?.login, uid);
+        var items = [];
+        var entries = Object.entries(users || {});
+        for (var _i5 = 0; _i5 < entries.length && items.length < 150; _i5++) {
+            var entry = entries[_i5];
+            var uid = entry[0];
+            var user = entry[1];
+            var events = collectItems(user?.events);
+            for (var _j2 = 0; _j2 < events.length && items.length < 150; _j2++) {
+                var event = events[_j2];
+                var fallbackName = getDisplayName(user?.profile?.nickname, user?.profile?.login, uid);
                 items.push({
-                    uid,
+                    uid: uid,
                     ts: event.ts || 0,
                     path: event.path || '/',
                     title: event.title || '',
                     nickname: event.nickname || user?.profile?.nickname || fallbackName,
                     login: event.login || user?.profile?.login || ''
                 });
-            });
-        });
-        items.sort((a, b) => b.ts - a.ts);
-        const display = items.slice(0, 30);
+            }
+        }
+        items.sort(function (a, b) { return b.ts - a.ts; });
+        var display = items.slice(0, 30);
         if (display.length === 0) {
             el.activityFeed.innerHTML = '<div class="feed-secondary">暂无访问记录</div>';
             return;
         }
-        el.activityFeed.innerHTML = display.map((item) => `
-            <div class="feed-item">
-              <div>
-                <div class="feed-primary">${item.nickname}${item.login ? ` · @${item.login}` : ''}</div>
-                <div class="feed-secondary">${item.title || item.path}</div>
-              </div>
-              <div class="feed-secondary">${formatShortTime(item.ts)}</div>
-            </div>
-        `).join('');
+        el.activityFeed.innerHTML = display.map(function (item) {
+            return '<div class="feed-item">' +
+                '<div>' +
+                '<div class="feed-primary">' + item.nickname + (item.login ? ' · @' + item.login : '') + '</div>' +
+                '<div class="feed-secondary">' + (item.title || item.path) + '</div>' +
+                '</div>' +
+                '<div class="feed-secondary">' + formatShortTime(item.ts) + '</div>' +
+                '</div>';
+        }).join('');
     }
 
     function exportUsers() {
@@ -572,12 +586,48 @@
 
     // ── Badge Management ──
 
+    function dbFetchWithTimeout(path, timeout) {
+        timeout = timeout || 15000;
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, timeout);
+        return fetch(API_BASE + '/api/db?path=' + encodeURIComponent(path), { signal: controller.signal })
+            .then(function (resp) {
+                clearTimeout(timer);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                return resp.json();
+            })
+            .catch(function (err) {
+                clearTimeout(timer);
+                throw err;
+            });
+    }
+
+    function dbPostWithTimeout(op, path, value, timeout) {
+        timeout = timeout || 15000;
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, timeout);
+        return fetch(API_BASE + '/api/db', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
+            body: JSON.stringify({ op: op, path: path, value: value })
+        })
+            .then(function (resp) {
+                clearTimeout(timer);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                return resp.json();
+            })
+            .catch(function (err) {
+                clearTimeout(timer);
+                throw err;
+            });
+    }
+
     async function loadBadgeList() {
         try {
-            var resp = await fetch(API_BASE + '/api/db?path=user_badges');
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            var data = await resp.json();
+            var data = await dbFetchWithTimeout('user_badges');
             var badges = (data && data.data) ? data.data : {};
+            if (!badges || typeof badges !== 'object') badges = {};
             window.__USER_BADGES__ = badges;
             if (el.badgeList) {
                 var entries = Object.entries(badges);
@@ -607,29 +657,21 @@
             return badges;
         } catch (error) {
             console.error('加载标识列表失败:', error);
-            if (el.badgeList) el.badgeList.innerHTML = '<div class="feed-secondary">加载失败</div>';
+            if (el.badgeList) el.badgeList.innerHTML = '<div class="feed-secondary">暂无标识数据，可直接创建</div>';
             return {};
         }
     }
 
     async function setBadge() {
-        var isAdmin = await verifyAdminSession();
-        if (!isAdmin) { setText(el.badgeTip, '需要管理员登录'); return; }
+        var isValid = await verifyAdminSession();
+        if (!isValid) { setText(el.badgeTip, '需要管理员登录'); return; }
         var userInput = el.badgeUserInput instanceof HTMLInputElement ? el.badgeUserInput.value.trim() : '';
         var badgeName = el.badgeNameInput instanceof HTMLInputElement ? el.badgeNameInput.value.trim() : '';
-        if (!userInput || !badgeName) { setText(el.badgeTip, '请填写用户标识和标识名称'); return; }
+        if (!userInput) { setText(el.badgeTip, '请填写用户标识 (如 gh_lsqkk)'); return; }
+        if (!badgeName) { setText(el.badgeTip, '请填写标识名称 (如 站主)'); return; }
         setText(el.badgeTip, '正在设置...');
         try {
-            var resp = await fetch(API_BASE + '/api/db', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    op: 'update',
-                    path: 'user_badges/' + userInput,
-                    value: { badge: badgeName, assignedAt: Date.now() }
-                })
-            });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            await dbPostWithTimeout('update', 'user_badges/' + userInput, { badge: badgeName, assignedAt: Date.now() });
             setText(el.badgeTip, '标识已设置');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
@@ -637,28 +679,19 @@
             }
         } catch (error) {
             console.error('设置标识失败:', error);
-            setText(el.badgeTip, '设置失败');
+            setText(el.badgeTip, '设置失败：' + (error.message || '网络错误'));
         }
     }
 
     async function removeBadge() {
-        var isAdmin = await verifyAdminSession();
-        if (!isAdmin) { setText(el.badgeTip, '需要管理员登录'); return; }
+        var isValid = await verifyAdminSession();
+        if (!isValid) { setText(el.badgeTip, '需要管理员登录'); return; }
         var userInput = el.badgeUserInput instanceof HTMLInputElement ? el.badgeUserInput.value.trim() : '';
         if (!userInput) { setText(el.badgeTip, '请填写用户标识'); return; }
         if (!confirm('确定移除 ' + userInput + ' 的标识？')) return;
         setText(el.badgeTip, '正在移除...');
         try {
-            var resp = await fetch(API_BASE + '/api/db', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    op: 'update',
-                    path: 'user_badges/' + userInput,
-                    value: null
-                })
-            });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            await dbPostWithTimeout('update', 'user_badges/' + userInput, null);
             setText(el.badgeTip, '标识已移除');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
@@ -666,7 +699,7 @@
             }
         } catch (error) {
             console.error('移除标识失败:', error);
-            setText(el.badgeTip, '移除失败');
+            setText(el.badgeTip, '移除失败：' + (error.message || '网络错误'));
         }
     }
 

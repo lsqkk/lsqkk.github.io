@@ -63,7 +63,10 @@
         }
         badgeLoading = true;
         try {
-            const resp = await fetch(`${BADGE_API_BASE}/api/db?path=user_badges`);
+            var controller = new AbortController();
+            var timer = setTimeout(function () { controller.abort(); }, 10000);
+            const resp = await fetch(`${BADGE_API_BASE}/api/db?path=user_badges`, { signal: controller.signal });
+            clearTimeout(timer);
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const data = await resp.json();
             badgeCache = (data && data.data) ? data.data : {};
