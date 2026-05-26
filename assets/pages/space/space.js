@@ -192,18 +192,10 @@
         }
       });
     }
-    var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 15000);
-    try {
-      var resp = await fetch(API_BASE + '/api/db?' + urlParams.toString(), { signal: controller.signal });
-      clearTimeout(timer);
-      if (!resp.ok) throw new Error('DB ' + resp.status);
-      var data = await resp.json();
-      return data && data.data ? data.data : null;
-    } catch (error) {
-      clearTimeout(timer);
-      throw error;
-    }
+    var resp = await fetch(API_BASE + '/api/db?' + urlParams.toString());
+    if (!resp.ok) throw new Error('DB ' + resp.status);
+    var data = await resp.json();
+    return data && data.data ? data.data : null;
   }
 
   async function postDb(op, path, value) {
@@ -798,6 +790,13 @@
     initTabs();
     bindEvents();
     void loadProfile();
+    // Safety net: force clear skeletons after 20s regardless
+    setTimeout(function () {
+      clearAllSkeletons();
+      if (el.nickname && (!el.nickname.textContent || el.nickname.textContent === '' || el.nickname.textContent === '-')) {
+        setText(el.nickname, '加载超时，请刷新重试');
+      }
+    }, 20000);
   }
 
   if (document.readyState === 'loading') {
