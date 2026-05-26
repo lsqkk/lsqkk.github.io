@@ -8,6 +8,12 @@
  * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
  * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
  * @typedef {{ip: string, province: string, city: string, district: string, latitude: number, longitude: number, distance: number | string}} VisitorInfo
+
+// SVG icon helper — reads from injected __FA_ICONS__
+function faIcon(name) {
+  var icons = window.__FA_ICONS__ || {};
+  return icons[name] || '';
+}
  * @typedef {{
  *   showPostNum?: number,
  *   showDynamicNum?: number,
@@ -203,8 +209,8 @@ async function loadRecentPosts() {
                             <div class="post-date">${post.date}</div>
                             <div class="post-tags">
                                 <span class="post-tag read-time">${post.wordCount || 0}字·${Math.ceil((post.wordCount || 0) / 400)}min</span>
-                                ${(post.columns || []).map(column => `<a class="post-tag post-tag-col tag-link" href="/posts/${encodeURIComponent(column)}"><i class="fa-solid fa-folder"></i>${column}</a>`).join('')}
-                                ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}"><i class="fa-solid fa-tag"></i>${tag}</a>`).join('')}
+                                ${(post.columns || []).map(column => `<a class="post-tag post-tag-col tag-link" href="/posts/${encodeURIComponent(column)}">${faIcon('folder')}${column}</a>`).join('')}
+                                ${(post.tags || ['未分类']).map(tag => `<a class="post-tag tag-link" href="/posts?tag=${encodeURIComponent(tag)}">${faIcon('tag')}${tag}</a>`).join('')}
                             </div>
                         </div>
                         ${post.cover ? `
@@ -954,7 +960,7 @@ function renderDynamicEntries(entries) {
         return `
         <article class="dynamic-card content-row" data-dynamic-id="${dynamicId}" data-dynamic-link="/blog/dt/${dynamicId}">
             <div class="dynamic-title">${entry.title}</div>
-            ${entry.date ? `<div class="dynamic-date"><i class="fa-regular fa-calendar"></i>${entry.date}</div>` : ''}
+            ${entry.date ? `<div class="dynamic-date">${faIcon('calendar')}${entry.date}</div>` : ''}
             <div class="dynamic-content">${htmlContent}</div>
             ${galleryHtml}
             <div class="dynamic-entry-footer">
@@ -1285,7 +1291,7 @@ async function loadGithubRepoCard() {
         <div class="github-promo-main">
             <div class="github-promo-head">
                 <a class="github-promo-title" href="${repoUrl}" target="_blank">
-                    <i class="fab fa-github"></i><span>lsqkk.github.io</span>
+                    ${faIcon('github')}<span>lsqkk.github.io</span>
                 </a>
             </div>
             <p class="github-promo-desc">夸克博客 | 基于原生技术栈的个人网站，分享笔记、工具、游戏、前端实验等。</p>
@@ -1307,7 +1313,7 @@ async function loadGithubRepoCard() {
             <div class="github-promo-main">
                 <div class="github-promo-head">
                     <a class="github-promo-title" href="${repo.html_url || repoUrl}" target="_blank">
-                        <i class="fab fa-github"></i><span>${repo.full_name || 'lsqkk/lsqkk.github.io'}</span>
+                        ${faIcon('github')}<span>${repo.full_name || 'lsqkk/lsqkk.github.io'}</span>
                     </a>
                     <span class="github-promo-branch">${repo.default_branch || 'main'}</span>
                 </div>

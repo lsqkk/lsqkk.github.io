@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "npm run gen:posts-json && npm run gen:rss && npm run sync:public",
+    "prebuild": "npm run gen:posts-json && npm run gen:rss && npm run sync:public && npm run gen:fa-icons",
+    "gen:fa-icons": "node scripts/extract-fa-icons.mjs",
     "build": "astro build",
     "postbuild": "node scripts/verify-dist.mjs",
     "preview": "astro preview",
@@ -15,6 +16,7 @@
     "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check assets/pages/blog/lyb/lyb.js"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^6.0.0",
     "astro": "^5.18.0",
     "lightningcss": "^1.32.0",
     "typescript": "^5.9.3"
