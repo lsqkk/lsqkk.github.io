@@ -32,62 +32,67 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <LuxuryBackground />
     <div class="space-shell">
 
-      <!-- Profile Banner -->
-      <div class="space-banner">
-        <div class="space-banner-bg"></div>
-        <div class="space-banner-inner">
-          <div class="space-avatar-wrap">
-            <div class="space-avatar-img-wrap">
-              <img id="spaceAvatar" class="space-avatar-img skeleton-img" alt="avatar" />
-              <span id="spaceAvatarFallback" class="space-avatar-fallback">Q</span>
+      <!-- Unified header card: banner + subbar -->
+      <div class="space-header-card">
+        <!-- Banner background -->
+        <div class="space-banner-bg" id="spaceBannerBg">
+          <img id="spaceBannerImg" class="space-banner-bg-img" alt="" />
+        </div>
+        <div class="space-banner">
+          <div class="space-banner-inner">
+            <div class="space-avatar-wrap">
+              <div class="space-avatar-img-wrap">
+                <img id="spaceAvatar" class="space-avatar-img skeleton-img" alt="avatar" />
+                <span id="spaceAvatarFallback" class="space-avatar-fallback">Q</span>
+              </div>
             </div>
-          </div>
-          <div class="space-banner-main">
-            <div class="space-name-row">
-              <h1 class="space-nickname" id="spaceNickname">
+            <div class="space-banner-main">
+              <div class="space-name-row">
+                <h1 class="space-nickname" id="spaceNickname">
+                  <span class="skeleton-text skeleton-line-sm">-</span>
+                </h1>
+                <span id="spaceBadge" class="space-badge-display"></span>
+                <span class="space-handle" id="spaceHandle">
+                  <span class="skeleton-text skeleton-line-sm">@-</span>
+                </span>
+              </div>
+              <!-- Signature (new) -->
+              <div class="space-signature" id="spaceSignature"></div>
+              <div class="space-meta-row" id="spaceLoginType">
                 <span class="skeleton-text skeleton-line-sm">-</span>
-              </h1>
-              <span id="spaceBadge" class="space-badge-display"></span>
-              <span class="space-handle" id="spaceHandle">
-                <span class="skeleton-text skeleton-line-sm">@-</span>
-              </span>
+              </div>
+              <div class="space-meta-row" id="spaceRegisterAt">
+                <span class="skeleton-text skeleton-line-sm">-</span>
+              </div>
             </div>
-            <div class="space-meta-row" id="spaceLoginType">
-              <span class="skeleton-text skeleton-line-sm">-</span>
-            </div>
-            <div class="space-meta-row" id="spaceRegisterAt">
-              <span class="skeleton-text skeleton-line-sm">-</span>
-            </div>
-          </div>
-          <div class="space-banner-actions">
-            <button class="space-like-btn" id="spaceLikeBtn">
-              <i class="fa-solid fa-thumbs-up"></i>
-              <span id="spaceLikeCount">0</span>
-            </button>
-            <div class="space-like-status" id="spaceLikeStatus">点赞</div>
-            <div class="space-self-actions" id="spaceSelfActions">
-              <a class="space-action-btn" href="/a/account"><i class="fa-solid fa-user"></i> 账号中心</a>
-              <button class="space-action-btn" id="spaceLogoutBtn"><i class="fa-solid fa-sign-out-alt"></i> 退出</button>
+            <div class="space-banner-actions">
+              <button class="space-like-btn" id="spaceLikeBtn">
+                <i class="fa-solid fa-thumbs-up"></i>
+                <span id="spaceLikeCount">0</span>
+              </button>
+              <div class="space-like-status" id="spaceLikeStatus">点赞</div>
+              <div class="space-self-actions" id="spaceSelfActions">
+                <a class="space-action-btn" href="/a/account"><i class="fa-solid fa-user"></i> 账号中心</a>
+                <button class="space-action-btn" id="spaceLogoutBtn"><i class="fa-solid fa-sign-out-alt"></i> 退出</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Sub bar: tabs + search -->
-      <div class="space-subbar">
-        <nav class="space-tabs" id="spaceTabs">
-          <button class="space-tab is-active" data-tab="overview">概况</button>
-          <button class="space-tab" data-tab="activity">留言板</button>
-          <button class="space-tab" data-tab="dynamic">动态评论</button>
-          <button class="space-tab" data-tab="postComment">文章讨论</button>
-          <button class="space-tab" data-tab="oj">OJ 讨论</button>
-          <button class="space-tab" data-tab="recent">最近浏览</button>
-        </nav>
-        <div class="space-subbar-right">
-          <div class="space-search" id="spaceSearchWrap">
-            <i class="fa-solid fa-search space-search-icon"></i>
-            <input type="text" id="spaceSearchInput" placeholder="搜索用户..." />
-            <button id="spaceSearchBtn" class="space-search-btn">搜索</button>
+        <!-- Sub bar: tabs + search -->
+        <div class="space-subbar">
+          <nav class="space-tabs" id="spaceTabs">
+            <button class="space-tab is-active" data-tab="overview">概况</button>
+            <button class="space-tab" data-tab="speech">站内发言</button>
+            <button class="space-tab" data-tab="stickies">随心贴</button>
+            <button class="space-tab" data-tab="recent">最近浏览</button>
+          </nav>
+          <div class="space-subbar-right">
+            <div class="space-search" id="spaceSearchWrap">
+              <i class="fa-solid fa-search space-search-icon"></i>
+              <input type="text" id="spaceSearchInput" placeholder="搜索用户..." />
+              <button id="spaceSearchBtn" class="space-search-btn">搜索</button>
+            </div>
           </div>
         </div>
       </div>
@@ -95,56 +100,51 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
       <!-- Tab content -->
       <div class="space-content" id="spaceContent">
 
-        <!-- Overview tab (default) -->
-        <section class="space-tab-panel is-active" data-panel="overview">
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-chart-simple"></i> 数据概览</h2>
+        <!-- ========== Overview tab ========== -->
+        <section class="space-panel is-active" data-panel="overview">
+          <div class="space-panel-header">
+            <h2><i class="fa-solid fa-chart-simple"></i> 数据概览</h2>
+          </div>
+          <div class="overview-grid">
+            <div class="overview-item" data-privacy-key="showIdentifier">
+              <span class="overview-label">账号标识</span>
+              <strong id="spaceLogin">
+                <span class="skeleton-text skeleton-line-sm">-</span>
+              </strong>
+              <button class="privacy-badge" data-privacy-toggle="showIdentifier">
+                <i class="fa-solid fa-eye"></i>
+              </button>
             </div>
-            <div class="overview-grid">
-              <div class="overview-item" data-privacy-key="showIdentifier">
-                <span class="overview-label">账号标识</span>
-                <strong id="spaceLogin">
-                  <span class="skeleton-text skeleton-line-sm">-</span>
-                </strong>
-                <button class="privacy-badge" data-privacy-toggle="showIdentifier">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-              </div>
-              <div class="overview-item" data-privacy-key="showLocation">
-                <span class="overview-label">IP 属地</span>
-                <strong id="spaceLocationSummary">
-                  <span class="skeleton-text skeleton-line-sm">-</span>
-                </strong>
-                <button class="privacy-badge" data-privacy-toggle="showLocation">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-              </div>
-              <div class="overview-item" data-privacy-key="showLastSeen">
-                <span class="overview-label">最近在线</span>
-                <strong id="spaceLastSeenSummary">
-                  <span class="skeleton-text skeleton-line-sm">-</span>
-                </strong>
-                <button class="privacy-badge" data-privacy-toggle="showLastSeen">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-              </div>
-              <div class="overview-item" data-privacy-key="showRecentPage">
-                <span class="overview-label">最近浏览</span>
-                <strong id="spaceRecentPageSummary">
-                  <span class="skeleton-text skeleton-line-sm">-</span>
-                </strong>
-                <button class="privacy-badge" data-privacy-toggle="showRecentPage">
-                  <i class="fa-solid fa-eye"></i>
-                </button>
-              </div>
+            <div class="overview-item" data-privacy-key="showLocation">
+              <span class="overview-label">IP 属地</span>
+              <strong id="spaceLocationSummary">
+                <span class="skeleton-text skeleton-line-sm">-</span>
+              </strong>
+              <button class="privacy-badge" data-privacy-toggle="showLocation">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+            <div class="overview-item" data-privacy-key="showLastSeen">
+              <span class="overview-label">最近在线</span>
+              <strong id="spaceLastSeenSummary">
+                <span class="skeleton-text skeleton-line-sm">-</span>
+              </strong>
+              <button class="privacy-badge" data-privacy-toggle="showLastSeen">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+            <div class="overview-item" data-privacy-key="showRecentPage">
+              <span class="overview-label">最近浏览</span>
+              <strong id="spaceRecentPageSummary">
+                <span class="skeleton-text skeleton-line-sm">-</span>
+              </strong>
+              <button class="privacy-badge" data-privacy-toggle="showRecentPage">
+                <i class="fa-solid fa-eye"></i>
+              </button>
             </div>
           </div>
 
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-location-dot"></i> 详细位置</h2>
-            </div>
+          <div style="margin-top:16px;">
             <div class="meta-detail-list">
               <div class="meta-detail-item"><span>IP 属地</span><strong id="spaceLocation"><span class="skeleton-text skeleton-line-sm">-</span></strong></div>
               <div class="meta-detail-item"><span>最近在线</span><strong id="spaceLastSeen"><span class="skeleton-text skeleton-line-sm">-</span></strong></div>
@@ -153,67 +153,71 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
           </div>
 
           <!-- Search results (shown when searching) -->
-          <div class="space-card" id="spaceSearchCard" style="display:none;">
-            <div class="space-card-header">
+          <div id="spaceSearchCard" style="display:none; margin-top:16px;">
+            <div class="space-panel-header" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
               <h2><i class="fa-solid fa-users"></i> 搜索结果</h2>
             </div>
-            <div class="space-list" id="spaceSearchList"></div>
+            <div class="space-divider-list" id="spaceSearchList"></div>
           </div>
         </section>
 
-        <!-- Activity tab -->
-        <section class="space-tab-panel" data-panel="activity">
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-comments"></i> 留言板</h2>
-              <span>最近留言记录</span>
+        <!-- ========== Speech tab (站内发言, merged) ========== -->
+        <section class="space-panel" data-panel="speech">
+          <div class="speech-subtabs" id="speechSubtabs">
+            <button class="speech-subtab is-active" data-speech="activity">留言板</button>
+            <button class="speech-subtab" data-speech="dynamic">动态评论</button>
+            <button class="speech-subtab" data-speech="postComment">文章讨论</button>
+            <button class="speech-subtab" data-speech="oj">OJ 讨论</button>
+          </div>
+          <div class="speech-content">
+            <div class="speech-panel is-active" data-speech-panel="activity">
+              <div class="space-divider-list skeleton-placeholder" id="spaceActivityList"></div>
             </div>
-            <div class="space-list skeleton-placeholder" id="spaceActivityList"></div>
+            <div class="speech-panel" data-speech-panel="dynamic">
+              <div class="space-divider-list skeleton-placeholder" id="spaceDynamicList"></div>
+            </div>
+            <div class="speech-panel" data-speech-panel="postComment">
+              <div class="space-divider-list skeleton-placeholder" id="spacePostCommentList"></div>
+            </div>
+            <div class="speech-panel" data-speech-panel="oj">
+              <div class="space-divider-list skeleton-placeholder" id="spaceOjList"></div>
+            </div>
           </div>
         </section>
 
-        <!-- Dynamic comments tab -->
-        <section class="space-tab-panel" data-panel="dynamic">
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-message"></i> 动态评论</h2>
-              <span>来自动态页的最新评论</span>
-            </div>
-            <div class="space-list skeleton-placeholder" id="spaceDynamicList"></div>
+        <!-- ========== Stickies tab (随心贴) ========== -->
+        <section class="space-panel" data-panel="stickies">
+          <div class="space-panel-header">
+            <h2><i class="fa-solid fa-note-sticky"></i> 随心贴</h2>
+            <span>来这里说点什么</span>
           </div>
+          <!-- Post form -->
+          <div class="stickies-form" id="stickiesForm" style="display:none;">
+            <div class="stickies-form-inner">
+              <textarea class="stickies-input" id="stickiesInput" placeholder="写一段话…" maxlength="200"></textarea>
+              <div class="stickies-form-footer">
+                <span class="stickies-count" id="stickiesCount">0 / 200</span>
+                <button class="stickies-submit" id="stickiesSubmit">发布</button>
+              </div>
+            </div>
+          </div>
+          <!-- Guest hint -->
+          <div class="stickies-form" id="stickiesGuestHint" style="display:none;">
+            <div class="stickies-form-inner" style="flex-direction:row;align-items:center;gap:10px;">
+              <i class="fa-solid fa-circle-info" style="color:var(--accent);font-size:15px;"></i>
+              <span style="font-size:13px;color:var(--text-subtle);">登录后可以在这里留言</span>
+            </div>
+          </div>
+          <div class="stickies-list skeleton-placeholder" id="stickiesList"></div>
         </section>
 
-        <!-- Post comments tab -->
-        <section class="space-tab-panel" data-panel="postComment">
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-file-lines"></i> 文章段落讨论</h2>
-              <span>来自文章段落讨论的最新评论</span>
-            </div>
-            <div class="space-list skeleton-placeholder" id="spacePostCommentList"></div>
+        <!-- ========== Recent tab ========== -->
+        <section class="space-panel" data-panel="recent">
+          <div class="space-panel-header">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> 最近浏览</h2>
+            <span>最近访问的页面</span>
           </div>
-        </section>
-
-        <!-- OJ discussions tab -->
-        <section class="space-tab-panel" data-panel="oj">
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-code"></i> OJ 讨论</h2>
-              <span>最近回复记录</span>
-            </div>
-            <div class="space-list skeleton-placeholder" id="spaceOjList"></div>
-          </div>
-        </section>
-
-        <!-- Recent browse tab -->
-        <section class="space-tab-panel" data-panel="recent">
-          <div class="space-card">
-            <div class="space-card-header">
-              <h2><i class="fa-solid fa-clock-rotate-left"></i> 最近浏览</h2>
-              <span>最近访问的页面</span>
-            </div>
-            <div class="space-list skeleton-placeholder" id="spaceRecentList"></div>
-          </div>
+          <div class="space-divider-list skeleton-placeholder" id="spaceRecentList"></div>
         </section>
       </div>
 

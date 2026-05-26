@@ -48,7 +48,8 @@ function isAllowedPath(path) {
     'user_space_likes',
     'xjtu360',
     'rooms',
-    'user_badges'
+    'user_badges',
+    'user_space_stickies'
   ];
   const clean = String(path || '').replace(/^\/+/, '');
   if (!clean) return false;

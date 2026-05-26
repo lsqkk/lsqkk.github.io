@@ -61,7 +61,29 @@
       "Bash(echo \"nav.css: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/assets/css/nav.css\\)\")",
       "Bash(echo \"Server: $\\(curl -s -o /dev/null -w '%{http_code}' http://localhost:4321/\\)\")",
       "Bash(echo \"exit: $?\")",
-      "Bash(xargs grep -l -i \"space\\\\|user.*card\\\\|profile\\\\|user-card\\\\|userCard\")"
+      "Bash(xargs grep -l -i \"space\\\\|user.*card\\\\|profile\\\\|user-card\\\\|userCard\")",
+      "Bash(gh auth *)",
+      "Bash(powershell.exe *)",
+      "Bash(git config *)",
+      "Bash(curl -s --connect-timeout 5 https://github.com)",
+      "Bash(xargs grep -l -i \"api\\\\|db\")",
+      "Bash(xargs grep -l \"db\\\\|user_badges\\\\|api\")",
+      "Bash(git show *)",
+      "Read(//tmp/**)",
+      "Bash(xargs grep -l \"db\\\\|firebase\\\\|api\")",
+      "WebFetch(domain:lsqkk.github.io)",
+      "Bash(echo \"svd:  $\\(curl -s http://localhost:4321/assets/pages/space/space.js)",
+      "Bash(ps -W)",
+      "Bash(netstat -ano)",
+      "Read(//proc/22728/**)",
+      "Bash(wmic process *)",
+      "Bash(npx playwright *)",
+      "Bash(npm init *)",
+      "Bash(npx -y playwright install chromium)",
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "Bash(npm pack *)",
+      "Bash(cat node_modules/@fortawesome/fontawesome-free/svgs/solid/__TRACKED_VAR__.svg)",
+      "Bash(cat \"node_modules/@fortawesome/fontawesome-free/svgs/regular/calendar.svg\")"
     ]
   }
 }

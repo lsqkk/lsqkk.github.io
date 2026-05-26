@@ -51,6 +51,14 @@
         el.accountLogout = document.getElementById('accountLogout');
         el.loginTypeLabel = document.getElementById('loginTypeLabel');
         el.emailBindSection = document.getElementById('emailBindSection');
+        el.signatureInput = document.getElementById('signatureInput');
+        el.signatureCount = document.getElementById('signatureCount');
+        el.bgFile = document.getElementById('bgFile');
+        el.bgUrl = document.getElementById('bgUrl');
+        el.bgPreviewImg = document.getElementById('bgPreviewImg');
+        el.bgPreviewPlaceholder = document.getElementById('bgPreviewPlaceholder');
+        el.bgPreviewWrap = document.getElementById('bgPreviewWrap');
+        el.bgClearBtn = document.getElementById('bgClearBtn');
     }
 
     let firebaseReady = false;
@@ -151,6 +159,26 @@
             el.avatarFallback.style.display = 'block';
         }
         setText(el.avatarState, clean ? '已设置头像' : '使用默认头像');
+    }
+
+    function updateSignatureCount() {
+        if (!el.signatureInput || !el.signatureCount) return;
+        const len = el.signatureInput.value.length;
+        el.signatureCount.textContent = len + ' / 100';
+    }
+
+    function updateBgPreview(url) {
+        if (!el.bgPreviewImg || !el.bgPreviewPlaceholder) return;
+        const clean = (url || '').trim();
+        if (clean) {
+            el.bgPreviewImg.src = clean;
+            el.bgPreviewImg.classList.add('loaded');
+            el.bgPreviewPlaceholder.style.display = 'none';
+        } else {
+            el.bgPreviewImg.removeAttribute('src');
+            el.bgPreviewImg.classList.remove('loaded');
+            el.bgPreviewPlaceholder.style.display = 'block';
+        }
     }
 
     function formatTime(ts) {
@@ -329,14 +357,14 @@
         return `${safeLogin}-${ts}-${rand}.png`;
     }
 
-    async function requestPresignedUpload(fileName, contentType) {
+    async function requestPresignedUpload(fileName, contentType, folder) {
         const resp = await fetch(`${API_BASE}/api/r2-presign`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 originalName: fileName,
                 contentType: contentType || 'application/octet-stream',
-                folder: 'avatar'
+                folder: folder || 'avatar'
             })
         });
 
@@ -384,6 +412,22 @@
 
     function applyCropper() {
         void uploadCroppedAvatar();
+    }
+
+    async function uploadBgImage(file) {
+        if (!file) return;
+        try {
+            setStatus('背景图上传中...');
+            const fileName = 'bg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + (file.name.split('.').pop() || 'png');
+            const presign = await requestPresignedUpload(fileName, file.type || 'image/png', 'background');
+            await uploadToR2(presign.uploadUrl, file, file.type || 'image/png');
+            if (el.bgUrl instanceof HTMLInputElement) el.bgUrl.value = presign.publicUrl;
+            updateBgPreview(presign.publicUrl);
+            setStatus('背景图已上传');
+        } catch (error) {
+            console.error('背景图上传失败:', error);
+            setStatus('背景图上传失败，请稍后重试');
+        }
     }
 
     function closeCropper() {
@@ -477,6 +521,27 @@
             el.loginHistoryToggle.addEventListener('click', () => {
                 const collapsed = el.loginHistoryBody.classList.toggle('is-collapsed');
                 el.loginHistoryToggle.textContent = collapsed ? '展开' : '收起';
+            });
+        }
+        if (el.signatureInput) {
+            el.signatureInput.addEventListener('input', updateSignatureCount);
+        }
+        if (el.bgUrl) {
+            el.bgUrl.addEventListener('input', () => {
+                updateBgPreview(el.bgUrl.value);
+            });
+        }
+        if (el.bgFile) {
+            el.bgFile.addEventListener('change', () => {
+                const file = el.bgFile.files ? el.bgFile.files[0] : null;
+                if (file) void uploadBgImage(file);
+                el.bgFile.value = '';
+            });
+        }
+        if (el.bgClearBtn) {
+            el.bgClearBtn.addEventListener('click', () => {
+                if (el.bgUrl) el.bgUrl.value = '';
+                updateBgPreview('');
             });
         }
     }
@@ -582,10 +647,18 @@
         }
     }
 
+    function applyBgToForm(profile) {
+        if (el.signatureInput) el.signatureInput.value = profile.signature || '';
+        if (el.bgUrl) el.bgUrl.value = profile.backgroundImage || '';
+        updateBgPreview(profile.backgroundImage || '');
+        updateSignatureCount();
+    }
+
     function applyProfileToForm(profile) {
         if (el.nickname instanceof HTMLInputElement) el.nickname.value = profile.nickname || '';
         if (el.avatarUrl instanceof HTMLInputElement) el.avatarUrl.value = profile.avatarUrl || '';
         updateAvatarPreview(profile.avatarUrl || '', profile.nickname || '');
+        applyBgToForm(profile);
     }
 
     async function loadRemoteProfile(force = false) {
@@ -847,6 +920,8 @@
             : (localStorage.getItem('quark_login_type') || '')) || '';
         const nickname = el.nickname instanceof HTMLInputElement ? el.nickname.value.trim() : '';
         const avatarUrl = el.avatarUrl instanceof HTMLInputElement ? el.avatarUrl.value.trim() : '';
+        const signature = el.signatureInput ? el.signatureInput.value.trim() : '';
+        const backgroundImage = el.bgUrl instanceof HTMLInputElement ? el.bgUrl.value.trim() : '';
         const profileUrl = user.html_url || '';
         const uid = getUid();
         const createdAt = cachedRemote && typeof cachedRemote.createdAt === 'number' ? cachedRemote.createdAt : Date.now();
@@ -859,9 +934,12 @@
             avatarUrl,
             avatarType: avatarUrl ? 'image' : 'color',
             avatarColor: '#2563eb',
+            signature,
+            backgroundImage,
             profileUrl,
             createdAt,
             updatedAt: Date.now()
+            // privacy is preserved from existing remote profile
         };
 
         if (el.localSyncToggle && el.localSyncToggle instanceof HTMLInputElement && el.localSyncToggle.checked) {
@@ -877,6 +955,8 @@
                 await db.ref('qb_users').child(String(login).toLowerCase()).update({
                     nickname: profile.nickname || '',
                     avatarUrl: profile.avatarUrl || '',
+                    signature: profile.signature || '',
+                    backgroundImage: profile.backgroundImage || '',
                     updatedAt: Date.now()
                 });
             }

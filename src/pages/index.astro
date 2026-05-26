@@ -47,7 +47,7 @@ const contact = homeConfig?.contact || homeConfig?.Contact || {};
 const contactItems = [
   {
     key: "email",
-    icon: "fas fa-envelope",
+    icon: "envelope",
     label: "邮箱",
     value: contact.email,
     href: contact.email ? `mailto:${contact.email}` : "",
@@ -55,7 +55,7 @@ const contactItems = [
   },
   {
     key: "phone",
-    icon: "fas fa-phone",
+    icon: "phone",
     label: "电话",
     value: contact.phone,
     href: contact.phone ? `tel:${contact.phone}` : "",
@@ -63,7 +63,7 @@ const contactItems = [
   },
   {
     key: "cv",
-    icon: "fas fa-file-lines",
+    icon: "file-lines",
     label: "简历",
     value: "查看 CV",
     href: contact.cv || "",
@@ -71,7 +71,7 @@ const contactItems = [
   },
   {
     key: "academic",
-    icon: "fas fa-graduation-cap",
+    icon: "graduation-cap",
     label: "学术主页",
     value: "Academic",
     href: contact.academic || "",
@@ -132,6 +132,21 @@ const homePreloaded = {
     gamesTotal,
   },
 };
+
+  // SVG icon helper — inline SVGs eliminate Font Awesome CDN dependency
+  const icon = (name) => {
+    const svgs = {
+      envelope: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline" fill="currentColor"><path d="M256 352c-16.53 0-33.06-5.422-47.16-16.41L0 173.2V400C0 426.5 21.49 448 48 448h416c26.51 0 48-21.49 48-48V173.2l-208.8 162.5C289.1 346.6 272.5 352 256 352zM16.29 145.3l212.2 165.1c16.19 12.6 38.87 12.6 55.06 0l212.2-165.1C505.1 137.3 512 125 512 112C512 85.49 490.5 64 464 64h-416C21.49 64 0 85.49 0 112C0 125 6.01 137.3 16.29 145.3z"/></svg>',
+      phone: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline" fill="currentColor"><path d="M511.2 387l-23.25 100.8c-3.266 14.25-15.79 24.22-30.46 24.22C205.2 512 0 306.8 0 54.5c0-14.66 9.969-27.2 24.22-30.45l100.8-23.25C139.7-2.602 154.7 5.018 160.8 18.92l46.52 108.5c5.438 12.78 1.77 27.67-8.98 36.45L144.5 207.1c33.98 69.22 90.26 125.5 159.5 159.5l44.08-53.8c8.688-10.78 23.69-14.51 36.47-8.975l108.5 46.51C506.1 357.2 514.6 372.4 511.2 387z"/></svg>',
+      "file-lines": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="svg-inline" fill="currentColor"><path d="M256 0v128h128L256 0zM224 128L224 0H48C21.49 0 0 21.49 0 48v416C0 490.5 21.49 512 48 512h288c26.51 0 48-21.49 48-48V160h-127.1C238.3 160 224 145.7 224 128zM272 416h-160C103.2 416 96 408.8 96 400C96 391.2 103.2 384 112 384h160c8.836 0 16 7.162 16 16C288 408.8 280.8 416 272 416zM272 352h-160C103.2 352 96 344.8 96 336C96 327.2 103.2 320 112 320h160c8.836 0 16 7.162 16 16C288 344.8 280.8 352 272 352zM288 272C288 280.8 280.8 288 272 288h-160C103.2 288 96 280.8 96 272C96 263.2 103.2 256 112 256h160C280.8 256 288 263.2 288 272z"/></svg>',
+      "graduation-cap": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="svg-inline" fill="currentColor"><path d="M623.1 136.9l-282.7-101.2c-13.73-4.91-28.7-4.91-42.43 0L16.05 136.9C6.438 140.4 0 149.6 0 160s6.438 19.65 16.05 23.09L76.07 204.6c-11.89 15.8-20.26 34.16-24.55 53.95C40.05 263.4 32 274.8 32 288c0 9.953 4.814 18.49 11.94 24.36l-24.83 149C17.48 471.1 25 480 34.89 480H93.11c9.887 0 17.41-8.879 15.78-18.63l-24.83-149C91.19 306.5 96 297.1 96 288c0-10.29-5.174-19.03-12.72-24.89c4.252-17.76 12.88-33.82 24.94-47.03l190.6 68.23c13.73 4.91 28.7 4.91 42.43 0l282.7-101.2C633.6 179.6 640 170.4 640 160S633.6 140.4 623.1 136.9zM351.1 314.4C341.7 318.1 330.9 320 320 320c-10.92 0-21.69-1.867-32-5.555L142.8 262.5L128 405.3C128 446.6 213.1 480 320 480c105.1 0 192-33.4 192-74.67l-14.78-142.9L351.1 314.4z"/></svg>',
+      rss: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline" fill="currentColor"><path d="M25.57 176.1C12.41 175.4 .9117 185.2 .0523 198.4s9.173 24.65 22.39 25.5c120.1 7.875 225.7 112.7 233.6 233.6C256.9 470.3 267.4 480 279.1 480c.5313 0 1.062-.0313 1.594-.0625c13.22-.8438 23.25-12.28 22.39-25.5C294.6 310.3 169.7 185.4 25.57 176.1zM32 32C14.33 32 0 46.31 0 64s14.33 32 32 32c194.1 0 352 157.9 352 352c0 17.69 14.33 32 32 32s32-14.31 32-32C448 218.6 261.4 32 32 32zM63.1 351.9C28.63 351.9 0 380.6 0 416s28.63 64 63.1 64s64.08-28.62 64.08-64S99.37 351.9 63.1 351.9z"/></svg>',
+      folder: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline" fill="currentColor"><path d="M464 96h-192l-64-64h-160C21.5 32 0 53.5 0 80V160h512V144C512 117.5 490.5 96 464 96zM0 432C0 458.5 21.5 480 48 480h416c26.5 0 48-21.5 48-48V192H0V432z"/></svg>',
+      tag: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline" fill="currentColor"><path d="M48 32H197.5C214.5 32 230.7 38.74 242.7 50.75L418.7 226.7C443.7 251.7 443.7 292.3 418.7 317.3L285.3 450.7C260.3 475.7 219.7 475.7 194.7 450.7L18.75 274.7C6.743 262.7 0 246.5 0 229.5V80C0 53.49 21.49 32 48 32L48 32zM112 176C129.7 176 144 161.7 144 144C144 126.3 129.7 112 112 112C94.33 112 80 126.3 80 144C80 161.7 94.33 176 112 176z"/></svg>',
+      calendar: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline" fill="currentColor"><path d="M152 64H296V24C296 10.75 306.7 0 320 0C333.3 0 344 10.75 344 24V64H384C419.3 64 448 92.65 448 128V448C448 483.3 419.3 512 384 512H64C28.65 512 0 483.3 0 448V128C0 92.65 28.65 64 64 64H104V24C104 10.75 114.7 0 128 0C141.3 0 152 10.75 152 24V64zM48 448C48 456.8 55.16 464 64 464H384C392.8 464 400 456.8 400 448V192H48V448z"/></svg>',
+    };
+    return svgs[name] || "";
+  };
 ---
 
 <!DOCTYPE html>
@@ -158,8 +173,6 @@ const homePreloaded = {
     <script is:inline src="/assets/js/cursor-trail.js"></script>
     <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <script is:inline src="/assets/js/dynamic-gallery.js"></script>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'" />
     <meta name="referrer" content="never" />
   </head>
 
@@ -202,7 +215,7 @@ const homePreloaded = {
                     <div class="contact-chips" id="contact-chips">
                       {contactItems.map((item) => (
                         <a class="contact-chip" href={escapeHtml(item.href)} target={item.target || undefined}>
-                          <span class="contact-icon"><i class={item.icon}></i></span>
+                          <span class="contact-icon"><Fragment set:html={icon(item.icon)} /></span>
                           <span class="contact-text">
                             <span class="contact-label">{escapeHtml(item.label)}</span>
                             <span class="contact-value">{escapeHtml(item.value)}</span>
@@ -231,7 +244,7 @@ const homePreloaded = {
                   <a href="/posts">文章 Articles</a>
                 </h2>
                 <a href="/posts/rss.xml" class="rss-link" aria-label="RSS订阅">
-                  <i class="fa-solid fa-rss rss-icon"></i>
+                  <Fragment set:html={icon("rss")} />
                 </a>
               </div>
               <div id="recent-posts" class="content-list recent-posts" data-preloaded="true">
@@ -246,12 +259,12 @@ const homePreloaded = {
                         </span>
                         {(post.columns || []).map((column: string) => (
                           <a class="post-tag post-tag-col tag-link" href={`/posts/${encodeURIComponent(column)}`}>
-                            <i class="fa-solid fa-folder"></i>{column}
+                            <Fragment set:html={icon("folder")} />{column}
                           </a>
                         ))}
                         {(post.tags || ["未分类"]).map((tag: string) => (
                           <a class="post-tag tag-link" href={`/posts?tag=${encodeURIComponent(tag)}`}>
-                            <i class="fa-solid fa-tag"></i>{tag}
+                            <Fragment set:html={icon("tag")} />{tag}
                           </a>
                         ))}
                       </div>
@@ -283,7 +296,7 @@ const homePreloaded = {
                       <div class="dynamic-title">{escapeHtml(entry.title)}</div>
                       {entry.date && (
                         <div class="dynamic-date">
-                          <i class="fa-regular fa-calendar"></i>{escapeHtml(entry.date)}
+                          <Fragment set:html={icon("calendar")} />{escapeHtml(entry.date)}
                         </div>
                       )}
                       <div

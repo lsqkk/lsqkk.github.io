@@ -91,6 +91,30 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
                 <label for="nicknameInput">昵称</label>
                 <input type="text" id="nicknameInput" placeholder="输入昵称" />
               </div>
+              <div class="field">
+                <label for="signatureInput">个性签名</label>
+                <textarea class="signature-textarea" id="signatureInput" placeholder="写一句个性签名…" maxlength="100"></textarea>
+                <div class="signature-count" id="signatureCount">0 / 100</div>
+                <div class="helper">显示在个人主页昵称下方。</div>
+              </div>
+              <div class="field">
+                <label>主页背景图</label>
+                <div class="bg-preview-wrap" id="bgPreviewWrap">
+                  <img id="bgPreviewImg" class="bg-preview-img" alt="background" />
+                  <span class="bg-preview-placeholder" id="bgPreviewPlaceholder">未设置背景图</span>
+                </div>
+                <div class="bg-actions">
+                  <label class="btn ghost">
+                    上传背景图
+                    <input type="file" id="bgFile" class="file-input" accept="image/*" />
+                  </label>
+                  <button class="btn ghost" id="bgClearBtn">清除背景</button>
+                </div>
+                <div class="field" style="margin-top:8px;">
+                  <input type="url" id="bgUrl" placeholder="或粘贴背景图链接 https://..." />
+                  <div class="helper">建议横图，会覆盖在个人主页横幅区域。</div>
+                </div>
+              </div>
               <div class="email-bind-section" id="emailBindSection">
                 <div class="field">
                   <label for="bindEmail">绑定邮箱</label>

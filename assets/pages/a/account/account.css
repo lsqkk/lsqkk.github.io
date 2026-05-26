@@ -340,6 +340,74 @@
   color: rgba(15, 23, 42, 0.6);
 }
 
+/* ── Signature field ── */
+.signature-textarea {
+  border: 1px solid var(--line);
+  background: var(--glass-bg-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 120px;
+  font-family: inherit;
+  color: var(--text-main);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.signature-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+  background: var(--glass-bg);
+}
+
+.signature-textarea::placeholder {
+  color: var(--text-soft);
+}
+
+.signature-count {
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-top: 4px;
+}
+
+/* ── Background image field ── */
+.bg-preview-wrap {
+  width: 100%;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--glass-bg-soft);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.bg-preview-img.loaded {
+  display: block;
+}
+
+.bg-preview-placeholder {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.bg-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .cropper-modal {
   position: fixed;
   inset: 0;

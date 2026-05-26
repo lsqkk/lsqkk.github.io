@@ -5,6 +5,7 @@
 
   const API_BASE = '__API_BASE__';
   const LIKE_DAILY_LIMIT = 10;
+  const STICKY_MAX_LENGTH = 200;
 
   const el = {
     list: document.getElementById('spaceSearchList'),
@@ -36,7 +37,19 @@
     likeStatus: document.getElementById('spaceLikeStatus'),
     badgeDisplay: document.getElementById('spaceBadge'),
     tabs: document.querySelectorAll('.space-tab'),
-    panels: document.querySelectorAll('.space-tab-panel')
+    panels: document.querySelectorAll('.space-panel[data-panel]'),
+    // New elements
+    speechTabs: document.querySelectorAll('.speech-subtab'),
+    speechPanels: document.querySelectorAll('.speech-panel[data-speech-panel]'),
+    signature: document.getElementById('spaceSignature'),
+    bannerBg: document.getElementById('spaceBannerBg'),
+    bannerImg: document.getElementById('spaceBannerImg'),
+    stickiesForm: document.getElementById('stickiesForm'),
+    stickiesInput: document.getElementById('stickiesInput'),
+    stickiesSubmit: document.getElementById('stickiesSubmit'),
+    stickiesList: document.getElementById('stickiesList'),
+    stickiesCount: document.getElementById('stickiesCount'),
+    stickiesGuestHint: document.getElementById('stickiesGuestHint')
   };
 
   const SKELETON_LISTS = ['activity', 'dynamic', 'postComment', 'oj', 'recentList'];
@@ -53,7 +66,7 @@
   let isSelfUser = false;
   let likeState = { total: 0, todayCount: 0 };
 
-  // ── Tab switching ──
+  // ── Primary tab switching ──
   function initTabs() {
     el.tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
@@ -66,12 +79,25 @@
     });
   }
 
+  // ── Speech sub-tab switching ──
+  function initSpeechTabs() {
+    el.speechTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        el.speechTabs.forEach(function (t) { t.classList.remove('is-active'); });
+        tab.classList.add('is-active');
+        el.speechPanels.forEach(function (p) { p.classList.remove('is-active'); });
+        var panel = document.querySelector('[data-speech-panel="' + tab.dataset.speech + '"]');
+        if (panel) panel.classList.add('is-active');
+      });
+    });
+  }
+
   // ── Skeleton helpers ──
   function removeSkeletonText(targets) {
     if (!targets) return;
-    (Array.isArray(targets) ? targets : [targets]).forEach(function (el) {
-      if (el) {
-        var skeletons = el.querySelectorAll('.skeleton-text');
+    (Array.isArray(targets) ? targets : [targets]).forEach(function (target) {
+      if (target) {
+        var skeletons = target.querySelectorAll('.skeleton-text');
         skeletons.forEach(function (s) { s.remove(); });
       }
     });
@@ -100,6 +126,10 @@
       return shared.escapeHtml(text);
     }
     return String(text ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function escapeAttr(text) {
+    return String(text ?? '').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function formatDate(ts) {
@@ -155,6 +185,37 @@
       var letter = name ? name.slice(0, 1).toUpperCase() : 'Q';
       el.avatarFallback.textContent = letter;
       el.avatarFallback.style.display = url ? 'none' : 'flex';
+    }
+  }
+
+  function setBannerBackground(url) {
+    if (!el.bannerBg || !el.bannerImg) return;
+    if (url) {
+      el.bannerImg.src = url;
+      el.bannerImg.classList.remove('loaded');
+      el.bannerBg.classList.add('has-image');
+      el.bannerImg.addEventListener('load', function () {
+        el.bannerImg.classList.add('loaded');
+      }, { once: true });
+      el.bannerImg.addEventListener('error', function () {
+        el.bannerBg.classList.remove('has-image');
+        el.bannerImg.style.display = 'none';
+      }, { once: true });
+    } else {
+      el.bannerBg.classList.remove('has-image');
+      el.bannerImg.classList.remove('loaded');
+      el.bannerImg.removeAttribute('src');
+    }
+  }
+
+  function setSignature(text) {
+    if (!el.signature) return;
+    if (text && String(text).trim()) {
+      el.signature.textContent = String(text).trim();
+      el.signature.removeAttribute('data-empty');
+    } else {
+      el.signature.textContent = '';
+      el.signature.setAttribute('data-empty', 'true');
     }
   }
 
@@ -233,6 +294,18 @@
     return identifier === getAccountIdentifier(login, loginType);
   }
 
+  function getLoginProfile() {
+    var shared = window.CommentShared;
+    return shared && typeof shared.getLoginProfile === 'function'
+      ? shared.getLoginProfile()
+      : null;
+  }
+
+  function isLoggedIn() {
+    var profile = getLoginProfile();
+    return !!(profile && profile.login);
+  }
+
   async function resolveUser(identifier) {
     if (!identifier) return null;
     var parsed = normalizeIdentifier(identifier);
@@ -269,7 +342,9 @@
           avatarType: qb.avatarUrl ? 'image' : (qb.avatarType || 'color'),
           avatarColor: qb.avatarColor || '#4a6cf7',
           createdAt: qb.createdAt || 0,
-          updatedAt: qb.updatedAt || 0
+          updatedAt: qb.updatedAt || 0,
+          signature: qb.signature || '',
+          backgroundImage: qb.backgroundImage || ''
         };
       }
     }
@@ -297,7 +372,7 @@
       return;
     }
     el.list.innerHTML = items.map(function (item, i) {
-      return '<div class="space-item" style="--i:' + i + '">' +
+      return '<div class="space-row" style="--i:' + i + '">' +
         '<strong>' + escapeHtml(item.nickname || item.login) + '</strong>' +
         '<div>账号标识：' + escapeHtml(item.identifier) + '</div>' +
         '<a href="/space?user=' + encodeURIComponent(item.identifier) + '">查看主页</a>' +
@@ -325,10 +400,10 @@
       return;
     }
     el.recentList.innerHTML = events.map(function (item, i) {
-      return '<div class="space-item" style="--i:' + i + '">' +
+      return '<div class="space-row" style="--i:' + i + '">' +
         '<strong>' + escapeHtml(item.title || '未命名页面') + '</strong>' +
         '<div>' + formatDateTime(item.ts) + '</div>' +
-        '<a href="' + escapeHtml(item.path || '#') + '">' + escapeHtml(item.path || '链接') + '</a>' +
+        '<a href="' + escapeAttr(item.path || '#') + '">' + escapeHtml(item.path || '链接') + '</a>' +
         '</div>';
     }).join('');
   }
@@ -354,7 +429,7 @@
         .slice(0, 5)
         .map(function (msg) { return { text: msg.text || '无内容', timestamp: msg.timestamp || 0 }; });
       renderList(el.activity, items, '暂无发言', function (item) {
-        return '<div class="space-item">' +
+        return '<div class="space-row">' +
           '<strong>' + escapeHtml(item.text) + '</strong>' +
           '<div>' + formatDateTime(item.timestamp) + '</div>' +
           '<a href="/blog/lyb">前往留言板</a>' +
@@ -392,7 +467,7 @@
       });
       var sorted = items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); }).slice(0, 5);
       renderList(el.dynamic, sorted, '暂无动态评论', function (item) {
-        return '<div class="space-item">' +
+        return '<div class="space-row">' +
           '<strong>' + escapeHtml(item.text) + '</strong>' +
           '<div>' + formatDateTime(item.timestamp) + '</div>' +
           '<a href="/blog/dt/' + encodeURIComponent(item.postId) + '">查看动态</a>' +
@@ -431,10 +506,10 @@
       });
       var sorted = items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); }).slice(0, 5);
       renderList(el.postComment, sorted, '暂无文章评论', function (item) {
-        return '<div class="space-item">' +
+        return '<div class="space-row">' +
           '<strong>' + escapeHtml(item.text) + '</strong>' +
           '<div>' + formatDateTime(item.timestamp) + '</div>' +
-          (item.postPath ? '<a href="' + escapeHtml(item.postPath) + '">查看文章' + (item.postTitle ? ' · ' + escapeHtml(item.postTitle) : '') + '</a>' : '<span>来源未知</span>') +
+          (item.postPath ? '<a href="' + escapeAttr(item.postPath) + '">查看文章' + (item.postTitle ? ' · ' + escapeHtml(item.postTitle) : '') + '</a>' : '<span>来源未知</span>') +
           '</div>';
       });
     } catch (error) {
@@ -462,7 +537,7 @@
       });
       var sorted = items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); }).slice(0, 5);
       renderList(el.oj, sorted, '暂无讨论', function (item) {
-        return '<div class="space-item">' +
+        return '<div class="space-row">' +
           '<strong>' + escapeHtml(item.text) + '</strong>' +
           '<div>' + formatDateTime(item.timestamp) + '</div>' +
           '<a href="/a/oj/discussion?id=' + encodeURIComponent(item.discussionId) + '">查看讨论</a>' +
@@ -472,6 +547,108 @@
       console.error('加载OJ讨论失败:', error);
       hideSkeletonList(el.oj);
       if (el.oj) el.oj.textContent = '加载失败';
+    }
+  }
+
+  // ── Stickies (随心贴) ──
+  function renderStickies(items) {
+    if (!(el.stickiesList instanceof HTMLElement)) return;
+    hideSkeletonList(el.stickiesList);
+    if (!items.length) {
+      el.stickiesList.innerHTML = '<div class="sticky-empty">还没有留言，来写第一条吧 ✨</div>';
+      return;
+    }
+    el.stickiesList.innerHTML = items.map(function (item, i) {
+      var letter = escapeHtml((item.authorNickname || '?')[0].toUpperCase());
+      var avatarHtml;
+      if (item.authorAvatarUrl) {
+        avatarHtml = '<div class="sticky-avatar"><img src="' + escapeAttr(item.authorAvatarUrl) + '" alt="" onerror="this.outerHTML=\'<span class=sticky-avatar-fallback>' + letter + '</span>\'" /></div>';
+      } else {
+        avatarHtml = '<div class="sticky-avatar-fallback">' + letter + '</div>';
+      }
+      return '<div class="sticky-item" style="--i:' + i + '">' +
+        avatarHtml +
+        '<div class="sticky-body">' +
+        '<div class="sticky-header">' +
+        '<span class="sticky-author">' + escapeHtml(item.authorNickname || '匿名') + '</span>' +
+        '<span class="sticky-time">' + formatAgo(item.timestamp) + '</span>' +
+        '</div>' +
+        '<div class="sticky-text">' + escapeHtml(item.text) + '</div>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  async function loadStickies(targetUid) {
+    if (!targetUid) return;
+    try {
+      var data = await fetchDb('user_space_stickies/' + targetUid + '/messages');
+      var list = data ? Object.values(data) : [];
+      var sorted = list.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+      renderStickies(sorted);
+    } catch (error) {
+      console.error('加载随心贴失败:', error);
+      hideSkeletonList(el.stickiesList);
+      if (el.stickiesList) el.stickiesList.textContent = '加载失败';
+    }
+  }
+
+  function updateStickiesCount() {
+    if (!el.stickiesCount || !el.stickiesInput) return;
+    var len = el.stickiesInput.value.length;
+    el.stickiesCount.textContent = len + ' / ' + STICKY_MAX_LENGTH;
+    if (el.stickiesSubmit instanceof HTMLButtonElement) {
+      el.stickiesSubmit.disabled = len === 0 || len > STICKY_MAX_LENGTH;
+    }
+  }
+
+  async function postSticky() {
+    if (!currentUid || !(el.stickiesInput instanceof HTMLTextAreaElement)) return;
+    var text = el.stickiesInput.value.trim();
+    if (!text || text.length > STICKY_MAX_LENGTH) return;
+    var profile = getLoginProfile();
+    if (!profile || !profile.login) return;
+    if (el.stickiesSubmit instanceof HTMLButtonElement) el.stickiesSubmit.disabled = true;
+    try {
+      var sticky = {
+        authorLogin: profile.login,
+        authorLoginType: profile.loginType || 'github',
+        authorNickname: profile.nickname || profile.login,
+        authorAvatarUrl: profile.avatarUrl || '',
+        text: text,
+        timestamp: Date.now()
+      };
+      await postDb('push', 'user_space_stickies/' + currentUid + '/messages', sticky);
+      el.stickiesInput.value = '';
+      updateStickiesCount();
+      void loadStickies(currentUid);
+    } catch (error) {
+      console.error('发布随心贴失败:', error);
+      if (el.stickiesSubmit instanceof HTMLButtonElement) el.stickiesSubmit.disabled = false;
+    }
+  }
+
+  function initStickiesForm() {
+    if (!el.stickiesInput || !el.stickiesCount || !el.stickiesSubmit) return;
+    el.stickiesInput.addEventListener('input', updateStickiesCount);
+    el.stickiesSubmit.addEventListener('click', function () { void postSticky(); });
+    el.stickiesInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        void postSticky();
+      }
+    });
+    updateStickiesCount();
+  }
+
+  function toggleStickiesForm() {
+    if (!el.stickiesForm || !el.stickiesGuestHint) return;
+    if (isLoggedIn()) {
+      el.stickiesForm.style.display = 'flex';
+      el.stickiesGuestHint.style.display = 'none';
+    } else {
+      el.stickiesForm.style.display = 'none';
+      el.stickiesGuestHint.style.display = 'flex';
     }
   }
 
@@ -623,6 +800,12 @@
       setText(el.registerAt, '注册时间：' + formatDate(profile.createdAt || profile.updatedAt || 0));
       setText(el.login, result.identifier ? '账号标识：' + result.identifier : '账号标识：-');
 
+      // Signature
+      setSignature(profile.signature || '');
+
+      // Background image
+      setBannerBackground(profile.backgroundImage || '');
+
       var locationText = [profile.province, profile.city].filter(Boolean).join(' ');
       setText(el.location, 'IP 属地：' + (locationText || '-'));
       setText(el.locationSummary, locationText || '-');
@@ -665,11 +848,17 @@
 
       applyPrivacy();
 
+      // Load data for tabs
       if (currentPrivacy.showActivity !== false) await loadActivity(result.login, result.loginType);
       if (currentPrivacy.showDynamic !== false) await loadDynamicComments(result.login, result.loginType);
       if (currentPrivacy.showPostComments !== false) await loadPostComments(result.login, result.loginType);
       if (currentPrivacy.showOj !== false) await loadOjDiscussions(result.login, result.loginType);
-      if (currentUid) await loadLikes(currentUid);
+      if (currentUid) {
+        await loadStickies(currentUid);
+        await loadLikes(currentUid);
+      }
+
+      toggleStickiesForm();
     } catch (error) {
       console.error('加载用户失败:', error);
       SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
@@ -778,6 +967,8 @@
   function init() {
     initTheme();
     initTabs();
+    initSpeechTabs();
+    initStickiesForm();
     bindEvents();
     void loadProfile();
     // Safety net: force clear skeletons after 25s
@@ -787,6 +978,7 @@
         if (t) { var s = t.querySelectorAll('.skeleton-text'); s.forEach(function (x) { x.remove(); }); }
       });
       SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
+      if (el.stickiesList) hideSkeletonList(el.stickiesList);
       if (el.nickname && (!el.nickname.textContent || el.nickname.textContent === '' || el.nickname.textContent === '-')) {
         el.nickname.textContent = '加载超时，请刷新重试';
       }

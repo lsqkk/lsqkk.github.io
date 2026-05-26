@@ -37,6 +37,14 @@ body.home-page .recent-posts .post-item {
     pointer-events: none;
 }
 
+.svg-inline {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    line-height: 1;
+}
+
 .main-layout {
     max-width: 1280px;
     margin: 0 auto;
