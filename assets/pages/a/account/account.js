@@ -685,19 +685,29 @@
             const snap = await db.ref('user_activity').child(uid).child('profile').once('value');
             const remote = snap.val() || null;
             cachedRemote = remote;
+            console.log('[loadRemoteProfile] uid:', uid, 'remote:', remote);
             if (remote && (force || remote.updatedAt)) {
                 const localMeta = window.QuarkUserProfile && typeof window.QuarkUserProfile.getStoredProfile === 'function'
                     ? window.QuarkUserProfile.getStoredProfile()
                     : null;
+                console.log('[loadRemoteProfile] localMeta:', localMeta);
                 const localUpdatedAt = localMeta && typeof localMeta.updatedAt === 'number' ? localMeta.updatedAt : 0;
                 const remoteUpdatedAt = typeof remote.updatedAt === 'number' ? remote.updatedAt : 0;
                 if (remoteUpdatedAt > localUpdatedAt && window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
                     window.QuarkUserProfile.syncProfile(remote);
                 }
-                applyProfileToForm(remote);
-                if (remote.login) setText(el.githubLogin, remote.login);
-                setText(el.lastSyncAt, formatTime(remote.updatedAt));
-                const location = [remote.province, remote.city].filter(Boolean).join(' ');
+                // Merge: Firebase data wins (except where undefined/null), stored locale fills gaps
+                const merged = { ...(localMeta || {}) };
+                for (const key of Object.keys(remote)) {
+                    if (remote[key] !== undefined && remote[key] !== null) {
+                        merged[key] = remote[key];
+                    }
+                }
+                console.log('[loadRemoteProfile] merged profile:', merged);
+                applyProfileToForm(merged);
+                if (merged.login) setText(el.githubLogin, merged.login);
+                setText(el.lastSyncAt, formatTime(merged.updatedAt));
+                const location = [merged.province, merged.city].filter(Boolean).join(' ');
                 setText(el.accountLocation, location || '-');
             }
         } catch (error) {
@@ -959,6 +969,8 @@
             // privacy is preserved from existing remote profile
         };
 
+        console.log('[saveProfile] uid:', uid, 'profile:', profile);
+
         if (el.localSyncToggle && el.localSyncToggle instanceof HTMLInputElement && el.localSyncToggle.checked) {
             if (window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
                 window.QuarkUserProfile.syncProfile(profile);
@@ -967,6 +979,7 @@
 
         try {
             const db = await ensureFirebase();
+            console.log('[saveProfile] writing to Firebase path:', 'user_activity/' + uid + '/profile');
             await db.ref('user_activity').child(uid).child('profile').update(profile);
             if (loginType === 'local' && login) {
                 await db.ref('qb_users').child(String(login).toLowerCase()).update({
@@ -1002,6 +1015,7 @@
         const user = ensureLogin();
         if (!user) return;
         const profile = getProfile();
+        console.log('[fillStaticInfo] profile from getProfile():', profile);
         applyProfileToForm(profile);
         setText(el.githubLogin, user.login || profile.login || '');
         const loginType = getLoginType();
