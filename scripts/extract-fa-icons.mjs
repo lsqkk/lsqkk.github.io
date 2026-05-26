@@ -10,7 +10,7 @@
  * To use a new icon: just write the FA class in any .astro or .js file, rebuild.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -85,7 +85,7 @@ function walk(dir, results) {
   let entries;
   try { entries = readdirSync(dir); } catch { return results; }
   for (const name of entries) {
-    const full = dir + "\\" + name;
+    const full = join(dir, name);
     try {
       const st = statSync(full);
       if (st.isDirectory()) { walk(full, results); }
@@ -143,7 +143,7 @@ function extractSvg(name, style) {
 
 function main() {
   const icons = discoverIcons();
-  if (icons.length === 0) { console.warn("[fa-icons] No icons found"); return; }
+  if (icons.length === 0) { console.warn("[fa-icons] No icons found — writing empty file"); }
 
   const astroFmt = {}, clientFmt = {};
   let ok = 0, skip = 0;
