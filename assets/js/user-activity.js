@@ -217,7 +217,10 @@
     function applyRemoteProfile(remote) {
         if (!remote || typeof remote !== 'object') return false;
         if (!window.QuarkUserProfile || typeof window.QuarkUserProfile.syncProfile !== 'function') return false;
-        window.QuarkUserProfile.syncProfile(remote);
+        // Merge with local to avoid losing fields not yet in remote (signature, backgroundImage, etc.)
+        const localMeta = getLocalProfileMeta();
+        const enriched = { ...(localMeta || {}), ...remote };
+        window.QuarkUserProfile.syncProfile(enriched);
         return true;
     }
 
@@ -252,12 +255,12 @@
 
             const legacyProfile = legacyData.profile || {};
             const targetProfile = targetData.profile || {};
-            const legacyUpdatedAt = legacyProfile.updatedAt || 0;
-            const targetUpdatedAt = targetProfile.updatedAt || 0;
 
-            const mergedProfile = legacyUpdatedAt > targetUpdatedAt
-                ? legacyProfile
-                : targetProfile;
+            // Merge all fields: target wins, legacy fills gaps
+            const mergedProfile = { ...legacyProfile, ...targetProfile };
+            const legUp = legacyProfile.updatedAt || 0;
+            const tgtUp = targetProfile.updatedAt || 0;
+            mergedProfile.updatedAt = Math.max(legUp, tgtUp);
 
             const mergedEvents = {
                 ...(legacyData.events || {}),

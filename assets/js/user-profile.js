@@ -99,6 +99,16 @@
         console.log('[syncProfile] CALLED by', new Error().stack.split('\n').slice(2, 3).join('').trim());
         console.log('[syncProfile] keys:', Object.keys(profile), 'has_sig:', 'signature' in profile, 'has_bg:', 'backgroundImage' in profile, 'sig_val:', profile.signature);
         syncing = true;
+
+        // Merge with existing stored data so partial updates never lose fields
+        const stored = readStoredProfile();
+        if (stored && typeof stored === 'object') {
+            var merged = {};
+            for (var k in stored) { if (stored.hasOwnProperty(k)) merged[k] = stored[k]; }
+            for (var k in profile) { if (profile.hasOwnProperty(k)) merged[k] = profile[k]; }
+            profile = merged;
+        }
+
         const updatedAt = typeof profile.updatedAt === 'number' ? profile.updatedAt : Date.now();
         if (typeof profile.nickname === 'string') {
             const nickname = profile.nickname.trim();
