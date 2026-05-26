@@ -671,7 +671,7 @@
         if (!badgeName) { setText(el.badgeTip, '请填写标识名称 (如 站主)'); return; }
         setText(el.badgeTip, '正在设置...');
         try {
-            await dbPostWithTimeout('update', 'user_badges/' + userInput, { badge: badgeName, assignedAt: Date.now() });
+            await dbPostWithTimeout('set', 'user_badges/' + userInput, { badge: badgeName, assignedAt: Date.now() });
             setText(el.badgeTip, '标识已设置');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
@@ -691,7 +691,7 @@
         if (!confirm('确定移除 ' + userInput + ' 的标识？')) return;
         setText(el.badgeTip, '正在移除...');
         try {
-            await dbPostWithTimeout('update', 'user_badges/' + userInput, null);
+            await dbPostWithTimeout('remove', 'user_badges/' + userInput, null);
             setText(el.badgeTip, '标识已移除');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
