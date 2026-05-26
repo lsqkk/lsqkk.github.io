@@ -757,12 +757,8 @@
     height: 60px;
 }
 
-.nav-hover-item .nav-hover-menu {
-    display: block;
-    visibility: hidden;
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
+/* 基本样式：无论菜单在哪个父元素下都生效 */
+.nav-hover-menu {
     min-width: 160px;
     max-width: 220px;
     max-height: 360px;
@@ -773,6 +769,15 @@
     box-shadow: 0 12px 28px var(--glass-shadow);
     border: 1px solid var(--glass-edge);
     padding: 12px;
+}
+
+/* 默认状态：在 nav-item 内部，隐藏 */
+.nav-hover-item .nav-hover-menu {
+    display: block;
+    visibility: hidden;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
     opacity: 0;
     transform: translateY(-8px);
     pointer-events: none;
@@ -789,12 +794,24 @@
     height: 14px;
 }
 
+/* 展开状态：在 nav-item 内部 */
 .nav-hover-item.open .nav-hover-menu {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
     transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+/* 展开状态：挂载到 body 上（避开 header 的 backdrop-filter 包含块） */
+.nav-hover-menu.nav-hover-body {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 99999;
 }
 
 .nav-hover-scroll {
@@ -962,6 +979,13 @@
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.42);
 }
 
+/* 挂载到 body 的菜单深色主题（body 上有 .dark-mode） */
+body.dark-mode .nav-hover-menu.nav-hover-body {
+    background: rgba(14, 24, 41, 0.92);
+    border-color: rgba(138, 173, 220, 0.33);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.42);
+}
+
 .header.nav-dark .nav-hover-section-title,
 .header.nav-dark .nav-hover-loading,
 .header.nav-dark .nav-hover-empty {
@@ -1104,6 +1128,13 @@
     }
 
     .header:not(.nav-dark) .nav-hover-item .nav-hover-menu {
+        background: rgba(14, 24, 41, 0.92);
+        border-color: rgba(138, 173, 220, 0.33);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.42);
+    }
+
+    /* prefers-color-scheme 深色且 body 未挂 dark-mode 类时，body 菜单也用深色 */
+    body:not(.dark-mode) .nav-hover-menu.nav-hover-body {
         background: rgba(14, 24, 41, 0.92);
         border-color: rgba(138, 173, 220, 0.33);
         box-shadow: 0 16px 32px rgba(0, 0, 0, 0.42);
