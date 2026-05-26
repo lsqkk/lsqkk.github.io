@@ -1027,6 +1027,20 @@ body.dark-mode .nav-hover-menu.nav-hover-body {
     color: #ffffff !important;
 }
 
+/* 挂载到 body 的导航菜单深色文字 */
+body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-section-title,
+body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-loading,
+body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-empty {
+    color: #b6cdeb;
+}
+body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-list a {
+    color: #deebff !important;
+}
+body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-list a:hover {
+    background: rgba(110, 168, 255, 0.22) !important;
+    color: #ffffff !important;
+}
+
 .mobile-navsidebar.nav-dark .navsidebar-overlay {
     background: rgba(0, 0, 0, 0.62);
 }
@@ -1192,6 +1206,20 @@ body.dark-mode .nav-hover-menu.nav-hover-body {
     }
 
     .header:not(.nav-dark) .nav-hover-list a:hover {
+        background: rgba(110, 168, 255, 0.22) !important;
+        color: #ffffff !important;
+    }
+
+    /* prefers-color-scheme 深色时，body 菜单文字也用深色 */
+    body:not(.dark-mode) .nav-hover-menu.nav-hover-body .nav-hover-section-title,
+    body:not(.dark-mode) .nav-hover-menu.nav-hover-body .nav-hover-loading,
+    body:not(.dark-mode) .nav-hover-menu.nav-hover-body .nav-hover-empty {
+        color: #b6cdeb;
+    }
+    body:not(.dark-mode) .nav-hover-menu.nav-hover-body .nav-hover-list a {
+        color: #deebff !important;
+    }
+    body:not(.dark-mode) .nav-hover-menu.nav-hover-body .nav-hover-list a:hover {
         background: rgba(110, 168, 255, 0.22) !important;
         color: #ffffff !important;
     }
