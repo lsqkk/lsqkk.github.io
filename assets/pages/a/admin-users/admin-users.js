@@ -584,50 +584,14 @@
         }
     }
 
-    // ── Badge Management ──
-
-    function dbFetchWithTimeout(path, timeout) {
-        timeout = timeout || 15000;
-        var controller = new AbortController();
-        var timer = setTimeout(function () { controller.abort(); }, timeout);
-        return fetch(API_BASE + '/api/db?path=' + encodeURIComponent(path), { signal: controller.signal })
-            .then(function (resp) {
-                clearTimeout(timer);
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                return resp.json();
-            })
-            .catch(function (err) {
-                clearTimeout(timer);
-                throw err;
-            });
-    }
-
-    function dbPostWithTimeout(op, path, value, timeout) {
-        timeout = timeout || 15000;
-        var controller = new AbortController();
-        var timer = setTimeout(function () { controller.abort(); }, timeout);
-        return fetch(API_BASE + '/api/db', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            signal: controller.signal,
-            body: JSON.stringify({ op: op, path: path, value: value })
-        })
-            .then(function (resp) {
-                clearTimeout(timer);
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                return resp.json();
-            })
-            .catch(function (err) {
-                clearTimeout(timer);
-                throw err;
-            });
-    }
+    // ── Badge Management (using Firebase SDK directly) ──
 
     async function loadBadgeList() {
         try {
-            var data = await dbFetchWithTimeout('user_badges');
-            var badges = (data && data.data) ? data.data : {};
-            if (!badges || typeof badges !== 'object') badges = {};
+            var db = await ensureFirebase();
+            var snap = await db.ref('user_badges').once('value');
+            var badges = snap.val() || {};
+            if (typeof badges !== 'object') badges = {};
             window.__USER_BADGES__ = badges;
             if (el.badgeList) {
                 var entries = Object.entries(badges);
@@ -671,7 +635,8 @@
         if (!badgeName) { setText(el.badgeTip, '请填写标识名称 (如 站主)'); return; }
         setText(el.badgeTip, '正在设置...');
         try {
-            await dbPostWithTimeout('set', 'user_badges/' + userInput, { badge: badgeName, assignedAt: Date.now() });
+            var db = await ensureFirebase();
+            await db.ref('user_badges/' + userInput).set({ badge: badgeName, assignedAt: Date.now() });
             setText(el.badgeTip, '标识已设置');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {
@@ -691,7 +656,8 @@
         if (!confirm('确定移除 ' + userInput + ' 的标识？')) return;
         setText(el.badgeTip, '正在移除...');
         try {
-            await dbPostWithTimeout('remove', 'user_badges/' + userInput, null);
+            var db = await ensureFirebase();
+            await db.ref('user_badges/' + userInput).remove();
             setText(el.badgeTip, '标识已移除');
             await loadBadgeList();
             if (window.CommentShared && typeof window.CommentShared.loadBadges === 'function') {

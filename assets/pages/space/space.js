@@ -614,6 +614,7 @@
   async function loadProfile() {
     var rawIdentifier = params.get('user') || '';
     if (!rawIdentifier) {
+      clearAllSkeletons();
       if (el.nickname) setText(el.nickname, '请输入用户后搜索');
       if (el.selfActions) el.selfActions.style.display = 'none';
       return;
