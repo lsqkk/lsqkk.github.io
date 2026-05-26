@@ -94,8 +94,10 @@
     let syncing = false;
 
     function syncProfile(profile) {
-        if (!profile || typeof profile !== 'object') return;
-        if (syncing) return;
+        if (!profile || typeof profile !== 'object') { console.log('[syncProfile] skipped: invalid profile', profile); return; }
+        if (syncing) { console.log('[syncProfile] skipped: already syncing'); return; }
+        console.log('[syncProfile] CALLED by', new Error().stack.split('\n').slice(2, 3).join('').trim());
+        console.log('[syncProfile] keys:', Object.keys(profile), 'has_sig:', 'signature' in profile, 'has_bg:', 'backgroundImage' in profile, 'sig_val:', profile.signature);
         syncing = true;
         const updatedAt = typeof profile.updatedAt === 'number' ? profile.updatedAt : Date.now();
         if (typeof profile.nickname === 'string') {
