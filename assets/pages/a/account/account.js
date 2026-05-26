@@ -672,6 +672,16 @@
         }
     }
 
+    function mergeProfileFields(legacy, target) {
+        // Merge all fields: target fields win, but legacy fills gaps
+        const result = { ...(legacy || {}), ...(target || {}) };
+        // Preserve the latest updatedAt
+        const legUp = (legacy && legacy.updatedAt) || 0;
+        const tgtUp = (target && target.updatedAt) || 0;
+        result.updatedAt = Math.max(legUp, tgtUp);
+        return result;
+    }
+
     async function migrateLegacyUid() {
         const legacyUid = getLegacyUid();
         const targetUid = getUid();
@@ -686,11 +696,7 @@
             }
             const targetSnap = await db.ref('user_activity').child(targetUid).once('value');
             const targetData = targetSnap.val() || {};
-            const legacyProfile = legacyData.profile || {};
-            const targetProfile = targetData.profile || {};
-            const legacyUpdatedAt = legacyProfile.updatedAt || 0;
-            const targetUpdatedAt = targetProfile.updatedAt || 0;
-            const mergedProfile = legacyUpdatedAt > targetUpdatedAt ? legacyProfile : targetProfile;
+            const mergedProfile = mergeProfileFields(legacyData.profile, targetData.profile);
 
             await db.ref('user_activity').child(targetUid).update({
                 profile: mergedProfile,
@@ -733,8 +739,11 @@
                 console.log('[loadRemoteProfile] localMeta:', localMeta);
                 const localUpdatedAt = localMeta && typeof localMeta.updatedAt === 'number' ? localMeta.updatedAt : 0;
                 const remoteUpdatedAt = typeof remote.updatedAt === 'number' ? remote.updatedAt : 0;
+                // Sync to localStorage only if remote data is newer AND has at least as many fields
                 if (remoteUpdatedAt > localUpdatedAt && window.QuarkUserProfile && typeof window.QuarkUserProfile.syncProfile === 'function') {
-                    window.QuarkUserProfile.syncProfile(remote);
+                    // Merge: keep localStorage fields that remote doesn't have
+                    const enriched = { ...(localMeta || {}), ...remote };
+                    window.QuarkUserProfile.syncProfile(enriched);
                 }
                 // Merge: Firebase data wins (except where undefined/null), stored locale fills gaps
                 const merged = { ...(localMeta || {}) };
