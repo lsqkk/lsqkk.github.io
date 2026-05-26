@@ -576,7 +576,7 @@
       var nextTotal = total + 1;
       await postDb('update', 'user_space_likes/' + currentUid, {
         total: nextTotal,
-        'daily/' + dayKey + '/' + likeId: nextCount
+        ['daily/' + dayKey + '/' + likeId]: nextCount
       });
       likeState = { total: nextTotal, todayCount: nextCount };
       if (el.likeCount) el.likeCount.textContent = String(nextTotal);
