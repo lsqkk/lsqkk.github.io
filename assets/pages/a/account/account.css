@@ -1,6 +1,6 @@
 .account-body {
   min-height: 100vh;
-  color: var(--text-color, #0f172a);
+  color: var(--text-main);
   background: transparent;
 }
 
@@ -18,24 +18,32 @@
   justify-content: space-between;
   gap: 32px;
   align-items: center;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: account-hero-in 0.5s ease 0.08s forwards;
+}
+
+@keyframes account-hero-in {
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .account-kicker {
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.6);
+  color: var(--text-soft);
   margin-bottom: 12px;
 }
 
 .account-title {
   font-size: 36px;
   margin: 0 0 8px;
+  color: var(--text-main);
 }
 
 .account-subtitle {
   margin: 0;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--text-subtle);
 }
 
 .account-metrics {
@@ -48,19 +56,28 @@
   padding: 14px 16px;
   border-radius: 16px;
   background: var(--glass-bg);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
   border: 1px solid var(--line);
   text-align: center;
+  box-shadow: 0 8px 24px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+  transition: box-shadow 0.28s ease, transform 0.28s ease;
+}
+
+.metric:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
 }
 
 .metric-label {
   display: block;
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.6);
+  color: var(--text-subtle);
 }
 
 .metric-value {
   font-size: 18px;
+  color: var(--text-main);
 }
 
 .account-grid {
@@ -74,18 +91,35 @@
   border: 1px solid var(--line);
   border-radius: 22px;
   padding: 24px;
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 60px var(--glass-shadow);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+  transition: box-shadow 0.28s ease, transform 0.28s ease;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: account-card-in 0.5s ease forwards;
+}
+
+.account-card:first-child { animation-delay: 0.12s; }
+.account-card:last-child { animation-delay: 0.22s; }
+
+@keyframes account-card-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.account-card:hover {
+  box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
 }
 
 .card-header h2 {
   margin: 0 0 6px;
   font-size: 20px;
+  color: var(--text-main);
 }
 
 .card-header p {
   margin: 0;
-  color: rgba(15, 23, 42, 0.65);
+  color: var(--text-subtle);
 }
 
 .profile-row {
@@ -106,11 +140,17 @@
   height: 140px;
   border-radius: 24px;
   background: rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  border: 1px solid var(--line);
   display: grid;
   place-items: center;
   overflow: hidden;
   position: relative;
+  transition: box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.avatar-preview:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .avatar-preview img {
@@ -123,7 +163,7 @@
 .avatar-preview span {
   font-size: 48px;
   font-weight: 600;
-  color: rgba(15, 23, 42, 0.5);
+  color: var(--text-soft);
 }
 
 .avatar-actions {
@@ -147,7 +187,7 @@
 
 .crop-hint {
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.6);
+  color: var(--text-soft);
 }
 
 .btn {
@@ -156,7 +196,10 @@
   padding: 10px 18px;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.28s ease, background 0.28s ease, color 0.28s ease, box-shadow 0.28s ease;
 }
 
 .btn.primary {
@@ -165,17 +208,27 @@
 }
 
 .btn.primary:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   background: #1e40af;
+  box-shadow: 0 6px 16px rgba(29, 78, 216, 0.25);
+}
+
+.btn.primary:active {
+  transform: translateY(0) scale(0.97);
 }
 
 .btn.ghost {
-  background: rgba(148, 163, 184, 0.25);
-  color: #0f172a;
+  background: var(--glass-bg-strong);
+  color: var(--text-main);
 }
 
 .btn.ghost:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: var(--glass-bg);
+  color: var(--text-main);
+}
+
+.btn.ghost:active {
+  transform: scale(0.97);
 }
 
 .field {
@@ -186,7 +239,7 @@
 
 .field label {
   font-size: 13px;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--text-subtle);
 }
 
 .captcha-row {
@@ -211,16 +264,28 @@
   padding: 10px 12px;
   font-size: 14px;
   outline: none;
+  color: var(--text-main);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease, background 0.3s ease;
+}
+
+.field input[type="text"]:focus,
+.field input[type="email"]:focus,
+.field input[type="url"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  transform: scale(1.01);
+  background: var(--glass-bg);
 }
 
 .field input[disabled] {
   background: var(--glass-bg-soft);
   color: var(--text-soft);
+  opacity: 0.7;
 }
 
 .helper {
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.55);
+  color: var(--text-soft);
 }
 
 .toggle-row {
@@ -228,7 +293,7 @@
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--text-subtle);
 }
 
 .action-row {
@@ -241,7 +306,7 @@
 .status-row {
   margin-top: 12px;
   font-size: 13px;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--text-subtle);
 }
 
 .record-grid {
@@ -257,6 +322,13 @@
   border-radius: 12px;
   border: 1px solid var(--line);
   background: var(--glass-bg-soft);
+  color: var(--text-main);
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.record-item:hover {
+  border-color: var(--line-strong);
+  background: var(--glass-bg);
 }
 
 .record-item span {
@@ -279,7 +351,7 @@
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: rgba(15, 23, 42, 0.7);
+  color: var(--text-subtle);
 }
 
 .record-toggle {
@@ -290,17 +362,19 @@
   font-size: 12px;
   padding: 4px 10px;
   cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .record-toggle:hover {
   background: var(--glass-bg);
+  border-color: var(--line-strong);
 }
 
 .record-list-body {
   display: grid;
   gap: 10px;
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.65);
+  color: var(--text-soft);
   max-height: 220px;
   overflow-y: auto;
   padding-right: 6px;
@@ -337,7 +411,7 @@
 .tips {
   margin-top: 16px;
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.6);
+  color: var(--text-soft);
 }
 
 /* ── Signature field ── */
@@ -353,12 +427,12 @@
   max-height: 120px;
   font-family: inherit;
   color: var(--text-main);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .signature-textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
   background: var(--glass-bg);
 }
 
@@ -428,7 +502,7 @@
   border-radius: 20px;
   padding: 20px;
   border: 1px solid var(--line);
-  box-shadow: 0 25px 60px var(--glass-shadow);
+  box-shadow: 0 25px 60px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
 }
 
 .cropper-header {
@@ -437,9 +511,13 @@
   align-items: center;
 }
 
+.cropper-header h3 {
+  color: var(--text-main);
+}
+
 .cropper-body {
   margin: 16px 0;
-  background: rgba(15, 23, 42, 0.06);
+  background: var(--glass-bg-soft);
   border-radius: 16px;
   padding: 16px;
   display: grid;
@@ -463,6 +541,12 @@
   justify-content: flex-end;
 }
 
+/* ── Email bind ── */
+.email-bind-section {
+  margin-top: 8px;
+}
+
+/* ── Responsive ── */
 @media (max-width: 960px) {
   .account-hero {
     flex-direction: column;
@@ -479,80 +563,47 @@
   }
 }
 
-.dark-mode.account-body {
-  background: transparent;
-  color: #e2e8f0;
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .account-hero,
+  .account-card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .metric,
+  .account-card,
+  .btn,
+  .field input,
+  .signature-textarea,
+  .record-item,
+  .record-toggle {
+    transition: none !important;
+  }
+  .metric:hover,
+  .account-card:hover {
+    transform: none !important;
+  }
 }
 
-.dark-mode .account-kicker,
-.dark-mode .account-subtitle,
-.dark-mode .metric-label,
-.dark-mode .card-header p,
-.dark-mode .field label,
-.dark-mode .helper,
-.dark-mode .toggle-row,
-.dark-mode .status-row,
-.dark-mode .record-item span,
-.dark-mode .tips,
-.dark-mode .crop-hint {
-  color: rgba(226, 232, 240, 0.7);
+body.reduce-motion .account-hero,
+body.reduce-motion .account-card {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
-.dark-mode .account-card,
-.dark-mode .metric {
-  border-color: var(--line);
-  box-shadow: 0 20px 60px var(--glass-shadow);
+body.reduce-motion .metric,
+body.reduce-motion .account-card,
+body.reduce-motion .btn,
+body.reduce-motion .field input,
+body.reduce-motion .signature-textarea,
+body.reduce-motion .record-item,
+body.reduce-motion .record-toggle {
+  transition: none !important;
 }
 
-.dark-mode .field input[type="text"],
-.dark-mode .field input[type="email"],
-.dark-mode .field input[type="url"] {
-  border-color: var(--line);
-  color: var(--text-main);
-}
-
-.dark-mode .field input[disabled] {
-  color: var(--text-soft);
-}
-
-.dark-mode .btn.ghost {
-  background: var(--glass-bg-strong);
-  color: var(--text-main);
-}
-
-.dark-mode .record-item {
-  border-color: var(--line);
-}
-
-.dark-mode .record-list {
-  border-color: var(--line);
-}
-
-.dark-mode .record-list-title {
-  color: var(--text-subtle);
-}
-
-.dark-mode .record-toggle {
-  border-color: var(--line);
-  color: var(--text-subtle);
-}
-
-.dark-mode .record-list-body {
-  color: var(--text-soft);
-}
-
-.dark-mode .record-entry {
-  border-color: var(--line);
-}
-
-.dark-mode .record-entry strong {
-  color: var(--text-main);
-}
-
-.dark-mode .cropper-card {
-  border-color: var(--line);
-}
-
-.dark-mode .cropper-body {
-  background: var(--glass-bg-soft);
+body.reduce-motion .metric:hover,
+body.reduce-motion .account-card:hover {
+  transform: none !important;
 }

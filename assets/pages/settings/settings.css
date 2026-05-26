@@ -1,6 +1,6 @@
 .settings-body {
     min-height: 100vh;
-    color: #182033;
+    color: var(--text-main);
 }
 
 .settings-shell {
@@ -27,7 +27,7 @@
 
 .settings-kicker {
     margin: 0 0 10px;
-    color: #42635a;
+    color: var(--accent-2);
     font-weight: 700;
     letter-spacing: 0;
 }
@@ -36,27 +36,32 @@
     margin: 0;
     font-size: clamp(2rem, 6vw, 4.6rem);
     line-height: 1;
-    color: #111827;
+    color: var(--text-main);
 }
 
 .settings-hero p:not(.settings-kicker) {
     max-width: 640px;
     margin: 18px 0 0;
-    color: #4b5563;
+    color: var(--text-subtle);
     font-size: 1rem;
 }
 
 .settings-panel {
     background: var(--glass-bg);
     border: 1px solid var(--line);
-    border-radius: 8px;
-    box-shadow: 0 18px 50px var(--glass-shadow);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
     overflow: hidden;
+    transition: box-shadow 0.3s ease;
     opacity: 0;
     transform: translateY(18px);
     animation: settings-panel-in 0.55s ease 0.18s forwards;
+}
+
+.settings-panel:hover {
+    box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
 }
 
 @keyframes settings-panel-in {
@@ -93,13 +98,13 @@
 
 .settings-section h2 {
     margin: 0 0 8px;
-    color: #111827;
+    color: var(--text-main);
     font-size: 1.25rem;
 }
 
 .settings-section p {
     margin: 0;
-    color: #64748b;
+    color: var(--text-subtle);
 }
 
 .settings-grid {
@@ -111,7 +116,7 @@
 .setting-field {
     display: grid;
     gap: 8px;
-    color: #334155;
+    color: var(--text-subtle);
     font-weight: 700;
 }
 
@@ -120,7 +125,7 @@
     min-height: 44px;
     padding: 0 12px;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: 12px;
     background: var(--glass-bg-strong);
     color: var(--text-main);
     font: inherit;
@@ -129,13 +134,13 @@
 }
 
 .setting-field select:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(31, 122, 106, 0.12);
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-2) 12%, transparent);
 }
 
 .setting-field select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(31, 122, 106, 0.2);
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-2) 20%, transparent);
     transform: scale(1.01);
     outline: none;
 }
@@ -150,7 +155,7 @@
 .toggle-card input {
     width: 46px;
     height: 24px;
-    accent-color: #1f7a6a;
+    accent-color: var(--accent-2);
     cursor: pointer;
     transition: accent-color 0.3s ease, transform 0.2s ease;
 }
@@ -160,7 +165,7 @@
 }
 
 .toggle-card input:checked {
-    accent-color: #1f7a6a;
+    accent-color: var(--accent-2);
 }
 
 .toggle-card span {
@@ -169,11 +174,11 @@
 }
 
 .toggle-card strong {
-    color: #111827;
+    color: var(--text-main);
 }
 
 .toggle-card small {
-    color: #64748b;
+    color: var(--text-subtle);
 }
 
 .settings-actions {
@@ -193,85 +198,52 @@
 
 .btn {
     min-height: 42px;
-    padding: 0 18px;
-    border-radius: 8px;
+    padding: 0 20px;
+    border-radius: 999px;
     border: 1px solid transparent;
     font: inherit;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn.primary {
     color: #fff;
-    background: #1f7a6a;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    background: var(--accent-2);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
 }
 
 .btn.primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(31, 122, 106, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-2) 25%, transparent);
     background: #166b5c;
 }
 
 .btn.primary:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.97);
 }
 
 .btn.ghost {
     color: var(--text-main);
     background: var(--glass-bg-soft);
     border-color: var(--line);
-    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    transition: transform 0.28s ease, border-color 0.28s ease, background 0.28s ease;
 }
 
 .btn.ghost:hover {
-    transform: translateY(-1px);
-    border-color: var(--accent);
+    transform: translateY(-2px);
+    border-color: var(--accent-2);
     background: var(--glass-bg);
 }
 
 .btn.ghost:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.97);
 }
 
 #settingsStatus {
-    color: #64748b;
-}
-
-body.dark-mode.settings-body {
-    color: #e5edf8;
-}
-
-body.dark-mode .settings-hero h1,
-body.dark-mode .settings-section h2,
-body.dark-mode .toggle-card strong {
-    color: var(--text-main);
-}
-
-body.dark-mode .settings-kicker,
-body.dark-mode .settings-hero p,
-body.dark-mode .settings-section p,
-body.dark-mode .toggle-card small,
-body.dark-mode #settingsStatus {
     color: var(--text-subtle);
-}
-
-body.dark-mode .settings-panel {
-    border-color: var(--line);
-}
-
-body.dark-mode .setting-field {
-    color: var(--text-subtle);
-}
-
-body.dark-mode .setting-field select {
-    border-color: var(--line);
-    color: var(--text-main);
-}
-
-body.dark-mode .btn.ghost {
-    color: var(--text-main);
-    border-color: var(--line);
 }
 
 @media (max-width: 760px) {
