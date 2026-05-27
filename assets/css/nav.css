@@ -65,7 +65,7 @@
 /* 溢出时左对齐，配合 translateX 滚动 */
 .header-nav-container.nav-overflow {
     justify-content: flex-start;
-    padding-left: 6px;
+    padding-left: 16px;
 }
 
 /* 左右滑动指示器 — 仅在可滑动时显示 */
@@ -83,8 +83,8 @@
 }
 
 .header-nav-container::before {
-    left: 6px;
-    width: 22px;
+    left: 0;
+    width: 28px;
     background: linear-gradient(to right, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.04) 40%, transparent 100%);
 }
 
