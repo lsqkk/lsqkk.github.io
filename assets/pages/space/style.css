@@ -154,10 +154,10 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(0,0,0,0.45) 0%,
+    90deg,
+    rgba(0,0,0,0.72) 0%,
     rgba(0,0,0,0.55) 50%,
-    rgba(0,0,0,0.7) 100%
+    rgba(0,0,0,0.35) 100%
   );
   pointer-events: none;
 }
@@ -165,7 +165,7 @@
 /* Text colors when background image is present — switch to white for readability */
 .space-banner-bg.has-image ~ .space-banner-inner .space-nickname {
   color: #fff;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
 }
 .space-banner-bg.has-image ~ .space-banner-inner .space-handle,
 .space-banner-bg.has-image ~ .space-banner-inner .space-signature,
