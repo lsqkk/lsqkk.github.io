@@ -4,8 +4,313 @@
     "content": "基于仓库 `commits` 记录整理，部分更新可能不及时。\n\n查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)"
   },
   {
+    "date": "2026-05-27",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "50950d"
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "3429f2"
+      },
+      {
+        "type": "优化",
+        "description": "优化了文章页相关UI和功能",
+        "commit": "64777b"
+      },
+      {
+        "type": "优化",
+        "description": "文章侧栏显示同tag/column文章",
+        "commit": "f57c61"
+      },
+      {
+        "type": "更新",
+        "description": "PostLayout.astro",
+        "commit": "918575"
+      },
+      {
+        "type": "优化",
+        "description": "升级了文章页侧栏和qtv样式",
+        "commit": "a39276"
+      },
+      {
+        "type": "优化",
+        "description": "优化了一些UI",
+        "commit": "5c9d4e"
+      },
+      {
+        "type": "更新",
+        "description": "space.js",
+        "commit": "9f454d"
+      },
+      {
+        "type": "优化",
+        "description": "移除了db调试代码",
+        "commit": "d7957f"
+      },
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": "13fc9f"
+      },
+      {
+        "type": "更新",
+        "description": "user-activity.js",
+        "commit": "e379cf"
+      },
+      {
+        "type": "更新",
+        "description": "account.js",
+        "commit": "24044b"
+      },
+      {
+        "type": "更新",
+        "description": "Create 用户资料同步机制.md",
+        "commit": "e2fb4c"
+      },
+      {
+        "type": "修复",
+        "description": "修复了已知问题",
+        "commit": "908f23"
+      },
+      {
+        "type": "更新",
+        "description": "user-profile.js",
+        "commit": "39437f"
+      },
+      {
+        "type": "更新",
+        "description": "account.js",
+        "commit": "9106bf"
+      },
+      {
+        "type": "更新",
+        "description": "account.js",
+        "commit": "8b3324"
+      },
+      {
+        "type": "更新",
+        "description": "account.js",
+        "commit": "827883"
+      },
+      {
+        "type": "更新",
+        "description": "account.js",
+        "commit": "aa30c6"
+      },
+      {
+        "type": "更新",
+        "description": "account.js",
+        "commit": "ed18a6"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "user-profile.js",
+        "commit": "fe652b"
+      },
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": "0ea632"
+      },
+      {
+        "type": "优化",
+        "description": "优化了账号页面UI",
+        "commit": "799cf8"
+      },
+      {
+        "type": "更新",
+        "description": "Revert \"Update deploy-pages.yml\"",
+        "commit": "fc6e62"
+      },
+      {
+        "type": "更新",
+        "description": "deploy-pages.yml",
+        "commit": "dff23a"
+      },
+      {
+        "type": "优化",
+        "description": "优化了一些UI",
+        "commit": "2ea87f"
+      },
+      {
+        "type": "修复",
+        "description": "修复了顶栏FA图标问题",
+        "commit": "419087"
+      },
+      {
+        "type": "优化",
+        "description": "优化了一些UI",
+        "commit": "5bdbda"
+      },
+      {
+        "type": "优化",
+        "description": "更新了一些UI",
+        "commit": "a7ecb8"
+      },
+      {
+        "type": "更新",
+        "description": "index.js",
+        "commit": "4fd23f"
+      },
+      {
+        "type": "更新",
+        "description": "nav.css",
+        "commit": "b97452"
+      },
+      {
+        "type": "修复",
+        "description": "修复了fa已知问题",
+        "commit": "fba16b"
+      },
+      {
+        "type": "修复",
+        "description": "修复了fa脚本路径问题",
+        "commit": "b5bd50"
+      },
+      {
+        "type": "优化",
+        "description": "彻底优化了fa加载方案",
+        "commit": "b70af9"
+      },
+      {
+        "type": "优化",
+        "description": "优化了fa加载和导航栏问题",
+        "commit": "32022e"
+      },
+      {
+        "type": "修复",
+        "description": "修复了顶栏下拉列表",
+        "commit": "489cf3"
+      },
+      {
+        "type": "修复",
+        "description": "该ignore的都ignore了",
+        "commit": "8aff50"
+      },
+      {
+        "type": "更新",
+        "description": "测试",
+        "commit": "dd9c13"
+      },
+      {
+        "type": "更新",
+        "description": "调试 - 构建测试",
+        "commit": "8238ca"
+      },
+      {
+        "type": "新增",
+        "description": "新增了若干个人空间功能",
+        "commit": "1c7137"
+      },
+      {
+        "type": "修复",
+        "description": "api/db.js路径白名单添加user_badges，修复管理页添加标识时Invalid path错误",
+        "commit": "6fe412"
+      },
+      {
+        "type": "修复",
+        "description": "space.js第579行缺少方括号导致SyntaxError，space.js完全无法执行",
+        "commit": "5a7a9f"
+      },
+      {
+        "type": "修复",
+        "description": "修复space无参数时骨架卡死问题",
+        "commit": "caafb0"
+      },
+      {
+        "type": "修复",
+        "description": "space还原为原始工作版本，标识改用dbSet",
+        "commit": "260b07"
+      },
+      {
+        "type": "修复",
+        "description": "space增加骨架20秒安全兜底",
+        "commit": "edf548"
+      },
+      {
+        "type": "修复",
+        "description": "space骨架残留、UI衔接、管理页标识400",
+        "commit": "1cbd09"
+      },
+      {
+        "type": "修复",
+        "description": "管理页标识操作 API 参数错误",
+        "commit": "b83b32"
+      },
+      {
+        "type": "修复",
+        "description": "修复space页面和管理页多项问题",
+        "commit": "9b351c"
+      },
+      {
+        "type": "优化",
+        "description": "优化了徽章",
+        "commit": "72c288"
+      },
+      {
+        "type": "修复",
+        "description": "修复了顶栏已知问题",
+        "commit": "f0c1b3"
+      },
+      {
+        "type": "修复",
+        "description": "修复已知问题",
+        "commit": "658880"
+      },
+      {
+        "type": "修复",
+        "description": "修复顶栏滚动问题",
+        "commit": "286f06"
+      },
+      {
+        "type": "修复",
+        "description": "修复了顶栏已知问题",
+        "commit": "d6cfeb"
+      },
+      {
+        "type": "更新",
+        "description": "nav.js",
+        "commit": "3ad8c7"
+      },
+      {
+        "type": "优化",
+        "description": "优化了顶栏样式",
+        "commit": "11a3e1"
+      },
+      {
+        "type": "优化",
+        "description": "优化了部分UI，优化了quark serve命令",
+        "commit": "594024"
+      }
+    ]
+  },
+  {
     "date": "2026-05-25",
     "entries": [
+      {
+        "type": "修复",
+        "description": "修复了字体相关问题",
+        "commit": "565c97"
+      },
+      {
+        "type": "更新",
+        "description": "更新了部分UI和参考文档",
+        "commit": "87f247"
+      },
+      {
+        "type": "更新",
+        "description": "更新了一些UI效果",
+        "commit": "110cdc"
+      },
       {
         "type": "优化",
         "description": "优化了一些UI效果",

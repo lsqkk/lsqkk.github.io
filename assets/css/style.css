@@ -92,17 +92,22 @@ button {
     position: relative;
 }
 
-.post-layout-wrap .morenpost {
+.post-main-column {
     flex: 1;
     min-width: 0;
     max-width: 800px;
-    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Comment section inside the wrap — full width below flex items */
-.post-comment-section {
+.post-layout-wrap .morenpost {
+    margin: 20px 0 0;
+}
+
+.post-main-column .post-share-card,
+.post-main-column .post-comment-section {
     width: 100%;
-    max-width: 800px;
 }
 
 /* ── Right sidebar group (stacked boxes) ── */
@@ -623,12 +628,8 @@ button {
         background: var(--glass-bg-solid);
     }
 
-    .post-comment-section {
+    .post-main-column {
         max-width: 100%;
-    }
-
-    .post-comment-section .morenpost {
-        padding: 20px;
     }
 
     .sidebar-toggle {

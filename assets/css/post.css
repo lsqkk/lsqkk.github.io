@@ -457,8 +457,6 @@ pre {
 
 /* ── Share / donate card ── */
 .post-share-card {
-    width: 100%;
-    max-width: 800px;
     background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
     -webkit-backdrop-filter: blur(22px) saturate(135%);
@@ -673,18 +671,11 @@ pre {
 }
 
 .post-comment-section .morenpost {
-    margin: 20px 0;
     padding: 28px 32px;
 }
 
 .post-comment-section .giscus {
     width: 100%;
-}
-
-@media (max-width: 900px) {
-    .post-comment-section .morenpost {
-        padding: 20px;
-    }
 }
 
 /* ── Toast notification ── */
@@ -727,11 +718,10 @@ body.dark-mode .post-toast {
 @media (max-width: 640px) {
     .morenpost {
         padding: 20px;
-        margin: 12px;
     }
 
-    .post-comment-wrap {
-        padding: 0 12px;
+    .post-main-column .post-comment-section .morenpost {
+        padding: 20px;
     }
 
     .post-meta {

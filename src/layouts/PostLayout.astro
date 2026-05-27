@@ -118,6 +118,7 @@ try {
     <script id="dynamic-gallery-script" is:inline src="/assets/js/dynamic-gallery.js"></script>
     <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
     <div class="post-layout-wrap">
+      <div class="post-main-column">
       <div class="morenpost">
       <div class="post-header">
         {coverUrl ? (
@@ -225,6 +226,12 @@ try {
           <img src="/assets/img/buymeacoffee.png" alt="赞赏码" class="donate-qr" loading="lazy" />
         </div>
       </div>
+      <div class="post-comment-section">
+        <div class="morenpost">
+          <div class="giscus"></div>
+        </div>
+      </div>
+      </div><!-- /.post-main-column -->
       <aside class="post-sidebar-group">
         <div class="post-sidebar-group-scroll">
         <div class="post-toc-box" id="postTocBox">
@@ -286,11 +293,6 @@ try {
         </div>
         </div>
       </aside>
-      <div class="post-comment-section">
-        <div class="morenpost">
-          <div class="giscus"></div>
-        </div>
-      </div>
     </div><!-- /.post-layout-wrap -->
     <script is:inline defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
     <script is:inline defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
