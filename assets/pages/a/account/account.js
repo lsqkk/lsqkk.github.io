@@ -1059,6 +1059,16 @@
             cachedRemote = profile;
             setStatus('资料已保存并同步');
             setText(el.lastSyncAt, formatTime(profile.updatedAt));
+
+            // Verify write: read back from Firebase immediately
+            try {
+                const verifySnap = await db.ref('user_activity').child(uid).child('profile').once('value');
+                const verifyData = verifySnap.val() || {};
+                console.log('[saveProfile VERIFY] signature:', verifyData.signature, 'bg:', verifyData.backgroundImage);
+                console.log('[saveProfile VERIFY] has_sig:', 'signature' in verifyData, 'has_bg:', 'backgroundImage' in verifyData);
+            } catch (verr) {
+                console.warn('[saveProfile VERIFY] failed:', verr);
+            }
         } catch (error) {
             console.error('保存资料失败:', error);
             setStatus('保存失败，请稍后再试');
