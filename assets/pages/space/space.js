@@ -331,6 +331,21 @@
       }
     }
 
+    // Enrich local user profiles with full data from qb_users
+    // (activity cache profile may lack signature, backgroundImage, etc.)
+    if (matchedProfile && parsed.login && parsed.loginType === 'local') {
+      var full = await fetchDb('qb_users/' + parsed.login.toLowerCase()).catch(function () { return null; });
+      if (full) {
+        matchedProfile.nickname = full.nickname || matchedProfile.nickname || parsed.login;
+        matchedProfile.avatarUrl = full.avatarUrl || matchedProfile.avatarUrl || '';
+        matchedProfile.signature = full.signature || '';
+        matchedProfile.backgroundImage = full.backgroundImage || '';
+        matchedProfile.province = full.province || matchedProfile.province;
+        matchedProfile.city = full.city || matchedProfile.city;
+        matchedProfile.privacy = full.privacy || matchedProfile.privacy;
+      }
+    }
+
     if (!matchedProfile && parsed.login && parsed.loginType === 'local') {
       var qb = await fetchDb('qb_users/' + parsed.login.toLowerCase()).catch(function () { return null; });
       if (qb) {
