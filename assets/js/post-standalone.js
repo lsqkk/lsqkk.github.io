@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     initTOCSpy();
     addPostNavigationFromData();
 
-    // 显示侧边栏内容
-    const sidebarContent = document.getElementById('sidebarContent');
-    if (sidebarContent instanceof HTMLElement) {
-        sidebarContent.style.opacity = '1';
+    // 显示侧边栏内容 — TOC 内容由 generateTOC 填充
+    const tocContent = document.getElementById('postTocContent');
+    if (tocContent instanceof HTMLElement) {
+        tocContent.style.opacity = '1';
     }
 
     // 初始化段落划线点赞评论
@@ -232,13 +232,23 @@ function renderMath() {
     });
 }
 
-// 4. 生成目录 (TOC)
+// 4. 生成目录 (TOC) — 单独在 toc-box 中
 function generateTOC() {
-    const tocContainer = document.querySelector('.sidebar-main-content');
+    const tocContainer = document.getElementById('postTocContent');
     if (!tocContainer) return;
 
     var headings = Array.from(document.querySelectorAll('.post-content h1, .post-content h2, .post-content h3, .post-content h4'))
         .filter(function (heading) { return heading.getClientRects().length > 0; });
+
+    var tocBox = document.getElementById('postTocBox');
+    if (headings.length === 0) {
+        // No headings — hide TOC box entirely
+        if (tocBox) tocBox.classList.add('is-empty');
+        return;
+    }
+
+    // Show TOC box (remove empty state if previously set)
+    if (tocBox) tocBox.classList.remove('is-empty');
 
     var html = [
         '<div class="toc-shell">',
@@ -251,10 +261,6 @@ function generateTOC() {
         '  </div>',
         '  <div class="toc-list-wrap">'
     ].join('\n');
-
-    if (headings.length === 0) {
-        html += '<p class="toc-empty">暂无目录</p>';
-    }
 
     headings.forEach(function (heading, index) {
         var level = heading.tagName.toLowerCase();
@@ -270,16 +276,7 @@ function generateTOC() {
         ].join('\n');
     });
 
-    html += '</div>';
-
-    html += [
-        '<div class="nav-arrows-container">',
-        '  <div class="nav-arrows-title">前后文章</div>',
-        '  <a id="prevPost" class="nav-arrow nav-arrow-prev">← 加载中...</a>',
-        '  <a id="nextPost" class="nav-arrow nav-arrow-next">加载中... →</a>',
-        '</div>',
-        '</div>'
-    ].join('\n');
+    html += '</div></div>';
 
     tocContainer.innerHTML = html;
 }
@@ -355,13 +352,13 @@ function addPostNavigationFromData() {
     }
 }
 
-// 侧栏切换
+// 侧栏切换（移动端展开/收起整个 sidebar-group）
 function toggleSidebar() {
-    const sidebar = document.getElementById('postTocSidebar') || document.querySelector('.sidebar');
+    const group = document.querySelector('.post-sidebar-group');
     const backdrop = document.querySelector('.sidebar-backdrop');
-    if (!(sidebar instanceof HTMLElement)) return;
-    const willOpen = !sidebar.classList.contains('active');
-    sidebar.classList.toggle('active', willOpen);
+    if (!(group instanceof HTMLElement)) return;
+    const willOpen = !group.classList.contains('active');
+    group.classList.toggle('active', willOpen);
     document.body.classList.toggle('sidebar-open', willOpen);
     if (backdrop instanceof HTMLElement) {
         backdrop.classList.toggle('active', willOpen);

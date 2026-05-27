@@ -634,10 +634,36 @@ pre {
     border-radius: 5px;
 }
 
+/* ── Comment section (giscus) ── */
+.post-comment-section {
+    max-width: 800px;
+    margin: 0;
+    padding: 0;
+}
+
+.post-comment-section .morenpost {
+    margin: 20px 0;
+    padding: 28px 32px;
+}
+
+.post-comment-section .giscus {
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .post-comment-section .morenpost {
+        padding: 20px;
+    }
+}
+
 @media (max-width: 640px) {
     .morenpost {
         padding: 20px;
         margin: 12px;
+    }
+
+    .post-comment-wrap {
+        padding: 0 12px;
     }
 
     .post-meta {
