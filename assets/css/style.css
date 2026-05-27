@@ -117,18 +117,18 @@ button {
     gap: 16px;
 }
 
-/* Shared glass card for each sidebar box — no shadow, natural height */
+/* Shared glass card for each sidebar box — 符合玻璃系统标准 */
 .post-toc-box,
 .post-nav-box,
 .post-related-box,
 .post-footer-box {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border: 1px solid var(--glass-edge-soft);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--line);
     border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: border-color 0.28s ease, background 0.28s ease;
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    transition: border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
 }
 
 .post-toc-box:hover,
@@ -137,6 +137,7 @@ button {
 .post-footer-box:hover {
     border-color: var(--line-strong);
     background: var(--glass-bg-strong);
+    box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
 }
 
 .post-toc-box.is-empty,
@@ -827,23 +828,6 @@ button {
     background: rgba(0, 0, 0, 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
-    .post-toc-box,
-    .post-nav-box,
-    .post-related-box,
-    .post-footer-box {
-        background: rgba(17, 28, 46, 0.55);
-        border-color: rgba(134, 171, 226, 0.15);
-    }
-}
-
-body.dark-mode .post-toc-box,
-body.dark-mode .post-nav-box,
-body.dark-mode .post-related-box,
-body.dark-mode .post-footer-box {
-    background: rgba(17, 28, 46, 0.55);
-    border-color: rgba(134, 171, 226, 0.15);
-}
 
 /* 移动端深色模式：减轻背景黑块感 */
 body.dark-mode .sidebar-backdrop {
