@@ -49,6 +49,7 @@
 .header-left {
     display: flex;
     align-items: center;
+    margin-right: 8px;
 }
 .header-nav-container {
     display: flex;
@@ -65,7 +66,6 @@
 /* 溢出时左对齐，配合 translateX 滚动 */
 .header-nav-container.nav-overflow {
     justify-content: flex-start;
-    padding-left: 16px;
 }
 
 /* 左右滑动指示器 — 仅在可滑动时显示 */

@@ -175,6 +175,8 @@ lsqkk.github.io/
 ### npm 构建链路
 运行 `npm run build` 时，实际顺序为：
 
+> **注意**：build 输出每个页面的详细日志（270+ 行）会浪费 token，因此 `npm run build` 的输出应通过 `grep -iE "(error|warn|\bcompleted\b|✓|built in)"` 过滤，只保留关键行。完整原始输出仅在调试构建失败时使用。
+
 1. `prebuild`
 2. `gen:posts-json`：扫描 `posts/**/*.md` 生成 `posts/posts.json`
 3. `gen:rss`：基于 `posts/posts.json` 生成 `posts/rss.xml`
