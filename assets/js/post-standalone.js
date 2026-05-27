@@ -388,26 +388,28 @@ async function loadRelatedPosts() {
         // data-post-path looks like 2026/2606
         if (currentPath) currentFile = currentPath + '.md';
 
-        // Same tag matches
+        // Same tag matches — show first matching tag name
         if (hasTag) {
+            var tagLabel = tags[0] + '标签下的文章';
             var relatedByTag = allPosts.filter(function (p) {
                 if (p.file === currentFile) return false;
                 if (!Array.isArray(p.tags)) return false;
                 return p.tags.some(function (t) { return tags.indexOf(t) >= 0; });
             }).slice(0, 5);
 
-            renderRelatedList('relatedByTag', relatedByTag, '相同标签');
+            renderRelatedList('relatedByTag', relatedByTag, tagLabel);
         }
 
-        // Same column matches
+        // Same column matches — show first matching column name
         if (hasColumn) {
+            var colLabel = columns[0] + '专栏下的文章';
             var relatedByColumn = allPosts.filter(function (p) {
                 if (p.file === currentFile) return false;
                 if (!Array.isArray(p.columns) || p.columns.length === 0) return false;
                 return p.columns.some(function (c) { return columns.indexOf(c) >= 0; });
             }).slice(0, 5);
 
-            renderRelatedList('relatedByColumn', relatedByColumn, '相同专栏');
+            renderRelatedList('relatedByColumn', relatedByColumn, colLabel);
         }
 
         // Show the box if anything was rendered

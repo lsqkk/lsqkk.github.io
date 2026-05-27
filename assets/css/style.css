@@ -112,31 +112,15 @@ button {
     position: sticky;
     top: 100px;
     margin-top: 20px;
-    max-height: calc(100vh - 130px);
-    /* sticky outer wrapper — no overflow here */
 }
 
 .post-sidebar-group-scroll {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-height: calc(100vh - 130px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    padding-right: 2px;
 }
 
-.post-sidebar-group-scroll::-webkit-scrollbar {
-    width: 4px;
-}
-
-.post-sidebar-group-scroll::-webkit-scrollbar-thumb {
-    background: rgba(100, 120, 150, 0.25);
-    border-radius: 3px;
-}
-
-/* Shared glass card for each sidebar box */
+/* Shared glass card for each sidebar box — no shadow, natural height */
 .post-toc-box,
 .post-nav-box,
 .post-related-box,
@@ -146,21 +130,16 @@ button {
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     border: 1px solid var(--glass-edge-soft);
     border-radius: var(--radius-md);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        0 2px 8px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge);
     overflow: hidden;
-    transition: box-shadow 0.28s ease;
+    transition: border-color 0.28s ease, background 0.28s ease;
 }
 
 .post-toc-box:hover,
 .post-nav-box:hover,
 .post-related-box:hover,
 .post-footer-box:hover {
-    box-shadow:
-        0 12px 40px var(--glass-shadow-hover),
-        inset 0 0 0 1px var(--glass-edge-strong);
+    border-color: var(--line-strong);
+    background: var(--glass-bg-strong);
 }
 
 .post-toc-box.is-empty,
@@ -619,7 +598,6 @@ button {
 
     .post-sidebar-group.active .post-sidebar-group-scroll {
         max-height: none;
-        overflow: visible;
     }
 
     .post-sidebar-group.active .post-toc-box,
@@ -704,10 +682,6 @@ button {
     .post-footer-box {
         background: rgba(17, 28, 46, 0.55);
         border-color: rgba(134, 171, 226, 0.15);
-        box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            0 2px 8px rgba(0, 0, 0, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
 }
 
@@ -717,10 +691,6 @@ body.dark-mode .post-related-box,
 body.dark-mode .post-footer-box {
     background: rgba(17, 28, 46, 0.55);
     border-color: rgba(134, 171, 226, 0.15);
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        0 2px 8px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* 标签分类样式 */
