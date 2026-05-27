@@ -196,6 +196,8 @@ try {
         data-date={date}
         data-word-count={String(wordCount)}
         data-tags={JSON.stringify(tags)}
+        data-columns={JSON.stringify(columns)}
+        data-post-title={postTitle}
         data-description={postDescription}
         data-prev-title={prevPostTitle}
         data-prev-url={prevPostUrl}
@@ -263,6 +265,14 @@ try {
                 <a id="prevPost" class="nav-arrow nav-arrow-prev">← 加载中...</a>
                 <a id="nextPost" class="nav-arrow nav-arrow-next">加载中... →</a>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="post-related-box is-empty" id="postRelatedBox">
+          <div class="sidebar-content">
+            <div class="sidebar-main-content">
+              <div id="relatedByTag"></div>
+              <div id="relatedByColumn"></div>
             </div>
           </div>
         </div>

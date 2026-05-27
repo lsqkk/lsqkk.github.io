@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 初始化段落划线点赞评论
     await initPostAnnotationFeature();
+
+    // 加载同标签/同专栏相关文章
+    loadRelatedPosts();
 });
 
 async function initPostAnnotationFeature() {
@@ -350,6 +353,97 @@ function addPostNavigationFromData() {
     } else {
         nextBtn.style.display = 'none';
     }
+}
+
+// 6. 同标签 / 同专栏相关文章
+async function loadRelatedPosts() {
+    var container = document.getElementById('post-tags-container');
+    if (!(container instanceof HTMLElement)) return;
+
+    var tagsJson = container.getAttribute('data-tags');
+    var columnsJson = container.getAttribute('data-columns');
+    var currentTitle = container.getAttribute('data-post-title') || '';
+    var currentPath = container.getAttribute('data-post-path') || '';
+
+    /** @type {string[]} */
+    var tags = [];
+    /** @type {string[]} */
+    var columns = [];
+    try { if (tagsJson) tags = JSON.parse(tagsJson); } catch (e) { tags = []; }
+    try { if (columnsJson) columns = JSON.parse(columnsJson); } catch (e) { columns = []; }
+
+    var hasTag = tags.length > 0;
+    var hasColumn = columns.length > 0;
+    if (!hasTag && !hasColumn) return;
+
+    try {
+        var resp = await fetch('/posts/posts.json');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        /** @type {Array<{title:string,file:string,date:string,tags:string[],columns:string[]}>} */
+        var allPosts = await resp.json();
+        if (!Array.isArray(allPosts)) throw new Error('Invalid posts.json');
+
+        // Filter out current post by path
+        var currentFile = '';
+        // data-post-path looks like /posts/2026/slug → extract file path
+        var pathMatch = currentPath.match(/\/posts\/(.+)/);
+        if (pathMatch) currentFile = pathMatch[1] + '.md';
+
+        // Same tag matches
+        if (hasTag) {
+            var relatedByTag = allPosts.filter(function (p) {
+                if (p.file === currentFile) return false;
+                if (!Array.isArray(p.tags)) return false;
+                return p.tags.some(function (t) { return tags.indexOf(t) >= 0; });
+            }).slice(0, 5);
+
+            renderRelatedList('relatedByTag', relatedByTag, '相同标签');
+        }
+
+        // Same column matches
+        if (hasColumn) {
+            var relatedByColumn = allPosts.filter(function (p) {
+                if (p.file === currentFile) return false;
+                if (!Array.isArray(p.columns) || p.columns.length === 0) return false;
+                return p.columns.some(function (c) { return columns.indexOf(c) >= 0; });
+            }).slice(0, 5);
+
+            renderRelatedList('relatedByColumn', relatedByColumn, '相同专栏');
+        }
+
+        // Show the box if anything was rendered
+        var box = document.getElementById('postRelatedBox');
+        if (box && (document.getElementById('relatedByTag')?.children.length > 0 ||
+                     document.getElementById('relatedByColumn')?.children.length > 0)) {
+            box.classList.remove('is-empty');
+        }
+    } catch (e) {
+        console.warn('相关文章加载失败:', e);
+    }
+}
+
+/**
+ * @param {string} containerId
+ * @param {Array<{title:string,file:string,date:string}>} posts
+ * @param {string} label
+ */
+function renderRelatedList(containerId, posts, label) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    if (!posts || posts.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    var html = '<div class="related-section-title">' + label + '</div>';
+    posts.forEach(function (p) {
+        var slug = p.file.replace(/\.md$/i, '');
+        var href = '/posts/' + slug;
+        html += '<a class="related-post-item" href="' + href + '">' +
+                p.title +
+                '<span class="related-post-date">' + (p.date || '') + '</span>' +
+                '</a>';
+    });
+    container.innerHTML = html;
 }
 
 // 侧栏切换（移动端展开/收起整个 sidebar-group）

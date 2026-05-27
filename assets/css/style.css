@@ -115,11 +115,25 @@ button {
     position: sticky;
     top: 100px;
     margin-top: 20px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.post-sidebar-group::-webkit-scrollbar {
+    width: 4px;
+}
+
+.post-sidebar-group::-webkit-scrollbar-thumb {
+    background: rgba(100, 120, 150, 0.25);
+    border-radius: 3px;
 }
 
 /* Shared glass card for each sidebar box */
 .post-toc-box,
 .post-nav-box,
+.post-related-box,
 .post-footer-box {
     background: var(--glass-bg);
     backdrop-filter: blur(24px) saturate(160%);
@@ -136,18 +150,21 @@ button {
 
 .post-toc-box:hover,
 .post-nav-box:hover,
+.post-related-box:hover,
 .post-footer-box:hover {
     box-shadow:
         0 12px 40px var(--glass-shadow-hover),
         inset 0 0 0 1px var(--glass-edge-strong);
 }
 
-.post-toc-box.is-empty {
+.post-toc-box.is-empty,
+.post-related-box.is-empty {
     display: none;
 }
 
 .post-toc-box .sidebar-main-content,
 .post-nav-box .sidebar-main-content,
+.post-related-box .sidebar-main-content,
 .post-footer-box .sidebar-main-content {
     padding: 20px;
     padding-right: 15px;
@@ -155,8 +172,13 @@ button {
     position: relative;
 }
 
+.post-related-box .sidebar-main-content {
+    padding: 16px 20px;
+}
+
 .post-toc-box .sidebar-content,
 .post-nav-box .sidebar-content,
+.post-related-box .sidebar-content,
 .post-footer-box .sidebar-content {
     position: relative;
 }
@@ -432,39 +454,98 @@ button {
     padding-left: 24px;
 }
 
-/* 导航箭头样式 */
+/* 导航箭头样式 — 独立盒子，无顶部边框 */
 .nav-arrows-container {
-    margin-top: 18px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .nav-arrows-title {
-    margin-bottom: 10px;
     color: var(--text-soft);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
 }
 
 .nav-arrow {
-    display: block;
-    margin: 6px 0;
-    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 11px;
     color: var(--accent);
     text-decoration: none;
-    font-size: 0.88em;
-    line-height: 1.5;
-    border-radius: 10px;
+    font-size: 0.84em;
+    font-weight: 600;
+    line-height: 1.4;
+    border-radius: var(--radius-sm);
     background: var(--surface-tint);
-    border: 1px solid var(--accent-soft);
-    transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+}
+
+.nav-arrow-prev {
+    justify-content: flex-start;
+}
+
+.nav-arrow-next {
+    justify-content: flex-end;
 }
 
 .nav-arrow:hover {
-    opacity: 1;
     transform: translateX(2px);
-    background: var(--surface);
+    background: color-mix(in srgb, var(--surface-tint) 60%, var(--accent-soft));
+}
+
+.nav-arrow:active {
+    transform: scale(0.98);
+}
+
+/* ── Related articles in sidebar ── */
+.related-section-title {
+    color: var(--text-soft);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.related-post-item {
+    display: block;
+    padding: 7px 6px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 0.84em;
+    line-height: 1.35;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    border-bottom: 1px solid var(--line);
+}
+
+.related-post-item:last-child {
+    border-bottom: none;
+}
+
+.related-post-item:hover {
+    background: var(--surface-tint);
+    color: var(--accent);
+    transform: translateX(2px);
+}
+
+.related-post-date {
+    display: block;
+    font-size: 0.72em;
+    color: var(--text-soft);
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+.related-empty {
+    color: var(--text-soft);
+    font-size: 0.82em;
+    padding: 4px 0;
 }
 
 /* 底部链接样式 */
@@ -496,38 +577,8 @@ button {
     pointer-events: auto;
 }
 
-/* 响应式设计 */
-@media (max-width: 1200px) {
-    .sidebar-toggle {
-        display: inline-flex;
-    }
-
-    .post-sidebar-group {
-        position: fixed;
-        right: -300px;
-        top: 80px;
-        width: 280px;
-        z-index: 999;
-        transition: right 0.3s ease, opacity 0.3s ease;
-        opacity: 0;
-        pointer-events: none;
-        max-height: calc(100vh - 100px);
-        overflow-y: auto;
-        gap: 12px;
-    }
-
-    .post-sidebar-group.active {
-        right: 10px;
-        opacity: 1;
-        pointer-events: auto;
-    }
-
-    .sidebar {
-        display: none;
-    }
-}
-
-@media (max-width: 900px) {
+/* 响应式设计 — 两层：桌面 >1100px | 移动端 ≤1100px */
+@media (max-width: 1100px) {
     .post-layout-wrap {
         flex-direction: column;
         padding: 0 12px;
@@ -564,6 +615,7 @@ button {
 
     .post-sidebar-group.active .post-toc-box,
     .post-sidebar-group.active .post-nav-box,
+    .post-sidebar-group.active .post-related-box,
     .post-sidebar-group.active .post-footer-box {
         background: var(--glass-bg-solid);
     }
@@ -579,9 +631,13 @@ button {
     .sidebar-toggle {
         display: inline-flex;
     }
+
+    .sidebar {
+        display: none;
+    }
 }
 
-@media (min-width: 1201px) {
+@media (min-width: 1101px) {
     .post-sidebar-group {
         display: flex;
     }
@@ -635,6 +691,7 @@ button {
 @media (prefers-color-scheme: dark) {
     .post-toc-box,
     .post-nav-box,
+    .post-related-box,
     .post-footer-box {
         background: rgba(17, 28, 46, 0.55);
         border-color: rgba(134, 171, 226, 0.15);
@@ -647,6 +704,7 @@ button {
 
 body.dark-mode .post-toc-box,
 body.dark-mode .post-nav-box,
+body.dark-mode .post-related-box,
 body.dark-mode .post-footer-box {
     background: rgba(17, 28, 46, 0.55);
     border-color: rgba(134, 171, 226, 0.15);
