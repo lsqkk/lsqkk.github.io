@@ -626,36 +626,51 @@ button {
         display: none;
     }
 
-    /* 文章页：主栏和侧栏独立滚动（桌面端） */
-    body.post-layout-page {
-        overflow: hidden;
-        height: 100vh;
-    }
-
-    body.post-layout-page .post-layout-wrap {
-        height: calc(100vh - 60px);
-        overflow: hidden;
-        align-items: stretch;
-    }
-
-    body.post-layout-page .post-main-column {
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-
+    /* 文章页：侧栏固定定位 + 透明层独立滚动（桌面端），主栏跟随页面滚动 */
     body.post-layout-page .post-sidebar-group {
-        position: static;
-        top: auto;
-        max-height: none;
-        overflow-y: auto;
-        overscroll-behavior: contain;
+        position: fixed;
+        top: 100px;
+        height: calc(100vh - 120px);
+        width: 240px;
+        left: calc((100vw - min(1120px, 100vw)) / 2 + 20px + 800px + 24px);
+        z-index: 1;
     }
 
-    /* 独立滚动模式下固定 header 不隐藏 */
-    body.post-layout-page .header.header-hidden {
-        transform: none !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
+    body.post-layout-page .post-sidebar-scroll {
+        height: 100%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 16px,
+            black calc(100% - 16px),
+            transparent 100%
+        );
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 16px,
+            black calc(100% - 16px),
+            transparent 100%
+        );
+    }
+
+    body.post-layout-page .post-sidebar-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* 侧栏内部盒子自然高度，不受外层约束 */
+    body.post-layout-page .post-sidebar-scroll .post-toc-box,
+    body.post-layout-page .post-sidebar-scroll .post-nav-box,
+    body.post-layout-page .post-sidebar-scroll .post-related-box,
+    body.post-layout-page .post-sidebar-scroll .post-footer-box {
+        flex-shrink: 0;
     }
 }
 
@@ -712,6 +727,18 @@ body.dark-mode .post-related-box,
 body.dark-mode .post-footer-box {
     background: rgba(17, 28, 46, 0.55);
     border-color: rgba(134, 171, 226, 0.15);
+}
+
+/* 移动端深色模式：减轻背景黑块感 */
+body.dark-mode .sidebar-backdrop {
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(1px);
+}
+
+@media (max-width: 1100px) {
+    body.dark-mode .post-sidebar-group.active {
+        background: rgba(10, 18, 34, 0.3);
+    }
 }
 
 /* 标签分类样式 */
