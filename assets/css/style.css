@@ -83,13 +83,11 @@ button {
 /* ── Post layout: article + right TOC ── */
 .post-layout-wrap {
     display: flex;
-    flex-wrap: wrap;
     gap: 24px;
     max-width: 1120px;
     margin: 0 auto;
     padding: 0 20px;
     align-items: flex-start;
-    position: relative;
 }
 
 .post-main-column {
@@ -116,23 +114,12 @@ button {
     flex-shrink: 0;
     position: sticky;
     top: 100px;
-    margin-top: 20px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
     display: flex;
     flex-direction: column;
     gap: 16px;
-}
-
-.post-sidebar-group::-webkit-scrollbar {
-    width: 4px;
-}
-
-.post-sidebar-group::-webkit-scrollbar-thumb {
-    background: rgba(100, 120, 150, 0.25);
-    border-radius: 3px;
 }
 
 /* Shared glass card for each sidebar box — no shadow, natural height */
