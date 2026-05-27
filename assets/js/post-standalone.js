@@ -30,6 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         tocContent.style.opacity = '1';
     }
 
+    // 初始化动态侧栏遮罩（渐隐效果）
+    updateSidebarMask();
+    var sidebarScroll = document.querySelector('.post-sidebar-scroll');
+    if (sidebarScroll) {
+        sidebarScroll.addEventListener('scroll', updateSidebarMask, { passive: true });
+    }
+    window.addEventListener('resize', updateSidebarMask);
+
     // 初始化段落划线点赞评论
     await initPostAnnotationFeature();
 
@@ -181,6 +189,47 @@ function initBackToTop() {
     });
 }
 
+// ── Dynamic sidebar scroll mask ──
+function applyScrollMask(el) {
+    var st = el.scrollTop;
+    var sh = el.scrollHeight;
+    var ch = el.clientHeight;
+
+    // No mask if content doesn't overflow
+    if (sh <= ch + 1) {
+        el.style.removeProperty('-webkit-mask-image');
+        el.style.removeProperty('mask-image');
+        return;
+    }
+
+    var atTop = st <= 3;
+    var atBottom = sh - st - ch <= 3;
+
+    var mask = 'linear-gradient(to bottom';
+    if (atTop) {
+        mask += ', black 0%';
+    } else {
+        mask += ', transparent 0%, black 16px';
+    }
+    mask += ', black calc(100% - 16px)';
+    if (atBottom) {
+        mask += ', black 100%';
+    } else {
+        mask += ', transparent 100%';
+    }
+    mask += ')';
+
+    el.style.setProperty('-webkit-mask-image', mask);
+    el.style.setProperty('mask-image', mask);
+}
+
+function updateSidebarMask() {
+    var scrollEl = document.querySelector('.post-sidebar-scroll');
+    if (scrollEl) applyScrollMask(scrollEl);
+    var mobileEl = document.querySelector('.post-sidebar-group.active');
+    if (mobileEl) applyScrollMask(mobileEl);
+}
+
 // 2. 渲染元数据和基础 UI
 function initPostUI() {
     const tagsContainer = document.getElementById('post-tags-container');
@@ -314,6 +363,11 @@ function initTOCSpy() {
         if (activeItem) {
             activeItem.classList.add('active');
         }
+
+        // Auto-scroll sidebar to keep active item in view
+        if (activeItem) {
+            scrollActiveTocIntoView(activeItem);
+        }
     };
 
     updateActive();
@@ -321,6 +375,24 @@ function initTOCSpy() {
         window.requestAnimationFrame(updateActive);
     }, { passive: true });
     window.addEventListener('resize', updateActive);
+}
+
+// ── Sidebar auto-scroll to keep active TOC item visible ──
+function scrollActiveTocIntoView(activeItem) {
+    var scrollContainer = document.querySelector('.post-sidebar-scroll');
+    if (!scrollContainer) return;
+
+    var itemRect = activeItem.getBoundingClientRect();
+    var containerRect = scrollContainer.getBoundingClientRect();
+    var relTop = itemRect.top - containerRect.top;
+    var relBottom = itemRect.bottom - containerRect.top;
+    var padding = 16;
+
+    if (relBottom > containerRect.height - padding) {
+        scrollContainer.scrollTop += relBottom - containerRect.height + padding;
+    } else if (relTop < padding) {
+        scrollContainer.scrollTop += relTop - padding;
+    }
 }
 
 // 5. 侧边栏导航逻辑（使用构建期注入的数据，不再请求 posts.json）
@@ -435,7 +507,14 @@ function renderRelatedList(containerId, posts, label) {
         container.innerHTML = '';
         return;
     }
-    var html = '<div class="related-section-title">' + label + '</div>';
+    var sectionId = containerId + '-items';
+    var html = '<div class="related-section">';
+    html += '<button class="related-toggle" type="button" aria-expanded="false" onclick="toggleRelatedSection(this)">';
+    html += '<span class="related-toggle-icon">▶</span> ';
+    html += '<span class="related-section-title">' + label + '</span>';
+    html += '<span class="related-count">' + posts.length + '</span>';
+    html += '</button>';
+    html += '<div class="related-items" id="' + sectionId + '" hidden>';
     posts.forEach(function (p) {
         var slug = p.file.replace(/\.md$/i, '');
         var href = '/posts/' + slug;
@@ -444,8 +523,18 @@ function renderRelatedList(containerId, posts, label) {
                 '<span class="related-post-date">' + (p.date || '') + '</span>' +
                 '</a>';
     });
+    html += '</div></div>';
     container.innerHTML = html;
 }
+
+window.toggleRelatedSection = function(btn) {
+    var items = btn.nextElementSibling;
+    var expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    if (items) {
+        items.hidden = expanded;
+    }
+};
 
 // 侧栏切换（移动端展开/收起整个 sidebar-group）
 function toggleSidebar() {
@@ -461,6 +550,24 @@ function toggleSidebar() {
     const toggle = document.querySelector('.sidebar-toggle');
     if (toggle instanceof HTMLElement) {
         toggle.setAttribute('aria-expanded', String(willOpen));
+    }
+
+    // Update sidebar mask after toggle
+    if (willOpen) {
+        requestAnimationFrame(function () {
+            updateSidebarMask();
+            // Add scroll listener for mobile sidebar
+            if (window.matchMedia('(max-width: 1100px)').matches && group) {
+                group.addEventListener('scroll', updateSidebarMask, { passive: true });
+            }
+        });
+    } else {
+        // Clean up mobile mask and scroll listener on close
+        if (group) {
+            group.style.removeProperty('-webkit-mask-image');
+            group.style.removeProperty('mask-image');
+            group.removeEventListener('scroll', updateSidebarMask);
+        }
     }
 }
 
