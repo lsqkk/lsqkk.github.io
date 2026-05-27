@@ -1091,11 +1091,18 @@ function initNavScrollWheel() {
 
     let pos = 0;
 
+    const updateIndicators = (maxScroll) => {
+        const canScroll = maxScroll > 0;
+        navContainer.classList.toggle('scroll-left', canScroll && pos < 0);
+        navContainer.classList.toggle('scroll-right', canScroll && pos > -maxScroll);
+    };
+
     const applyClamp = () => {
         if (!navContainer.isConnected) return;
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
         pos = Math.max(-maxScroll, Math.min(0, pos));
         navList.style.transform = `translateX(${pos}px)`;
+        updateIndicators(maxScroll);
     };
 
     const recalc = () => requestAnimationFrame(applyClamp);
@@ -1118,7 +1125,10 @@ function initNavScrollWheel() {
     navContainer.addEventListener('wheel', (event) => {
         if (event.ctrlKey || event.metaKey) return;
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
-        if (maxScroll <= 0) return;
+        if (maxScroll <= 0) {
+            navContainer.classList.remove('scroll-left', 'scroll-right');
+            return;
+        }
         // 同时支持鼠标滚轮（垂直）和触控板横向滑动
         let delta = 0;
         if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
@@ -1133,6 +1143,7 @@ function initNavScrollWheel() {
         pos = Math.max(-maxScroll, Math.min(0, pos - step));
         if (pos !== prevPos) {
             navList.style.transform = `translateX(${pos}px)`;
+            updateIndicators(maxScroll);
         }
     }, { passive: false });
 }

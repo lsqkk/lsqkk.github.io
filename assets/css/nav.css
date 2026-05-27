@@ -54,11 +54,43 @@
     display: flex;
     align-items: center;
     flex-grow: 1;
-    justify-content: center;
     min-width: 0;
     flex-shrink: 1;
     overflow: hidden;
     touch-action: pan-y;
+    position: relative;
+}
+
+/* 左右滑动指示器 — 仅在可滑动时显示 */
+.header-nav-container::before,
+.header-nav-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.header-nav-container::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.04) 40%, transparent 100%);
+}
+
+.header-nav-container::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.04) 40%, transparent 100%);
+}
+
+.header-nav-container.scroll-left::before {
+    opacity: 1;
+}
+
+.header-nav-container.scroll-right::after {
+    opacity: 1;
 }
 
 .header-nav {
@@ -894,6 +926,14 @@
         inset 0 1px 0 rgba(171, 199, 241, 0.12);
 }
 
+.header.nav-dark .header-nav-container::before {
+    background: linear-gradient(to right, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 40%, transparent 100%);
+}
+
+.header.nav-dark .header-nav-container::after {
+    background: linear-gradient(to left, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 40%, transparent 100%);
+}
+
 .header.nav-dark h1,
 .header.nav-dark .header-nav li a,
 .header.nav-dark .header-search-btn,
@@ -1171,6 +1211,14 @@ body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-list a:hover {
         background: rgba(14, 24, 41, 0.92);
         border-color: rgba(138, 173, 220, 0.33);
         box-shadow: 0 16px 32px rgba(0, 0, 0, 0.42);
+    }
+
+    .header:not(.nav-dark) .header-nav-container::before {
+        background: linear-gradient(to right, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 40%, transparent 100%);
+    }
+
+    .header:not(.nav-dark) .header-nav-container::after {
+        background: linear-gradient(to left, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.12) 40%, transparent 100%);
     }
 
     /* prefers-color-scheme 深色且 body 未挂 dark-mode 类时，body 菜单也用深色 */
