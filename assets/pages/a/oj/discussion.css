@@ -7,29 +7,29 @@
 #newDiscussionForm {
     margin-bottom: 20px;
     padding: 18px;
-    background: var(--oj-glass);
+    background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
     -webkit-backdrop-filter: blur(22px) saturate(135%);
-    border: 1px solid var(--oj-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    color: var(--oj-text);
-    box-shadow: 0 8px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge);
+    color: var(--text-main);
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
 }
 
 #newDiscussionForm h3 {
-    color: var(--oj-text);
+    color: var(--text-main);
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.3em;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--oj-line);
+    border-bottom: 1px solid var(--line);
 }
 
 .form-group label {
     display: block;
     margin-bottom: 6px;
     font-size: 0.9em;
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
     font-weight: 500;
 }
 
@@ -69,7 +69,7 @@
     color: #fff;
     font-size: 1.2rem;
     border: 2px solid var(--oj-accent);
-    box-shadow: 0 2px 5px var(--oj-shadow);
+    box-shadow: 0 2px 5px var(--glass-shadow);
     overflow: hidden;
     background-size: cover;
     background-position: center;
@@ -80,14 +80,14 @@
     border-radius: 6px;
     overflow: hidden;
     flex-shrink: 0;
-    background: var(--oj-glass-soft);
+    background: var(--glass-bg-soft);
 }
 
 .avatar-toggle button {
     padding: 8px 16px;
     border: none;
     background: transparent;
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
     transition: background 0.2s ease, color 0.2s ease;
     font-size: 14px;
     cursor: pointer;
@@ -161,10 +161,10 @@
     box-sizing: border-box;
     width: 100%;
     padding: 10px 12px;
-    background: var(--oj-glass-soft);
-    border: 1px solid var(--oj-line);
+    background: var(--glass-bg-soft);
+    border: 1px solid var(--line);
     border-radius: 6px;
-    color: var(--oj-text);
+    color: var(--text-main);
     font-size: 0.95em;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     backdrop-filter: blur(5px);
@@ -173,7 +173,7 @@
 
 #newDiscussionForm input::placeholder,
 #newDiscussionForm textarea::placeholder {
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
 }
 
 #newDiscussionForm input:focus,
@@ -207,12 +207,12 @@
     cursor: pointer;
     transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
     font-weight: bold;
-    box-shadow: 0 2px 5px var(--oj-shadow);
+    box-shadow: 0 2px 5px var(--glass-shadow);
 }
 
 .submit-btn:hover {
     background: var(--oj-accent-hover);
-    box-shadow: 0 4px 8px var(--oj-shadow);
+    box-shadow: 0 4px 8px var(--glass-shadow);
     transform: translateY(-1px);
 }
 
@@ -233,40 +233,40 @@
 
 /* ── 讨论列表 ── */
 .discussions-list-section h2 {
-    color: var(--oj-text);
+    color: var(--text-main);
     margin-top: 0;
     margin-bottom: 15px;
 }
 
 .discussion-summary {
-    background: var(--oj-glass);
+    background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
     -webkit-backdrop-filter: blur(22px) saturate(135%);
-    border: 1px solid var(--oj-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    color: var(--oj-text);
+    color: var(--text-main);
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: 0 8px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge);
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
     transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
     cursor: pointer;
 }
 
 .discussion-summary:hover {
-    background: var(--oj-glass-strong);
+    background: var(--glass-bg-strong);
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge-strong);
+    box-shadow: 0 12px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge-strong);
 }
 
 .summary-title {
     font-weight: 600;
     font-size: 1.1em;
-    color: var(--oj-text);
+    color: var(--text-main);
     margin-bottom: 8px;
 }
 
 .summary-meta {
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
     font-size: 0.85em;
     display: flex;
     align-items: center;
@@ -282,7 +282,7 @@
     border-radius: 999px;
     font-size: 0.75em;
     font-weight: 600;
-    color: var(--oj-text);
+    color: var(--text-main);
     background: var(--oj-accent-soft);
     border: 1px solid var(--oj-accent);
 }
@@ -301,7 +301,7 @@
     background-size: cover;
     background-position: center;
     vertical-align: middle;
-    border: 2px solid var(--oj-edge);
+    border: 2px solid var(--glass-edge);
 }
 
 .problem-tag {
@@ -316,19 +316,19 @@
 
 /* ── 讨论详情 ── */
 .discussion-detail-card {
-    background: var(--oj-glass);
+    background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
     -webkit-backdrop-filter: blur(22px) saturate(135%);
-    border: 1px solid var(--oj-line);
+    border: 1px solid var(--line);
     border-radius: var(--radius-sm);
-    color: var(--oj-text);
-    box-shadow: 0 8px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge);
+    color: var(--text-main);
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
     padding: 25px;
     margin-top: 20px;
 }
 
 .detail-header h1 {
-    color: var(--oj-text);
+    color: var(--text-main);
     font-weight: 700;
     font-size: 1.5em;
     margin-top: 0;
@@ -336,35 +336,35 @@
 }
 
 .detail-meta-row {
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
     font-size: 0.9em;
     display: flex;
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid var(--oj-line);
+    border-bottom: 1px solid var(--line);
 }
 
 .post-content {
     line-height: 1.7;
-    color: var(--oj-text);
+    color: var(--text-main);
     margin-bottom: 25px;
 }
 
 .post-content pre {
-    background: var(--oj-glass-strong);
-    border: 1px solid var(--oj-line);
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--line);
     padding: 12px;
     border-radius: 6px;
     overflow-x: auto;
     font-family: 'Consolas', 'Courier New', monospace;
-    color: var(--oj-text);
+    color: var(--text-main);
     margin: 15px 0;
 }
 
 .post-content code {
-    background: var(--oj-glass-strong);
+    background: var(--glass-bg-strong);
     padding: 2px 6px;
     border-radius: 4px;
     color: #ffcc99;
@@ -378,7 +378,7 @@
 }
 
 .reply-card {
-    background: var(--oj-glass-soft);
+    background: var(--glass-bg-soft);
     border-left: 4px solid var(--oj-accent);
     padding: 15px;
     margin-bottom: 15px;
@@ -412,29 +412,29 @@
 
 .reply-author {
     font-weight: 600;
-    color: var(--oj-text);
+    color: var(--text-main);
 }
 
 .reply-time {
     font-size: 0.8em;
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
 }
 
 .reply-content {
-    color: var(--oj-text);
+    color: var(--text-main);
     line-height: 1.6;
 }
 
 .reply-input-area {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid var(--oj-line);
+    border-top: 1px solid var(--line);
 }
 
 .action-btn {
     background: none;
     border: none;
-    color: var(--oj-text-soft);
+    color: var(--text-soft);
     cursor: pointer;
     transition: color 0.2s ease;
     display: inline-flex;
@@ -449,9 +449,9 @@
 }
 
 .back-to-list-btn {
-    background: var(--oj-glass-soft);
-    border: 1px solid var(--oj-line);
-    color: var(--oj-text);
+    background: var(--glass-bg-soft);
+    border: 1px solid var(--line);
+    color: var(--text-main);
     border-radius: 6px;
     padding: 8px 15px;
     cursor: pointer;
@@ -463,7 +463,7 @@
 }
 
 .back-to-list-btn:hover {
-    background: var(--oj-glass);
+    background: var(--glass-bg);
     transform: translateY(-1px);
 }
 
@@ -477,10 +477,10 @@
 
 .page-btn {
     padding: 8px 16px;
-    border: 1px solid var(--oj-line);
+    border: 1px solid var(--line);
     border-radius: 6px;
-    background: var(--oj-glass-soft);
-    color: var(--oj-text);
+    background: var(--glass-bg-soft);
+    color: var(--text-main);
     cursor: pointer;
     transition: background 0.2s ease;
 }
@@ -492,7 +492,7 @@
 }
 
 .page-btn:hover:not(.active) {
-    background: var(--oj-glass-strong);
+    background: var(--glass-bg-strong);
 }
 
 /* ── Responsive ── */
