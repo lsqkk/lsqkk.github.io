@@ -685,9 +685,7 @@
     async function migrateLegacyUid() {
         const legacyUid = getLegacyUid();
         const targetUid = getUid();
-        console.log('[migrateLegacyUid] legacyUid:', legacyUid, 'targetUid:', targetUid);
         if (!legacyUid || !targetUid || legacyUid === targetUid) return;
-        console.log('[migrateLegacyUid] WILL RUN migration');
         try {
             const db = await ensureFirebase();
             const legacySnap = await db.ref('user_activity').child(legacyUid).once('value');
@@ -699,9 +697,6 @@
             const targetSnap = await db.ref('user_activity').child(targetUid).once('value');
             const targetData = targetSnap.val() || {};
             const mergedProfile = mergeProfileFields(legacyData.profile, targetData.profile);
-            console.log('[migrateLegacyUid] legacyProfile:', legacyData.profile);
-            console.log('[migrateLegacyUid] targetProfile:', targetData.profile);
-            console.log('[migrateLegacyUid] mergedProfile:', JSON.stringify(mergedProfile));
 
             await db.ref('user_activity').child(targetUid).update({
                 profile: mergedProfile,
@@ -1033,7 +1028,6 @@
 
         try {
             const db = await ensureFirebase();
-            console.log('[saveProfile] writing to Firebase path:', 'user_activity/' + uid + '/profile');
             await db.ref('user_activity').child(uid).child('profile').update(profile);
             if (loginType === 'local' && login) {
                 await db.ref('qb_users').child(String(login).toLowerCase()).update({
@@ -1059,16 +1053,6 @@
             cachedRemote = profile;
             setStatus('资料已保存并同步');
             setText(el.lastSyncAt, formatTime(profile.updatedAt));
-
-            // Verify write: read back from Firebase immediately
-            try {
-                const verifySnap = await db.ref('user_activity').child(uid).child('profile').once('value');
-                const verifyData = verifySnap.val() || {};
-                console.log('[saveProfile VERIFY] signature:', verifyData.signature, 'bg:', verifyData.backgroundImage);
-                console.log('[saveProfile VERIFY] has_sig:', 'signature' in verifyData, 'has_bg:', 'backgroundImage' in verifyData);
-            } catch (verr) {
-                console.warn('[saveProfile VERIFY] failed:', verr);
-            }
         } catch (error) {
             console.error('保存资料失败:', error);
             setStatus('保存失败，请稍后再试');
@@ -1079,7 +1063,6 @@
         const user = ensureLogin();
         if (!user) return;
         const profile = getProfile();
-        console.log('[fillStaticInfo] profile from getProfile():', profile);
         applyProfileToForm(profile);
         setText(el.githubLogin, user.login || profile.login || '');
         const loginType = getLoginType();
@@ -1114,7 +1097,6 @@
     }
 
     async function init() {
-        console.log('[PAGE_LOAD] quark_uid:', localStorage.getItem('quark_uid'), 'github_login:', localStorage.getItem('github_login'));
         initThemeSync();
         cacheElements();
         fillStaticInfo();

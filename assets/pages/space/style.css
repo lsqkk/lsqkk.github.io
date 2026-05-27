@@ -115,23 +115,20 @@
 }
 
 .space-banner-bg {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--accent) 28%, var(--glass-bg)) 0%,
     color-mix(in srgb, var(--accent-2) 12%, var(--glass-bg)) 50%,
     var(--glass-bg) 100%
   );
-  opacity: 0.85;
   pointer-events: none;
-  z-index: 0;
-  transition: opacity 0.4s ease;
 }
 
 .space-banner-bg.has-image {
   background: none;
-  opacity: 1;
 }
 
 .space-banner-bg-img {
@@ -148,41 +145,17 @@
   display: block;
 }
 
-/* Overlay for readability over background image */
+/* Fade transition at the bottom of the hero image into the card background */
 .space-banner-bg.has-image::after {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    90deg,
-    rgba(0,0,0,0.72) 0%,
-    rgba(0,0,0,0.55) 50%,
-    rgba(0,0,0,0.35) 100%
+    to bottom,
+    transparent 45%,
+    var(--glass-bg-solid) 100%
   );
   pointer-events: none;
-}
-
-/* Text colors when background image is present — switch to white for readability */
-.space-banner-bg.has-image ~ .space-banner-inner .space-nickname {
-  color: #fff;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
-}
-.space-banner-bg.has-image ~ .space-banner-inner .space-handle,
-.space-banner-bg.has-image ~ .space-banner-inner .space-signature,
-.space-banner-bg.has-image ~ .space-banner-inner .space-meta-row,
-.space-banner-bg.has-image ~ .space-banner-inner .space-like-status {
-  color: rgba(255,255,255,0.85);
-  text-shadow: 0 1px 8px rgba(0,0,0,0.4);
-}
-.space-banner-bg.has-image ~ .space-banner-inner .space-action-btn {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.9);
-}
-.space-banner-bg.has-image ~ .space-banner-inner .space-action-btn:hover {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.4);
-  color: #fff;
 }
 
 .space-banner-inner {
@@ -1004,6 +977,7 @@
 
 @media (max-width: 640px) {
   .space-shell { padding: 80px 12px 40px; }
+  .space-banner-bg { min-height: 180px; }
   .space-avatar-img-wrap { width: 72px; height: 72px; }
   .space-avatar-fallback { font-size: 24px; }
   .space-nickname { font-size: 20px; }

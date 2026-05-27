@@ -94,18 +94,16 @@
     let syncing = false;
 
     function syncProfile(profile) {
-        if (!profile || typeof profile !== 'object') { console.log('[syncProfile] skipped: invalid profile', profile); return; }
-        if (syncing) { console.log('[syncProfile] skipped: already syncing'); return; }
-        console.log('[syncProfile] CALLED by', new Error().stack.split('\n').slice(2, 3).join('').trim());
-        console.log('[syncProfile] keys:', Object.keys(profile), 'has_sig:', 'signature' in profile, 'has_bg:', 'backgroundImage' in profile, 'sig_val:', profile.signature);
+        if (!profile || typeof profile !== 'object') return;
+        if (syncing) return;
         syncing = true;
 
         // Merge with existing stored data so partial updates never lose fields
         const stored = readStoredProfile();
         if (stored && typeof stored === 'object') {
-            var merged = {};
-            for (var k in stored) { if (stored.hasOwnProperty(k)) merged[k] = stored[k]; }
-            for (var k in profile) { if (profile.hasOwnProperty(k)) merged[k] = profile[k]; }
+            const merged = {};
+            for (let k in stored) { if (stored.hasOwnProperty(k)) merged[k] = stored[k]; }
+            for (let k in profile) { if (profile.hasOwnProperty(k)) merged[k] = profile[k]; }
             profile = merged;
         }
 
