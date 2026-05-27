@@ -65,6 +65,7 @@
 /* 溢出时左对齐，配合 translateX 滚动 */
 .header-nav-container.nav-overflow {
     justify-content: flex-start;
+    padding-left: 6px;
 }
 
 /* 左右滑动指示器 — 仅在可滑动时显示 */
