@@ -127,7 +127,7 @@ export function buildDynamicGallery(images: string[], id: string) {
       const isOverflow = imgIdx === 8 && total > 9;
       html += `
         <button type="button" class="gallery-item${isOverflow ? " gallery-item-overflow" : ""}" aria-label="查看图片 ${imgIdx + 1}" data-gallery-index="${imgIdx}">
-          <img src="${escapeHtml(image)}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img>
+          <img src="${escapeHtml(image)}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img onerror="this.parentElement.classList.add('is-error')">
           ${isOverflow ? `<div class="gallery-overlay">+${total - 9}</div>` : ""}
         </button>
       `;
