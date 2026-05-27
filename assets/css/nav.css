@@ -54,11 +54,17 @@
     display: flex;
     align-items: center;
     flex-grow: 1;
+    justify-content: center;
     min-width: 0;
     flex-shrink: 1;
     overflow: hidden;
     touch-action: pan-y;
     position: relative;
+}
+
+/* 溢出时左对齐，配合 translateX 滚动 */
+.header-nav-container.nav-overflow {
+    justify-content: flex-start;
 }
 
 /* 左右滑动指示器 — 仅在可滑动时显示 */
@@ -76,7 +82,8 @@
 }
 
 .header-nav-container::before {
-    left: 0;
+    left: 6px;
+    width: 22px;
     background: linear-gradient(to right, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.04) 40%, transparent 100%);
 }
 

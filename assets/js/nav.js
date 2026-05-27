@@ -1100,6 +1100,13 @@ function initNavScrollWheel() {
     const applyClamp = () => {
         if (!navContainer.isConnected) return;
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
+        if (maxScroll <= 0) {
+            navContainer.classList.remove('nav-overflow');
+            navList.style.transform = '';
+            updateIndicators(maxScroll);
+            return;
+        }
+        navContainer.classList.add('nav-overflow');
         pos = Math.max(-maxScroll, Math.min(0, pos));
         navList.style.transform = `translateX(${pos}px)`;
         updateIndicators(maxScroll);
@@ -1126,7 +1133,8 @@ function initNavScrollWheel() {
         if (event.ctrlKey || event.metaKey) return;
         const maxScroll = Math.max(0, navList.scrollWidth - navContainer.clientWidth);
         if (maxScroll <= 0) {
-            navContainer.classList.remove('scroll-left', 'scroll-right');
+            navContainer.classList.remove('nav-overflow', 'scroll-left', 'scroll-right');
+            navList.style.transform = '';
             return;
         }
         // 同时支持鼠标滚轮（垂直）和触控板横向滑动

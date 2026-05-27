@@ -117,27 +117,26 @@ button {
     gap: 16px;
 }
 
-/* Shared glass card for each sidebar box — 符合玻璃系统标准 */
+/* Inner sidebar boxes — transparent containers, glass handled at group level */
 .post-toc-box,
 .post-nav-box,
 .post-related-box,
 .post-footer-box {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
-    transition: border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .post-toc-box:hover,
 .post-nav-box:hover,
 .post-related-box:hover,
 .post-footer-box:hover {
-    border-color: var(--line-strong);
-    background: var(--glass-bg-strong);
-    box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
 }
 
 .post-toc-box.is-empty,
@@ -757,7 +756,7 @@ button {
         display: none;
     }
 
-    /* 文章页：侧栏固定定位 + 透明层独立滚动（桌面端），主栏跟随页面滚动 */
+    /* 文章页：侧栏固定定位 + 玻璃效果在固定容器上（避免 overflow 裁剪 backdrop-filter） */
     body.post-layout-page .post-sidebar-group {
         position: fixed;
         top: 100px;
@@ -765,6 +764,12 @@ button {
         width: 240px;
         left: calc((100vw - min(1120px, 100vw)) / 2 + 20px + 800px + 24px);
         z-index: 1;
+        background: var(--glass-bg);
+        backdrop-filter: blur(22px) saturate(135%);
+        -webkit-backdrop-filter: blur(22px) saturate(135%);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
     }
 
     body.post-layout-page .post-sidebar-scroll {
@@ -829,6 +834,17 @@ button {
 }
 
 
+/* 深色模式：侧栏玻璃变透明，保留模糊和边缘光 */
+@media (prefers-color-scheme: dark) {
+    body.post-layout-page .post-sidebar-group {
+        background: rgba(17, 28, 46, 0.15);
+    }
+}
+
+body.dark-mode.post-layout-page .post-sidebar-group {
+    background: rgba(17, 28, 46, 0.15);
+}
+
 /* 移动端深色模式：减轻背景黑块感 */
 body.dark-mode .sidebar-backdrop {
     background: rgba(0, 0, 0, 0.15);
@@ -836,8 +852,13 @@ body.dark-mode .sidebar-backdrop {
 }
 
 @media (max-width: 1100px) {
+    @media (prefers-color-scheme: dark) {
+        .post-sidebar-group.active {
+            background: rgba(17, 28, 46, 0.2);
+        }
+    }
     body.dark-mode .post-sidebar-group.active {
-        /* CSS variables handle dark mode automatically */
+        background: rgba(17, 28, 46, 0.2);
     }
 }
 
