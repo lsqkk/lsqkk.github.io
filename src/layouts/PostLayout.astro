@@ -112,7 +112,7 @@ try {
     />
   </head>
 
-  <body class="luxury-body">
+  <body class="luxury-body post-layout-page">
     <LuxuryBackground />
     <script is:inline src="/assets/js/cursor-trail.js" defer></script>
     <script id="dynamic-gallery-script" is:inline src="/assets/js/dynamic-gallery.js"></script>
@@ -231,6 +231,12 @@ try {
           <div class="giscus"></div>
         </div>
       </div>
+        <div style="text-align: center; padding: 20px 0 10px;">
+          <a href="/posts/copyright"
+            style="text-decoration: none; color: var(--text-subtle); font-size: 0.85em;">
+            © 2024 - {currentYear} {SITE_TITLE} All rights reserved.
+          </a>
+        </div>
       </div><!-- /.post-main-column -->
       <aside class="post-sidebar-group">
         <div class="post-toc-box" id="postTocBox">
@@ -328,14 +334,6 @@ try {
       });
     </script>
 
-    <div style="text-align: center; padding: 50px;">
-      <a
-        href="/posts/copyright"
-        style="text-decoration: none; color: rgb(255, 255, 255); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);"
-      >
-        © 2024 - {currentYear} {SITE_TITLE} All rights reserved.
-      </a>
-    </div>
 
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>

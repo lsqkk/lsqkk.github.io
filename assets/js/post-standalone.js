@@ -163,8 +163,13 @@ function initSidebarToggle() {
 function initBackToTop() {
     const button = document.querySelector('.back-to-top');
     if (!(button instanceof HTMLElement)) return;
+    const mainColumn = document.querySelector('.post-main-column');
+    const isSplitScroll = document.body.classList.contains('post-layout-page') && mainColumn;
+    const scrollEl = isSplitScroll ? mainColumn : window;
+
     const updateVisibility = () => {
-        if (window.scrollY > 240) {
+        const scrollY = isSplitScroll ? mainColumn.scrollTop : window.scrollY;
+        if (scrollY > 240) {
             button.style.opacity = '1';
             button.style.pointerEvents = 'auto';
             button.style.transform = 'translateY(0)';
@@ -175,9 +180,9 @@ function initBackToTop() {
         }
     };
     updateVisibility();
-    window.addEventListener('scroll', updateVisibility, { passive: true });
+    scrollEl.addEventListener('scroll', updateVisibility, { passive: true });
     button.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
@@ -317,7 +322,10 @@ function initTOCSpy() {
     };
 
     updateActive();
-    window.addEventListener('scroll', () => {
+    const mainColumn = document.querySelector('.post-main-column');
+    const isSplitScroll = document.body.classList.contains('post-layout-page') && mainColumn;
+    const scrollEl = isSplitScroll ? mainColumn : window;
+    scrollEl.addEventListener('scroll', () => {
         window.requestAnimationFrame(updateActive);
     }, { passive: true });
     window.addEventListener('resize', updateActive);

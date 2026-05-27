@@ -112,11 +112,6 @@ button {
 .post-sidebar-group {
     width: 240px;
     flex-shrink: 0;
-    position: sticky;
-    top: 100px;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -629,6 +624,38 @@ button {
 
     .sidebar {
         display: none;
+    }
+
+    /* 文章页：主栏和侧栏独立滚动（桌面端） */
+    body.post-layout-page {
+        overflow: hidden;
+        height: 100vh;
+    }
+
+    body.post-layout-page .post-layout-wrap {
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        align-items: stretch;
+    }
+
+    body.post-layout-page .post-main-column {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    body.post-layout-page .post-sidebar-group {
+        position: static;
+        top: auto;
+        max-height: none;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    /* 独立滚动模式下固定 header 不隐藏 */
+    body.post-layout-page .header.header-hidden {
+        transform: none !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
     }
 }
 
