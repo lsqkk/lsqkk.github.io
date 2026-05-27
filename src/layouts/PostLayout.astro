@@ -117,45 +117,8 @@ try {
     <script is:inline src="/assets/js/cursor-trail.js" defer></script>
     <script id="dynamic-gallery-script" is:inline src="/assets/js/dynamic-gallery.js"></script>
     <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
-    <div class="sidebar">
-      <div class="sidebar-content" id="sidebarContent">
-        <div class="sidebar-main-content">
-          <div class="toc-skeleton">
-            <div class="toc-skeleton-header">
-              <div class="toc-skeleton-eyebrow skeleton-block"></div>
-              <div class="toc-skeleton-title-row">
-                <div class="toc-skeleton-title skeleton-block"></div>
-                <div class="toc-skeleton-count skeleton-block"></div>
-              </div>
-            </div>
-            <div class="toc-skeleton-list">
-              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
-              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
-              <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
-              <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
-              <div class="toc-skeleton-item toc-skeleton-item-nested2"><div class="toc-skeleton-line toc-skeleton-h3 skeleton-block"></div></div>
-              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
-              <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
-              <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block" style="width: 55%;"></div></div>
-            </div>
-            <div class="toc-skeleton-nav">
-              <div class="toc-skeleton-nav-title skeleton-block"></div>
-              <div class="toc-skeleton-nav-btn skeleton-block"></div>
-              <div class="toc-skeleton-nav-btn skeleton-block" style="width: 60%;"></div>
-            </div>
-          </div>
-        </div>
-        <div class="sidebar-footer">
-          <a href="/index.html" style="text-decoration: none;">博客主页</a>
-          <a href="/posts" style="text-decoration: none;">文章</a>
-          <a href="/games" style="text-decoration: none;">夸克游戏</a>
-          <a href="/a/qai" style="text-decoration: none;">Q-AI WebUI</a>
-          <a href="/tool" style="text-decoration: none;">更多工具</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="morenpost">
+    <div class="post-layout-wrap">
+      <div class="morenpost">
       <div class="post-header">
         {coverUrl ? (
           <div class="post-hero">
@@ -266,8 +229,44 @@ try {
         </center>
       </div>
     </div>
-
-    <script is:inline defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+      <aside class="post-toc-sidebar" id="postTocSidebar">
+        <div class="sidebar-content" id="sidebarContent">
+          <div class="sidebar-main-content">
+            <div class="toc-skeleton">
+              <div class="toc-skeleton-header">
+                <div class="toc-skeleton-eyebrow skeleton-block"></div>
+                <div class="toc-skeleton-title-row">
+                  <div class="toc-skeleton-title skeleton-block"></div>
+                  <div class="toc-skeleton-count skeleton-block"></div>
+                </div>
+              </div>
+              <div class="toc-skeleton-list">
+                <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
+                <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
+                <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
+                <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
+                <div class="toc-skeleton-item toc-skeleton-item-nested2"><div class="toc-skeleton-line toc-skeleton-h3 skeleton-block"></div></div>
+                <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block"></div></div>
+                <div class="toc-skeleton-item toc-skeleton-item-nested"><div class="toc-skeleton-line toc-skeleton-h2 skeleton-block"></div></div>
+                <div class="toc-skeleton-item"><div class="toc-skeleton-line toc-skeleton-h1 skeleton-block" style="width: 55%;"></div></div>
+              </div>
+              <div class="toc-skeleton-nav">
+                <div class="toc-skeleton-nav-title skeleton-block"></div>
+                <div class="toc-skeleton-nav-btn skeleton-block"></div>
+                <div class="toc-skeleton-nav-btn skeleton-block" style="width: 60%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-footer">
+            <a href="/index.html" style="text-decoration: none;">博客主页</a>
+            <a href="/posts" style="text-decoration: none;">文章</a>
+            <a href="/games" style="text-decoration: none;">夸克游戏</a>
+            <a href="/a/qai" style="text-decoration: none;">Q-AI WebUI</a>
+            <a href="/tool" style="text-decoration: none;">更多工具</a>
+          </div>
+        </div>
+      </aside>
+    </div><!-- /.post-layout-wrap -->
     <script is:inline defer src="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
     <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="/assets/js/comment-render-shared.js"></script>

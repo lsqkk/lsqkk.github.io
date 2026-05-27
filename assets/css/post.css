@@ -1,6 +1,6 @@
-body {
+.post-layout-wrap .morenpost {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 20px 0;
 }
 
 .post-header {
@@ -54,19 +54,19 @@ body {
     margin: 0;
     font-size: clamp(2.1rem, 3.4vw, 3rem);
     color: var(--text-main);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    text-shadow: 0 2px 8px var(--glass-shadow);
     line-height: 1.15;
     padding: 12px 20px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.28);
+    background: var(--glass-bg-soft);
     backdrop-filter: blur(32px) saturate(180%);
     -webkit-backdrop-filter: blur(32px) saturate(180%);
     box-shadow:
-        0 4px 12px rgba(10, 18, 35, 0.04),
-        0 12px 36px rgba(10, 18, 35, 0.10),
-        0 24px 56px rgba(10, 18, 35, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+        0 4px 12px var(--glass-shadow),
+        0 12px 36px var(--glass-shadow),
+        0 24px 56px var(--glass-shadow),
+        inset 0 1px 0 var(--glass-edge-soft);
+    border: 1px solid var(--glass-edge-strong);
     max-width: 95%;
 }
 
@@ -103,7 +103,7 @@ body {
     height: 28px;
     border-radius: 999px;
     border: 1px solid var(--accent-soft);
-    background: var(--surface);
+    background: var(--glass-bg);
     color: var(--accent);
     box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 12%, transparent);
     cursor: help;
@@ -113,7 +113,7 @@ body {
 .post-description-trigger:hover,
 .post-description-trigger:focus-visible {
     transform: translateY(-1px);
-    background: var(--surface-strong);
+    background: var(--glass-bg-strong);
     box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 20%, transparent);
     outline: none;
 }
@@ -147,7 +147,7 @@ body {
     top: 50%;
     width: 10px;
     height: 10px;
-    background: rgba(15, 23, 42, 0.9);
+    background: color-mix(in srgb, var(--text-main) 90%, transparent);
     transform: translateY(-50%) rotate(45deg);
     opacity: 0;
     transition: opacity 0.18s ease;
@@ -202,7 +202,7 @@ body {
 
 .post-content img.post-gallery-image:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 10px 24px var(--glass-shadow-hover);
 }
 
 /* 添加段落间距 */
@@ -333,11 +333,10 @@ body {
     padding: 16px 18px;
     border-radius: 22px;
     border: 1px solid var(--line);
-    background:
-        linear-gradient(135deg, var(--surface), var(--surface-card));
+    background: var(--glass-bg);
     box-shadow:
-        var(--shadow-main),
-        inset 0 1px 0 var(--line-soft);
+        0 8px 32px var(--glass-shadow),
+        inset 0 0 0 1px var(--glass-edge);
     backdrop-filter: blur(12px) saturate(115%);
     -webkit-backdrop-filter: blur(12px) saturate(115%);
     overflow: hidden;
@@ -354,8 +353,8 @@ body {
 .post-content a.post-inline-card:hover {
     transform: translateY(-2px);
     box-shadow:
-        0 16px 34px rgba(15, 23, 42, 0.14),
-        inset 0 1px 0 var(--line-soft);
+        0 16px 34px var(--glass-shadow-hover),
+        inset 0 0 0 1px var(--glass-edge-strong);
     border-color: var(--line-strong);
     border-bottom: none !important;
     padding-bottom: 0 !important;
@@ -425,7 +424,7 @@ body {
     object-fit: cover;
     border-radius: 14px;
     border: 1px solid var(--line);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.10);
+    box-shadow: 0 8px 20px var(--glass-shadow);
 }
 
 /* 可选：修复标题间距 */
@@ -443,10 +442,10 @@ code {
 }
 
 pre {
-    background-color: rgba(30, 41, 59, 0.8);
+    background: var(--code-bg);
     padding: 16px;
     overflow: auto;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     line-height: 1.45;
     border: 1px solid var(--line);
 }
@@ -577,7 +576,7 @@ pre {
 .morenpost {
     line-height: 1.3em;
     margin-bottom: 1.3em;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     background: var(--glass-bg);
     backdrop-filter: blur(22px) saturate(135%);
     -webkit-backdrop-filter: blur(22px) saturate(135%);
@@ -585,7 +584,6 @@ pre {
         0 8px 32px var(--glass-shadow),
         inset 0 0 0 1px var(--glass-edge-soft);
     padding: 40px;
-    margin: 20px;
     border: 1px solid var(--line);
 }
 

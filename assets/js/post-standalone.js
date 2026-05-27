@@ -147,6 +147,14 @@ function initSidebarToggle() {
     if (toggle instanceof HTMLElement) {
         toggle.setAttribute('aria-expanded', 'false');
     }
+    // On mobile, toggle post-toc-sidebar visibility
+    const tocSidebar = document.getElementById('postTocSidebar');
+    if (tocSidebar) {
+        const isWide = window.matchMedia('(min-width: 1201px)').matches;
+        if (!isWide) {
+            tocSidebar.classList.remove('active');
+        }
+    }
 }
 
 function initBackToTop() {
@@ -349,7 +357,7 @@ function addPostNavigationFromData() {
 
 // 侧栏切换
 function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
+    const sidebar = document.getElementById('postTocSidebar') || document.querySelector('.sidebar');
     const backdrop = document.querySelector('.sidebar-backdrop');
     if (!(sidebar instanceof HTMLElement)) return;
     const willOpen = !sidebar.classList.contains('active');

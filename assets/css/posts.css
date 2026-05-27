@@ -23,23 +23,30 @@ body {
     background: var(--glass-bg-soft);
     backdrop-filter: blur(18px) saturate(130%);
     -webkit-backdrop-filter: blur(18px) saturate(130%);
-    border-radius: 15px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
     box-shadow: inset 0 0 0 1px var(--glass-edge-soft);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: post-item-in 0.35s ease 0.06s forwards;
 }
 
 .tag-btn {
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 999px;
     background: var(--accent-soft);
     color: var(--accent);
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.3s;
+    transition:
+        transform 0.25s ease,
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        padding 0.25s ease;
     font-size: 0.9em;
     font-weight: 500;
-    position: relative;
-    overflow: hidden;
 }
 
 .tag-btn::before {
@@ -74,12 +81,16 @@ body {
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(130%);
     -webkit-backdrop-filter: blur(18px) saturate(130%);
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     padding: 20px;
     margin-bottom: 15px;
-    transition: all 0.3s ease;
+    transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease,
+        background-color 0.28s ease,
+        border-color 0.28s ease;
     box-shadow:
-        0 4px 12px var(--glass-shadow),
+        0 8px 24px var(--glass-shadow),
         inset 0 0 0 1px var(--glass-edge-soft);
     border: 1px solid var(--line);
     display: flex;
@@ -105,7 +116,7 @@ body {
 
 .posts-fold-panel {
     margin-bottom: 12px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     background: var(--glass-bg-soft);
     backdrop-filter: blur(18px) saturate(130%);
     -webkit-backdrop-filter: blur(18px) saturate(130%);
@@ -184,8 +195,8 @@ body {
 
 .post-item:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-    background: var(--surface-overlay);
+    box-shadow: 0 12px 32px var(--glass-shadow-hover);
+    background: var(--glass-bg-strong);
 }
 
 .post-item-body {
@@ -281,14 +292,14 @@ body {
     background: var(--glass-bg-soft);
     backdrop-filter: blur(18px) saturate(130%);
     -webkit-backdrop-filter: blur(18px) saturate(130%);
-    border-radius: 15px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
     box-shadow: inset 0 0 0 1px var(--glass-edge-soft);
 }
 
 .page-btn {
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     background: var(--surface);
     border: 1px solid var(--line);
     color: var(--text-main);
@@ -303,7 +314,7 @@ body {
     color: var(--accent);
     border-color: var(--accent);
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.12);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .page-btn:active {
@@ -327,13 +338,15 @@ body {
     background: var(--glass-bg-soft);
     backdrop-filter: blur(18px) saturate(130%);
     -webkit-backdrop-filter: blur(18px) saturate(130%);
-    border-radius: 15px;
+    border-radius: var(--radius-sm);
     padding: 15px;
     margin-bottom: 20px;
     box-shadow:
         0 4px 12px var(--glass-shadow),
         inset 0 0 0 1px var(--glass-edge-soft);
     border: 1px solid var(--line);
+    opacity: 0;
+    animation: post-item-in 0.35s ease 0.1s forwards;
 }
 
 .search-input {
@@ -352,6 +365,7 @@ body {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
     transform: scale(1.005);
+    background: var(--glass-bg);
 }
 
 .search-input {
@@ -377,7 +391,7 @@ body {
     background: var(--glass-bg-soft);
     backdrop-filter: blur(18px) saturate(130%);
     -webkit-backdrop-filter: blur(18px) saturate(130%);
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     padding: 15px;
     margin-bottom: 20px;
     box-shadow:
@@ -433,7 +447,8 @@ body.dark-mode .search-results {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .post-item, .pagination, .tag-btn, .page-btn, .search-input {
+    .post-item, .pagination, .tag-btn, .page-btn, .search-input,
+    .posts-fold-toggle, .posts-fold-content {
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;
@@ -442,3 +457,19 @@ body.dark-mode .search-results {
     .tag-btn:hover { padding: 8px 16px !important; }
     .page-btn:hover { transform: none !important; }
 }
+
+body.reduce-motion .post-item,
+body.reduce-motion .pagination,
+body.reduce-motion .tag-btn,
+body.reduce-motion .page-btn,
+body.reduce-motion .search-input,
+body.reduce-motion .posts-fold-toggle,
+body.reduce-motion .posts-fold-content {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+body.reduce-motion .tag-btn:hover { padding: 8px 16px !important; }
+body.reduce-motion .page-btn:hover { transform: none !important; }

@@ -218,7 +218,7 @@
 .btn.primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-2) 25%, transparent);
-    background: #166b5c;
+    background: color-mix(in srgb, var(--accent-2) 80%, black);
 }
 
 .btn.primary:active {
