@@ -226,7 +226,7 @@
 
     async function upsertProfile(uid, profile, createdAt) {
         const ipInfo = await fetchIpInfo();
-        await dbSet(`${DB_ROOT}/${uid}/profile`, {
+        await dbUpdate(`${DB_ROOT}/${uid}/profile`, {
             uid,
             nickname: profile.nickname || '',
             login: profile.login || '',
@@ -235,6 +235,8 @@
             avatarType: profile.avatarType || 'color',
             avatarColor: profile.avatarColor || '',
             profileUrl: profile.profileUrl || '',
+            signature: profile.signature || '',
+            backgroundImage: profile.backgroundImage || '',
             ip: ipInfo?.ip || '',
             province: ipInfo?.province || '',
             city: ipInfo?.city || '',
