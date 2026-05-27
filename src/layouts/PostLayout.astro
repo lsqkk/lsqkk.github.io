@@ -213,25 +213,20 @@ try {
         <slot />
       </div>
 
-      <hr />
-
-      <div>
-        <center>
-          <div style="margin: 20px;">
-            <button class="share-button" onclick="copyLink()">复制本文链接</button>
-          </div>
-          <div class="donate-section">
-            <p class="donate-text">如果这篇文章对你有帮助，欢迎赞赏支持。</p>
-            <img src="/assets/img/buymeacoffee.png" alt="赞赏码" class="donate-qr" loading="lazy" />
-          </div>
-          <div class="native-share">
-            <button class="share-button" onclick="window.open('https://service.weibo.com/share/share.php?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href),'_blank','width=600,height=500')">分享到微博</button>
-            <button class="share-button" onclick="window.open('https://connect.qq.com/widget/shareqq/index.html?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href),'_blank','width=600,height=500')">分享到QQ</button>
-          </div>
-        </center>
+      <div class="post-share-card">
+        <div class="post-share-actions">
+          <button class="share-button" onclick="copyLink()">复制本文链接</button>
+          <button class="share-button" onclick="window.open('https://service.weibo.com/share/share.php?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href),'_blank','width=600,height=500')">分享到微博</button>
+          <button class="share-button" onclick="window.open('https://connect.qq.com/widget/shareqq/index.html?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href),'_blank','width=600,height=500')">分享到QQ</button>
+        </div>
+        <div class="donate-section">
+          <p class="donate-text">如果这篇文章对你有帮助，欢迎赞赏支持。</p>
+          <img src="/assets/img/buymeacoffee.png" alt="赞赏码" class="donate-qr" loading="lazy" />
+        </div>
       </div>
     </div>
       <aside class="post-sidebar-group">
+        <div class="post-sidebar-group-scroll">
         <div class="post-toc-box" id="postTocBox">
           <div class="sidebar-content">
             <div class="sidebar-main-content" id="postTocContent">
@@ -288,6 +283,7 @@ try {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </aside>
       <div class="post-comment-section">

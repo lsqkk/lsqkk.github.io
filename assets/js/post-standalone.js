@@ -377,7 +377,7 @@ async function loadRelatedPosts() {
     if (!hasTag && !hasColumn) return;
 
     try {
-        var resp = await fetch('/posts/posts.json');
+        var resp = await fetch('/json/posts.json');
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         /** @type {Array<{title:string,file:string,date:string,tags:string[],columns:string[]}>} */
         var allPosts = await resp.json();
@@ -385,9 +385,8 @@ async function loadRelatedPosts() {
 
         // Filter out current post by path
         var currentFile = '';
-        // data-post-path looks like /posts/2026/slug → extract file path
-        var pathMatch = currentPath.match(/\/posts\/(.+)/);
-        if (pathMatch) currentFile = pathMatch[1] + '.md';
+        // data-post-path looks like 2026/2606
+        if (currentPath) currentFile = currentPath + '.md';
 
         // Same tag matches
         if (hasTag) {
@@ -463,9 +462,34 @@ function toggleSidebar() {
     }
 }
 
+// Toast 提示
+function showToast(message) {
+    var existing = document.getElementById('post-toast');
+    if (existing) existing.remove();
+
+    var toast = document.createElement('div');
+    toast.id = 'post-toast';
+    toast.className = 'post-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Trigger entrance
+    requestAnimationFrame(function () {
+        toast.classList.add('is-visible');
+    });
+
+    // Auto-dismiss
+    setTimeout(function () {
+        toast.classList.remove('is-visible');
+        setTimeout(function () { toast.remove(); }, 300);
+    }, 2200);
+}
+
 // 复制链接
 function copyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        alert("链接已复制到剪贴板");
+    navigator.clipboard.writeText(window.location.href).then(function () {
+        showToast('链接已复制');
+    }).catch(function () {
+        showToast('复制失败');
     });
 }
