@@ -52,19 +52,41 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
     <main class="oj-main-content">
       <section class="oj-problem-panel glass-card">
-        <h2 class="oj-problem-title" id="problem-title">加载中...</h2>
-        <div class="oj-problem-info">
-          <span class="oj-time-limit">时间限制: <strong id="time-limit">1000ms</strong></span>
-          <span class="oj-memory-limit">内存限制: <strong id="memory-limit">64MB</strong></span>
+        <div class="oj-skeleton" id="problem-title-skeleton">
+          <div class="oj-skeleton-title"></div>
         </div>
-        <div class="oj-description-section"><h3>题目描述</h3><div id="problem-description" class="markdown-body"></div></div>
-        <div class="oj-description-section"><h3>输入格式</h3><div id="problem-input-format" class="markdown-body"></div></div>
-        <div class="oj-description-section"><h3>输出格式</h3><div id="problem-output-format" class="markdown-body"></div></div>
+        <h2 class="oj-problem-title" id="problem-title" style="display:none;"></h2>
+        <div class="oj-problem-info">
+          <span class="oj-time-limit">时间限制: <strong id="time-limit" class="oj-skeleton" style="display:inline-block;width:80px;height:16px">1000ms</strong></span>
+          <span class="oj-memory-limit">内存限制: <strong id="memory-limit" class="oj-skeleton" style="display:inline-block;width:80px;height:16px">64MB</strong></span>
+        </div>
+        <div class="oj-description-section">
+          <h3>题目描述</h3>
+          <div id="problem-description" class="markdown-body">
+            <div class="oj-skeleton-text"></div>
+            <div class="oj-skeleton-text"></div>
+            <div class="oj-skeleton-text" style="width:40%"></div>
+          </div>
+        </div>
+        <div class="oj-description-section">
+          <h3>输入格式</h3>
+          <div id="problem-input-format" class="markdown-body">
+            <div class="oj-skeleton-text"></div>
+            <div class="oj-skeleton-text" style="width:55%"></div>
+          </div>
+        </div>
+        <div class="oj-description-section">
+          <h3>输出格式</h3>
+          <div id="problem-output-format" class="markdown-body">
+            <div class="oj-skeleton-text"></div>
+            <div class="oj-skeleton-text" style="width:45%"></div>
+          </div>
+        </div>
         <div class="oj-description-section">
           <h3>输入/输出示例</h3>
           <div class="oj-sample-io">
-            <div class="oj-sample-block"><h4>输入示例</h4><pre id="sample-input"></pre></div>
-            <div class="oj-sample-block"><h4>输出示例</h4><pre id="sample-output"></pre></div>
+            <div class="oj-sample-block"><h4>输入示例</h4><pre id="sample-input"><div class="oj-skeleton" style="height:60px;width:100%"></div></pre></div>
+            <div class="oj-sample-block"><h4>输出示例</h4><pre id="sample-output"><div class="oj-skeleton" style="height:40px;width:100%"></div></pre></div>
           </div>
         </div>
       </section>

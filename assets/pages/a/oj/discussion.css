@@ -1,49 +1,38 @@
-/* discussion.css - 修改版：毛玻璃风格，与 style.css 统一 */
+/* ═══════════════════════════════════════════
+   OJ 讨论 — 浊玉玻璃版
+   与 style.css 共用 body.luxury-body 变量
+   ═══════════════════════════════════════════ */
 
-/* --- 使用 style.css 的颜色变量体系 --- */
-:root {
-    --oj-primary-color: #7abd9a;
-    --oj-glass-bg: rgba(122, 189, 154, 0.2);
-    --oj-glass-bg-light: rgba(255, 255, 255, 0.1);
-    --oj-text-color-light: #fff;
-    --oj-text-color-dark: #333;
-    --oj-border-color-light: rgba(255, 255, 255, 0.2);
-    --oj-shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --radius: 10px;
-}
-
-/* --- 新讨论表单区域 (发帖区) - 毛玻璃风格 --- */
+/* ── 新讨论表单 ── */
 #newDiscussionForm {
     margin-bottom: 20px;
     padding: 18px;
-    background: var(--oj-glass-bg-light);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--oj-border-color-light);
-    border-radius: var(--radius);
-    color: var(--oj-text-color-light);
-    box-shadow: var(--oj-shadow-light), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: var(--oj-glass);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--oj-line);
+    border-radius: var(--radius-sm);
+    color: var(--oj-text);
+    box-shadow: 0 8px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge);
 }
 
 #newDiscussionForm h3 {
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.3em;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--oj-border-color-light);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--oj-line);
 }
 
 .form-group label {
     display: block;
     margin-bottom: 6px;
     font-size: 0.9em;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--oj-text-soft);
     font-weight: 500;
 }
 
-/* 布局分组行 - 紧凑行布局 */
 .form-compact-row {
     display: flex;
     gap: 15px;
@@ -52,19 +41,14 @@
     justify-content: space-between;
 }
 
-/* 1. 昵称/头像设置行 */
 .form-group.form-nickname {
     flex: 0 0 auto;
-    /* 改为不增长不收缩 */
     width: 140px;
-    /* 固定宽度 */
 }
 
 .form-group.form-avatar-controls {
     flex: 0 0 auto;
-    /* 改为不增长不收缩 */
     width: 270px;
-    /* 固定宽度 */
 }
 
 .avatar-selection-area {
@@ -74,7 +58,6 @@
     margin-top: 5px;
 }
 
-/* 头像样式 - 圆形，与 lyb.css 对齐 */
 .avatar-preview {
     width: 50px;
     height: 50px;
@@ -83,10 +66,10 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color: white;
+    color: #fff;
     font-size: 1.2rem;
-    border: 2px solid var(--oj-primary-color);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--oj-accent);
+    box-shadow: 0 2px 5px var(--oj-shadow);
     overflow: hidden;
     background-size: cover;
     background-position: center;
@@ -97,22 +80,22 @@
     border-radius: 6px;
     overflow: hidden;
     flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--oj-glass-soft);
 }
 
 .avatar-toggle button {
     padding: 8px 16px;
     border: none;
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.8);
-    transition: all 0.3s ease;
+    background: transparent;
+    color: var(--oj-text-soft);
+    transition: background 0.2s ease, color 0.2s ease;
     font-size: 14px;
     cursor: pointer;
 }
 
 .avatar-toggle button.active {
-    background-color: var(--oj-primary-color);
-    color: white;
+    background: var(--oj-accent);
+    color: #fff;
     font-weight: bold;
 }
 
@@ -121,17 +104,10 @@
     cursor: not-allowed;
 }
 
-#newDiscussionForm input[disabled],
-#newDiscussionForm textarea[disabled] {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
 .avatar-toggle button:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.15);
+    background: var(--oj-accent-soft);
 }
 
-/* 隐藏的输入选项容器 */
 .avatar-input-container {
     margin-top: -10px;
     margin-bottom: 15px;
@@ -168,49 +144,43 @@
     flex-grow: 1;
 }
 
-/* 2. 题目ID和标题行 */
 .problem-id-group {
     flex: 0 0 auto;
-    /* 改为不增长不收缩 */
     width: 100px;
-    /* 固定宽度，比原来的120px短一点 */
 }
 
 .discussion-title-group {
     flex: 0 0 auto;
-    /* 改为不增长不收缩 */
     width: calc(100% - 120px - 20px);
-    /* 计算剩余宽度，120px=100px+20px间距 */
 }
 
-/* 输入框和文本域通用样式 - 毛玻璃风格 */
+/* ── 输入框 ── */
 #newDiscussionForm input:not([type="color"]),
 #newDiscussionForm textarea,
 .reply-input-area textarea {
     box-sizing: border-box;
     width: 100%;
     padding: 10px 12px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--oj-border-color-light);
+    background: var(--oj-glass-soft);
+    border: 1px solid var(--oj-line);
     border-radius: 6px;
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
     font-size: 0.95em;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }
 
 #newDiscussionForm input::placeholder,
 #newDiscussionForm textarea::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--oj-text-soft);
 }
 
 #newDiscussionForm input:focus,
 #newDiscussionForm textarea:focus,
 .reply-input-area textarea:focus {
-    border-color: var(--oj-primary-color);
-    box-shadow: 0 0 0 2px rgba(122, 189, 154, 0.3);
-    background-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--oj-accent);
+    box-shadow: 0 0 0 2px var(--oj-accent-soft);
     outline: none;
 }
 
@@ -220,24 +190,34 @@
     font-family: inherit;
 }
 
-/* 按钮样式 - 与 style.css 统一 */
+#newDiscussionForm input[disabled],
+#newDiscussionForm textarea[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* ── 按钮 ── */
 .submit-btn {
     padding: 10px 20px;
     font-size: 0.95em;
-    background-color: var(--oj-primary-color);
-    color: white;
+    background: var(--oj-accent);
+    color: #fff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px var(--oj-shadow);
 }
 
 .submit-btn:hover {
-    background-color: #6da285;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: var(--oj-accent-hover);
+    box-shadow: 0 4px 8px var(--oj-shadow);
     transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .mini-btn {
@@ -251,43 +231,42 @@
     margin-top: 15px;
 }
 
-/* --- 讨论列表样式 --- */
+/* ── 讨论列表 ── */
 .discussions-list-section h2 {
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
     margin-top: 0;
     margin-bottom: 15px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .discussion-summary {
-    background: var(--oj-glass-bg-light);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--oj-border-color-light);
-    border-radius: var(--radius);
-    color: var(--oj-text-color-light);
+    background: var(--oj-glass);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--oj-line);
+    border-radius: var(--radius-sm);
+    color: var(--oj-text);
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: var(--oj-shadow-light);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge);
+    transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
     cursor: pointer;
 }
 
 .discussion-summary:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--oj-glass-strong);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge-strong);
 }
 
 .summary-title {
     font-weight: 600;
     font-size: 1.1em;
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
     margin-bottom: 8px;
 }
 
 .summary-meta {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--oj-text-soft);
     font-size: 0.85em;
     display: flex;
     align-items: center;
@@ -303,23 +282,9 @@
     border-radius: 999px;
     font-size: 0.75em;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.85);
-    background: rgba(122, 189, 154, 0.18);
-    border: 1px solid rgba(122, 189, 154, 0.45);
-    letter-spacing: 0.02em;
-}
-
-.login-badge .login-icon {
-    width: 12px;
-    height: 12px;
-    display: inline-block;
-}
-
-.login-badge .login-icon img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
+    color: var(--oj-text);
+    background: var(--oj-accent-soft);
+    border: 1px solid var(--oj-accent);
 }
 
 .message-avatar {
@@ -331,76 +296,75 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color: white;
+    color: #fff;
     font-size: 1rem;
     background-size: cover;
     background-position: center;
     vertical-align: middle;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid var(--oj-edge);
 }
 
 .problem-tag {
-    background-color: var(--oj-primary-color);
+    background: var(--oj-accent);
     padding: 3px 10px;
     border-radius: 20px;
-    color: white;
+    color: #fff;
     font-weight: 500;
     font-size: 0.85em;
     display: inline-block;
 }
 
-/* --- 单个讨论详情样式 --- */
+/* ── 讨论详情 ── */
 .discussion-detail-card {
-    background: var(--oj-glass-bg-light);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--oj-border-color-light);
-    border-radius: var(--radius);
-    color: var(--oj-text-color-light);
-    box-shadow: var(--oj-shadow-light);
+    background: var(--oj-glass);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--oj-line);
+    border-radius: var(--radius-sm);
+    color: var(--oj-text);
+    box-shadow: 0 8px 32px var(--oj-shadow), inset 0 0 0 1px var(--oj-edge);
     padding: 25px;
     margin-top: 20px;
 }
 
 .detail-header h1 {
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
     font-weight: 700;
     font-size: 1.5em;
     margin-top: 0;
     margin-bottom: 10px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .detail-meta-row {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--oj-text-soft);
     font-size: 0.9em;
     display: flex;
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid var(--oj-border-color-light);
+    border-bottom: 1px solid var(--oj-line);
 }
 
 .post-content {
     line-height: 1.7;
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
     margin-bottom: 25px;
 }
 
 .post-content pre {
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--oj-glass-strong);
+    border: 1px solid var(--oj-line);
     padding: 12px;
     border-radius: 6px;
     overflow-x: auto;
     font-family: 'Consolas', 'Courier New', monospace;
-    color: #e8e8e8;
+    color: var(--oj-text);
     margin: 15px 0;
 }
 
 .post-content code {
-    background-color: rgba(0, 0, 0, 0.2);
+    background: var(--oj-glass-strong);
     padding: 2px 6px;
     border-radius: 4px;
     color: #ffcc99;
@@ -408,14 +372,14 @@
     font-size: 0.9em;
 }
 
-/* 回复区 */
+/* ── 回复区 ── */
 .replies-container {
     margin-top: 25px;
 }
 
 .reply-card {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-left: 4px solid var(--oj-primary-color);
+    background: var(--oj-glass-soft);
+    border-left: 4px solid var(--oj-accent);
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 0 6px 6px 0;
@@ -436,7 +400,7 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color: white;
+    color: #fff;
     font-size: 0.9rem;
     background-size: cover;
     background-position: center;
@@ -448,31 +412,31 @@
 
 .reply-author {
     font-weight: 600;
-    color: var(--oj-text-color-light);
+    color: var(--oj-text);
 }
 
 .reply-time {
     font-size: 0.8em;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--oj-text-soft);
 }
 
 .reply-content {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--oj-text);
     line-height: 1.6;
 }
 
 .reply-input-area {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid var(--oj-border-color-light);
+    border-top: 1px solid var(--oj-line);
 }
 
 .action-btn {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--oj-text-soft);
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -481,17 +445,17 @@
 }
 
 .action-btn:hover {
-    color: var(--oj-primary-color);
+    color: var(--oj-accent);
 }
 
 .back-to-list-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--oj-border-color-light);
-    color: var(--oj-text-color-light);
+    background: var(--oj-glass-soft);
+    border: 1px solid var(--oj-line);
+    color: var(--oj-text);
     border-radius: 6px;
     padding: 8px 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.24s ease, transform 0.24s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -499,11 +463,11 @@
 }
 
 .back-to-list-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--oj-glass);
     transform: translateY(-1px);
 }
 
-/* 分页样式 */
+/* ── 分页 ── */
 .pagination {
     display: flex;
     justify-content: center;
@@ -513,25 +477,25 @@
 
 .page-btn {
     padding: 8px 16px;
-    border: 1px solid var(--oj-border-color-light);
+    border: 1px solid var(--oj-line);
     border-radius: 6px;
-    background: var(--oj-glass-bg-light);
-    color: var(--oj-text-color-light);
+    background: var(--oj-glass-soft);
+    color: var(--oj-text);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.2s ease;
 }
 
 .page-btn.active {
-    background: var(--oj-primary-color);
-    color: white;
-    border-color: var(--oj-primary-color);
+    background: var(--oj-accent);
+    color: #fff;
+    border-color: var(--oj-accent);
 }
 
 .page-btn:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--oj-glass-strong);
 }
 
-/* 移动端调整 */
+/* ── Responsive ── */
 @media (max-width: 768px) {
     .form-compact-row {
         flex-direction: column;

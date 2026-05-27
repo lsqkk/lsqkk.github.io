@@ -115,6 +115,15 @@ async function loadProblemData(id) {
 function renderProblemUI(data) {
     if (!$title) return;
 
+    // Hide skeleton loading placeholders
+    const skeleton = document.getElementById('problem-title-skeleton');
+    if (skeleton) skeleton.style.display = 'none';
+    $title.style.display = '';
+    document.querySelectorAll('#problem-description .oj-skeleton-text, #problem-input-format .oj-skeleton-text, #problem-output-format .oj-skeleton-text, #sample-input .oj-skeleton, #sample-output .oj-skeleton')
+        .forEach(el => el.style.display = 'none');
+    document.querySelectorAll('#time-limit.oj-skeleton, #memory-limit.oj-skeleton')
+        .forEach(el => el.classList.remove('oj-skeleton'));
+
     $title.textContent = `${data.id}. ${data.title}`;
     $timeLimit.textContent = data.time_limit;
     $memoryLimit.textContent = data.memory_limit;

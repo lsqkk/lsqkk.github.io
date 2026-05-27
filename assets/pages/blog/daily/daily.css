@@ -1,16 +1,5 @@
-:root {
-    --primary-color: #4285f4;
-    --secondary-color: #34a853;
-    --accent-color: #ea4335;
-    --text-color: #333;
-    --light-text: #666;
-    --bg-color: #bbe0ff;
-    --card-bg: rgba(255, 255, 255, 0.85);
-    --border-radius: 16px;
-    --blur-amount: 10px;
-    --date-header-bg: rgba(66, 133, 244, 0.1);
-    --calendar-bg: rgba(255, 255, 255, 0.95);
-}
+/* ── 夸克日报（浊玉玻璃） ── */
+/* 使用 tokens.css 的 CSS 变量，自动适应深色/浅色模式 */
 
 * {
     margin: 0;
@@ -20,7 +9,7 @@
 
 body {
     background: transparent;
-    color: var(--text-color);
+    color: var(--text-main);
     line-height: 1.6;
     padding: 20px;
     min-height: 100vh;
@@ -31,14 +20,17 @@ body {
     margin: 0 auto;
 }
 
+/* ── 头部 ── */
 header {
     text-align: center;
     margin-bottom: 20px;
-    backdrop-filter: blur(var(--blur-amount));
-    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--glass-bg);
+    border: 1px solid var(--line);
     padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
     position: relative;
 }
 
@@ -52,31 +44,31 @@ header {
 }
 
 .container h1 {
-    color: var(--primary-color);
+    color: var(--accent);
     font-size: 2.5rem;
     margin-bottom: 0;
 }
 
 .date {
-    color: var(--light-text);
+    color: var(--text-soft);
     font-size: 1rem;
     margin-bottom: 0;
 }
 
 .header-description {
-    color: var(--light-text);
+    color: var(--text-soft);
     font-size: 1rem;
     margin-bottom: 15px;
 }
 
-/* 日历控件样式 */
+/* ── 日历控件 ── */
 .calendar-controls {
     margin-top: 10px;
 }
 
 .calendar-toggle-btn {
-    background: var(--primary-color);
-    color: white;
+    background: var(--accent);
+    color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
@@ -86,27 +78,29 @@ header {
     align-items: center;
     gap: 8px;
     margin: 0 auto;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+    transition: background 0.24s ease, transform 0.24s ease;
+    box-shadow: 0 2px 8px var(--glass-shadow);
 }
 
 .calendar-toggle-btn:hover {
-    background: #3367d6;
+    background: color-mix(in srgb, var(--accent) 80%, #fff);
     transform: translateY(-2px);
 }
 
 .calendar-toggle-btn.active {
-    background: var(--accent-color);
+    background: var(--accent-2);
 }
 
 .calendar-container {
     display: none;
-    background: var(--calendar-bg);
-    border-radius: var(--border-radius);
+    background: var(--glass-bg-solid);
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
     padding: 20px;
     margin-top: 15px;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px var(--glass-shadow);
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
@@ -118,15 +112,8 @@ header {
 }
 
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .calendar-header {
@@ -137,14 +124,14 @@ header {
 }
 
 .calendar-header h3 {
-    color: var(--text-color);
+    color: var(--text-main);
     font-size: 1.2rem;
 }
 
 .nav-btn {
     background: none;
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
+    border: 1px solid var(--accent-soft);
+    color: var(--accent);
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -153,12 +140,12 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nav-btn:hover {
-    background: var(--primary-color);
-    color: white;
+    background: var(--accent);
+    color: #fff;
 }
 
 .calendar-grid {
@@ -171,7 +158,7 @@ header {
 .weekday {
     text-align: center;
     font-weight: 600;
-    color: var(--light-text);
+    color: var(--text-soft);
     font-size: 0.9rem;
     padding: 5px 0;
 }
@@ -184,17 +171,18 @@ header {
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease;
     border: 2px solid transparent;
+    color: var(--text-main);
 }
 
 .calendar-day:hover {
-    background: rgba(66, 133, 244, 0.1);
+    background: var(--accent-soft);
 }
 
 .calendar-day.today {
-    background: var(--secondary-color);
-    color: white;
+    background: var(--accent-2);
+    color: #fff;
 }
 
 .calendar-day.has-articles {
@@ -208,14 +196,14 @@ header {
     bottom: 3px;
     width: 4px;
     height: 4px;
-    background: var(--primary-color);
+    background: var(--accent);
     border-radius: 50%;
 }
 
 .calendar-day.selected {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
 }
 
 .calendar-day.empty {
@@ -240,77 +228,82 @@ header {
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
-    transition: all 0.3s ease;
+    transition: background 0.24s ease, transform 0.24s ease;
 }
 
 .today-btn {
-    background: #f0f0f0;
-    color: var(--text-color);
+    background: var(--glass-bg-strong);
+    color: var(--text-main);
 }
 
 .today-btn:hover {
-    background: #e0e0e0;
+    background: var(--glass-bg-solid);
 }
 
 .confirm-btn {
-    background: var(--primary-color);
-    color: white;
+    background: var(--accent);
+    color: #fff;
 }
 
 .confirm-btn:hover {
-    background: #3367d6;
+    background: color-mix(in srgb, var(--accent) 80%, #fff);
+    transform: translateY(-1px);
 }
 
-/* 筛选状态显示 */
+/* ── 筛选状态 ── */
 .filter-status {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(var(--blur-amount));
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid var(--line);
     padding: 10px 20px;
-    border-radius: var(--border-radius);
+    border-radius: var(--radius-sm);
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px var(--glass-shadow);
+    transition: border-color 0.24s ease;
 }
 
 .filter-status.active {
-    background: rgba(66, 133, 244, 0.1);
-    border-left: 4px solid var(--primary-color);
+    background: var(--glass-bg-strong);
+    border-left: 4px solid var(--accent);
 }
 
 .clear-filter-btn {
     background: none;
-    border: 1px solid var(--light-text);
-    color: var(--light-text);
+    border: 1px solid var(--text-soft);
+    color: var(--text-soft);
     padding: 5px 10px;
     border-radius: 15px;
     cursor: pointer;
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease;
     display: none;
 }
 
 .clear-filter-btn:hover {
-    background: var(--light-text);
-    color: white;
+    background: var(--text-soft);
+    color: var(--text-inverse);
 }
 
-/* 分页控件 */
+/* ── 分页 ── */
 .pagination-container {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(var(--blur-amount));
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid var(--line);
     padding: 20px;
-    border-radius: var(--border-radius);
+    border-radius: var(--radius-sm);
     margin-top: 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 32px var(--glass-shadow);
 }
 
 .pagination-info {
     text-align: center;
     margin-bottom: 15px;
-    color: var(--light-text);
+    color: var(--text-soft);
     font-size: 0.95rem;
 }
 
@@ -323,8 +316,8 @@ header {
 }
 
 .pagination-btn {
-    background: var(--primary-color);
-    color: white;
+    background: var(--accent);
+    color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
@@ -333,18 +326,19 @@ header {
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s ease;
+    transition: background 0.24s ease, transform 0.24s ease;
     min-width: 100px;
     justify-content: center;
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background: #3367d6;
+    background: color-mix(in srgb, var(--accent) 80%, #fff);
     transform: translateY(-2px);
 }
 
 .pagination-btn:disabled {
-    background: #ccc;
+    background: var(--glass-bg-strong);
+    color: var(--text-soft);
     cursor: not-allowed;
     transform: none;
 }
@@ -357,56 +351,52 @@ header {
 .page-number {
     width: 40px;
     height: 40px;
-    border: 1px solid #ddd;
-    background: white;
+    border: 1px solid var(--line);
+    background: var(--glass-bg);
+    color: var(--text-main);
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95rem;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 
 .page-number:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 .page-number.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
 }
 
-/* 加载指示器 */
+/* ── 加载指示器 ── */
 .loading-indicator {
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 30px;
-    color: var(--light-text);
+    color: var(--text-soft);
 }
 
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid var(--primary-color);
+    border: 3px solid var(--glass-bg-strong);
+    border-top: 3px solid var(--accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 10px;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* 以下保持原有样式不变 */
+/* ── 每日文章列表 ── */
 .daily-sections {
     display: flex;
     flex-direction: column;
@@ -414,21 +404,24 @@ header {
 }
 
 .daily-section {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
+    background: var(--glass-bg);
+    border-radius: var(--radius-md);
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(var(--blur-amount));
+    box-shadow: 0 8px 32px var(--glass-shadow);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid var(--line);
 }
 
 .daily-header {
-    background-color: var(--date-header-bg);
+    background: var(--glass-bg-strong);
     padding: 12px 20px;
     font-weight: bold;
+    color: var(--text-main);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--line);
 }
 
 .articles-container {
@@ -439,16 +432,17 @@ header {
 }
 
 .article-card {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
+    background: var(--glass-bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
 }
 
 .article-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background: var(--glass-bg);
+    box-shadow: 0 12px 30px var(--glass-shadow);
 }
 
 .article-card.read {
@@ -463,7 +457,7 @@ header {
 .article-title {
     font-size: 1.1rem;
     margin-bottom: 8px;
-    color: var(--text-color);
+    color: var(--text-main);
     font-weight: 600;
 }
 
@@ -473,7 +467,7 @@ header {
     align-items: center;
     margin-top: 12px;
     font-size: 0.85rem;
-    color: var(--light-text);
+    color: var(--text-soft);
 }
 
 .read-time {
@@ -487,8 +481,8 @@ header {
 
 .tag {
     display: inline-block;
-    background-color: var(--primary-color);
-    color: white;
+    background: var(--accent);
+    color: #fff;
     padding: 2px 6px;
     border-radius: 10px;
     font-size: 0.75rem;
@@ -499,28 +493,19 @@ header {
 .empty-placeholder {
     text-align: center;
     padding: 30px;
-    color: var(--light-text);
+    color: var(--text-soft);
     grid-column: 1 / -1;
 }
 
-/* 移动端响应式 */
+/* ── 移动端 ── */
 @media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
+    .container { padding: 10px; }
 
-    .articles-container {
-        grid-template-columns: 1fr;
-    }
+    .articles-container { grid-template-columns: 1fr; }
 
-    .container h1 {
-        font-size: 2rem;
-    }
+    .container h1 { font-size: 2rem; }
 
-    .calendar-container {
-        max-width: 100%;
-        padding: 15px;
-    }
+    .calendar-container { max-width: 100%; padding: 15px; }
 
     .calendar-header {
         flex-wrap: wrap;
@@ -535,23 +520,13 @@ header {
         margin-bottom: 10px;
     }
 
-    .calendar-day {
-        font-size: 0.8rem;
-    }
+    .calendar-day { font-size: 0.8rem; }
 
-    .pagination-controls {
-        flex-direction: column;
-    }
+    .pagination-controls { flex-direction: column; }
 
-    .pagination-btn {
-        width: 100%;
-        max-width: 200px;
-    }
+    .pagination-btn { width: 100%; max-width: 200px; }
 
-    .page-numbers {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+    .page-numbers { justify-content: center; flex-wrap: wrap; }
 
     .header-content111 {
         flex-direction: column;
@@ -559,25 +534,11 @@ header {
         gap: 5px;
     }
 
-    .date,
-    .header-description {
-        font-size: 0.9rem;
-    }
+    .date, .header-description { font-size: 0.9rem; }
 }
 
 @media (max-width: 480px) {
-    .calendar-day {
-        font-size: 0.75rem;
-    }
-
-    .pagination-btn {
-        min-width: auto;
-        padding: 8px 15px;
-    }
-
-    .page-number {
-        width: 35px;
-        height: 35px;
-        font-size: 0.85rem;
-    }
+    .calendar-day { font-size: 0.75rem; }
+    .pagination-btn { min-width: auto; padding: 8px 15px; }
+    .page-number { width: 35px; height: 35px; font-size: 0.85rem; }
 }
