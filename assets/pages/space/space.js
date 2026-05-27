@@ -767,6 +767,22 @@
     }
   }
 
+  // ── Local profile cache (stale-while-revalidate) ──
+  function getProfileCache(id) {
+    try {
+      var raw = localStorage.getItem('qsp_' + id);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (Date.now() - d._ts > 300000) { localStorage.removeItem('qsp_' + id); return null; }
+      return d;
+    } catch (e) { return null; }
+  }
+
+  function setProfileCache(id, data) {
+    try { data._ts = Date.now(); localStorage.setItem('qsp_' + id, JSON.stringify(data)); }
+    catch (e) {}
+  }
+
   async function loadProfile() {
     var rawIdentifier = params.get('user') || '';
     if (!rawIdentifier) {
@@ -775,6 +791,30 @@
       if (el.nickname) setText(el.nickname, '请输入用户后搜索');
       if (el.selfActions) el.selfActions.style.display = 'none';
       return;
+    }
+
+    // Render cached profile immediately (stale-while-revalidate)
+    var cached = getProfileCache(rawIdentifier);
+    if (cached) {
+      SKELETON_TEXT_FIELDS.forEach(function (key) { removeSkeletonText(el[key]); });
+      SKELETON_LISTS.forEach(function (key) { hideSkeletonList(el[key]); });
+      if (cached.nickname !== undefined) setText(el.nickname, cached.nickname);
+      if (cached.handle !== undefined) setText(el.handle, cached.handle);
+      if (cached.loginType !== undefined) setText(el.loginType, cached.loginType);
+      if (cached.registerAt !== undefined) setText(el.registerAt, cached.registerAt);
+      if (cached.login !== undefined) setText(el.login, cached.login);
+      if (cached.signature !== undefined) setSignature(cached.signature);
+      if (cached.bgImage !== undefined) setBannerBackground(cached.bgImage);
+      if (cached.location !== undefined) setText(el.location, cached.location);
+      if (cached.locationSummary !== undefined) setText(el.locationSummary, cached.locationSummary);
+      if (cached.lastSeen !== undefined) setText(el.lastSeen, cached.lastSeen);
+      if (cached.lastSeenSummary !== undefined) setText(el.lastSeenSummary, cached.lastSeenSummary);
+      if (cached.recentPage !== undefined) setText(el.recentPage, cached.recentPage);
+      if (cached.recentPageSummary !== undefined) setText(el.recentPageSummary, cached.recentPageSummary);
+      if (cached.avatarUrl !== undefined) setAvatar(cached.avatarUrl, cached.nickname || '');
+      if (cached.badgeHtml !== undefined && el.badgeDisplay) el.badgeDisplay.innerHTML = cached.badgeHtml;
+      if (cached.selfActions !== undefined && el.selfActions) el.selfActions.style.display = cached.selfActions;
+      if (cached.recentEvents !== undefined) renderRecent(cached.recentEvents);
     }
 
     try {
@@ -845,6 +885,27 @@
       if (el.selfActions) {
         el.selfActions.style.display = isSelfUser ? 'flex' : 'none';
       }
+
+      // Save to local cache for instant load next visit
+      setProfileCache(rawIdentifier, {
+        nickname: profile.nickname || result.login,
+        handle: result.identifier ? '@' + result.identifier : '@-',
+        loginType: '类型：' + (result.loginType === 'local' ? '站内账号' : 'GitHub'),
+        registerAt: '注册时间：' + formatDate(profile.createdAt || profile.updatedAt || 0),
+        login: result.identifier ? '账号标识：' + result.identifier : '账号标识：-',
+        signature: profile.signature || '',
+        bgImage: profile.backgroundImage || '',
+        location: 'IP 属地：' + (locationText || '-'),
+        locationSummary: locationText || '-',
+        lastSeen: formatAgo(lastSeenTs) + ' (' + formatDateTime(lastSeenTs) + ')',
+        lastSeenSummary: formatAgo(lastSeenTs),
+        recentPage: recentPageTitle,
+        recentPageSummary: recentPageTitle || '-',
+        avatarUrl: profile.avatarUrl || profile.avatar || '',
+        badgeHtml: el.badgeDisplay ? el.badgeDisplay.innerHTML : '',
+        selfActions: isSelfUser ? 'flex' : 'none',
+        recentEvents: recentEvents
+      });
 
       applyPrivacy();
 
