@@ -760,7 +760,7 @@ button {
     body.post-layout-page .post-sidebar-group {
         position: fixed;
         top: 100px;
-        height: calc(100vh - 120px);
+        max-height: calc(100vh - 120px);
         width: 240px;
         left: calc((100vw - min(1120px, 100vw)) / 2 + 20px + 800px + 24px);
         z-index: 1;
@@ -773,7 +773,7 @@ button {
     }
 
     body.post-layout-page .post-sidebar-scroll {
-        height: 100%;
+        max-height: calc(100vh - 120px);
         overflow-y: auto;
         overscroll-behavior: contain;
         display: flex;

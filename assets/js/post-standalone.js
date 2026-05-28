@@ -460,16 +460,26 @@ async function loadRelatedPosts() {
         // data-post-path looks like 2026/2606
         if (currentPath) currentFile = currentPath + '.md';
 
-        // Same tag matches — show first matching tag name
-        if (hasTag) {
-            var tagLabel = tags[0] + '标签下的文章';
-            var relatedByTag = allPosts.filter(function (p) {
-                if (p.file === currentFile) return false;
-                if (!Array.isArray(p.tags)) return false;
-                return p.tags.some(function (t) { return tags.indexOf(t) >= 0; });
-            }).slice(0, 5);
+        // Clear containers before appending
+        var tagContainer = document.getElementById('relatedByTag');
+        var colContainer = document.getElementById('relatedByColumn');
+        if (tagContainer) tagContainer.innerHTML = '';
+        if (colContainer) colContainer.innerHTML = '';
 
-            renderRelatedList('relatedByTag', relatedByTag, tagLabel);
+        // Same tag matches — one section per tag, each correctly filtered
+        if (hasTag) {
+            tags.forEach(function(tag) {
+                var tagLabel = tag + '标签下的文章';
+                var relatedByTag = allPosts.filter(function (p) {
+                    if (p.file === currentFile) return false;
+                    if (!Array.isArray(p.tags)) return false;
+                    return p.tags.indexOf(tag) >= 0;
+                }).slice(0, 5);
+
+                if (relatedByTag.length > 0) {
+                    renderRelatedList('relatedByTag', relatedByTag, tagLabel);
+                }
+            });
         }
 
         // Same column matches — show first matching column name
@@ -481,7 +491,9 @@ async function loadRelatedPosts() {
                 return p.columns.some(function (c) { return columns.indexOf(c) >= 0; });
             }).slice(0, 5);
 
-            renderRelatedList('relatedByColumn', relatedByColumn, colLabel);
+            if (relatedByColumn.length > 0) {
+                renderRelatedList('relatedByColumn', relatedByColumn, colLabel);
+            }
         }
 
         // Show the box if anything was rendered
@@ -503,10 +515,7 @@ async function loadRelatedPosts() {
 function renderRelatedList(containerId, posts, label) {
     var container = document.getElementById(containerId);
     if (!container) return;
-    if (!posts || posts.length === 0) {
-        container.innerHTML = '';
-        return;
-    }
+    if (!posts || posts.length === 0) return;
     var sectionId = containerId + '-items';
     var html = '<div class="related-section">';
     html += '<button class="related-toggle" type="button" aria-expanded="false" onclick="toggleRelatedSection(this)">';
@@ -524,7 +533,7 @@ function renderRelatedList(containerId, posts, label) {
                 '</a>';
     });
     html += '</div></div>';
-    container.innerHTML = html;
+    container.insertAdjacentHTML('beforeend', html);
 }
 
 window.toggleRelatedSection = function(btn) {
