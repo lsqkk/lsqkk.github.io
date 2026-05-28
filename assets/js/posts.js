@@ -50,6 +50,31 @@ function initFoldPanels() {
     });
 }
 
+// 事件委托：避免内联 onclick 的字符串注入和 DOM 重建问题
+function setupFilterDelegation() {
+    const tagFilter = document.getElementById('tagFilter');
+    if (tagFilter && !tagFilter.dataset.delegation) {
+        tagFilter.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tag-btn');
+            if (btn && btn.dataset.tag) {
+                filterByTag(btn.dataset.tag);
+            }
+        });
+        tagFilter.dataset.delegation = 'true';
+    }
+
+    const columnFilter = document.getElementById('columnFilter');
+    if (columnFilter && !columnFilter.dataset.delegation) {
+        columnFilter.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tag-btn');
+            if (btn && btn.dataset.column) {
+                filterByColumn(btn.dataset.column);
+            }
+        });
+        columnFilter.dataset.delegation = 'true';
+    }
+}
+
 // 获取URL参数
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -122,6 +147,9 @@ async function loadPosts() {
     initFoldPanels();
     renderPosts();
     renderPagination();
+
+    // 使用事件委托替代内联 onclick（一次性绑定，避免 DOM 重建导致事件丢失）
+    setupFilterDelegation();
 
     // 检查URL参数，如果有搜索词则自动执行搜索
     const urlParams = getUrlParams();
@@ -254,15 +282,16 @@ function getCurrentPagePosts() {
     return filteredPosts.slice(startIndex, endIndex);
 }
 
-// 渲染标签筛选器
+// 渲染标签筛选器（使用 DOM 方法替代 innerHTML + onclick）
 function renderTagFilter() {
     const tagFilter = document.getElementById('tagFilter');
-    tagFilter.innerHTML = allTags.map(tag => `
-                <button class="tag-btn ${tag === currentTag ? 'active' : ''}" 
-                        onclick="filterByTag('${tag}')">
-                    ${tag}
-                </button>
-            `).join('');
+    tagFilter.replaceChildren(...allTags.map(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'tag-btn' + (tag === currentTag ? ' active' : '');
+        btn.dataset.tag = tag;
+        btn.textContent = tag;
+        return btn;
+    }));
 }
 
 function bindPostCardLinks(container) {
@@ -292,12 +321,13 @@ function bindPostCardLinks(container) {
 
 function renderColumnFilter() {
     const columnFilter = document.getElementById('columnFilter');
-    columnFilter.innerHTML = allColumns.map(column => `
-                <button class="tag-btn ${column === currentColumn ? 'active' : ''}" 
-                        onclick="filterByColumn('${column}')">
-                    ${column}
-                </button>
-            `).join('');
+    columnFilter.replaceChildren(...allColumns.map(column => {
+        const btn = document.createElement('button');
+        btn.className = 'tag-btn' + (column === currentColumn ? ' active' : '');
+        btn.dataset.column = column;
+        btn.textContent = column;
+        return btn;
+    }));
 }
 
 // 按标签筛选
