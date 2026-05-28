@@ -282,16 +282,25 @@ function getCurrentPagePosts() {
     return filteredPosts.slice(startIndex, endIndex);
 }
 
-// 渲染标签筛选器（使用 DOM 方法替代 innerHTML + onclick）
+// 渲染标签筛选器：首次创建按钮，后续只切换 active 类（避免 DOM 重建引发动画/重排闪烁）
 function renderTagFilter() {
     const tagFilter = document.getElementById('tagFilter');
-    tagFilter.replaceChildren(...allTags.map(tag => {
-        const btn = document.createElement('button');
-        btn.className = 'tag-btn' + (tag === currentTag ? ' active' : '');
-        btn.dataset.tag = tag;
-        btn.textContent = tag;
-        return btn;
-    }));
+    if (!tagFilter) return;
+    // 首次渲染：创建所有按钮
+    if (!tagFilter.children.length) {
+        tagFilter.replaceChildren(...allTags.map(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'tag-btn' + (tag === currentTag ? ' active' : '');
+            btn.dataset.tag = tag;
+            btn.textContent = tag;
+            return btn;
+        }));
+        return;
+    }
+    // 后续切换：只更新 active 类
+    tagFilter.querySelectorAll('.tag-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tag === currentTag);
+    });
 }
 
 function bindPostCardLinks(container) {
@@ -321,13 +330,20 @@ function bindPostCardLinks(container) {
 
 function renderColumnFilter() {
     const columnFilter = document.getElementById('columnFilter');
-    columnFilter.replaceChildren(...allColumns.map(column => {
-        const btn = document.createElement('button');
-        btn.className = 'tag-btn' + (column === currentColumn ? ' active' : '');
-        btn.dataset.column = column;
-        btn.textContent = column;
-        return btn;
-    }));
+    if (!columnFilter) return;
+    if (!columnFilter.children.length) {
+        columnFilter.replaceChildren(...allColumns.map(column => {
+            const btn = document.createElement('button');
+            btn.className = 'tag-btn' + (column === currentColumn ? ' active' : '');
+            btn.dataset.column = column;
+            btn.textContent = column;
+            return btn;
+        }));
+        return;
+    }
+    columnFilter.querySelectorAll('.tag-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.column === currentColumn);
+    });
 }
 
 // 按标签筛选
