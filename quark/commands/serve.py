@@ -16,8 +16,9 @@ def filtered_build(root):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         shell=True,
-        text=True,
         bufsize=1,
+        encoding="utf-8",
+        errors="replace",
     )
 
     last_line = ""
