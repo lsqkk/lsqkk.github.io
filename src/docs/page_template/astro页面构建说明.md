@@ -224,6 +224,24 @@ const currentYear = new Date().getFullYear();
 - `/search`
 - 对应聚合页
 
+## 附：文章 Markdown 内联组件
+
+文章 Markdown 中还支持通过 HTML 标签嵌入特殊交互组件：
+
+### 引用卡片
+
+```html
+<div id="card" title="标题" intro="简介" tag="标签" href="链接" image="图片URL"></div>
+```
+
+### 文件预览（2026-06 新增）
+
+```html
+<filepreview src="/assets/pdf/xxx.pdf" title="显示名称" size="96KB"></filepreview>
+```
+
+详情见 `src/docs/页面和功能/文章内联组件说明.md`
+
 ## 10. 版权与页尾
 
 当页面是独立功能页、工具页或用户能长期访问的正式页面时，可在页尾恰当位置增加版权信息：

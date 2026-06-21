@@ -509,7 +509,9 @@
 .post-file-preview-download {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
+    min-width: 80px;
     padding: 7px 15px;
     border-radius: 999px;
     border: 1px solid var(--line);
@@ -538,13 +540,19 @@
     background: var(--accent-soft);
     color: var(--accent);
     border-color: transparent;
+    border-bottom: none !important;
+    padding-bottom: 7px !important;
+    text-decoration: none !important;
 }
 
 .post-file-preview-download:hover {
     background: color-mix(in srgb, var(--accent) 18%, transparent);
     border-color: var(--accent-soft);
+    border-bottom: none !important;
+    padding-bottom: 7px !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 15%, transparent);
+    text-decoration: none !important;
 }
 
 .post-file-preview-toggle-arrow {
