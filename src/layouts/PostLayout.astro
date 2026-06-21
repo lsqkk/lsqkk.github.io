@@ -338,6 +338,15 @@ try {
 
 
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script is:inline defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof mermaid !== "undefined" && document.querySelector(".post-content .mermaid")) {
+          mermaid.initialize({ startOnLoad: false, theme: "default" });
+          mermaid.run({ querySelector: ".post-content .mermaid" });
+        }
+      });
+    </script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
     <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>

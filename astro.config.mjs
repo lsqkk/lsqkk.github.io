@@ -245,6 +245,93 @@ function rehypeFilePreview() {
   };
 }
 
+function rehypeMermaid() {
+  return (tree) => {
+    const visit = (node, parent = null, index = -1) => {
+      if (!node || typeof node !== "object") return;
+
+      // Match <pre><code class="language-mermaid">...</code></pre>
+      if (
+        node.type === "element" &&
+        node.tagName === "pre" &&
+        parent && index >= 0 &&
+        Array.isArray(node.children) &&
+        node.children.length === 1 &&
+        node.children[0].type === "element" &&
+        node.children[0].tagName === "code"
+      ) {
+        const codeEl = node.children[0];
+        const classNames = codeEl.properties?.className || [];
+        const isMermaid = classNames.some((c) => String(c) === "language-mermaid");
+        if (isMermaid) {
+          const diagramText = codeEl.children
+            .filter((c) => c.type === "text")
+            .map((c) => c.value)
+            .join("");
+          parent.children[index] = createElement("pre", { className: ["mermaid"] }, [
+            createTextNode(diagramText),
+          ]);
+          return;
+        }
+      }
+
+      if (Array.isArray(node.children)) {
+        node.children.forEach((child, childIndex) => visit(child, node, childIndex));
+      }
+    };
+
+    visit(tree);
+  };
+}
+
+function rehypeNote() {
+  return (tree) => {
+    const visit = (node, parent = null, index = -1) => {
+      if (!node || typeof node !== "object") return;
+
+      if (
+        node.type === "element" &&
+        node.tagName === "note" &&
+        parent && index >= 0
+      ) {
+        const type = toText(node.properties?.type) || "info";
+        const title = toText(node.properties?.title);
+
+        const validTypes = ["info", "warning", "tip", "danger"];
+        const noteType = validTypes.includes(type) ? type : "info";
+
+        const iconMap = { info: "i", warning: "!", tip: "*", danger: "!" };
+        const icon = iconMap[noteType] || "i";
+
+        // ── Header ──
+        const iconEl = createElement("span", { className: ["post-note-icon"] }, [createTextNode(icon)]);
+        const titleText = title || { info: "信息", warning: "注意", tip: "提示", danger: "警告" }[noteType];
+        const titleEl = createElement("span", { className: ["post-note-title"] }, [createTextNode(titleText)]);
+
+        const headerChildren = [iconEl, titleEl];
+        const header = createElement("div", { className: ["post-note-header"] }, headerChildren);
+
+        // ── Body ──
+        const body = createElement("div", { className: ["post-note-body"] }, node.children || []);
+
+        // ── Root ──
+        parent.children[index] = createElement(
+          "div",
+          { className: ["post-note", `is-${noteType}`] },
+          [header, body],
+        );
+        return;
+      }
+
+      if (Array.isArray(node.children)) {
+        node.children.forEach((child, childIndex) => visit(child, node, childIndex));
+      }
+    };
+
+    visit(tree);
+  };
+}
+
 function apiBaseInjector() {
   return {
     name: "api-base-injector",
@@ -486,7 +573,7 @@ export default defineConfig({
     remarkRehype: {
       allowDangerousHtml: true,
     },
-    rehypePlugins: [rehypeRaw, rehypePostCard, rehypeFilePreview],
+    rehypePlugins: [rehypeRaw, rehypePostCard, rehypeFilePreview, rehypeMermaid, rehypeNote],
   },
   build: {
     format: "file",
