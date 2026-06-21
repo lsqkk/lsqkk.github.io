@@ -33,7 +33,7 @@
 - 提供自定义、可扩展的 Quark CLI，封装构建、文章创建、日志更新与推送流程
 - 提供 `quark web` 本地管理面板，可视化编辑站点 JSON 配置并执行常用维护命令
 
-> 更多技术细节及本站使用服务清单，欢迎查看[更新日志](/blog/log)、[Agent文档](AGENTS.md)以及[关于本站](/posts/copyright.md)。
+> 更多技术细节及本站使用服务清单，欢迎查看[更新日志](/blog/log)以及[关于本站](/posts/copyright.md)。
 
 ## 技术架构
 

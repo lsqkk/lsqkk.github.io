@@ -107,6 +107,144 @@ function rehypePostCard() {
   };
 }
 
+function rehypeFilePreview() {
+  return (tree) => {
+    let hasFilePreview = false;
+
+    const visit = (node, parent = null, index = -1) => {
+      if (!node || typeof node !== "object") return;
+
+      if (node.type === "element" && node.tagName === "filepreview" && parent && index >= 0) {
+        hasFilePreview = true;
+        const src = toText(node.properties?.src);
+        const title = toText(node.properties?.title);
+        const rawSize = toText(node.properties?.size);
+
+        if (!src) {
+          parent.children[index] = createElement("div", { className: ["post-file-preview-error"] }, [
+            createTextNode("文件预览：缺少 src 属性"),
+          ]);
+          return;
+        }
+
+        // ── Derive file type from src extension ──
+        const ext = src.split(".").pop().toLowerCase();
+        const fileType = ext || "file";
+        const typeUpper = fileType.toUpperCase();
+
+        // ── Display name ──
+        const fileName = src.split("/").pop();
+        const displayName = title || fileName;
+
+        // ── URL-encode for non-ASCII characters ──
+        const encodedSrc = src
+          .split("/")
+          .map((part) => {
+            try {
+              return encodeURIComponent(decodeURIComponent(part));
+            } catch {
+              return encodeURIComponent(part);
+            }
+          })
+          .join("/");
+
+        // ── Build viewer content ──
+        const isPdf = fileType === "pdf";
+        let viewerChildren;
+        if (isPdf) {
+          viewerChildren = [
+            createElement("iframe", {
+              className: ["post-file-preview-frame"],
+              "data-src": encodedSrc + "#view=FitH",
+              loading: "lazy",
+              title: displayName,
+              referrerpolicy: "no-referrer",
+            }),
+          ];
+        } else {
+          viewerChildren = [
+            createElement("div", { className: ["post-file-preview-placeholder"] }, [
+              createTextNode(`此 ${typeUpper} 文件暂不支持在线预览，请下载后查看。`),
+            ]),
+          ];
+        }
+
+        const viewer = createElement("div", { className: ["post-file-preview-viewer"] }, viewerChildren);
+        const body = createElement("div", { className: ["post-file-preview-body"], "data-fp-body": "" }, [
+          viewer,
+        ]);
+
+        // ── Header ──
+        const iconText = createElement("span", { className: ["post-file-preview-icon-text"] }, [createTextNode(typeUpper)]);
+        const icon = createElement("div", { className: ["post-file-preview-icon"] }, [iconText]);
+
+        const nameEl = createElement("span", { className: ["post-file-preview-name"] }, [createTextNode(displayName)]);
+        const metaParts = [`${typeUpper} 文档`];
+        if (rawSize) metaParts.push(`· ${rawSize}`);
+        const metaEl = createElement("span", { className: ["post-file-preview-meta"] }, [
+          createTextNode(metaParts.join(" ")),
+        ]);
+        const info = createElement("div", { className: ["post-file-preview-info"] }, [nameEl, metaEl]);
+
+        // ── Actions ──
+        const toggleLabel = createElement("span", { className: ["post-file-preview-toggle-label"] }, [
+          createTextNode("展开预览"),
+        ]);
+        const toggleArrow = createElement("span", { className: ["post-file-preview-toggle-arrow"] }, [
+          createTextNode("▶"),
+        ]);
+        const toggleEl = createElement("span", { className: ["post-file-preview-toggle"] }, [toggleLabel, toggleArrow]);
+
+        const downloadLink = createElement("a", {
+          className: ["post-file-preview-download"],
+          href: encodedSrc,
+          download: "",
+          "aria-label": "下载文件",
+        }, [createTextNode("下载")]);
+
+        const actions = createElement("div", { className: ["post-file-preview-actions"] }, [toggleEl, downloadLink]);
+        const header = createElement(
+          "div",
+          {
+            className: ["post-file-preview-header"],
+            "data-fp-toggle": "",
+            role: "button",
+            tabindex: "0",
+            "aria-expanded": "false",
+          },
+          [icon, info, actions],
+        );
+
+        // ── Root ──
+        parent.children[index] = createElement(
+          "div",
+          { className: ["post-file-preview"], "data-fp-root": "" },
+          [header, body],
+        );
+        return;
+      }
+
+      if (Array.isArray(node.children)) {
+        node.children.forEach((child, childIndex) => visit(child, node, childIndex));
+      }
+    };
+
+    visit(tree);
+
+    // ── Inject the shared toggle script once per post ──
+    if (hasFilePreview) {
+      const scriptCode =
+        '!function(){var d=document;function t(e){var h=e.type==="click"?e.target.closest("[data-fp-toggle]"):e.target.closest("[data-fp-toggle]");if(!h)return;if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;if(e.type==="keydown")e.preventDefault();if(e.target.closest(".post-file-preview-download"))return;var r=h.closest("[data-fp-root]");if(!r)return;var b=r.querySelector("[data-fp-body]");var x=r.classList.toggle("is-expanded");h.setAttribute("aria-expanded",x);if(x){var f=b.querySelector("iframe[data-src]");if(f){f.src=f.dataset.src;f.removeAttribute("data-src")}}requestAnimationFrame(function(){b.style.maxHeight=x?b.scrollHeight+"px":"0px"})}d.addEventListener("click",t);d.addEventListener("keydown",t)}();';
+      tree.children.push({
+        type: "element",
+        tagName: "script",
+        properties: { "data-fp-init": "" },
+        children: [{ type: "text", value: scriptCode }],
+      });
+    }
+  };
+}
+
 function apiBaseInjector() {
   return {
     name: "api-base-injector",
@@ -348,7 +486,7 @@ export default defineConfig({
     remarkRehype: {
       allowDangerousHtml: true,
     },
-    rehypePlugins: [rehypeRaw, rehypePostCard],
+    rehypePlugins: [rehypeRaw, rehypePostCard, rehypeFilePreview],
   },
   build: {
     format: "file",

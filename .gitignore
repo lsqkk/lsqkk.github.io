@@ -11,6 +11,8 @@ dist
 .quark-artifact
 public
 .claude
+CLAUDE.md
+AGENTS.md
 
 # Test artifacts
 test-results
