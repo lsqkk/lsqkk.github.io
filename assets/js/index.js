@@ -996,15 +996,15 @@ function enhanceDynamicMarkdown(root = document) {
         if (!raw.trim()) return;
         try {
             let parsed = raw;
+            // 解析 QQ @提及: @{uin:12345,nick:某人,who:1} → Markdown 链接语法
+            parsed = parsed.replace(/@\{uin:(\d+),nick:([^,}]+)(?:,who:\d+)?\}/g, (_m, uin, nick) => {
+                const safeNick = nick.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+                return `[@${safeNick}](https://user.qzone.qq.com/${uin})`;
+            });
             if (window.QQEmotionParser) {
                 const parser = new window.QQEmotionParser();
                 parsed = parser.parse(parsed);
             }
-            // 解析 QQ @提及: @{uin:12345,nick:某人,who:1} → 可点击的 QQ 空间链接
-            parsed = parsed.replace(/@\{uin:(\d+),nick:([^,}]+)(?:,who:\d+)?\}/g, (_m, uin, nick) => {
-                const safeNick = nick.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                return `<a href="https://user.qzone.qq.com/${uin}" target="_blank" rel="noopener noreferrer">@${safeNick}</a>`;
-            });
             node.innerHTML = window.marked.parse(parsed, { breaks: true, gfm: true });
             node.dataset.mdEnhanced = 'true';
         } catch (error) {

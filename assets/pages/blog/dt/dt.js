@@ -189,14 +189,14 @@ function renderDynamicEntries(entries) {
     }
 
     container.innerHTML = entries.map((entry, index) => {
-        const contentText = entry.content || '';
+        let contentText = entry.content || '';
         const entryImages = Array.isArray(entry.images) ? entry.images : [];
-        let parsedContent = emotionParser.parse(contentText);
-        // 解析 QQ @提及: @{uin:12345,nick:某人,who:1} → 可点击的 QQ 空间链接
-        parsedContent = parsedContent.replace(/@\{uin:(\d+),nick:([^,}]+)(?:,who:\d+)?\}/g, (_m, uin, nick) => {
-            const safeNick = nick.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return `<a href="https://user.qzone.qq.com/${uin}" target="_blank" rel="noopener noreferrer">@${safeNick}</a>`;
+        // 解析 QQ @提及: @{uin:12345,nick:某人,who:1} → Markdown 链接语法
+        let parsedContent = contentText.replace(/@\{uin:(\d+),nick:([^,}]+)(?:,who:\d+)?\}/g, (_m, uin, nick) => {
+            const safeNick = nick.replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+            return `[@${safeNick}](https://user.qzone.qq.com/${uin})`;
         });
+        parsedContent = emotionParser.parse(parsedContent);
         const htmlContent = marked.parse(parsedContent, {
             breaks: true,
             gfm: true

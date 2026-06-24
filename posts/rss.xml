@@ -390,5 +390,13 @@
       <description>C++</description>
       <content:encoded><![CDATA[C++输出谢尔宾斯基三角形 2022年11月28日 谢尔宾斯基三角形 （Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。 我们可以这样做一个谢尔宾斯基三角形： 1. 取一个实心的三角形。（最好是等边三角形） 2. 沿三边中点的连线，将它分成四个小三角形。 3. 去掉中间的那一个小三角形。 4. 对其余三个小三角形重复1。 下面是用C++代码模拟的过程：]]></content:encoded>
     </item>
+    <item>
+      <title>2613</title>
+      <link>https://lsqkk.github.io/posts/2026/2613</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2613</guid>
+      <pubDate>Wed, 31 Dec 1969 16:00:00 GMT</pubDate>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
   </channel>
 </rss>

@@ -8,7 +8,7 @@
             "数码"
         ],
         "columns": [],
-        "wordCount": 3029,
+        "wordCount": 3000,
         "cover": "https://cn.bing.com/th?id=OHR.WinterludeIce_ZH-CN7868524911_1366x768.jpg"
     },
     {
@@ -636,5 +636,15 @@
         "columns": [],
         "wordCount": 825,
         "cover": "https://cn.bing.com/th?id=OHR.FosterCoveredBridge_ZH-CN2672988563_1366x768.jpg"
+    },
+    {
+        "title": "2613",
+        "description": "2613",
+        "file": "2026/2613.md",
+        "date": "1970-01-01",
+        "tags": [],
+        "columns": [],
+        "wordCount": 0,
+        "cover": "https://cn.bing.com/th?id=OHR.BeardedReedling_ZH-CN7714158275_1366x768.jpg"
     }
 ]
