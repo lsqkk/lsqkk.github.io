@@ -1,5 +1,18 @@
 [
     {
+        "title": "2026 年高考专业选择指南",
+        "description": "一份来自“过来人”的硬核志愿指南",
+        "file": "2026/2613.md",
+        "date": "2026-06-25",
+        "tags": [
+            "高考",
+            "志愿"
+        ],
+        "columns": [],
+        "wordCount": 457,
+        "cover": "https://cn.bing.com/th?id=OHR.BeardedReedling_ZH-CN7714158275_1366x768.jpg"
+    },
+    {
         "title": "电子产品相关建议",
         "description": "给刚下高三的同学们的相关推荐",
         "file": "2026/2612.md",
@@ -636,15 +649,5 @@
         "columns": [],
         "wordCount": 825,
         "cover": "https://cn.bing.com/th?id=OHR.FosterCoveredBridge_ZH-CN2672988563_1366x768.jpg"
-    },
-    {
-        "title": "2613",
-        "description": "2613",
-        "file": "2026/2613.md",
-        "date": "1970-01-01",
-        "tags": [],
-        "columns": [],
-        "wordCount": 0,
-        "cover": "https://cn.bing.com/th?id=OHR.BeardedReedling_ZH-CN7714158275_1366x768.jpg"
     }
 ]

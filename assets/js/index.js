@@ -984,6 +984,14 @@ function renderDynamicEntries(entries) {
     }
     initSkeletonImages(container);
     enhanceDynamicMarkdown(container);
+    // 让 @mention 链接在新窗口打开，阻止冒泡到父卡片
+    container.querySelectorAll('a[href*="user.qzone.qq.com"]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            window.open(this.href, '_blank', 'noopener');
+        });
+    });
     applyDynamicClamp(container);
 }
 

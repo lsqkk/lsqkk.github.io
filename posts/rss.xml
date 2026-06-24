@@ -5,7 +5,15 @@
     <description>蓝色奇夸克 - 分享技术、生活与思考。</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 23 Jun 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 24 Jun 2026 16:00:00 GMT</lastBuildDate>
+    <item>
+      <title>2026 年高考专业选择指南</title>
+      <link>https://lsqkk.github.io/posts/2026/2613</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2613</guid>
+      <pubDate>Wed, 24 Jun 2026 16:00:00 GMT</pubDate>
+      <description>高考, 志愿</description>
+      <content:encoded><![CDATA[2026 年高考专业选择指南 高考出分在即，专业选择成了头等大事。@氢氦李 写了一篇《2026年高考专业选择指南》现已发布，挂了他的几个群友包括我的名字，分享如下。 &lt;filepreview src=&quot;/assets/pdf/zhiyuan.pdf&quot; title=&quot;2026年高考专业选择指南&quot; size=&quot;438KB&quot; &lt;/filepreview 这份指南从13个学科门类入手，帮你理清理学、工学、医学等专业的内在逻辑；更给出三条实用思路]]></content:encoded>
+    </item>
     <item>
       <title>电子产品相关建议</title>
       <link>https://lsqkk.github.io/posts/2026/2612</link>
@@ -389,14 +397,6 @@
       <pubDate>Sun, 27 Nov 2022 16:00:00 GMT</pubDate>
       <description>C++</description>
       <content:encoded><![CDATA[C++输出谢尔宾斯基三角形 2022年11月28日 谢尔宾斯基三角形 （Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。 我们可以这样做一个谢尔宾斯基三角形： 1. 取一个实心的三角形。（最好是等边三角形） 2. 沿三边中点的连线，将它分成四个小三角形。 3. 去掉中间的那一个小三角形。 4. 对其余三个小三角形重复1。 下面是用C++代码模拟的过程：]]></content:encoded>
-    </item>
-    <item>
-      <title>2613</title>
-      <link>https://lsqkk.github.io/posts/2026/2613</link>
-      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2613</guid>
-      <pubDate>Wed, 31 Dec 1969 16:00:00 GMT</pubDate>
-      <description></description>
-      <content:encoded><![CDATA[]]></content:encoded>
     </item>
   </channel>
 </rss>
