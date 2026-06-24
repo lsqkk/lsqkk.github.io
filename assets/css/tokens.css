@@ -88,6 +88,16 @@
   --popup-text: #2d476d;
 }
 
+/* @mention 链接（动态中的 QQ @提及）—— 无下划线，自动适配深色模式 */
+.dynamic-content a[href*="user.qzone.qq.com"] {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.dynamic-content a[href*="user.qzone.qq.com"]:hover {
+  color: var(--accent-2);
+}
+
 /* ── Dark mode: system preference ── */
 @media (prefers-color-scheme: dark) {
   :root {
