@@ -1,9 +1,34 @@
 [
     {
+        "title": "电子产品相关建议",
+        "description": "给刚下高三的同学们的相关推荐",
+        "file": "2026/2612.md",
+        "date": "2026-06-24",
+        "tags": [
+            "数码"
+        ],
+        "columns": [],
+        "wordCount": 3029,
+        "cover": "https://cn.bing.com/th?id=OHR.WinterludeIce_ZH-CN7868524911_1366x768.jpg"
+    },
+    {
+        "title": "高等数学（下）复习手册",
+        "description": "今天刚整理的高数手册，突击救急用",
+        "file": "2026/2611.md",
+        "date": "2026-06-23",
+        "tags": [
+            "高数",
+            "复习"
+        ],
+        "columns": [],
+        "wordCount": 323,
+        "cover": "https://cn.bing.com/th?id=OHR.BolivianSummer_ZH-CN0179997340_1366x768.jpg"
+    },
+    {
         "title": "《我们都很棒》钢琴谱，与一个算不上催促的催促",
         "description": "分享一首去年的毕业歌，顺便聊聊我对B站毕业季的期待",
         "file": "2026/2610.md",
-        "date": "2026-06-21",
+        "date": "2026-06-19",
         "tags": [
             "B站",
             "音乐",
@@ -64,7 +89,7 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 9394,
+        "wordCount": 9389,
         "cover": "https://cn.bing.com/th?id=OHR.RockHouse_ZH-CN7318310409_1366x768.jpg"
     },
     {
@@ -323,7 +348,7 @@
             "论文"
         ],
         "columns": [],
-        "wordCount": 7746,
+        "wordCount": 7744,
         "cover": "https://cn.bing.com/th?id=OHR.MoonDogs_ZH-CN5201314184_1366x768.jpg"
     },
     {

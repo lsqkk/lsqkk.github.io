@@ -19,6 +19,7 @@ function stripMarkdown(text: string): string {
       const label = match.replace(/\[|\].*$/g, "");
       return label || " ";
     })
+    .replace(/@\{uin:\d+,nick:([^,}]+)(?:,who:\d+)?\}/g, " @$1 ")
     .replace(/^\s{0,3}>\s?/gm, "")
     .replace(/^\s{0,3}#{1,6}\s*/gm, "")
     .replace(/^\s{0,3}[-*+]\s+/gm, "")

@@ -29,7 +29,12 @@
     if (!marked) {
       return escapeHtml(raw).replace(/\n/g, '<br>');
     }
-    return marked.parse(raw);
+    // 解析 QQ @提及: @{uin:12345,nick:某人,who:1} → 可点击的 QQ 空间链接
+    const mentionParsed = raw.replace(/@\{uin:(\d+),nick:([^,}]+)(?:,who:\d+)?\}/g, (_m, uin, nick) => {
+      const safeNick = nick.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `<a href="https://user.qzone.qq.com/${uin}" target="_blank" rel="noopener noreferrer">@${safeNick}</a>`;
+    });
+    return marked.parse(mentionParsed);
   }
 
   function formatTime(timestamp) {

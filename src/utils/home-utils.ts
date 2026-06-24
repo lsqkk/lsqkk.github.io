@@ -139,7 +139,15 @@ export function buildDynamicGallery(images: string[], id: string) {
 }
 
 export function renderPlainLines(text: string) {
-  return escapeHtml(text).replace(/\n/g, "<br>");
+  // 先整体转义 HTML，再解析 @提及（@{} 结构不含特殊字符，转义后仍可匹配）
+  const result = escapeHtml(text).replace(
+    /@\{uin:(\d+),nick:([^,}]+)(?:,who:\d+)?\}/g,
+    (_m, uin, nick) => {
+      // nick 已由 escapeHtml 转义过
+      return `<a href="https://user.qzone.qq.com/${uin}" target="_blank" rel="noopener noreferrer">@${nick}</a>`;
+    }
+  );
+  return result.replace(/\n/g, "<br>");
 }
 
 export function sumArrayLengths(arr: any[] | undefined, key: string): number {
