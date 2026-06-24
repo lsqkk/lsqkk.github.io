@@ -4,8 +4,158 @@
     "content": "基于仓库 `commits` 记录整理，部分更新可能不及时。\n\n查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)"
   },
   {
+    "date": "2026-06-23",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "2611.md",
+        "commit": "f83fd1"
+      },
+      {
+        "type": "更新",
+        "description": "更新了复习手册",
+        "commit": "8480c7"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-22",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "新增note",
+        "commit": "a28185"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-21",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "优化了文件预览组件UI",
+        "commit": "726748"
+      },
+      {
+        "type": "新增",
+        "description": "增加了文件预览",
+        "commit": "ba2824"
+      }
+    ]
+  },
+  {
+    "date": "2026-05-28",
+    "entries": [
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "1c9d2a"
+      },
+      {
+        "type": "更新",
+        "description": "posts.js",
+        "commit": "80f9b1"
+      },
+      {
+        "type": "修复",
+        "description": "修复了文章页已知问题",
+        "commit": "a1ad51"
+      },
+      {
+        "type": "修复",
+        "description": "修复了文章列表页已知问题",
+        "commit": "0db5c8"
+      }
+    ]
+  },
+  {
     "date": "2026-05-27",
     "entries": [
+      {
+        "type": "修复",
+        "description": "修复了space页面已知问题",
+        "commit": "6c7e3e"
+      },
+      {
+        "type": "修复",
+        "description": "修复了卡片颜色问题",
+        "commit": "3014b6"
+      },
+      {
+        "type": "优化",
+        "description": "优化了UI",
+        "commit": "aa9179"
+      },
+      {
+        "type": "更新",
+        "description": "更新了quark serve和文档",
+        "commit": "e8f94f"
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "926ce2"
+      },
+      {
+        "type": "更新",
+        "description": "nav.css",
+        "commit": "4a5953"
+      },
+      {
+        "type": "更新",
+        "description": "home-utils.ts",
+        "commit": "07462e"
+      },
+      {
+        "type": "更新",
+        "description": "nav.css",
+        "commit": "e68212"
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "1c581d"
+      },
+      {
+        "type": "优化",
+        "description": "优化了顶栏滑动效果",
+        "commit": "60855f"
+      },
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": "9d18a3"
+      },
+      {
+        "type": "优化",
+        "description": "优化了文章页UI",
+        "commit": "e99793"
+      },
+      {
+        "type": "修复",
+        "description": "未补充说明",
+        "commit": "8e5168"
+      },
+      {
+        "type": "修复",
+        "description": "未补充说明",
+        "commit": "14471e"
+      },
+      {
+        "type": "更新",
+        "description": "style.css",
+        "commit": "2e669c"
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "cf47b5"
+      },
+      {
+        "type": "修复",
+        "description": "修复了一些已知问题",
+        "commit": "63d9bc"
+      },
       {
         "type": "修复",
         "description": "修复了一些已知问题",
