@@ -5,7 +5,23 @@
     <description>蓝色奇夸克 - 分享技术、生活与思考。</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 24 Jun 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2026 16:00:00 GMT</lastBuildDate>
+    <item>
+      <title>高考志愿填报与录取全流程解析</title>
+      <link>https://lsqkk.github.io/posts/2026/2615</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2615</guid>
+      <pubDate>Sat, 27 Jun 2026 16:00:00 GMT</pubDate>
+      <description>高考</description>
+      <content:encoded><![CDATA[高考志愿填报与录取全流程解析 声明：本文是未参加过高考的作者详细了解了高考志愿填报与录取相关知识后的总结产物，主要面向和我一样尚未或从未参加过高考、对志愿填报体系极不了解的人。 一场不完全信息的博弈 高考录取，对于绝大多数考生和家长来说是一个既熟悉又陌生的过程。熟悉的是“填志愿、等录取”这六个字，陌生的是这六个字背后那一整套精密、冷酷、且充满人性博弈的运行机制。 如果你面对“专业组”“投档线”“滑档”“退档”“大类分流”等词汇感到一头雾]]></content:encoded>
+    </item>
+    <item>
+      <title>近现代史纲要复习资料</title>
+      <link>https://lsqkk.github.io/posts/2026/2614</link>
+      <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2614</guid>
+      <pubDate>Thu, 25 Jun 2026 16:00:00 GMT</pubDate>
+      <description>史纲, 复习</description>
+      <content:encoded><![CDATA[近现代史纲要复习资料 考前突击手册 &lt;filepreview src=&quot;/assets/pdf/exam/史纲考前突击手册.pdf&quot; title=&quot;考前突击手册&quot; size=&quot;901KB&quot; &lt;/filepreview 模拟题 &lt;filepreview src=&quot;/assets/pdf/exam/中国近现代史纲要 四套模拟题.pdf&quot; title=&quot;四套模拟题&quot; size=&quot;377KB&quot; &lt;/filepreview 由 Agent 生成，]]></content:encoded>
+    </item>
     <item>
       <title>2026 年高考专业选择指南</title>
       <link>https://lsqkk.github.io/posts/2026/2613</link>
@@ -28,7 +44,7 @@
       <guid isPermaLink="true">https://lsqkk.github.io/posts/2026/2611</guid>
       <pubDate>Mon, 22 Jun 2026 16:00:00 GMT</pubDate>
       <description>高数, 复习</description>
-      <content:encoded><![CDATA[高等数学（下）复习手册 一份期末突击复习手册，基于历年真题的答题技巧、公式速查与渐进模拟演练。 针对性覆盖： • 傅里叶级数（系数计算、求级数和） • 曲线积分与曲面积分（格林/高斯/斯托克斯公式） • 幂级数展开与求和函数 • 多元函数可微性判断 • 微分方程大题 • 重积分与交换积分次序 &lt;filepreview src=&quot;/assets/pdf/高数下复习手册.pdf&quot; title=&quot;高等数学（下）复习手册&quot; size=&quot;461K]]></content:encoded>
+      <content:encoded><![CDATA[高等数学（下）复习手册 一份期末突击复习手册，基于历年真题的答题技巧、公式速查与渐进模拟演练。 针对性覆盖： • 傅里叶级数（系数计算、求级数和） • 曲线积分与曲面积分（格林/高斯/斯托克斯公式） • 幂级数展开与求和函数 • 多元函数可微性判断 • 微分方程大题 • 重积分与交换积分次序 &lt;filepreview src=&quot;/assets/pdf/exam/高数下复习手册.pdf&quot; title=&quot;高等数学（下）复习手册&quot; size=]]></content:encoded>
     </item>
     <item>
       <title>《我们都很棒》钢琴谱，与一个算不上催促的催促</title>
@@ -389,14 +405,6 @@
       <pubDate>Thu, 28 Sep 2023 16:00:00 GMT</pubDate>
       <description>物理</description>
       <content:encoded><![CDATA[牛顿白光色散实验的科学原理 ——关于“牛顿为何是发现白光色散现象第一人”以及相关问题的研究 摘要 光的色散（dispersion of light）指的是复色光（尤其是白光）分解为单色光的现象，色散现象说明光在介质中的速度随光的频率而变。在牛顿之前的不同的历史时期，人类对色彩的本质的想法是不同的。亚里士多德、笛卡尔等人都没有成功解释白光色散现象。牛顿所处的时代是欧洲社会大变革的时代，时代和个人的因素促使牛顿有解释白光色散的能力。牛顿比前]]></content:encoded>
-    </item>
-    <item>
-      <title>C++输出谢尔宾斯基三角形</title>
-      <link>https://lsqkk.github.io/posts/2023/2204</link>
-      <guid isPermaLink="true">https://lsqkk.github.io/posts/2023/2204</guid>
-      <pubDate>Sun, 27 Nov 2022 16:00:00 GMT</pubDate>
-      <description>C++</description>
-      <content:encoded><![CDATA[C++输出谢尔宾斯基三角形 2022年11月28日 谢尔宾斯基三角形 （Sierpinski triangle）是一种分形，由波兰数学家谢尔宾斯基在1915年提出。 我们可以这样做一个谢尔宾斯基三角形： 1. 取一个实心的三角形。（最好是等边三角形） 2. 沿三边中点的连线，将它分成四个小三角形。 3. 去掉中间的那一个小三角形。 4. 对其余三个小三角形重复1。 下面是用C++代码模拟的过程：]]></content:encoded>
     </item>
   </channel>
 </rss>

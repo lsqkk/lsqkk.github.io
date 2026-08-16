@@ -147,6 +147,11 @@
           "name": "图片转Emoji",
           "url": "/tool/image-emoji",
           "target": "_blank"
+        },
+        {
+          "name": "找不同辅助",
+          "url": "/tool/spotdiff",
+          "target": "_blank"
         }
       ]
     },

@@ -1,0 +1,124 @@
+---
+import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>找不同辅助 - {SITE_TITLE}</title>
+    <meta name="description" content="上传找不同游戏截屏，拖拽参考线分割两幅图，逐像素对比并高亮差异区域。" />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+    <script is:inline src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/pages/tool/spotdiff/spotdiff.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+</head>
+
+<body class="luxury-body">
+    <LuxuryBackground />
+
+    <div class="sd-container">
+        <h1 class="sd-page-title">找不同辅助</h1>
+        <p class="sd-subtitle">上传找不同截屏，拖拽参考线分割 A/B 两图，逐像素比对并高亮差异</p>
+
+        <!-- 步骤条 -->
+        <div class="sd-steps">
+            <span class="sd-step"><span class="sd-step-num">1</span>上传截屏</span>
+            <span class="sd-step"><span class="sd-step-num">2</span>拖线分割</span>
+            <span class="sd-step"><span class="sd-step-num">3</span>计算差异</span>
+            <span class="sd-step"><span class="sd-step-num">4</span>查看结果</span>
+        </div>
+
+        <!-- 1. 上传 -->
+        <div id="sd-upload-area" class="sd-panel sd-upload-area">
+            <div class="sd-upload-icon">🖼️</div>
+            <div class="sd-upload-text">拖放找不同截屏到这里，或点击选择文件，也可直接粘贴</div>
+            <div class="sd-upload-hint">支持 JPG / PNG / WebP 等格式</div>
+            <input type="file" id="sd-file" class="sd-file-input" accept="image/*">
+            <div class="sd-upload-error" id="sd-upload-error"></div>
+        </div>
+
+        <!-- 2. 分割 -->
+        <section id="sd-split" class="sd-panel sd-hidden">
+            <div class="sd-toolbar">
+                <button class="sd-btn is-active" data-mode="h">左右并列</button>
+                <button class="sd-btn" data-mode="v">上下堆叠</button>
+                <button id="sd-reset-lines" class="sd-btn sd-danger">重置参考线</button>
+                <span class="sd-hint">拖动蓝线（主/辅参考）与红线（分隔线）分割 A/B；双击恢复默认</span>
+            </div>
+            <div class="sd-stage-wrap">
+                <canvas id="sd-stage" class="sd-stage"></canvas>
+                <div class="sd-stage-note" id="sd-stage-note"></div>
+            </div>
+        </section>
+
+        <!-- 3. 参数与计算 -->
+        <section id="sd-param" class="sd-panel sd-hidden">
+            <div class="sd-param-grid">
+                <label class="sd-param">
+                    阈值
+                    <span class="sd-param-row">
+                        <input type="range" id="sd-threshold" min="1" max="255" step="1" value="32">
+                        <output id="sd-threshold-val">32</output>
+                    </span>
+                </label>
+                <label class="sd-param">
+                    降噪
+                    <span class="sd-param-row">
+                        <input type="range" id="sd-denoise" min="0" max="2" step="1" value="0">
+                        <output id="sd-denoise-val">0</output>
+                    </span>
+                </label>
+                <label class="sd-checkbox">
+                    <input type="checkbox" id="sd-auto-align" checked>
+                    自动对齐（修正截图错位）
+                </label>
+                <label class="sd-param">
+                    最小区域(px)
+                    <span class="sd-param-row">
+                        <input type="number" id="sd-min-size" min="1" max="100" value="3">
+                    </span>
+                </label>
+                <button id="sd-run" class="sd-btn sd-primary">计算差异</button>
+            </div>
+        </section>
+
+        <!-- 4. 结果 -->
+        <section id="sd-result" class="sd-panel sd-hidden">
+            <div class="sd-result-toolbar">
+                <button class="sd-btn" data-view="orig">原图A</button>
+                <button class="sd-btn" data-view="heatmap">热力图</button>
+                <button class="sd-btn" data-view="diff">差值灰度</button>
+                <button class="sd-btn" data-view="mark">高亮标记</button>
+                <button class="sd-btn" data-view="boxes">区域框选</button>
+                <span class="sd-spacer"></span>
+                <button id="sd-zoom-in" class="sd-btn">＋</button>
+                <button id="sd-zoom-out" class="sd-btn">－</button>
+                <button id="sd-reset-view" class="sd-btn">复位</button>
+                <button id="sd-download" class="sd-btn sd-primary">下载PNG</button>
+            </div>
+            <div class="sd-result-wrap">
+                <canvas id="sd-result-canvas" class="sd-result-canvas"></canvas>
+                <div id="sd-empty-banner" class="sd-empty-banner sd-hidden">未检测到差异，请降低阈值或检查参考线</div>
+            </div>
+            <div id="sd-stats" class="sd-stats"></div>
+        </section>
+
+        <div class="sd-footer">
+            <a href="/">首页</a>
+            <a href="/tool">更多工具</a>
+            <a href="/posts/copyright">版权声明</a>
+            <span>© <span id="sd-year"></span> {SITE_TITLE}</span>
+        </div>
+    </div>
+
+    <script is:inline>
+        document.getElementById('sd-year').textContent = new Date().getFullYear();
+    </script>
+    <script is:inline src="/assets/pages/tool/spotdiff/spotdiff.js"></script>
+</body>
+
+</html>

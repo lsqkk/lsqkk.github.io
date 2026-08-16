@@ -1,5 +1,30 @@
 [
     {
+        "title": "高考志愿填报与录取全流程解析",
+        "description": "高考志愿填报与录取的相关知识",
+        "file": "2026/2615.md",
+        "date": "2026-06-28",
+        "tags": [
+            "高考"
+        ],
+        "columns": [],
+        "wordCount": 10919,
+        "cover": ""
+    },
+    {
+        "title": "近现代史纲要复习资料",
+        "description": "近现代史纲要考前突击手册和模拟题",
+        "file": "2026/2614.md",
+        "date": "2026-06-26",
+        "tags": [
+            "史纲",
+            "复习"
+        ],
+        "columns": [],
+        "wordCount": 302,
+        "cover": ""
+    },
+    {
         "title": "2026 年高考专业选择指南",
         "description": "一份来自“过来人”的硬核志愿指南",
         "file": "2026/2613.md",
@@ -34,7 +59,7 @@
             "复习"
         ],
         "columns": [],
-        "wordCount": 323,
+        "wordCount": 328,
         "cover": "https://cn.bing.com/th?id=OHR.BolivianSummer_ZH-CN0179997340_1366x768.jpg"
     },
     {

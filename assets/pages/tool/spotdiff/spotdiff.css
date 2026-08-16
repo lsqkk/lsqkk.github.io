@@ -1,0 +1,402 @@
+/* =========================================================
+   spotdiff.css - 找不同辅助
+   风格：Aero / 玻璃拟态，复用 tokens.css 设计变量
+   ========================================================= */
+
+:root {
+    --sd-red: #ff5a5a;
+    --sd-red-strong: #ff3b3b;
+    --sd-font: inherit;
+}
+
+body {
+    color: var(--text-main);
+}
+
+/* ---------- 布局 ---------- */
+.sd-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sd-page-title {
+    text-align: center;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 600;
+}
+
+.sd-subtitle {
+    text-align: center;
+    color: var(--text-main);
+    opacity: 0.72;
+    margin: 0 0 22px;
+    font-size: 0.95rem;
+}
+
+/* ---------- 步骤条 ---------- */
+.sd-steps {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.sd-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--text-main);
+    opacity: 0.55;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--glass-bg-soft);
+    border: 1px solid var(--glass-edge-soft);
+    transition: all 0.2s ease;
+}
+
+.sd-step.is-active {
+    opacity: 1;
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+
+.sd-step-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* ---------- 通用面板（玻璃卡） ---------- */
+.sd-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(100%);
+    -webkit-backdrop-filter: blur(20px) saturate(100%);
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 32px var(--glass-shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.sd-hidden {
+    display: none !important;
+}
+
+/* ---------- 上传区 ---------- */
+.sd-upload-area {
+    border: 2px dashed var(--line-strong);
+    border-radius: var(--radius-lg);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    color: var(--text-main);
+}
+
+.sd-upload-area:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+}
+
+.sd-upload-area.sd-active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.sd-upload-icon {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+}
+
+.sd-upload-text {
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+.sd-upload-hint {
+    font-size: 0.82rem;
+    opacity: 0.62;
+    margin-top: 6px;
+}
+
+.sd-file-input {
+    display: none;
+}
+
+.sd-upload-error {
+    color: var(--sd-red-strong);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    min-height: 1em;
+}
+
+/* ---------- 工具栏 / 按钮 ---------- */
+.sd-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.sd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface-soft);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.sd-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+
+.sd-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.sd-btn.sd-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    border-color: transparent;
+    font-weight: 500;
+}
+
+.sd-btn.sd-accent {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+
+.sd-btn.sd-danger {
+    color: var(--sd-red-strong);
+    border-color: var(--sd-red);
+}
+
+.sd-btn.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+}
+
+.sd-hint {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.sd-spacer {
+    flex: 1;
+}
+
+/* ---------- 画布 ---------- */
+.sd-stage-wrap,
+.sd-result-wrap {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: repeating-conic-gradient(var(--surface-soft) 0% 25%, var(--surface-card) 0% 50%) 50% / 22px 22px;
+    border: 1px solid var(--line-soft);
+}
+
+.sd-stage,
+.sd-result-canvas {
+    display: block;
+    width: 100%;
+    max-height: 70vh;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.sd-stage.sd-dragging,
+.sd-result-canvas.sd-dragging {
+    cursor: grabbing;
+}
+
+.sd-stage-note {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    font-size: 0.75rem;
+    background: var(--glass-bg-solid);
+    border: 1px solid var(--glass-edge);
+    border-radius: 8px;
+    padding: 4px 10px;
+    color: var(--text-main);
+    pointer-events: none;
+}
+
+/* ---------- 参数面板 ---------- */
+.sd-param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px 22px;
+    align-items: center;
+}
+
+.sd-param {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: var(--text-main);
+}
+
+.sd-param-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sd-param label {
+    font-weight: 500;
+}
+
+.sd-param input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+}
+
+.sd-param output {
+    min-width: 2.4em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
+}
+
+.sd-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.86rem;
+}
+
+.sd-checkbox input {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------- 结果区 ---------- */
+.sd-result-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.sd-result-canvas {
+    min-height: 120px;
+}
+
+.sd-empty-banner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background: var(--glass-bg-solid);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.sd-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    opacity: 0.85;
+}
+
+.sd-stats b {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 页脚 ---------- */
+.sd-footer {
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.65;
+    margin-top: 26px;
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sd-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* ---------- 移动端 ---------- */
+@media (max-width: 768px) {
+    .sd-container {
+        padding: 16px 12px 40px;
+    }
+
+    .sd-panel {
+        padding: 14px;
+        border-radius: var(--radius-md);
+    }
+
+    .sd-toolbar,
+    .sd-result-toolbar {
+        gap: 8px;
+    }
+
+    .sd-btn {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+    }
+
+    .sd-param-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sd-stage,
+    .sd-result-canvas {
+        max-height: 52vh;
+    }
+}
