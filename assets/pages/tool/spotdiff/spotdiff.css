@@ -189,6 +189,11 @@ body {
     border-color: #ff5a5a;
 }
 
+.sd-btn.sd-accent {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+
 .sd-btn.is-active {
     background: var(--accent);
     border-color: var(--accent);

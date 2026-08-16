@@ -48,18 +48,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <button id="sd-reset-lines" class="sd-btn sd-danger">重置参考线</button>
                 <span class="sd-hint">左右模式：A左缘｜分界(红线，即 B 的左缘 = A 的右缘)｜B右缘，青色顶部/底部框住上下；上下模式对称（A顶部｜分界｜B底部 + 青左/右缘）。线可任意拖动、顺序不限，工具自动按位置排序；双击单线复位</span>
             </div>
-            <div class="sd-nudge">
-                <span class="sd-nudge-label">微调分界线</span>
-                <select id="sd-nudge-step" class="sd-nudge-step" aria-label="微调步长">
-                    <option value="1">1px</option>
-                    <option value="2">2px</option>
-                    <option value="5">5px</option>
-                    <option value="10">10px</option>
-                </select>
-                <button id="sd-nudge-minus" class="sd-btn sd-nudge-btn" aria-label="向起点微调">◀</button>
-                <button id="sd-nudge-plus" class="sd-btn sd-nudge-btn" aria-label="向终点微调">▶</button>
-                <span class="sd-hint">也可 Ctrl+方向键</span>
-            </div>
             <div class="sd-stage-wrap">
                 <canvas id="sd-stage" class="sd-stage"></canvas>
                 <div class="sd-stage-note" id="sd-stage-note"></div>
@@ -78,6 +66,22 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <canvas id="sd-result-canvas" class="sd-result-canvas"></canvas>
             </div>
             <div id="sd-diff-count" class="sd-stats"></div>
+
+            <!-- 对齐区：看着差异图微调分界线 / 自动对齐 -->
+            <div class="sd-nudge">
+                <button id="sd-auto-align-btn" class="sd-btn sd-accent">尝试自动对齐</button>
+                <span class="sd-nudge-label">微调分界线</span>
+                <select id="sd-nudge-step" class="sd-nudge-step" aria-label="微调步长">
+                    <option value="1">1px</option>
+                    <option value="2">2px</option>
+                    <option value="5">5px</option>
+                    <option value="10">10px</option>
+                </select>
+                <button id="sd-nudge-minus" class="sd-btn sd-nudge-btn" aria-label="向起点微调">◀</button>
+                <button id="sd-nudge-plus" class="sd-btn sd-nudge-btn" aria-label="向终点微调">▶</button>
+                <span class="sd-hint">自动对齐：分界线附近 ±50px 内找差异最小的位置；也可 Ctrl+方向键手动微调</span>
+            </div>
+
             <p class="sd-tip">黑白差异图：黑=两图相同，白/亮=有差异的地方。长图可上下滚动，下载的是全分辨率原图。</p>
         </section>
 

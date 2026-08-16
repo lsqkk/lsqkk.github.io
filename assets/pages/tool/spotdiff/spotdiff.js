@@ -26,6 +26,7 @@
         nudgeStep: $('sd-nudge-step'),
         nudgeMinus: $('sd-nudge-minus'),
         nudgePlus: $('sd-nudge-plus'),
+        autoAlignBtn: $('sd-auto-align-btn'),
         steps: document.querySelectorAll('.sd-step'),
     };
 
@@ -450,6 +451,93 @@
         else if (!isH && e.key === 'ArrowUp') { e.preventDefault(); nudgeDivider(-1); }
         else if (!isH && e.key === 'ArrowDown') { e.preventDefault(); nudgeDivider(1); }
     });
+
+    // ---------- 尝试自动对齐：分界线附近 ±range px 内找差异最小的位置 ----------
+    function lumaOf(src, rect, w, h) {
+        const c = newCanvas(w, h);
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'medium';
+        ctx.drawImage(src, rect.x, rect.y, rect.w, rect.h, 0, 0, w, h);
+        const data = ctx.getImageData(0, 0, w, h).data;
+        const l = new Float32Array(w * h);
+        for (let i = 0, p = 0; i < w * h; i++, p += 4) {
+            l[i] = 0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2];
+        }
+        return l;
+    }
+    function subtractMean(arr) {
+        let s = 0;
+        for (let i = 0; i < arr.length; i++) s += arr[i];
+        const m = s / arr.length;
+        for (let i = 0; i < arr.length; i++) arr[i] -= m;
+    }
+    // 在 A/B 亮度图上沿分割轴做 SAD，返回得分最低的偏移（数组单元）
+    function sadBest(la, lb, w, h, axis, rng, center) {
+        let bestScore = Infinity;
+        let bestD = 0;
+        for (let d = center - rng; d <= center + rng; d++) {
+            const dx = axis === 'x' ? d : 0;
+            const dy = axis === 'y' ? d : 0;
+            const ox0 = Math.max(0, -dx);
+            const oy0 = Math.max(0, -dy);
+            const ow = w - Math.abs(dx);
+            const oh = h - Math.abs(dy);
+            if (ow <= 0 || oh <= 0) continue;
+            const n = ow * oh;
+            let s = 0;
+            for (let y = 0; y < oh; y++) {
+                const rowA = (oy0 + y) * w + ox0;
+                const rowB = (oy0 + y + dy) * w + ox0 + dx;
+                for (let x = 0; x < ow; x++) {
+                    const v = la[rowA + x] - lb[rowB + x];
+                    s += v < 0 ? -v : v;
+                }
+            }
+            // 减均值抗亮度差 + 正则项让平坦区域偏向零偏移
+            const score = s / n + 0.002 * d * d;
+            if (score < bestScore) {
+                bestScore = score;
+                bestD = d;
+            }
+        }
+        return bestD;
+    }
+    // 返回让 A/B 差异最小的分界线移动量（源图像素，正值=向 B 方向移动）
+    function estimateBestDividerShift(src, rectA, rectB, mode, range) {
+        const axis = mode === 'h' ? 'x' : 'y';
+        // 粗搜：1/4 降采样 ±range
+        const scale = 0.25;
+        const sw = Math.max(8, Math.round(rectA.w * scale));
+        const sh = Math.max(8, Math.round(rectA.h * scale));
+        const sA = lumaOf(src, rectA, sw, sh);
+        const sB = lumaOf(src, rectB, sw, sh);
+        subtractMean(sA);
+        subtractMean(sB);
+        const rng = Math.max(1, Math.round(range * scale));
+        const coarse = sadBest(sA, sB, sw, sh, axis, rng, 0);
+        let shift = Math.round(coarse / scale);
+        // 精修：全分辨率在最优附近 ±3px（1px 精度）
+        const fA = lumaOf(src, rectA, rectA.w, rectA.h);
+        const fB = lumaOf(src, rectB, rectB.w, rectB.h);
+        subtractMean(fA);
+        subtractMean(fB);
+        const fine = sadBest(fA, fB, rectA.w, rectA.h, axis, 3, shift);
+        return fine;
+    }
+    function tryAutoAlign() {
+        if (!state.srcCanvas) return;
+        const r = computeRects();
+        const key = state.mode === 'h' ? 'xDiv' : 'yDiv';
+        const axisLen = state.mode === 'h' ? state.workW : state.workH;
+        const range = Math.min(50, Math.floor(axisLen * 0.25));
+        const shift = estimateBestDividerShift(state.srcCanvas, r.rectA, r.rectB, state.mode, range);
+        state.lines[state.mode][key] = clamp01(state.lines[state.mode][key] + shift / Math.max(1, axisLen));
+        drawStage();
+        saveSettings();
+        scheduleRecompute();
+    }
+    els.autoAlignBtn.addEventListener('click', tryAutoAlign);
 
     // ---------- 上传 ----------
     els.uploadArea.addEventListener('click', () => els.fileInput.click());
