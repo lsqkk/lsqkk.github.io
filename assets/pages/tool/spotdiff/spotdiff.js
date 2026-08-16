@@ -45,11 +45,16 @@
     const MAX_BOXES = 30;       // 区域框选上限
     const VIEWS = ['orig', 'heatmap', 'diff', 'mark', 'boxes'];
     const LINE_ORDER = ['main', 'divider', 'aux'];
-    const LINE_LABELS = {
-        main: '主参考线',
-        divider: '分隔线',
-        aux: '辅参考线',
-    };
+    // 线名随模式变化：上下模式是水平线，左右模式是竖线
+    // main=A 顶部/左缘，divider=B 顶部/左缘(=A 与 B 的分界)，aux=底部/右缘
+    function lineLabelsFor(mode) {
+        const isH = mode === 'h';
+        return {
+            main: isH ? 'A 左缘' : 'A 顶部',
+            divider: isH ? 'B 左缘·分界' : 'B 顶部·分界',
+            aux: isH ? '右缘' : '底部',
+        };
+    }
     const LINE_COLORS = {
         main: '#2367d7',
         divider: '#ff5a5a',
@@ -353,7 +358,7 @@
     }
 
     function drawLine(ctx, pos, type, isH, full) {
-        const label = LINE_LABELS[type];
+        const label = lineLabelsFor(state.mode)[type];
         ctx.save();
         ctx.strokeStyle = LINE_COLORS[type];
         ctx.lineWidth = 2;
