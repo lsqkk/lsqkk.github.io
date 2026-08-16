@@ -454,117 +454,65 @@
         else if (!isH && e.key === 'ArrowDown') { e.preventDefault(); nudgeDivider(1); }
     });
 
-    // ---------- 尝试自动对齐：分界线附近 ±range px 内找差异最小的位置 ----------
-    function lumaOf(src, rect, w, h) {
-        const c = newCanvas(w, h);
-        const ctx = c.getContext('2d', { willReadFrequently: true });
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'medium';
-        ctx.drawImage(src, rect.x, rect.y, rect.w, rect.h, 0, 0, w, h);
-        const data = ctx.getImageData(0, 0, w, h).data;
-        const l = new Float32Array(w * h);
-        for (let i = 0, p = 0; i < w * h; i++, p += 4) {
-            l[i] = 0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2];
+    // ---------- 尝试自动对齐：在 ±10px 内找"差异像素数"最小的分界线位置 ----------
+    // 统计两幅图（1/2 尺度）的差异像素数，与界面"差异像素：xxx"同口径
+    function diffCountOf(aData, bData, w, h) {
+        const n = w * h;
+        const hist = new Uint32Array(256);
+        const d = new Uint8Array(n);
+        for (let i = 0, p = 0; i < n; i++, p += 4) {
+            let v = aData[p] - bData[p]; if (v < 0) v = -v;
+            let t = aData[p + 1] - bData[p + 1]; if (t < 0) t = -t; if (t > v) v = t;
+            t = aData[p + 2] - bData[p + 2]; if (t < 0) t = -t; if (t > v) v = t;
+            d[i] = v;
+            hist[v]++;
         }
-        return l;
-    }
-    function subtractMean(arr) {
-        let s = 0;
-        for (let i = 0; i < arr.length; i++) s += arr[i];
-        const m = s / arr.length;
-        for (let i = 0; i < arr.length; i++) arr[i] -= m;
-    }
-    // 在 A/B 亮度图上沿分割轴打分（MSE：差异程度的平方）。
-    // 为什么用平方而不是绝对差：符合"白得越亮越算差异"的直觉，
-    // JPEG 噪点是低强度随机像素，平方后贡献远小于真正的结构差异，因此不会被噪点带偏。
-    // 返回 { best: 得分最低的偏移(数组单元), bestScore, score0: 偏移0(即不动)时的得分 }
-    function alignSearch(la, lb, w, h, axis, rng, center) {
-        let best = center;
-        let bestScore = Infinity;
-        let score0 = Infinity;
-        for (let d = center - rng; d <= center + rng; d++) {
-            const dx = axis === 'x' ? d : 0;
-            const dy = axis === 'y' ? d : 0;
-            const ox0 = Math.max(0, -dx);
-            const oy0 = Math.max(0, -dy);
-            const ow = w - Math.abs(dx);
-            const oh = h - Math.abs(dy);
-            if (ow <= 0 || oh <= 0) continue;
-            const n = ow * oh;
-            let s = 0;
-            for (let y = 0; y < oh; y++) {
-                const rowA = (oy0 + y) * w + ox0;
-                const rowB = (oy0 + y + dy) * w + ox0 + dx;
-                for (let x = 0; x < ow; x++) {
-                    const v = la[rowA + x] - lb[rowB + x];
-                    s += v * v;
-                }
-            }
-            const score = s / n;
-            if (d === 0) score0 = score;
-            if (score < bestScore) {
-                bestScore = score;
-                best = d;
-            }
+        const floor = percentileOf(hist, n, 0.25);
+        const ceil = percentileOf(hist, n, 0.985);
+        const range = Math.max(1, ceil - floor);
+        let count = 0;
+        for (let i = 0; i < n; i++) {
+            const g = d[i] <= floor ? 0 : Math.min(255, Math.round((d[i] - floor) / range * 255));
+            if (g > 10) count++;
         }
-        return { best, bestScore, score0 };
+        return count;
     }
 
-    // 3×3 box blur（轻降噪，抑制 JPEG 噪点对对齐判断的干扰）
-    function blurLuma(l, w, h) {
-        const tmp = new Float32Array(l.length);
-        for (let y = 0; y < h; y++) {
-            const row = y * w;
-            for (let x = 0; x < w; x++) {
-                let s = l[row + Math.max(0, x - 1)] + l[row + x] + l[row + Math.min(w - 1, x + 1)];
-                tmp[row + x] = s / 3;
-            }
-        }
-        const out = new Float32Array(l.length);
-        for (let y = 0; y < h; y++) {
-            const row = y * w;
-            for (let x = 0; x < w; x++) {
-                let s = tmp[Math.max(0, y - 1) * w + x] + tmp[row + x] + tmp[Math.min(h - 1, y + 1) * w + x];
-                out[row + x] = s / 3;
-            }
-        }
-        return out;
-    }
-    // 返回让 A/B 差异最小的分界线移动量（源图像素，正值=向 B 方向移动）
-    function estimateBestDividerShift(src, rectA, rectB, mode, range) {
+    // 返回让差异像素数最小的分界线移动量（源图像素，正值=向 B 方向移动）
+    // 简单暴力：在 ±10px（"10 步"）逐像素比较，取差异像素数最小的位置，不做粗/精修、不降噪
+    function searchBestDividerShift(src, rectA, rectB, mode) {
+        const range = 10;   // px
+        const compW = Math.min(rectA.w, rectB.w);
+        const compH = Math.min(rectA.h, rectB.h);
+        if (compW < 4 || compH < 4) return 0;
+        const s = 0.5;      // 搜索在 1/2 尺度上做（快速）；找到位置后最终仍按全分辨率渲染
+        const sw = Math.max(8, Math.round(compW * s));
+        const sh = Math.max(8, Math.round(compH * s));
         const axis = mode === 'h' ? 'x' : 'y';
-        // 粗搜：1/4 降采样 ±range（1/4 采样本身即低通，天然抗噪点）
-        const scale = 0.25;
-        const sw = Math.max(8, Math.round(rectA.w * scale));
-        const sh = Math.max(8, Math.round(rectA.h * scale));
-        const sA = lumaOf(src, rectA, sw, sh);
-        const sB = lumaOf(src, rectB, sw, sh);
-        subtractMean(sA);
-        subtractMean(sB);
-        const rng = Math.max(1, Math.round(range * scale));
-        const coarse = alignSearch(sA, sB, sw, sh, axis, rng, 0);
-        // 显著性门控：最优位置相对"不动"(0) 无 ≥2% 改进 → 视为噪点干扰，返回 0 不动
-        if (coarse.best !== 0 && coarse.score0 > 0 && coarse.bestScore > coarse.score0 * 0.98) {
-            return 0;
-        }
-        const shift = Math.round(coarse.best / scale);
-        // 精修：全分辨率中心条带（垂直/水平取中间 60% 控制计算量）+ 3×3 轻降噪，±4px 内细调到 1px
-        const strip = mode === 'h'
-            ? {
-                a: { x: rectA.x, y: rectA.y + Math.round(rectA.h * 0.2), w: rectA.w, h: Math.max(1, Math.round(rectA.h * 0.6)) },
-                b: { x: rectB.x, y: rectB.y + Math.round(rectB.h * 0.2), w: rectB.w, h: Math.max(1, Math.round(rectB.h * 0.6)) },
+        const aC = newCanvas(sw, sh);
+        const bC = newCanvas(sw, sh);
+        const actx = aC.getContext('2d', { willReadFrequently: true });
+        const bctx = bC.getContext('2d', { willReadFrequently: true });
+        actx.imageSmoothingEnabled = false;
+        bctx.imageSmoothingEnabled = false;
+        // A 区域固定只采一次
+        actx.drawImage(src, rectA.x, rectA.y, compW, compH, 0, 0, sw, sh);
+        const aData = actx.getImageData(0, 0, sw, sh).data;
+        let bestCount = Infinity;
+        let bestShift = 0;
+        for (let shift = -range; shift <= range; shift++) {
+            const bx = rectB.x + (axis === 'x' ? shift : 0);
+            const by = rectB.y + (axis === 'y' ? shift : 0);
+            if (bx < 0 || by < 0 || bx + compW > state.workW || by + compH > state.workH) continue;
+            bctx.drawImage(src, bx, by, compW, compH, 0, 0, sw, sh);
+            const bData = bctx.getImageData(0, 0, sw, sh).data;
+            const cnt = diffCountOf(aData, bData, sw, sh);
+            if (cnt < bestCount) {
+                bestCount = cnt;
+                bestShift = shift;
             }
-            : {
-                a: { x: rectA.x + Math.round(rectA.w * 0.2), y: rectA.y, w: Math.max(1, Math.round(rectA.w * 0.6)), h: rectA.h },
-                b: { x: rectB.x + Math.round(rectB.w * 0.2), y: rectB.y, w: Math.max(1, Math.round(rectB.w * 0.6)), h: rectB.h },
-            };
-        const sw2 = strip.a.w;
-        const sh2 = strip.a.h;
-        const fA = blurLuma(lumaOf(src, strip.a, sw2, sh2), sw2, sh2);
-        const fB = blurLuma(lumaOf(src, strip.b, sw2, sh2), sw2, sh2);
-        subtractMean(fA);
-        subtractMean(fB);
-        return alignSearch(fA, fB, sw2, sh2, axis, 4, shift).best;
+        }
+        return bestShift;
     }
     function tryAutoAlign() {
         if (!state.srcCanvas) return;
@@ -578,8 +526,7 @@
                 const r = computeRects();
                 const key = state.mode === 'h' ? 'xDiv' : 'yDiv';
                 const axisLen = state.mode === 'h' ? state.workW : state.workH;
-                const range = Math.min(10, Math.max(1, Math.floor(axisLen * 0.2)));
-                const shift = estimateBestDividerShift(state.srcCanvas, r.rectA, r.rectB, state.mode, range);
+                const shift = searchBestDividerShift(state.srcCanvas, r.rectA, r.rectB, state.mode);
                 if (shift === 0) {
                     els.alignNote.textContent = '已对齐，无需移动';
                 } else {
