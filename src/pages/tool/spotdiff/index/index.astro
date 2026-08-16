@@ -59,6 +59,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <div class="sd-result-toolbar">
                 <button class="sd-btn is-active" data-view="diff">差异图</button>
                 <button class="sd-btn" data-view="orig">原图+标红</button>
+                <label class="sd-minarea" title="原图+标红：面积小于该值的点状噪点不画框">
+                    最小区域
+                    <input type="range" id="sd-min-area" min="50" max="500" step="10" value="100">
+                    <output id="sd-min-area-val">100</output>
+                </label>
                 <span class="sd-spacer"></span>
                 <button id="sd-download" class="sd-btn sd-primary">下载PNG</button>
             </div>
@@ -85,7 +90,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <span id="sd-align-note" class="sd-align-note"></span>
             </div>
 
-            <p class="sd-tip">差异图：黑=两图相同，白/亮=有差异。原图+标红：把差异较亮（≥60%）的像素用红标出，微弱噪点自动滤掉，再对每块差异画红框（面积过小的点状噪点不画，相交/包含的框自动合并）。长图可上下滚动，下载的是全分辨率图。</p>
+            <p class="sd-tip">差异图：黑=两图相同，白/亮=有差异。原图+标红：把差异较亮（≥60%）的像素用红标出，微弱噪点自动滤掉，再对每块差异画绿色方框（最小区域滑条可调过滤力度，面积过小的点状噪点不画，相交/包含的框自动合并）。长图可上下滚动，下载的是全分辨率图。</p>
         </section>
 
         <div class="sd-footer">

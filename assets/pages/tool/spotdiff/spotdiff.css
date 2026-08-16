@@ -249,6 +249,28 @@ body {
     flex-basis: 100%;
 }
 
+/* ---------- 最小区域滑条 ---------- */
+.sd-minarea {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+.sd-minarea input[type="range"] {
+    width: 110px;
+    accent-color: var(--accent);
+}
+
+.sd-minarea output {
+    min-width: 2.4em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
+}
+
 .sd-spacer {
     flex: 1;
 }

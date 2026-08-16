@@ -28,6 +28,8 @@
         nudgePlus: $('sd-nudge-plus'),
         autoAlignBtn: $('sd-auto-align-btn'),
         alignNote: $('sd-align-note'),
+        minArea: $('sd-min-area'),
+        minAreaVal: $('sd-min-area-val'),
         steps: document.querySelectorAll('.sd-step'),
     };
 
@@ -35,7 +37,6 @@
     const LS_KEY = 'spotdiff-settings-v2';
     const HIT_RADIUS = 18;      // 参考线命中半径（px），兼顾鼠标与触屏
     const ORTH_KEYS = ['yTop', 'yBot', 'xLeft', 'xRight'];
-    const MIN_REGION_AREA = 10; // 标红区域最小面积(px)：过滤"点状不成面积"的噪点
 
     // 模式定义：
     //  h=左右：A 左 B 右。分割线=竖线 xA / xDiv(分界) / xB；正交线=横线 yTop / yBot
@@ -71,9 +72,10 @@
         lines: defaultLines(),
         stageScale: 1,     // CSS px / 图像 px
         drag: null,        // { key, pointerId }
-        diff: null,        // { offA, offDiff, compW, compH, count }
+        diff: null,        // { offA, offDiff, offMark, compW, compH, count }
         view: 'diff',      // 'diff' | 'orig'
         nudgeStep: 1,      // 微调分界线步长（px）
+        minArea: 100,      // 标红区域最小面积(px)：过滤点状噪点
     };
 
     // ---------- 小工具 ----------
@@ -108,6 +110,7 @@
                     mode: state.mode,
                     lines: state.lines,
                     nudgeStep: state.nudgeStep,
+                    minArea: state.minArea,
                 }));
             } catch (e) { /* localStorage 不可用则忽略 */ }
         }, 150);
@@ -447,6 +450,12 @@
         state.nudgeStep = clamp(parseFloat(els.nudgeStep.value) || 1, 0.1, 10);
         saveSettings();
     });
+    els.minArea.addEventListener('input', () => {
+        state.minArea = clamp(parseInt(els.minArea.value, 10) || 100, 50, 500);
+        els.minAreaVal.textContent = state.minArea;
+        saveSettings();
+        scheduleRecompute();
+    });
     window.addEventListener('keydown', (e) => {
         if (!e.ctrlKey || !state.srcCanvas) return;
         const isH = state.mode === 'h';
@@ -729,9 +738,9 @@
         }
         dctx.putImageData(img, 0, 0);
 
-        // 原图A + 红色标注：标差异亮度 ≥60% 的像素；对每个区域画红框，
-        // 面积过小的点状噪点不画，相交/包含的框合并成一个大方框
-        const boxes = mergeBoxes(findRegions(mark, compW, compH, MIN_REGION_AREA));
+        // 原图A + 红色标注：标差异亮度 ≥60% 的像素；对每个区域画绿框，
+        // 面积 < minArea 的点状噪点不画，相交/包含的框合并成一个大方框
+        const boxes = mergeBoxes(findRegions(mark, compW, compH, state.minArea));
         const offMark = newCanvas(compW, compH);
         const mctx = offMark.getContext('2d');
         mctx.drawImage(offA, 0, 0);
@@ -746,7 +755,7 @@
         }
         mctx.putImageData(mimg, 0, 0);
         if (boxes.length) {
-            mctx.strokeStyle = '#ff3b3b';
+            mctx.strokeStyle = '#00c853';   // 绿色框（标红区域仍是红色）
             mctx.lineWidth = 2;
             for (const b of boxes) {
                 mctx.strokeRect(b.x0 + 0.5, b.y0 + 0.5, b.x1 - b.x0, b.y1 - b.y0);
@@ -848,9 +857,12 @@
                 v: Object.assign({}, def.v, (d.lines && d.lines.v) || {}),
             };
             if (d.nudgeStep && d.nudgeStep >= 0.1 && d.nudgeStep <= 10) state.nudgeStep = d.nudgeStep;
+            if (d.minArea && d.minArea >= 20 && d.minArea <= 2000) state.minArea = d.minArea;
         }
         els.modeBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.mode === state.mode));
         els.nudgeStep.value = String(state.nudgeStep);
+        els.minArea.value = String(state.minArea);
+        els.minAreaVal.textContent = state.minArea;
         updateNudgeArrows();
         syncViewBtns();
         setStep(0);
