@@ -85,7 +85,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <span id="sd-align-note" class="sd-align-note"></span>
             </div>
 
-            <p class="sd-tip">差异图：黑=两图相同，白/亮=有差异。原图+标红：把差异较亮（≥60%）的像素用红标出，微弱噪点自动滤掉。长图可上下滚动，下载的是全分辨率图。</p>
+            <p class="sd-tip">差异图：黑=两图相同，白/亮=有差异。原图+标红：把差异较亮（≥60%）的像素用红标出，微弱噪点自动滤掉，再对每块差异画红框（面积过小的点状噪点不画，相交/包含的框自动合并）。长图可上下滚动，下载的是全分辨率图。</p>
         </section>
 
         <div class="sd-footer">

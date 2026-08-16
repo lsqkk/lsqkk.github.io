@@ -35,6 +35,7 @@
     const LS_KEY = 'spotdiff-settings-v2';
     const HIT_RADIUS = 18;      // 参考线命中半径（px），兼顾鼠标与触屏
     const ORTH_KEYS = ['yTop', 'yBot', 'xLeft', 'xRight'];
+    const MIN_REGION_AREA = 10; // 标红区域最小面积(px)：过滤"点状不成面积"的噪点
 
     // 模式定义：
     //  h=左右：A 左 B 右。分割线=竖线 xA / xDiv(分界) / xB；正交线=横线 yTop / yBot
@@ -592,6 +593,78 @@
         return 255;
     }
 
+    // 在标记位图上做 8-连通域聚类，返回面积 ≥ minArea 的区域外接框
+    function findRegions(mark, w, h, minArea) {
+        const visited = new Uint8Array(w * h);
+        const boxes = [];
+        const NB = [
+            [-1, -1], [0, -1], [1, -1],
+            [-1, 0], [1, 0],
+            [-1, 1], [0, 1], [1, 1],
+        ];
+        for (let i = 0; i < w * h; i++) {
+            if (!mark[i] || visited[i]) continue;
+            const stack = [i];
+            visited[i] = 1;
+            let cnt = 0;
+            let x0 = w, y0 = h, x1 = 0, y1 = 0;
+            while (stack.length) {
+                const p = stack.pop();
+                const x = p % w;
+                const y = (p / w) | 0;
+                cnt++;
+                if (x < x0) x0 = x;
+                if (y < y0) y0 = y;
+                if (x > x1) x1 = x;
+                if (y > y1) y1 = y;
+                for (let k = 0; k < 8; k++) {
+                    const nx = x + NB[k][0];
+                    const ny = y + NB[k][1];
+                    if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+                    const q = ny * w + nx;
+                    if (mark[q] && !visited[q]) {
+                        visited[q] = 1;
+                        stack.push(q);
+                    }
+                }
+            }
+            if (cnt >= minArea) boxes.push({ x0, y0, x1, y1 });
+        }
+        return boxes;
+    }
+
+    // 把相交或包含的框合并成一个外接大方框，直到无框可合并
+    function mergeBoxes(boxes) {
+        const list = boxes.map((b) => ({ x0: b.x0, y0: b.y0, x1: b.x1, y1: b.y1 }));
+        let changed = true;
+        while (changed) {
+            changed = false;
+            for (let i = 0; i < list.length; i++) {
+                if (!list[i]) continue;
+                for (let j = i + 1; j < list.length; j++) {
+                    if (!list[j]) continue;
+                    const a = list[i];
+                    const b = list[j];
+                    // 相交或包含（含相切）
+                    if (a.x0 <= b.x1 && b.x0 <= a.x1 && a.y0 <= b.y1 && b.y0 <= a.y1) {
+                        list[i] = {
+                            x0: Math.min(a.x0, b.x0),
+                            y0: Math.min(a.y0, b.y0),
+                            x1: Math.max(a.x1, b.x1),
+                            y1: Math.max(a.y1, b.y1),
+                        };
+                        list[j] = null;
+                        changed = true;
+                    }
+                }
+            }
+            const kept = list.filter(Boolean);
+            list.length = 0;
+            list.push.apply(list, kept);
+        }
+        return list;
+    }
+
     function computeDiff() {
         if (!state.srcCanvas) return;
         const r = computeRects();
@@ -640,11 +713,14 @@
         const img = dctx.createImageData(compW, compH);
         const od = img.data;
         const gArr = new Uint8Array(n);   // 归一化差异亮度（0~255），供标红与计数复用
+        const mark = new Uint8Array(n);   // 强差异标记（≥60%），供找区域/画框
+        const MARK_MIN = 153;             // 0.6 * 255
         let count = 0;
         for (let i = 0, p = 0; i < n; i++, p += 4) {
             const v = d[i];
             const g = v <= floor ? 0 : Math.min(255, Math.round((v - floor) / range * 255));
             gArr[i] = g;
+            if (g >= MARK_MIN) mark[i] = 1;
             od[p] = g;
             od[p + 1] = g;
             od[p + 2] = g;
@@ -653,25 +729,35 @@
         }
         dctx.putImageData(img, 0, 0);
 
-        // 原图A + 红色标注：只标差异亮度 ≥60%（153）的像素，滤掉微弱 JPEG 噪点
+        // 原图A + 红色标注：标差异亮度 ≥60% 的像素；对每个区域画红框，
+        // 面积过小的点状噪点不画，相交/包含的框合并成一个大方框
+        const boxes = mergeBoxes(findRegions(mark, compW, compH, MIN_REGION_AREA));
         const offMark = newCanvas(compW, compH);
         const mctx = offMark.getContext('2d');
         mctx.drawImage(offA, 0, 0);
         const mimg = mctx.getImageData(0, 0, compW, compH);
         const md = mimg.data;
-        const MARK_MIN = 153;
         for (let i = 0, p = 0; i < n; i++, p += 4) {
-            if (gArr[i] >= MARK_MIN) {
+            if (mark[i]) {
                 md[p] = Math.min(255, Math.round(md[p] * 0.45 + 255 * 0.55));
                 md[p + 1] = Math.round(md[p + 1] * 0.45);
                 md[p + 2] = Math.round(md[p + 2] * 0.45);
             }
         }
         mctx.putImageData(mimg, 0, 0);
+        if (boxes.length) {
+            mctx.strokeStyle = '#ff3b3b';
+            mctx.lineWidth = 2;
+            for (const b of boxes) {
+                mctx.strokeRect(b.x0 + 0.5, b.y0 + 0.5, b.x1 - b.x0, b.y1 - b.y0);
+            }
+        }
 
         state.diff = { offA, offDiff, offMark, compW, compH, count };
         els.resultPanel.classList.remove('sd-hidden');
-        els.diffCount.textContent = count > 0 ? `差异像素：${count}` : '未检测到差异（两图一致）';
+        els.diffCount.textContent = count > 0
+            ? `差异像素：${count}${boxes.length ? ' · 区域 ' + boxes.length : ''}`
+            : '未检测到差异（两图一致）';
         setStep(2);
         renderResult();
     }
