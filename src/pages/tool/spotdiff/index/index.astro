@@ -79,7 +79,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 </select>
                 <button id="sd-nudge-minus" class="sd-btn sd-nudge-btn" aria-label="向起点微调">◀</button>
                 <button id="sd-nudge-plus" class="sd-btn sd-nudge-btn" aria-label="向终点微调">▶</button>
-                <span class="sd-hint">自动对齐：分界线附近 ±50px 内找差异最小的位置；也可 Ctrl+方向键手动微调</span>
+                <span class="sd-hint">自动对齐：分界线附近 ±10px 内按差异"白亮程度"找最贴合的位置（抗 JPEG 噪点）；也可 Ctrl+方向键手动微调</span>
+                <span id="sd-align-note" class="sd-align-note"></span>
             </div>
 
             <p class="sd-tip">黑白差异图：黑=两图相同，白/亮=有差异的地方。长图可上下滚动，下载的是全分辨率原图。</p>

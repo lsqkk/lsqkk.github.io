@@ -27,6 +27,7 @@
         nudgeMinus: $('sd-nudge-minus'),
         nudgePlus: $('sd-nudge-plus'),
         autoAlignBtn: $('sd-auto-align-btn'),
+        alignNote: $('sd-align-note'),
         steps: document.querySelectorAll('.sd-step'),
     };
 
@@ -218,6 +219,7 @@
         state.workW = width;
         state.workH = height;
         state.diff = null;
+        els.alignNote.textContent = '';
 
         els.splitPanel.classList.remove('sd-hidden');
         els.resultPanel.classList.add('sd-hidden');
@@ -472,10 +474,14 @@
         const m = s / arr.length;
         for (let i = 0; i < arr.length; i++) arr[i] -= m;
     }
-    // 在 A/B 亮度图上沿分割轴做 SAD，返回得分最低的偏移（数组单元）
-    function sadBest(la, lb, w, h, axis, rng, center) {
+    // 在 A/B 亮度图上沿分割轴打分（MSE：差异程度的平方）。
+    // 为什么用平方而不是绝对差：符合"白得越亮越算差异"的直觉，
+    // JPEG 噪点是低强度随机像素，平方后贡献远小于真正的结构差异，因此不会被噪点带偏。
+    // 返回 { best: 得分最低的偏移(数组单元), bestScore, score0: 偏移0(即不动)时的得分 }
+    function alignSearch(la, lb, w, h, axis, rng, center) {
+        let best = center;
         let bestScore = Infinity;
-        let bestD = 0;
+        let score0 = Infinity;
         for (let d = center - rng; d <= center + rng; d++) {
             const dx = axis === 'x' ? d : 0;
             const dy = axis === 'y' ? d : 0;
@@ -491,22 +497,43 @@
                 const rowB = (oy0 + y + dy) * w + ox0 + dx;
                 for (let x = 0; x < ow; x++) {
                     const v = la[rowA + x] - lb[rowB + x];
-                    s += v < 0 ? -v : v;
+                    s += v * v;
                 }
             }
-            // 减均值抗亮度差 + 正则项让平坦区域偏向零偏移
-            const score = s / n + 0.002 * d * d;
+            const score = s / n;
+            if (d === 0) score0 = score;
             if (score < bestScore) {
                 bestScore = score;
-                bestD = d;
+                best = d;
             }
         }
-        return bestD;
+        return { best, bestScore, score0 };
+    }
+
+    // 3×3 box blur（轻降噪，抑制 JPEG 噪点对对齐判断的干扰）
+    function blurLuma(l, w, h) {
+        const tmp = new Float32Array(l.length);
+        for (let y = 0; y < h; y++) {
+            const row = y * w;
+            for (let x = 0; x < w; x++) {
+                let s = l[row + Math.max(0, x - 1)] + l[row + x] + l[row + Math.min(w - 1, x + 1)];
+                tmp[row + x] = s / 3;
+            }
+        }
+        const out = new Float32Array(l.length);
+        for (let y = 0; y < h; y++) {
+            const row = y * w;
+            for (let x = 0; x < w; x++) {
+                let s = tmp[Math.max(0, y - 1) * w + x] + tmp[row + x] + tmp[Math.min(h - 1, y + 1) * w + x];
+                out[row + x] = s / 3;
+            }
+        }
+        return out;
     }
     // 返回让 A/B 差异最小的分界线移动量（源图像素，正值=向 B 方向移动）
     function estimateBestDividerShift(src, rectA, rectB, mode, range) {
         const axis = mode === 'h' ? 'x' : 'y';
-        // 粗搜：1/4 降采样 ±range
+        // 粗搜：1/4 降采样 ±range（1/4 采样本身即低通，天然抗噪点）
         const scale = 0.25;
         const sw = Math.max(8, Math.round(rectA.w * scale));
         const sh = Math.max(8, Math.round(rectA.h * scale));
@@ -515,9 +542,13 @@
         subtractMean(sA);
         subtractMean(sB);
         const rng = Math.max(1, Math.round(range * scale));
-        const coarse = sadBest(sA, sB, sw, sh, axis, rng, 0);
-        const shift = Math.round(coarse / scale);
-        // 精修：全分辨率中心条带（限垂直/水平方向取中间 60%，控制计算量）±3px → 1px 精度
+        const coarse = alignSearch(sA, sB, sw, sh, axis, rng, 0);
+        // 显著性门控：最优位置相对"不动"(0) 无 ≥2% 改进 → 视为噪点干扰，返回 0 不动
+        if (coarse.best !== 0 && coarse.score0 > 0 && coarse.bestScore > coarse.score0 * 0.98) {
+            return 0;
+        }
+        const shift = Math.round(coarse.best / scale);
+        // 精修：全分辨率中心条带（垂直/水平取中间 60% 控制计算量）+ 3×3 轻降噪，±4px 内细调到 1px
         const strip = mode === 'h'
             ? {
                 a: { x: rectA.x, y: rectA.y + Math.round(rectA.h * 0.2), w: rectA.w, h: Math.max(1, Math.round(rectA.h * 0.6)) },
@@ -529,11 +560,11 @@
             };
         const sw2 = strip.a.w;
         const sh2 = strip.a.h;
-        const fA = lumaOf(src, strip.a, sw2, sh2);
-        const fB = lumaOf(src, strip.b, sw2, sh2);
+        const fA = blurLuma(lumaOf(src, strip.a, sw2, sh2), sw2, sh2);
+        const fB = blurLuma(lumaOf(src, strip.b, sw2, sh2), sw2, sh2);
         subtractMean(fA);
         subtractMean(fB);
-        return sadBest(fA, fB, sw2, sh2, axis, 3, shift);
+        return alignSearch(fA, fB, sw2, sh2, axis, 4, shift).best;
     }
     function tryAutoAlign() {
         if (!state.srcCanvas) return;
@@ -549,10 +580,15 @@
                 const axisLen = state.mode === 'h' ? state.workW : state.workH;
                 const range = Math.min(10, Math.max(1, Math.floor(axisLen * 0.2)));
                 const shift = estimateBestDividerShift(state.srcCanvas, r.rectA, r.rectB, state.mode, range);
-                state.lines[state.mode][key] = clamp01(state.lines[state.mode][key] + shift / Math.max(1, axisLen));
-                drawStage();
-                saveSettings();
-                scheduleRecompute();
+                if (shift === 0) {
+                    els.alignNote.textContent = '已对齐，无需移动';
+                } else {
+                    state.lines[state.mode][key] = clamp01(state.lines[state.mode][key] + shift / Math.max(1, axisLen));
+                    els.alignNote.textContent = '已对齐：分界线移动 ' + (shift > 0 ? '+' : '') + shift + 'px';
+                    drawStage();
+                    saveSettings();
+                    scheduleRecompute();
+                }
             } catch (err) {
                 showError('自动对齐失败：' + (err && err.message ? err.message : '未知错误'));
             } finally {

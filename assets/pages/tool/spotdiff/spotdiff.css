@@ -242,6 +242,13 @@ body {
     flex: 0 0 auto;
 }
 
+.sd-align-note {
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-weight: 500;
+    flex-basis: 100%;
+}
+
 .sd-spacer {
     flex: 1;
 }
