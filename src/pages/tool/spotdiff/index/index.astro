@@ -58,7 +58,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <section id="sd-result" class="sd-panel sd-hidden">
             <div class="sd-result-toolbar">
                 <button class="sd-btn is-active" data-view="diff">差异图</button>
-                <button class="sd-btn" data-view="orig">原图A</button>
+                <button class="sd-btn" data-view="orig">原图+标红</button>
                 <span class="sd-spacer"></span>
                 <button id="sd-download" class="sd-btn sd-primary">下载PNG</button>
             </div>
@@ -72,6 +72,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <button id="sd-auto-align-btn" class="sd-btn sd-accent">尝试自动对齐</button>
                 <span class="sd-nudge-label">微调分界线</span>
                 <select id="sd-nudge-step" class="sd-nudge-step" aria-label="微调步长">
+                    <option value="0.2">0.2px</option>
+                    <option value="0.5">0.5px</option>
                     <option value="1">1px</option>
                     <option value="2">2px</option>
                     <option value="5">5px</option>
@@ -83,7 +85,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <span id="sd-align-note" class="sd-align-note"></span>
             </div>
 
-            <p class="sd-tip">黑白差异图：黑=两图相同，白/亮=有差异的地方。长图可上下滚动，下载的是全分辨率原图。</p>
+            <p class="sd-tip">差异图：黑=两图相同，白/亮=有差异。原图+标红：把差异较亮（≥60%）的像素用红标出，微弱噪点自动滤掉。长图可上下滚动，下载的是全分辨率图。</p>
         </section>
 
         <div class="sd-footer">

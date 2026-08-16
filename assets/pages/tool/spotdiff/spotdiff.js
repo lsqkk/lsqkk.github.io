@@ -131,32 +131,33 @@
         const L = state.lines[state.mode];
         const w = state.workW;
         const h = state.workH;
+        // 分割轴位置保留浮点（支持 0.2px 亚像素微调）；正交轴取整即可
         if (state.mode === 'h') {
             // 三条分割线按位置排序：最左=A左，中间=分界，最右=B右（与拖动顺序无关）
             const xs = [L.xA, L.xDiv, L.xB].sort((a, b) => a - b);
             // 两条正交线排序：上/下（与拖动顺序无关）
             const ys = [L.yTop, L.yBot].sort((a, b) => a - b);
-            const xA = Math.round(xs[0] * w);
-            const xD = Math.round(xs[1] * w);
-            const xB = Math.round(xs[2] * w);
+            const xA = xs[0] * w;
+            const xD = xs[1] * w;
+            const xB = xs[2] * w;
             const yT = Math.round(ys[0] * h);
             const yB = Math.round(ys[1] * h);
             return {
-                rectA: { x: xA, y: yT, w: Math.max(1, xD - xA), h: Math.max(1, yB - yT) },
-                rectB: { x: xD, y: yT, w: Math.max(1, xB - xD), h: Math.max(1, yB - yT) },
+                rectA: { x: xA, y: yT, w: xD - xA, h: yB - yT },
+                rectB: { x: xD, y: yT, w: xB - xD, h: yB - yT },
             };
         }
         // 上下：三条横线排序：最上=A顶，中间=分界，最下=B底；两条竖线排序：左/右
         const ys = [L.yA, L.yDiv, L.yB].sort((a, b) => a - b);
         const xs = [L.xLeft, L.xRight].sort((a, b) => a - b);
-        const yA = Math.round(ys[0] * h);
-        const yD = Math.round(ys[1] * h);
-        const yB = Math.round(ys[2] * h);
+        const yA = ys[0] * h;
+        const yD = ys[1] * h;
+        const yB = ys[2] * h;
         const xL = Math.round(xs[0] * w);
         const xR = Math.round(xs[1] * w);
         return {
-            rectA: { x: xL, y: yA, w: Math.max(1, xR - xL), h: Math.max(1, yD - yA) },
-            rectB: { x: xL, y: yD, w: Math.max(1, xR - xL), h: Math.max(1, yB - yD) },
+            rectA: { x: xL, y: yA, w: xR - xL, h: yD - yA },
+            rectB: { x: xL, y: yD, w: xR - xL, h: yB - yD },
         };
     }
 
@@ -442,7 +443,7 @@
     els.nudgeMinus.addEventListener('click', () => nudgeDivider(-1));
     els.nudgePlus.addEventListener('click', () => nudgeDivider(1));
     els.nudgeStep.addEventListener('change', () => {
-        state.nudgeStep = clamp(parseInt(els.nudgeStep.value, 10) || 1, 1, 10);
+        state.nudgeStep = clamp(parseFloat(els.nudgeStep.value) || 1, 0.1, 10);
         saveSettings();
     });
     window.addEventListener('keydown', (e) => {
@@ -595,8 +596,9 @@
         if (!state.srcCanvas) return;
         const r = computeRects();
         // 以 A、B 重合的最小尺寸为比对框：分隔线略偏时也能直接做差，不拉伸
-        const compW = Math.min(r.rectA.w, r.rectB.w);
-        const compH = Math.min(r.rectA.h, r.rectB.h);
+        // 分割轴坐标是浮点（支持 0.2px 亚像素），画布尺寸取整
+        const compW = Math.max(1, Math.round(Math.min(r.rectA.w, r.rectB.w)));
+        const compH = Math.max(1, Math.round(Math.min(r.rectA.h, r.rectB.h)));
         if (compW < 2 || compH < 2) {
             showError('框选区域过小，请检查参考线');
             return;
@@ -605,8 +607,9 @@
         const offB = newCanvas(compW, compH);
         const ctxA = offA.getContext('2d', { willReadFrequently: true });
         const ctxB = offB.getContext('2d', { willReadFrequently: true });
-        ctxA.imageSmoothingEnabled = false;
-        ctxB.imageSmoothingEnabled = false;
+        // 开启平滑以支持亚像素（浮点源坐标）采样；整数对齐时与关闭无差别
+        ctxA.imageSmoothingEnabled = true;
+        ctxB.imageSmoothingEnabled = true;
         ctxA.drawImage(state.srcCanvas, r.rectA.x, r.rectA.y, compW, compH, 0, 0, compW, compH);
         ctxB.drawImage(state.srcCanvas, r.rectB.x, r.rectB.y, compW, compH, 0, 0, compW, compH);
         const da = ctxA.getImageData(0, 0, compW, compH).data;
@@ -636,10 +639,12 @@
         const dctx = offDiff.getContext('2d');
         const img = dctx.createImageData(compW, compH);
         const od = img.data;
+        const gArr = new Uint8Array(n);   // 归一化差异亮度（0~255），供标红与计数复用
         let count = 0;
         for (let i = 0, p = 0; i < n; i++, p += 4) {
             const v = d[i];
             const g = v <= floor ? 0 : Math.min(255, Math.round((v - floor) / range * 255));
+            gArr[i] = g;
             od[p] = g;
             od[p + 1] = g;
             od[p + 2] = g;
@@ -648,18 +653,34 @@
         }
         dctx.putImageData(img, 0, 0);
 
-        state.diff = { offA, offDiff, compW, compH, count };
+        // 原图A + 红色标注：只标差异亮度 ≥60%（153）的像素，滤掉微弱 JPEG 噪点
+        const offMark = newCanvas(compW, compH);
+        const mctx = offMark.getContext('2d');
+        mctx.drawImage(offA, 0, 0);
+        const mimg = mctx.getImageData(0, 0, compW, compH);
+        const md = mimg.data;
+        const MARK_MIN = 153;
+        for (let i = 0, p = 0; i < n; i++, p += 4) {
+            if (gArr[i] >= MARK_MIN) {
+                md[p] = Math.min(255, Math.round(md[p] * 0.45 + 255 * 0.55));
+                md[p + 1] = Math.round(md[p + 1] * 0.45);
+                md[p + 2] = Math.round(md[p + 2] * 0.45);
+            }
+        }
+        mctx.putImageData(mimg, 0, 0);
+
+        state.diff = { offA, offDiff, offMark, compW, compH, count };
         els.resultPanel.classList.remove('sd-hidden');
         els.diffCount.textContent = count > 0 ? `差异像素：${count}` : '未检测到差异（两图一致）';
         setStep(2);
         renderResult();
     }
 
-    // ---------- 结果渲染（差异图 / 原图A） ----------
+    // ---------- 结果渲染（差异图 / 原图A+标红） ----------
     function renderResult() {
         const d = state.diff;
         if (!d) return;
-        const src = state.view === 'diff' ? d.offDiff : d.offA;
+        const src = state.view === 'diff' ? d.offDiff : (d.offMark || d.offA);
         const dpr = window.devicePixelRatio || 1;
         const wrap = els.result.parentElement;
         const availW = Math.max(1, wrap.clientWidth - 2);
@@ -688,7 +709,7 @@
     // ---------- 下载（全分辨率） ----------
     els.download.addEventListener('click', () => {
         if (!state.diff) return;
-        const src = state.view === 'diff' ? state.diff.offDiff : state.diff.offA;
+        const src = state.view === 'diff' ? state.diff.offDiff : (state.diff.offMark || state.diff.offA);
         src.toBlob((blob) => {
             if (!blob) {
                 showError('下载失败');
@@ -697,7 +718,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = state.view === 'diff' ? 'spotdiff-差异.png' : 'spotdiff-原图A.png';
+            a.download = state.view === 'diff' ? 'spotdiff-差异.png' : 'spotdiff-原图标红.png';
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -740,7 +761,7 @@
                 h: Object.assign({}, def.h, (d.lines && d.lines.h) || {}),
                 v: Object.assign({}, def.v, (d.lines && d.lines.v) || {}),
             };
-            if (d.nudgeStep && d.nudgeStep >= 1 && d.nudgeStep <= 10) state.nudgeStep = d.nudgeStep;
+            if (d.nudgeStep && d.nudgeStep >= 0.1 && d.nudgeStep <= 10) state.nudgeStep = d.nudgeStep;
         }
         els.modeBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.mode === state.mode));
         els.nudgeStep.value = String(state.nudgeStep);
