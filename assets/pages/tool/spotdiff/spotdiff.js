@@ -516,26 +516,50 @@
         subtractMean(sB);
         const rng = Math.max(1, Math.round(range * scale));
         const coarse = sadBest(sA, sB, sw, sh, axis, rng, 0);
-        let shift = Math.round(coarse / scale);
-        // 精修：全分辨率在最优附近 ±3px（1px 精度）
-        const fA = lumaOf(src, rectA, rectA.w, rectA.h);
-        const fB = lumaOf(src, rectB, rectB.w, rectB.h);
+        const shift = Math.round(coarse / scale);
+        // 精修：全分辨率中心条带（限垂直/水平方向取中间 60%，控制计算量）±3px → 1px 精度
+        const strip = mode === 'h'
+            ? {
+                a: { x: rectA.x, y: rectA.y + Math.round(rectA.h * 0.2), w: rectA.w, h: Math.max(1, Math.round(rectA.h * 0.6)) },
+                b: { x: rectB.x, y: rectB.y + Math.round(rectB.h * 0.2), w: rectB.w, h: Math.max(1, Math.round(rectB.h * 0.6)) },
+            }
+            : {
+                a: { x: rectA.x + Math.round(rectA.w * 0.2), y: rectA.y, w: Math.max(1, Math.round(rectA.w * 0.6)), h: rectA.h },
+                b: { x: rectB.x + Math.round(rectB.w * 0.2), y: rectB.y, w: Math.max(1, Math.round(rectB.w * 0.6)), h: rectB.h },
+            };
+        const sw2 = strip.a.w;
+        const sh2 = strip.a.h;
+        const fA = lumaOf(src, strip.a, sw2, sh2);
+        const fB = lumaOf(src, strip.b, sw2, sh2);
         subtractMean(fA);
         subtractMean(fB);
-        const fine = sadBest(fA, fB, rectA.w, rectA.h, axis, 3, shift);
-        return fine;
+        return sadBest(fA, fB, sw2, sh2, axis, 3, shift);
     }
     function tryAutoAlign() {
         if (!state.srcCanvas) return;
-        const r = computeRects();
-        const key = state.mode === 'h' ? 'xDiv' : 'yDiv';
-        const axisLen = state.mode === 'h' ? state.workW : state.workH;
-        const range = Math.min(50, Math.floor(axisLen * 0.25));
-        const shift = estimateBestDividerShift(state.srcCanvas, r.rectA, r.rectB, state.mode, range);
-        state.lines[state.mode][key] = clamp01(state.lines[state.mode][key] + shift / Math.max(1, axisLen));
-        drawStage();
-        saveSettings();
-        scheduleRecompute();
+        const btn = els.autoAlignBtn;
+        const origText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '对齐中…';
+        // 先让按钮反馈渲染出来，再执行同步计算（避免看起来像卡死）
+        setTimeout(() => {
+            try {
+                const r = computeRects();
+                const key = state.mode === 'h' ? 'xDiv' : 'yDiv';
+                const axisLen = state.mode === 'h' ? state.workW : state.workH;
+                const range = Math.min(10, Math.max(1, Math.floor(axisLen * 0.2)));
+                const shift = estimateBestDividerShift(state.srcCanvas, r.rectA, r.rectB, state.mode, range);
+                state.lines[state.mode][key] = clamp01(state.lines[state.mode][key] + shift / Math.max(1, axisLen));
+                drawStage();
+                saveSettings();
+                scheduleRecompute();
+            } catch (err) {
+                showError('自动对齐失败：' + (err && err.message ? err.message : '未知错误'));
+            } finally {
+                btn.disabled = false;
+                btn.textContent = origText;
+            }
+        }, 10);
     }
     els.autoAlignBtn.addEventListener('click', tryAutoAlign);
 
