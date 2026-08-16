@@ -23,21 +23,25 @@
         download: $('sd-download'),
         result: $('sd-result-canvas'),
         diffCount: $('sd-diff-count'),
+        nudgeStep: $('sd-nudge-step'),
+        nudgeMinus: $('sd-nudge-minus'),
+        nudgePlus: $('sd-nudge-plus'),
         steps: document.querySelectorAll('.sd-step'),
     };
 
     // ---------- 常量 ----------
     const LS_KEY = 'spotdiff-settings-v2';
     const HIT_RADIUS = 18;      // 参考线命中半径（px），兼顾鼠标与触屏
-    const MIN_GAP = 0.004;      // 线之间最小间距（ratio）
     const ORTH_KEYS = ['yTop', 'yBot', 'xLeft', 'xRight'];
 
     // 模式定义：
     //  h=左右：A 左 B 右。分割线=竖线 xA / xDiv(分界) / xB；正交线=横线 yTop / yBot
     //  v=上下：A 上 B 下。分割线=横线 yA / yDiv(分界) / yB；正交线=竖线 xLeft / xRight
+    // 左右：A 在左、B 在右。分界 = B 的左缘 = A 的右缘（红线）
+    // 上下：A 在上、B 在下。分界 = B 的顶部 = A 的底部（红线）
     const MODE_LABELS = {
-        h: { xA: 'A左缘', xDiv: 'B左缘·分界', xB: '右缘', yTop: '顶部', yBot: '底部' },
-        v: { yA: 'A顶部', yDiv: 'B顶部·分界', yB: '底部', xLeft: '左缘', xRight: '右缘' },
+        h: { xA: 'A左缘', xDiv: '分界(A右/B左)', xB: 'B右缘', yTop: '顶部', yBot: '底部' },
+        v: { yA: 'A顶部', yDiv: '分界(A底/B顶)', yB: 'B底部', xLeft: '左缘', xRight: '右缘' },
     };
 
     function defaultLines() {
@@ -66,6 +70,7 @@
         drag: null,        // { key, pointerId }
         diff: null,        // { offA, offDiff, compW, compH, count }
         view: 'diff',      // 'diff' | 'orig'
+        nudgeStep: 1,      // 微调分界线步长（px）
     };
 
     // ---------- 小工具 ----------
@@ -99,6 +104,7 @@
                     version: 2,
                     mode: state.mode,
                     lines: state.lines,
+                    nudgeStep: state.nudgeStep,
                 }));
             } catch (e) { /* localStorage 不可用则忽略 */ }
         }, 150);
@@ -124,21 +130,28 @@
         const w = state.workW;
         const h = state.workH;
         if (state.mode === 'h') {
-            const xA = Math.round(L.xA * w);
-            const xD = Math.round(L.xDiv * w);
-            const xB = Math.round(L.xB * w);
-            const yT = Math.round(L.yTop * h);
-            const yB = Math.round(L.yBot * h);
+            // 三条分割线按位置排序：最左=A左，中间=分界，最右=B右（与拖动顺序无关）
+            const xs = [L.xA, L.xDiv, L.xB].sort((a, b) => a - b);
+            // 两条正交线排序：上/下（与拖动顺序无关）
+            const ys = [L.yTop, L.yBot].sort((a, b) => a - b);
+            const xA = Math.round(xs[0] * w);
+            const xD = Math.round(xs[1] * w);
+            const xB = Math.round(xs[2] * w);
+            const yT = Math.round(ys[0] * h);
+            const yB = Math.round(ys[1] * h);
             return {
                 rectA: { x: xA, y: yT, w: Math.max(1, xD - xA), h: Math.max(1, yB - yT) },
                 rectB: { x: xD, y: yT, w: Math.max(1, xB - xD), h: Math.max(1, yB - yT) },
             };
         }
-        const yA = Math.round(L.yA * h);
-        const yD = Math.round(L.yDiv * h);
-        const yB = Math.round(L.yB * h);
-        const xL = Math.round(L.xLeft * w);
-        const xR = Math.round(L.xRight * w);
+        // 上下：三条横线排序：最上=A顶，中间=分界，最下=B底；两条竖线排序：左/右
+        const ys = [L.yA, L.yDiv, L.yB].sort((a, b) => a - b);
+        const xs = [L.xLeft, L.xRight].sort((a, b) => a - b);
+        const yA = Math.round(ys[0] * h);
+        const yD = Math.round(ys[1] * h);
+        const yB = Math.round(ys[2] * h);
+        const xL = Math.round(xs[0] * w);
+        const xR = Math.round(xs[1] * w);
         return {
             rectA: { x: xL, y: yA, w: Math.max(1, xR - xL), h: Math.max(1, yD - yA) },
             rectB: { x: xL, y: yD, w: Math.max(1, xR - xL), h: Math.max(1, yB - yD) },
@@ -329,26 +342,9 @@
             : (e.clientY - rect.top) / (state.workH * s);
         return clamp01(raw);
     }
+    // 不做任何位置限制：每条线都可在 0~1 内自由拖动，
+    // 顺序无所谓，computeRects 里会按位置自动排序得出 A/B 区域
     function clampLine(key, ratio) {
-        const L = state.lines[state.mode];
-        // 线沿哪个轴，就用哪个轴的长度算最小间距
-        const axisLen = state.mode === 'h'
-            ? (key === 'xA' || key === 'xDiv' || key === 'xB' ? state.workW : state.workH)
-            : (key === 'yA' || key === 'yDiv' || key === 'yB' ? state.workH : state.workW);
-        const gap = Math.max(1 / Math.max(1, axisLen), MIN_GAP);
-        if (state.mode === 'h') {
-            if (key === 'xA') return clamp(ratio, 0, L.xDiv - gap);
-            if (key === 'xDiv') return clamp(ratio, L.xA + gap, L.xB - gap);
-            if (key === 'xB') return clamp(ratio, L.xDiv + gap, 1);
-            if (key === 'yTop') return clamp(ratio, 0, L.yBot - gap);
-            if (key === 'yBot') return clamp(ratio, L.yTop + gap, 1);
-            return clamp01(ratio);
-        }
-        if (key === 'yA') return clamp(ratio, 0, L.yDiv - gap);
-        if (key === 'yDiv') return clamp(ratio, L.yA + gap, L.yB - gap);
-        if (key === 'yB') return clamp(ratio, L.yDiv + gap, 1);
-        if (key === 'xLeft') return clamp(ratio, 0, L.xRight - gap);
-        if (key === 'xRight') return clamp(ratio, L.xLeft + gap, 1);
         return clamp01(ratio);
     }
 
@@ -403,6 +399,7 @@
         if (mode !== 'h' && mode !== 'v') return;
         state.mode = mode;
         els.modeBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.mode === mode));
+        updateNudgeArrows();
         if (state.srcCanvas) {
             fitStage();
             drawStage();
@@ -417,6 +414,41 @@
         if (state.srcCanvas) drawStage();
         saveSettings();
         scheduleRecompute();
+    });
+
+    // ---------- 微调分界线（手动对齐） ----------
+    function updateNudgeArrows() {
+        if (state.mode === 'h') {
+            els.nudgeMinus.textContent = '◀';
+            els.nudgePlus.textContent = '▶';
+        } else {
+            els.nudgeMinus.textContent = '▲';
+            els.nudgePlus.textContent = '▼';
+        }
+    }
+    function nudgeDivider(dir) {
+        if (!state.srcCanvas) return;
+        const axisLen = state.mode === 'h' ? state.workW : state.workH;
+        const key = state.mode === 'h' ? 'xDiv' : 'yDiv';
+        const delta = (dir * state.nudgeStep) / Math.max(1, axisLen);
+        state.lines[state.mode][key] = clamp01(state.lines[state.mode][key] + delta);
+        drawStage();
+        saveSettings();
+        scheduleRecompute();
+    }
+    els.nudgeMinus.addEventListener('click', () => nudgeDivider(-1));
+    els.nudgePlus.addEventListener('click', () => nudgeDivider(1));
+    els.nudgeStep.addEventListener('change', () => {
+        state.nudgeStep = clamp(parseInt(els.nudgeStep.value, 10) || 1, 1, 10);
+        saveSettings();
+    });
+    window.addEventListener('keydown', (e) => {
+        if (!e.ctrlKey || !state.srcCanvas) return;
+        const isH = state.mode === 'h';
+        if (isH && e.key === 'ArrowLeft') { e.preventDefault(); nudgeDivider(-1); }
+        else if (isH && e.key === 'ArrowRight') { e.preventDefault(); nudgeDivider(1); }
+        else if (!isH && e.key === 'ArrowUp') { e.preventDefault(); nudgeDivider(-1); }
+        else if (!isH && e.key === 'ArrowDown') { e.preventDefault(); nudgeDivider(1); }
     });
 
     // ---------- 上传 ----------
@@ -613,8 +645,11 @@
                 h: Object.assign({}, def.h, (d.lines && d.lines.h) || {}),
                 v: Object.assign({}, def.v, (d.lines && d.lines.v) || {}),
             };
+            if (d.nudgeStep && d.nudgeStep >= 1 && d.nudgeStep <= 10) state.nudgeStep = d.nudgeStep;
         }
         els.modeBtns.forEach((b) => b.classList.toggle('is-active', b.dataset.mode === state.mode));
+        els.nudgeStep.value = String(state.nudgeStep);
+        updateNudgeArrows();
         syncViewBtns();
         setStep(0);
     }

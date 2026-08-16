@@ -46,7 +46,19 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 <button class="sd-btn is-active" data-mode="h">左右并列</button>
                 <button class="sd-btn" data-mode="v">上下堆叠</button>
                 <button id="sd-reset-lines" class="sd-btn sd-danger">重置参考线</button>
-                <span class="sd-hint">拖线框出两幅图：蓝线=A/B 外缘，红线=分界，青线=顶部/底部（上下模式反之）。双击单线复位</span>
+                <span class="sd-hint">左右模式：A左缘｜分界(红线，即 B 的左缘 = A 的右缘)｜B右缘，青色顶部/底部框住上下；上下模式对称（A顶部｜分界｜B底部 + 青左/右缘）。线可任意拖动、顺序不限，工具自动按位置排序；双击单线复位</span>
+            </div>
+            <div class="sd-nudge">
+                <span class="sd-nudge-label">微调分界线</span>
+                <select id="sd-nudge-step" class="sd-nudge-step" aria-label="微调步长">
+                    <option value="1">1px</option>
+                    <option value="2">2px</option>
+                    <option value="5">5px</option>
+                    <option value="10">10px</option>
+                </select>
+                <button id="sd-nudge-minus" class="sd-btn sd-nudge-btn" aria-label="向起点微调">◀</button>
+                <button id="sd-nudge-plus" class="sd-btn sd-nudge-btn" aria-label="向终点微调">▶</button>
+                <span class="sd-hint">也可 Ctrl+方向键</span>
             </div>
             <div class="sd-stage-wrap">
                 <canvas id="sd-stage" class="sd-stage"></canvas>

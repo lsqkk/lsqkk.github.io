@@ -202,6 +202,41 @@ body {
     line-height: 1.5;
 }
 
+/* ---------- 微调分界线 ---------- */
+.sd-nudge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.sd-nudge-label {
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.sd-nudge-step {
+    background: var(--surface-soft);
+    color: var(--text-main);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 0.86rem;
+    accent-color: var(--accent);
+}
+
+.sd-nudge-btn {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.05rem;
+    flex: 0 0 auto;
+}
+
 .sd-spacer {
     flex: 1;
 }
@@ -304,6 +339,12 @@ body {
         min-width: 0;
         padding: 12px 10px;
         font-size: 0.88rem;
+    }
+
+    .sd-nudge-btn {
+        flex: 0 0 auto;
+        width: 48px;
+        height: 48px;
     }
 
     .sd-hint {
