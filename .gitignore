@@ -1,5 +1,7 @@
 private
 quark/qqexport/resource/
+.venv/
+venv/
 .env
 .env.local
 .env.*.local
