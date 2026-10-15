@@ -437,13 +437,14 @@ function revealPanel(ctx, info) {
     ]);
   }
 
-  const words = room.teams[result.turn].words ?? {};
+  // ⚠️ 这里只公开"数字卡 ↔ 暗号"的对应关系，绝不能带出原词。
+  // 原词要等对局结束才揭晓 —— 否则监听者每轮都直接拿到答案，
+  // 靠情报板逐轮逼近对方词汇的玩法就整个失效了。
   const mapping = (result.descriptions ?? []).map((text, index) => {
     const number = result.card?.[index];
     return el("div", { class: "ss-map-row" }, [
       el("span", { class: "ss-map-order", text: `第${index + 1}位` }),
       el("span", { class: "ss-map-number", text: number ? String(number) : "?" }),
-      el("span", { class: "ss-map-word", text: words[String(number)] ?? "—" }),
       el("span", { class: "ss-map-clue", text: text }),
     ]);
   });
@@ -467,6 +468,10 @@ function revealPanel(ctx, info) {
       : null,
     cardDisplay(result.card, { note: `${result.turn} 队的数字卡` }),
     el("div", { class: "ss-map-list" }, mapping),
+    el("p", {
+      class: "ss-hint",
+      text: "本轮只公开数字卡与暗号的对应关系；双方原始词汇要等对局结束才揭晓。",
+    }),
     el("div", { class: "ss-verdict-list" }, [
       verdictRow(`${result.turn} 队猜测者`, result.guesserGuess, result.guesserCorrect),
       verdictRow(`${otherTeam(result.turn)} 队监听者`, result.listenerGuess, result.listenerCorrect),

@@ -1420,9 +1420,10 @@ body.ss-modal-open * {
   margin-bottom: 16px;
 }
 
+/* 只有 序号 / 编号 / 暗号 三列：原词不在公开阶段出现 */
 .ss-map-row {
   display: grid;
-  grid-template-columns: 4.5em 2.4em minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-columns: 4.5em 2.4em minmax(0, 1fr);
   align-items: baseline;
   gap: 12px;
   padding: 11px 0;
@@ -1442,12 +1443,6 @@ body.ss-modal-open * {
 .ss-map-number {
   font-family: var(--ss-mono);
   color: var(--accent);
-}
-
-.ss-map-word {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ss-map-clue {
