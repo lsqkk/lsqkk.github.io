@@ -10,22 +10,26 @@
  * 会自动回到当前阶段，无需任何本地状态修补。
  */
 
+import { createChat } from "./chat.js";
 import { append, byId, clear, copyText, withPreservedInputs, el } from "./dom.js";
 import {
   AVATAR_COLORS,
   HEALTH_DEFAULT,
+  OFFLINE_KICK_MS,
   ROOM_CODE_LENGTH,
   ROOM_CAPACITY,
   createRoomCode,
   createUid,
   extractRoomCode,
+  normalizeTeamPreference,
   otherTeam,
   sanitizeAvatar,
   sanitizeNickname,
 } from "./game-core.js";
-import { clampHealth } from "./room-model.js";
+import { clampHealth, currentRoles, guessSideOf } from "./room-model.js";
 import {
   bindPresence,
+  clearChat,
   dispatch,
   forgetRoom,
   getDatabase,
@@ -33,13 +37,18 @@ import {
   reapAbandonedRooms,
   rememberRoom,
   roomReleaseDeadline,
+  serverNow,
   watchRoom,
+  watchServerClock,
 } from "./rtdb.js";
+import { attachUnlock, isEnabled as isSoundEnabled, play, setEnabled as setSoundEnabled } from "./sound.js";
+import { renderChatDock, focusChatInput, pinChatScroll } from "./views-chat.js";
 import { dealWords, isWordPoolReady, loadWords, rerollWords } from "./word-pool.js";
 import { modalOptions, readEntryForm, renderEntry, renderModal } from "./views-entry.js";
 import { renderGameScreen } from "./views-game.js";
 import { renderEndedScreen } from "./views-ended.js";
 import { renderRoomScreen } from "./views-room.js";
+import { offlineCountdownText } from "./views-shared.js";
 
 const STORAGE_UID = "spySignalUid";
 const STORAGE_NICKNAME = "spySignalNickname";
@@ -60,6 +69,14 @@ const ROOM_PARAM = "room";
 /** 房间倒计时的刷新间隔与废弃房间扫描间隔 */
 const COUNTDOWN_REFRESH_MS = 20000;
 const REAP_INTERVAL_MS = 60000;
+/** 离线倒计时的文本刷新与超时剔除的巡检节奏 */
+const OFFLINE_TICK_MS = 1000;
+const OFFLINE_SWEEP_EVERY = 10; // 每 10 次 tick（≈10 秒）扫一次
+/**
+ * 超时剔除的宽限：`offlineAt` 是服务端时间，和本机时钟可能差几百毫秒，
+ * 多等 3 秒可以避免"倒计时刚归零就被踢"这种差一点的体验。
+ */
+const OFFLINE_GRACE_MS = 3000;
 
 /** 会被明确提示给用户的事务拒绝原因 */
 const REJECT_MESSAGES = {
@@ -69,6 +86,8 @@ const REJECT_MESSAGES = {
   REROLL: "换词失败，请确认仍在准备阶段",
   SET_HEALTH_MAX: "血量只能在开局前修改",
   RESTART: "只有房主可以在 4 人齐时开新局",
+  SWITCH_TEAM: "换队失败：目标队伍已满员，或对局已经开始",
+  KICK: "无法移出：只有房主能移出离线玩家，且开局后不再受理",
 };
 
 const state = {
@@ -96,8 +115,21 @@ const state = {
   /** @type {string} */ wordError: "",
   /** @type {boolean} */ restoring: false,
   /** @type {boolean} */ reapScheduled: false,
+  /** @type {boolean} */ clockScheduled: false,
   /** 来自 ?room= 的房间码，用于预填加入框 */
   /** @type {string} */ prefillCode: "",
+  /** 聊天控制器：进房时创建，离房时销毁 */
+  /** @type {ReturnType<typeof createChat> | null} */ chat: null,
+  /**
+   * 上一次渲染时房间的指纹。数据完全没变就跳过整屏重建。
+   *
+   * 命中面不大（真正改了东西的动作都会推进 `updatedAt`，指纹必然不同），
+   * 它主要挡的是"重连后把整份数据重推一遍"以及断线 / 上线两次写入落在同一状态
+   * 这类噪声 —— 而那些恰好是最容易让整页白闪一下的时机。
+   */
+  /** @type {string} */ roomKey: "",
+  /** @type {number} */ offlineTimer: 0,
+  /** @type {number} */ offlineTicks: 0,
 };
 
 let toastTimer = 0;
@@ -113,6 +145,9 @@ export function boot() {
   readIdentity();
   const container = byId("ssScreens");
   if (!container) return;
+
+  // 浏览器要求先有用户手势才允许出声，挂一次性的解锁监听
+  attachUnlock();
 
   state.prefillCode = readRoomParam();
 
@@ -162,7 +197,11 @@ export function boot() {
     refreshSiteIdentity();
   });
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refreshSiteIdentity();
+    if (document.visibilityState === "visible") {
+      refreshSiteIdentity();
+      // 切回前台时，面板开着的那些未读消息就算已读了
+      state.chat?.markRead();
+    }
   });
 
   scheduleReap();
@@ -485,11 +524,25 @@ async function ensureDb() {
     state.db = await getDatabase();
     state.notice = null;
     scheduleReap();
+    startServerClock();
     return state.db;
   } finally {
     state.busy = false;
     render();
   }
+}
+
+/**
+ * 订阅服务器时钟偏移。
+ *
+ * `offlineAt` 是服务端时间写的，而"满没满 2 分钟"只能由客户端判断；
+ * 本机时钟快几分钟就会误判成已超时、把刚掉线的人当场移出。
+ * `.info/serverTimeOffset` 是连接级的，页面生命周期内挂一次就够。
+ */
+function startServerClock() {
+  if (!state.db || state.clockScheduled) return;
+  state.clockScheduled = true;
+  watchServerClock(state.db);
 }
 
 async function createRoom() {
@@ -572,7 +625,12 @@ async function joinRoom(rawValue) {
   try {
     state.busy = true;
     render();
-    const ok = await joinRoomInternal(code, identity.nickname, identity.avatar);
+    const ok = await joinRoomInternal(
+      code,
+      identity.nickname,
+      identity.avatar,
+      normalizeTeamPreference(form.team),
+    );
     if (!ok) toast(REJECT_MESSAGES.JOIN);
   } catch (error) {
     toast(`加入房间失败：${messageOf(error)}`);
@@ -587,15 +645,17 @@ async function joinRoom(rawValue) {
  * @param {string} code
  * @param {string} nickname
  * @param {{ type: string, color: string, url: string }} [avatar]
+ * @param {"A" | "B" | null} [team] 加入时指定的队伍；不传就按人数自动补位
  * @returns {Promise<boolean>}
  */
-async function joinRoomInternal(code, nickname, avatar) {
+async function joinRoomInternal(code, nickname, avatar, team) {
   const db = await ensureDb();
   const result = await dispatch(db, code, {
     type: "JOIN",
     actorId: state.uid,
     payload: {
       name: sanitizeNickname(nickname) || "匿名特工",
+      ...(team ? { team } : {}),
       ...(avatar ? { avatar } : {}),
     },
   });
@@ -605,7 +665,7 @@ async function joinRoomInternal(code, nickname, avatar) {
 }
 
 /**
- * 进入房间：订阅 + 在线状态 + 本地记忆。
+ * 进入房间：订阅 + 在线状态 + 聊天 + 本地记忆。
  * @param {string} code
  * @param {string} nickname
  */
@@ -616,6 +676,7 @@ function enterRoom(code, nickname) {
   state.dealToken = "";
   state.prefillCode = "";
   state.modal = null;
+  state.roomKey = "";
   rememberRoom({ roomId: code, name: nickname });
   // 让地址栏直接就是一条可分享的邀请链接
   writeRoomParam(code);
@@ -637,8 +698,24 @@ function enterRoom(code, nickname) {
         handleRoomGone();
         return;
       }
+      // 自己不在这间房的座位上了：被房主移出，或离线超时被剔
+      if (state.room && state.room.players[state.uid] && !room.players[state.uid]) {
+        handleRemoved(room);
+        return;
+      }
+
+      const previous = state.room;
       state.room = room;
+      // 队内频道跟着自己的队伍走；换队会自动退订旧队伍、订阅新队伍
+      state.chat?.setTeam(room.players[state.uid]?.team ?? null);
+      announceRoomChange(previous, room);
       maybeDealWords(room);
+      sweepOffline();
+
+      // 房间内容完全没变就别重绘（重连重推、同一位置的重复写入）
+      const key = roomKeyOf(room);
+      if (key === state.roomKey) return;
+      state.roomKey = key;
       render();
     },
     (error) => {
@@ -649,12 +726,23 @@ function enterRoom(code, nickname) {
   state.presence = bindPresence(state.db, code, state.uid, (connected) => {
     state.connected = connected;
     const badge = byId("ssConnBadge");
-    if (badge) {
-      badge.textContent = connected ? "实时同步中" : "连接中断，正在重连…";
-      badge.className = `ss-conn${connected ? " is-online" : " is-offline"}`;
-    }
+    if (!badge) return;
+    badge.className = `ss-conn${connected ? " is-online" : " is-offline"}`;
+    const text = badge.querySelector(".ss-conn-text");
+    if (text) text.textContent = connected ? "实时同步中" : "连接中断，正在重连…";
   });
 
+  // 聊天走自己的一条监听线，回调只重画聊天面板，不惊动整屏
+  state.chat = createChat({
+    db: state.db,
+    roomId: code,
+    uid: state.uid,
+    describeSelf: () => currentIdentity(),
+    onChange: () => renderChat(),
+    onNotice: (message) => toast(message),
+  });
+
+  startOfflineTimer();
   render();
 }
 
@@ -666,6 +754,29 @@ function handleRoomGone() {
   state.room = null;
   state.notice = "房间已解散。";
   render();
+}
+
+/**
+ * 自己被移出房间（房主手动移出，或离线超过 OFFLINE_KICK_MS 被剔）。
+ * 房间本身还在，所以不能走 handleRoomGone（那句"房间已解散"会误导人）。
+ * @param {import("./room-model.js").Room} room
+ */
+function handleRemoved(room) {
+  const kick = room.meta?.lastKick;
+  const mine = kick && kick.uid === state.uid ? kick : null;
+
+  leaveRoomWatchers();
+  clearSession();
+  writeRoomParam("");
+  state.roomId = "";
+  state.room = null;
+  state.notice = mine
+    ? mine.reason === "timeout"
+      ? "你离线超过 2 分钟，已被自动移出房间。"
+      : "你已被房主移出房间。"
+    : "你已不在房间中。";
+  render();
+  play("kick");
 }
 
 async function leaveRoom() {
@@ -685,7 +796,9 @@ async function leaveRoom() {
   if (db && roomId) {
     // 显式退出才移除座位；单纯刷新 / 掉线只标记离线，以便原样恢复对局
     try {
-      await dispatch(db, roomId, { type: "LEAVE", actorId: uid });
+      const result = await dispatch(db, roomId, { type: "LEAVE", actorId: uid });
+      // 最后一人离开时房间节点被直接删除，聊天是兄弟路径，得跟着一起清掉
+      if (!result.room) await clearChat(db, roomId).catch(() => {});
     } catch {
       /* 房间可能已经被解散，忽略 */
     }
@@ -701,6 +814,12 @@ function leaveRoomWatchers() {
     state.presence();
     state.presence = null;
   }
+  if (state.chat) {
+    state.chat.dispose();
+    state.chat = null;
+  }
+  stopOfflineTimer();
+  state.roomKey = "";
   state.connected = false;
 }
 
@@ -713,26 +832,165 @@ function clearSession() {
 }
 
 /* ------------------------------------------------------------------ *
+ * 掉线巡检与音效提示
+ * ------------------------------------------------------------------ */
+
+/**
+ * 房间的稳定指纹，用来判断"这次推送是否真的改了东西"。
+ * @param {import("./room-model.js").Room} room
+ * @returns {string}
+ */
+function roomKeyOf(room) {
+  return JSON.stringify(room);
+}
+
+/**
+ * 比较前后两次房间状态，放音效。只在真正相关的变化上响，不做"什么都响一下"。
+ * @param {import("./room-model.js").Room | null} previous
+ * @param {import("./room-model.js").Room} room
+ */
+function announceRoomChange(previous, room) {
+  if (!previous) return;
+
+  const before = Object.keys(previous.players ?? {});
+  const now = Object.keys(room.players ?? {});
+  if (now.some((uid) => !before.includes(uid))) play("join");
+  else if (before.some((uid) => !now.includes(uid))) play("leave");
+
+  const previousResultAt = previous.roundResult?.at ?? 0;
+  const resultAt = room.roundResult?.at ?? 0;
+  if (resultAt && resultAt !== previousResultAt) {
+    const myTeam = room.players[state.uid]?.team;
+    if (room.phase === "ended") {
+      play(room.winner && room.winner === myTeam ? "win" : "lose");
+    } else if (room.roundResult?.voided) {
+      play("void");
+    } else if (room.roundResult && room.roundResult.healthLoss > 0 && room.roundResult.turn === myTeam) {
+      play("settleBad");
+    } else {
+      play("settleGood");
+    }
+    return;
+  }
+
+  if (previous.phase === room.phase) return;
+  if (room.phase === "select-role") {
+    play(previous.phase === "prepare" ? "start" : "turn");
+  } else if (needsMyAction(room)) {
+    play("turn");
+  }
+}
+
+/**
+ * 当前阶段下"该我出手了吗"：描述者要写暗号、猜测者 / 监听者要提交猜测。
+ * @param {import("./room-model.js").Room} room
+ * @returns {boolean}
+ */
+function needsMyAction(room) {
+  if (!room.players[state.uid]) return false;
+  if (room.phase === "describing") return currentRoles(room).describerId === state.uid;
+  if (room.phase !== "guessing") return false;
+  const side = guessSideOf(room, state.uid);
+  return Boolean(side) && !room.guesses[side];
+}
+
+/**
+ * 把离线超时的玩家移出房间。
+ *
+ * 没有服务端定时任务，只能由**在场玩家**顺手做（和房间释放是同一个思路）：
+ * 每次巡检只移出一个人，避免同一瞬间并发派发好几个事务；
+ * 谁先跑到谁生效，其余人的事务会因为"目标已经不在座"而自动中止，天然幂等。
+ */
+function sweepOffline() {
+  const room = state.room;
+  if (!room || !state.db || !state.roomId) return;
+  // 踢人只在大厅 / 准备阶段有用：对局中途换人会让词板与角色指派全部失效
+  if (room.phase !== "lobby" && room.phase !== "prepare") return;
+  // 自己都不在座了就别再帮着踢人
+  if (!room.players[state.uid]) return;
+
+  // 用服务器时钟比较（offlineAt 也是服务端时间写的），免得本机时钟偏了就误踢
+  const now = serverNow();
+  const expired = Object.entries(room.players).find(([, player]) => {
+    if (player.online || !player.offlineAt) return false;
+    return now - player.offlineAt > OFFLINE_KICK_MS + OFFLINE_GRACE_MS;
+  });
+  if (!expired) return;
+
+  // silent：多个人同时扫到同一个超时目标时，慢一步的那个会收到事务中止，
+  // 那是正常竞争，不该弹"无法移出"吓人
+  act("KICK", { targetUid: expired[0], reason: "timeout" }, { silent: true });
+}
+
+function startOfflineTimer() {
+  stopOfflineTimer();
+  state.offlineTicks = 0;
+  state.offlineTimer = window.setInterval(() => {
+    state.offlineTicks += 1;
+    tickOfflineCountdown();
+    if (state.offlineTicks % OFFLINE_SWEEP_EVERY === 0) sweepOffline();
+  }, OFFLINE_TICK_MS);
+}
+
+function stopOfflineTimer() {
+  if (state.offlineTimer) {
+    window.clearInterval(state.offlineTimer);
+    state.offlineTimer = 0;
+  }
+}
+
+/**
+ * 每秒只改倒计时那几行文字，不做整屏重绘 ——
+ * 否则每秒重建一次界面，比原来的"抖动"还晃眼。
+ */
+function tickOfflineCountdown() {
+  const room = state.room;
+  if (!room) return;
+  if (room.phase !== "lobby" && room.phase !== "prepare") return;
+
+  const now = serverNow();
+  for (const [uid, player] of Object.entries(room.players)) {
+    if (player.online || !player.offlineAt) continue;
+    const node = byId(`ssOffline-${uid}`);
+    if (!node) continue;
+    node.textContent = offlineCountdownText(player.offlineAt + OFFLINE_KICK_MS - now);
+  }
+}
+
+/**
+ * 房主手动移出离线玩家（自动超时那条路不需要确认）。
+ * @param {string} targetUid
+ * @param {string} name
+ */
+function confirmKick(targetUid, name) {
+  const ok = window.confirm(`把「${name}」移出房间？对方离线后一直没回来。`);
+  if (!ok) return;
+  act("KICK", { targetUid, reason: "manual" });
+}
+
+/* ------------------------------------------------------------------ *
  * 动作派发
  * ------------------------------------------------------------------ */
 
 /**
  * @param {string} type
  * @param {Record<string, unknown>} [payload]
+ * @param {{ silent?: boolean }} [options] silent：事务被中止时不弹提示（后台巡检用）
  */
-async function act(type, payload) {
+async function act(type, payload, options) {
   if (!state.db || !state.roomId) return;
+  const silent = options?.silent === true;
   try {
     const result = await dispatch(state.db, state.roomId, {
       type,
       actorId: state.uid,
       payload,
     });
-    if (!result.committed && REJECT_MESSAGES[type]) {
+    if (!result.committed && !silent && REJECT_MESSAGES[type]) {
       toast(REJECT_MESSAGES[type]);
     }
   } catch (error) {
-    toast(`操作失败：${messageOf(error)}`);
+    if (!silent) toast(`操作失败：${messageOf(error)}`);
   }
 }
 
@@ -804,6 +1062,10 @@ function render() {
   const screens = byId("ssScreens");
   if (!topbar || !screens) return;
 
+  // 整屏是 clear + 重建：视口与滚动位置会被顶回去，先记下来、渲染完还回去。
+  // 不加这一步时，任何一次状态刷新都会让正在往下看的玩家被弹回原处。
+  const scrollY = window.scrollY;
+
   withPreservedInputs(topbar, () => {
     clear(topbar);
     append(topbar, buildTopbar());
@@ -813,10 +1075,62 @@ function render() {
     append(screens, buildScreen());
   });
   renderModalHost();
+  renderChat();
+
+  window.scrollTo(0, scrollY);
 }
 
-/** 上一次渲染出来的对话框种类，用来判断是否需要重建 */
-let renderedModal = " ";
+/**
+ * 聊天停靠区。
+ *
+ * 单独渲染在 `#ssChat` 里（与 `#ssModals` 同理）：它既不能被 `#ssScreens` 的重绘
+ * 波及，也不该在每次房间刷新时重建整屏 —— 聊天自己那条监听线只调这个函数。
+ */
+function renderChat() {
+  const host = byId("ssChat");
+  if (!host) return;
+
+  const chat = state.chat;
+  if (!chat || !state.roomId || !state.room) {
+    clear(host);
+    return;
+  }
+
+  const myTeam = state.room.players[state.uid]?.team ?? null;
+
+  withPreservedInputs(host, () => {
+    clear(host);
+    append(host, renderChatDock({
+      open: chat.state.open,
+      tab: chat.state.tab,
+      team: myTeam,
+      teamLabel: myTeam ? `${myTeam} 队` : null,
+      channels: chat.state.channels,
+      uid: state.uid,
+      playerCount: Object.keys(state.room?.players ?? {}).length,
+      noticeOpen: chat.state.noticeOpen,
+      onToggle: () => chat.toggle(),
+      onTab: (channel) => chat.setTab(channel),
+      onToggleNotice: (isOpen) => {
+        // 只记状态，不重绘：<details> 自己已经切换好了
+        chat.state.noticeOpen = isOpen;
+      },
+      onSend: (text) => {
+        chat.send(text);
+      },
+    }));
+  });
+
+  pinChatScroll(host);
+  if (chat.state.open && chat.consumeFocusRequest()) focusChatInput(host);
+}
+
+/**
+ * 上一次渲染出来的对话框种类，用来判断是否需要重建。
+ * 初值刻意是个不可能等于 `state.modal ?? ""` 的哨兵值，
+ * 好让首次渲染走一遍完整流程（而不是被"没变化"提前短路）。
+ */
+let renderedModal = " ";
 
 /**
  * 对话框单独渲染在一个容器里。
@@ -931,10 +1245,38 @@ function buildTopbar() {
   }
 
   children.push(
-    el("div", {
-      id: "ssConnBadge",
-      class: `ss-conn${state.connected ? " is-online" : " is-offline"}`,
-      text: state.connected ? "实时同步中" : "未连接",
+    // 状态点 + 文字：窄屏只留点（顶栏挤不下时文字会一个字一行地竖排）
+    el(
+      "div",
+      {
+        id: "ssConnBadge",
+        class: `ss-conn${state.connected ? " is-online" : " is-offline"}`,
+      },
+      [
+        el("i", { class: "ss-conn-dot", attrs: { "aria-hidden": "true" } }),
+        el("span", { class: "ss-conn-text", text: state.connected ? "实时同步中" : "未连接" }),
+      ],
+    ),
+  );
+
+  // 音效开关放在最右（`.ss-conn` 的 margin-left:auto 会自动把这一组推到边上）。
+  // 它在所有屏都常驻：对局里的回合/结算音效也归它管，不只管聊天。
+  const soundOn = isSoundEnabled();
+  children.push(
+    el("button", {
+      class: `ss-sound-btn${soundOn ? " is-on" : ""}`,
+      type: "button",
+      title: soundOn ? "关闭音效" : "开启音效",
+      text: soundOn ? "🔊" : "🔇",
+      attrs: { "aria-label": soundOn ? "关闭音效" : "开启音效" },
+      on: {
+        click: () => {
+          // 先切换再试听，开着的时候点一下能立刻听到确认音
+          const next = setSoundEnabled(!isSoundEnabled());
+          if (next) play("message");
+          render();
+        },
+      },
     }),
   );
 
@@ -998,6 +1340,8 @@ function buildScreen() {
     confirmLeave: () => confirmLeave(),
     onReroll: () => rerollMyTeam(),
     onRestart: () => restart(),
+    onSwitchTeam: (team) => act("SWITCH_TEAM", { team }),
+    onKick: (targetUid, name) => confirmKick(targetUid, name),
     draftGuess: state.draftGuess,
     onDraftGuess: (seq) => {
       state.draftGuess = seq;

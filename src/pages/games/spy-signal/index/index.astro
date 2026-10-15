@@ -29,6 +29,13 @@ import { SITE_TITLE } from "@siteConfig";
         <!-- 对话框容器：与 #ssScreens 分开，避免打字时被整屏重绘打断 -->
         <div id="ssModals"></div>
 
+        <!--
+            聊天室容器：同样是常驻节点。
+            聊天消息有自己的 RTDB 监听线，只在有变化时重画这块，
+            不跟着 #ssScreens 一起被整屏清空重建。
+        -->
+        <div id="ssChat"></div>
+
         <div class="ss-toast" id="ssToast" hidden></div>
     </div>
 

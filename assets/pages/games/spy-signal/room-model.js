@@ -25,6 +25,8 @@ import {
   isValidRoleForTeam,
   isValidSequence,
   judgeRound,
+  normalizeTeamPreference,
+  OFFLINE_KICK_MS,
   otherTeam,
   sanitizeAvatar,
   sanitizeDescription,
@@ -45,6 +47,7 @@ import { dealWords } from "./word-pool.js";
  * @property {string | null} role 本轮担任的角色
  * @property {boolean} ready
  * @property {boolean} online
+ * @property {number | null} offlineAt 掉线时刻（服务端时间），在线时为 null
  * @property {number} joinedAt
  * @property {"color" | "image"} avatarType
  * @property {string} avatarColor
@@ -78,6 +81,13 @@ import { dealWords } from "./word-pool.js";
  * @property {boolean} voided
  * @property {number} at
  *
+ * @typedef {object} KickRecord
+ * @property {string} uid 被移出的玩家
+ * @property {string} name 被移出时的昵称（玩家已不在座，只能在这里留一份）
+ * @property {string} by 执行者 uid
+ * @property {"manual" | "timeout"} reason manual = 房主手动移出，timeout = 离线超时
+ * @property {number} at
+ *
  * @typedef {object} RoomMeta
  * @property {number} createdAt 建房时间
  * @property {string} hostId 房主 uid
@@ -85,6 +95,7 @@ import { dealWords } from "./word-pool.js";
  * @property {number | null} dealtAt 首次发牌时间（等价于真正凑满 4 人的时刻）
  * @property {number | null} startedAt 开局时间
  * @property {number | null} endedAt 结束时间
+ * @property {KickRecord | null} lastKick 最近一次移出记录（单槽覆盖），供被移出者看原因
  *
  * @typedef {object} Room
  * @property {RoomMeta} meta
@@ -140,6 +151,7 @@ export function createEmptyRoom({ hostId, healthMax, now = Date.now() }) {
       dealtAt: null,
       startedAt: null,
       endedAt: null,
+      lastKick: null,
     },
     players: {},
     teams: {
@@ -182,6 +194,14 @@ export function normalizeRoom(raw) {
   for (const [uid, value] of Object.entries(players)) {
     const player = /** @type {any} */ (value);
     if (!player || typeof player !== "object") continue;
+
+    // 幽灵座位：`bindPresence()` 是直接把 online / offlineAt 写在 `players/{uid}` 上的，
+    // 万一这次写入先于 JOIN 落库（或被移出的客户端重连时又写回来），players 里就会多出
+    // 一个没有昵称、没有队伍的空记录 —— 它会实打实占掉一个座位，还让 rosterComplete 永远为假。
+    // 真正的入座一定会带上 joinedAt，没有它就当它不存在；下一次事务写回时也会被顺带清掉。
+    const joinedAt = Number(player.joinedAt) || 0;
+    if (!joinedAt) continue;
+
     const team = player.team === "B" ? "B" : "A";
     const avatar = sanitizeAvatar({
       type: player.avatarType,
@@ -194,7 +214,8 @@ export function normalizeRoom(raw) {
       role: typeof player.role === "string" ? player.role : null,
       ready: player.ready === true,
       online: player.online === true,
-      joinedAt: Number(player.joinedAt) || 0,
+      offlineAt: Number(player.offlineAt) || null,
+      joinedAt,
       avatarType: avatar.type,
       avatarColor: avatar.color,
       avatarUrl: avatar.url,
@@ -219,6 +240,7 @@ export function normalizeRoom(raw) {
       dealtAt: Number(raw.meta?.dealtAt) || null,
       startedAt: Number(raw.meta?.startedAt) || null,
       endedAt: Number(raw.meta?.endedAt) || null,
+      lastKick: normalizeKick(raw.meta?.lastKick),
     },
     players: normalizedPlayers,
     teams,
@@ -302,6 +324,23 @@ function normalizeGuess(value) {
   return { seq, by: String(value.by ?? ""), at: Number(value.at) || 0 };
 }
 
+/**
+ * @param {any} value
+ * @returns {KickRecord | null}
+ */
+function normalizeKick(value) {
+  if (!value || typeof value !== "object") return null;
+  const uid = String(value.uid ?? "");
+  if (!uid) return null;
+  return {
+    uid,
+    name: sanitizeNickname(value.name) || "匿名特工",
+    by: String(value.by ?? ""),
+    reason: value.reason === "timeout" ? "timeout" : "manual",
+    at: Number(value.at) || 0,
+  };
+}
+
 /* ------------------------------------------------------------------ *
  * 状态机
  * ------------------------------------------------------------------ */
@@ -317,8 +356,13 @@ function normalizeGuess(value) {
 export function applyAction(room, action) {
   if (!action || typeof action.type !== "string") return ABORT;
 
-  // 创建房间是唯一允许 room 为 null 的动作
-  if (!room) {
+  // 没有 meta 的节点不算一间房：`bindPresence()` 直接写 `players/{uid}`，
+  // 房间若在某人离线期间被删掉，他重连时这一写会把父节点重建出来，得到只剩 players 的空壳。
+  // 当作不存在处理，于是它既接受 CREATE_ROOM 覆盖，也不会接住 JOIN 变成一间没有房主的死房。
+  const current = room && room.meta?.createdAt ? room : null;
+
+  // 创建房间是唯一允许"房间不存在"的动作
+  if (!current) {
     if (action.type === "CREATE_ROOM") {
       const hostId = String(action.actorId ?? "");
       if (!hostId) return ABORT;
@@ -340,39 +384,43 @@ export function applyAction(room, action) {
       // 房间码已被占用，拒绝创建
       return ABORT;
     case "JOIN":
-      return reduceJoin(room, action);
+      return reduceJoin(current, action);
     case "SET_ONLINE":
-      return reduceSetOnline(room, action);
+      return reduceSetOnline(current, action);
     case "LEAVE":
-      return reduceLeave(room, action);
+      return reduceLeave(current, action);
+    case "KICK":
+      return reduceKick(current, action);
     case "SET_READY":
-      return reduceSetReady(room, action);
+      return reduceSetReady(current, action);
+    case "SWITCH_TEAM":
+      return reduceSwitchTeam(current, action);
     case "SET_HEALTH_MAX":
-      return reduceSetHealthMax(room, action);
+      return reduceSetHealthMax(current, action);
     case "DEAL_WORDS":
-      return reduceDealWords(room, action);
+      return reduceDealWords(current, action);
     case "REROLL":
-      return reduceReroll(room, action);
+      return reduceReroll(current, action);
     case "START":
-      return reduceStart(room, action);
+      return reduceStart(current, action);
     case "ASSIGN_ROLE":
-      return reduceAssignRole(room, action);
+      return reduceAssignRole(current, action);
     case "AUTO_ASSIGN":
-      return reduceAutoAssign(room, action);
+      return reduceAutoAssign(current, action);
     case "DESCRIBE":
-      return reduceDescribe(room, action);
+      return reduceDescribe(current, action);
     case "GUESS":
-      return reduceGuess(room, action);
+      return reduceGuess(current, action);
     case "VOID_ROUND":
-      return reduceVoidRound(room, action);
+      return reduceVoidRound(current, action);
     case "NEXT_ROUND":
-      return reduceNextRound(room, action);
+      return reduceNextRound(current, action);
     case "ADD_NOTE":
-      return reduceAddNote(room, action);
+      return reduceAddNote(current, action);
     case "REMOVE_NOTE":
-      return reduceRemoveNote(room, action);
+      return reduceRemoveNote(current, action);
     case "RESTART":
-      return reduceRestart(room, action);
+      return reduceRestart(current, action);
     default:
       return ABORT;
   }
@@ -403,6 +451,7 @@ function createPlayer(name, team, online, avatar) {
     role: null,
     ready: false,
     online,
+    offlineAt: null,
     joinedAt: Date.now(),
     avatarType: safeAvatar.type,
     avatarColor: safeAvatar.color,
@@ -412,13 +461,49 @@ function createPlayer(name, team, online, avatar) {
 
 /**
  * @param {Record<string, Player>} players
+ * @param {Team} team
+ * @returns {number}
+ */
+function teamCount(players, team) {
+  let count = 0;
+  for (const player of Object.values(players)) {
+    if (player.team === team) count += 1;
+  }
+  return count;
+}
+
+/**
+ * @param {Record<string, Player>} players
  * @returns {Team}
  */
 function pickBalancedTeam(players) {
-  const counts = { A: 0, B: 0 };
-  for (const player of Object.values(players)) counts[player.team] += 1;
-  if (counts.A <= counts.B) return "A";
-  return "B";
+  return teamCount(players, "A") <= teamCount(players, "B") ? "A" : "B";
+}
+
+/**
+ * 加入时选队：优先尊重玩家在对话框里选的队伍，该队已满（或没选）时退回人数补齐。
+ * @param {Record<string, Player>} players
+ * @param {Team | null} preferred
+ * @returns {Team}
+ */
+function pickPreferredTeam(players, preferred) {
+  if (preferred && teamCount(players, preferred) < TEAM_SIZE) return preferred;
+  return pickBalancedTeam(players);
+}
+
+/**
+ * 房主转移：房主不在座时，把房主身份交给剩下成员中最早进房的那位。
+ *
+ * 早先没有这一步，房主在大厅退出后 `meta.hostId` 仍指向已经离开的人，
+ * 剩下的人**谁都点不动「开始游戏」**。返回空对象表示房主还在，不需要改。
+ * @param {RoomMeta} meta
+ * @param {Record<string, Player>} players
+ * @returns {{ hostId?: string }}
+ */
+function promoteHost(meta, players) {
+  if (players[meta.hostId]) return {};
+  const entries = Object.entries(players).sort((a, b) => a[1].joinedAt - b[1].joinedAt);
+  return entries[0] ? { hostId: entries[0][0] } : {};
 }
 
 /**
@@ -487,13 +572,14 @@ function reduceJoin(room, action) {
     ? sanitizeAvatar(/** @type {any} */ (incomingAvatar))
     : null;
 
-  // 重连 / 刷新：沿用原有座位
+  // 重连 / 刷新：沿用原有座位（队伍与角色都不动，只把在线状态与倒计时清掉）
   if (room.players[uid]) {
     const existing = room.players[uid];
     const player = {
       ...existing,
       name,
       online: true,
+      offlineAt: null,
       // 没带头像时保留原样，避免重连把已设置的头像洗掉
       avatarType: avatar ? avatar.type : existing.avatarType,
       avatarColor: avatar ? avatar.color : existing.avatarColor,
@@ -506,7 +592,8 @@ function reduceJoin(room, action) {
   // 对局中不再接受新玩家，避免破坏双方词板
   if (room.phase !== "lobby" && room.phase !== "prepare") return ABORT;
 
-  const team = pickBalancedTeam(room.players);
+  // 队伍可以在加入对话框里指定；该队满员或没选时退回"补人少的一队"
+  const team = pickPreferredTeam(room.players, normalizeTeamPreference(action.payload?.team));
   const player = createPlayer(name, team, true, hasAvatar ? incomingAvatar : undefined);
   let next = commit(room, { players: { ...room.players, [uid]: player } });
 
@@ -528,8 +615,12 @@ function reduceSetOnline(room, action) {
   if (!player) return ABORT;
   const online = action.payload?.online === true;
   if (player.online === online) return ABORT;
+  // 掉线时记下时刻，供界面倒计时；重新上线则清掉。
+  // 实际部署里在线状态是 bindPresence 直接写子节点的（见 rtdb.js），
+  // 这条动作主要给测试与脚本用，所以时间戳取本机时间即可。
+  const offlineAt = online ? null : player.offlineAt ?? Date.now();
   return commit(room, {
-    players: { ...room.players, [uid]: { ...player, online } },
+    players: { ...room.players, [uid]: { ...player, online, offlineAt } },
   });
 }
 
@@ -550,13 +641,118 @@ function reduceLeave(room, action) {
   }
   if (countPlayers(players) === 0) return null; // 最后一人离开，删除房间
 
-  let next = clearRoles(commit(room, { players }));
+  // 走的若是房主，得把房主身份交出去，否则剩下的人谁也开不了局
+  let next = clearRoles(
+    commit(room, { players, meta: { ...room.meta, ...promoteHost(room.meta, players) } }),
+  );
 
   // 准备阶段掉人 → 退回大厅重新组队；对局中保留进度，交由房主决定作废或重开
   if (next.phase === "lobby" || next.phase === "prepare") {
     next = commit(next, { phase: "lobby" });
   }
   return next;
+}
+
+/**
+ * 把离线玩家移出房间。
+ *
+ * 两种来源，权限刻意不同：
+ * - `reason: "manual"`（房主在大厅点「移出」）→ 只有房主可以；
+ * - `reason: "timeout"`（离线超过 OFFLINE_KICK_MS）→ **任何在场玩家**都可以代发。
+ *   后者必须是"谁都能做"，否则房主自己掉线后就永远没人能把他挪走，
+ *   剩下的人既开不了局也换不了人。多人同时扫到同一个目标也没关系：
+ *   事务串行化后只有第一个生效，其余因为"目标已不在座"而自动中止。
+ *
+ * 一律**只允许移动离线的人**：还在玩的人想走会自己点「退出」，
+ * 房主不该能随手把正在对局的人踢掉。
+ *
+ * 因此本动作只在大厅 / 准备阶段生效 —— 对局中途换人会让词板与角色指派全部失效，
+ * 那种情况继续用现有的「作废本轮」。
+ *
+ * @param {Room} room
+ * @param {Action} action
+ * @returns {Room | undefined}
+ */
+function reduceKick(room, action) {
+  const actorId = String(action.actorId ?? "");
+  if (!room.players[actorId]) return ABORT;
+  if (room.phase !== "lobby" && room.phase !== "prepare") return ABORT;
+
+  const reason = action.payload?.reason === "timeout" ? "timeout" : "manual";
+  if (reason === "manual" && !isHost(room, actorId)) return ABORT;
+
+  const targetUid = String(action.payload?.targetUid ?? "");
+  const target = room.players[targetUid];
+  if (!target) return ABORT;
+  // 手动移出时房主不能踢自己；超时这条可以（此时房主已经不在线，需要把身份交出去）
+  if (reason === "manual" && targetUid === room.meta.hostId) return ABORT;
+  if (target.online) return ABORT;
+  // 至少留一个人：否则房间会被直接销毁，"离线的人回来还有座位"就变成"房间没了"
+  if (countPlayers(room.players) <= 1) return ABORT;
+
+  // 「离线超 2 分钟」这条规则必须由 reducer 兜住，而不是只靠界面上的巡检：
+  // 巡检跑在各客户端的时钟上，时钟偏一点就可能把刚掉线的人当成超时；reducer 是所有客户端
+  // 都同意的那一层，这里再卡一道，保证**不会有人提前被移出**（宁可晚，不可早）。
+  // 没有 offlineAt 说明这个人压根没被标记过离线，也不该按超时处理。
+  if (reason === "timeout") {
+    const offlineAt = Number(target.offlineAt) || 0;
+    if (!offlineAt) return ABORT;
+    if (Date.now() - offlineAt < OFFLINE_KICK_MS) return ABORT;
+  }
+
+  /** @type {Record<string, Player>} */
+  const players = {};
+  for (const [key, player] of Object.entries(room.players)) {
+    if (key === targetUid) continue;
+    players[key] = player;
+  }
+
+  /** @type {KickRecord} */
+  const kick = {
+    uid: targetUid,
+    name: target.name,
+    by: actorId,
+    reason: reason === "timeout" ? "timeout" : "manual",
+    at: Date.now(),
+  };
+
+  return clearRoles(
+    commit(room, {
+      players,
+      meta: { ...room.meta, ...promoteHost(room.meta, players), lastKick: kick },
+      phase: "lobby",
+    }),
+  );
+}
+
+/**
+ * 换队（仅大厅 / 准备阶段）：目标队还有空位就能换。
+ *
+ * 只动席位：词板与血量按队归属，与谁坐在这队无关，所以不用重新发牌；
+ * 但换队后原角色指派不再成立，因此清空双方角色槽，并要求本人重新点准备。
+ * @param {Room} room
+ * @param {Action} action
+ * @returns {Room | undefined}
+ */
+function reduceSwitchTeam(room, action) {
+  const uid = String(action.actorId ?? "");
+  const player = room.players[uid];
+  if (!player) return ABORT;
+  if (room.phase !== "lobby" && room.phase !== "prepare") return ABORT;
+
+  const team = normalizeTeamPreference(action.payload?.team);
+  if (!team || team === player.team) return ABORT;
+  if (teamCount(room.players, team) >= TEAM_SIZE) return ABORT;
+
+  /** @type {Record<string, Player>} */
+  const players = {};
+  for (const [key, value] of Object.entries(room.players)) {
+    players[key] = key === uid ? { ...value, team, ready: false } : value;
+  }
+
+  // 复用 clearRoles：它会同时清掉所有人的 `role` 与六个角色槽。
+  // 这里自己手写一遍的话，很容易只清了自己的 role 而漏掉别人的标签。
+  return clearRoles(commit(room, { players }));
 }
 
 /**

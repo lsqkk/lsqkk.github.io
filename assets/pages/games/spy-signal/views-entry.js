@@ -16,8 +16,16 @@ import {
   HEALTH_MIN,
   NICKNAME_MAX,
   ROOM_CODE_LENGTH,
+  TEAM_AUTO,
 } from "./game-core.js";
 import { avatar } from "./views-shared.js";
+
+/** 加入房间时可选的队伍，空值即"交给系统补到人少的一队" */
+const JOIN_TEAM_OPTIONS = [
+  { value: TEAM_AUTO, label: "自动" },
+  { value: "A", label: "A 队" },
+  { value: "B", label: "B 队" },
+];
 
 const RULES = [
   "4 人分两队，每队 2 人；每队持有 4 个只有自己看得见的秘密词。",
@@ -359,6 +367,28 @@ export function renderModal(options) {
               class: "ss-hint",
               text: `粘贴整条邀请链接会自动识别其中的 ${ROOM_CODE_LENGTH} 位房间码；字母不区分大小写。`,
             }),
+            el("div", { class: "ss-field" }, [
+              el("label", { class: "ss-field-label", text: "加入哪一队" }),
+              el(
+                "div",
+                { class: "ss-segmented" },
+                JOIN_TEAM_OPTIONS.map((option) =>
+                  el("label", { class: "ss-segment" }, [
+                    el("input", {
+                      type: "radio",
+                      name: "ssJoinTeam",
+                      value: option.value,
+                      checked: option.value === TEAM_AUTO,
+                    }),
+                    el("span", { text: option.label }),
+                  ]),
+                ),
+              ),
+            ]),
+            el("p", {
+              class: "ss-hint",
+              text: "想进的那队满员时会自动补到人少的一队；进房后在大厅还能再换。",
+            }),
             options.recentRooms.length
               ? el("div", { class: "ss-field" }, [
                   el("label", { class: "ss-field-label", text: "最近加入过" }),
@@ -424,16 +454,19 @@ function rulesBlock() {
  * 读取入口屏表单。
  *
  * 注意：血量与面板开合都记在控制器状态里（面板关掉后输入框就不存在了），
- * 所以这里只取仍然存在的文本输入。
- * @returns {{ nickname: string, joinCode: string, avatarColor: string }}
+ * 所以这里只取仍然存在的输入。对话框没打开时它里面的控件当然也读不到，
+ * 那几个字段会返回空串 / 默认值，调用方按"没选"处理即可。
+ * @returns {{ nickname: string, joinCode: string, avatarColor: string, team: string }}
  */
 export function readEntryForm() {
   const nicknameInput = /** @type {any} */ (document.getElementById("ssNickname"));
   const codeInput = /** @type {any} */ (document.getElementById("ssJoinCode"));
   const color = /** @type {any} */ (document.querySelector('input[name="ssAvatarColor"]:checked'));
+  const team = /** @type {any} */ (document.querySelector('input[name="ssJoinTeam"]:checked'));
   return {
     nickname: String(nicknameInput?.value ?? "").trim(),
     joinCode: String(codeInput?.value ?? "").trim(),
     avatarColor: String(color?.value ?? ""),
+    team: String(team?.value ?? TEAM_AUTO),
   };
 }

@@ -5,8 +5,11 @@
  */
 
 import { el } from "./dom.js";
-import { HEALTH_MAX, HEALTH_MIN, ROOM_CAPACITY } from "./game-core.js";
+import { HEALTH_MAX, HEALTH_MIN, OFFLINE_KICK_MS, ROOM_CAPACITY } from "./game-core.js";
 import { rosterTable, teamTag, visibleWords, wordBoard } from "./views-shared.js";
+
+/** 掉线多久会被移出，直接从常量算出来，别在文案里另写一个数字 */
+const OFFLINE_KICK_MINUTES = Math.round(OFFLINE_KICK_MS / 60000);
 
 /**
  * @param {import("./views-shared.js").ViewContext} ctx
@@ -59,6 +62,10 @@ export function renderRoomScreen(ctx) {
         }),
       ]),
       el("p", { class: "ss-hint", text: statusLines[0] }),
+      el("p", {
+        class: "ss-hint",
+        text: `离线超过 ${OFFLINE_KICK_MINUTES} 分钟会被自动移出房间（房主也可以立刻点「移出」）；期间重新连上，座位原样保留。`,
+      }),
       ctx.releaseHint ? el("p", { class: "ss-hint ss-hint-warn", text: ctx.releaseHint }) : null,
       el("div", { class: "ss-room-actions" }, [
         el("button", {
@@ -120,7 +127,7 @@ export function renderRoomScreen(ctx) {
     el("section", { class: "ss-block" }, [
       el("header", { class: "ss-block-head" }, [
         el("h3", { class: "ss-block-title", text: "分队情况" }),
-        el("span", { class: "ss-block-sub", text: "每队 2 人，人少的一队优先补位" }),
+        el("span", { class: "ss-block-sub", text: "每队 2 人；自己那行可以换队" }),
       ]),
       rosterTable(ctx),
     ]),

@@ -32,6 +32,26 @@ export const ROOM_CODE_LENGTH = 6;
 export const NICKNAME_MAX = 12;
 export const DESCRIPTION_MAX = 24;
 export const NOTE_MAX = 60;
+export const CHAT_MAX = 120;
+
+/** 聊天记录读取条数（只影响读取窗口，写入不做裁剪） */
+export const CHAT_HISTORY = 60;
+/** 两条聊天消息之间的最小间隔，挡住手滑连点造成的刷屏 */
+export const CHAT_MIN_INTERVAL_MS = 700;
+
+/**
+ * 掉线多久后自动移出房间。
+ *
+ * 倒计时从断线那一刻算起（服务端写在 `players/{uid}/offlineAt`），
+ * 因此中途刷新 / 短暂断网只要在窗口内回来，座位原样保留。
+ *
+ * ⚠️ 客户端被强杀时 RTDB 要等心跳超时（通常 ≤60s）才会判定断线，
+ * 所以实际倒计时的起点可能比"关掉页面那一刻"晚半分钟左右。
+ */
+export const OFFLINE_KICK_MS = 2 * 60 * 1000;
+
+/** 加入房间时的队伍偏好：让系统自动塞进人少的一队 */
+export const TEAM_AUTO = "auto";
 /** 角色标识 */
 export const ROLE_DESCRIBER = "describer";
 export const ROLE_GUESSER = "guesser";
@@ -310,6 +330,10 @@ export function sanitizeAvatar(input) {
 /**
  * 清洗用户文本：去掉控制字符、折叠空白、限制长度。
  * 返回值始终为字符串，可直接用于 textContent。
+ *
+ * 长度按**码点**截断而不是按 UTF-16 单元：`slice()` 数的是 UTF-16 单元，
+ * 一个 emoji 占 2 个，正好卡在边界上就会把代理对劈成半个字符，
+ * 存进去再渲染出来对四个人都是乱码（聊天里 emoji 很常见）。
  * @param {unknown} value
  * @param {number} maxLength
  * @returns {string}
@@ -324,7 +348,8 @@ export function sanitizeText(value, maxLength) {
     out += char;
   }
   out = out.replace(/\s+/g, " ").trim();
-  return out.slice(0, maxLength);
+  const points = [...out];
+  return points.length > maxLength ? points.slice(0, maxLength).join("") : out;
 }
 
 /**
@@ -350,6 +375,27 @@ export function sanitizeDescription(value) {
  */
 export function sanitizeNote(value) {
   return sanitizeText(value, NOTE_MAX);
+}
+
+/**
+ * 清洗聊天文本。与其它文本一样走 `sanitizeText`：控制字符会被丢掉、
+ * 空白会被折叠，返回值可直接写进 `textContent`。
+ * @param {unknown} value
+ * @returns {string}
+ */
+export function sanitizeChatText(value) {
+  return sanitizeText(value, CHAT_MAX);
+}
+
+/**
+ * 规格化"加入房间时想进的队伍"：只认 A / B，其余（含缺失、'' 、'auto'）都当作自动。
+ * @param {unknown} value
+ * @returns {"A" | "B" | null}
+ */
+export function normalizeTeamPreference(value) {
+  const raw = String(value ?? "").trim().toUpperCase();
+  if (raw === "A" || raw === "B") return raw;
+  return null;
 }
 
 /**

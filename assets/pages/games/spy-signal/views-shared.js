@@ -7,8 +7,9 @@
  */
 
 import { el, frag } from "./dom.js";
-import { ROLE_LABELS, WORD_NUMBERS, formatCard } from "./game-core.js";
+import { OFFLINE_KICK_MS, ROLE_LABELS, TEAM_SIZE, WORD_NUMBERS, formatCard, otherTeam } from "./game-core.js";
 import { entriesOf, intelOf, playersByTeam } from "./room-model.js";
+import { serverNow } from "./rtdb.js";
 
 /**
  * 界面层与控制器之间的契约：视图只读 `room`，其余一律通过回调交回控制器。
@@ -23,9 +24,36 @@ import { entriesOf, intelOf, playersByTeam } from "./room-model.js";
  * @property {() => void} confirmLeave
  * @property {() => void} onReroll
  * @property {() => void} onRestart
+ * @property {(team: "A" | "B") => void} onSwitchTeam 把自己换到另一队
+ * @property {(targetUid: string, name: string) => void} onKick 房主手动移出离线玩家
  * @property {number[]} draftGuess 猜测面板的草稿序列（存在控制器里，重绘不丢）
  * @property {(seq: number[]) => void} onDraftGuess
  */
+
+/**
+ * 掉线倒计时的文案。
+ *
+ * 由 `views-shared` 提供、控制器每秒直接改文本节点用 ——
+ * 倒计时每秒变一次，整屏重绘的代价远大于改一个 span 的 textContent。
+ * @param {number} leftMs
+ * @returns {string}
+ */
+export function offlineCountdownText(leftMs) {
+  if (leftMs <= 0) return "即将移出…";
+  const total = Math.ceil(leftMs / 1000);
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
+  return `离线 ${minutes}:${String(seconds).padStart(2, "0")} 后移出`;
+}
+
+/**
+ * 现在是否处在"可以挪动座位"的阶段：只有大厅 / 准备阶段允许换队与移出。
+ * @param {import("./room-model.js").Room} room
+ * @returns {boolean}
+ */
+export function seatChangeAllowed(room) {
+  return room.phase === "lobby" || room.phase === "prepare";
+}
 
 /** 数字编号 → 中文序号展示 */
 const ROLE_TONE = {
@@ -121,12 +149,9 @@ export function avatarWithPresence(player, options = {}) {
 export function healthTrack(team, health, healthMax, options = {}) {
   const pips = [];
   for (let i = 0; i < healthMax; i += 1) {
-    pips.push(
-      el("i", {
-        class: `ss-pip${i < health ? " is-full" : ""}`,
-        style: { animationDelay: `${i * 60}ms` },
-      }),
-    );
+    // 早先这里还给每个格子写了 animationDelay，但 .ss-pip 早已没有任何动画，
+    // 那段 style 是死代码，顺带去掉
+    pips.push(el("i", { class: `ss-pip${i < health ? " is-full" : ""}` }));
   }
 
   return el("div", { class: `ss-health ss-health-${team.toLowerCase()}${options.active ? " is-active" : ""}` }, [
@@ -147,8 +172,12 @@ export function healthTrack(team, health, healthMax, options = {}) {
 export function playerRow(ctx, entry) {
   const { player, uid } = entry;
   const isSelf = uid === ctx.uid;
+  /** 这一行的玩家本人是不是房主（用来挂「房主」标记） */
   const isHost = uid === ctx.room.meta.hostId;
+  /** 正在看这个界面的我是不是房主（用来决定我有没有权限移出别人） */
+  const viewerIsHost = ctx.room.meta.hostId === ctx.uid;
   const isTurnTeam = player.team === ctx.room.turn;
+  const canManageSeat = seatChangeAllowed(ctx.room);
 
   const tags = [];
   if (isSelf) tags.push(el("span", { class: "ss-mini-tag", text: "我" }));
@@ -162,6 +191,62 @@ export function playerRow(ctx, entry) {
     );
   }
 
+  // 掉线倒计时。id 固定成 ssOffline-{uid}，控制器每秒只改这一行的文字，
+  // 不做整屏重绘（每秒重建一次界面比原来的"抖动"还晃眼）。
+  // 用 serverNow() 与巡检、reducer 保持同一个时钟，免得显示和实际动手的时机对不上。
+  const countdown =
+    canManageSeat && player.online === false && player.offlineAt
+      ? el("span", {
+          class: "ss-offline-count",
+          id: `ssOffline-${uid}`,
+          text: offlineCountdownText(player.offlineAt + OFFLINE_KICK_MS - serverNow()),
+        })
+      : null;
+
+  /** @type {any[]} */
+  const actions = [];
+  if (canManageSeat) {
+    // 离线的人才需要腾位子；在线的人想走会自己点「退出」
+    if (viewerIsHost && !isSelf && player.online === false) {
+      actions.push(
+        el("button", {
+          class: "ss-btn ss-btn-danger ss-btn-mini",
+          type: "button",
+          text: "移出",
+          title: `把「${player.name}」移出房间`,
+          on: { click: () => ctx.onKick(uid, player.name) },
+        }),
+      );
+    }
+    if (isSelf && !player.online) {
+      actions.push(el("span", { class: "ss-mini-tag ss-mini-tag-warn", text: "你已离线" }));
+    }
+    if (isSelf) {
+      const target = otherTeam(player.team);
+      // 复用 room-model 的分组结果，别在这儿再数一遍
+      const targetCount = playersByTeam(ctx.room)[target].length;
+      if (targetCount < TEAM_SIZE) {
+        actions.push(
+          el("button", {
+            class: "ss-btn ss-btn-ghost ss-btn-mini",
+            type: "button",
+            text: `换到 ${target} 队`,
+            on: { click: () => ctx.onSwitchTeam(target) },
+          }),
+        );
+      }
+    }
+  }
+
+  // 右侧那一组（已准备 / 换队 / 移出）包在一个容器里：
+  // flex 里同时给两个元素挂 margin-left:auto 的话，空白会被均分到中间去。
+  const tail = [
+    player.ready && (ctx.room.phase === "lobby" || ctx.room.phase === "prepare")
+      ? el("span", { class: "ss-ready-mark", text: "已准备" })
+      : null,
+    actions.length ? el("span", { class: "ss-player-actions" }, actions) : null,
+  ].filter(Boolean);
+
   return el(
     "div",
     {
@@ -172,10 +257,9 @@ export function playerRow(ctx, entry) {
     [
       avatarWithPresence(player),
       el("span", { class: "ss-player-name", text: player.name }),
+      countdown,
       el("span", { class: "ss-player-tags" }, tags),
-      player.ready && (ctx.room.phase === "lobby" || ctx.room.phase === "prepare")
-        ? el("span", { class: "ss-ready-mark", text: "已准备" })
-        : null,
+      tail.length ? el("span", { class: "ss-player-tail" }, tail) : null,
     ].filter(Boolean),
   );
 }
@@ -190,7 +274,7 @@ export function rosterTable(ctx, options = {}) {
   const grouped = playersByTeam(ctx.room);
   const columns = ["A", "B"].map((team) => {
     const members = grouped[/** @type {"A"} */ (team)];
-    const empty = Math.max(0, 2 - members.length);
+    const empty = Math.max(0, TEAM_SIZE - members.length);
     return el("div", { class: `ss-roster-col ss-roster-${team.toLowerCase()}` }, [
       el("div", { class: "ss-roster-head" }, [
         teamTag(/** @type {any} */ (team)),

@@ -158,10 +158,24 @@ body.dark-mode .ss-app {
 }
 
 .ss-conn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
   margin-left: auto;
   font-size: 0.76rem;
   letter-spacing: 0.08em;
   color: var(--text-soft);
+}
+
+/* 状态点用 currentColor，跟着 .is-online / .is-offline 变色，不必另写两套规则 */
+.ss-conn-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.75;
 }
 
 .ss-conn::before {
@@ -191,7 +205,11 @@ body.dark-mode .ss-app {
   border: 1px solid var(--ss-block-line, var(--line));
   border-radius: var(--radius-lg);
   background: var(--surface-soft);
-  animation: ss-rise 0.34s ease both;
+  /* 刻意没有进场动画。
+     界面是"每次 RTDB 推送就 clear + 重建整屏"，而 .ss-block 遍地都是（60 多处），
+     原先那句 `animation: ss-rise` 会让"谁切了准备 / 在线状态抖一下 / 20 秒倒计时到点"
+     都触发满屏的淡入 + 上移，看起来就是整页在晃。要保留入场感的话，
+     只能在"阶段变化"那一层做，不能挂在通用块上。 */
 }
 
 .ss-block-muted {
@@ -253,16 +271,8 @@ body.dark-mode .ss-app {
   color: var(--text-main);
 }
 
-@keyframes ss-rise {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
+/* 原先的 @keyframes ss-rise 已删除：它挂在通用的 .ss-block 上，
+   而整屏会被频繁 clear + 重建，导致每次状态变化都满屏重播淡入。 */
 
 /* ── 表单控件 ─────────────────────────────────────────────────────────── */
 
@@ -733,18 +743,20 @@ body.ss-modal-open * {
   height: 9px;
   border-radius: 50%;
   background: var(--accent);
-  animation: ss-pulse 1.4s ease-in-out infinite;
+  /* 摆幅刻意收窄、周期放长：它会被整屏重绘重置相位，
+     原先 0.3→1 的透明度变化在重置那一刻会明显"跳"一下。 */
+  animation: ss-pulse 2.2s ease-in-out infinite;
 }
 
 @keyframes ss-pulse {
   0%,
   100% {
-    opacity: 0.3;
-    transform: scale(0.8);
+    opacity: 0.45;
+    transform: scale(0.92);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.15);
+    opacity: 0.85;
+    transform: scale(1.04);
   }
 }
 
@@ -1754,7 +1766,7 @@ body.ss-modal-open * {
   border-radius: var(--radius-xl);
   background: var(--surface-soft);
   text-align: center;
-  animation: ss-rise 0.4s ease both;
+  /* 结束屏同样会被倒计时定时器重绘，所以也不挂入场动画（理由见 .ss-block） */
 }
 
 .ss-winner-title {
@@ -2046,6 +2058,382 @@ body.ss-modal-open * {
   margin-left: auto;
 }
 
+/* ── 音效开关（顶栏） ─────────────────────────────────────────────────── */
+
+.ss-sound-btn {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-subtle);
+  font: inherit;
+  font-size: 0.86rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.ss-sound-btn:hover {
+  border-color: var(--line-strong);
+  color: var(--text-main);
+}
+
+.ss-sound-btn.is-on {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ── 座位管理：离线倒计时 / 换队 / 移出 ───────────────────────────────── */
+
+/* 掉线倒计时：数字用等宽，避免每秒跳动时宽度抖 */
+.ss-offline-count {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ss-negative);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ss-player-tail {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin-left: auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ss-player-tail .ss-ready-mark {
+  margin-left: 0;
+}
+
+.ss-player-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ss-btn-mini {
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+}
+
+.ss-mini-tag-warn {
+  background: color-mix(in srgb, var(--ss-negative) 16%, transparent);
+  color: var(--ss-negative);
+}
+
+/* ── 聊天室 ───────────────────────────────────────────────────────────── */
+
+/*
+ * z-index 70：高于提示条（60），低于站点自定义光标（cursor-trail.js 用 z-index 9999）。
+ *
+ * 面板刻意不用原生 <dialog>：它渲染在 top layer，层级高于任何 z-index，
+ * 会把这个光标元素整个盖住；而真实光标又被注入规则设成了 none，
+ * 结果是整屏看不见指针、只能盲点（入口屏对话框踩过同一个坑）。
+ * 浮动面板不进 top layer，且聊天本来也不该是模态的 —— 它得一直开着看对局。
+ */
+.ss-chat-dock {
+  position: fixed;
+  right: 20px;
+  bottom: 22px;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.ss-chat-fab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-overlay);
+  color: var(--text-main);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.2s ease,
+    border-color 0.24s ease,
+    background-color 0.24s ease;
+}
+
+.ss-chat-fab:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.ss-chat-fab.is-open {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 未读红点。刻意不加脉冲动画：它会在整屏重绘时重置相位，反而更晃眼 */
+.ss-chat-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--ss-negative);
+  color: var(--ss-on-accent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--surface-strong);
+}
+
+.ss-chat-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(368px, calc(100vw - 40px));
+  height: min(58vh, 486px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-overlay);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+/* 队内频道按队伍色着色，一眼能看出"这条只队友可见" */
+.ss-chat-panel.ss-chat-team-a {
+  --ss-chat-tone: var(--ss-team-a);
+}
+
+.ss-chat-panel.ss-chat-team-b {
+  --ss-chat-tone: var(--ss-team-b);
+}
+
+.ss-chat-panel.is-team {
+  border-color: color-mix(in srgb, var(--ss-chat-tone) 45%, var(--line-strong));
+}
+
+.ss-chat-panel.is-team .ss-chat-sub {
+  color: var(--ss-chat-tone);
+}
+
+.ss-chat-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ss-chat-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ss-chat-title {
+  margin: 0;
+  font-size: 0.94rem;
+  letter-spacing: 0.06em;
+  color: var(--text-main);
+}
+
+.ss-chat-sub {
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+}
+
+.ss-chat-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 9px 12px 0;
+}
+
+.ss-chat-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-subtle);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.ss-chat-tab:hover {
+  color: var(--text-main);
+}
+
+.ss-chat-tab.is-active {
+  border-color: var(--line-strong);
+  background: var(--surface-tint);
+  color: var(--text-main);
+}
+
+.ss-chat-tab.is-team.is-active {
+  border-color: color-mix(in srgb, var(--ss-chat-tone) 50%, transparent);
+  color: var(--ss-chat-tone);
+}
+
+.ss-chat-tab-dot {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--ss-negative);
+  color: var(--ss-on-accent);
+  font-size: 0.62rem;
+  line-height: 16px;
+  text-align: center;
+}
+
+.ss-chat-notice {
+  margin: 8px 12px 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-tint);
+}
+
+.ss-chat-notice-summary {
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-subtle);
+  cursor: pointer;
+}
+
+.ss-chat-notice-list {
+  margin: 0;
+  padding: 0 12px 9px 26px;
+}
+
+.ss-chat-notice-list li {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+.ss-chat-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 90px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ss-chat-empty {
+  margin: auto;
+  font-size: 0.76rem;
+  color: var(--text-subtle);
+  text-align: center;
+}
+
+.ss-chat-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.ss-chat-msg.is-self {
+  flex-direction: row-reverse;
+}
+
+.ss-chat-bubble {
+  min-width: 0;
+  max-width: 78%;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-strong);
+}
+
+.ss-chat-msg.is-self .ss-chat-bubble {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: var(--accent-soft);
+}
+
+.ss-chat-msg.is-team .ss-chat-bubble {
+  border-color: color-mix(in srgb, var(--ss-chat-tone) 35%, transparent);
+}
+
+.ss-chat-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.ss-chat-msg.is-self .ss-chat-meta {
+  justify-content: flex-end;
+}
+
+.ss-chat-name {
+  font-size: 0.7rem;
+  color: var(--text-subtle);
+}
+
+.ss-chat-time {
+  font-size: 0.64rem;
+  color: var(--text-subtle);
+  opacity: 0.75;
+}
+
+.ss-chat-text {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ss-chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.ss-chat-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ss-chat-send {
+  flex: 0 0 auto;
+  padding: 10px 16px;
+}
+
 /* ── 响应式 ───────────────────────────────────────────────────────────── */
 
 @media (max-width: 900px) {
@@ -2161,14 +2549,37 @@ body.ss-modal-open * {
     display: none;
   }
 
-  .ss-conn {
-    font-size: 0.7rem;
+  /* 顶栏在窄屏很挤：连接状态只留状态点，并禁止标题 / 按钮折成竖排 */
+  .ss-conn-text {
+    display: none;
+  }
+
+  .ss-brand,
+  .ss-brand-text,
+  .ss-topbar-exit {
+    white-space: nowrap;
+  }
+
+  /* 窄屏把聊天面板铺成底部抽屉，入口按钮贴角 */
+  .ss-chat-dock {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    align-items: flex-end;
+  }
+
+  .ss-chat-panel {
+    width: 100%;
+    height: min(58vh, 460px);
+  }
+
+  /* 提示条原本贴着底部居中，会被聊天按钮压住 */
+  .ss-toast {
+    bottom: 92px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ss-block,
-  .ss-winner,
   .ss-toast {
     animation: none;
   }
@@ -2179,7 +2590,10 @@ body.ss-modal-open * {
 
   .ss-btn,
   .ss-input,
-  .ss-guess-digit {
+  .ss-guess-digit,
+  .ss-chat-fab,
+  .ss-chat-tab,
+  .ss-sound-btn {
     transition: none;
   }
 }
