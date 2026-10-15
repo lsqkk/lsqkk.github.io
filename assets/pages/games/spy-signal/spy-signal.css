@@ -588,6 +588,13 @@ body.dark-mode .ss-app {
   backdrop-filter: blur(3px);
 }
 
+/* 对话框打开期间恢复正常光标：见 main.js 里加 body 类的原因说明。
+   选择器带类名（0,1,0）能压过 cursor-trail.js 注入的 `* { cursor: none !important }`（0,0,0）。 */
+body.ss-modal-open,
+body.ss-modal-open * {
+  cursor: auto !important;
+}
+
 .ss-modal-head {
   display: flex;
   align-items: center;

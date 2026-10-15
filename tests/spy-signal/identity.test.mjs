@@ -97,30 +97,44 @@ describe("头像归一化", () => {
     assert.equal(sanitizeAvatar(undefined).color, AVATAR_COLORS[0]);
   });
 
-  it("只接受白名单域名下的 https 图片", () => {
-    assert.equal(isAllowedAvatarUrl("https://avatars.githubusercontent.com/u/1?v=4"), true);
+  it("图片地址：https + 常见图片后缀即可（与站点评论头像一致）", () => {
+    assert.equal(isAllowedAvatarUrl("https://avatars.githubusercontent.com/u/1?v=4"), true, "GitHub 头像无后缀");
     assert.equal(isAllowedAvatarUrl("https://cdn.jsdelivr.net/gh/a/b.png"), true);
+    assert.equal(isAllowedAvatarUrl("https://pic.example.com/avatar.png"), true, "自建图床也应放行");
+    assert.equal(isAllowedAvatarUrl("https://pic.example.com/avatar.webp"), true);
 
-    assert.equal(isAllowedAvatarUrl("http://avatars.githubusercontent.com/u/1"), false, "http 拒绝");
-    assert.equal(isAllowedAvatarUrl("https://evil.test/a.png"), false, "陌生域名拒绝");
+    assert.equal(isAllowedAvatarUrl("http://pic.example.com/avatar.png"), false, "非 https 拒绝");
+    assert.equal(isAllowedAvatarUrl("https://pic.example.com/avatar.gif"), false, "非白名单后缀");
+    assert.equal(isAllowedAvatarUrl("https://pic.example.com/page"), false, "陌生域名且无图片后缀");
     assert.equal(isAllowedAvatarUrl("javascript:alert(1)"), false);
     assert.equal(isAllowedAvatarUrl("data:image/svg+xml;base64,PHN2Zz4="), false);
     assert.equal(isAllowedAvatarUrl(""), false);
   });
 
   it("图片不合法时安静地退回颜色头像", () => {
-    const bad = sanitizeAvatar({ type: "image", url: "https://evil.test/a.png", color: "#4a6cf7" });
-    assert.equal(bad.type, "color");
-    assert.equal(bad.url, "");
-    assert.equal(bad.color, "#4a6cf7", "颜色仍然保留");
+    // 非 https、或既不是图片后缀也不是已知头像来源 → 退回底色
+    for (const url of [
+      "http://pic.example.com/a.png",
+      "https://pic.example.com/track",
+      "javascript:alert(1)",
+      "",
+    ]) {
+      const bad = sanitizeAvatar({ type: "image", url, color: "#4a6cf7" });
+      assert.equal(bad.type, "color", `应退回颜色：${url}`);
+      assert.equal(bad.url, "");
+      assert.equal(bad.color, "#4a6cf7", "颜色仍然保留");
+    }
 
-    const good = sanitizeAvatar({
-      type: "image",
-      url: "https://avatars.githubusercontent.com/u/1?v=4",
-      color: "#4a6cf7",
-    });
-    assert.equal(good.type, "image");
-    assert.ok(good.url.startsWith("https://avatars.githubusercontent.com/"));
+    // 站点允许的头像地址形态都应保留为图片
+    for (const url of [
+      "https://avatars.githubusercontent.com/u/1?v=4",
+      "https://pic.example.com/avatar.png",
+      "https://pic.example.com/avatar.webp",
+    ]) {
+      const good = sanitizeAvatar({ type: "image", url, color: "#4a6cf7" });
+      assert.equal(good.type, "image", `应保留图片：${url}`);
+      assert.equal(good.url, url);
+    }
   });
 
   it("声明为图片但没给 URL 时退回颜色", () => {

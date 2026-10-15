@@ -46,7 +46,14 @@ const STORAGE_NICKNAME = "spySignalNickname";
 const STORAGE_HEALTH = "spySignalHealth";
 const STORAGE_SESSION = "spySignalSession";
 const STORAGE_AVATAR_COLOR = "spySignalAvatarColor";
-const STORAGE_IDENTITY_MODE = "spySignalIdentityMode";
+/**
+ * 身份来源偏好。**只在用户显式点过"改用…"时才写入**。
+ *
+ * 早先这里在每次存档时都会写入当前模式，于是"当时还没登录所以算出 manual"
+ * 会被当成用户的明确选择记下来；等真的登录了也一直停在手动表单上，
+ * 看起来就是"登录了却读不到博客身份"。换一个键名顺便让旧值失效。
+ */
+const STORAGE_IDENTITY_PREF = "spySignalIdentityPref";
 
 /** URL 参数名：?room=ABC123，便于直接分享邀请链接 */
 const ROOM_PARAM = "room";
@@ -133,10 +140,29 @@ export function boot() {
     restoreSession(session);
   }
 
-  // 在别处登录 / 退出后，入口屏的身份区要跟着更新
-  window.addEventListener("quark-user-updated", () => {
-    state.site = readSiteIdentity();
+  // 身份可能在别处发生变化，几种情况都要能即时跟上，不必手动刷新：
+  //  - 站内模块自己更新（QuarkUserProfile.syncProfile 会派发）
+  //  - 在另一个标签页登录 / 退出（storage 事件）
+  //  - 从登录页切回来（visibilitychange：auth.astro 是直接写 localStorage 的，不会派发事件）
+  const refreshSiteIdentity = () => {
+    const next = readSiteIdentity();
+    const changed =
+      next.hasSiteIdentity !== state.site.hasSiteIdentity ||
+      next.nickname !== state.site.nickname ||
+      next.avatar.url !== state.site.avatar.url;
+    if (!changed) return;
+    state.site = next;
     if (!state.roomId) render();
+  };
+  window.addEventListener("quark-user-updated", refreshSiteIdentity);
+  window.addEventListener("storage", (event) => {
+    if (!event.key || !["github_user", "qb_user", "quark_login_type", "nickname"].includes(event.key)) {
+      return;
+    }
+    refreshSiteIdentity();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshSiteIdentity();
   });
 
   scheduleReap();
@@ -187,6 +213,12 @@ function setIdentityMode(mode) {
     state.manualNickname = state.site.nickname;
   }
   persistIdentity();
+  try {
+    // 显式偏好：只有走这条路径才记录下来
+    window.localStorage.setItem(STORAGE_IDENTITY_PREF, state.identityMode);
+  } catch {
+    /* 忽略 */
+  }
   render();
   if (state.identityMode === "manual") {
     const input = /** @type {any} */ (byId("ssNickname"));
@@ -280,9 +312,9 @@ function readIdentity() {
   if (savedColor && AVATAR_COLORS.includes(savedColor)) state.manualColor = savedColor;
 
   state.site = readSiteIdentity();
-  // 有登录身份就默认用它；显式选过"手动"才坚持手动
+  // 有登录身份就默认用它；只有用户显式切到"手动"才坚持手动
   state.identityMode = state.site.hasSiteIdentity
-    ? readStored(STORAGE_IDENTITY_MODE) === "manual"
+    ? readStored(STORAGE_IDENTITY_PREF) === "manual"
       ? "manual"
       : "site"
     : "manual";
@@ -390,7 +422,7 @@ function persistIdentity() {
   const identity = currentIdentity();
   state.nickname = identity.nickname;
   try {
-    window.localStorage.setItem(STORAGE_IDENTITY_MODE, state.identityMode);
+    // 注意：这里**不**写 STORAGE_IDENTITY_PREF —— 只有 setIdentityMode() 才代表用户显式选择
     window.localStorage.setItem(STORAGE_AVATAR_COLOR, state.manualColor);
     window.localStorage.setItem(STORAGE_HEALTH, String(state.healthMax));
     if (state.manualNickname) window.localStorage.setItem(STORAGE_NICKNAME, state.manualNickname);
@@ -809,6 +841,13 @@ function renderModalHost() {
   const existing = /** @type {any} */ (host.querySelector("dialog"));
   if (existing && existing.open) existing.close();
   clear(host);
+
+  // 自定义光标是个 z-index:9999 的元素，而原生 dialog 在 top layer，
+  // 层级高于任何 z-index —— 光标会被对话框和遮罩盖住，
+  // 偏偏 cursor-trail.js 又注入了 `* { cursor: none !important }`，
+  // 结果是整个屏幕都看不见光标、只能盲点。开着对话框时把原生的还回来。
+  document.body.classList.toggle("ss-modal-open", Boolean(key));
+
   if (!key) return;
 
   const dialog = /** @type {any} */ (renderModal(modalOptions(currentEntryOptions())));

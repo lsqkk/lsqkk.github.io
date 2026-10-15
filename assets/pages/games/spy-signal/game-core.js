@@ -236,8 +236,10 @@ export const AVATAR_COLORS = [
 ];
 
 /**
- * 允许作为头像图片的域名。只放行这几个来源，避免玩家塞任意 URL
- * （既防跟踪像素，也免得页面加载来路不明的资源）。
+ * 常见的"地址里没有图片后缀"的头像来源。
+ *
+ * GitHub 的头像是 `https://avatars.githubusercontent.com/u/123?v=4`，
+ * 带查询串、看不出后缀，所以单独放行这些域名。
  */
 const AVATAR_IMAGE_HOSTS = [
   "avatars.githubusercontent.com",
@@ -246,22 +248,40 @@ const AVATAR_IMAGE_HOSTS = [
   "cdn.jsdelivr.net",
 ];
 
+/** 与站点评论头像（comment-input-shared.js）保持一致的图片后缀白名单 */
+export const AVATAR_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
+
 /**
+ * 判断一个 URL 能否当头像。
+ *
+ * 规则刻意与站点评论头像保持一致：**https + 常见图片后缀**即可，
+ * 另外额外放行 GitHub 这类"后缀看不出来"的固定域名。
+ *
+ * 早先这里只允许四个白名单域名，结果把用户自己在站点里设置的头像
+ * （例如图床地址）也一并挡掉了，表现为"昵称同步了但没有头像"。
+ * 既然站点的评论头像本来就允许任意图片地址，游戏里再严格一套只会造成不一致。
+ *
  * @param {unknown} value
  * @returns {boolean}
  */
 export function isAllowedAvatarUrl(value) {
   const url = String(value ?? "").trim();
   if (!url) return false;
+
+  let parsed;
   try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:") return false;
-    return AVATAR_IMAGE_HOSTS.some(
-      (host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`),
-    );
+    parsed = new URL(url);
   } catch {
     return false;
   }
+  if (parsed.protocol !== "https:") return false;
+
+  const pathname = parsed.pathname.toLowerCase();
+  if (AVATAR_IMAGE_EXTENSIONS.some((ext) => pathname.endsWith(ext))) return true;
+
+  return AVATAR_IMAGE_HOSTS.some(
+    (host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`),
+  );
 }
 
 /**

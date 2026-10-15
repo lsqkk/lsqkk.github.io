@@ -66,20 +66,29 @@ function safeCssUrl(value) {
 
 /**
  * 玩家头像：有图用图，没图就用底色 + 昵称首字。
- * @param {{ name?: string, avatarType?: string, avatarColor?: string, avatarUrl?: string } | null | undefined} player
+ *
+ * 入参兼容两种形状，否则很容易"静默退化成首字圆圈"：
+ *  - 房间里的玩家对象：`{ name, avatarType, avatarColor, avatarUrl }`
+ *  - `sanitizeAvatar()` 的返回值：`{ type, color, url }`
+ *
+ * @param {any} source
  * @param {{ size?: "sm" | "md" | "lg" }} [options]
  * @returns {any}
  */
-export function avatar(player, options = {}) {
+export function avatar(source, options = {}) {
   const size = options.size ?? "md";
-  const name = String(player?.name ?? "");
+  const name = String(source?.name ?? "");
   const initial = name ? [...name][0] : "?";
-  const imageUrl = player?.avatarType === "image" ? safeCssUrl(player.avatarUrl) : "";
+
+  const type = source?.avatarType ?? source?.type ?? "color";
+  const color = source?.avatarColor ?? source?.color ?? "var(--accent)";
+  const rawUrl = source?.avatarUrl ?? source?.url ?? "";
+  const imageUrl = type === "image" ? safeCssUrl(rawUrl) : "";
 
   /** @type {Record<string, string>} */
   const style = {};
   if (imageUrl) style.backgroundImage = imageUrl;
-  else style.background = player?.avatarColor || "var(--accent)";
+  else style.background = color || "var(--accent)";
 
   const node = el("span", {
     class: `ss-avatar ss-avatar-${size}${imageUrl ? " is-image" : ""}`,
