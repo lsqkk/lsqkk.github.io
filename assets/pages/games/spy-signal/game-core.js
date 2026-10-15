@@ -178,18 +178,113 @@ export function createRoomCode() {
 }
 
 /**
- * 规范化房间码输入：大写、去空格、把易混字符还原。
+ * 规范化房间码输入：转大写、去掉所有分隔符与易混字符。
+ *
+ * 注意房间码字母表本身就排除了 I / O / 0 / 1（避免口头或手抄时读错），
+ * 所以这些字符不可能出现在合法房间码里 —— 直接去掉，而不是"猜"成别的字符
+ * （早先版本把 O 当成 0、I 当成 1，反而会造出字母表里不存在的字符）。
  * @param {unknown} value
  * @returns {string}
  */
 export function normalizeRoomCode(value) {
   return String(value ?? "")
-    .trim()
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "")
-    .replace(/O/g, "0")
-    .replace(/I/g, "1")
+    .replace(/[IO01]/g, "")
     .slice(0, ROOM_CODE_LENGTH);
+}
+
+/**
+ * 从用户输入里取出房间码，同时兼容三种写法：
+ * - 纯房间码：`ABC123`
+ * - 带查询串：`?room=ABC123`
+ * - 完整邀请链接：`https://lsqkk.github.io/games/spy-signal/?room=ABC123`
+ *
+ * @param {unknown} value
+ * @returns {string} 解析出的房间码；是链接但没带房间码时返回空串
+ */
+export function extractRoomCode(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+
+  const inline = /[?&]room=([A-Za-z0-9_-]+)/.exec(raw);
+  if (inline) return normalizeRoomCode(inline[1]);
+
+  // 看着像链接（或至少带路径）却没有 room 参数：不要硬塞进房间码框
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.includes("/")) {
+    try {
+      const params = new URL(raw).searchParams.get("room");
+      return params ? normalizeRoomCode(params) : "";
+    } catch {
+      return "";
+    }
+  }
+
+  return normalizeRoomCode(raw);
+}
+
+/** 手动填写身份时可选的头像底色 */
+export const AVATAR_COLORS = [
+  "#4a6cf7",
+  "#0ea5a3",
+  "#c2761f",
+  "#c0392b",
+  "#7c5cd6",
+  "#2f855a",
+  "#b83280",
+  "#0b6bcb",
+];
+
+/**
+ * 允许作为头像图片的域名。只放行这几个来源，避免玩家塞任意 URL
+ * （既防跟踪像素，也免得页面加载来路不明的资源）。
+ */
+const AVATAR_IMAGE_HOSTS = [
+  "avatars.githubusercontent.com",
+  "github.com",
+  "raw.githubusercontent.com",
+  "cdn.jsdelivr.net",
+];
+
+/**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+export function isAllowedAvatarUrl(value) {
+  const url = String(value ?? "").trim();
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    return AVATAR_IMAGE_HOSTS.some(
+      (host) => parsed.hostname === host || parsed.hostname.endsWith(`.${host}`),
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 归一化头像：只接受"映射到允许域名的图片"或"预设/合法的十六进制颜色"。
+ * 任何不合规的输入都退回默认色，保证房间里不会出现坏图或注入。
+ *
+ * @param {{ type?: unknown, color?: unknown, url?: unknown }} [input]
+ * @returns {{ type: "color" | "image", color: string, url: string }}
+ */
+export function sanitizeAvatar(input) {
+  const fallbackColor = AVATAR_COLORS[0];
+  const rawColor = String(input?.color ?? "").trim();
+  const color = /^#[0-9a-fA-F]{6}$/.test(rawColor)
+    ? rawColor.toLowerCase()
+    : /^#[0-9a-fA-F]{3}$/.test(rawColor)
+      ? `#${rawColor[1]}${rawColor[1]}${rawColor[2]}${rawColor[2]}${rawColor[3]}${rawColor[3]}`.toLowerCase()
+      : fallbackColor;
+
+  const url = String(input?.url ?? "").trim();
+  if (input?.type === "image" && isAllowedAvatarUrl(url)) {
+    return { type: "image", color, url };
+  }
+  return { type: "color", color, url: "" };
 }
 
 /**

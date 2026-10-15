@@ -11,6 +11,8 @@ import { SITE_TITLE } from "@siteConfig";
         "https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js",
         "https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js",
         "/assets/js/firebase-ready.js",
+        // 全站统一的身份模块：登录夸克博客后可直接取到昵称与头像
+        "/assets/js/user-profile.js",
     ]}
 >
     <!--
@@ -23,6 +25,9 @@ import { SITE_TITLE } from "@siteConfig";
     <div class="ss-app">
         <!-- 入口 / 房间 / 对局 / 结算四屏，由 main.js 按阶段路由 -->
         <main class="ss-main" id="ssScreens"></main>
+
+        <!-- 对话框容器：与 #ssScreens 分开，避免打字时被整屏重绘打断 -->
+        <div id="ssModals"></div>
 
         <div class="ss-toast" id="ssToast" hidden></div>
     </div>

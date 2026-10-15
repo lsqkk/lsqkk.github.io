@@ -53,6 +53,60 @@ export function teamTag(team, options = {}) {
 }
 
 /**
+ * @param {unknown} value
+ * @returns {string}
+ */
+function safeCssUrl(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  // sanitizeAvatar 已限制过来源，这里再挡一次 CSS 注入
+  if (/["'()\\\s]/.test(raw)) return "";
+  return `url("${raw}")`;
+}
+
+/**
+ * 玩家头像：有图用图，没图就用底色 + 昵称首字。
+ * @param {{ name?: string, avatarType?: string, avatarColor?: string, avatarUrl?: string } | null | undefined} player
+ * @param {{ size?: "sm" | "md" | "lg" }} [options]
+ * @returns {any}
+ */
+export function avatar(player, options = {}) {
+  const size = options.size ?? "md";
+  const name = String(player?.name ?? "");
+  const initial = name ? [...name][0] : "?";
+  const imageUrl = player?.avatarType === "image" ? safeCssUrl(player.avatarUrl) : "";
+
+  /** @type {Record<string, string>} */
+  const style = {};
+  if (imageUrl) style.backgroundImage = imageUrl;
+  else style.background = player?.avatarColor || "var(--accent)";
+
+  const node = el("span", {
+    class: `ss-avatar ss-avatar-${size}${imageUrl ? " is-image" : ""}`,
+    style,
+    attrs: { "aria-hidden": "true" },
+  });
+  if (!imageUrl) node.textContent = initial;
+  return node;
+}
+
+/**
+ * 头像 + 在线小圆点。
+ * @param {import("./room-model.js").Player} player
+ * @param {{ size?: "sm" | "md" | "lg" }} [options]
+ * @returns {any}
+ */
+export function avatarWithPresence(player, options = {}) {
+  return el("span", { class: "ss-avatar-wrap" }, [
+    avatar(player, options),
+    el("i", {
+      class: `ss-avatar-dot${player?.online === false ? " is-offline" : ""}`,
+      title: player?.online === false ? "已离线" : "在线",
+    }),
+  ]);
+}
+
+/**
  * 分段血量条：一格代表 1 点血，比进度条更能一眼看出还剩几条命。
  * @param {import("./room-model.js").Team} team
  * @param {number} health
@@ -112,7 +166,7 @@ export function playerRow(ctx, entry) {
       }`,
     },
     [
-      el("span", { class: `ss-online-dot${player.online ? "" : " is-offline"}`, title: player.online ? "在线" : "已离线" }),
+      avatarWithPresence(player),
       el("span", { class: "ss-player-name", text: player.name }),
       el("span", { class: "ss-player-tags" }, tags),
       player.ready && (ctx.room.phase === "lobby" || ctx.room.phase === "prepare")

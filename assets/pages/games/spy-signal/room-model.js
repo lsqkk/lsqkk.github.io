@@ -26,6 +26,7 @@ import {
   isValidSequence,
   judgeRound,
   otherTeam,
+  sanitizeAvatar,
   sanitizeDescription,
   sanitizeNote,
   sanitizeNickname,
@@ -45,6 +46,9 @@ import { dealWords } from "./word-pool.js";
  * @property {boolean} ready
  * @property {boolean} online
  * @property {number} joinedAt
+ * @property {"color" | "image"} avatarType
+ * @property {string} avatarColor
+ * @property {string} avatarUrl
  *
  * @typedef {object} TeamState
  * @property {Record<string, string>} words 编号 1-4 → 秘密词
@@ -179,6 +183,11 @@ export function normalizeRoom(raw) {
     const player = /** @type {any} */ (value);
     if (!player || typeof player !== "object") continue;
     const team = player.team === "B" ? "B" : "A";
+    const avatar = sanitizeAvatar({
+      type: player.avatarType,
+      color: player.avatarColor,
+      url: player.avatarUrl,
+    });
     normalizedPlayers[uid] = {
       name: sanitizeNickname(player.name) || "匿名特工",
       team,
@@ -186,6 +195,9 @@ export function normalizeRoom(raw) {
       ready: player.ready === true,
       online: player.online === true,
       joinedAt: Number(player.joinedAt) || 0,
+      avatarType: avatar.type,
+      avatarColor: avatar.color,
+      avatarUrl: avatar.url,
     };
   }
 
@@ -316,7 +328,7 @@ export function applyAction(room, action) {
       });
       return commit(created, {
         players: {
-          [hostId]: createPlayer(action.payload?.name, "A", true),
+          [hostId]: createPlayer(action.payload?.name, "A", true, action.payload?.avatar),
         },
       });
     }
@@ -380,9 +392,11 @@ function commit(room, patch) {
  * @param {unknown} name
  * @param {Team} team
  * @param {boolean} online
+ * @param {unknown} [avatar]
  * @returns {Player}
  */
-function createPlayer(name, team, online) {
+function createPlayer(name, team, online, avatar) {
+  const safeAvatar = sanitizeAvatar(/** @type {any} */ (avatar));
   return {
     name: sanitizeNickname(name) || "匿名特工",
     team,
@@ -390,6 +404,9 @@ function createPlayer(name, team, online) {
     ready: false,
     online,
     joinedAt: Date.now(),
+    avatarType: safeAvatar.type,
+    avatarColor: safeAvatar.color,
+    avatarUrl: safeAvatar.url,
   };
 }
 
@@ -464,10 +481,24 @@ function reduceJoin(room, action) {
   const uid = String(action.actorId ?? "");
   if (!uid) return ABORT;
   const name = sanitizeNickname(action.payload?.name) || "匿名特工";
+  const incomingAvatar = action.payload?.avatar;
+  const hasAvatar = incomingAvatar && typeof incomingAvatar === "object";
+  const avatar = hasAvatar
+    ? sanitizeAvatar(/** @type {any} */ (incomingAvatar))
+    : null;
 
   // 重连 / 刷新：沿用原有座位
   if (room.players[uid]) {
-    const player = { ...room.players[uid], name, online: true };
+    const existing = room.players[uid];
+    const player = {
+      ...existing,
+      name,
+      online: true,
+      // 没带头像时保留原样，避免重连把已设置的头像洗掉
+      avatarType: avatar ? avatar.type : existing.avatarType,
+      avatarColor: avatar ? avatar.color : existing.avatarColor,
+      avatarUrl: avatar ? avatar.url : existing.avatarUrl,
+    };
     return commit(room, { players: { ...room.players, [uid]: player } });
   }
 
@@ -476,7 +507,7 @@ function reduceJoin(room, action) {
   if (room.phase !== "lobby" && room.phase !== "prepare") return ABORT;
 
   const team = pickBalancedTeam(room.players);
-  const player = createPlayer(name, team, true);
+  const player = createPlayer(name, team, true, hasAvatar ? incomingAvatar : undefined);
   let next = commit(room, { players: { ...room.players, [uid]: player } });
 
   // 满员后进入准备阶段，等待任意客户端发牌

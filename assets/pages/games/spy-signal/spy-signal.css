@@ -243,12 +243,6 @@ body.dark-mode .ss-app {
   color: var(--ss-team-b);
 }
 
-/* 通过邀请链接进入时，把"加入房间"提到视觉重点 */
-.ss-block-invited {
-  border-color: var(--accent);
-  background: var(--surface-strong);
-}
-
 .ss-invite {
   padding: 10px 14px;
   margin: 0 0 14px;
@@ -482,7 +476,7 @@ body.dark-mode .ss-app {
 /* ── 入口屏 ───────────────────────────────────────────────────────────── */
 
 .ss-entry-hero {
-  padding: 30px 4px 26px;
+  padding: 18px 4px 22px;
 }
 
 .ss-eyebrow {
@@ -509,32 +503,124 @@ body.dark-mode .ss-app {
   color: var(--text-subtle);
 }
 
-.ss-entry-actions {
+/* 两个主操作并排；自身不套框，靠留白与上面板分隔 */
+.ss-actions {
+  margin-bottom: 20px;
+}
+
+.ss-actions .ss-invite {
+  margin-bottom: 14px;
+}
+
+.ss-tabs {
   display: flex;
   gap: 12px;
-  margin-bottom: 18px;
 }
 
-.ss-entry-actions .ss-btn {
-  padding: 12px 34px;
-  font-size: 0.94rem;
+.ss-tab {
+  flex: 1 1 0;
+  padding: 14px 18px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    border-color 0.24s ease,
+    background-color 0.24s ease,
+    color 0.24s ease,
+    transform 0.2s ease;
 }
 
-.ss-join-row {
-  display: flex;
-  gap: 10px;
+.ss-tab:hover:not(:disabled) {
+  background: var(--accent-soft);
+  transform: translateY(-1px);
 }
 
-.ss-join-row .ss-input {
-  flex: 1 1 auto;
-  min-width: 0;
+.ss-tab.is-primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--ss-on-accent);
+}
+
+.ss-tab.is-primary:hover:not(:disabled) {
+  background: var(--accent-2);
+  color: var(--ss-on-accent);
+}
+
+.ss-tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ss-tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 /* 按钮不能被输入框挤到换行 */
-.ss-join-row .ss-btn,
 .ss-intel-form .ss-intel-add {
   flex: 0 0 auto;
   white-space: nowrap;
+}
+
+/* ── 弹窗（原生 dialog）───────────────────────────────────────────────── */
+
+.ss-modal {
+  width: min(440px, calc(100vw - 28px));
+  max-height: calc(100vh - 64px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-overlay);
+  color: var(--text-main);
+  box-shadow: var(--shadow-main);
+  backdrop-filter: blur(18px);
+}
+
+.ss-modal::backdrop {
+  background: rgba(3, 8, 18, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.ss-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px 14px;
+}
+
+.ss-modal-title {
+  margin: 0;
+  font-size: 1.04rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+}
+
+.ss-modal-close {
+  margin-left: auto;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.ss-modal-body {
+  padding: 0 20px;
+}
+
+.ss-modal-body .ss-field {
+  margin-bottom: 4px;
+}
+
+.ss-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 20px 20px;
 }
 
 .ss-recent {
@@ -1040,12 +1126,11 @@ body.dark-mode .ss-app {
 
 /* ── 数字卡 ───────────────────────────────────────────────────────────── */
 
+/* 数字卡本身不再套框：它已经在操作面板里，靠字号与下方分隔线区分即可 */
 .ss-card {
-  padding: 16px 18px;
-  margin-bottom: 16px;
-  border: 1px dashed var(--line-strong);
-  border-radius: var(--radius-md);
-  background: var(--surface-tint);
+  padding: 14px 0 16px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--line);
 }
 
 .ss-card-slots {
@@ -1781,6 +1866,225 @@ body.dark-mode .ss-app {
     opacity: 1;
     transform: translate(-50%, 0);
   }
+}
+
+/* ── 头像 ─────────────────────────────────────────────────────────────── */
+
+.ss-avatar {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line-soft);
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  font-weight: 650;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.ss-avatar-sm {
+  width: 22px;
+  height: 22px;
+  font-size: 0.7rem;
+}
+
+.ss-avatar-md {
+  width: 30px;
+  height: 30px;
+  font-size: 0.84rem;
+}
+
+.ss-avatar-lg {
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+}
+
+.ss-avatar.is-placeholder {
+  border-style: dashed;
+  background: var(--surface-tint);
+  color: var(--text-soft);
+  text-shadow: none;
+}
+
+.ss-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.ss-avatar-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ss-positive);
+  box-shadow: 0 0 0 2px var(--surface-soft);
+}
+
+.ss-avatar-dot.is-offline {
+  background: var(--text-soft);
+}
+
+/* ── 身份区 ───────────────────────────────────────────────────────────── */
+
+.ss-identity-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ss-identity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ss-identity-name {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.ss-identity-note {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.ss-identity-card .ss-btn {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.ss-identity-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ss-identity-preview {
+  padding-top: 3px;
+}
+
+.ss-identity-fields {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ss-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.ss-swatch {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ss-swatch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ss-swatch:hover {
+  transform: translateY(-2px);
+}
+
+.ss-swatch.is-selected {
+  border-color: var(--text-main);
+}
+
+.ss-swatch:focus-within {
+  box-shadow:
+    inset 0 0 0 1px var(--line-strong),
+    0 0 0 3px var(--accent-soft);
+}
+
+/* ── 折叠的玩法说明 ───────────────────────────────────────────────────── */
+
+.ss-details {
+  padding: 0;
+  overflow: hidden;
+}
+
+.ss-details-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 18px 20px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.ss-details-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ss-details-summary::before {
+  content: "▸";
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  transition: transform 0.24s ease;
+}
+
+.ss-details[open] .ss-details-summary::before {
+  content: "▾";
+}
+
+.ss-details-summary .ss-block-sub {
+  margin-left: auto;
+}
+
+.ss-details .ss-rule-list {
+  padding: 0 20px 16px;
+}
+
+/* ── 入口屏补充 ───────────────────────────────────────────────────────── */
+
+.ss-btn-wide {
+  min-width: 180px;
+}
+
+.ss-join-open {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 角色条补充 ───────────────────────────────────────────────────────── */
+
+.ss-role-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ss-role-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ss-role-cell .ss-team-tag {
+  margin-left: auto;
 }
 
 /* ── 响应式 ───────────────────────────────────────────────────────────── */

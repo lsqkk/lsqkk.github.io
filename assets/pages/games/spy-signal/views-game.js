@@ -21,7 +21,7 @@ import {
   otherTeam,
 } from "./game-core.js";
 import { currentRoles, guessSideOf } from "./room-model.js";
-import { cardDisplay, intelBoard, logList, scoreHeader, teamTag, wordBoard } from "./views-shared.js";
+import { avatar, cardDisplay, intelBoard, logList, scoreHeader, teamTag, wordBoard } from "./views-shared.js";
 
 /**
  * @param {import("./views-shared.js").ViewContext} ctx
@@ -73,8 +73,13 @@ function roleBar(ctx, roles) {
     const player = id ? room.players[id] : null;
     const isSelf = id === ctx.uid;
     return el("div", { class: `ss-role-cell${isSelf ? " is-self" : ""}${player ? "" : " is-empty"}` }, [
-      el("span", { class: "ss-role-name", text: label }),
-      el("span", { class: "ss-role-holder", text: player ? player.name : "未指派" }),
+      player
+        ? avatar(player, { size: "md" })
+        : el("span", { class: "ss-avatar ss-avatar-md is-placeholder", text: "?" }),
+      el("div", { class: "ss-role-body" }, [
+        el("span", { class: "ss-role-name", text: label }),
+        el("span", { class: "ss-role-holder", text: player ? player.name : "未指派" }),
+      ]),
       team ? teamTag(/** @type {any} */ (team), { small: true }) : null,
     ].filter(Boolean));
   };
@@ -145,7 +150,6 @@ function selectRolePanel(ctx, info) {
           el("button", {
             class: `ss-btn ss-btn-chip${holder === memberId ? " is-selected" : ""}`,
             type: "button",
-            text: `${player.name}${memberId === uid ? "（我）" : ""}`,
             on: {
               click: () =>
                 ctx.act("ASSIGN_ROLE", {
@@ -156,7 +160,10 @@ function selectRolePanel(ctx, info) {
                   card: drawCard(),
                 }),
             },
-          }),
+          }, [
+            avatar(player, { size: "sm" }),
+            el("span", { text: `${player.name}${memberId === uid ? "（我）" : ""}` }),
+          ]),
         ),
       ),
     ]);
