@@ -1,0 +1,5 @@
+{
+  "description": "仅供 Node 使用：让同目录下的 .js 被解析为 ES 模块，tests/spy-signal 下的状态机测试才能直接 import。浏览器不会读取本文件，也不会被发布到 public/（见 scripts/sync-public.mjs）。",
+  "private": true,
+  "type": "module"
+}

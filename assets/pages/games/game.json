@@ -6,6 +6,11 @@
             "link": "5ziqi"
         },
         {
+            "name": "谍报风云",
+            "image": "/assets/pages/games/image/7.png",
+            "link": "spy-signal"
+        },
+        {
             "name": "每日答题",
             "image": "/assets/pages/games/image/4.png",
             "link": "dati"

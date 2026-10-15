@@ -19,7 +19,8 @@
     "assets/js/dynamic-interactions.js",
     "assets/js/user-preferences.js",
     "assets/js/site-search.js",
-    "assets/js/**/*.d.ts"
+    "assets/js/**/*.d.ts",
+    "assets/pages/games/spy-signal/*.js"
   ],
   "exclude": [
     "**/*.min.js",

@@ -1,0 +1,38 @@
+---
+import RealtimeRoomLayout from "../../../../layouts/RealtimeRoomLayout.astro";
+import { SITE_TITLE } from "@siteConfig";
+---
+<RealtimeRoomLayout
+    pageTitle={`谍报风云 - 在线桌游 - ${SITE_TITLE}`}
+    bodyClass="dark-mode"
+    includeCursor={true}
+    pageStyles={["/assets/pages/games/spy-signal/spy-signal.css"]}
+    headScripts={[
+        "https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js",
+        "https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js",
+        "/assets/js/firebase-ready.js",
+    ]}
+>
+    <!--
+        顶栏（房间码 / 连接状态 / 退出）由 main.js 渲染。
+        放在 .ss-app 之外，才能让分隔线铺满整行宽度，
+        同时用 padding 把内容对齐回 1180 栏。
+    -->
+    <header class="ss-topbar" id="ssTopbar"></header>
+
+    <div class="ss-app">
+        <!-- 入口 / 房间 / 对局 / 结算四屏，由 main.js 按阶段路由 -->
+        <main class="ss-main" id="ssScreens"></main>
+
+        <div class="ss-toast" id="ssToast" hidden></div>
+    </div>
+
+    <!--
+        用内联 module 引入控制器：assets/ 下的脚本保持 ES 模块原样下发，
+        不参与 Astro/Vite 打包，便于与其它小游戏共用同一套调试方式。
+    -->
+    <script is:inline type="module">
+        import { boot } from "/assets/pages/games/spy-signal/main.js";
+        boot();
+    </script>
+</RealtimeRoomLayout>

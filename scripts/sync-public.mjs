@@ -68,6 +68,9 @@ function shouldCopyFile(srcAbs) {
   // Never copy markdown files (data is now stored in JSON under assets/data/).
   if (ext === ".md") return false;
 
+  // package.json 只用于给 Node 标注模块类型，不应出现在站点产物里。
+  if (path.basename(rel).toLowerCase() === "package.json") return false;
+
   return true;
 }
 
