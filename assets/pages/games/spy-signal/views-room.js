@@ -6,7 +6,7 @@
 
 import { el } from "./dom.js";
 import { HEALTH_MAX, HEALTH_MIN, ROOM_CAPACITY } from "./game-core.js";
-import { rosterTable, teamTag, wordBoard } from "./views-shared.js";
+import { rosterTable, teamTag, visibleWords, wordBoard } from "./views-shared.js";
 
 /**
  * @param {import("./views-shared.js").ViewContext} ctx
@@ -128,8 +128,7 @@ export function renderRoomScreen(ctx) {
     isPrepare && wordsDealt
       ? el("div", { class: "ss-prepare-grid" }, [
           el("div", { class: "ss-prepare-cell" }, [
-            wordBoard(room.teams[myTeam], {
-              reveal: true,
+            wordBoard(visibleWords(room, myTeam, myTeam), {
               title: `我方词板 · ${myTeam} 队`,
               subtitle: `${teamMembers.length} / 2 人可见`,
             }),
@@ -144,14 +143,11 @@ export function renderRoomScreen(ctx) {
             ]),
           ]),
           el("div", { class: "ss-prepare-cell" }, [
-            wordBoard(
-              { words: {}, intel: {}, notes: {}, health: 0, describerId: null, guesserId: null, listenerId: null },
-              {
-                reveal: false,
-                title: `对方词板 · ${opponent} 队`,
-                subtitle: `${opponentMembers.length} / 2 人，开局前不可见`,
-              },
-            ),
+            // 对方的词在这里取不到（visibleWords 只会返回空对象）
+            wordBoard(visibleWords(room, opponent, myTeam), {
+              title: `对方词板 · ${opponent} 队`,
+              subtitle: `${opponentMembers.length} / 2 人，开局前不可见`,
+            }),
             el("p", { class: "ss-hint", text: `对局结束前，你永远看不到 ${opponent} 队的原始词汇。` }),
           ]),
         ])

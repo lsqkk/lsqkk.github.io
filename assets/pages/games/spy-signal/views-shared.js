@@ -7,12 +7,7 @@
  */
 
 import { el, frag } from "./dom.js";
-import {
-  CARD_LENGTH,
-  ROLE_LABELS,
-  WORD_NUMBERS,
-  formatCard,
-} from "./game-core.js";
+import { ROLE_LABELS, WORD_NUMBERS, formatCard } from "./game-core.js";
 import { entriesOf, intelOf, playersByTeam } from "./room-model.js";
 
 /**
@@ -224,15 +219,40 @@ export function rosterTable(ctx, options = {}) {
 }
 
 /**
- * 秘密词板。`reveal` 为 false 时只显示编号与问号（用于对方词板）。
- * @param {import("./room-model.js").TeamState} teamState
- * @param {{ reveal: boolean, title: string, subtitle?: string }} options
+ * 取某队的秘密词用于渲染 —— **全站唯一的出口**。
+ *
+ * 只有两种情况允许拿到真实词：
+ *   1. 看的正是自己队；
+ *   2. 对局已经结束（`phase === 'ended'`）。
+ *
+ * 其它任何情况一律返回空对象，因此调用方**没有机会**把对方的词渲染出去。
+ * 早先靠各调用点自己传 `reveal: true/false` 开关，一旦某个分支写错就会直接泄露
+ * （结算面板就曾因此把行动方原词公开给双方）。现在改成"拿不到词"而不是"记得别显示"。
+ *
+ * @param {import("./room-model.js").Room | null | undefined} room
+ * @param {import("./room-model.js").Team} team
+ * @param {import("./room-model.js").Team} viewerTeam
+ * @returns {Record<string, string>}
+ */
+export function visibleWords(room, team, viewerTeam) {
+  if (!room || !team) return {};
+  if (team !== viewerTeam && room.phase !== "ended") return {};
+  return room.teams?.[team]?.words ?? {};
+}
+
+/**
+ * 秘密词板。
+ *
+ * `words` 必须来自 `visibleWords()` —— 拿不到的词不会传进来，
+ * 所以这里没有"要不要显示"的开关，没有词就自然是问号。
+ * @param {Record<string, string> | null | undefined} words
+ * @param {{ title: string, subtitle?: string }} options
  * @returns {any}
  */
-export function wordBoard(teamState, options) {
+export function wordBoard(words, options) {
   const rows = WORD_NUMBERS.map((number) => {
-    const word = teamState?.words?.[String(number)];
-    const hidden = !options.reveal || !word;
+    const word = words?.[String(number)];
+    const hidden = !word;
     return el("div", { class: `ss-word-row${hidden ? " is-hidden" : ""}` }, [
       el("span", { class: "ss-word-number", text: String(number) }),
       el("span", { class: "ss-word-text", text: hidden ? "？？？" : String(word) }),
@@ -246,29 +266,6 @@ export function wordBoard(teamState, options) {
     ].filter(Boolean)),
     el("div", { class: "ss-word-list" }, rows),
   ]);
-}
-
-/**
- * 数字卡展示。
- * @param {readonly number[] | null | undefined} card
- * @param {{ note?: string, compact?: boolean }} [options]
- * @returns {any}
- */
-export function cardDisplay(card, options = {}) {
-  const slots = [];
-  for (let i = 0; i < CARD_LENGTH; i += 1) {
-    const value = card && card.length > i ? card[i] : null;
-    slots.push(
-      el("div", { class: "ss-card-slot" }, [
-        el("span", { class: "ss-card-order", text: `第${i + 1}位` }),
-        el("span", { class: "ss-card-digit", text: value === null ? "·" : String(value) }),
-      ]),
-    );
-  }
-  return el("div", { class: `ss-card${options.compact ? " is-compact" : ""}` }, [
-    el("div", { class: "ss-card-slots" }, slots),
-    options.note ? el("p", { class: "ss-card-note", text: options.note }) : null,
-  ].filter(Boolean));
 }
 
 /**

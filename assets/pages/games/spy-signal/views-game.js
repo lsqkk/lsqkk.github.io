@@ -21,7 +21,15 @@ import {
   otherTeam,
 } from "./game-core.js";
 import { currentRoles, guessSideOf } from "./room-model.js";
-import { avatar, cardDisplay, intelBoard, logList, scoreHeader, teamTag, wordBoard } from "./views-shared.js";
+import {
+  avatar,
+  intelBoard,
+  logList,
+  scoreHeader,
+  teamTag,
+  visibleWords,
+  wordBoard,
+} from "./views-shared.js";
 
 /**
  * @param {import("./views-shared.js").ViewContext} ctx
@@ -42,13 +50,12 @@ export function renderGameScreen(ctx) {
     phaseAction(ctx, { myTeam, opponent, roles, isHost }),
 
     el("div", { class: "ss-board-grid" }, [
-      wordBoard(room.teams[myTeam], {
-        reveal: true,
+      // visibleWords 是唯一出口：对方那块的词在结束前根本取不到
+      wordBoard(visibleWords(room, myTeam, myTeam), {
         title: `我方词板 · ${myTeam} 队`,
         subtitle: "只有你和你队友看得到",
       }),
-      wordBoard(room.teams[opponent], {
-        reveal: false,
+      wordBoard(visibleWords(room, opponent, myTeam), {
         title: `对方词板 · ${opponent} 队`,
         subtitle: "对局结束前保持遮蔽",
       }),
@@ -208,7 +215,8 @@ function describingPanel(ctx, info) {
   const { room, uid } = ctx;
   const isDescriber = uid === info.roles.describerId;
   const card = room.currentCard ?? [];
-  const words = room.teams[room.turn].words ?? {};
+  // 走同一个出口：描述者属于本轮行动队，所以能拿到本队的词；其余人拿到空对象。
+  const words = visibleWords(room, room.turn, info.myTeam);
 
   if (!isDescriber) {
     return el("section", { class: "ss-block ss-action-block" }, [
@@ -466,11 +474,12 @@ function revealPanel(ctx, info) {
     result.voided
       ? el("p", { class: "ss-notice", text: "本轮由房主作废，不结算扣血，但暗号已归档进对方情报板。" })
       : null,
-    cardDisplay(result.card, { note: `${result.turn} 队的数字卡` }),
+    // 原数字卡大图已删除：下面的对应关系表里每位都带编号，那张卡纯属重复，
+    // 而且它连同旁边的内容一起被误认为"原词就显示在这里"。
     el("div", { class: "ss-map-list" }, mapping),
     el("p", {
       class: "ss-hint",
-      text: "本轮只公开数字卡与暗号的对应关系；双方原始词汇要等对局结束才揭晓。",
+      text: "本轮只公开编号与暗号的对应关系；双方原始词汇要等对局结束才揭晓。",
     }),
     el("div", { class: "ss-verdict-list" }, [
       verdictRow(`${result.turn} 队猜测者`, result.guesserGuess, result.guesserCorrect),

@@ -1131,50 +1131,7 @@ body.ss-modal-open * {
   gap: 8px;
 }
 
-/* ── 数字卡 ───────────────────────────────────────────────────────────── */
-
-/* 数字卡本身不再套框：它已经在操作面板里，靠字号与下方分隔线区分即可 */
-.ss-card {
-  padding: 14px 0 16px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid var(--line);
-}
-
-.ss-card-slots {
-  display: flex;
-  gap: 14px;
-}
-
-.ss-card-slot {
-  flex: 1 1 0;
-  text-align: center;
-}
-
-.ss-card-order {
-  display: block;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  color: var(--text-soft);
-}
-
-.ss-card-digit {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--ss-mono);
-  font-size: 2.4rem;
-  line-height: 1.15;
-  color: var(--accent);
-}
-
-.ss-card.is-compact .ss-card-digit {
-  font-size: 1.7rem;
-}
-
-.ss-card-note {
-  margin: 12px 0 0;
-  font-size: 0.78rem;
-  color: var(--text-soft);
-}
+/* 数字卡大图已删除（编号在对应关系表里逐位列出，那张卡纯属重复） */
 
 /* ── 描述阶段 ─────────────────────────────────────────────────────────── */
 
