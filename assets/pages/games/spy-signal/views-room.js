@@ -6,7 +6,7 @@
 
 import { el } from "./dom.js";
 import { HEALTH_MAX, HEALTH_MIN, OFFLINE_KICK_MS, ROOM_CAPACITY } from "./game-core.js";
-import { rosterTable, teamTag, visibleWords, wordBoard } from "./views-shared.js";
+import { ownClues, rosterTable, teamTag, visibleWords, wordBoard } from "./views-shared.js";
 
 /** 掉线多久会被移出，直接从常量算出来，别在文案里另写一个数字 */
 const OFFLINE_KICK_MINUTES = Math.round(OFFLINE_KICK_MS / 60000);
@@ -72,7 +72,8 @@ export function renderRoomScreen(ctx) {
           class: `ss-btn${me?.ready ? " ss-btn-active" : ""}`,
           type: "button",
           text: me?.ready ? "已准备（点击取消）" : "准备",
-          disabled: !isPrepare && room.phase !== "lobby",
+          // 这一屏本来只在 lobby / prepare 出现，准备按钮始终可点
+          // （原先那个 disabled 表达式在两个阶段里都求值为 false，是死条件，去掉）
           on: { click: () => ctx.act("SET_READY", { ready: !me?.ready }) },
         }),
         isHost
@@ -138,6 +139,7 @@ export function renderRoomScreen(ctx) {
             wordBoard(visibleWords(room, myTeam, myTeam), {
               title: `我方词板 · ${myTeam} 队`,
               subtitle: `${teamMembers.length} / 2 人可见`,
+              clues: ownClues(room.teams[myTeam]),
             }),
             el("div", { class: "ss-prepare-actions" }, [
               el("button", {

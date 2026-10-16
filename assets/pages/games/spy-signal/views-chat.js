@@ -27,6 +27,7 @@ const ROOM_NOTICE = [
 const TEAM_NOTICE = [
   "只有你和队友看得到，对手看不到。",
   "别把数字卡顺序、该猜的编号写出来 —— 那等同于作弊。",
+  "描述与猜测阶段队内频道会暂停（队友正等着猜，私聊等于直接报答案），公开后才恢复。",
   "换队后会切到新队伍的频道，原队伍的记录不再显示。",
 ];
 
@@ -73,16 +74,23 @@ function messageRow(entry, uid, channel) {
  * @param {number} unread
  * @param {boolean} active
  * @param {(channel: "room" | "team") => void} onTab
+ * @param {boolean} [disabled]
  * @returns {any}
  */
-function tabButton(channel, label, unread, active, onTab) {
+function tabButton(channel, label, unread, active, onTab, disabled) {
   return el("button", {
-    class: `ss-chat-tab is-${channel}${active ? " is-active" : ""}`,
+    class: `ss-chat-tab is-${channel}${active ? " is-active" : ""}${disabled ? " is-locked" : ""}`,
     type: "button",
-    attrs: { role: "tab", "aria-selected": active ? "true" : "false" },
+    disabled,
+    attrs: {
+      role: "tab",
+      "aria-selected": active ? "true" : "false",
+      ...(disabled ? { title: "本轮暗号已发出，队内私聊暂时关闭" } : {}),
+    },
     on: { click: () => onTab(channel) },
   }, [
     el("span", { text: label }),
+    disabled ? el("span", { class: "ss-chat-tab-lock", text: "🔒", attrs: { "aria-hidden": "true" } }) : null,
     unread > 0
       ? el("span", { class: "ss-chat-tab-dot", text: unread > 9 ? "9+" : String(unread) })
       : null,
@@ -97,6 +105,7 @@ function tabButton(channel, label, unread, active, onTab) {
  *   tab: "room" | "team",
  *   team: "A" | "B" | null,
  *   teamLabel: string | null,
+ *   teamLocked: boolean,
  *   uid: string,
  *   playerCount: number,
  *   noticeOpen: boolean,
@@ -104,7 +113,7 @@ function tabButton(channel, label, unread, active, onTab) {
  *   onToggle: () => void,
  *   onTab: (channel: "room" | "team") => void,
  *   onToggleNotice: (open: boolean) => void,
- *   onSend: (text: string) => void,
+ *   onSend: (text: string) => boolean | void,
  * }} options
  * @returns {any}
  */
@@ -136,7 +145,16 @@ export function renderChatDock(options) {
   // 队伍还没分出来时（理论上不会发生）也不给一个点进去全是空的页签
   const tabs = [tabButton("room", "房间", options.channels.room.unread, options.tab === "room", options.onTab)];
   if (options.teamLabel) {
-    tabs.push(tabButton("team", options.teamLabel, options.channels.team.unread, options.tab === "team", options.onTab));
+    tabs.push(
+      tabButton(
+        "team",
+        options.teamLabel,
+        options.channels.team.unread,
+        options.tab === "team",
+        options.onTab,
+        options.teamLocked,
+      ),
+    );
   }
 
   const isTeam = options.tab === "team";
@@ -179,6 +197,15 @@ export function renderChatDock(options) {
 
     el("div", { class: "ss-chat-tabs", attrs: { role: "tablist" } }, tabs),
 
+    // 停用原因必须写在界面上：只说"队内频道点不动"的话，
+    // 玩家会以为是网络或 bug，而不是规则如此。
+    options.teamLocked
+      ? el("p", {
+          class: "ss-chat-lock",
+          text: "本轮暗号已发出：为防止把答案直接说给自己人，队内私聊暂时关闭，公开后恢复。",
+        })
+      : null,
+
     el("details", {
       class: "ss-chat-notice",
       open: options.noticeOpen,
@@ -205,8 +232,14 @@ export function renderChatDock(options) {
           const input = /** @type {any} */ (document.getElementById("ssChatInput"));
           const text = String(input?.value ?? "").trim();
           if (!text) return;
-          options.onSend(text);
+          // ⚠️ 必须先清空、再发送：消息一写出就会经 RTDB 回调触发 `renderChat()`，
+          // 而重绘会把这个输入框换成一个新节点（`withPreservedInputs` 还会把旧值搬过去）。
+          // 发送之后再清，清到的是已经脱离文档的旧节点，新节点里那行字原封不动地留着
+          // —— 表现就是"发完还得手动删一次"。
           if (input) input.value = "";
+          // 没被受理（队内已停用 / 限流）就把草稿还回去：
+          // 那种情况下并没有写出任何东西，也就没有重绘，这个节点还是活的。
+          if (options.onSend(text) === false && input) input.value = text;
         },
       },
     }, [

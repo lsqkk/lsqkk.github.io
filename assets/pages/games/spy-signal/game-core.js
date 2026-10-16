@@ -423,15 +423,38 @@ export function toTextList(value) {
 
 /**
  * 判定指定队伍当前应派出的角色是否合法。
- * 当前回合队伍只能派描述者与猜测者，对方队伍只能派监听者。
+ *
+ * **只有行动队需要指派角色**（描述者 + 猜测者）。监听方不再指派具体的人：
+ * 对方队伍任一成员都可以提交监听答案，谁先提交算谁的（见 `room-model.js` 的 `reduceGuess`）。
+ * 因此非行动队不合法任何角色指派。
  * @param {"A" | "B"} team
  * @param {"A" | "B"} turn
  * @param {string} role
  * @returns {boolean}
  */
 export function isValidRoleForTeam(team, turn, role) {
-  if (team === turn) return role === ROLE_DESCRIBER || role === ROLE_GUESSER;
-  return role === ROLE_LISTENER;
+  if (team !== turn) return false;
+  return role === ROLE_DESCRIBER || role === ROLE_GUESSER;
+}
+
+/**
+ * 回合已经开始但猜测尚未提交的阶段 —— 这期间**队内私聊必须停用**。
+ *
+ * 理由：描述者在这一刻已经拿到了数字卡，而他的队友正是需要凭暗号还原数字卡的猜测者。
+ * 队内频道只要能发言，"把 3-4-1 直接说出来"就比任何暗号都省事，整个玩法当场失效。
+ * 对方队伍同样停用，是为了不给"哪一队能私聊"留下需要解释的差别对待。
+ *
+ * 公共频道不受影响：四个人都在场，说出去的话对手也看得到，不构成串通。
+ */
+export const TEAM_CHAT_LOCKED_PHASES = /** @type {const} */ (["describing", "guessing"]);
+
+/**
+ * 当前阶段队内私聊是否应当停用。
+ * @param {string} phase
+ * @returns {boolean}
+ */
+export function isTeamChatLocked(phase) {
+  return TEAM_CHAT_LOCKED_PHASES.includes(/** @type {any} */ (phase));
 }
 
 /**

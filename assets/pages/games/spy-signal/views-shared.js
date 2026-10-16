@@ -8,7 +8,7 @@
 
 import { el, frag } from "./dom.js";
 import { OFFLINE_KICK_MS, ROLE_LABELS, TEAM_SIZE, WORD_NUMBERS, formatCard, otherTeam } from "./game-core.js";
-import { entriesOf, intelOf, playersByTeam } from "./room-model.js";
+import { cluesOf, entriesOf, intelOf, playersByTeam } from "./room-model.js";
 import { serverNow } from "./rtdb.js";
 
 /**
@@ -18,7 +18,7 @@ import { serverNow } from "./rtdb.js";
  * @property {string} uid
  * @property {string} roomId
  * @property {string | null} releaseHint 房间自动释放的倒计时提示
- * @property {(type: string, payload?: Record<string, unknown>) => void} act
+ * @property {(type: string, payload?: Record<string, unknown>) => Promise<boolean>} act 返回事务是否提交；视图据此决定要不要把用户输入还回去
  * @property {(message: string, tone?: string) => void} toast
  * @property {() => void} copyRoomCode
  * @property {() => void} confirmLeave
@@ -76,10 +76,15 @@ export function teamTag(team, options = {}) {
 }
 
 /**
+ * 把 URL 包成可以安全写进 CSS 的 `url("…")`。
+ *
+ * 含引号 / 括号 / 反斜杠 / 空白的地址直接判空：`sanitizeAvatar()` 放行的是**原始字符串**
+ * （它只校验解析出来的 host 与后缀），所以形如 `https://avatars.githubusercontent.com/u/1?v=4"`
+ * 这种地址能通过校验、却会把 `url("…")` 提前闭合掉。这里再挡一次。
  * @param {unknown} value
  * @returns {string}
  */
-function safeCssUrl(value) {
+export function safeCssUrl(value) {
   const raw = String(value ?? "").trim();
   if (!raw) return "";
   // sanitizeAvatar 已限制过来源，这里再挡一次 CSS 注入
@@ -329,17 +334,49 @@ export function visibleWords(room, team, viewerTeam) {
  *
  * `words` 必须来自 `visibleWords()` —— 拿不到的词不会传进来，
  * 所以这里没有"要不要显示"的开关，没有词就自然是问号。
+ *
+ * `clues` 是**本队自己给过**的暗号（`cluesOf()` 的返回值，按编号分组）。
+ * 它在词的下方逐轮列出，用来提醒下一轮换一套语义：
+ * 同一个词连着给两条语义相近的暗号，对方把两条线索一对照就能锁定原词。
+ * 传 null 就不渲染这一块（对方词板永远是 null）。
+ *
  * @param {Record<string, string> | null | undefined} words
- * @param {{ title: string, subtitle?: string }} options
+ * @param {{
+ *   title: string,
+ *   subtitle?: string,
+ *   clues?: Record<string, { round: number, text: string }[]> | null,
+ * }} options
  * @returns {any}
  */
 export function wordBoard(words, options) {
+  const clueMap = options.clues ?? null;
+
+  /** @param {number} number */
+  const clueList = (number) => {
+    const entries = clueMap?.[String(number)] ?? [];
+    if (entries.length === 0) return null;
+    return el(
+      "ul",
+      { class: "ss-word-clues", attrs: { "aria-label": `${number} 号词给过的暗号` } },
+      entries.map((entry) =>
+        el("li", { class: "ss-word-clue" }, [
+          el("span", { class: "ss-word-clue-round", text: `第${entry.round}轮` }),
+          el("span", { class: "ss-word-clue-text", text: entry.text }),
+        ]),
+      ),
+    );
+  };
+
   const rows = WORD_NUMBERS.map((number) => {
     const word = words?.[String(number)];
     const hidden = !word;
+    const clues = hidden ? null : clueList(number);
     return el("div", { class: `ss-word-row${hidden ? " is-hidden" : ""}` }, [
       el("span", { class: "ss-word-number", text: String(number) }),
-      el("span", { class: "ss-word-text", text: hidden ? "？？？" : String(word) }),
+      el("div", { class: "ss-word-body" }, [
+        el("span", { class: "ss-word-text", text: hidden ? "？？？" : String(word) }),
+        clues,
+      ].filter(Boolean)),
     ]);
   });
 
@@ -350,6 +387,24 @@ export function wordBoard(words, options) {
     ].filter(Boolean)),
     el("div", { class: "ss-word-list" }, rows),
   ]);
+}
+
+/**
+ * 本队词板的暗号史，直接喂给 `wordBoard` 的 `clues`。
+ *
+ * 只对**能看到那块词板的人**有意义（即自己的队），所以这里不做什么权限判断 ——
+ * 调用点本来就只在渲染自己词板时才调它。
+ * @param {import("./room-model.js").TeamState | null | undefined} teamState
+ * @returns {Record<string, { round: number, text: string }[]>}
+ */
+export function ownClues(teamState) {
+  if (!teamState) return {};
+  /** @type {Record<string, { round: number, text: string }[]>} */
+  const out = {};
+  for (const number of WORD_NUMBERS) {
+    out[String(number)] = cluesOf(teamState, number);
+  }
+  return out;
 }
 
 /**
@@ -412,13 +467,21 @@ export function intelBoard(ctx, team, options = {}) {
                 const input = /** @type {any} */ (document.getElementById(inputId));
                 const text = String(input?.value ?? "").trim();
                 if (!text) return;
+                // ⚠️ 必须先清空再派发：`ctx.act()` 会触发整屏重绘，
+                // 事后再清只会清到一个已经脱离文档的旧节点上（新节点会把旧值还原回来）。
+                if (input) input.value = "";
                 ctx.act("ADD_NOTE", {
                   team,
                   number: String(number),
                   text,
                   noteId: `n${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+                }).then((ok) => {
+                  // 事务被拒（或写失败）时笔记没落库，把内容还给用户；
+                  // 按 id 重新取节点，免得中途整屏重绘过、拿到的是旧节点。
+                  if (ok) return;
+                  const back = /** @type {any} */ (document.getElementById(inputId));
+                  if (back) back.value = text;
                 });
-                if (input) input.value = "";
               },
             },
           }, [
@@ -502,7 +565,7 @@ export function logList(room, options = {}) {
     verdicts.push(
       el("span", {
         class: `ss-verdict${log.listenerCorrect ? " is-bad" : " is-ok"}`,
-        text: `监听者${log.listenerCorrect ? "猜中" : "未猜中"}`,
+        text: `监听方${log.listenerCorrect ? "猜中" : "未猜中"}`,
       }),
     );
     if (log.healthLoss > 0) {

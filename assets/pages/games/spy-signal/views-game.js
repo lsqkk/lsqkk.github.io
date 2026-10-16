@@ -15,6 +15,7 @@ import {
   ROLE_GUESSER,
   ROLE_LABELS,
   ROLE_LISTENER,
+  TEAM_SIZE,
   WORD_NUMBERS,
   drawCard,
   formatCard,
@@ -25,6 +26,7 @@ import {
   avatar,
   intelBoard,
   logList,
+  ownClues,
   scoreHeader,
   teamTag,
   visibleWords,
@@ -50,10 +52,12 @@ export function renderGameScreen(ctx) {
     phaseAction(ctx, { myTeam, opponent, roles, isHost }),
 
     el("div", { class: "ss-board-grid" }, [
-      // visibleWords 是唯一出口：对方那块的词在结束前根本取不到
+      // visibleWords 是唯一出口：对方那块的词在结束前根本取不到。
+      // 自己的词板额外带上"我们给过哪些暗号"，下一轮好避开重复的语义。
       wordBoard(visibleWords(room, myTeam, myTeam), {
         title: `我方词板 · ${myTeam} 队`,
         subtitle: "只有你和你队友看得到",
+        clues: ownClues(room.teams[myTeam]),
       }),
       wordBoard(visibleWords(room, opponent, myTeam), {
         title: `对方词板 · ${opponent} 队`,
@@ -69,14 +73,14 @@ export function renderGameScreen(ctx) {
 /**
  * 本轮角色条。
  * @param {any} ctx
- * @param {{ describerId: string | null, guesserId: string | null, listenerId: string | null }} roles
+ * @param {{ describerId: string | null, guesserId: string | null }} roles
  * @returns {any}
  */
 function roleBar(ctx, roles) {
   const { room } = ctx;
   const opponent = otherTeam(room.turn);
 
-  const cell = (/** @type {string} */ label, /** @type {string | null} */ id, /** @type {string | null} */ team) => {
+  const cell = (/** @type {string} */ label, /** @type {string | null} */ id, /** @type {"A" | "B"} */ team) => {
     const player = id ? room.players[id] : null;
     const isSelf = id === ctx.uid;
     return el("div", { class: `ss-role-cell${isSelf ? " is-self" : ""}${player ? "" : " is-empty"}` }, [
@@ -87,14 +91,29 @@ function roleBar(ctx, roles) {
         el("span", { class: "ss-role-name", text: label }),
         el("span", { class: "ss-role-holder", text: player ? player.name : "未指派" }),
       ]),
-      team ? teamTag(/** @type {any} */ (team), { small: true }) : null,
+      teamTag(team, { small: true }),
     ].filter(Boolean));
   };
+
+  // 监听方不再指派具体的人：对方队伍任一成员都能提交监听答案，
+  // 所以这一格显示的是"哪支队在监听"，而不是某个人的头像。
+  const listenerCell = el(
+    "div",
+    { class: `ss-role-cell is-collective${room.players[ctx.uid]?.team === opponent ? " is-self" : ""}` },
+    [
+      el("span", { class: "ss-avatar ss-avatar-md is-placeholder is-collective", text: `${TEAM_SIZE}人` }),
+      el("div", { class: "ss-role-body" }, [
+        el("span", { class: "ss-role-name", text: ROLE_LABELS[ROLE_LISTENER] }),
+        el("span", { class: "ss-role-holder", text: `${opponent} 队任一人` }),
+      ]),
+      teamTag(opponent, { small: true }),
+    ],
+  );
 
   return el("section", { class: "ss-role-bar" }, [
     cell(ROLE_LABELS[ROLE_DESCRIBER], roles.describerId, room.turn),
     cell(ROLE_LABELS[ROLE_GUESSER], roles.guesserId, room.turn),
-    cell(ROLE_LABELS[ROLE_LISTENER], roles.listenerId, opponent),
+    listenerCell,
   ]);
 }
 
@@ -141,8 +160,8 @@ function selectRolePanel(ctx, info) {
    * @returns {any}
    */
   const picker = (role) => {
-    const field = /** @type {"describerId" | "guesserId" | "listenerId"} */ (
-      role === ROLE_DESCRIBER ? "describerId" : role === ROLE_GUESSER ? "guesserId" : "listenerId"
+    const field = /** @type {"describerId" | "guesserId"} */ (
+      role === ROLE_DESCRIBER ? "describerId" : "guesserId"
     );
     const holder = myTeamState[field];
     return el("div", { class: "ss-pick" }, [
@@ -163,7 +182,7 @@ function selectRolePanel(ctx, info) {
                   team: info.myTeam,
                   role,
                   targetUid: holder === memberId ? null : memberId,
-                  // 三个角色集齐时由该动作顺带上锁本轮数字卡，未集齐时会被状态机忽略
+                  // 两人都就位时由该动作顺带上锁本轮数字卡，缺一个时会被状态机忽略
                   card: drawCard(),
                 }),
             },
@@ -176,28 +195,47 @@ function selectRolePanel(ctx, info) {
     ]);
   };
 
-  const waitingForOpponent = isTurnTeam
-    ? room.teams[info.opponent].listenerId
-      ? `对方已派出监听者：${room.players[room.teams[info.opponent].listenerId]?.name ?? ""}`
-      : "等待对方队伍派出监听者…"
-    : room.teams[room.turn].describerId && room.teams[room.turn].guesserId
-      ? "对方角色已就位，等你派出监听者"
-      : "等待对方队伍指派描述者与猜测者…";
+  // 监听方不需要任何准备动作，所以对"轮到对方行动"的那一队，这一屏只有等待。
+  if (!isTurnTeam) {
+    const turnTeam = room.turn;
+    const ready = Boolean(room.teams[turnTeam].describerId) && Boolean(room.teams[turnTeam].guesserId);
+    return el("section", { class: "ss-block ss-action-block" }, [
+      el("header", { class: "ss-block-head" }, [
+        el("h3", { class: "ss-block-title", text: `第 ${room.round} 轮 · 等待 ${turnTeam} 队出暗号` }),
+        el("span", { class: "ss-block-sub", text: `${turnTeam} 队行动` }),
+      ]),
+      el("div", { class: "ss-awaiting" }, [
+        el("span", { class: "ss-pulse" }),
+        el("p", {
+          class: "ss-hint",
+          text: ready
+            ? `${turnTeam} 队角色已就位，正在编写暗号。`
+            : `等待 ${turnTeam} 队指派描述者与猜测者…`,
+        }),
+      ]),
+      el("p", {
+        class: "ss-hint",
+        text: `本轮由你（${info.myTeam} 队）监听：不用指派谁，暗号公开后你们队任一人提交答案即可。`,
+      }),
+    ]);
+  }
+
+  const waitingForOpponent = room.teams[room.turn].describerId && room.teams[room.turn].guesserId
+    ? "本队角色已就位，暗号锁定中…"
+    : `${info.opponent} 队不需要派人，暗号公开后他们队任一人提交监听答案即可。`;
 
   return el("section", { class: "ss-block ss-action-block" }, [
     el("header", { class: "ss-block-head" }, [
       el("h3", { class: "ss-block-title", text: `第 ${room.round} 轮 · 指派角色` }),
       el("span", { class: "ss-block-sub", text: `${room.turn} 队行动` }),
     ]),
-    el("p", { class: "ss-hint", text: `${room.turn} 队需要派出描述者与猜测者，另一队派出监听者；三者就位后自动进入描述阶段。` }),
-    isTurnTeam
-      ? el("div", { class: "ss-pick-grid" }, [picker(ROLE_DESCRIBER), picker(ROLE_GUESSER)])
-      : el("div", { class: "ss-pick-grid" }, [picker(ROLE_LISTENER)]),
+    el("p", { class: "ss-hint", text: `${room.turn} 队需要派出描述者与猜测者（两人各占一个，不能是同一人）；两人就位后自动进入描述阶段。` }),
+    el("div", { class: "ss-pick-grid" }, [picker(ROLE_DESCRIBER), picker(ROLE_GUESSER)]),
     el("div", { class: "ss-action-row" }, [
       el("button", {
         class: "ss-btn",
         type: "button",
-        text: isTurnTeam ? "自动轮换本队角色" : "自动指派监听者",
+        text: "自动轮换本队角色",
         on: { click: () => ctx.act("AUTO_ASSIGN", { team: info.myTeam, card: drawCard() }) },
       }),
       el("span", { class: "ss-hint", text: waitingForOpponent }),
@@ -287,7 +325,7 @@ function describingPanel(ctx, info) {
           },
         },
       }),
-      el("span", { class: "ss-hint", text: "提交后不可修改，且会立即公开给你的队友与对方监听者。" }),
+      el("span", { class: "ss-hint", text: "提交后不可修改，且会立即公开给你的队友与对方队伍（监听方）。" }),
     ]),
     hostVoidRow(ctx, info),
   ].filter(Boolean));
@@ -321,14 +359,24 @@ function guessingPanel(ctx, info) {
   ];
 
   if (side) {
-    const roleLabel = side === room.turn ? ROLE_LABELS[ROLE_GUESSER] : ROLE_LABELS[ROLE_LISTENER];
-    if (alreadySubmitted) {
+    const isGuesserSide = side === room.turn;
+    const submitted = room.guesses[side];
+    if (alreadySubmitted && submitted) {
+      // 监听方是"整队共用一个答案"，提交的很可能是队友而不是自己，
+      // 光说"你已提交"会让人以为自己点过（早先就是这样）。
+      const byMe = submitted.by === uid;
+      const seq = (submitted.seq ?? []).join("-");
+      const waiting = isGuesserSide
+        ? "等待监听方提交后自动结算。"
+        : "等待对方猜测者提交后自动结算。";
       panels.push(
         el("div", { class: "ss-awaiting" }, [
           el("span", { class: "ss-pulse" }),
           el("p", {
             class: "ss-hint",
-            text: `你已作为${roleLabel}提交了 ${(room.guesses[side]?.seq ?? []).join("-")}，等待另一方提交后自动结算。`,
+            text: byMe
+              ? `你已提交${isGuesserSide ? `猜测 ${seq}` : `监听答案 ${seq}`}，${waiting}`
+              : `队友 ${room.players[submitted.by]?.name ?? ""} 已提交本轮的监听答案 ${seq}（先提交的算数），${waiting}`,
           }),
         ]),
       );
@@ -336,8 +384,16 @@ function guessingPanel(ctx, info) {
       panels.push(
         el("div", { class: "ss-guess-block" }, [
           el("div", { class: "ss-guess-head" }, [
-            el("h4", { class: "ss-guess-title", text: `你是本轮${roleLabel}` }),
-            el("span", { class: "ss-hint", text: "按第 1 位 → 第 3 位依次点名编号" }),
+            el("h4", {
+              class: "ss-guess-title",
+              text: isGuesserSide ? `你是本轮${ROLE_LABELS[ROLE_GUESSER]}` : "本轮由你们队监听",
+            }),
+            el("span", {
+              class: "ss-hint",
+              text: isGuesserSide
+                ? "按第 1 位 → 第 3 位依次点名编号"
+                : "队里谁提交都行，先提交的那份算数",
+            }),
           ]),
           guessPad(ctx),
         ]),
@@ -347,7 +403,7 @@ function guessingPanel(ctx, info) {
     panels.push(
       el("div", { class: "ss-awaiting" }, [
         el("span", { class: "ss-pulse" }),
-        el("p", { class: "ss-hint", text: "等待本轮猜测者与监听者提交猜测…" }),
+        el("p", { class: "ss-hint", text: "等待本轮猜测者与监听方提交猜测…" }),
       ]),
     );
   }
@@ -359,7 +415,7 @@ function guessingPanel(ctx, info) {
     el("span", { class: `ss-flag${guesserSubmitted ? " is-ok" : ""}`, text: `猜测者${guesserSubmitted ? "已提交" : "未提交"}` }),
   );
   submittedFlags.push(
-    el("span", { class: `ss-flag${listenerSubmitted ? " is-ok" : ""}`, text: `监听者${listenerSubmitted ? "已提交" : "未提交"}` }),
+    el("span", { class: `ss-flag${listenerSubmitted ? " is-ok" : ""}`, text: `监听方${listenerSubmitted ? "已提交" : "未提交"}` }),
   );
 
   panels.push(el("div", { class: "ss-flag-row" }, submittedFlags));
@@ -472,7 +528,12 @@ function revealPanel(ctx, info) {
       el("span", { class: "ss-block-sub", text: `数字卡 ${formatCard(result.card)}` }),
     ]),
     result.voided
-      ? el("p", { class: "ss-notice", text: "本轮由房主作废，不结算扣血，但暗号已归档进对方情报板。" })
+      ? el("p", {
+          class: "ss-notice",
+          // 作废轮在 reducer 里既不扣血也不写 intel / clues（见 reduceVoidRound），
+          // 早先这里写着"暗号已归档"是不对的，会让人以为情报板多了一条。
+          text: "本轮由房主作废：不结算扣血，暗号也不会计入双方情报板与暗号史。",
+        })
       : null,
     // 原数字卡大图已删除：下面的对应关系表里每位都带编号，那张卡纯属重复，
     // 而且它连同旁边的内容一起被误认为"原词就显示在这里"。
@@ -483,7 +544,7 @@ function revealPanel(ctx, info) {
     }),
     el("div", { class: "ss-verdict-list" }, [
       verdictRow(`${result.turn} 队猜测者`, result.guesserGuess, result.guesserCorrect),
-      verdictRow(`${otherTeam(result.turn)} 队监听者`, result.listenerGuess, result.listenerCorrect),
+      verdictRow(`${otherTeam(result.turn)} 队监听方`, result.listenerGuess, result.listenerCorrect),
     ]),
     el("div", { class: "ss-delta" }, [
       el("span", { class: `ss-delta-value${result.healthLoss > 0 ? " is-loss" : ""}`, text: result.healthLoss > 0 ? `${result.turn} 队 −${result.healthLoss}` : "无人扣血" }),
@@ -508,19 +569,50 @@ function revealPanel(ctx, info) {
 }
 
 /**
- * 房主专用的"本轮作废"入口：只在必要角色掉线时出现。
+ * 房主专用的"本轮作废"入口：只在**本轮已经没法继续**时出现。
+ *
+ * 判据分三种：
+ * 1. 描述者 / 猜测者**掉线**；
+ * 2. 描述者 / 猜测者**槽位空着** —— 对局中途有人点「退出」时 `reduceLeave()` 会
+ *    `clearRoles()` 而**保留当前阶段**，于是场上再没有人能描述或提交猜测。
+ *    这种局面比掉线更死：掉线的人好歹还能回来，退出的座位是空的了。
+ *    ⚠️ 早先这里只看"在线与否"，槽位空着（`id` 为 null）时既不报 blocker、
+ *    监听方又还有人在线，按钮就永远不出现 —— 本轮彻底卡死，而房间的闲置 TTL
+ *    还要求全员离线，连自动释放都等不到。
+ * 3. 监听方**整队都没人在线**：监听方只要还剩一个人在线，本轮就还能正常推进
+ *    （对方任一成员都能提交监听答案）。
+ *
+ * 只在 `describing` / `guessing` 两屏调用，那两个阶段角色槽本来必定是齐的，
+ * 所以"空着"一定意味着有人中途离场。
  * @param {any} ctx
  * @param {{ roles: any, isHost: boolean }} info
  * @returns {any}
  */
 function hostVoidRow(ctx, info) {
   if (!info.isHost) return null;
-  const required = [info.roles.describerId, info.roles.guesserId, info.roles.listenerId];
-  const offline = required.filter((id) => id && ctx.room.players[id] && !ctx.room.players[id].online);
-  if (offline.length === 0) return null;
+  const { room } = ctx;
+
+  const blockers = [];
+  const slots = [
+    [ROLE_LABELS[ROLE_DESCRIBER], info.roles.describerId],
+    [ROLE_LABELS[ROLE_GUESSER], info.roles.guesserId],
+  ];
+  for (const [label, id] of slots) {
+    const player = id ? room.players[id] : null;
+    if (!player) blockers.push(`${label}席位空缺`);
+    else if (!player.online) blockers.push(`${label}「${player.name}」离线`);
+  }
+
+  const listenerTeam = otherTeam(room.turn);
+  const listenerReachable = Object.values(room.players).some(
+    (player) => player.team === listenerTeam && player.online,
+  );
+  if (!listenerReachable) blockers.push(`${listenerTeam} 队监听方（全员离线）`);
+
+  if (blockers.length === 0) return null;
 
   return el("div", { class: "ss-void-row" }, [
-    el("span", { class: "ss-hint", text: `${offline.length} 位必要角色当前离线，可作废本轮继续对局。` }),
+    el("span", { class: "ss-hint", text: `${blockers.join("、")}，本轮已无法继续，可作废后接着打。` }),
     el("button", {
       class: "ss-btn ss-btn-danger",
       type: "button",

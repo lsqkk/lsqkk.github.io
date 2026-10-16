@@ -21,7 +21,7 @@ import {
   createRoomCode,
   createUid,
   extractRoomCode,
-  normalizeTeamPreference,
+  isTeamChatLocked,
   otherTeam,
   sanitizeAvatar,
   sanitizeNickname,
@@ -88,6 +88,7 @@ const REJECT_MESSAGES = {
   RESTART: "只有房主可以在 4 人齐时开新局",
   SWITCH_TEAM: "换队失败：目标队伍已满员，或对局已经开始",
   KICK: "无法移出：只有房主能移出离线玩家，且开局后不再受理",
+  GUESS: "提交失败：本轮猜测已经提交或已经结算",
 };
 
 const state = {
@@ -299,6 +300,8 @@ function currentEntryOptions() {
     notice: state.notice ?? state.wordError ?? null,
     onCreate: () => createRoom(),
     onJoin: (value) => joinRoom(value),
+    // 地址栏里已经带着邀请码时，点按钮直接进房，不再先弹一个"再填一遍房间码"的框
+    onJoinInvite: () => joinRoom(state.prefillCode),
     onOpenRecent: (code) => joinRoom(code),
     onOpenModal: (kind) => openModal(kind),
     onCloseModal: () => closeModal(),
@@ -625,12 +628,7 @@ async function joinRoom(rawValue) {
   try {
     state.busy = true;
     render();
-    const ok = await joinRoomInternal(
-      code,
-      identity.nickname,
-      identity.avatar,
-      normalizeTeamPreference(form.team),
-    );
+    const ok = await joinRoomInternal(code, identity.nickname, identity.avatar);
     if (!ok) toast(REJECT_MESSAGES.JOIN);
   } catch (error) {
     toast(`加入房间失败：${messageOf(error)}`);
@@ -642,20 +640,21 @@ async function joinRoom(rawValue) {
 
 /**
  * 执行加入并订阅房间。
+ *
+ * 不再接受"加入时选队伍"：分队由座位数自动补齐（人少的一队优先），
+ * 进房后在大厅还能随时换队，加入时多问一次只是多一道没必要的关卡。
  * @param {string} code
  * @param {string} nickname
  * @param {{ type: string, color: string, url: string }} [avatar]
- * @param {"A" | "B" | null} [team] 加入时指定的队伍；不传就按人数自动补位
  * @returns {Promise<boolean>}
  */
-async function joinRoomInternal(code, nickname, avatar, team) {
+async function joinRoomInternal(code, nickname, avatar) {
   const db = await ensureDb();
   const result = await dispatch(db, code, {
     type: "JOIN",
     actorId: state.uid,
     payload: {
       name: sanitizeNickname(nickname) || "匿名特工",
-      ...(team ? { team } : {}),
       ...(avatar ? { avatar } : {}),
     },
   });
@@ -706,7 +705,9 @@ function enterRoom(code, nickname) {
 
       const previous = state.room;
       state.room = room;
-      // 队内频道跟着自己的队伍走；换队会自动退订旧队伍、订阅新队伍
+      // 队内频道跟着自己的队伍走；换队会自动退订旧队伍、订阅新队伍。
+      // 停用状态要先同步（它不触发重绘），否则 `setTeam` 那一次重绘会用到上一帧的旧值。
+      state.chat?.setTeamLocked(isTeamChatLocked(room.phase));
       state.chat?.setTeam(room.players[state.uid]?.team ?? null);
       announceRoomChange(previous, room);
       maybeDealWords(room);
@@ -746,14 +747,27 @@ function enterRoom(code, nickname) {
   render();
 }
 
-function handleRoomGone() {
-  leaveRoomWatchers();
+/**
+ * 离开房间时统一把"邀请码"这件事收尾。
+ *
+ * ⚠️ 必须连 `state.prefillCode` 一起清：入口屏的「加入邀请的房间」按钮是拿它直接进房的，
+ * 墙上那句邀请提示也是它。只清地址栏的话，"刚被移出房间"的人回到入口屏会看到
+ * **自己那间房**的邀请提示，还带着一个一点就重进的按钮。
+ * @param {string | null} notice
+ */
+function backToEntry(notice) {
   clearSession();
   writeRoomParam("");
+  state.prefillCode = "";
   state.roomId = "";
   state.room = null;
-  state.notice = "房间已解散。";
+  state.notice = notice;
   render();
+}
+
+function handleRoomGone() {
+  leaveRoomWatchers();
+  backToEntry("房间已解散。");
 }
 
 /**
@@ -766,16 +780,13 @@ function handleRemoved(room) {
   const mine = kick && kick.uid === state.uid ? kick : null;
 
   leaveRoomWatchers();
-  clearSession();
-  writeRoomParam("");
-  state.roomId = "";
-  state.room = null;
-  state.notice = mine
-    ? mine.reason === "timeout"
-      ? "你离线超过 2 分钟，已被自动移出房间。"
-      : "你已被房主移出房间。"
-    : "你已不在房间中。";
-  render();
+  backToEntry(
+    mine
+      ? mine.reason === "timeout"
+        ? "你离线超过 2 分钟，已被自动移出房间。"
+        : "你已被房主移出房间。"
+      : "你已不在房间中。",
+  );
   play("kick");
 }
 
@@ -784,14 +795,11 @@ async function leaveRoom() {
   const uid = state.uid;
   const db = state.db;
   leaveRoomWatchers();
-  state.roomId = "";
-  state.room = null;
   state.draftGuess = [];
   state.modal = null;
-  clearSession();
-  writeRoomParam("");
   forgetRoom(roomId);
-  render();
+  // 顺带清掉 prefillCode：自己退出的房间不该在入口屏继续挂着"邀请"
+  backToEntry(null);
 
   if (db && roomId) {
     // 显式退出才移除座位；单纯刷新 / 掉线只标记离线，以便原样恢复对局
@@ -973,12 +981,18 @@ function confirmKick(targetUid, name) {
  * ------------------------------------------------------------------ */
 
 /**
+ * 派发一个动作。
+ *
+ * 返回值是"事务是否真的提交了"：视图层靠它决定要不要把用户刚填的东西还回去
+ * （例如情报板笔记被拒时把文字塞回输入框）。被拒时的提示文案仍由这里统一负责。
+ *
  * @param {string} type
  * @param {Record<string, unknown>} [payload]
  * @param {{ silent?: boolean }} [options] silent：事务被中止时不弹提示（后台巡检用）
+ * @returns {Promise<boolean>}
  */
 async function act(type, payload, options) {
-  if (!state.db || !state.roomId) return;
+  if (!state.db || !state.roomId) return false;
   const silent = options?.silent === true;
   try {
     const result = await dispatch(state.db, state.roomId, {
@@ -989,8 +1003,10 @@ async function act(type, payload, options) {
     if (!result.committed && !silent && REJECT_MESSAGES[type]) {
       toast(REJECT_MESSAGES[type]);
     }
+    return result.committed === true;
   } catch (error) {
     if (!silent) toast(`操作失败：${messageOf(error)}`);
+    return false;
   }
 }
 
@@ -1105,6 +1121,7 @@ function renderChat() {
       tab: chat.state.tab,
       team: myTeam,
       teamLabel: myTeam ? `${myTeam} 队` : null,
+      teamLocked: chat.state.teamLocked,
       channels: chat.state.channels,
       uid: state.uid,
       playerCount: Object.keys(state.room?.players ?? {}).length,
@@ -1115,9 +1132,8 @@ function renderChat() {
         // 只记状态，不重绘：<details> 自己已经切换好了
         chat.state.noticeOpen = isOpen;
       },
-      onSend: (text) => {
-        chat.send(text);
-      },
+      // 返回"是否受理"给视图：被拒绝时视图要把草稿还回输入框
+      onSend: (text) => chat.send(text),
     }));
   });
 

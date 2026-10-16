@@ -17,7 +17,6 @@ import {
   PHASES,
   ROLE_DESCRIBER,
   ROLE_GUESSER,
-  ROLE_LISTENER,
   ROOM_CAPACITY,
   TEAMS,
   TEAM_SIZE,
@@ -56,11 +55,11 @@ import { dealWords } from "./word-pool.js";
  * @typedef {object} TeamState
  * @property {Record<string, string>} words 编号 1-4 → 秘密词
  * @property {Record<string, Record<string, string>>} intel 编号 1-4 → 本队收集到的对方暗号
+ * @property {Record<string, Record<string, string>>} clues 编号 1-4 → **本队自己给过**的暗号（按轮次）
  * @property {Record<string, Record<string, { text: string, by: string, name: string, at: number }>>} notes 编号 1-4 → 本队自定义笔记
  * @property {number} health
  * @property {string | null} describerId
  * @property {string | null} guesserId
- * @property {string | null} listenerId
  *
  * @typedef {object} Guess
  * @property {number[]} seq
@@ -128,11 +127,11 @@ function createTeamState() {
   return {
     words: {},
     intel: { 1: {}, 2: {}, 3: {}, 4: {} },
+    clues: { 1: {}, 2: {}, 3: {}, 4: {} },
     notes: { 1: {}, 2: {}, 3: {}, 4: {} },
     health: HEALTH_DEFAULT,
     describerId: null,
     guesserId: null,
-    listenerId: null,
   };
 }
 
@@ -278,6 +277,12 @@ function normalizeTeam(raw, healthMax) {
       3: raw.intel?.[3] ?? {},
       4: raw.intel?.[4] ?? {},
     },
+    clues: {
+      1: raw.clues?.[1] ?? {},
+      2: raw.clues?.[2] ?? {},
+      3: raw.clues?.[3] ?? {},
+      4: raw.clues?.[4] ?? {},
+    },
     notes: {
       1: raw.notes?.[1] ?? {},
       2: raw.notes?.[2] ?? {},
@@ -287,7 +292,6 @@ function normalizeTeam(raw, healthMax) {
     health: Number.isFinite(Number(raw.health)) ? Number(raw.health) : healthMax,
     describerId: raw.describerId ?? null,
     guesserId: raw.guesserId ?? null,
-    listenerId: raw.listenerId ?? null,
   };
 }
 
@@ -551,8 +555,8 @@ function clearRoles(room) {
   return commit(room, {
     players,
     teams: {
-      A: { ...room.teams.A, describerId: null, guesserId: null, listenerId: null },
-      B: { ...room.teams.B, describerId: null, guesserId: null, listenerId: null },
+      A: { ...room.teams.A, describerId: null, guesserId: null },
+      B: { ...room.teams.B, describerId: null, guesserId: null },
     },
   });
 }
@@ -750,7 +754,7 @@ function reduceSwitchTeam(room, action) {
     players[key] = key === uid ? { ...value, team, ready: false } : value;
   }
 
-  // 复用 clearRoles：它会同时清掉所有人的 `role` 与六个角色槽。
+  // 复用 clearRoles：它会同时清掉所有人的 `role` 与四个角色槽（两队各两个）。
   // 这里自己手写一遍的话，很容易只清了自己的 role 而漏掉别人的标签。
   return clearRoles(commit(room, { players }));
 }
@@ -896,7 +900,10 @@ function reduceStart(room, action) {
 }
 
 /**
- * 指派角色：本队只能派描述者 / 猜测者，对方队伍只能派监听者。
+ * 指派角色：只有行动队需要指派描述者与猜测者。
+ *
+ * 监听方刻意**不指派具体的人** —— 对方队伍任一成员都可以提交监听答案（谁先提交算谁的，
+ * 见 `reduceGuess`）。否则监听者一个人掉线，全场就卡死在本轮无法继续。
  * @param {Room} room
  * @param {Action} action
  * @returns {Room | undefined}
@@ -929,7 +936,7 @@ function reduceAssignRole(room, action) {
 
   // 同一玩家不能在两个槽位重复出现：先把旧槽位清掉
   if (targetUid) {
-    for (const slot of ["describerId", "guesserId", "listenerId"]) {
+    for (const slot of ["describerId", "guesserId"]) {
       if (teamState[slot] === targetUid) teamState[slot] = null;
     }
     players[targetUid].role = role;
@@ -939,11 +946,9 @@ function reduceAssignRole(room, action) {
   }
   teamState[field] = targetUid;
 
-  // 当前回合队伍的描述者与猜测者必须是两个人
-  if (team === room.turn) {
-    if (role === ROLE_DESCRIBER && teamState.guesserId === targetUid) teamState.guesserId = null;
-    if (role === ROLE_GUESSER && teamState.describerId === targetUid) teamState.describerId = null;
-  }
+  // 描述者与猜测者必须是两个人（本队刚好两人，同一人占两槽就没法玩了）
+  if (role === ROLE_DESCRIBER && teamState.guesserId === targetUid) teamState.guesserId = null;
+  if (role === ROLE_GUESSER && teamState.describerId === targetUid) teamState.describerId = null;
 
   let next = commit(room, {
     players,
@@ -955,8 +960,10 @@ function reduceAssignRole(room, action) {
 }
 
 /**
- * 自动轮换：按轮次奇偶把描述者 / 猜测者在本队两人之间交替，监听者同理。
+ * 自动轮换：按轮次奇偶把描述者 / 猜测者在本队两人之间交替。
  * 这样每局不必手动点选，同时避免同一人连续两轮担任同一角色。
+ *
+ * 只对**本轮的行动队**有意义 —— 监听方按新规则不需要指派（对方队伍任一人可提交答案）。
  * @param {Room} room
  * @param {Action} action
  * @returns {Room | undefined}
@@ -969,6 +976,7 @@ function reduceAutoAssign(room, action) {
 
   const team = action.payload?.team === "B" ? "B" : "A";
   if (actor.team !== team) return ABORT;
+  if (team !== room.turn) return ABORT;
 
   const members = membersOf(room, team);
   if (members.length < TEAM_SIZE) return ABORT;
@@ -979,21 +987,16 @@ function reduceAutoAssign(room, action) {
   const players = {};
   for (const [key, player] of Object.entries(room.players)) players[key] = { ...player };
   // 先清掉本队旧指派，避免"同一人占两个槽位"的中间态
-  for (const slot of ["describerId", "guesserId", "listenerId"]) {
+  for (const slot of ["describerId", "guesserId"]) {
     const previous = teamState[slot];
     if (previous && players[previous]) players[previous].role = null;
     teamState[slot] = null;
   }
 
-  if (team === room.turn) {
-    teamState.describerId = members[parity];
-    teamState.guesserId = members[(parity + 1) % TEAM_SIZE];
-    if (players[teamState.describerId]) players[teamState.describerId].role = ROLE_DESCRIBER;
-    if (players[teamState.guesserId]) players[teamState.guesserId].role = ROLE_GUESSER;
-  } else {
-    teamState.listenerId = members[parity];
-    if (players[teamState.listenerId]) players[teamState.listenerId].role = ROLE_LISTENER;
-  }
+  teamState.describerId = members[parity];
+  teamState.guesserId = members[(parity + 1) % TEAM_SIZE];
+  if (players[teamState.describerId]) players[teamState.describerId].role = ROLE_DESCRIBER;
+  if (players[teamState.guesserId]) players[teamState.guesserId].role = ROLE_GUESSER;
 
   let next = commit(room, {
     players,
@@ -1015,16 +1018,17 @@ function isTeamMember(room, team, uid) {
 
 /**
  * @param {string} role
- * @returns {"describerId" | "guesserId" | "listenerId"}
+ * @returns {"describerId" | "guesserId"}
  */
 function roleField(role) {
-  if (role === ROLE_DESCRIBER) return "describerId";
-  if (role === ROLE_GUESSER) return "guesserId";
-  return "listenerId";
+  return role === ROLE_DESCRIBER ? "describerId" : "guesserId";
 }
 
 /**
- * 三个角色就位后自动进入描述阶段，并锁定本轮数字卡。
+ * 行动队的描述者与猜测者就位后自动进入描述阶段，并锁定本轮数字卡。
+ *
+ * 不必等对方"派人监听"：监听方任一成员都可以在猜测阶段提交答案，
+ * 所以轮到哪个队就去监听的这一方本身不需要任何准备工作。
  * @param {Room} room
  * @param {unknown} card
  * @returns {Room}
@@ -1032,11 +1036,7 @@ function roleField(role) {
 function tryBeginDescribing(room, card) {
   if (room.phase !== "select-role") return room;
   const current = room.teams[room.turn];
-  const opposite = room.teams[otherTeam(room.turn)];
-  const ready =
-    Boolean(current.describerId) &&
-    Boolean(current.guesserId) &&
-    Boolean(opposite.listenerId);
+  const ready = Boolean(current.describerId) && Boolean(current.guesserId);
   if (!ready) return room;
   if (!isValidSequence(card)) return room;
 
@@ -1073,6 +1073,12 @@ function reduceDescribe(room, action) {
 
 /**
  * 提交猜测；双方都提交后立即判定并进入公开阶段。
+ *
+ * 两侧的"谁能提交"刻意不对称：
+ * - 行动队**只有被指派为猜测者的那个人**能提交（本队另一个人是描述者，他已经知道答案）；
+ * - 监听方**对方队伍任一成员都能提交**，谁先提交算谁的 —— 之后同队再来也会被拒绝。
+ *   以前监听者是一个需要指派的角色，那个人一掉线本轮就彻底卡住，只能靠房主作废；
+ *   现在监听是"整支队伍的事"，掉一个人也不影响继续。
  * @param {Room} room
  * @param {Action} action
  * @returns {Room | undefined}
@@ -1083,13 +1089,13 @@ function reduceGuess(room, action) {
   const seq = action.payload?.seq;
   if (!isValidSequence(seq)) return ABORT;
 
-  const current = room.teams[room.turn];
-  const opposite = room.teams[otherTeam(room.turn)];
+  const guesserId = room.teams[room.turn].guesserId;
+  const listenerTeam = otherTeam(room.turn);
 
   /** @type {Team} */
   let side;
-  if (uid && uid === current.guesserId) side = room.turn;
-  else if (uid && uid === opposite.listenerId) side = otherTeam(room.turn);
+  if (uid && uid === guesserId) side = room.turn;
+  else if (room.players[uid]?.team === listenerTeam) side = listenerTeam;
   else return ABORT;
 
   if (room.guesses[side]) return ABORT;
@@ -1137,7 +1143,7 @@ function reduceVoidRound(room, action) {
 }
 
 /**
- * 判定本轮：扣血、写入日志、把暗号加进对方情报板、必要时结束游戏。
+ * 判定本轮：扣血、写入日志、把暗号归档进双方、必要时结束游戏。
  * @param {Room} room
  * @returns {Room}
  */
@@ -1168,26 +1174,26 @@ function finalizeRound(room) {
   // 当前队伍扣血（规则中只有行动方会掉血）
   const currentTeam = room.teams[turn];
   const health = Math.max(0, currentTeam.health - verdict.healthLoss);
-  const opponentTeam = { ...room.teams[opponent] };
 
-  // 对方队伍把本轮暗号按编号归档到自己的情报板
-  const intel = { ...opponentTeam.intel };
-  if (Array.isArray(result.descriptions) && result.descriptions.length === CARD_LENGTH) {
-    for (let i = 0; i < CARD_LENGTH; i += 1) {
-      const number = card[i];
-      if (!number) continue;
-      const bucket = intel[number] ?? {};
-      const nextBucket = { ...bucket };
-      // 用递增序号 + 轮次作为 key，天然按轮次排序且不会互相覆盖
-      nextBucket[`r${result.round}`] = result.descriptions[i];
-      intel[number] = nextBucket;
-    }
-  }
-  opponentTeam.intel = intel;
+  // 同一份「编号 → 本轮暗号」的映射有两个去处：
+  //  - 落进**对方**的 intel，那是监听方攒下来的原始线索；
+  //  - 同时落进**行动方自己**的 clues —— 下一轮再给暗号时得避开已经用过的语义，
+  //    自己给过什么不能只靠翻日志回忆（见 views-shared.js 词板下方的小注）。
+  // 编号取的是行动方自己的词编号（数字卡本来就是从它自己的 1-4 里抽的），
+  // 所以同一个编号对双方指的是同一块词板。
+  const opponentTeam = {
+    ...room.teams[opponent],
+    intel: withArchivedClues(room.teams[opponent].intel, result),
+  };
+  const ownTeam = {
+    ...currentTeam,
+    health,
+    clues: withArchivedClues(currentTeam.clues, result),
+  };
 
   const teams = {
     ...room.teams,
-    [turn]: { ...currentTeam, health },
+    [turn]: ownTeam,
     [opponent]: opponentTeam,
   };
   result.healthAfter = { A: teams.A.health, B: teams.B.health };
@@ -1208,6 +1214,31 @@ function finalizeRound(room) {
     roundResult: result,
     logs: { ...room.logs, [`r${room.round}`]: result },
   });
+}
+
+/**
+ * 把本轮「编号 → 暗号」并进一份归档。
+ *
+ * `intel`（对手给的暗号）与 `clues`（自己给过的暗号）用的是完全相同的形状，
+ * 所以两边共用这一个函数：`{ "3": { "r1": "不酸的果子" } }`。
+ * 以轮次 `r{n}` 作为键，既天然按轮次排序，也不会被后续轮次覆盖。
+ *
+ * @param {Record<string, Record<string, string>>} store
+ * @param {RoundResult} result
+ * @returns {Record<string, Record<string, string>>}
+ */
+function withArchivedClues(store, result) {
+  const descriptions = result.descriptions;
+  if (!Array.isArray(descriptions) || descriptions.length !== CARD_LENGTH) return store;
+
+  const next = { ...store };
+  for (let i = 0; i < CARD_LENGTH; i += 1) {
+    const number = result.card?.[i];
+    if (!number) continue;
+    const key = String(number);
+    next[key] = { ...(next[key] ?? {}), [`r${result.round}`]: descriptions[i] };
+  }
+  return next;
 }
 
 /**
@@ -1413,32 +1444,53 @@ function roundIndex(key) {
 }
 
 /**
- * 当前回合应当提交猜测的玩家，以及应当描述 / 监听的玩家。
+ * 本轮行动队指派的角色。
+ *
+ * 只有行动队有角色：描述者与猜测者。监听方不再指派具体的人
+ * （对方队伍任一成员都可以提交监听答案），因此这里不再返回 `listenerId`。
  * @param {Room} room
- * @returns {{ describerId: string | null, guesserId: string | null, listenerId: string | null }}
+ * @returns {{ describerId: string | null, guesserId: string | null }}
  */
 export function currentRoles(room) {
   const current = room.teams[room.turn];
-  const opposite = room.teams[otherTeam(room.turn)];
   return {
     describerId: current.describerId ?? null,
     guesserId: current.guesserId ?? null,
-    listenerId: opposite.listenerId ?? null,
   };
 }
 
 /**
- * 判断某位玩家在当前阶段是否可以提交猜测。
+ * 判断某位玩家在当前阶段是否可以提交猜测，并告诉他代表哪一队。
+ *
+ * - 行动队：只有被指派的猜测者本人；
+ * - 监听方：**对方队伍的任何成员**（谁先提交算谁的）。
  * @param {Room} room
  * @param {string} uid
  * @returns {Team | null}
  */
 export function guessSideOf(room, uid) {
   if (room.phase !== "guessing") return null;
-  const roles = currentRoles(room);
-  if (uid && uid === roles.guesserId) return room.turn;
-  if (uid && uid === roles.listenerId) return otherTeam(room.turn);
+  if (uid && uid === room.teams[room.turn].guesserId) return room.turn;
+  if (room.players[uid]?.team === otherTeam(room.turn)) return otherTeam(room.turn);
   return null;
+}
+
+/**
+ * 读取某队**自己给过**的暗号（按轮次排序），供词板在词下方列出。
+ *
+ * 与 `intelOf` 的区别：`intel` 是对方给的（帮我们猜对方的词），
+ * `clues` 是我们自己给的（提醒下一轮别再用同一套语义）。
+ * @param {TeamState} teamState
+ * @param {number} number
+ * @returns {{ round: number, text: string }[]}
+ */
+export function cluesOf(teamState, number) {
+  const bucket = teamState?.clues?.[number];
+  if (!bucket) return [];
+  return Object.entries(bucket)
+    .map(([key, text]) => ({ round: roundIndex(key), text: String(text) }))
+    .filter((entry) => entry.text.length > 0)
+    .sort((a, b) => a.round - b.round);
 }
 
 /**

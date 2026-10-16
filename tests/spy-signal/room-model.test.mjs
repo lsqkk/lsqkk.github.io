@@ -23,6 +23,7 @@ import {
 } from "../../assets/pages/games/spy-signal/game-core.js";
 import {
   applyAction,
+  cluesOf,
   createEmptyRoom,
   intelOf,
   normalizeRoom,
@@ -148,7 +149,10 @@ function readyAll(room) {
 }
 
 /**
- * 指派角色并进入描述阶段。
+ * 行动队指派描述者与猜测者并进入描述阶段。
+ *
+ * 监听方不需要任何指派（对方队伍任一人可提交监听答案），
+ * 所以两个角色一就位，状态机就直接进入描述阶段。
  * @param {any} room
  * @param {number[]} [card]
  * @returns {any}
@@ -159,28 +163,20 @@ function assignRoles(room, card = CARD) {
     next = roundTrip(act(next, "START", HOST));
   }
   const turn = next.turn;
-  const opposite = otherTeam(turn);
+  const describer = turn === "A" ? A1 : B1;
   next = roundTrip(
-    act(next, "ASSIGN_ROLE", turn === "A" ? A1 : B1, {
+    act(next, "ASSIGN_ROLE", describer, {
       team: turn,
       role: ROLE_DESCRIBER,
-      targetUid: turn === "A" ? A1 : B1,
+      targetUid: describer,
       card,
     }),
   );
   next = roundTrip(
-    act(next, "ASSIGN_ROLE", turn === "A" ? A1 : B1, {
+    act(next, "ASSIGN_ROLE", describer, {
       team: turn,
       role: ROLE_GUESSER,
       targetUid: turn === "A" ? A2 : B2,
-      card,
-    }),
-  );
-  next = roundTrip(
-    act(next, "ASSIGN_ROLE", opposite === "A" ? A1 : B1, {
-      team: opposite,
-      role: ROLE_LISTENER,
-      targetUid: opposite === "A" ? A1 : B1,
       card,
     }),
   );
@@ -300,13 +296,16 @@ describe("房间组建", () => {
 });
 
 describe("回合流程", () => {
-  it("三角色就位后自动进入描述阶段并锁定数字卡", () => {
+  it("行动队两人就位后自动进入描述阶段并锁定数字卡，监听方不需要派人", () => {
     const room = assignRoles(readyAll(makeReadyRoom()));
     assert.equal(room.phase, "describing");
     assert.deepEqual(room.currentCard, CARD);
     assert.equal(room.teams.A.describerId, A1);
     assert.equal(room.teams.A.guesserId, A2);
-    assert.equal(room.teams.B.listenerId, B1);
+    // 监听方没有任何角色槽：监听是"整队的事"
+    assert.equal(room.teams.B.describerId, null);
+    assert.equal(room.teams.B.guesserId, null);
+    assert.equal(room.teams.B.listenerId, undefined, "listenerId 已从模型里删除");
   });
 
   it("描述者与猜测者不能是同一人", () => {
@@ -333,21 +332,35 @@ describe("回合流程", () => {
     assert.equal(room.phase, "select-role", "角色不完整时不能进入描述阶段");
   });
 
-  it("队伍只能指派自己这一侧的角色", () => {
-    let room = readyAll(makeReadyRoom());
-    room = roundTrip(act(room, "START", HOST));
-    // A 队不能替 B 队选监听者
+  it("队伍只能给自己派描述者 / 猜测者，监听方一律不接受指派", () => {
+    const room = roundTrip(act(readyAll(makeReadyRoom()), "START", HOST));
+
+    // A 队不能替 B 队派角色
     actRejected(room, "ASSIGN_ROLE", A1, {
       team: "B",
-      role: ROLE_LISTENER,
+      role: ROLE_DESCRIBER,
       targetUid: B1,
     });
-    // 行动队不能指派监听者
+    // 监听不再是某个人的角色，行动队也派不出来
     actRejected(room, "ASSIGN_ROLE", A1, {
       team: "A",
       role: ROLE_LISTENER,
       targetUid: A2,
     });
+    // 监听方更不允许给自己派监听者
+    actRejected(room, "ASSIGN_ROLE", B1, {
+      team: "B",
+      role: ROLE_LISTENER,
+      targetUid: B1,
+    });
+    // 监听方也不需要派描述者 / 猜测者（那是行动队的事）
+    actRejected(room, "ASSIGN_ROLE", B1, {
+      team: "B",
+      role: ROLE_DESCRIBER,
+      targetUid: B1,
+    });
+    // 自动轮换同理，只对行动队开放
+    actRejected(room, "AUTO_ASSIGN", B1, { team: "B", card: CARD });
   });
 
   it("自动轮换在两名队员之间交替角色", () => {
@@ -372,20 +385,43 @@ describe("回合流程", () => {
     assert.deepEqual(roundTrip(room).descriptions, descriptions);
   });
 
-  it("猜测阶段只有猜测者与监听者能提交，且各自只能提交一次", () => {
+  it("行动队只有猜测者本人能提交，监听方任一成员都能提交", () => {
     let room = assignRoles(readyAll(makeReadyRoom()));
     room = roundTrip(act(room, "DESCRIBE", A1, { descriptions: ["甲", "乙", "丙"] }));
 
+    // 描述者本人已经知道答案，不能替他提交；不在场的人更不能
     actRejected(room, "GUESS", A1, { seq: [1, 2, 3] });
-    actRejected(room, "GUESS", B2, { seq: [1, 2, 3] });
-    actRejected(room, "GUESS", A2, { seq: [1, 1, 2] });
+    actRejected(room, "GUESS", "pStranger", { seq: [1, 2, 3] });
+    actRejected(room, "GUESS", A2, { seq: [1, 1, 2] }); // 序列非法
 
     room = roundTrip(act(room, "GUESS", A2, { seq: [2, 4, 1] }));
     assert.equal(room.phase, "guessing", "只有一方提交时不应结算");
     assert.deepEqual(room.guesses.A.seq, [2, 4, 1]);
     assert.equal(room.guesses.B, null);
 
+    // 同一个人不能重复提交
     actRejected(room, "GUESS", A2, { seq: [1, 2, 3] });
+
+    // 监听方没人被指派：B 队谁点谁算
+    const settled = roundTrip(act(room, "GUESS", B2, { seq: CARD }));
+    assert.equal(settled.phase, "reveal");
+    assert.equal(settled.guesses.B.by, B2);
+  });
+
+  it("监听方整队共用一个答案：队友抢先提交后另一个不能再改", () => {
+    let room = assignRoles(readyAll(makeReadyRoom()));
+    room = roundTrip(act(room, "DESCRIBE", A1, { descriptions: ["甲", "乙", "丙"] }));
+
+    room = roundTrip(act(room, "GUESS", B2, { seq: [1, 2, 3] }));
+    assert.equal(room.phase, "guessing", "行动队还没提交，本轮不结算");
+    assert.equal(room.guesses.B.by, B2);
+
+    // B1 是 B2 的队友，同一份答案只能提交一次
+    actRejected(room, "GUESS", B1, { seq: CARD });
+
+    room = roundTrip(act(room, "GUESS", A2, { seq: CARD }));
+    assert.equal(room.phase, "reveal");
+    assert.deepEqual(room.roundResult.listenerGuess.seq, [1, 2, 3]);
   });
 
   it("双方提交后结算：猜测者猜错 + 监听者猜中 = 扣 2 血", () => {
@@ -421,6 +457,57 @@ describe("回合流程", () => {
     }
   });
 
+  it("同一轮暗号也记进本队自己的暗号史，供下一轮避开重复语义", () => {
+    let room = assignRoles(readyAll(makeReadyRoom()), CARD);
+    room = roundTrip(act(room, "DESCRIBE", A1, { descriptions: ["雪地猎手", "树皮发白", "铜锅涮肉"] }));
+    room = roundTrip(act(room, "GUESS", A2, { seq: [2, 4, 1] }));
+    room = roundTrip(act(room, "GUESS", B1, { seq: [2, 4, 1] }));
+
+    // 编号取的是行动方自己的词编号，与对方情报板上的编号一一对应
+    assert.deepEqual(cluesOf(room.teams.A, 2), [{ round: 1, text: "雪地猎手" }]);
+    assert.deepEqual(cluesOf(room.teams.A, 4), [{ round: 1, text: "树皮发白" }]);
+    assert.deepEqual(cluesOf(room.teams.A, 1), [{ round: 1, text: "铜锅涮肉" }]);
+    assert.deepEqual(cluesOf(room.teams.A, 3), []);
+    // 没轮到出暗号的那一队不该凭空多出暗号史
+    for (const number of WORD_NUMBERS) {
+      assert.deepEqual(cluesOf(room.teams.B, number), []);
+    }
+  });
+
+  it("同一队的暗号史按轮次累积，不会互相覆盖", () => {
+    // 第 1 轮：A 队出暗号（猜对 + 监听未中，双方都不掉血，好让对局继续）
+    let room = assignRoles(readyAll(makeReadyRoom()), [2, 3, 4]);
+    room = roundTrip(act(room, "DESCRIBE", A1, { descriptions: ["甲", "乙", "丙"] }));
+    room = roundTrip(act(room, "GUESS", A2, { seq: [2, 3, 4] }));
+    room = roundTrip(act(room, "GUESS", B1, { seq: [1, 2, 3] }));
+    room = roundTrip(act(room, "NEXT_ROUND", A2));
+
+    // 第 2 轮：轮到 B 队，A 队的暗号史应当原样留着
+    room = assignRoles(room, [4, 3, 1]);
+    room = roundTrip(act(room, "DESCRIBE", B1, { descriptions: ["南极绅士", "一层冰壳", "深海铁鱼"] }));
+    room = roundTrip(act(room, "GUESS", B2, { seq: [4, 3, 1] }));
+    room = roundTrip(act(room, "GUESS", A1, { seq: [1, 2, 3] }));
+    room = roundTrip(act(room, "NEXT_ROUND", B2));
+
+    assert.deepEqual(cluesOf(room.teams.A, 2), [{ round: 1, text: "甲" }], "第 1 轮的暗号还在");
+    assert.deepEqual(cluesOf(room.teams.B, 4), [{ round: 2, text: "南极绅士" }]);
+
+    // 第 3 轮又轮到 A 队，2 号词第二次被描述 → 同一编号下攒成两条
+    room = assignRoles(room, [2, 3, 4]);
+    room = roundTrip(act(room, "DESCRIBE", A1, { descriptions: ["戊", "己", "庚"] }));
+    room = roundTrip(act(room, "GUESS", A2, { seq: [2, 3, 4] }));
+    room = roundTrip(act(room, "GUESS", B1, { seq: [1, 2, 3] }));
+
+    assert.deepEqual(cluesOf(room.teams.A, 2), [
+      { round: 1, text: "甲" },
+      { round: 3, text: "戊" },
+    ], "按轮次排序，且上一轮的不会被覆盖");
+    assert.deepEqual(cluesOf(room.teams.A, 3), [
+      { round: 1, text: "乙" },
+      { round: 3, text: "己" },
+    ]);
+  });
+
   it("公开阶段可以推进到下一轮，行动方交替且角色清空", () => {
     let room = assignRoles(readyAll(makeReadyRoom()));
     room = roundTrip(act(room, "DESCRIBE", A1, { descriptions: ["甲", "乙", "丙"] }));
@@ -437,7 +524,7 @@ describe("回合流程", () => {
     assert.equal(room.descriptions, null);
     assert.deepEqual(room.guesses, { A: null, B: null });
     assert.equal(room.teams.A.describerId, null);
-    assert.equal(room.teams.B.listenerId, null);
+    assert.equal(room.teams.B.guesserId, null);
     // 上一轮日志保留
     assert.ok(room.logs.r1);
     assert.equal(room.logs.r1.turn, "A");
@@ -569,6 +656,7 @@ describe("健壮性", () => {
     assert.deepEqual(room.logs, {});
     assert.deepEqual(room.teams.A.words, {}, "词板清空，等待重新发牌");
     assert.deepEqual(room.teams.B.intel["1"], {});
+    assert.deepEqual(room.teams.A.clues["1"], {}, "暗号史也跟着清空，别带到新的一局");
     assert.equal(room.teams.A.health, 3);
     assert.equal(room.players[A1].ready, false);
   });

@@ -16,37 +16,35 @@ import {
   HEALTH_MIN,
   NICKNAME_MAX,
   ROOM_CODE_LENGTH,
-  TEAM_AUTO,
 } from "./game-core.js";
-import { avatar } from "./views-shared.js";
-
-/** 加入房间时可选的队伍，空值即"交给系统补到人少的一队" */
-const JOIN_TEAM_OPTIONS = [
-  { value: TEAM_AUTO, label: "自动" },
-  { value: "A", label: "A 队" },
-  { value: "B", label: "B 队" },
-];
+import { avatar, safeCssUrl } from "./views-shared.js";
 
 const RULES = [
   "4 人分两队，每队 2 人；每队持有 4 个只有自己看得见的秘密词。",
-  "每轮行动队派出描述者与猜测者，对方派出监听者。",
+  "每轮行动队派出描述者与猜测者，另一队整队担任监听方（不用派人，任一人提交即可）。",
   "系统随机抽出 3 个不重复编号作为数字卡，描述者按卡片顺序为对应词填写暗号。",
-  "行动队猜测者猜对不扣血、猜错扣 1 血；对方监听者猜中再扣 1 血（最多一次扣 2 血）。",
-  "每轮结束公开数字卡，对方把暗号归档进自己的情报板，逐步逼近你的词。",
+  "行动队猜测者猜对不扣血、猜错扣 1 血；监听方猜中再扣 1 血（最多一次扣 2 血）。",
+  "每轮结束公开数字卡，对方把暗号归档进自己的情报板，逐步逼近你的词；我方词板下方也会记下自己给过的暗号。",
+  "暗号公开后、结果揭晓前，队内私聊暂停，只能用公共频道。",
   "任意一队血量归零，对局结束并公开双方全部词汇与线索。",
 ];
 
 /**
  * 把头像画进预览节点（昵称首字随输入实时变化）。
+ *
+ * 图片地址走 `safeCssUrl()`（与词板、名册用的同一个出口），
+ * 不自己拼 `url("…")`：`sanitizeAvatar()` 校验的是解析后的 host 与后缀，
+ * 原始串里仍可能带引号，直接拼会把 CSS 值提前闭合。
  * @param {any} node
  * @param {string} name
  * @param {{ type: string, color: string, url: string }} spec
  */
 function paintAvatar(node, name, spec) {
   if (!node) return;
-  if (spec.type === "image" && spec.url) {
+  const imageUrl = spec.type === "image" ? safeCssUrl(spec.url) : "";
+  if (imageUrl) {
     node.style.background = "";
-    node.style.backgroundImage = `url("${spec.url}")`;
+    node.style.backgroundImage = imageUrl;
     node.textContent = "";
     return;
   }
@@ -72,6 +70,7 @@ function paintAvatar(node, name, spec) {
  *   busy: boolean,
  *   notice: string | null,
  *   onOpenModal: (kind: "create" | "join") => void,
+ *   onJoinInvite: () => void,
  *   onToggleIdentityMode: (mode: "site" | "manual") => void,
  *   onManualNickname: (name: string) => void,
  *   onManualColor: (color: string) => void,
@@ -106,7 +105,6 @@ export function modalOptions(options) {
   return {
     modal: options.modal,
     healthMax: options.healthMax,
-    prefillCode: options.prefillCode,
     recentRooms: options.recentRooms,
     busy: options.busy,
     onCreate: options.onCreate,
@@ -169,8 +167,12 @@ function identityBlock(options) {
             value: identity.manualNickname,
             autocomplete: "off",
             on: {
+              // 回车跟着"当前最可能的意图"走：带着邀请链接进来的人想入座，不是想建房。
+              // 早先无条件 createRoom()，顺着邀请链接来的人打完昵称一回车就多出一间空房。
               keydown: (/** @type {KeyboardEvent} */ event) => {
-                if (event.key === "Enter") options.onCreate();
+                if (event.key !== "Enter") return;
+                if (options.prefillCode) options.onJoinInvite();
+                else options.onCreate();
               },
               input: (/** @type {Event} */ event) => {
                 const target = /** @type {any} */ (event.target);
@@ -225,8 +227,13 @@ function identityBlock(options) {
 /* ── 两个动作：创建 / 加入 ─────────────────────────────────────────────── */
 
 /**
- * 就两个按钮，点开后各自弹出一个对话框填写该动作需要的设置
- * （创建 → 初始血量；加入 → 房间码 / 邀请链接）。
+ * 就两个按钮：
+ * - **创建房间**点开对话框选初始血量；
+ * - **加入房间**在没有邀请码时点开对话框填房间码，
+ *   而地址栏里已经带着邀请码时**直接进房** —— 房间码都摆在提示里了，
+ *   再让人在弹窗里看一遍同样的 6 个字符、再点一次「加入」，纯属多此一举。
+ *
+ * 分队不在这里问：进房后在大厅随时能换队，加入时选一次没有意义。
  *
  * 刻意不套 `.ss-block`：按 UI 规范，按钮本身就是明确的点击入口，
  * 再给它加一层框只是无意义的套娃。
@@ -234,12 +241,23 @@ function identityBlock(options) {
  * @returns {any}
  */
 function actionsBlock(options) {
+  const invited = Boolean(options.prefillCode);
+
   return el("div", { class: "ss-actions" }, [
-    options.prefillCode
-      ? el("p", {
-          class: "ss-invite",
-          text: `你收到一条房间邀请：${options.prefillCode}。填好昵称后点「加入房间」即可入座。`,
-        })
+    invited
+      ? el("div", { class: "ss-invite" }, [
+          el("span", {
+            text: `你收到一条房间邀请：${options.prefillCode}。填好昵称后点「加入邀请的房间」即可入座。`,
+          }),
+          // 邀请码在地址栏里，但人可能想进的是另一间（例如手上有两个房间码），
+          // 所以留一个出口给"我要输别的码"
+          el("button", {
+            class: "ss-invite-alt",
+            type: "button",
+            text: "换成别的房间码",
+            on: { click: () => options.onOpenModal("join") },
+          }),
+        ])
       : null,
     el("div", { class: "ss-tabs" }, [
       el("button", {
@@ -252,9 +270,9 @@ function actionsBlock(options) {
       el("button", {
         class: "ss-tab",
         type: "button",
-        text: "加入房间",
+        text: invited ? "加入邀请的房间" : "加入房间",
         disabled: options.busy,
-        on: { click: () => options.onOpenModal("join") },
+        on: { click: () => (invited ? options.onJoinInvite() : options.onOpenModal("join")) },
       }),
     ]),
   ].filter(Boolean));
@@ -353,7 +371,6 @@ export function renderModal(options) {
                 type: "text",
                 // 要能整段粘贴邀请链接，所以不限制长度
                 placeholder: `6 位房间码，或整条邀请链接`,
-                value: options.prefillCode,
                 autocomplete: "off",
                 spellcheck: "false",
                 on: {
@@ -367,27 +384,9 @@ export function renderModal(options) {
               class: "ss-hint",
               text: `粘贴整条邀请链接会自动识别其中的 ${ROOM_CODE_LENGTH} 位房间码；字母不区分大小写。`,
             }),
-            el("div", { class: "ss-field" }, [
-              el("label", { class: "ss-field-label", text: "加入哪一队" }),
-              el(
-                "div",
-                { class: "ss-segmented" },
-                JOIN_TEAM_OPTIONS.map((option) =>
-                  el("label", { class: "ss-segment" }, [
-                    el("input", {
-                      type: "radio",
-                      name: "ssJoinTeam",
-                      value: option.value,
-                      checked: option.value === TEAM_AUTO,
-                    }),
-                    el("span", { text: option.label }),
-                  ]),
-                ),
-              ),
-            ]),
             el("p", {
               class: "ss-hint",
-              text: "想进的那队满员时会自动补到人少的一队；进房后在大厅还能再换。",
+              text: "队伍先按人数自动补齐，进房后在大厅还能换队。",
             }),
             options.recentRooms.length
               ? el("div", { class: "ss-field" }, [
@@ -455,18 +454,16 @@ function rulesBlock() {
  *
  * 注意：血量与面板开合都记在控制器状态里（面板关掉后输入框就不存在了），
  * 所以这里只取仍然存在的输入。对话框没打开时它里面的控件当然也读不到，
- * 那几个字段会返回空串 / 默认值，调用方按"没选"处理即可。
- * @returns {{ nickname: string, joinCode: string, avatarColor: string, team: string }}
+ * 那几个字段会返回空串 / 默认值，调用方按"没填"处理即可。
+ * @returns {{ nickname: string, joinCode: string, avatarColor: string }}
  */
 export function readEntryForm() {
   const nicknameInput = /** @type {any} */ (document.getElementById("ssNickname"));
   const codeInput = /** @type {any} */ (document.getElementById("ssJoinCode"));
   const color = /** @type {any} */ (document.querySelector('input[name="ssAvatarColor"]:checked'));
-  const team = /** @type {any} */ (document.querySelector('input[name="ssJoinTeam"]:checked'));
   return {
     nickname: String(nicknameInput?.value ?? "").trim(),
     joinCode: String(codeInput?.value ?? "").trim(),
     avatarColor: String(color?.value ?? ""),
-    team: String(team?.value ?? TEAM_AUTO),
   };
 }

@@ -53,6 +53,11 @@ export function createChat(options) {
     /** @type {number} */
     lastSentAt: 0,
     /** @type {"A" | "B" | null} */ team: null,
+    /**
+     * 队内频道是否被规则停用（描述 / 猜测阶段，见 `game-core.js` 的 `isTeamChatLocked`）。
+     * 由控制器在每次房间更新时同步进来，本文件不自己去问房间状态。
+     */
+    teamLocked: false,
     channels: {
       room: { /** @type {{ id: string, value: any }[]} */ messages: [], unread: 0, seeded: false },
       team: { /** @type {{ id: string, value: any }[]} */ messages: [], unread: 0, seeded: false },
@@ -161,10 +166,31 @@ export function createChat(options) {
   }
 
   /**
+   * 同步"队内频道此刻是否被规则停用"。
+   *
+   * 刻意**不触发 onChange**：调用方（`main.js`）紧接着就会因为房间变化自己重绘，
+   * 这里再回调一次只会多画一帧。停用期间如果正停在队内页签上，顺手切回公共频道。
+   * @param {boolean} locked
+   */
+  function setTeamLocked(locked) {
+    const next = locked === true;
+    if (next === state.teamLocked) return;
+    state.teamLocked = next;
+    if (next && state.tab === "team") {
+      state.tab = "room";
+      markTabRead("room");
+    }
+  }
+
+  /**
    * @param {Channel} tab
    */
   function setTab(tab) {
     const next = tab === "team" ? "team" : "room";
+    if (next === "team" && state.teamLocked) {
+      onNotice("本轮暗号已发出，队内私聊暂停，请在公共频道说。");
+      return;
+    }
     if (next === state.tab) return;
     state.tab = next;
     markTabRead(next);
@@ -194,47 +220,61 @@ export function createChat(options) {
 
   /**
    * 往当前频道发一条消息。
+   *
+   * 返回的是**同步**的"这条消息被受理了吗"：被规则拒绝（没分队 / 队内已停用）或被限流时
+   * 返回 false。调用方（`views-chat.js`）会先把输入框清空再调这里（重绘会把输入框换成新节点，
+   * 顺序反过来就清不掉），拿到 false 时再把草稿还回去 —— 否则字被清掉又没发出去，
+   * 人会以为是自己按丢了。
+   *
+   * 真正的写入是异步的：写失败只提示，不再往输入框里塞回去（那时输入框多半已经重绘过了，
+   * 而"发到一半失败"把整句话丢回输入框，反而更让人摸不着头脑）。
+   *
    * @param {string} rawText
-   * @returns {Promise<void>}
+   * @returns {boolean}
    */
-  async function send(rawText) {
+  function send(rawText) {
     const text = sanitizeChatText(rawText);
-    if (!text) return;
+    if (!text) return false;
 
     const channel = state.tab;
     const team = state.team;
     if (channel === "team" && !team) {
       onNotice("还没有分队，暂时发不了队内消息");
-      return;
+      return false;
+    }
+    // 描述 / 猜测阶段队内频道是关闭的：描述者已经拿到数字卡，
+    // 队内频道能发言就等于可以隔空把答案念给猜测者听。
+    if (channel === "team" && state.teamLocked) {
+      onNotice("本轮暗号已发出，队内私聊暂停，请在公共频道说。");
+      return false;
     }
 
     const now = Date.now();
     if (now - state.lastSentAt < CHAT_MIN_INTERVAL_MS) {
       onNotice("发得太快了，缓一下再发");
-      return;
+      return false;
     }
     state.lastSentAt = now;
 
     const self = describeSelf();
-    try {
-      await sendChatMessage(
-        db,
-        roomId,
-        {
-          uid,
-          name: self.nickname || "匿名特工",
-          text,
-          avatarType: self.avatar.type,
-          avatarColor: self.avatar.color,
-          avatarUrl: self.avatar.url,
-          at: now,
-        },
-        channel,
-        team,
-      );
-    } catch (error) {
+    sendChatMessage(
+      db,
+      roomId,
+      {
+        uid,
+        name: self.nickname || "匿名特工",
+        text,
+        avatarType: self.avatar.type,
+        avatarColor: self.avatar.color,
+        avatarUrl: self.avatar.url,
+        at: now,
+      },
+      channel,
+      team,
+    ).catch((error) => {
       onNotice(`消息发送失败：${error instanceof Error ? error.message : String(error)}`);
-    }
+    });
+    return true;
   }
 
   function dispose() {
@@ -250,5 +290,17 @@ export function createChat(options) {
     }
   }
 
-  return { state, setTeam, setTab, open, close, toggle, markRead, consumeFocusRequest, send, dispose };
+  return {
+    state,
+    setTeam,
+    setTeamLocked,
+    setTab,
+    open,
+    close,
+    toggle,
+    markRead,
+    consumeFocusRequest,
+    send,
+    dispose,
+  };
 }

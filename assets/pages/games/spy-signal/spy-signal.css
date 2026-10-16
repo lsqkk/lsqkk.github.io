@@ -262,12 +262,33 @@ body.dark-mode .ss-app {
 }
 
 .ss-invite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
   padding: 10px 14px;
   margin: 0 0 14px;
   border-radius: var(--radius-sm);
   background: var(--accent-soft);
   font-size: 0.86rem;
   line-height: 1.6;
+  color: var(--text-main);
+}
+
+/* 邀请提示里的次要出口：想进别的房间时用 */
+.ss-invite-alt {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ss-invite-alt:hover {
   color: var(--text-main);
 }
 
@@ -942,7 +963,7 @@ body.ss-modal-open * {
 
 .ss-word-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   padding: 12px 0;
 }
@@ -964,9 +985,50 @@ body.ss-modal-open * {
   color: var(--text-subtle);
 }
 
+.ss-word-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
 .ss-word-text {
   font-size: 1.05rem;
   letter-spacing: 0.06em;
+}
+
+/* 词下面那一串"我们给过的暗号"。整块压低亮度，免得抢了词本身的视线。 */
+.ss-word-clues {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ss-word-clue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-subtle);
+}
+
+.ss-word-clue-round {
+  flex: 0 0 auto;
+  padding: 0 5px;
+  border-radius: 5px;
+  background: var(--surface-tint);
+  font-family: var(--ss-mono);
+  font-size: 0.66rem;
+  color: var(--text-soft);
+}
+
+.ss-word-clue-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .ss-word-row.is-hidden .ss-word-text {
@@ -2058,6 +2120,12 @@ body.ss-modal-open * {
   margin-left: auto;
 }
 
+/* 监听方是"整队"而不是某个人，占位圈里写个 2 人，字号要再收一点才放得下 */
+.ss-role-cell.is-collective .ss-avatar.is-placeholder {
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+
 /* ── 音效开关（顶栏） ─────────────────────────────────────────────────── */
 
 .ss-sound-btn {
@@ -2301,6 +2369,31 @@ body.ss-modal-open * {
 .ss-chat-tab.is-team.is-active {
   border-color: color-mix(in srgb, var(--ss-chat-tone) 50%, transparent);
   color: var(--ss-chat-tone);
+}
+
+/* 描述 / 猜测阶段的队内频道：按得动才怪，索性做成明确的禁用态 */
+.ss-chat-tab.is-locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ss-chat-tab.is-locked:hover {
+  color: var(--text-subtle);
+}
+
+.ss-chat-tab-lock {
+  font-size: 0.66rem;
+  line-height: 1;
+}
+
+.ss-chat-lock {
+  margin: 8px 12px 0;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--text-subtle);
 }
 
 .ss-chat-tab-dot {

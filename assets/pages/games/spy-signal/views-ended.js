@@ -5,7 +5,7 @@
 
 import { el } from "./dom.js";
 import { otherTeam } from "./game-core.js";
-import { intelBoard, logList, scoreHeader, teamTag, visibleWords, wordBoard } from "./views-shared.js";
+import { intelBoard, logList, ownClues, scoreHeader, teamTag, visibleWords, wordBoard } from "./views-shared.js";
 
 /**
  * @param {import("./views-shared.js").ViewContext} ctx
@@ -59,14 +59,17 @@ export function renderEndedScreen(ctx) {
     scoreHeader(room),
 
     el("div", { class: "ss-reveal-grid" }, [
-      // 到了结束阶段，visibleWords 才会真正把双方的词交出来
+      // 到了结束阶段，visibleWords 才会真正把双方的词交出来；
+      // 词下面的暗号史也一并公开，方便复盘"哪一轮露了底"
       wordBoard(visibleWords(room, "A", me?.team ?? "A"), {
         title: "A 队原始词汇",
         subtitle: "对局结束，全部公开",
+        clues: ownClues(room.teams.A),
       }),
       wordBoard(visibleWords(room, "B", me?.team ?? "A"), {
         title: "B 队原始词汇",
         subtitle: "对局结束，全部公开",
+        clues: ownClues(room.teams.B),
       }),
     ]),
 

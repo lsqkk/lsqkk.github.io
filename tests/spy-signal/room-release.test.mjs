@@ -92,13 +92,13 @@ describe("房间时间戳", () => {
     assert.ok(room.meta.startedAt > 0);
     assert.equal(room.meta.endedAt, null);
 
+    // 监听方不需要指派，行动队两人就位即进入描述阶段
     const card = [1, 2, 3];
     room = say(room, "ASSIGN_ROLE", HOST, { team: "A", role: "describer", targetUid: HOST, card });
     room = say(room, "ASSIGN_ROLE", HOST, { team: "A", role: "guesser", targetUid: A2, card });
-    room = say(room, "ASSIGN_ROLE", B1, { team: "B", role: "listener", targetUid: B1, card });
     room = say(room, "DESCRIBE", HOST, { descriptions: ["一", "二", "三"] });
     room = say(room, "GUESS", A2, { seq: [3, 2, 1] }); // 猜错 −1
-    room = say(room, "GUESS", B1, { seq: card }); // 监听者猜中 −1 → A 0 血，结束
+    room = say(room, "GUESS", B1, { seq: card }); // 监听方任一人猜中 −1 → A 0 血，结束
 
     assert.equal(room.phase, "ended");
     assert.ok(room.meta.endedAt > 0, "结束时间必须记录，房间释放依赖它");
