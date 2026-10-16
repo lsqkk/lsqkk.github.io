@@ -216,6 +216,13 @@ body.dark-mode .ss-app {
   opacity: 0.86;
 }
 
+/* 轮到我出手的操作区：描一圈主色，配合页头的「该你出手」，
+   让"该按哪儿"在满屏卡片里不需要找。同样是静态样式，不做动画。 */
+.ss-action-block.is-my-turn {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
 .ss-block-head {
   display: flex;
   flex-wrap: wrap;
@@ -659,6 +666,24 @@ body.ss-modal-open * {
   justify-content: flex-end;
   gap: 10px;
   padding: 18px 20px 20px;
+}
+
+/* ── 确认框（复用 .ss-modal 的壳）────────────────────────────────────── */
+
+/* 比创建 / 加入房间短得多：标题 + 一句话 + 两个按钮，不需要额外的间距 */
+.ss-confirm .ss-modal-head {
+  padding-bottom: 6px;
+}
+
+.ss-confirm .ss-modal-body {
+  padding-bottom: 2px;
+}
+
+.ss-confirm-message {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: var(--text-main);
 }
 
 .ss-recent {
@@ -1126,6 +1151,18 @@ body.ss-modal-open * {
   font-size: 0.76rem;
   letter-spacing: 0.14em;
   color: var(--text-soft);
+}
+
+/* 该你出手：这是整屏最该被一眼看到的四个字，给它主色描边与底色。
+   刻意不做脉冲动画 —— 整屏每次重建都会重置动画相位，闪起来比不动更烦。 */
+.ss-phase-chip.is-my-turn {
+  display: inline-block;
+  padding: 2px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text-main);
+  font-weight: 650;
 }
 
 /* ── 角色条 ───────────────────────────────────────────────────────────── */
@@ -1871,11 +1908,27 @@ body.ss-modal-open * {
 
 /* ── 提示条 ───────────────────────────────────────────────────────────── */
 
+/*
+ * 提示条走 `popover="manual"`（见 main.js 的 showToastNode）：进出 top layer，
+ * 因此**不受任何 z-index 影响**，弹窗打开时也能压过弹窗与它的磨砂遮罩。
+ * z-index: 80 只是给"不支持 popover 的浏览器"兜底，让它高过聊天停靠区（70）。
+ *
+ * ⚠️ popover 的 UA 样式会把 inset 设成 0、margin 设成 auto，
+ * 而我们只想要"底部居中"。不写 `inset: auto` 复位的话，
+ * `top: 0` 与 `bottom: 34px` 会同时生效，把提示条拉成一条从顶到底的竖带。
+ *
+ * pointer-events: none —— 提示条是纯通知，不该在它短暂亮着的 2.8 秒里
+ * 挡住下面任何可以点的东西（尤其是压着弹窗底部按钮的时候）。
+ */
 .ss-toast {
   position: fixed;
+  inset: auto;
   left: 50%;
   bottom: 34px;
-  z-index: 60;
+  z-index: 80;
+  margin: 0;
+  overflow: visible;
+  pointer-events: none;
   transform: translateX(-50%);
   max-width: min(90vw, 460px);
   padding: 11px 20px;
@@ -1888,6 +1941,18 @@ body.ss-modal-open * {
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(12px);
   animation: ss-toast-in 0.24s ease both;
+}
+
+/* 出错 / 被拒：换成警示色，和"哦我点错了"这一声配合 */
+.ss-toast.is-warn {
+  border-color: color-mix(in srgb, var(--ss-negative) 55%, transparent);
+  background: color-mix(in srgb, var(--ss-negative) 18%, var(--surface-overlay));
+  color: var(--text-main);
+}
+
+/* 操作成功 */
+.ss-toast.is-ok {
+  border-color: color-mix(in srgb, var(--ss-positive) 50%, transparent);
 }
 
 @keyframes ss-toast-in {
@@ -2450,6 +2515,32 @@ body.ss-modal-open * {
   font-size: 0.76rem;
   color: var(--text-subtle);
   text-align: center;
+}
+
+/*
+ * "以下是 N 条新消息"。
+ * 未读只由玩家的动作清掉（见 chat.js 的已读规则），所以打开面板时这行还在，
+ * 用来指认新消息的起点，而不是让玩家自己数。
+ */
+.ss-chat-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ss-negative);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.ss-chat-divider::before,
+.ss-chat-divider::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: color-mix(in srgb, var(--ss-negative) 45%, transparent);
+}
+
+.ss-chat-divider-text {
+  flex: 0 0 auto;
 }
 
 .ss-chat-msg {

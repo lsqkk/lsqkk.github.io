@@ -7,18 +7,49 @@
  * - `team` 队内私聊，只有自己队那两个人看得到 —— 靠**分开的 RTDB 路径**实现
  *   （客户端根本不订阅对方队伍的节点），而不是"同一个列表按字段过滤"。
  *
- * 本文件只管：订阅、未读 / 打开 / 当前频道这点状态、发送限流、新消息提醒
- * （红点 + 提示音）。绘制在 `views-chat.js`，网络在 `rtdb.js`，音效在 `sound.js`。
+ * 本文件只管：订阅、未读 / 已读这点状态、发送限流、新消息提醒（红点 + 提示音）。
+ * 绘制在 `views-chat.js`，网络在 `rtdb.js`，音效在 `sound.js`。
  *
  * 聊天监听器与房间监听器是**两条独立的线**：`onChange` 只重画聊天面板，
  * 不触发整屏 `render()`，因此别人说话不会让对局界面重排。
+ *
+ * ## 已读与"新消息"标记（很容易做错，单列出来）
+ *
+ * 红点（`unread`）按常规语义走：打开面板 / 切到该频道 / 自己发言就算已读，清零。
+ *
+ * 但**"清零"不等于"玩家真的看见了"**：早先的规则里还有一条
+ * "窗口重新可见时立刻清红点"，于是玩家切到别的标签页、有人说话（响了铃但他没听见），
+ * 切回来的一瞬间红点就被清掉了 —— 从玩家的角度看就是"有时候根本没提醒我"。
+ * 现在窗口重新可见**不再**动红点，只有玩家在页面上的动作才算数。
+ *
+ * 另外，清零时会把"新消息从哪一条开始"记进 `markerId`（见 `markTabRead`），
+ * 面板据此画一条"以下是 N 条新消息"的分隔线。这条线是**给"打开面板就等于读过了"打的补丁**：
+ * 清红点让面板不像卡住，分隔线负责说清刚才来的是哪几条。
+ * 它只在玩家真的碰了面板（`acknowledge()`）时才收掉。
+ *
+ * 提示音与红点分开判定：红点只在"没在看"时累积，**铃声则每条别人的消息都响** ——
+ * 看漏一条消息的代价远大于多响一声。
  */
 
-import { CHAT_MIN_INTERVAL_MS, sanitizeChatText } from "./game-core.js";
+import { CHAT_MIN_INTERVAL_MS, freshMessages, sanitizeChatText } from "./game-core.js";
 import { sendChatMessage, watchChat } from "./rtdb.js";
 import { play } from "./sound.js";
 
 /** @typedef {"room" | "team"} Channel */
+
+/**
+ * 一个频道的本地状态。
+ *
+ * - `messages`：最近一段记录（读取窗口最多 `CHAT_HISTORY` 条）；
+ * - `unread`：红点上的数字；
+ * - `seeded`：是否已经用第一帧数据播种过（进房时墙上已有的记录不算"新消息"）；
+ * - `markerId`：上次清零红点时"第一条没看过的消息"的 id，面板据此画分隔线。
+ *   记 id 而不是下标：读取窗口是滑动的，老消息会被挤出去，下标会跟着漂。
+ * @returns {{ messages: { id: string, value: any }[], unread: number, seeded: boolean, markerId: string | null }}
+ */
+function chatBucket() {
+  return { messages: [], unread: 0, seeded: false, markerId: null };
+}
 
 /**
  * @param {any} list
@@ -59,8 +90,8 @@ export function createChat(options) {
      */
     teamLocked: false,
     channels: {
-      room: { /** @type {{ id: string, value: any }[]} */ messages: [], unread: 0, seeded: false },
-      team: { /** @type {{ id: string, value: any }[]} */ messages: [], unread: 0, seeded: false },
+      room: chatBucket(),
+      team: chatBucket(),
     },
   };
 
@@ -87,18 +118,18 @@ export function createChat(options) {
         if (disposed) return;
         const bucket = state.channels[channel];
         const sorted = sortMessages(list);
-        const fresh = bucket.seeded
-          ? sorted.filter((item) => !knownIds[channel].has(item.id) && item.value?.uid !== uid)
-          : [];
+        // 首次回调只用来"播种"：进房时墙上已有的记录不是新消息，不该让刚坐下的人被一串铃轰炸
+        const fresh = bucket.seeded ? freshMessages(sorted, knownIds[channel], uid) : [];
         knownIds[channel] = new Set(sorted.map((item) => item.id));
         bucket.seeded = true;
         bucket.messages = sorted;
 
         if (fresh.length > 0) {
-          // 正在看这个频道、窗口也在前台，才算"已读"；否则攒进红点
+          // 正在看这个频道、窗口也在前台，才算"已读"；否则攒进红点。
+          // 注意这里**不**再看 `document.hidden` 决定要不要响铃 —— 铃是单独的判定。
           const watching = state.open && state.tab === channel && !document.hidden;
           if (!watching) bucket.unread += fresh.length;
-          play("message");
+          play(channel === "team" ? "teamMessage" : "message");
         }
         onChange();
       },
@@ -115,21 +146,27 @@ export function createChat(options) {
   /**
    * 跟随自己的队伍切换队内频道。换队后会自动退订旧队伍、订阅新队伍，
    * 于是旧队伍的聊天记录既不会被显示，也不会留在内存里。
+   *
+   * ⚠️ `null` 一律当作"这次推送没读到我的队伍"处理，**不动现有订阅**。
+   * `main.js` 每次房间更新都会调这里，而 `normalizeRoom()` 会把没有 `joinedAt` 的
+   * 幽灵座位过滤掉、`bindPresence()` 又可能先一步写出 `players/{uid}` ——
+   * 于是会出现"某一帧里我的座位上没有人"。早先这里会把队伍降成 null，
+   * 顺手退订队内频道并清空未读，下一帧再订回来，期间队友说的话就变成了"历史记录"，
+   * 既不响铃也不给红点（表现正是"通知时有时无"）。
    * @param {"A" | "B" | null} team
    */
   function setTeam(team) {
     const next = team === "B" ? "B" : team === "A" ? "A" : null;
-    if (next === state.team) return;
+    if (!next || next === state.team) return;
     state.team = next;
     if (stopTeam) {
       stopTeam();
       stopTeam = null;
     }
     // 换了队伍，旧队伍的未读与历史都不再属于自己
-    state.channels.team = { messages: [], unread: 0, seeded: false };
+    state.channels.team = chatBucket();
     knownIds.team = new Set();
-    if (state.tab === "team" && !next) state.tab = "room";
-    if (next) stopTeam = subscribe("team", next);
+    stopTeam = subscribe("team", next);
     onChange();
   }
 
@@ -141,6 +178,8 @@ export function createChat(options) {
   function open() {
     if (state.open) return;
     state.open = true;
+    // 打开就算已读：面板里那几条新消息就在眼前，红点再挂着反而像卡住了。
+    // 但清零时记下起点，面板会画一条"以下是 N 条新消息"。
     markTabRead(state.tab);
     state.focusPending = true;
     onChange();
@@ -158,11 +197,28 @@ export function createChat(options) {
   }
 
   /**
+   * 把某个频道的未读清零，顺手记下"第一条没看过的消息"。
    * @param {Channel} channel
    */
   function markTabRead(channel) {
     const bucket = state.channels[channel];
-    if (bucket.unread !== 0) bucket.unread = 0;
+    if (bucket.unread === 0) return;
+    bucket.markerId = bucket.messages[bucket.messages.length - bucket.unread]?.id ?? null;
+    bucket.unread = 0;
+  }
+
+  /**
+   * 玩家真的看了这个面板（点了一下里面的东西）：连"以下是 N 条新消息"一起收掉。
+   *
+   * 红点本身多半已经被 `open()` / `setTab()` 清掉了，这里主要管分隔线。
+   * @returns {void}
+   */
+  function acknowledge() {
+    const bucket = state.channels[state.tab];
+    if (bucket.unread === 0 && !bucket.markerId) return;
+    bucket.unread = 0;
+    bucket.markerId = null;
+    onChange();
   }
 
   /**
@@ -189,22 +245,19 @@ export function createChat(options) {
     const next = tab === "team" ? "team" : "room";
     if (next === "team" && state.teamLocked) {
       onNotice("本轮暗号已发出，队内私聊暂停，请在公共频道说。");
+      play("denied");
       return;
     }
-    if (next === state.tab) return;
+    if (next === state.tab) {
+      // 点已经选中的页签也算"我在看这个频道"，顺手清掉未读
+      acknowledge();
+      return;
+    }
     state.tab = next;
     markTabRead(next);
     // 切频道时输入框里的草稿没有意义，交给重绘清空
     state.focusPending = true;
-    onChange();
-  }
-
-  /** 窗口重新获得焦点时清掉当前频道的红点。 */
-  function markRead() {
-    if (!state.open) return;
-    const bucket = state.channels[state.tab];
-    if (bucket.unread === 0) return;
-    markTabRead(state.tab);
+    play("toggle");
     onChange();
   }
 
@@ -240,21 +293,26 @@ export function createChat(options) {
     const team = state.team;
     if (channel === "team" && !team) {
       onNotice("还没有分队，暂时发不了队内消息");
+      play("denied");
       return false;
     }
     // 描述 / 猜测阶段队内频道是关闭的：描述者已经拿到数字卡，
     // 队内频道能发言就等于可以隔空把答案念给猜测者听。
     if (channel === "team" && state.teamLocked) {
       onNotice("本轮暗号已发出，队内私聊暂停，请在公共频道说。");
+      play("denied");
       return false;
     }
 
     const now = Date.now();
     if (now - state.lastSentAt < CHAT_MIN_INTERVAL_MS) {
       onNotice("发得太快了，缓一下再发");
+      play("denied");
       return false;
     }
     state.lastSentAt = now;
+    // 自己发完话，这条频道就是"我正在看"的：未读与"以下是 N 条新消息"一起收掉
+    acknowledge();
 
     const self = describeSelf();
     sendChatMessage(
@@ -273,6 +331,7 @@ export function createChat(options) {
       team,
     ).catch((error) => {
       onNotice(`消息发送失败：${error instanceof Error ? error.message : String(error)}`);
+      play("denied");
     });
     return true;
   }
@@ -298,7 +357,7 @@ export function createChat(options) {
     open,
     close,
     toggle,
-    markRead,
+    acknowledge,
     consumeFocusRequest,
     send,
     dispose,

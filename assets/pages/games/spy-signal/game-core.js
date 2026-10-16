@@ -388,6 +388,25 @@ export function sanitizeChatText(value) {
 }
 
 /**
+ * 从一次聊天推送里挑出"真正的新消息"。
+ *
+ * 聊天用 `limitToLast(CHAT_HISTORY)` + `on('value')` 订阅，每次回调拿到的都是
+ * **整段最近记录**，而不是"增量的一条"，所以必须自己按 id 做差集。
+ * 自己发的消息不算（本地已经渲染过一遍，再响一次铃就是双重提示）。
+ *
+ * 抽成纯函数是为了能单测 —— "红点与提示音时有时无"这类问题，
+ * 光看调用点很难判断到底是判定写错了还是事件没到。
+ *
+ * @param {readonly { id: string, value: any }[]} messages 本次推送的完整列表（按时间升序）
+ * @param {ReadonlySet<string>} knownIds 上一次已经见过的消息 id
+ * @param {string} uid 当前玩家
+ * @returns {{ id: string, value: any }[]}
+ */
+export function freshMessages(messages, knownIds, uid) {
+  return messages.filter((item) => !knownIds.has(item.id) && item.value?.uid !== uid);
+}
+
+/**
  * 规格化"加入房间时想进的队伍"：只认 A / B，其余（含缺失、'' 、'auto'）都当作自动。
  * @param {unknown} value
  * @returns {"A" | "B" | null}

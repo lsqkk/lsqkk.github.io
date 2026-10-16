@@ -36,7 +36,20 @@ import { SITE_TITLE } from "@siteConfig";
         -->
         <div id="ssChat"></div>
 
-        <div class="ss-toast" id="ssToast" hidden></div>
+        <!--
+            提示条：`popover="manual"` 让它进出 top layer ——
+            原生 <dialog>（创建 / 加入房间）也在那里，而 top layer 高于任何 z-index，
+            不开 popover 的话弹窗一打开，提示条就会被弹窗的磨砂遮罩糊在下面。
+            `role="status"` 让读屏软件也念出这条提示（它不进焦点、不是对话框）。
+        -->
+        <div
+            class="ss-toast"
+            id="ssToast"
+            popover="manual"
+            role="status"
+            aria-live="polite"
+            hidden
+        ></div>
     </div>
 
     <!--

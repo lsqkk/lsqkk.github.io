@@ -14,6 +14,7 @@ import { createChat } from "./chat.js";
 import { append, byId, clear, copyText, withPreservedInputs, el } from "./dom.js";
 import {
   AVATAR_COLORS,
+  CARD_LENGTH,
   HEALTH_DEFAULT,
   OFFLINE_KICK_MS,
   ROOM_CODE_LENGTH,
@@ -41,10 +42,16 @@ import {
   watchRoom,
   watchServerClock,
 } from "./rtdb.js";
-import { attachUnlock, isEnabled as isSoundEnabled, play, setEnabled as setSoundEnabled } from "./sound.js";
-import { renderChatDock, focusChatInput, pinChatScroll } from "./views-chat.js";
+import { armUnlock, isEnabled as isSoundEnabled, play, setEnabled as setSoundEnabled } from "./sound.js";
+import {
+  renderChatDock,
+  focusChatInput,
+  readChatScroll,
+  restoreChatScroll,
+} from "./views-chat.js";
 import { dealWords, isWordPoolReady, loadWords, rerollWords } from "./word-pool.js";
 import { modalOptions, readEntryForm, renderEntry, renderModal } from "./views-entry.js";
+import { renderConfirmDialog } from "./views-confirm.js";
 import { renderGameScreen } from "./views-game.js";
 import { renderEndedScreen } from "./views-ended.js";
 import { renderRoomScreen } from "./views-room.js";
@@ -103,6 +110,21 @@ const state = {
   /** @type {string} */ manualColor: AVATAR_COLORS[0],
   /** 当前弹出的对话框：创建 / 加入 */
   /** @type {"create" | "join" | null} */ modal: null,
+  /**
+   * 当前等待玩家选择的确认框（退出房间 / 移出玩家）。
+   * 和 `modal` 共用同一个对话框宿主，同一时刻只会有一个（见 `modalKeyOf`）。
+   * @type {{
+   *   seq: number,
+   *   title: string,
+   *   message: string,
+   *   hint?: string,
+   *   confirmText: string,
+   *   cancelText: string,
+   *   danger: boolean,
+   *   resolve: (value: boolean) => void,
+   * } | null}
+   */
+  confirm: null,
   /** @type {any} */ db: null,
   /** @type {string} */ roomId: "",
   /** @type {import("./room-model.js").Room | null} */ room: null,
@@ -147,8 +169,13 @@ export function boot() {
   const container = byId("ssScreens");
   if (!container) return;
 
-  // 浏览器要求先有用户手势才允许出声，挂一次性的解锁监听
-  attachUnlock();
+  // 浏览器要求先有用户手势才允许出声；解锁监听会一直挂到上下文真正跑起来为止
+  armUnlock();
+  // 点按钮给一声轻响：桌游的"手感"有一半来自这种即时反馈
+  attachClickSound();
+  attachGuessKeys();
+  // 未读时把数字写进标签页标题，切到别的标签也能看见（见 syncTitle）
+  baseTitle = document.title;
 
   state.prefillCode = readRoomParam();
 
@@ -200,8 +227,9 @@ export function boot() {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
       refreshSiteIdentity();
-      // 切回前台时，面板开着的那些未读消息就算已读了
-      state.chat?.markRead();
+      // ⚠️ 这里刻意**不**清未读。玩家刚切回来、还没真的看，
+      // 清掉就等于把"有人说话"这件事吞了（早先就是这条规则导致"通知时有时无"）。
+      // 红点由面板上的交互清（见 chat.js 的 acknowledge / views-chat.js 的 onInteract）。
     }
   });
 
@@ -571,9 +599,9 @@ async function createRoom() {
         return;
       }
     }
-    toast("房间码生成失败，请重试");
+    toast("房间码生成失败，请重试", "warn");
   } catch (error) {
-    toast(`创建房间失败：${messageOf(error)}`);
+    toast(`创建房间失败：${messageOf(error)}`, "warn");
   } finally {
     state.busy = false;
     render();
@@ -594,7 +622,7 @@ function applyEntryForm(form) {
 
   const identity = currentIdentity();
   if (!identity.nickname) {
-    toast("请先填写昵称");
+    toast("请先填写昵称", "warn");
     const input = /** @type {any} */ (byId("ssNickname"));
     if (input) input.focus();
     return null;
@@ -617,11 +645,11 @@ async function joinRoom(rawValue) {
   const looksLikeLink = /^[a-z][a-z0-9+.-]*:/i.test(rawValue.trim()) || rawValue.includes("/");
   const code = extractRoomCode(rawValue);
   if (!code) {
-    toast(looksLikeLink ? "这条链接里没有找到房间码" : "请输入房间码");
+    toast(looksLikeLink ? "这条链接里没有找到房间码" : "请输入房间码", "warn");
     return;
   }
   if (code.length !== ROOM_CODE_LENGTH) {
-    toast(`房间码应为 ${ROOM_CODE_LENGTH} 位，当前识别到 ${code.length} 位：${code}`);
+    toast(`房间码应为 ${ROOM_CODE_LENGTH} 位，当前识别到 ${code.length} 位：${code}`, "warn");
     return;
   }
 
@@ -629,9 +657,12 @@ async function joinRoom(rawValue) {
     state.busy = true;
     render();
     const ok = await joinRoomInternal(code, identity.nickname, identity.avatar);
-    if (!ok) toast(REJECT_MESSAGES.JOIN);
+    if (!ok) {
+      play("denied");
+      toast(REJECT_MESSAGES.JOIN, "warn");
+    }
   } catch (error) {
-    toast(`加入房间失败：${messageOf(error)}`);
+    toast(`加入房间失败：${messageOf(error)}`, "warn");
   } finally {
     state.busy = false;
     render();
@@ -720,7 +751,7 @@ function enterRoom(code, nickname) {
       render();
     },
     (error) => {
-      toast(`实时同步中断：${messageOf(error)}`);
+      toast(`实时同步中断：${messageOf(error)}`, "warn");
     },
   );
 
@@ -756,6 +787,10 @@ function enterRoom(code, nickname) {
  * @param {string | null} notice
  */
 function backToEntry(notice) {
+  // 房间已经没了 / 自己被移出：还挂着的确认框（例如"确定退出吗"）已经没有意义，
+  // 摘掉并当作"取消"结掉它 —— 否则入口屏上会孤零零留一个对话框，
+  // 而 await 它的那条代码永远等不到结果。
+  const dropped = takeConfirm();
   clearSession();
   writeRoomParam("");
   state.prefillCode = "";
@@ -763,6 +798,7 @@ function backToEntry(notice) {
   state.room = null;
   state.notice = notice;
   render();
+  if (dropped) dropped(false);
 }
 
 function handleRoomGone() {
@@ -853,7 +889,40 @@ function roomKeyOf(room) {
 }
 
 /**
+ * 两队词汇的指纹。张数一样时它就能判断"是不是换了一批词"（换词 / 重新发牌）。
+ * @param {import("./room-model.js").Room} room
+ * @returns {string}
+ */
+function wordsKeyOf(room) {
+  // 用 JSON 拼成一串做指纹：纯拼接会让 ["a","bc"] 与 ["ab","c"] 撞成同一个值，而这里要判的正是"词换了没有"
+  const a = Object.values(room.teams?.A?.words ?? {});
+  const b = Object.values(room.teams?.B?.words ?? {});
+  return JSON.stringify([a, b]);
+}
+
+/**
+ * 有人切换了「准备」吗？返回**第一个**变化后的准备状态（true / false），没人变则返回 null。
+ *
+ * 一次推送里可能有好几个人同时改准备状态，这里只取一个方向做提示音 ——
+ * 准备与否在界面上本来就逐行都写着，不需要听出"几个人一起准备了"。
+ * @param {import("./room-model.js").Room} previous
+ * @param {import("./room-model.js").Room} room
+ * @returns {boolean | null}
+ */
+function readyChangeOf(previous, room) {
+  for (const [uid, player] of Object.entries(room.players ?? {})) {
+    const was = previous.players?.[uid];
+    if (was && Boolean(was.ready) !== Boolean(player.ready)) return Boolean(player.ready);
+  }
+  return null;
+}
+
+/**
  * 比较前后两次房间状态，放音效。只在真正相关的变化上响，不做"什么都响一下"。
+ *
+ * 优先级刻意是"一次只响一件事"：一次房间推送里往往同时包含好几件事
+ * （比如最后一人的 ready 与发牌），全响就成了一阵噪音。
+ * 顺序按"这一刻玩家最关心什么"排：出结果 > 人进出 > 发牌 > 准备 > 阶段推进。
  * @param {import("./room-model.js").Room | null} previous
  * @param {import("./room-model.js").Room} room
  */
@@ -862,31 +931,65 @@ function announceRoomChange(previous, room) {
 
   const before = Object.keys(previous.players ?? {});
   const now = Object.keys(room.players ?? {});
-  if (now.some((uid) => !before.includes(uid))) play("join");
-  else if (before.some((uid) => !now.includes(uid))) play("leave");
+  const joined = now.some((uid) => !before.includes(uid));
+  const left = before.some((uid) => !now.includes(uid));
 
   const previousResultAt = previous.roundResult?.at ?? 0;
   const resultAt = room.roundResult?.at ?? 0;
   if (resultAt && resultAt !== previousResultAt) {
     const myTeam = room.players[state.uid]?.team;
+    const result = room.roundResult;
     if (room.phase === "ended") {
       play(room.winner && room.winner === myTeam ? "win" : "lose");
-    } else if (room.roundResult?.voided) {
+    } else if (result?.voided) {
       play("void");
-    } else if (room.roundResult && room.roundResult.healthLoss > 0 && room.roundResult.turn === myTeam) {
-      play("settleBad");
+    } else if (result && result.healthLoss > 0) {
+      // 只对"我方掉血"报丧，对方掉血是好事，不该给一个低沉的音
+      play(result.turn === myTeam ? "settleBad" : "settleGood");
     } else {
       play("settleGood");
     }
     return;
   }
 
+  if (joined) {
+    // 人齐了是这一局真正的开始，比"又来了一个人"值得更明显的提示
+    play(now.length === ROOM_CAPACITY ? "full" : "join");
+    return;
+  }
+  if (left) {
+    play("leave");
+    return;
+  }
+
+  // 发牌 / 换词：词汇集合变了。第一次发牌与中途换词用两种声音，
+  // 一个说"牌发下来了"，一个说"洗了一遍"。
+  if (wordsKeyOf(previous) !== wordsKeyOf(room)) {
+    // 词被清空不是"换词"而是"开新局时的重置"（`reduceRestart` 会把两队词板整个换新），
+    // 这一声留给紧接着的发牌，不然会听见"洗牌 + 发牌"连着响两下。
+    if (Object.keys(room.teams?.A?.words ?? {}).length === 0) return;
+    const wasEmpty = Object.keys(previous.teams?.A?.words ?? {}).length === 0;
+    play(wasEmpty ? "deal" : "shuffle");
+    return;
+  }
+
+  const readyTo = readyChangeOf(previous, room);
+  if (readyTo !== null) {
+    play(readyTo ? "ready" : "unready");
+    return;
+  }
+
   if (previous.phase === room.phase) return;
+  if (needsMyAction(room)) {
+    // 该我出手：整局最该被听见的一声
+    play("myTurn");
+    return;
+  }
   if (room.phase === "select-role") {
     play(previous.phase === "prepare" ? "start" : "turn");
-  } else if (needsMyAction(room)) {
-    play("turn");
+    return;
   }
+  play("turn");
 }
 
 /**
@@ -970,10 +1073,110 @@ function tickOfflineCountdown() {
  * @param {string} targetUid
  * @param {string} name
  */
-function confirmKick(targetUid, name) {
-  const ok = window.confirm(`把「${name}」移出房间？对方离线后一直没回来。`);
+async function confirmKick(targetUid, name) {
+  const ok = await askConfirm({
+    title: "移出玩家",
+    message: `把「${name}」移出房间？`,
+    hint: "对方离线后一直没回来。移出后座位立刻空出来，他可以重新加入。",
+    confirmText: "移出",
+    danger: true,
+  });
   if (!ok) return;
   act("KICK", { targetUid, reason: "manual" });
+}
+
+/* ------------------------------------------------------------------ *
+ * 全局手感：按钮轻响、数字键猜测、标签页未读
+ * ------------------------------------------------------------------ */
+
+/** 页面自己的标题（不含未读前缀），boot 时记下 */
+let baseTitle = "";
+
+/**
+ * 未读数字写进标签页标题。
+ *
+ * 聊天面板收在右下角，玩家切到别的标签页时既看不到红点也看不到面板，
+ * 标题栏是唯一还剩的提示位；回到本页时数字自然消失，不需要额外清理。
+ * @param {number} unread
+ * @returns {void}
+ */
+function syncTitle(unread) {
+  if (!baseTitle) return;
+  const next = unread > 0 ? `(${unread > 99 ? "99+" : unread}) ${baseTitle}` : baseTitle;
+  if (document.title !== next) document.title = next;
+}
+
+/**
+ * 所有按钮点一下给一声轻响。
+ *
+ * 用 pointerdown 而不是 click：click 要等抬起，手感会慢半拍；
+ * 禁用态的表单控件本来就不会派发 pointer 事件，不必额外判断。
+ *
+ * 只用**捕获**阶段挂一个委托监听：按钮在各屏之间不停重建，
+ * 逐个挂监听既啰嗦又容易漏；捕获阶段可以在按钮自己的处理器之前先响。
+ *
+ * 认准 `.ss-app` / `.ss-topbar` 两个常驻容器：站点的导航、页脚不属于本页的游戏手感，
+ * 而顶栏是 `.ss-app` 的兄弟节点，不一起算的话"复制邀请链接""退出"就没有回响。
+ * @returns {void}
+ */
+function attachClickSound() {
+  document.addEventListener(
+    "pointerdown",
+    (/** @type {PointerEvent} */ event) => {
+      if (event.button !== 0) return;
+      const target = /** @type {any} */ (event.target);
+      if (!target?.closest || !target.closest(".ss-app, .ss-topbar")) return;
+      const button = target.closest("button, .ss-tab, .ss-segment, .ss-swatch, .ss-recent-item");
+      if (!button || button.disabled) return;
+      play("click");
+    },
+    true,
+  );
+}
+
+/**
+ * 猜测键盘快捷键：数字键填位、退格回退、回车提交。
+ *
+ * 猜测面板本来只有鼠标/触摸可用，键盘是网页桌游"能不能顺手玩"的分水岭。
+ * 只在猜测面板真的出现在页面上时才接管按键，并且避开正在打字的输入框
+ * （聊天、暗号、情报板笔记都在同一页）。
+ *
+ * 为什么不做成给按钮挂 keydown：整屏每次重绘都会换掉按钮节点，
+ * 挂在上面的监听会跟着一起没；document 上挂一次最省事。
+ * @returns {void}
+ */
+function attachGuessKeys() {
+  document.addEventListener("keydown", (/** @type {KeyboardEvent} */ event) => {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = /** @type {any} */ (event.target);
+    if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+      return;
+    }
+    if (!document.querySelector(".ss-guess-pad")) return;
+
+    const seq = Array.isArray(state.draftGuess) ? state.draftGuess : [];
+    if (/^[1-4]$/.test(event.key)) {
+      const number = Number(event.key);
+      if (seq.includes(number) || seq.length >= CARD_LENGTH) return;
+      event.preventDefault();
+      state.draftGuess = [...seq, number];
+      render();
+      return;
+    }
+    if (event.key === "Backspace") {
+      if (seq.length === 0) return;
+      event.preventDefault();
+      state.draftGuess = seq.slice(0, -1);
+      render();
+      return;
+    }
+    if (event.key === "Enter") {
+      const submit = /** @type {any} */ (document.querySelector(".ss-guess-pad .ss-btn-primary"));
+      if (!submit || submit.disabled) return;
+      event.preventDefault();
+      submit.click();
+    }
+  });
 }
 
 /* ------------------------------------------------------------------ *
@@ -994,6 +1197,8 @@ function confirmKick(targetUid, name) {
 async function act(type, payload, options) {
   if (!state.db || !state.roomId) return false;
   const silent = options?.silent === true;
+  // 阶段要在 dispatch 之前同步取：房间监听器可能先一步把 state.room 换成新值
+  const phaseBefore = state.room?.phase;
   try {
     const result = await dispatch(state.db, state.roomId, {
       type,
@@ -1001,11 +1206,21 @@ async function act(type, payload, options) {
       payload,
     });
     if (!result.committed && !silent && REJECT_MESSAGES[type]) {
-      toast(REJECT_MESSAGES[type]);
+      // 被规则拦下时给一声"不行"：按钮已经点下去了，光有一行小字容易被漏看
+      play("denied");
+      toast(REJECT_MESSAGES[type], "warn");
+    }
+    if (result.committed && type === "GUESS" && result.room?.phase === phaseBefore) {
+      // 只提交了半边（对方还没交）时不会有结算音，阶段也不会推进，
+      // 不给一声反馈就像"按了没反应"。等结算那是另一半提交时的事。
+      play("submit");
     }
     return result.committed === true;
   } catch (error) {
-    if (!silent) toast(`操作失败：${messageOf(error)}`);
+    if (!silent) {
+      play("denied");
+      toast(`操作失败：${messageOf(error)}`, "warn");
+    }
     return false;
   }
 }
@@ -1038,7 +1253,7 @@ function maybeDealWords(room) {
       })
       .catch((error) => {
         state.dealToken = "";
-        toast(`词库加载失败：${messageOf(error)}`);
+        toast(`词库加载失败：${messageOf(error)}`, "warn");
       });
     return;
   }
@@ -1051,14 +1266,14 @@ function rerollMyTeam() {
   const me = room?.players?.[state.uid];
   if (!room || !me) return;
   if (!isWordPoolReady()) {
-    toast("词库尚未就绪，请稍后再试");
+    toast("词库尚未就绪，请稍后再试", "warn");
     return;
   }
   const mine = Object.values(room.teams[me.team].words ?? {});
   const theirs = Object.values(room.teams[otherTeam(me.team)].words ?? {});
   const words = rerollWords([...mine, ...theirs]);
   if (words.length < 4) {
-    toast("词库余量不足，无法换词");
+    toast("词库余量不足，无法换词", "warn");
     return;
   }
   act("REROLL", { words });
@@ -1109,10 +1324,13 @@ function renderChat() {
   const chat = state.chat;
   if (!chat || !state.roomId || !state.room) {
     clear(host);
+    syncTitle(0);
     return;
   }
 
   const myTeam = state.room.players[state.uid]?.team ?? null;
+  // 必须在 clear() 之前量：重建后的列表是新节点，scrollTop 恒为 0
+  const scroll = readChatScroll(host);
 
   withPreservedInputs(host, () => {
     clear(host);
@@ -1134,19 +1352,38 @@ function renderChat() {
       },
       // 返回"是否受理"给视图：被拒绝时视图要把草稿还回输入框
       onSend: (text) => chat.send(text),
+      // 碰一下面板 = 看到了：清红点、收掉"以下是 N 条新消息"
+      onInteract: () => chat.acknowledge(),
     }));
   });
 
-  pinChatScroll(host);
+  restoreChatScroll(host, scroll);
+
+  const { room: roomBucket, team: teamBucket } = chat.state.channels;
+  syncTitle(roomBucket.unread + teamBucket.unread);
+
   if (chat.state.open && chat.consumeFocusRequest()) focusChatInput(host);
 }
 
 /**
- * 上一次渲染出来的对话框种类，用来判断是否需要重建。
- * 初值刻意是个不可能等于 `state.modal ?? ""` 的哨兵值，
+ * 上一次渲染出来的对话框，用来判断是否需要重建。
+ * 初值刻意是个不可能等于真实 key 的哨兵值，
  * 好让首次渲染走一遍完整流程（而不是被"没变化"提前短路）。
  */
 let renderedModal = " ";
+
+/**
+ * 当前对话框的 key。
+ *
+ * 确认框带一个自增序号：连着弹两次确认（例如连着移出两个离线玩家）时
+ * `state.confirm` 两次都是同一个形状，只比较种类会被"没变化"提前短路，
+ * 第二次的确认框就永远显示不出来。
+ * @returns {string}
+ */
+function modalKeyOf() {
+  if (state.confirm) return `confirm:${state.confirm.seq}`;
+  return state.modal ?? "";
+}
 
 /**
  * 对话框单独渲染在一个容器里。
@@ -1159,7 +1396,7 @@ function renderModalHost() {
   const host = byId("ssModals");
   if (!host) return;
 
-  const key = state.modal ?? "";
+  const key = modalKeyOf();
   if (key === renderedModal) {
     // 结构不变，只同步提交按钮的忙碌状态
     const submit = byId("ssModalSubmit");
@@ -1180,12 +1417,49 @@ function renderModalHost() {
 
   if (!key) return;
 
-  const dialog = /** @type {any} */ (renderModal(modalOptions(currentEntryOptions())));
+  const confirm = state.confirm;
+  const dialog = /** @type {any} */ (
+    confirm
+      ? renderConfirmDialog({
+          title: confirm.title,
+          message: confirm.message,
+          hint: confirm.hint,
+          confirmText: confirm.confirmText,
+          cancelText: confirm.cancelText,
+          danger: confirm.danger,
+          onConfirm: () => settleConfirm(true),
+          onCancel: () => settleConfirm(false),
+        })
+      : renderModal(modalOptions(currentEntryOptions()))
+  );
   if (!dialog) return;
   append(host, dialog);
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
+
+  // 弹窗刚进 top layer，压住了可能正亮着的提示条。popover 的层级是"后进的在上面"，
+  // 所以这里把提示条重新入栈一次，让它回到弹窗与它的磨砂遮罩之上。
+  const toastNode = /** @type {any} */ (byId("ssToast"));
+  if (toastNode && typeof toastNode.showPopover === "function") {
+    try {
+      if (toastNode.matches(":popover-open")) {
+        toastNode.hidePopover();
+        toastNode.showPopover();
+      }
+    } catch {
+      /* 重排失败也只是层级低一档，不影响功能 */
+    }
+  }
+
+  if (confirm) {
+    // 焦点：普通确认落在「确定」（回车即确认，最顺手），
+    // 破坏性操作（退出房间 / 移出玩家）落在「取消」——
+    // 这两个框本来就是"防止误触"用的，把回车默认接到危险那一边等于白做。
+    const target = /** @type {any} */ (byId(confirm.danger ? "ssConfirmCancel" : "ssConfirmAccept"));
+    if (target && typeof target.focus === "function") target.focus();
+    return;
+  }
 
   if (key === "join") {
     const input = /** @type {any} */ (byId("ssJoinCode"));
@@ -1196,6 +1470,62 @@ function renderModalHost() {
   }
 }
 
+/** 确认框的自增序号，见 `modalKeyOf()` */
+let confirmSeq = 0;
+
+/**
+ * 弹一个确认框，等玩家选。
+ *
+ * 替代 `window.confirm()`：原生确认框会阻塞整个 JS 线程（RTDB 推送、倒计时、
+ * 音效全部停摆），样式也和本页完全两回事。绘制在 `views-confirm.js`。
+ *
+ * @param {{ title?: string, message: string, hint?: string, confirmText?: string, cancelText?: string, danger?: boolean }} options
+ * @returns {Promise<boolean>}
+ */
+function askConfirm(options) {
+  return new Promise((resolve) => {
+    confirmSeq += 1;
+    state.confirm = {
+      seq: confirmSeq,
+      title: options.title ?? "确认",
+      message: options.message,
+      hint: options.hint,
+      confirmText: options.confirmText ?? "确定",
+      cancelText: options.cancelText ?? "取消",
+      danger: options.danger === true,
+      resolve,
+    };
+    render();
+  });
+}
+
+/**
+ * 摘下当前待确认的框：从状态里移除（于是重绘时它会消失），
+ * 把 resolve 交回调用方决定何时结算。
+ * @returns {((value: boolean) => void) | null}
+ */
+function takeConfirm() {
+  const current = state.confirm;
+  state.confirm = null;
+  return current ? current.resolve : null;
+}
+
+/**
+ * 结掉当前确认框。
+ *
+ * 先摘再关：关闭对话框会触发 `close` 事件，而那条路也会调到 `onCancel()`，
+ * 不先摘掉就会再结一次（甚至把 resolve(true) 覆盖成 false）。
+ * @param {boolean} accepted
+ * @returns {void}
+ */
+function settleConfirm(accepted) {
+  const resolve = takeConfirm();
+  if (!resolve) return;
+  // render() 里的 renderModalHost 会因为 key 变化把对话框关掉并清空容器
+  render();
+  resolve(accepted);
+}
+
 /**
  * 打开对话框。
  *
@@ -1204,7 +1534,7 @@ function renderModalHost() {
  */
 function openModal(kind) {
   if (state.identityMode === "manual" && !currentIdentity().nickname) {
-    toast("请先填写昵称");
+    toast("请先填写昵称", "warn");
     const input = /** @type {any} */ (byId("ssNickname"));
     if (input) input.focus();
     return;
@@ -1284,12 +1614,22 @@ function buildTopbar() {
       type: "button",
       title: soundOn ? "关闭音效" : "开启音效",
       text: soundOn ? "🔊" : "🔇",
-      attrs: { "aria-label": soundOn ? "关闭音效" : "开启音效" },
+      attrs: {
+        "aria-label": soundOn ? "关闭音效" : "开启音效",
+        "aria-pressed": soundOn ? "true" : "false",
+      },
       on: {
         click: () => {
-          // 先切换再试听，开着的时候点一下能立刻听到确认音
-          const next = setSoundEnabled(!isSoundEnabled());
-          if (next) play("message");
+          // 先切换再试听：关掉的那一下也要能听见，所以"关"的音必须在关掉之后播，
+          // 而 `play()` 在关闭状态下会直接返回 —— 顺序反过来就永远听不到"关"的反馈。
+          if (soundOn) {
+            // 关闭：先出声再落状态，让最后一声"关"能响
+            play("off");
+            setSoundEnabled(false);
+          } else {
+            setSoundEnabled(true);
+            play("on");
+          }
           render();
         },
       },
@@ -1302,7 +1642,11 @@ function buildTopbar() {
 async function copyRoomCode() {
   const link = shareUrl(state.roomId);
   const ok = await copyText(link);
-  toast(ok ? "邀请链接已复制，发给队友即可" : `复制失败，请手动记录房间码：${state.roomId}`);
+  play(ok ? "copy" : "denied");
+  toast(
+    ok ? "邀请链接已复制，发给队友即可" : `复制失败，请手动记录房间码：${state.roomId}`,
+    ok ? "ok" : "warn",
+  );
 }
 
 /**
@@ -1322,12 +1666,18 @@ function releaseHintOf(room) {
   return `还差人不齐，房间将在约 ${minutes} 分钟后自动释放。`;
 }
 
-function confirmLeave() {
+async function confirmLeave() {
   const inGame = state.room && state.room.phase !== "lobby" && state.room.phase !== "prepare";
-  const message = inGame
-    ? "对局进行中，离开会移出你的座位（队友可以用「作废本轮」继续）。确定退出吗？"
-    : "确定退出房间吗？";
-  if (window.confirm(message)) leaveRoom();
+  const ok = await askConfirm({
+    title: "退出房间",
+    message: inGame ? "对局进行中，确定退出吗？" : "确定退出房间吗？",
+    hint: inGame
+      ? "离开会立刻移出你的座位，队伍会少一个人；队友可以用「作废本轮」把这一轮跳过。"
+      : "退出后座位会让出来，重新加入需要房间码。",
+    confirmText: "退出房间",
+    danger: true,
+  });
+  if (ok) leaveRoom();
 }
 
 function buildScreen() {
@@ -1350,6 +1700,8 @@ function buildScreen() {
     uid: state.uid,
     roomId: state.roomId,
     releaseHint: releaseHintOf(room),
+    /** 此刻是否在等我出手：用来把"轮到你"标出来，别让人对着屏幕等别人 */
+    myTurn: needsMyAction(room),
     act: (type, payload) => act(type, payload),
     toast,
     copyRoomCode: () => copyRoomCode(),
@@ -1375,19 +1727,65 @@ function buildScreen() {
 }
 
 /**
+ * 提示条。
+ *
+ * 提示条是**最高优先级**的界面元素：它承载的是"你刚做的事出了什么问题"，
+ * 被任何东西盖住都等于没提示。所以它走 `popover="manual"` —— popover 和原生
+ * `<dialog>` 一样进 top layer，而 top layer 里**后进来的在上面**，于是在弹窗打开时
+ * 显示提示条也能压过弹窗与它的磨砂遮罩（早先只有 z-index:60，会被
+ * `.ss-modal::backdrop` 糊在下面）。见 `showToastNode()`。
+ *
  * @param {string} message
- * @param {string} [tone]
+ * @param {"warn" | "ok"} [tone] warn：操作被拒 / 出错；ok：操作成功
  */
 function toast(message, tone) {
   const node = byId("ssToast");
   if (!node) return;
   node.textContent = message;
   node.className = `ss-toast${tone ? ` is-${tone}` : ""}`;
-  node.hidden = false;
+  showToastNode(node);
   window.clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => {
-    node.hidden = true;
+    hideToastNode(node);
   }, 2800);
+}
+
+/**
+ * 让提示条显示出来，并保证它在 top layer 的最上面。
+ *
+ * 已经在显示时**不重新入栈**：`hidePopover()` + `showPopover()` 会让 CSS 入场动画
+ * 重放一遍，连着来两条提示就会一闪一闪的。真正需要"重新入栈"的时刻只有
+ * "提示条正亮着、又新开了一个弹窗"，那一处在 `renderModalHost()` 里单独处理。
+ * @param {any} node
+ * @returns {void}
+ */
+function showToastNode(node) {
+  // popover 元素在部分浏览器里仍会被 `[hidden]` 压住，先摘掉；不支持 popover 时这就是全部
+  node.hidden = false;
+  if (typeof node.showPopover !== "function") return;
+  try {
+    if (!node.matches(":popover-open")) node.showPopover();
+  } catch {
+    /* 退化成普通定位元素也已经能看见 */
+  }
+}
+
+/**
+ * @param {any} node
+ * @returns {void}
+ */
+function hideToastNode(node) {
+  if (typeof node.hidePopover === "function") {
+    try {
+      if (node.matches(":popover-open")) {
+        node.hidePopover();
+        return;
+      }
+    } catch {
+      /* 落到 hidden 兜底 */
+    }
+  }
+  node.hidden = true;
 }
 
 /**

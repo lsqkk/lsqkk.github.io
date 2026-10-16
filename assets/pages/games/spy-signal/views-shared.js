@@ -18,6 +18,7 @@ import { serverNow } from "./rtdb.js";
  * @property {string} uid
  * @property {string} roomId
  * @property {string | null} releaseHint 房间自动释放的倒计时提示
+ * @property {boolean} myTurn 此刻是否在等我出手（用来标出"该你出手"与操作区描边）
  * @property {(type: string, payload?: Record<string, unknown>) => Promise<boolean>} act 返回事务是否提交；视图据此决定要不要把用户输入还回去
  * @property {(message: string, tone?: string) => void} toast
  * @property {() => void} copyRoomCode
@@ -602,10 +603,16 @@ export function logList(room, options = {}) {
 
 /**
  * 页头统计：血量 + 当前回合 + 轮次。
+ *
+ * `options.myTurn` 为真时把中间那枚状态片换成"该你出手"并高亮 ——
+ * 对局里最需要一眼看清的就是"现在是不是等我"，而它恰好是整屏信息最多的地方。
  * @param {import("./room-model.js").Room} room
+ * @param {{ myTurn?: boolean }} [options]
  * @returns {any}
  */
-export function scoreHeader(room) {
+export function scoreHeader(room, options = {}) {
+  const myTurn = options.myTurn === true && room.phase !== "ended";
+
   return el("section", { class: "ss-scoreboard" }, [
     healthTrack("A", room.teams.A.health, room.meta.healthMax, {
       active: room.turn === "A" && room.phase !== "ended",
@@ -613,8 +620,9 @@ export function scoreHeader(room) {
     el("div", { class: "ss-scoreboard-center" }, [
       el("div", { class: "ss-round-chip", text: `第 ${room.round} 轮` }),
       el("div", {
-        class: "ss-phase-chip",
-        text: room.phase === "ended" ? "对局结束" : `${room.turn} 队行动中`,
+        class: `ss-phase-chip${myTurn ? " is-my-turn" : ""}`,
+        attrs: myTurn ? { role: "status" } : {},
+        text: room.phase === "ended" ? "对局结束" : myTurn ? "该你出手" : `${room.turn} 队行动中`,
       }),
     ]),
     healthTrack("B", room.teams.B.health, room.meta.healthMax, {

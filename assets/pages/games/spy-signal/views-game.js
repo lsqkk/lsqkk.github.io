@@ -45,11 +45,16 @@ export function renderGameScreen(ctx) {
   const roles = currentRoles(room);
   const isHost = room.meta.hostId === uid;
 
+  const action = phaseAction(ctx, { myTeam, opponent, roles, isHost });
+  // 轮到我出手时给操作区一道描边：整屏里能点的东西不少，
+  // 光靠角色条上一个小小的"我"字，盯着屏幕找自己要按哪个按钮太久。
+  if (ctx.myTurn) action.classList.add("is-my-turn");
+
   return el("div", { class: "ss-game" }, [
-    scoreHeader(room),
+    scoreHeader(room, { myTurn: ctx.myTurn }),
     roleBar(ctx, roles),
 
-    phaseAction(ctx, { myTeam, opponent, roles, isHost }),
+    action,
 
     el("div", { class: "ss-board-grid" }, [
       // visibleWords 是唯一出口：对方那块的词在结束前根本取不到。

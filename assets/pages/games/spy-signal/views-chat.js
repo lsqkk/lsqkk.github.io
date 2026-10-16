@@ -68,6 +68,21 @@ function messageRow(entry, uid, channel) {
 }
 
 /**
+ * "以下是 N 条新消息"分隔线。
+ *
+ * 打开面板会清掉红点（不清的话面板看起来像卡住了），但"清掉"不等于玩家看见了。
+ * 这条线是那个清零点留下的痕迹：红点没了，新消息从哪一条开始仍然一眼可见。
+ * 玩家真的碰了面板（`acknowledge()`）之后才收掉。位置由 `channels[].markerId` 决定。
+ * @param {number} count 分隔线之后有几条消息
+ * @returns {any}
+ */
+function unreadDivider(count) {
+  return el("div", { class: "ss-chat-divider", attrs: { role: "separator" } }, [
+    el("span", { class: "ss-chat-divider-text", text: `以下 ${count} 条新消息` }),
+  ]);
+}
+
+/**
  * 频道页签。
  * @param {"room" | "team"} channel
  * @param {string} label
@@ -109,11 +124,16 @@ function tabButton(channel, label, unread, active, onTab, disabled) {
  *   uid: string,
  *   playerCount: number,
  *   noticeOpen: boolean,
- *   channels: Record<"room" | "team", { messages: { id: string, value: any }[], unread: number }>,
+ *   channels: Record<"room" | "team", {
+ *     messages: { id: string, value: any }[],
+ *     unread: number,
+ *     markerId: string | null,
+ *   }>,
  *   onToggle: () => void,
  *   onTab: (channel: "room" | "team") => void,
  *   onToggleNotice: (open: boolean) => void,
  *   onSend: (text: string) => boolean | void,
+ *   onInteract: () => void,
  * }} options
  * @returns {any}
  */
@@ -159,14 +179,26 @@ export function renderChatDock(options) {
 
   const isTeam = options.tab === "team";
   const bucket = options.channels[isTeam ? "team" : "room"];
-  const rows = bucket.messages.length
-    ? bucket.messages.map((entry) => messageRow(entry, options.uid, isTeam ? "team" : "room"))
-    : [
-        el("p", {
-          class: "ss-chat-empty",
-          text: isTeam ? "还没有队内消息，和队友商量两句？" : "还没有人说话，打个招呼吧。",
-        }),
-      ];
+  // "新消息"分隔线：按 `markerId` 找位置。找不到（那条已经被滑出读取窗口）就不画。
+  const dividerAt = bucket.markerId
+    ? bucket.messages.findIndex((entry) => entry.id === bucket.markerId)
+    : -1;
+
+  /** @type {any[]} */
+  const rows = [];
+  if (bucket.messages.length === 0) {
+    rows.push(
+      el("p", {
+        class: "ss-chat-empty",
+        text: isTeam ? "还没有队内消息，和队友商量两句？" : "还没有人说话，打个招呼吧。",
+      }),
+    );
+  } else {
+    bucket.messages.forEach((entry, index) => {
+      if (index === dividerAt) rows.push(unreadDivider(bucket.messages.length - dividerAt));
+      rows.push(messageRow(entry, options.uid, isTeam ? "team" : "room"));
+    });
+  }
 
   // 队内频道按队伍色着色（--ss-chat-tone），一眼能看出"这条只队友可见"
   const teamTone =
@@ -177,6 +209,22 @@ export function renderChatDock(options) {
   const panel = el("section", {
     class: `ss-chat-panel${isTeam ? ` is-team${teamTone}` : ""}`,
     attrs: { "aria-label": "房间聊天" },
+    // 点一下消息本身就算"我看到了"（清红点、收掉"以下是 N 条新消息"）。
+    //
+    // 三个刻意的限制：
+    // 1. 用 click 而不是 pointerdown —— 清未读会重绘面板，若在 pointerdown 阶段
+    //    就把节点换掉，这次点击的 mouseup 落在新节点上，click 事件根本不会派发，
+    //    表现就是"面板里的第一个按钮点不动"。
+    // 2. 跳过交互控件：消息列表以外的东西都有自己的职责
+    //    （<details> 的展开、开关弹层、发送…），替它们顺手清未读只会互相打架。
+    // 3. 挂在面板上而不是整个停靠区上：点入口按钮是要开关面板，不该顺手清未读。
+    on: {
+      click: (/** @type {MouseEvent} */ event) => {
+        const target = /** @type {any} */ (event.target);
+        if (target?.closest?.("button, input, textarea, select, summary, label, a")) return;
+        options.onInteract();
+      },
+    },
   }, [
     el("header", { class: "ss-chat-head" }, [
       el("div", { class: "ss-chat-head-text" }, [
@@ -260,18 +308,48 @@ export function renderChatDock(options) {
 }
 
 /**
- * 把消息列表钉到底部。
+ * 读一次消息列表的滚动状态，供重绘后还原。
  *
- * 只在用户本来就在底部附近时才自动滚动 —— 否则他正翻看历史消息，
- * 被一条新消息拽到底下会很烦。
+ * ⚠️ 这个函数必须在**清空容器之前**调用。
+ *
+ * `renderChat()` 是 `clear + 重建`，所以重绘后拿到的是一个全新的 `#ssChatList`，
+ * 它的 `scrollTop` 永远是 0。早先的做法是重绘**之后**再判断"离底部远不远"，
+ * 那时量到的永远是最顶端到最底部的距离，于是每次都判成"用户在翻历史"、
+ * 一次都不自动滚动 —— 表现就是"聊天框有时突然闪回顶部，还得自己往下拉"。
+ * 想在重绘后决定滚到哪里，唯一的办法是重绘前先把状态量下来。
+ *
  * @param {any} host 聊天容器
+ * @returns {{ top: number, atBottom: boolean } | null} 面板没打开（列表不存在）时返回 null
+ */
+export function readChatScroll(host) {
+  const list = /** @type {any} */ (host?.querySelector?.("#ssChatList"));
+  if (!list) return null;
+  return {
+    top: list.scrollTop,
+    // 贴底判定留 48px 余量，容忍一两行的高度差
+    atBottom: list.scrollHeight - list.scrollTop - list.clientHeight < 48,
+  };
+}
+
+/**
+ * 重绘后还原滚动位置。
+ *
+ * - 原本贴着底部（或面板刚打开、读不到旧状态）→ 钉到最新一条：
+ *   新消息永远就在眼前，"有没有人说话"不需要再手动拉一下才能确认；
+ * - 原本正在往上翻历史 → 停在原处，不被新消息拽走。
+ *
+ * @param {any} host 聊天容器
+ * @param {{ top: number, atBottom: boolean } | null} snapshot `readChatScroll()` 的返回值
  * @returns {void}
  */
-export function pinChatScroll(host) {
-  const list = host?.querySelector?.("#ssChatList");
+export function restoreChatScroll(host, snapshot) {
+  const list = /** @type {any} */ (host?.querySelector?.("#ssChatList"));
   if (!list) return;
-  const distance = list.scrollHeight - list.scrollTop - list.clientHeight;
-  if (distance < 48) list.scrollTop = list.scrollHeight;
+  if (!snapshot || snapshot.atBottom) {
+    list.scrollTop = list.scrollHeight;
+    return;
+  }
+  list.scrollTop = Math.min(snapshot.top, list.scrollHeight);
 }
 
 /**
