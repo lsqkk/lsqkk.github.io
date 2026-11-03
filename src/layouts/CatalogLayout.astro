@@ -1,0 +1,79 @@
+---
+import LuxuryBackground from '../components/LuxuryBackground.astro';
+import GameCover from '../components/GameCover.astro';
+import navConfig from '../config/json/nav.json';
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
+interface Item { name: string; href: string; description?: string; tags?: string[]; }
+interface Group { name: string; description?: string; items: Item[]; }
+interface Props { title: string; eyebrow: string; description: string; groups: Group[]; kind?: string; }
+const { title, eyebrow, description, groups, kind = 'tool' } = Astro.props;
+const total = groups.reduce((sum, group) => sum + group.items.length, 0);
+const sections = groups.map((group, index) => ({ ...group, id: 'category-' + index }));
+const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'游戏'}, {href:'/a/',label:'实验室'}, {href:'/blog/',label:'功能导航'}];
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} - {SITE_TITLE}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, SITE_URL)} />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/nav.css" />
+    <link rel="stylesheet" href="/assets/css/catalog.css" />
+    <script is:inline define:vars={{navConfig}}>window.__NAV_CONFIG__ = navConfig;</script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/catalog.js"></script>
+  </head>
+  <body class={'luxury-body catalog-page catalog-' + kind}>
+    <a class="catalog-skip" href="#catalog-main">跳到内容</a>
+    <LuxuryBackground />
+    <main class="catalog-wrap" id="catalog-main">
+      <header class="catalog-hero">
+        <div class="catalog-eyebrow"><span></span>{eyebrow}</div>
+        <h1>{title}<span class="catalog-total">{String(total).padStart(2,'0')}</span></h1>
+        <p>{description}</p>
+        <nav class="catalog-destinations" aria-label="探索网站">
+          {destinations.map(item => <a href={item.href} aria-current={Astro.url.pathname.replace(/\/$/,'') === item.href.replace(/\/$/,'') ? 'page' : undefined}>{item.label}<span aria-hidden="true">↗</span></a>)}
+        </nav>
+      </header>
+      <div class="catalog-toolbar" hidden data-catalog-toolbar>
+        <label class="catalog-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+          <span class="catalog-sr">搜索{title}</span>
+          <input type="search" placeholder={'搜索' + title + '名称或用途…'} data-catalog-search autocomplete="off" />
+          <kbd aria-hidden="true">/</kbd>
+        </label>
+        <p class="catalog-result" role="status" aria-live="polite" data-catalog-result>共 {total} 项</p>
+      </div>
+      <div class="catalog-layout">
+        <nav class="catalog-categories" aria-label="按分类浏览">
+          <span class="catalog-nav-label">分类浏览</span>
+          <a href="#catalog-main" data-category="all" aria-current="true">全部<span>{total}</span></a>
+          {sections.map(group => <a href={'#'+group.id} data-category={group.id}>{group.name}<span>{group.items.length}</span></a>)}
+        </nav>
+        <div class="catalog-content">
+          {sections.map((group, groupIndex) => <section class="catalog-section" id={group.id} data-catalog-section>
+            <div class="catalog-section-head"><div><h2>{group.name}<span>{String(group.items.length).padStart(2,'0')}</span></h2>{group.description && <p>{group.description}</p>}</div><span class="catalog-section-number" aria-hidden="true">{String(groupIndex+1).padStart(2,'0')}</span></div>
+            <div class="catalog-grid">
+              {group.items.map((item, index) => {
+                const external = /^https?:\/\//.test(item.href) && !item.href.startsWith(SITE_URL + '/');
+                return <a class="catalog-card" href={item.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} data-catalog-card data-search={[item.name, item.description, group.name, ...(item.tags || [])].filter(Boolean).join(' ').toLocaleLowerCase()}>
+                  {kind === 'games' ? <GameCover href={item.href} name={item.name} /> : <div class="catalog-card-top"><span class="catalog-card-icon" aria-hidden="true">{kind === 'lab' ? '⌘' : kind === 'blog' ? '↗' : ['◷','∑','¶','⇄','◇'][groupIndex % 5]}</span><span class="catalog-card-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span></div>}
+                  <div class="catalog-card-body"><h3>{item.name}<span class="catalog-card-arrow" aria-hidden="true">↗</span></h3>
+                  {item.description && <p>{item.description}</p>}
+                  {item.tags?.length && <div class="catalog-card-tags">{item.tags.map(tag=><span>{tag}</span>)}</div>}
+                  {external && <span class="catalog-external">外部网站 · 新标签页打开</span>}</div>
+                </a>;
+              })}
+            </div>
+          </section>)}
+          <div class="catalog-empty" hidden data-catalog-empty><span aria-hidden="true">⌕</span><h2>没有找到匹配的内容</h2><p>试试更短的关键词，或查看全部分类。</p><button type="button" data-catalog-reset>清除筛选</button></div>
+        </div>
+      </div>
+      <footer class="catalog-footer"><a href="/">{SITE_TITLE}</a><span>发现一点新东西。</span><a href="/posts/copyright">关于本站 ↗</a></footer>
+    </main>
+  </body>
+</html>

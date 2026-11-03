@@ -18,13 +18,14 @@ const currentYear = new Date().getFullYear();
     <script is:inline id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script is:inline src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/fa-local.css" />
     <link rel="stylesheet" href="/assets/css/md.css">
 
     <script is:inline src="/assets/js/cursor-trail.js"></script>
+<link rel="stylesheet" href="/assets/css/editor-refresh.css">
 </head>
 
-<body>
+<body class="markdown-workspace">
     <button class="sidebar-toggle" id="sidebarToggle">
         <i class="fas fa-bars"></i>
     </button>
@@ -54,7 +55,7 @@ const currentYear = new Date().getFullYear();
             <h1 class="title">
                 夸克 Markdown 编辑器
             </h1>
-            <a href="tool" class="back-btn">
+            <a href="/tool/" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 返回工具箱
             </a>

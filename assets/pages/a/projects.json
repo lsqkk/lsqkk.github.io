@@ -90,12 +90,6 @@
           "link": "online",
           "description": "实时查看当前在线访客，展示在线轨迹与页面信息",
           "icon": "fa-users"
-        },
-        {
-          "name": "用户活动管理",
-          "link": "admin-users",
-          "description": "管理员专用用户画像与访问日志面板",
-          "icon": "fa-user-shield"
         }
       ]
     },
@@ -109,12 +103,6 @@
           "icon": "fa-image"
         },
         {
-          "name": "夸克网盘",
-          "link": "drive",
-          "description": "管理员专用的文件上传与直链分享工具，支持本地记录同步",
-          "icon": "fa-cloud-upload-alt"
-        },
-        {
           "name": "夸克博客留言板",
           "link": "/blog/lyb",
           "description": "用户互动与留言交流平台，支持实时评论和消息通知",
@@ -125,12 +113,6 @@
           "link": "uni",
           "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪",
           "icon": "fa-graduation-cap"
-        },
-        {
-          "name": "夸克自控平台",
-          "link": "zk",
-          "description": "个人成长与自我管理系统",
-          "icon": "fa-cogs"
         }
       ]
     }

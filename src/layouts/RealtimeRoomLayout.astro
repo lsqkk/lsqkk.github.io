@@ -25,14 +25,15 @@ import { SITE_LOGO_URL } from "@siteConfig";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{pageTitle}</title>
     <link rel="stylesheet" href="/assets/css/basic.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="/assets/css/fa-local.css" />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     {includeCursor ? <link rel="stylesheet" href="/assets/css/cursor.css" /> : null}
     {pageStyles.map((href) => <link rel="stylesheet" href={href} />)}
+    <link rel="stylesheet" href="/assets/css/room-refresh.css" />
     {headScripts.map((src) => <script is:inline src={src}></script>)}
     {includeCursor ? <script is:inline src="/assets/js/cursor-trail.js"></script> : null}
   </head>
-  <body class={bodyClass}>
+  <body class={"room-page " + bodyClass}>
     <slot />
     {tailScripts.map((src) => <script is:inline src={src}></script>)}
   </body>

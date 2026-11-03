@@ -1,0 +1,20 @@
+body.room-page { --primary-color:var(--accent); --background:var(--page-bg); --sidebar-bg:var(--surface-strong); --message-bg:var(--surface-soft); --text-color:var(--text-main); --input-bg:var(--surface-soft); --border-color:var(--line); --shadow-color:var(--glass-shadow); --timestamp-color:var(--text-subtle); background:var(--page-bg); color:var(--text-main); }
+.room-page .sidebar, .room-page .game-header, .room-page .game-container { backdrop-filter:none; -webkit-backdrop-filter:none; }
+.room-page .sidebar { background:var(--surface-strong); }
+.room-page .game-header { background:var(--surface-strong); min-height:64px; }
+.room-page .game-title { font-size:17px; font-weight:600; letter-spacing:-.02em; }
+.room-page .room-back { display:flex; align-items:center; gap:4px; color:var(--text-subtle); font-size:12px; text-decoration:none; padding:7px 10px; border:1px solid var(--line); border-radius:7px; white-space:nowrap; }
+.room-page .profile-setup { width:min(440px,100%); max-width:none; padding:28px; margin:20px auto; background:var(--surface-strong); border:1px solid var(--line); border-radius:16px; box-shadow:none; animation:none; }
+.room-page .profile-title { font-size:21px; font-weight:600; margin-bottom:22px; letter-spacing:-.03em; }
+.room-page .profile-input { min-height:46px; border:1px solid var(--line-strong); border-radius:8px; color:var(--text-main); background:var(--surface-soft); font:inherit; }
+.room-page .profile-input::placeholder { color:var(--text-subtle); }
+.room-page .color-picker { gap:12px; margin:20px 0; }
+.room-page .color-option { width:28px; height:28px; }
+.room-page .role-selection { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:20px 0; }
+.room-page .role-btn { display:flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:8px 12px; border:1px solid var(--line); border-radius:8px; background:var(--surface-soft); color:var(--text-subtle); font:inherit; font-size:13px; cursor:pointer; }
+.room-page .role-btn.selected { color:var(--accent); background:var(--accent-soft); border-color:var(--accent); }
+.room-page .profile-save-btn, .room-page .join-room-btn { min-height:44px; background:var(--accent); color:var(--page-bg); border:1px solid var(--accent); border-radius:8px; font-weight:600; }
+.room-page .join-room-input { border:1px solid var(--line); border-radius:8px; }
+.room-page .question-card { border:1px solid var(--line); border-radius:12px; padding:24px; }
+.room-page .option-btn { border:1px solid var(--line); border-radius:8px; }
+@media(max-width:640px) { .room-page .profile-setup { padding:24px 20px; } .room-page .game-container { padding:16px; } .room-page .game-title { font-size:15px; } .room-page .game-header { gap:12px; padding:12px 16px; } }

@@ -104,18 +104,19 @@ function toggleMode() {
     document.querySelectorAll('.function-panel').forEach(panel => {
         panel.style.display = 'none';
     });
-    document.getElementById(mode + 'Panel').style.display = 'block';
+    const panel = document.getElementById(mode + 'Panel');
+    if (panel) panel.style.display = 'block';
+    document.getElementById('basicButtons').style.display = mode === 'basic' ? 'grid' : 'none';
 
     // 特殊处理矩阵运算
     if (mode === 'matrix') {
-        document.getElementById('matrixOperation').addEventListener('change', function () {
+        document.getElementById('matrixOperation').onchange = function () {
             const op = this.value;
             document.getElementById('matrixInputBGroup').style.display =
                 (op === 'multiply' || op === 'add') ? 'block' : 'none';
-        });
+        };
     }
 
-    inputField.focus();
 }
 
 // 方程求解 - 支持多种方程
@@ -471,7 +472,7 @@ function formatMatrix(matrix) {
 // 显示结果
 function showResult(text, isError = false) {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = text;
+    resultDiv.textContent = text;
     resultDiv.className = isError ? 'error' : 'success';
 }
 
@@ -479,5 +480,4 @@ function showResult(text, isError = false) {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('modeSelect').addEventListener('change', toggleMode);
     toggleMode(); // 初始显示基本面板
-    inputField.focus();
 });

@@ -12,18 +12,17 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能OCR文字识别 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
 
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap"
-        rel="stylesheet">
+    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
     <link rel="stylesheet" href="/assets/pages/tool/ocr/ocr.css">
     <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
 </head>
 
-<body class="ocr-page luxury-body">
+<body class="ocr-page luxury-body feature-page feature-ocr">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
 
     <LuxuryBackground />
     <div class="container">

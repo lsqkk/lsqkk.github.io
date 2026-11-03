@@ -11,16 +11,18 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
     <!-- 注意：根据模板说明，这里保留了右键禁用脚本 -->
 
     <!-- 自定义样式和脚本 -->
     <link rel="stylesheet" href="/assets/pages/tool/random-wheel/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/fa-local.css" />
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
 </head>
 
-<body>
+<body class=" feature-page feature-random-wheel">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
     <main class="container">
         <h1><i class="fas fa-dharmachakra"></i> 随机转盘抽取器</h1>
 

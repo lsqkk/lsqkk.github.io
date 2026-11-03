@@ -12,12 +12,14 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图片混淆加密 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
     <link rel="stylesheet" href="/assets/pages/tool/tphx/style.css">
     <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
 </head>
 
-<body class="luxury-body">
+<body class="luxury-body feature-page feature-tphx">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
     <LuxuryBackground />
     <div class="container">
         <h1>图片混淆加密</h1>

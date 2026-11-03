@@ -1,0 +1,12 @@
+---
+const {href, name} = Astro.props;
+const key = href.replace(/\/$/,'').split('/').pop();
+---
+<div class={'game-cover cover-' + key} aria-hidden="true">
+  <div class="cover-orbit"></div>
+  {key === '5ziqi' ? <div class="cover-board"><i/><i/><i/><i/><i/></div> :
+   key === 'spy-signal' ? <div class="cover-signal"><span>01</span><span>02</span><span>03</span><b>••• — •••</b></div> :
+   key === 'xjtx' ? <svg class="cover-drawing" viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="2"><path d="m35 30 40-15 50 20 40-15v70l-40 15-50-20-40 15zM75 15v70m50-50v70"/><path d="M100 35c-22 0-20 25 0 41 20-16 22-41 0-41Z"/><circle cx="100" cy="49" r="5"/></svg> :
+   <div class="cover-quiz">?<span>A · B · C · D</span></div>}
+  <span class="cover-label">{name}</span>
+</div>

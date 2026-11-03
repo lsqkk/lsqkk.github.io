@@ -3,6 +3,9 @@ import fs from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import sitemapCompat from "./scripts/sitemap-compat.mjs";
+import optimizeStatic from "./scripts/optimize-static.mjs";
+import retiredPages from "./src/config/retired-pages.json" with { type: "json" };
 import rehypeRaw from "rehype-raw";
 
 const API_BASE_PLACEHOLDER = "__API_BASE__";
@@ -568,7 +571,17 @@ function apiBaseInjector() {
 
 export default defineConfig({
   site: "https://lsqkk.github.io", // canonical URL (also in src/config/site.js)
-  integrations: [sitemap(), apiBaseInjector()],
+  integrations: [sitemap({
+    filter(url) {
+      const pathname = new URL(url).pathname.replace(/\/index(?:\.html)?\/?$/, "").replace(/\/$/, "");
+      return !retiredPages.some(page => page.path === pathname);
+    },
+    serialize(item) {
+      const url = new URL(item.url);
+      url.pathname = url.pathname.replace(/\/index(?:\.html)?\/?$/, '/');
+      return { ...item, url: url.href };
+    },
+  }), sitemapCompat(), apiBaseInjector(), optimizeStatic()],
   markdown: {
     remarkRehype: {
       allowDangerousHtml: true,

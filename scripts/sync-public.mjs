@@ -211,7 +211,7 @@ async function generateFontConfigCss() {
   const systemFallbacks = Array.isArray(fontConfig.systemFallbacks) && fontConfig.systemFallbacks.length
     ? fontConfig.systemFallbacks
     : ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Microsoft YaHei", "sans-serif"];
-  const stack = [...familyStack, ...systemFallbacks]
+  const stack = [...systemFallbacks]
     .map(cssFamily)
     .filter(Boolean)
     .filter((family, index, array) => array.indexOf(family) === index);

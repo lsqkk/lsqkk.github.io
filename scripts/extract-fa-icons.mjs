@@ -16,7 +16,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 
-const SCAN_DIRS = ["src/pages", "src/layouts", "src/components", "assets/js"];
+const SCAN_DIRS = ["src/pages", "src/layouts", "src/components", "assets/js", "assets/pages"];
 const SCAN_EXTS = new Set([".astro", ".js", ".mjs"]);
 
 const STYLE_MAP = {
@@ -28,6 +28,13 @@ const SUPPORTED = new Set(["solid", "regular", "brands"]);
 
 // FA5→FA6 icon renames (icons that changed names in Font Awesome 6)
 const FA5_RENAMES = {
+  "external-link-alt": "up-right-from-square",
+  "frown": "face-frown",
+  "tint": "droplet",
+  "compress-alt": "down-left-and-up-right-to-center",
+  "chart-simple": "chart-column",
+  "shield-halved": "shield",
+  "baidu": "paw",
   "calendar-alt": "calendar-days",
   "check-circle": "circle-check",
   "cog": "gear",
@@ -71,7 +78,7 @@ const FA5_RENAMES = {
   "volume-mute": "volume-xmark",
   "volume-up": "volume-high",
   "cloud-upload-alt": "cloud-arrow-up",
-  "broadcast-tower": "tower-cell",
+  "broadcast-tower": "tower-broadcast",
   "basketball-ball": "basketball",
   "book-reader": "book-open-reader",
   "sign-in-alt": "right-to-bracket",
@@ -175,6 +182,11 @@ function main() {
   mkdirSync(out, { recursive: true });
   writeFileSync(resolve(out, "fa-icons.json"), JSON.stringify(astroFmt, null, 2) + "\n");
   writeFileSync(resolve(out, "fa-icons.js"), "window.__FA_ICONS__ = " + JSON.stringify(clientFmt) + ";\n");
+  const cssDir = resolve(ROOT, 'public', 'assets', 'css');
+  mkdirSync(cssDir, { recursive: true });
+  const rules = ['.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands{display:inline-block;width:1em;height:1em;background:currentColor;vertical-align:-.12em;mask:var(--fa-mask) center/contain no-repeat;-webkit-mask:var(--fa-mask) center/contain no-repeat;font-style:normal;flex-shrink:0}.fa-fw{width:1.25em}.fa-spin{animation:fa-spin 1s linear infinite}@keyframes fa-spin{to{transform:rotate(360deg)}}'];
+  for (const [name, svg] of Object.entries(astroFmt)) rules.push('.fa-' + name + '{--fa-mask:url("data:image/svg+xml,' + encodeURIComponent(svg) + '")}');
+  writeFileSync(resolve(cssDir, 'fa-local.css'), rules.join('\n'));
   console.log("[fa-icons] " + ok + " icons extracted" + (skip ? ", " + skip + " skipped" : ""));
 }
 

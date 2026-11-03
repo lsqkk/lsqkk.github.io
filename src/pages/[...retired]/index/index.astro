@@ -1,0 +1,20 @@
+---
+import retired from '../../../config/retired-pages.json';
+import { SITE_TITLE, SITE_URL } from '@siteConfig';
+export function getStaticPaths() {
+  return retired.map(page=>({params:{retired:page.path.replace(/^\//,'')},props:{destination:page.to}}));
+}
+const {destination}=Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, follow" />
+    <meta http-equiv="refresh" content={'0;url='+destination} />
+    <link rel="canonical" href={new URL(destination,SITE_URL)} />
+    <title>内容已整理 - {SITE_TITLE}</title>
+  </head>
+  <body><main><h1>内容已整理</h1><p>正在前往新的页面。</p><a href={destination}>点击继续浏览 →</a></main></body>
+</html>

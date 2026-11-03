@@ -1,8 +1,9 @@
 // nav.js
-const link = document.createElement('link');
-link.rel = 'stylesheet';
-link.href = '/assets/css/nav.css';
-document.head.appendChild(link);
+if (!document.querySelector('link[href="/assets/css/nav.css"]')) {
+    const navStyle = document.createElement('link');
+    navStyle.rel = 'stylesheet'; navStyle.href = '/assets/css/nav.css';
+    document.head.appendChild(navStyle);
+}
 const profileScript = document.createElement('script');
 profileScript.src = '/assets/js/user-profile.js';
 profileScript.defer = true;
@@ -323,7 +324,7 @@ function generateNavHTML(config) {
                     <h1>${config.title.text}</h1>
                 </a>
                 <!-- 移动端汉堡菜单按钮 -->
-                <button class="hamburger-menu" id="hamburgerMenu">
+                <button class="hamburger-menu" id="hamburgerMenu" aria-label="打开导航菜单" aria-controls="mobilenavsidebar" aria-expanded="false">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -387,7 +388,7 @@ function generateNavHTML(config) {
         <div class="navsidebar-content">
             <div class="navsidebar-header">
                 <h2>导航菜单</h2>
-                <button class="navsidebar-close" id="navsidebarClose">&times;</button>
+                <button class="navsidebar-close" id="navsidebarClose" aria-label="关闭导航菜单">&times;</button>
             </div>
             <div class="navsidebar-nav">
                 <ul>
@@ -434,7 +435,13 @@ function generateNavHTML(config) {
 
 // 获取配置并写入导航栏
 const navConfig = getNavConfig();
-document.write(generateNavHTML(navConfig));
+// Deferred and synchronous callers share one DOM-based mount.
+function mountNavigation() {
+    if (document.querySelector('.header')) return;
+    document.body.insertAdjacentHTML('afterbegin', generateNavHTML(navConfig));
+}
+if (document.body) mountNavigation();
+else document.addEventListener('DOMContentLoaded', mountNavigation, { once: true });
 
 // 检查视频API是否可用，不可用则隐藏导航中的"视频"项
 (async function checkVideoApi() {
@@ -502,11 +509,13 @@ function handleMobileSearch() {
 // 侧边栏控制函数
 function openSidebar() {
     document.getElementById('mobilenavsidebar').classList.add('active');
+    document.getElementById('hamburgerMenu')?.setAttribute('aria-expanded','true');
     document.body.style.overflow = 'hidden'; // 防止背景滚动
 }
 
 function closeSidebar() {
     document.getElementById('mobilenavsidebar').classList.remove('active');
+    document.getElementById('hamburgerMenu')?.setAttribute('aria-expanded','false');
     document.body.style.overflow = ''; // 恢复背景滚动
 }
 
@@ -598,7 +607,7 @@ async function loadHoverSections(key) {
         const data = await fetch('/assets/pages/games/game.json').then(r => r.json());
         const groups = [
             { title: '多人联机', items: data.multiplayer || [] },
-            { title: '单机游戏', items: data.singlePlayer || [] },
+            { title: '校园探索', items: data.singlePlayer || [] },
             { title: '经典游戏', items: data.classic || [] }
         ];
         sections = groups.map(group => ({
@@ -711,9 +720,13 @@ function initializeNavHoverMenus() {
 }
 
 // 多语言翻译功能
+let translationLoading = false;
 function initializeTranslation() {
+    if (currentLanguage === DEFAULT_LANGUAGE || translationLoading) return;
+    translationLoading = true;
     const script = document.createElement('script');
     script.src = 'https://cdn.staticfile.net/translate.js/3.17.0/translate.js';
+    script.onerror = () => { translationLoading = false; console.warn('Translation service unavailable'); };
     script.onload = function () {
         // 1. 基础配置：设置本地语种并隐藏自动生成的选择框
         translate.language.setLocal(DEFAULT_LANGUAGE);
@@ -747,6 +760,7 @@ function performLanguageChange(targetLanguage, options = {}) {
     syncLanguagePickers(normalizedLanguage);
 
     if (!window.translate || typeof translate.changeLanguage !== 'function') {
+        if (normalizedLanguage !== DEFAULT_LANGUAGE) initializeTranslation();
         return;
     }
 

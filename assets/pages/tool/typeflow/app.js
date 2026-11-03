@@ -220,7 +220,7 @@ function displayText() {
 
     // 滚动到当前字符位置
     const currentCharElement = textDisplay.querySelector('.char-current');
-    if (currentCharElement) {
+    if (currentCharElement && isTesting) {
         currentCharElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     }
 }
@@ -914,10 +914,10 @@ function initCharts() {
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: getComputedStyle(document.body).getPropertyValue('--line').trim()
                     },
                     ticks: {
-                        color: 'rgba(255, 255, 255, 0.7)'
+                        color: getComputedStyle(document.body).getPropertyValue('--text-subtle').trim()
                     }
                 }
             }
@@ -965,19 +965,19 @@ function initCharts() {
             scales: {
                 x: {
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: getComputedStyle(document.body).getPropertyValue('--line').trim()
                     },
                     ticks: {
-                        color: 'rgba(255, 255, 255, 0.7)'
+                        color: getComputedStyle(document.body).getPropertyValue('--text-subtle').trim()
                     }
                 },
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: getComputedStyle(document.body).getPropertyValue('--line').trim()
                     },
                     ticks: {
-                        color: 'rgba(255, 255, 255, 0.7)'
+                        color: getComputedStyle(document.body).getPropertyValue('--text-subtle').trim()
                     }
                 }
             }

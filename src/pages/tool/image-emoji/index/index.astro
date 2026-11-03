@@ -12,14 +12,16 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图片 Emoji 化工具 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/fa-local.css" />
 
     <link rel="stylesheet" href="/assets/pages/tool/image-emoji/image-emoji.css">
     <link rel="stylesheet" href="/assets/css/basic.css">
-    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
 </head>
 
-<body class="luxury-body">
+<body class="luxury-body feature-page feature-image-emoji">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
     <LuxuryBackground />
     <main>
         <div class="hero">

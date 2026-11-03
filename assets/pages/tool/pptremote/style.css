@@ -248,3 +248,11 @@ h2 {
 
     .control-section-header { color: #8aa5c0; }
 }
+
+.main-content-wrapper-remote { box-sizing:border-box; width:100%; padding:100px 20px 40px; }
+.container-remote { box-sizing:border-box; width:100%; max-width:520px; padding:0; }
+.card-remote { background:var(--surface-strong); color:var(--text-main); border:1px solid var(--line); border-radius:16px; box-shadow:none; backdrop-filter:none; }
+.card-remote h2 { color:var(--text-main); font-size:20px; }
+.card-remote p { color:var(--text-subtle); }
+.remote-input { color:var(--text-main); background:var(--surface-soft); border-color:var(--line); }
+@media(max-width:640px) { .main-content-wrapper-remote { padding:84px 16px 30px; } .card-remote { padding:24px 20px; } }

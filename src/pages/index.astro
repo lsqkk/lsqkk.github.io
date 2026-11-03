@@ -160,10 +160,10 @@ const homePreloaded = {
       window.__HOME_PRELOADED__ = homePreloaded;
       window.__POPUPS_DATA__ = popups;
     </script>
-    <script is:inline src="/assets/js/fa-icons.js"></script>
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
-    <script is:inline src="/assets/js/dynamic-gallery.js"></script>
+    <script is:inline defer src="/assets/js/fa-icons.js"></script>
+    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
+    <script is:inline defer src="/assets/js/marked.min.js"></script>
+    <script is:inline defer src="/assets/js/dynamic-gallery.js"></script>
     <meta name="referrer" content="never" />
   </head>
 
@@ -182,7 +182,7 @@ const homePreloaded = {
               {hasMainSection("avatar_nickname") && (
                 <div class="intro-hero hero-section">
                   <a class="hero-avatar-link" href="/posts/about">
-                    <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" data-skeleton-img />
+                    <img class="hero-avatar" src="/assets/img/touxiang.png" alt="头像" width="112" height="112" fetchpriority="high" data-skeleton-img />
                   </a>
                   <h1 class="hero-title" id="Nickname">{escapeHtml(homeConfig.Nickname || "")}</h1>
                 </div>
@@ -242,7 +242,7 @@ const homePreloaded = {
                 {recentPosts.map((post: any) => (
                   <article class="post-item post-item-link content-row" data-href={`/posts/${post.file.replace(".md", "")}`}>
                     <div class="post-item-body">
-                      <div class="post-title">{escapeHtml(post.title)}</div>
+                      <div class="post-title"><a href={`/posts/${post.file.replace(".md", "")}`}>{escapeHtml(post.title)}</a></div>
                       <div class="post-date">{escapeHtml(post.date)}</div>
                       <div class="post-tags">
                         <span class="post-tag read-time">
@@ -532,7 +532,7 @@ const homePreloaded = {
     <script is:inline src="/assets/js/index.js"></script>
     <script is:inline src="/assets/js/popup.js"></script>
 
-    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline defer src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="/assets/js/comment-render-shared.js"></script>

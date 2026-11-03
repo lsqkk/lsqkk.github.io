@@ -1,68 +1,23 @@
 {
-    "multiplayer": [
-        {
-            "name": "五子棋对战",
-            "image": "/assets/pages/games/image/9.png",
-            "link": "5ziqi"
-        },
-        {
-            "name": "谍报风云",
-            "image": "/assets/pages/games/image/7.png",
-            "link": "spy-signal"
-        },
-        {
-            "name": "每日答题",
-            "image": "/assets/pages/games/image/4.png",
-            "link": "dati"
-        }
-    ],
-    "singlePlayer": [
-        {
-            "name": "手机颠球",
-            "image": "https://cdn.jsdelivr.net/gh/lsqkk/image@main/20251203160551799.jpg",
-            "link": "ball"
-        },
-        {
-            "name": "单机五子棋",
-            "image": "/assets/pages/games/image/9.png",
-            "link": "5ziqi-p"
-        },
-        {
-            "name": "交大图寻（兴庆）",
-            "image": "/assets/pages/games/image/8.png",
-            "link": "xjtx"
-        },
-        {
-            "name": "躲避陨石",
-            "image": "/assets/pages/games/image/1.png",
-            "link": "AvoidStar"
-        },
-        {
-            "name": "戳气泡",
-            "image": "/assets/pages/games/image/5.png",
-            "link": "bubble"
-        },
-        {
-            "name": "钢琴",
-            "image": "/assets/pages/games/image/3.png",
-            "link": "piano"
-        },
-        {
-            "name": "ZY公式",
-            "image": "/assets/pages/games/image/3.png",
-            "link": "zy"
-        }
-    ],
-    "classic": [
-        {
-            "name": "合成大西瓜",
-            "image": "/assets/pages/games/image/2.png",
-            "link": "xigua"
-        },
-        {
-            "name": "2048",
-            "image": "/assets/pages/games/image/10.png",
-            "link": "2048"
-        }
-    ]
+  "multiplayer": [
+    {
+      "name": "五子棋对战",
+      "link": "5ziqi"
+    },
+    {
+      "name": "谍报风云",
+      "link": "spy-signal"
+    },
+    {
+      "name": "每日答题",
+      "link": "dati"
+    }
+  ],
+  "singlePlayer": [
+    {
+      "name": "交大图寻（兴庆）",
+      "link": "xjtx"
+    }
+  ],
+  "classic": []
 }

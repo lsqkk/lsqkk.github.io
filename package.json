@@ -15,13 +15,16 @@
     "typecheck": "tsc -p jsconfig.json --noEmit",
     "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check assets/pages/blog/lyb/lyb.js && node --check assets/pages/tool/spotdiff/spotdiff.js",
     "check:words": "node scripts/verify-spy-words.mjs",
-    "test:spy-signal": "node --test \"tests/spy-signal/**/*.test.mjs\""
+    "test:spy-signal": "node --test \"tests/spy-signal/**/*.test.mjs\"",
+    "test:sitemap": "node --test tests/sitemap.test.mjs",
+    "test:ui": "node tests/ui/site-smoke.cjs"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",
     "astro": "^5.18.0",
     "lightningcss": "^1.32.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "esbuild": "^0.25.12"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.0",

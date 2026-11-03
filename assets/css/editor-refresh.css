@@ -1,0 +1,9 @@
+
+body.markdown-workspace { --primary-color:var(--accent); --text-color:var(--text-main); --secondary-color:var(--surface-soft); --border-color:var(--line); --sidebar-bg:var(--surface-strong); --code-bg:var(--surface-soft); background:var(--page-bg); color:var(--text-main); }
+.markdown-workspace .container { background:var(--surface-strong); border:1px solid var(--line); border-radius:14px; box-shadow:none; padding:24px; }
+.markdown-workspace .title { color:var(--text-main); font-size:24px; letter-spacing:-.035em; }
+.markdown-workspace .textarea, .markdown-workspace .preview { background:var(--surface-soft); color:var(--text-main); border:1px solid var(--line); border-radius:8px; }
+.markdown-workspace .sidebar { color:var(--text-main); background:var(--surface-strong); border-color:var(--line); }
+.markdown-workspace .label, .markdown-workspace .note-title { color:var(--text-main); }
+.markdown-workspace .back-btn { font-size:12px; padding:8px 12px; border-radius:7px; }
+@media(max-width:1024px) { .markdown-workspace .container { margin:24px 16px 24px 48px; width:calc(100% - 64px); padding:20px; } .markdown-workspace .title { font-size:21px; } }

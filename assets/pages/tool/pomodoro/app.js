@@ -24,8 +24,8 @@ resetButton.addEventListener('click', resetTimer);
 
 timeOptions.forEach(option => {
     option.addEventListener('click', () => {
-        timeOptions.forEach(opt => opt.classList.remove('active'));
-        option.classList.add('active');
+        timeOptions.forEach(opt => { opt.classList.remove('active'); opt.setAttribute('aria-pressed','false'); });
+        option.classList.add('active'); option.setAttribute('aria-pressed','true');
         const newTime = parseInt(option.dataset.time);
         initTimer(newTime);
     });
@@ -97,14 +97,14 @@ function timerComplete() {
     progressBar.style.width = '0%';
 
     // 播放提示音
-    alarmSound.play();
+    alarmSound.play().catch(() => {});
 
     // 显示通知
-    if (Notification.permission === 'granted') {
+    if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('番茄钟完成', {
             body: '时间到！该休息一下了。'
         });
-    } else if (Notification.permission !== 'denied') {
+    } else if ('Notification' in window && Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 new Notification('番茄钟完成', {
@@ -117,7 +117,7 @@ function timerComplete() {
 
 function toggleTheme() {
     isDarkMode = !isDarkMode;
-    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    document.body.dataset.timerTheme = isDarkMode ? 'dark' : 'light';
     themeToggle.textContent = isDarkMode ? '🌞' : '🌓';
 
     // 保存主题偏好到本地存储
@@ -128,11 +128,8 @@ function toggleTheme() {
 const savedTheme = localStorage.getItem('themePreference');
 if (savedTheme === 'dark') {
     isDarkMode = true;
-    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.dataset.timerTheme = 'dark';
     themeToggle.textContent = '🌞';
 }
 
-// 请求通知权限
-if ('Notification' in window) {
-    Notification.requestPermission();
-}
+// Notification permission is requested after a completed focus session.

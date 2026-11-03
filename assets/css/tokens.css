@@ -1,4 +1,6 @@
 :root {
+  --page-bg: #f5f7fa;
+  --focus-ring: #2367d7;
   /* Surfaces */
   --bg-tint: rgba(6, 17, 33, 0.58);
   --surface: rgba(255, 255, 255, 0.9);
@@ -101,6 +103,8 @@
 /* ── Dark mode: system preference ── */
 @media (prefers-color-scheme: dark) {
   :root {
+    --page-bg: #0f1724;
+    --focus-ring: #84b7ff;
     --bg-tint: rgba(4, 10, 22, 0.74);
     --surface: rgba(17, 28, 46, 0.68);
     --surface-strong: rgba(18, 30, 50, 0.72);
@@ -162,6 +166,8 @@
 
 /* ── Dark mode: manual class toggle (matches user-preferences.js) ── */
 body.dark-mode {
+  --page-bg: #0f1724;
+  --focus-ring: #84b7ff;
   --bg-tint: rgba(4, 10, 22, 0.74);
   --surface: rgba(17, 28, 46, 0.68);
   --surface-strong: rgba(18, 30, 50, 0.72);

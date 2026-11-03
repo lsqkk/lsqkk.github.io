@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
+  // Effects are opt-in; do not allocate animation loops for ordinary browsing.
+  const saved = (() => { try { return JSON.parse(localStorage.getItem('quark_site_preferences') || '{}'); } catch { return {}; } })();
+  if (saved.cursorTrail !== true || saved.motion === 'reduce' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // 检测是否为非触摸设备
   const isTouchDevice = !matchMedia('(hover: hover) and (pointer: fine)').matches;
 

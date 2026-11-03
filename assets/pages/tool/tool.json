@@ -4,29 +4,16 @@
       "name": "生活",
       "tools": [
         {
-          "name": "经典时钟",
-          "url": "/tool/time",
-          "target": "_blank"
-        },
-        {
           "name": "智能番茄钟",
           "url": "/tool/pomodoro",
-          "target": "_blank"
-        },
-        {
-          "name": "夸克天气",
-          "url": "/tool/weather",
-          "target": "_blank"
-        },
-        {
-          "name": "自定义网站导航",
-          "url": "/tool/nav",
-          "target": "_blank"
+          "target": "_self",
+          "description": "设定专注时段，开始、暂停和重置你的工作节奏。"
         },
         {
           "name": "随机转盘",
           "url": "/tool/random-wheel",
-          "target": "_blank"
+          "target": "_self",
+          "description": "输入候选项，让转盘帮你随机做个决定。"
         }
       ]
     },
@@ -36,37 +23,32 @@
         {
           "name": "思政题库抽测",
           "url": "/tool/ti",
-          "target": "_blank"
-        },
-        {
-          "name": "AIGC 检查",
-          "url": "/tool/aigc",
-          "target": "_blank"
-        },
-        {
-          "name": "LLM sort",
-          "url": "/tool/llmsort",
-          "target": "_blank"
+          "target": "_self",
+          "description": "随机抽题练习，检验思政知识的掌握情况。"
         },
         {
           "name": "Q-AI WebUI",
           "url": "/a/qai",
-          "target": "_blank"
+          "target": "_self",
+          "description": "在浏览器中与 AI 对话、检索和探索。"
         },
         {
           "name": "高级科学计算器",
           "url": "/tool/calculator",
-          "target": "_blank"
+          "target": "_self",
+          "description": "表达式计算、方程求解、微积分与矩阵运算。"
         },
         {
           "name": "论文参考文献生成",
           "url": "/tool/ref",
-          "target": "_blank"
+          "target": "_self",
+          "description": "按文献类型填写信息，生成论文参考文献。"
         },
         {
           "name": "Quark OJ 在线判题",
           "url": "/a/oj",
-          "target": "_blank"
+          "target": "_self",
+          "description": "浏览编程题目，提交代码并查看评测结果。"
         }
       ]
     },
@@ -74,34 +56,34 @@
       "name": "文本",
       "tools": [
         {
-          "name": "聊天记录高频词&图云生成",
+          "name": "聊天记录分析与词云",
           "url": "/tool/chat-analyzer",
-          "target": "_blank"
+          "target": "_self",
+          "description": "分析聊天记录中的高频词，生成词云。"
         },
         {
           "name": "语音识别",
           "url": "/tool/audio2txt",
-          "target": "_blank"
+          "target": "_self",
+          "description": "将语音内容转成文字，便于整理和检索。"
         },
         {
           "name": "文字识别",
           "url": "/tool/ocr",
-          "target": "_blank"
+          "target": "_self",
+          "description": "从图片中识别文字，减少手工录入。"
         },
         {
           "name": "Markdown 编辑器",
           "url": "/tool/markdown",
-          "target": "_blank"
-        },
-        {
-          "name": "多人协同 Markdown 编辑器",
-          "url": "/tool/markdown/co",
-          "target": "_blank"
+          "target": "_self",
+          "description": "编写 Markdown，实时预览排版。"
         },
         {
           "name": "Markdown 定制导出",
           "url": "/tool/markdown/export",
-          "target": "_blank"
+          "target": "_self",
+          "description": "将 Markdown 内容按所需格式导出。"
         }
       ]
     },
@@ -109,29 +91,22 @@
       "name": "实时协同",
       "tools": [
         {
-          "name": "夸克闪传 QuarkShare",
-          "url": "/a/share",
-          "target": "_blank"
-        },
-        {
           "name": "多人协同 Markdown 编辑器",
           "url": "/tool/markdown/co",
-          "target": "_blank"
+          "target": "_self",
+          "description": "多人一起编辑 Markdown 文档。"
+        },
+        {
+          "name": "夸克闪传 QuarkShare",
+          "url": "/a/share",
+          "target": "_self",
+          "description": "通过浏览器直接传送文件给另一台设备。"
         },
         {
           "name": "PPT遥控器",
           "url": "/tool/pptremote",
-          "target": "_blank"
-        },
-        {
-          "name": "夸克聊天室",
-          "url": "/a/chat-room",
-          "target": "_blank"
-        },
-        {
-          "name": "夸克会议",
-          "url": "/a/meet",
-          "target": "_blank"
+          "target": "_self",
+          "description": "用手机遥控演示文稿，辅助现场展示。"
         }
       ]
     },
@@ -139,44 +114,39 @@
       "name": "图片",
       "tools": [
         {
-          "name": "图片混淆加密",
+          "name": "图片混淆与还原",
           "url": "/tool/tphx",
-          "target": "_blank"
+          "target": "_self",
+          "description": "通过空间填充曲线混淆图片，并支持还原操作。"
         },
         {
           "name": "图片转Emoji",
           "url": "/tool/image-emoji",
-          "target": "_blank"
+          "target": "_self",
+          "description": "将图片转换成由 Emoji 拼成的图像。"
         },
         {
           "name": "找不同辅助",
           "url": "/tool/spotdiff",
-          "target": "_blank"
+          "target": "_self",
+          "description": "对比两张图片，查找不同之处。"
         }
       ]
     },
     {
-      "name": "其他",
+      "name": "练习与自测",
       "tools": [
         {
           "name": "科技伦理立场测试",
           "url": "/tool/test",
-          "target": "_blank"
+          "target": "_self",
+          "description": "选择问卷，探索你的观点与偏好。"
         },
         {
-          "name": "夸克自控",
-          "url": "/a/zk",
-          "target": "_blank"
-        },
-        {
-          "name": "交大360度",
-          "url": "/a/360",
-          "target": "_blank"
-        },
-        {
-          "name": "Bing搜索",
-          "url": "https://cn.bing.com/",
-          "target": "_blank"
+          "name": "打字练习与分析",
+          "url": "/tool/typeflow",
+          "description": "练习中文与英文输入，查看速度、准确率和错误模式。",
+          "target": "_self"
         }
       ]
     }

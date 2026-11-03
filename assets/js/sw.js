@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quarkblog-cache-v2';
+const CACHE_NAME = 'quarkblog-cache-v3';
 
 const PRECACHE_URLS = [
   '/',
@@ -46,7 +46,7 @@ self.addEventListener('fetch', (event) => {
 
   // 静态资源（CSS、JS、图片、字体）— 缓存优先
   if (/\.(css|js|json|mjs)$/i.test(url.pathname)) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(staleWhileRevalidate(event));
     return;
   }
 
@@ -93,4 +93,16 @@ async function networkFirst(request) {
     if (cached) return cached;
     return new Response('', { status: 408, statusText: 'Offline' });
   }
+}
+
+
+async function staleWhileRevalidate(event) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(event.request);
+  const update = fetch(event.request).then(async response => {
+    if (response.ok) await cache.put(event.request, response.clone());
+    return response;
+  });
+  event.waitUntil(update.then(() => {}).catch(() => {}));
+  return cached || update;
 }

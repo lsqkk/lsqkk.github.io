@@ -1350,3 +1350,27 @@ body.dark-mode .nav-hover-menu.nav-hover-body .nav-hover-list a:hover {
         background: rgba(110, 168, 255, 0.22);
     }
 }
+
+
+/* A quiet, readable navigation surface in both themes. */
+.header { background:var(--surface-strong); color:var(--text-main); border-bottom:1px solid var(--line); box-shadow:none; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.header h1 { color:var(--text-main); text-shadow:none; font-size:1.2rem; letter-spacing:-.03em; }
+.header .header-nav > li > a, .header .header-nav > li > a span { color:var(--text-main); text-shadow:none; }
+.header .header-nav > li > a:hover { color:var(--accent); }
+.header .header-search input { color:var(--text-main); background:var(--surface-soft); border-color:var(--line); }
+.header .header-search input::placeholder { color:var(--text-subtle); }
+.header.nav-dark { background:var(--surface-strong); border-color:var(--line); }
+
+.header .header-nav li a { color:var(--text-main); text-shadow:none; font-size:13px; }
+.header .header-nav li a:hover { color:var(--accent); background:var(--accent-soft); box-shadow:none; }
+.header :is(.language-trigger,.nav-settings-btn,.header-login a) { color:var(--text-main); background:var(--surface-soft); border:1px solid var(--line); backdrop-filter:none; }
+.header .language-trigger:hover, .header .nav-settings-btn:hover { background:var(--accent-soft); box-shadow:none; }
+.header .header-search input { color:var(--text-main); background:var(--surface-soft); border:1px solid var(--line); }
+.header .header-search input::placeholder { color:var(--text-subtle); }
+.header .header-search button { color:var(--text-subtle); }
+
+.header .header-search-btn { color:var(--text-subtle); }
+.header .hamburger-menu span { background:var(--text-main); }
+
+.mobile-navsidebar:not(.active) { visibility:hidden; }
+.mobile-navsidebar.active { visibility:visible; }

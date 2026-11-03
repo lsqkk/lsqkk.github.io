@@ -7,9 +7,9 @@
     const UPDATED_EVENT = 'quark-preferences-updated';
     const DEFAULTS = {
         language: 'chinese_simplified',
-        font: 'xwwk',
+        font: 'system',
         motion: 'full',
-        cursorTrail: true
+        cursorTrail: false
     };
     const FONTS = [
         {
@@ -57,7 +57,7 @@
         // theme 字段已废弃，强制移除
         delete next.theme;
         if (!MOTION_VALUES.has(next.motion)) next.motion = DEFAULTS.motion;
-        next.cursorTrail = next.cursorTrail !== false;
+        next.cursorTrail = typeof base.cursorTrail === 'boolean' ? base.cursorTrail : DEFAULTS.cursorTrail;
         next.language = String(next.language || DEFAULTS.language);
         next.updatedAt = Number(next.updatedAt || 0);
         return next;

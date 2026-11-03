@@ -13,13 +13,15 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
     <link rel="stylesheet" href="/assets/pages/tool/ti/ti.css">
 
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
 </head>
 
-<body class="luxury-body">
+<body class="luxury-body feature-page feature-ti">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
     <LuxuryBackground />
     <div class="glass-card">
         <h1 id="title-text">《思想道德与法制》题库抽测</h1>

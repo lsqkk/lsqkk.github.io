@@ -13,18 +13,20 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
 
     <!-- 自定义样式和脚本 -->
     <link rel="stylesheet" href="/assets/pages/tool/typeflow/style.css">
-    <script is:inline src="/assets/pages/tool/typeflow/app.js" defer></script>
 
     <!-- 图表库 -->
-    <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script is:inline defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <script is:inline defer src="/assets/pages/tool/typeflow/app.js"></script>
 </head>
 
-<body class="luxury-body">
+<body class="luxury-body feature-page feature-typeflow">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
     <LuxuryBackground />
     <!-- 页面内容 -->
     <main class="typeflow-container">
@@ -279,13 +281,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </footer>
 
     <!-- Font Awesome 图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/fa-local.css" />
 </body>
 
 </html>
-
-
-
-
-
-

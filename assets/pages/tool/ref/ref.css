@@ -24,7 +24,7 @@
         }
 
         h1 {
-            color: var(white);
+            color: var(--text-main);
             margin-bottom: 5px;
         }
 

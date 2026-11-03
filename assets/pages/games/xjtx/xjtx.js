@@ -34,6 +34,7 @@ function showMap() {
 }
 
 function submitAnswer() {
+    if (!currentQuestion || !userCoords) return;
     const dx = currentQuestion.x - userCoords.x;
     const dy = currentQuestion.y - userCoords.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -124,7 +125,7 @@ function updateStats(score) {
         (stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length).toFixed(1);
 }
 
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', function () {
     const savedStats = localStorage.getItem('gameStats');
     if (savedStats) {
         stats = JSON.parse(savedStats);
@@ -133,4 +134,4 @@ window.onload = function () {
         }
     }
     loadQuestion();
-};
+});

@@ -20,7 +20,9 @@ const { enabled = true } = Astro.props;
       currentY += (targetY - currentY) * 0.12;
       root.style.setProperty('--glow-x', `${currentX}%`);
       root.style.setProperty('--glow-y', `${currentY}%`);
-      rafId = window.requestAnimationFrame(render);
+      if (Math.abs(targetX-currentX) > 0.05 || Math.abs(targetY-currentY) > 0.05) {
+        rafId = window.requestAnimationFrame(render);
+      } else { rafId = 0; }
     };
 
     const ensureRenderLoop = () => {
