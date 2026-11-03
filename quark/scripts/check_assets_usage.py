@@ -32,7 +32,9 @@ def normalize_asset_ref(doc_file: Path, raw_ref: str, root: Path) -> Path | None
 
 def iter_source_docs(root: Path):
     for ext in ("*.html", "*.astro"):
-        yield from root.rglob(ext)
+        for doc_file in root.rglob(ext):
+            if doc_file.is_file():
+                yield doc_file
 
 
 def collect_refs(root: Path) -> tuple[set[Path], set[Path]]:
