@@ -1,5 +1,5 @@
         :root {
-            --primary-color: #4a90e2;
+            --primary-color: var(--accent);
             --text-color: #2d3748;
         }
 
@@ -7,7 +7,7 @@
             line-height: 1.6;
             margin: 0;
             padding: 50px;
-            background: url('/assets/img/bg.png') no-repeat center center fixed;
+            background: var(--page-bg);
             background-size: cover;
             color: var(--text-color);
         }
@@ -16,16 +16,16 @@
             max-width: 800px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+
             padding: 30px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .progress-bar {
             height: 8px;
             background: #ffffff8a;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             margin: 20px 0;
             overflow: hidden;
         }
@@ -52,7 +52,7 @@
             margin: 10px 0;
             background: #f8fafc97;
             border: 2px solid #e2e8f0;
-            border-radius: 15px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
@@ -89,7 +89,7 @@
         button {
             padding: 12px 25px;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -113,7 +113,7 @@
             margin: 20px 0;
             padding: 15px;
             background: #f8fafc;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
         }
 
         .bar-label {
@@ -125,7 +125,7 @@
         .bar {
             height: 12px;
             background: #e2e8f0;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             overflow: hidden;
         }
 
@@ -146,7 +146,7 @@
             margin-bottom: 25px;
             background: #f9f9f9;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
         }
 
         .dimension-group h4 {
@@ -165,10 +165,19 @@
             width: 100%;
             margin-top: 30px;
             padding: 12px;
-            background: #4a90e2;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             font-size: 16px;
             cursor: pointer;
         }
+/* 扁平归一 */
+body { background: var(--page-bg); color: var(--text-main); padding-top: 92px; }
+.container, .question-container, .result-container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--text-main);
+}

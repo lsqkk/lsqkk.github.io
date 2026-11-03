@@ -95,11 +95,13 @@ const navHoverData = {
   blog: (functionsData.categories || [])
     .map((cat: any) => ({
       title: cat.name || "更多",
-      items: (cat.functions || []).map((item: any) => ({
-        name: item.name || "未命名",
-        link: item.link || "#",
-        target: item.target === "_self" ? "_self" : "_blank",
-      })),
+      items: (cat.functions || [])
+        .filter((item: any) => !["/posts", "/tool", "/games", "/a", "/blog"].includes(item.link))
+        .map((item: any) => ({
+          name: item.name || "未命名",
+          link: item.link || "#",
+          target: item.target === "_self" ? "_self" : "_blank",
+        })),
     }))
     .filter((section: any) => section.items.length > 0),
 };

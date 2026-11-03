@@ -24,9 +24,9 @@
             margin: 0 auto;
             background: rgba(26, 26, 46, 0.8);
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            box-shadow: none;
+
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: 30px;
         }
@@ -35,7 +35,7 @@
 
         .upload-area {
             border: 2px dashed var(--primary-color);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             padding: 30px;
             text-align: center;
             margin-bottom: 20px;
@@ -88,7 +88,7 @@
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 30px;
+            border-radius: var(--radius-xl);
             cursor: pointer;
             font-size: 16px;
             margin: 5px;
@@ -113,7 +113,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(58, 134, 255, 0.6);
+            box-shadow: none;
         }
 
         .btn:hover::after {
@@ -146,7 +146,7 @@
             position: relative;
             width: 150px;
             height: 150px;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
@@ -214,7 +214,7 @@
             min-height: 250px;
             padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             font-size: 16px;
             margin-top: 20px;
             background: rgba(255, 255, 255, 0.05);
@@ -242,14 +242,14 @@
             margin: 20px 0;
             display: none;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             padding: 10px;
         }
 
         .progress-bar {
             height: 10px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             overflow: hidden;
             margin-bottom: 5px;
         }
@@ -259,7 +259,7 @@
             background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
             width: 0%;
             transition: width 0.3s;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
         }
 
         .status {
@@ -276,7 +276,7 @@
         /* 改为类选择器 */
         .language-selector select {
             padding: 10px 15px;
-            border-radius: 30px;
+            border-radius: var(--radius-xl);
             border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.1);
             color: var(--primary-color);
@@ -368,3 +368,56 @@
         .pulse {
             animation: pulse 1.5s infinite;
         }
+/* 扁平归一 */
+body.ocr-page { background: var(--page-bg); color: var(--text-main); }
+.container {
+  max-width: 1000px;
+  margin: 100px auto 48px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.container h1 { color: var(--text-main); font-size: clamp(32px, 5vw, 52px); font-weight: 650; letter-spacing: -0.025em; }
+.upload-area {
+  padding: 32px 20px;
+  color: var(--text-subtle);
+  background: var(--surface-soft);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+}
+.upload-area:hover { background: var(--surface); border-color: var(--accent); }
+.upload-area::before { display: none; animation: none; }
+.btn {
+  padding: 9px 15px;
+  color: var(--surface-strong);
+  background: var(--text-main);
+  border: 1px solid var(--text-main);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.btn:hover { background: var(--text-main); opacity: 0.85; transform: none; }
+.btn:disabled { color: var(--text-soft); background: var(--surface-soft); border-color: var(--line); }
+.btn::after { display: none; }
+.language-selector { color: var(--text-subtle); font-size: 13px; }
+.language-selector select {
+  color: var(--text-main);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+#resultText {
+  color: var(--text-main);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+}
+#resultText:focus { border-color: var(--line-strong); box-shadow: 0 0 0 3px var(--accent-soft); }
+.image-preview-item { background: var(--surface); border-color: var(--line); border-radius: var(--radius-md); }
+.action-buttons { gap: 8px; }
+@media (max-width: 700px) { .container { margin: 88px 16px 32px; } }

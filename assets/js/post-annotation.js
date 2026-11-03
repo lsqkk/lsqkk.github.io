@@ -18,7 +18,7 @@
     };
 
     const BLOCK_SELECTOR = 'p,li,blockquote,pre,h1,h2,h3,h4,h5,h6,td,th';
-    const COLOR_OPTIONS = ['#2563eb', '#dc2626', '#16a34a', '#ca8a04', '#7c3aed'];
+    const COLOR_OPTIONS = ['#3b6fd4', '#b64a44', '#3d7a5d', '#9a7017', '#6b5ca5'];
 
     /** @type {{
      * initialized: boolean,
@@ -572,10 +572,41 @@
         return '';
     }
 
+    function isLocalHighlight(id) {
+        const item = state.highlights[id];
+        return !!(item && item.localOnly);
+    }
+
+    function setModalNotice(text) {
+        if (!ui.modal) return;
+        let notice = ui.modal.querySelector('[data-modal-notice]');
+        if (!notice) {
+            notice = document.createElement('div');
+            notice.className = 'post-annotation-notice';
+            notice.dataset.modalNotice = '';
+            ui.modalQuote?.after(notice);
+        }
+        notice.textContent = text || '';
+        notice.hidden = !text;
+    }
+
     async function ensureHighlightFromPending(autoLike) {
         const anchor = buildAnchorFromPending();
         if (!anchor) {
             return '';
+        }
+
+        // 云端不可用时仍然打开预览，避免点击后毫无反应
+        if (!state.dbRef) {
+            const localId = `local_${Date.now().toString(36)}`;
+            state.highlights[localId] = {
+                ...anchor,
+                createdAt: Date.now(),
+                likesBy: {},
+                comments: {},
+                localOnly: true
+            };
+            return localId;
         }
 
         let highlightId = findExistingHighlightByAnchor(anchor);
@@ -614,6 +645,10 @@
     }
 
     async function toggleHighlightLike(highlightId) {
+        if (!state.dbRef || isLocalHighlight(highlightId)) {
+            setModalNotice('云端评论暂不可用，当前仅展示本页预览。');
+            return;
+        }
         await state.dbRef.child(highlightId).child('likesBy').transaction((likesBy) => {
             const next = likesBy || {};
             if (next[state.profile.uid]) {
@@ -635,6 +670,10 @@
         if (!highlightId) {
             return;
         }
+        if (!state.dbRef || isLocalHighlight(highlightId)) {
+            setModalNotice('云端评论暂不可用，当前仅展示本页预览。');
+            return;
+        }
         const newRef = state.dbRef.child(highlightId).child('comments').push();
         await newRef.set({
             text: text.slice(0, 2000),
@@ -652,6 +691,10 @@
     }
 
     async function toggleCommentLike(highlightId, commentId) {
+        if (!state.dbRef || isLocalHighlight(highlightId)) {
+            setModalNotice('云端评论暂不可用，当前仅展示本页预览。');
+            return;
+        }
         const ref = state.dbRef.child(highlightId).child('comments').child(commentId).child('likesBy');
         await ref.transaction((likesBy) => {
             const next = likesBy || {};
@@ -678,6 +721,7 @@
         ui.modalQuote.textContent = item.exactText || '';
         ui.modalLikeBtn.textContent = `${userLiked ? '取消点赞' : '点赞'} (${likeCount})`;
         ui.modalStats.textContent = `评论 ${getCommentCount(item.comments)}`;
+        setModalNotice(item.localOnly ? '云端评论暂不可用，当前仅展示本页预览。' : '');
 
         if (!commentList.length) {
             ui.commentList.innerHTML = '<div class="post-annotation-empty">还没有评论，欢迎第一个发言。</div>';
@@ -704,7 +748,10 @@
 
         ui.commentList.querySelectorAll('[data-comment-like]').forEach((btn) => {
             btn.addEventListener('click', () => {
-                toggleCommentLike(state.activeHighlightId, btn.dataset.commentLike);
+                toggleCommentLike(state.activeHighlightId, btn.dataset.commentLike).catch((err) => {
+                    console.error('[post-annotation] 评论点赞失败:', err);
+                    setModalNotice('操作失败，请稍后重试。');
+                });
             });
         });
     }
@@ -879,23 +926,29 @@
         ui.avatarPreview = ui.modal.querySelector('[data-avatar-preview]');
         ui.colorPicker = ui.modal.querySelector('[data-color-picker]');
 
-        ui.popover.querySelector('[data-action="like"]').addEventListener('click', async () => {
-            const id = await ensureHighlightFromPending(true);
-            hidePopover();
-            window.getSelection().removeAllRanges();
-            if (id) {
-                openModal(id);
+        async function handlePopoverAction(autoLike) {
+            const buttons = ui.popover.querySelectorAll('button');
+            buttons.forEach((btn) => { btn.disabled = true; });
+            try {
+                const id = await ensureHighlightFromPending(autoLike);
+                hidePopover();
+                window.getSelection().removeAllRanges();
+                if (id) {
+                    openModal(id);
+                } else {
+                    console.warn('[post-annotation] 无法定位选中的文字');
+                }
+            } catch (err) {
+                console.error('[post-annotation] 操作失败:', err);
+                hidePopover();
+                window.getSelection().removeAllRanges();
+            } finally {
+                buttons.forEach((btn) => { btn.disabled = false; });
             }
-        });
+        }
 
-        ui.popover.querySelector('[data-action="comment"]').addEventListener('click', async () => {
-            const id = await ensureHighlightFromPending(false);
-            hidePopover();
-            window.getSelection().removeAllRanges();
-            if (id) {
-                openModal(id);
-            }
-        });
+        ui.popover.querySelector('[data-action="like"]').addEventListener('click', () => handlePopoverAction(true));
+        ui.popover.querySelector('[data-action="comment"]').addEventListener('click', () => handlePopoverAction(false));
 
         ui.modal.querySelector('[data-close-modal]').addEventListener('click', closeModal);
         ui.modal.addEventListener('click', (evt) => {
@@ -909,10 +962,22 @@
                 return;
             }
             collectProfileFromUI();
-            await toggleHighlightLike(state.activeHighlightId);
+            try {
+                await toggleHighlightLike(state.activeHighlightId);
+            } catch (err) {
+                console.error('[post-annotation] 点赞失败:', err);
+                setModalNotice('操作失败，请稍后重试。');
+            }
         });
 
-        ui.modal.querySelector('[data-send-comment]').addEventListener('click', submitComment);
+        ui.modal.querySelector('[data-send-comment]').addEventListener('click', async () => {
+            try {
+                await submitComment();
+            } catch (err) {
+                console.error('[post-annotation] 评论失败:', err);
+                setModalNotice('发布失败，请稍后重试。');
+            }
+        });
         ui.nicknameInput.addEventListener('input', () => {
             if (state.profile.login) return;
             state.profile.nickname = ui.nicknameInput.value.trim() || '访客';

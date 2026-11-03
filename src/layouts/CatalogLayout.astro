@@ -3,7 +3,7 @@ import LuxuryBackground from '../components/LuxuryBackground.astro';
 import GameCover from '../components/GameCover.astro';
 import navConfig from '../config/json/nav.json';
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
-interface Item { name: string; href: string; description?: string; tags?: string[]; }
+interface Item { name: string; href: string; description?: string; icon?: string; tags?: string[]; }
 interface Group { name: string; description?: string; items: Item[]; }
 interface Props { title: string; eyebrow: string; description: string; groups: Group[]; kind?: string; }
 const { title, eyebrow, description, groups, kind = 'tool' } = Astro.props;
@@ -61,7 +61,7 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
               {group.items.map((item, index) => {
                 const external = /^https?:\/\//.test(item.href) && !item.href.startsWith(SITE_URL + '/');
                 return <a class="catalog-card" href={item.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} data-catalog-card data-search={[item.name, item.description, group.name, ...(item.tags || [])].filter(Boolean).join(' ').toLocaleLowerCase()}>
-                  {kind === 'games' ? <GameCover href={item.href} name={item.name} /> : <div class="catalog-card-top"><span class="catalog-card-icon" aria-hidden="true">{kind === 'lab' ? '⌘' : kind === 'blog' ? '↗' : ['◷','∑','¶','⇄','◇'][groupIndex % 5]}</span><span class="catalog-card-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span></div>}
+                  {kind === 'games' ? <GameCover href={item.href} name={item.name} /> : <div class="catalog-card-top"><span class="catalog-card-icon" aria-hidden="true">{item.icon || (kind === 'lab' ? '⌘' : kind === 'blog' ? '·' : ['◷','∑','¶','⇄','◇'][groupIndex % 5])}</span><span class="catalog-card-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span></div>}
                   <div class="catalog-card-body"><h3>{item.name}<span class="catalog-card-arrow" aria-hidden="true">↗</span></h3>
                   {item.description && <p>{item.description}</p>}
                   {item.tags?.length && <div class="catalog-card-tags">{item.tags.map(tag=><span>{tag}</span>)}</div>}

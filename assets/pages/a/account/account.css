@@ -16,9 +16,9 @@
   display: inline-block;
   background: linear-gradient(
     90deg,
-    var(--glass-bg-strong) 25%,
-    color-mix(in srgb, var(--glass-bg-strong) 60%, var(--accent) 10%) 50%,
-    var(--glass-bg-strong) 75%
+    var(--surface-strong) 25%,
+    color-mix(in srgb, var(--surface-strong) 60%, var(--accent) 10%) 50%,
+    var(--surface-strong) 75%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.8s ease-in-out infinite;
@@ -75,12 +75,11 @@
    Unified Hero Header
    ════════════════════════════════════════ */
 .account-hero {
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(135%);
-  -webkit-backdrop-filter: blur(24px) saturate(135%);
+  background: var(--surface);
+
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
   padding: 28px 32px;
   display: flex;
   align-items: center;
@@ -90,7 +89,7 @@
 }
 
 .account-hero:hover {
-  box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
+  box-shadow: none;
 }
 
 .account-hero-main {
@@ -109,7 +108,7 @@
   overflow: hidden;
   flex-shrink: 0;
   background: var(--accent-soft);
-  border: 2px solid var(--glass-bg);
+  border: 2px solid var(--surface);
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);
   position: relative;
   transition: box-shadow 0.3s ease;
@@ -162,15 +161,15 @@
 .metric {
   padding: 12px 16px;
   border-radius: var(--radius-sm);
-  background: var(--glass-bg-soft);
-  backdrop-filter: blur(8px);
+  background: var(--surface-soft);
+
   border: 1px solid var(--line);
   text-align: center;
   transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
 }
 
 .metric:hover {
-  background: color-mix(in srgb, var(--glass-bg-soft) 80%, var(--accent-soft));
+  background: color-mix(in srgb, var(--surface-soft) 80%, var(--accent-soft));
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--glass-shadow);
 }
@@ -201,19 +200,18 @@
 
 /* ── Glass card (shared) ── */
 .account-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(22px) saturate(135%);
-  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  background: var(--surface);
+
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
   padding: 28px;
   animation: acc-fade-up 0.5s ease both;
   transition: box-shadow 0.28s ease;
 }
 
 .account-card:hover {
-  box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
+  box-shadow: none;
 }
 
 .account-card--main { animation-delay: 0.10s; }
@@ -264,8 +262,8 @@
 .avatar-preview {
   width: 120px;
   height: 120px;
-  border-radius: 20px;
-  background: var(--glass-bg-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-strong);
   border: 1px solid var(--line);
   display: grid;
   place-items: center;
@@ -337,7 +335,7 @@
 .field input[type="email"],
 .field input[type="url"] {
   border: 1px solid var(--line);
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 14px;
@@ -352,11 +350,11 @@
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
   transform: scale(1.01);
-  background: var(--glass-bg);
+  background: var(--surface);
 }
 
 .field input[disabled] {
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   color: var(--text-soft);
   opacity: 0.65;
   cursor: not-allowed;
@@ -371,7 +369,7 @@
 /* ── Signature textarea ── */
 .signature-textarea {
   border: 1px solid var(--line);
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 14px;
@@ -387,7 +385,7 @@
 .signature-textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
-  background: var(--glass-bg);
+  background: var(--surface);
 }
 
 .signature-textarea::placeholder {
@@ -408,7 +406,7 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   border: 1px solid var(--line);
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   position: relative;
   display: flex;
   align-items: center;
@@ -453,7 +451,7 @@
    ════════════════════════════════════════ */
 .btn {
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   padding: 9px 18px;
   font-size: 13px;
   cursor: pointer;
@@ -480,13 +478,13 @@
 }
 
 .btn.ghost {
-  background: var(--glass-bg-strong);
+  background: var(--surface-strong);
   color: var(--text-main);
   border: 1px solid var(--line);
 }
 
 .btn.ghost:hover {
-  background: var(--glass-bg);
+  background: var(--surface);
   border-color: var(--line-strong);
 }
 
@@ -500,7 +498,7 @@
 }
 
 .btn.danger {
-  color: #dc2626;
+  color: var(--danger);
   border-color: rgba(220, 38, 38, 0.25);
 }
 
@@ -551,14 +549,14 @@ body.dark-mode .btn.danger:hover {
   gap: 3px;
   padding: 12px 14px;
   border-radius: var(--radius-sm);
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   border: 1px solid var(--line);
   transition: border-color 0.24s ease, background 0.24s ease;
 }
 
 .record-item:hover {
   border-color: var(--line-strong);
-  background: color-mix(in srgb, var(--glass-bg-soft) 80%, var(--accent-soft));
+  background: color-mix(in srgb, var(--surface-soft) 80%, var(--accent-soft));
 }
 
 .record-item span {
@@ -579,7 +577,7 @@ body.dark-mode .btn.danger:hover {
   padding: 14px 16px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
 }
 
 .record-list-title {
@@ -595,9 +593,9 @@ body.dark-mode .btn.danger:hover {
 
 .record-toggle {
   border: 1px solid var(--line);
-  background: var(--glass-bg-strong);
+  background: var(--surface-strong);
   color: var(--text-subtle);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   padding: 4px 10px;
   cursor: pointer;
@@ -605,7 +603,7 @@ body.dark-mode .btn.danger:hover {
 }
 
 .record-toggle:hover {
-  background: var(--glass-bg);
+  background: var(--surface);
   border-color: var(--line-strong);
 }
 
@@ -640,7 +638,7 @@ body.dark-mode .btn.danger:hover {
   padding: 8px 10px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: var(--glass-bg);
+  background: var(--surface);
 }
 
 .record-entry strong {
@@ -703,11 +701,11 @@ body.dark-mode .btn.danger:hover {
 
 .cropper-card {
   width: min(90vw, 520px);
-  background: var(--glass-bg-solid);
-  border-radius: 20px;
+  background: var(--surface-strong);
+  border-radius: var(--radius-lg);
   padding: 20px;
   border: 1px solid var(--line);
-  box-shadow: 0 25px 60px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+  box-shadow: 0 25px 60px var(--glass-shadow), inset 0 0 0 1px var(--line);
   animation: acc-fade-up 0.3s ease;
 }
 
@@ -725,7 +723,7 @@ body.dark-mode .btn.danger:hover {
 
 .cropper-body {
   margin: 16px 0;
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   border-radius: var(--radius-sm);
   padding: 16px;
   display: grid;

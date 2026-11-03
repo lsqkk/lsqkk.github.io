@@ -5,7 +5,7 @@ const { className = '' } = Astro.props;
 <style is:global>
   html { background:var(--page-bg, #f5f7fa); min-height:100%; }
   body.luxury-body { background:transparent !important; }
-  .luxury-backdrop { position:fixed; inset:0; pointer-events:none; z-index:-1; background:radial-gradient(ellipse at 0% 0%,var(--accent-soft),transparent 48%),var(--page-bg, #f5f7fa); }
+  .luxury-backdrop { position:fixed; inset:0; pointer-events:none; z-index:-1; background:var(--page-bg, #f5f7fa); }
 </style>
 <div class={'luxury-backdrop ' + className} aria-hidden="true"></div>
 <NavHoverData />

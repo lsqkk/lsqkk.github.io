@@ -6,7 +6,7 @@
             --bg-light: #404040;
             --text-primary: #ffffff;
             --text-secondary: #cccccc;
-            --border-radius: 12px;
+            --border-radius: var(--radius-md);
             --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
@@ -56,7 +56,7 @@
             transition: all 0.3s;
             display: inline-block;
             padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
         }
 
         .tou a:hover {
@@ -177,7 +177,7 @@
             left: 50%;
             width: 5px;
             height: 5px;
-            background: rgba(255, 255, 255, 0.5);
+            background: var(--surface);
             opacity: 0;
             border-radius: 100%;
             transform: scale(1, 1) translate(-50%, -50%);
@@ -238,7 +238,7 @@
             padding: 12px;
             background: var(--bg-medium);
             border: 1px solid #555;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             color: var(--text-primary);
             font-size: 16px;
             transition: all 0.3s;

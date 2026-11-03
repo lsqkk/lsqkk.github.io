@@ -40,7 +40,7 @@ canvas {
     background: linear-gradient(90deg, #ff00cc, #3333ff, #00ccff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(255, 0, 204, 0.3);
+    text-shadow: none;
     font-weight: 300;
     letter-spacing: 2px;
 }
@@ -65,11 +65,11 @@ canvas {
     color: white;
     border: none;
     padding: 12px 25px;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all 0.3s;
     font-size: 1rem;
-    backdrop-filter: blur(10px);
+
     border: 1px solid rgba(100, 100, 255, 0.2);
     display: flex;
     align-items: center;
@@ -80,13 +80,13 @@ canvas {
 .control-btn:hover {
     background: rgba(40, 40, 80, 0.8);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
 }
 
 .control-btn.active {
     background: rgba(80, 80, 255, 0.3);
     border: 1px solid rgba(100, 100, 255, 0.5);
-    box-shadow: 0 0 20px rgba(100, 100, 255, 0.4);
+    box-shadow: none;
 }
 
 #audioInput {
@@ -101,17 +101,17 @@ canvas {
     color: white;
     border: 1px solid rgba(255, 100, 255, 0.2);
     padding: 12px 25px;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all 0.3s;
-    backdrop-filter: blur(10px);
+
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .file-label:hover {
     background: rgba(60, 20, 60, 0.8);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
 }
 
 .visualization-info {
@@ -121,8 +121,8 @@ canvas {
     transform: translateX(-50%);
     background: rgba(20, 20, 40, 0.7);
     padding: 12px 25px;
-    border-radius: 50px;
-    backdrop-filter: blur(10px);
+    border-radius: var(--radius-sm);
+
     font-size: 0.9rem;
     color: #a0a0e0;
     border: 1px solid rgba(100, 100, 255, 0.2);
@@ -182,7 +182,7 @@ canvas {
     color: #a0a0e0;
     border: 1px solid rgba(100, 100, 255, 0.2);
     padding: 8px 15px;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all 0.3s;
     font-size: 0.9rem;

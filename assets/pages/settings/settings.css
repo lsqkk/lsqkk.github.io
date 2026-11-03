@@ -47,12 +47,11 @@
 }
 
 .settings-panel {
-    background: var(--glass-bg);
+    background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 22px;
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+
     overflow: hidden;
     transition: box-shadow 0.3s ease;
     opacity: 0;
@@ -61,7 +60,7 @@
 }
 
 .settings-panel:hover {
-    box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
+    box-shadow: none;
 }
 
 @keyframes settings-panel-in {
@@ -125,8 +124,8 @@
     min-height: 44px;
     padding: 0 12px;
     border: 1px solid var(--line);
-    border-radius: 12px;
-    background: var(--glass-bg-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface-strong);
     color: var(--text-main);
     font: inherit;
     cursor: pointer;
@@ -199,7 +198,7 @@
 .btn {
     min-height: 42px;
     padding: 0 20px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid transparent;
     font: inherit;
     font-weight: 600;
@@ -217,7 +216,7 @@
 
 .btn.primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-2) 25%, transparent);
+    box-shadow: none;
     background: color-mix(in srgb, var(--accent-2) 80%, black);
 }
 
@@ -227,7 +226,7 @@
 
 .btn.ghost {
     color: var(--text-main);
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     border-color: var(--line);
     transition: transform 0.28s ease, border-color 0.28s ease, background 0.28s ease;
 }
@@ -235,7 +234,7 @@
 .btn.ghost:hover {
     transform: translateY(-2px);
     border-color: var(--accent-2);
-    background: var(--glass-bg);
+    background: var(--surface);
 }
 
 .btn.ghost:active {
@@ -297,3 +296,22 @@ body.reduce-motion .btn,
 body.reduce-motion .toggle-card input {
     transition: none !important;
 }
+
+/* 扁平归一 */
+.settings-shell { padding: 0 0 64px; }
+.settings-hero { padding: 100px 0 24px; animation: none; opacity: 1; transform: none; }
+.settings-kicker {
+  margin: 0 0 10px;
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.settings-hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 650; letter-spacing: -0.025em; }
+.settings-hero p:not(.settings-kicker) { font-size: 13px; }
+.btn { border-radius: var(--radius-sm); font-size: 12.5px; }
+.btn.primary { color: var(--surface-strong); background: var(--text-main); }
+.btn.primary:hover { background: var(--text-main); opacity: 0.85; transform: none; box-shadow: none; }
+.btn.primary:active { transform: none; }
+@media (max-width: 640px) { .settings-hero { padding-top: 88px; } }

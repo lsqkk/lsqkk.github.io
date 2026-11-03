@@ -22,12 +22,6 @@
           "icon": "fa-atom"
         },
         {
-          "name": "山火预警监测",
-          "link": "fire-alert2",
-          "description": "基于卫星数据和气象信息的山火风险预警与监测系统",
-          "icon": "fa-fire"
-        },
-        {
           "name": "音乐可视化",
           "link": "music-visualizer",
           "description": "结合粒子系统和 3D 场景的音频可视化实验",
@@ -107,12 +101,6 @@
           "link": "/blog/lyb",
           "description": "用户互动与留言交流平台，支持实时评论和消息通知",
           "icon": "fa-comments"
-        },
-        {
-          "name": "夸克大学",
-          "link": "uni",
-          "description": "在线学习与知识分享平台，提供课程管理和学习进度跟踪",
-          "icon": "fa-graduation-cap"
         }
       ]
     }

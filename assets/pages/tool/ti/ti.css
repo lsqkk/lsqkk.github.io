@@ -1,140 +1,221 @@
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #e0e0e0;
-            --text-dim: #888;
-        }
+/* ============================================================
+   思政题库抽测 — 扁平答题界面
+   ============================================================ */
 
-        body {
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            text-shadow: 0px 2px 2px #000;
-        }
+body.feature-ti {
+    display: block;
+    min-height: 100vh;
+    margin: 0;
+    padding: 92px 24px 48px;
+    color: var(--text-main);
+    background: var(--page-bg);
+    text-shadow: none;
+}
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 2.5rem;
-            width: 90%;
-            max-width: 700px;
-            margin-top: 60px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
+.ti-shell {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
 
-        .glass-card h1 {
-            font-weight: 300;
-            letter-spacing: 4px;
-            text-align: center;
-            margin-bottom: 2.5rem;
-            color: #fff;
-        }
+.ti-header { margin-bottom: 28px; }
 
-        .config-section,
-        .quiz-section,
-        .stats-section {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
+.ti-kicker {
+    margin: 0 0 10px;
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+}
 
-        .row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+.ti-header h1 {
+    margin: 0 0 10px;
+    color: var(--text-main);
+    font-size: clamp(30px, 4.5vw, 44px);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+}
 
-        .range-picker {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+.ti-subtitle {
+    margin: 0;
+    color: var(--text-subtle);
+    font-size: 14px;
+    line-height: 1.8;
+}
 
-        select,
-        button,
-        input[type="checkbox"] {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--glass-border);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 4px;
-            outline: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
+.ti-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line);
+}
 
-        button:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
+.ti-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
 
-        .primary-btn {
-            background: #fff;
-            color: #000;
-            font-weight: 600;
-            border: none;
-            padding: 14px;
-            margin-top: 10px;
-            border-radius: 6px;
-        }
+.ti-label {
+    color: var(--text-subtle);
+    font-size: 13px;
+}
 
-        .primary-btn:hover {
-            background: #ccc;
-        }
+.range-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 
-        #question-display {
-            font-size: 1.5rem;
-            line-height: 1.6;
-            text-align: center;
-            min-height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+select,
+input[type="checkbox"] {
+    font: inherit;
+}
 
-        .hint-text {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            text-align: center;
-            height: 20px;
-        }
+select {
+    min-height: 38px;
+    padding: 8px 11px;
+    color: var(--text-main);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+}
 
-        .hidden {
-            display: none !important;
-        }
+select:focus {
+    border-color: var(--line-strong);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
 
-        .stats-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+.ti-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-subtle);
+    font-size: 13px;
+    cursor: pointer;
+}
 
-        .stats-table td {
-            padding: 12px 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.85rem;
-        }
+.ti-check input { accent-color: var(--accent); }
 
-        .tag-yes {
-            color: #50fa7b;
-        }
+.ti-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
 
-        .tag-no {
-            color: #ff5555;
-        }
+.primary-btn,
+.ghost-btn {
+    min-height: 40px;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+}
 
-        .progress-bar {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            text-align: center;
-            letter-spacing: 1px;
-        }
+.primary-btn {
+    color: var(--surface-strong);
+    background: var(--text-main);
+    border: 1px solid var(--text-main);
+}
+
+.primary-btn:hover { opacity: 0.84; }
+
+.ghost-btn {
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+}
+
+.ghost-btn:hover {
+    color: var(--text-main);
+    background: var(--surface-soft);
+    border-color: var(--line-strong);
+}
+
+#question-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    padding: 8px 0;
+    color: var(--text-main);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.7;
+    text-align: left;
+}
+
+.progress-bar {
+    color: var(--text-soft);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+}
+
+.hint-text {
+    min-height: 20px;
+    color: var(--text-subtle);
+    font-size: 12.5px;
+}
+
+.ti-exit {
+    align-self: flex-start;
+    padding: 0;
+    color: var(--text-soft);
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.ti-exit:hover { color: var(--text-main); }
+
+.hidden { display: none !important; }
+
+/* 统计表 */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stats-table th {
+    padding: 10px 8px;
+    color: var(--text-soft);
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-align: left;
+}
+
+.stats-table td {
+    padding: 12px 8px;
+    color: var(--text-subtle);
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+.tag-yes { color: var(--ok); }
+.tag-no { color: var(--text-soft); }
+
+@media (max-width: 560px) {
+    body.feature-ti { padding: 84px 16px 32px; }
+    .ti-field { align-items: flex-start; }
+    .range-picker { width: 100%; }
+    .range-picker select { flex: 1; min-width: 0; }
+    #question-display { font-size: 17px; min-height: 140px; }
+}

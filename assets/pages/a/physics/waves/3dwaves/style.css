@@ -16,14 +16,14 @@
             left: 20px;
             background-color: rgba(30, 30, 40, 0.8);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius-md);
+            box-shadow: none;
             max-width: 300px;
-            backdrop-filter: blur(5px);
+
         }
         h1 {
             margin-top: 0;
-            color: #4cc9f0;
+            color: var(--accent);
             font-size: 1.5em;
             margin-bottom: 15px;
         }
@@ -47,7 +47,7 @@
         input[type="range"] {
             width: 100%;
             height: 6px;
-            border-radius: 3px;
+            border-radius: var(--radius-sm);
             background: #2d3746;
             outline: none;
             -webkit-appearance: none;
@@ -57,7 +57,7 @@
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: #4cc9f0;
+            background: var(--accent);
             cursor: pointer;
         }
         .buttons {
@@ -71,12 +71,12 @@
             background-color: #2d3746;
             color: #e0e0e0;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             transition: background-color 0.2s;
         }
         button:hover {
-            background-color: #4cc9f0;
+            background-color: var(--accent);
             color: #121212;
         }
         .legend {
@@ -92,15 +92,15 @@
             left: 20px;
             background-color: rgba(30, 30, 40, 0.8);
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius-md);
+            box-shadow: none;
             max-width: 300px;
-            backdrop-filter: blur(5px);
+
             font-size: 0.9em;
         }
         #instructions h3 {
             margin-top: 0;
-            color: #4cc9f0;
+            color: var(--accent);
         }
         #instructions ul {
             padding-left: 20px;
@@ -119,3 +119,27 @@
         a:hover {
             color: orange;
         }
+/* 暗色实验台：沿用全站令牌 */
+html, body {
+  --page-bg: #0f1115; --surface: #171a20; --surface-strong: #1b1f26; --surface-soft: #14171c;
+  --text-main: #e7e9ee; --text-subtle: #a3adbb; --text-soft: #828c9a;
+  --line: #2a2f37; --line-strong: #3a404a; --line-soft: #23272e;
+  --accent: #7aa2ff; --accent-soft: rgba(122, 162, 255, .14); --accent-2: #4fd1c5;
+  color-scheme: dark; background: var(--page-bg); color: var(--text-main);
+}
+body { background: var(--page-bg); color: var(--text-main); }
+#ui, #instructions {
+  background: rgba(20, 23, 28, .94);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+h1 { color: var(--text-main); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.control-group h3, #instructions h3 { color: var(--text-soft); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+input[type="range"] { background: var(--line); }
+input[type="range"]::-webkit-slider-thumb { background: var(--accent); }
+button { background: var(--surface-strong); color: var(--text-main); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+button:hover { background: var(--surface-soft); color: var(--text-main); border-color: var(--line-strong); }
+.legend { color: var(--text-soft); }
+a:link, a:visited { color: var(--accent); }
+a:hover { color: var(--text-main); }

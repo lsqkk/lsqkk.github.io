@@ -2,10 +2,10 @@
     --primary-color: #4361ee;
     --primary-hover: #3a56d4;
     --secondary-color: #3f37c9;
-    --success-color: #4cc9f0;
+    --success-color: var(--accent);
     --text-color: rgba(255, 255, 255, 0.9);
     /* 浅色文字 */
-    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --text-shadow: none;
     /* 深色阴影 */
     --light-gray: rgba(255, 255, 255, 0.1);
     --medium-gray: rgba(255, 255, 255, 0.15);
@@ -16,7 +16,7 @@
     /* 毛玻璃背景 */
     --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     /* 增强阴影深度 */
-    --border-radius: 16px;
+    --border-radius: var(--radius-md);
     /* 增加圆角增强液态感 */
 }
 
@@ -33,16 +33,16 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
     /* 为所有文字添加阴影 */
 }
 
 /* 毛玻璃效果类 */
 .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(100%);
+    background: var(--surface);
+
     /* 高模糊 + 饱和度增强 */
-    -webkit-backdrop-filter: blur(20px) saturate(100%);
+
     border: 1px solid rgba(255, 255, 255, 0.18);
     /* 微妙的边框增强层次 */
     box-shadow: var(--shadow),
@@ -92,7 +92,7 @@ main {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     color: var(--text-color);
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-shadow: none;
     /* 增强标题阴影 */
 }
 
@@ -101,15 +101,15 @@ main {
     color: var(--dark-gray);
     max-width: 700px;
     margin: 0 auto 1.5rem;
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 /* 容器应用毛玻璃效果 */
 .container {
     background: var(--white);
-    backdrop-filter: blur(25px) saturate(100%);
+
     /* 更高的模糊度 */
-    -webkit-backdrop-filter: blur(25px) saturate(100%);
+
     border-radius: var(--border-radius);
     padding: 2rem;
     box-shadow: var(--shadow),
@@ -121,8 +121,7 @@ main {
 }
 
 .container:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25),
-        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    box-shadow: none;
 }
 
 .upload-area {
@@ -135,8 +134,8 @@ main {
     cursor: pointer;
     position: relative;
     background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+
+
 }
 
 .upload-area:hover {
@@ -161,13 +160,13 @@ main {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
     color: var(--text-color);
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 .upload-hint {
     color: var(--dark-gray);
     font-size: 0.9rem;
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 .controls {
@@ -187,7 +186,7 @@ main {
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--text-color);
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 .slider-container {
@@ -201,18 +200,18 @@ input[type="range"] {
     -webkit-appearance: none;
     height: 8px;
     background: var(--medium-gray);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     outline: none;
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+
+
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 24px;
     height: 24px;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--surface-strong);
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s;
@@ -231,7 +230,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     text-align: center;
     font-weight: 600;
     color: var(--text-color);
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 .preview-container {
@@ -267,8 +266,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border-radius: var(--border-radius);
     border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+
+
 }
 
 #emojiResult {
@@ -279,10 +278,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
     overflow-y: auto;
     background: rgba(255, 255, 255, 0.08);
     padding: 1rem;
-    border-radius: calc(var(--border-radius) - 4px);
+    border-radius: calc(var(--border-radius) - var(--radius-sm));
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-color);
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
     font-family: 'Courier New', monospace;
 }
 
@@ -299,17 +298,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     /* 胶囊按钮增强液态感 */
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
     font-size: 1rem;
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+
+
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-color);
     position: relative;
@@ -339,7 +338,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .btn-primary:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: none;
     background: linear-gradient(135deg, rgba(67, 97, 238, 1), rgba(63, 55, 201, 1));
 }
 
@@ -351,7 +350,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.25);
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
 }
 
 .btn-success {
@@ -363,7 +362,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .btn-success:hover {
     background: linear-gradient(135deg, rgba(76, 201, 240, 1), rgba(64, 180, 220, 1));
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: none;
 }
 
 .btn:disabled {
@@ -391,8 +390,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     background: rgba(255, 255, 255, 0.08);
     padding: 1rem;
     border-radius: var(--border-radius);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+
+
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -413,17 +412,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--dark-gray);
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 footer {
     background: rgba(255, 255, 255, 0.1);
     padding: 1.5rem 0;
     text-align: center;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
     margin-top: auto;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+
+
     border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -445,7 +444,7 @@ footer {
     color: var(--dark-gray);
     text-decoration: none;
     transition: color 0.3s, transform 0.3s;
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 .footer-links a:hover {
@@ -456,7 +455,7 @@ footer {
 .copyright {
     color: var(--dark-gray);
     font-size: 0.9rem;
-    text-shadow: var(--text-shadow);
+    text-shadow: none;
 }
 
 .file-input {
@@ -478,8 +477,8 @@ footer {
     transition: opacity 0.3s;
     pointer-events: none;
     z-index: 10;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+
+
 }
 
 .drag-drop-hint.active {
@@ -492,9 +491,9 @@ footer {
     padding: 1rem 2rem;
     border-radius: var(--border-radius);
     font-weight: 500;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    text-shadow: none;
+
+
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -522,6 +521,6 @@ footer {
 
     .container {
         padding: 1.5rem;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
     }
 }

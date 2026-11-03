@@ -27,39 +27,66 @@ const currentYear = new Date().getFullYear();
     </script>
     <script is:inline defer src="/assets/js/cursor-trail.js"></script>
     <script is:inline defer src="/assets/js/nav.js"></script>
-  <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
 </head>
 
-  <body class=" feature-page feature-xjtx">
-<nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span>/</span><a href="/games/">游戏</a></nav>
-    <div id="game-container">
-      <h1>XJTU 交大图寻</h1>
-      <div id="question-image"></div>
-      <button onclick="showMap()">选择位置</button>
-      <div class="stats">
-        <h3>今日统计</h3>
-        <p>答题数: <span id="total-questions">0</span></p>
-        <p>最高分: <span id="high-score">0</span></p>
-        <p>最低分: <span id="low-score">0</span></p>
-        <p>平均分: <span id="average-score">0</span></p>
-      </div>
-      <div class="game-link">
-        <button onclick="window.location.href='/'">{SITE_TITLE}</button>
-        <button onclick="window.location.href='/games'">更多游戏</button>
-      </div>
-    </div>
-    <div class="footer">
+  <body class="feature-page feature-xjtx">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span>/</span><a href="/games/">游戏</a></nav>
+
+    <main class="xjtx-shell">
+      <section class="xjtx-stage" aria-label="题目照片">
+        <div id="question-image" class="xjtx-photo"></div>
+        <p class="xjtx-caption">这张照片拍摄于校园的哪个位置？</p>
+      </section>
+
+      <aside class="xjtx-panel">
+        <p class="xjtx-kicker">CAMPUS / XJTU</p>
+        <h1>交大图寻</h1>
+        <p class="xjtx-intro">看一张校园照片，在地图上指出拍摄位置。越接近真实地点，得分越高。</p>
+
+        <button class="xjtx-primary" type="button" onclick="showMap()">选择位置</button>
+
+        <section class="xjtx-stats" aria-labelledby="xjtx-stats-title">
+          <h2 id="xjtx-stats-title">今日统计</h2>
+          <dl>
+            <div><dt>答题数</dt><dd id="total-questions">0</dd></div>
+            <div><dt>最高分</dt><dd id="high-score">0</dd></div>
+            <div><dt>最低分</dt><dd id="low-score">0</dd></div>
+            <div><dt>平均分</dt><dd id="average-score">0</dd></div>
+          </dl>
+        </section>
+
+        <div class="xjtx-links">
+          <a href="/">返回首页</a>
+          <a href="/games">更多游戏</a>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
       <p>© 2024 - {currentYear} 蓝色奇夸克 / {SITE_TITLE} All rights reserved.</p>
-    </div>
-    <div id="satellite-map">
-      <div class="map-overlay">
-        <img src="/assets/pages/games/xjtx/images/1.png" id="map-image" alt="交大卫星图" />
-        <div id="correct-marker" class="marker"></div>
-        <div id="user-marker" class="marker"></div>
-        <div id="connection-line"></div>
+    </footer>
+
+    <div id="satellite-map" class="xjtx-map-modal" role="dialog" aria-modal="true" aria-labelledby="xjtx-map-title">
+      <div class="xjtx-map-card">
+        <header class="xjtx-map-header">
+          <div>
+            <p class="xjtx-map-kicker">MAP</p>
+            <h2 id="xjtx-map-title">在地图上选择位置</h2>
+          </div>
+          <button id="map-close" class="xjtx-map-close" type="button" aria-label="关闭地图" onclick="closeMap()">×</button>
+        </header>
+        <div class="map-overlay">
+          <img src="/assets/pages/games/xjtx/images/1.png" id="map-image" alt="交大卫星图" />
+          <div id="correct-marker" class="marker" aria-hidden="true"></div>
+          <div id="user-marker" class="marker" aria-hidden="true"></div>
+          <div id="connection-line" aria-hidden="true"></div>
+        </div>
+        <div id="map-result" class="xjtx-result" role="status" aria-live="polite"></div>
+        <div class="xjtx-map-actions">
+          <button id="submit-btn" class="xjtx-primary" type="button" onclick="submitAnswer()">确定</button>
+        </div>
       </div>
-      <div id="map-result"></div>
-      <button id="submit-btn" onclick="submitAnswer()">确定</button>
     </div>
 
     <script is:inline src="/assets/pages/games/xjtx/xjtx.js"></script>

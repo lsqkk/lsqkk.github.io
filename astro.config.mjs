@@ -1,5 +1,6 @@
 import path from "node:path";
 import fs from "node:fs/promises";
+import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
@@ -582,6 +583,7 @@ export default defineConfig({
       return { ...item, url: url.href };
     },
   }), sitemapCompat(), apiBaseInjector(), optimizeStatic()],
+  redirects: process.argv.includes("dev") ? buildDevRedirects() : undefined,
   markdown: {
     remarkRehype: {
       allowDangerousHtml: true,
@@ -602,5 +604,56 @@ export default defineConfig({
         "@siteConfig": path.resolve("src/config/site.js"),
       },
     },
+    plugins: [devApiBase()],
   },
 });
+
+/**
+ * In production `__API_BASE__` is replaced after the build. In dev the
+ * placeholder is left in `<script src="__API_BASE__/api/...">` and Vite tries
+ * to resolve it as a module. Replace it for dev so the preview server runs.
+ */
+function devApiBase() {
+  let apiBase = "";
+  try {
+    apiBase = JSON.parse(
+      readFileSync(path.join(ROOT, "src", "config", "json", "api.json"), "utf8"),
+    ).apiBase || "";
+  } catch {
+    // keep the placeholder when the config is unavailable
+  }
+  return {
+    name: "dev-api-base",
+    apply: "serve",
+    enforce: "pre",
+    transform(code) {
+      if (!apiBase || !code.includes(API_BASE_PLACEHOLDER)) return null;
+      return { code: code.split(API_BASE_PLACEHOLDER).join(apiBase), map: null };
+    },
+  };
+}
+
+/**
+ * `build.format: "file"` turns `pages/x/index/index.astro` into `x/index.html`,
+ * so GitHub Pages serves it at `/x`. Astro dev instead exposes `/x/index`,
+ * which makes directory links 404 locally. Add redirects in dev only;
+ * production output is untouched.
+ */
+function buildDevRedirects() {
+  const pagesDir = path.join(ROOT, "src", "pages");
+  const redirects = {};
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (entry.name === "index.astro" && path.basename(dir) === "index") {
+        const rel = path.relative(pagesDir, path.dirname(dir)).split(path.sep).join("/");
+        if (!rel) continue;
+        redirects[`/${rel}`] = `/${rel}/index`;
+      }
+    }
+  };
+  walk(pagesDir);
+  return redirects;
+}

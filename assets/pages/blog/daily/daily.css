@@ -24,13 +24,12 @@ body {
 header {
     text-align: center;
     margin-bottom: 20px;
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    background: var(--glass-bg);
+
+    background: var(--surface);
     border: 1px solid var(--line);
     padding: 20px;
     border-radius: var(--radius-md);
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
     position: relative;
 }
 
@@ -71,7 +70,7 @@ header {
     color: #fff;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-size: 0.95rem;
     display: flex;
@@ -93,14 +92,13 @@ header {
 
 .calendar-container {
     display: none;
-    background: var(--glass-bg-solid);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface-strong);
+
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     padding: 20px;
     margin-top: 15px;
-    box-shadow: 0 8px 32px var(--glass-shadow);
+    box-shadow: none;
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
@@ -168,7 +166,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-size: 0.9rem;
     transition: background 0.2s ease;
@@ -225,19 +223,19 @@ header {
     flex: 1;
     padding: 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-size: 0.95rem;
     transition: background 0.24s ease, transform 0.24s ease;
 }
 
 .today-btn {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     color: var(--text-main);
 }
 
 .today-btn:hover {
-    background: var(--glass-bg-solid);
+    background: var(--surface-strong);
 }
 
 .confirm-btn {
@@ -252,9 +250,8 @@ header {
 
 /* ── 筛选状态 ── */
 .filter-status {
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
     padding: 10px 20px;
     border-radius: var(--radius-sm);
@@ -262,12 +259,12 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 8px 32px var(--glass-shadow);
+    box-shadow: none;
     transition: border-color 0.24s ease;
 }
 
 .filter-status.active {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     border-left: 4px solid var(--accent);
 }
 
@@ -276,7 +273,7 @@ header {
     border: 1px solid var(--text-soft);
     color: var(--text-soft);
     padding: 5px 10px;
-    border-radius: 15px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     font-size: 0.85rem;
     transition: background 0.2s ease, color 0.2s ease;
@@ -290,14 +287,13 @@ header {
 
 /* ── 分页 ── */
 .pagination-container {
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
     padding: 20px;
     border-radius: var(--radius-sm);
     margin-top: 30px;
-    box-shadow: 0 8px 32px var(--glass-shadow);
+    box-shadow: none;
 }
 
 .pagination-info {
@@ -320,7 +316,7 @@ header {
     color: #fff;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-size: 0.95rem;
     display: flex;
@@ -337,7 +333,7 @@ header {
 }
 
 .pagination-btn:disabled {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     color: var(--text-soft);
     cursor: not-allowed;
     transform: none;
@@ -352,9 +348,9 @@ header {
     width: 40px;
     height: 40px;
     border: 1px solid var(--line);
-    background: var(--glass-bg);
+    background: var(--surface);
     color: var(--text-main);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-size: 0.95rem;
     transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
@@ -384,7 +380,7 @@ header {
 .spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid var(--glass-bg-strong);
+    border: 3px solid var(--surface-strong);
     border-top: 3px solid var(--accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -404,17 +400,16 @@ header {
 }
 
 .daily-section {
-    background: var(--glass-bg);
+    background: var(--surface);
     border-radius: var(--radius-md);
     overflow: hidden;
-    box-shadow: 0 8px 32px var(--glass-shadow);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    box-shadow: none;
+
     border: 1px solid var(--line);
 }
 
 .daily-header {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     padding: 12px 20px;
     font-weight: bold;
     color: var(--text-main);
@@ -432,7 +427,7 @@ header {
 }
 
 .article-card {
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     overflow: hidden;
@@ -441,8 +436,8 @@ header {
 
 .article-card:hover {
     transform: translateY(-3px);
-    background: var(--glass-bg);
-    box-shadow: 0 12px 30px var(--glass-shadow);
+    background: var(--surface);
+    box-shadow: none;
 }
 
 .article-card.read {
@@ -484,7 +479,7 @@ header {
     background: var(--accent);
     color: #fff;
     padding: 2px 6px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     font-size: 0.75rem;
     margin-right: 5px;
     margin-bottom: 5px;
@@ -542,3 +537,127 @@ header {
     .pagination-btn { min-width: auto; padding: 8px 15px; }
     .page-number { width: 35px; height: 35px; font-size: 0.85rem; }
 }
+
+/* 扁平归一：日报 */
+body { background: var(--page-bg); }
+.container { max-width: 1000px; margin: 0 auto; padding: 0 24px 48px; }
+header {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 100px 24px 24px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.header-content111 {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+.header-content111 h1 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.header-content111 .date,
+.header-description { color: var(--text-subtle); font-size: 13px; margin: 0; }
+.calendar-controls { margin-top: 18px; }
+.calendar-toggle-btn {
+  padding: 8px 12px;
+  color: var(--text-subtle);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  box-shadow: none;
+}
+.calendar-toggle-btn:hover { color: var(--text-main); background: var(--surface-soft); transform: none; }
+.calendar-toggle-btn.active { color: var(--text-main); background: var(--surface-soft); border-color: var(--line-strong); }
+.calendar-container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+.calendar-day { border-radius: var(--radius-xs); color: var(--text-subtle); }
+.calendar-day.active,
+.calendar-day.selected { color: var(--surface-strong); background: var(--text-main); }
+.filter-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  margin: 0;
+  color: var(--text-subtle);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 12.5px;
+}
+.daily-sections { display: grid; gap: 0; }
+.daily-section {
+  margin: 0;
+  padding: 22px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.daily-section:first-child { border-top: 0; }
+.daily-section h2,
+.daily-section .date { color: var(--text-main); font-size: 14px; font-weight: 600; }
+.articles-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 32px;
+  margin-top: 8px;
+}
+.article-card {
+  margin: 0;
+  padding: 14px 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  border-radius: 0;
+  box-shadow: none;
+}
+.article-card:hover { transform: none; background: transparent; box-shadow: none; }
+.article-title { color: var(--text-main); font-size: 15px; font-weight: 600; line-height: 1.5; }
+.article-meta { color: var(--text-soft); font-size: 11.5px; }
+.tag {
+  padding: 1px 6px;
+  color: var(--text-subtle);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  font-size: 10.5px;
+}
+@media (max-width: 700px) {
+  header { padding: 88px 16px 20px; }
+  .container { padding: 0 16px 32px; }
+  .articles-container { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 版面收尾 */
+.header-content111 { justify-content: flex-start; }
+.daily-header {
+  padding: 0 0 10px;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.articles-container { padding: 0; margin: 0; gap: 0 32px; }
+.article-card { min-height: 0; }
+.article-content { padding: 0; }

@@ -1,18 +1,31 @@
+/* ============================================================
+   夸克图床 — 上传与结果
+   ============================================================ */
+
 .pic-shell {
-    width: min(980px, 92vw);
-    margin: 34px auto 48px;
+    width: min(880px, 92vw);
+    margin: 0 auto;
+    padding: 100px 0 56px;
+}
+
+.pic-shell .page-title {
+    margin: 0 0 10px;
+    text-align: left;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 650;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
 }
 
 .pic-panel {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 18px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    color: #f4f8ff;
+    margin: 0;
+    padding: 24px 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--text-main);
 }
 
 .pic-top-row {
@@ -24,149 +37,212 @@
 }
 
 .pic-back-link {
+    color: var(--text-subtle);
     text-decoration: none;
-    color: #d8ebff;
-    border: 1px solid rgba(216, 235, 255, 0.5);
-    padding: 7px 12px;
-    border-radius: 8px;
+    font-size: 12.5px;
 }
 
-.pic-back-link:hover {
-    background: rgba(216, 235, 255, 0.15);
-}
+.pic-back-link:hover { color: var(--accent); }
 
 .pic-limit-text {
-    font-size: 14px;
-    color: #dfeeff;
+    color: var(--text-soft);
+    font-size: 12px;
 }
 
 .pic-login-tip {
-    margin: 8px 0 14px;
-    font-size: 13px;
-    color: rgba(223, 238, 255, 0.85);
-    background: rgba(8, 28, 48, 0.4);
-    border: 1px dashed rgba(139, 198, 255, 0.4);
-    border-radius: 10px;
-    padding: 10px 12px;
+    margin: 0 0 18px;
+    padding: 10px 0 10px 12px;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 0;
+    border-left: 1px solid var(--line-strong);
+    border-radius: 0;
+    font-size: 12.5px;
+    line-height: 1.7;
 }
 
 .pic-login-tip.is-logged {
-    color: rgba(178, 255, 220, 0.9);
-    border-color: rgba(46, 204, 113, 0.45);
-    background: rgba(14, 40, 30, 0.45);
+    color: var(--text-subtle);
+    border-color: var(--ok);
 }
 
 .pic-picker {
     display: block;
-    border: 1px dashed rgba(255, 255, 255, 0.45);
-    border-radius: 12px;
-    padding: 18px;
+    padding: 28px 20px;
     text-align: center;
+    color: var(--text-subtle);
+    background: var(--surface-soft);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-lg);
+    font-size: 13px;
     cursor: pointer;
-    background: rgba(0, 18, 35, 0.35);
+    transition: border-color 0.16s ease, background-color 0.16s ease;
 }
 
-.pic-picker input {
+.pic-picker:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+}
+
+.pic-picker input[type="file"] {
     display: block;
     width: 100%;
-    margin-top: 10px;
-    color: #dfeeff;
+    margin-top: 14px;
+    color: var(--text-subtle);
+    font-size: 12px;
+}
+
+.pic-picker input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 14px;
+    color: var(--text-main);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
 }
 
 .pic-actions,
 .pic-copy-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 14px;
+    gap: 8px;
+    margin-top: 16px;
     flex-wrap: wrap;
 }
 
 .pic-actions button,
 .pic-copy-actions button {
-    border: 0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    background: #2f6fa2;
-    color: #fff;
+    padding: 9px 15px;
+    color: var(--surface-strong);
+    background: var(--text-main);
+    border: 1px solid var(--text-main);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
+    transition: opacity 0.16s ease;
 }
 
 .pic-actions button:hover,
+.pic-copy-actions button:hover { opacity: 0.84; }
+
+.pic-actions button + button,
+.pic-copy-actions button {
+    color: var(--text-subtle);
+    background: transparent;
+    border-color: var(--line);
+}
+
+.pic-actions button + button:hover,
 .pic-copy-actions button:hover {
-    filter: brightness(1.08);
+    color: var(--text-main);
+    background: var(--surface-soft);
+    border-color: var(--line-strong);
+    opacity: 1;
 }
 
 .pic-status {
-    margin-top: 14px;
-    font-size: 14px;
-    color: #e2f0ff;
+    margin-top: 16px;
+    color: var(--text-subtle);
+    font-size: 12.5px;
 }
 
 .pic-progress-wrap {
     width: 100%;
-    height: 10px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.15);
+    height: 3px;
     margin-top: 8px;
     overflow: hidden;
+    background: var(--line-soft);
+    border-radius: var(--radius-xs);
 }
 
 .pic-progress {
     width: 0%;
     height: 100%;
-    background: #67b7ff;
+    background: var(--accent);
     transition: width 0.2s ease;
 }
 
 .pic-file-list {
-    margin: 12px 0 0;
-    padding-left: 20px;
-    color: #ebf5ff;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--text-subtle);
+    font-size: 12.5px;
+}
+
+.pic-file-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line-soft);
 }
 
 .pic-section-title {
-    margin: 0 0 10px;
-    font-weight: 500;
+    margin: 0 0 12px;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .pic-result {
-    margin-top: 12px;
     display: grid;
-    gap: 10px;
+    gap: 8px;
+    margin-top: 14px;
 }
 
 .pic-item {
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 10px;
     padding: 12px;
-    background: rgba(4, 25, 45, 0.45);
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
 }
 
 .pic-item p {
-    margin: 6px 0;
+    margin: 5px 0;
+    color: var(--text-subtle);
+    font-size: 12.5px;
     word-break: break-all;
 }
 
 .pic-item a {
-    color: #95d3ff;
+    color: var(--accent);
     text-decoration: none;
 }
 
-.pic-item a:hover {
-    text-decoration: underline;
-}
+.pic-item a:hover { text-decoration: underline; }
 
 @media (max-width: 640px) {
     .pic-shell {
-        width: min(980px, 95vw);
+        width: min(880px, 94vw);
+        padding: 90px 0 40px;
     }
-
     .pic-top-row {
         flex-direction: column;
         align-items: flex-start;
     }
-
-    .pic-panel {
-        padding: 16px;
-    }
 }
+
+/* 文件选择：隐藏原生控件，使用中文按钮 */
+.pic-picker { position: relative; }
+.pic-picker input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.pic-picker > span {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  color: var(--text-main);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.pic-picker:hover > span { border-color: var(--line-strong); background: var(--surface-soft); }

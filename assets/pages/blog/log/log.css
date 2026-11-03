@@ -12,7 +12,7 @@
 
 body {
     min-height: 100vh;
-    background: url('/assets/img/bg.png') no-repeat center center fixed;
+    background: var(--page-bg);
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -54,16 +54,13 @@ body {
    Sidebar widgets
    ════════════════════════════════════════ */
 .log-sidebar-widget {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
-    border-radius: 16px;
+    border-radius: var(--radius-md);
     padding: 1.2rem;
     margin-bottom: 1.2rem;
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+    box-shadow: none;
     color: var(--text-main);
 }
 
@@ -120,7 +117,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 8px 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all 0.24s ease;
     text-decoration: none;
@@ -146,7 +143,7 @@ body {
     background: var(--accent-soft);
     color: var(--accent);
     padding: 1px 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     font-size: 0.78rem;
     min-width: 22px;
     text-align: center;
@@ -200,7 +197,7 @@ body {
 .heatmap-cell {
     width: 11px;
     height: 11px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     background: var(--surface);
     cursor: pointer;
     transition: transform 0.2s ease, opacity 0.2s ease;
@@ -246,23 +243,20 @@ body.dark-mode .heatmap-cell.level-2 { opacity: 0.85; }
 .legend-cell {
     width: 10px;
     height: 10px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
 }
 
 /* ════════════════════════════════════════
    Update cards (existing styles preserved)
    ════════════════════════════════════════ */
 .update-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    border-radius: 16px;
+    background: var(--surface);
+
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     border: 1px solid var(--line);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+    box-shadow: none;
     transition: all 0.3s ease;
     cursor: pointer;
     color: var(--text-main);
@@ -310,7 +304,7 @@ h1.title {
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: none;
 }
 
 .update-card h2 {
@@ -337,7 +331,7 @@ h1.title {
 
 .update-card img {
     max-width: 100%;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     margin: 1rem 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -369,13 +363,13 @@ h1.title {
 .update-card code {
     background: rgba(0, 0, 0, 0.2);
     padding: 0.2rem 0.4rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .update-card pre {
     background: rgba(0, 0, 0, 0.2);
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     margin: 1rem 0;
     overflow-x: auto;
 }
@@ -435,7 +429,7 @@ h1.title {
 .tag {
     display: inline-block;
     padding: 2px 10px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     font-size: 0.85em;
     font-weight: 600;
     margin-right: 0;
@@ -450,27 +444,27 @@ h1.title {
 }
 
 .tag.update {
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, var(--accent), var(--accent));
     color: white;
-    border: 1px solid #2980b9;
+    border: 1px solid var(--accent);
 }
 
 .tag.optimize {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    background: linear-gradient(135deg, var(--ok), var(--ok));
     color: white;
-    border: 1px solid #27ae60;
+    border: 1px solid var(--ok);
 }
 
 .tag.add {
-    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    background: linear-gradient(135deg, var(--violet), var(--violet));
     color: white;
-    border: 1px solid #8e44ad;
+    border: 1px solid var(--violet);
 }
 
 .tag.fix {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    background: linear-gradient(135deg, var(--danger), var(--danger));
     color: white;
-    border: 1px solid #c0392b;
+    border: 1px solid var(--danger);
 }
 
 .tag.default {
@@ -494,7 +488,7 @@ h1.title {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(255, 255, 255, 0.2);
     font-size: 0.9em;
     font-weight: 500;
@@ -571,12 +565,11 @@ body.dark-mode .pagination-container,
 }
 
 .pagination-btn {
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
     color: var(--text-main);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 0.5rem 1rem;
     cursor: pointer;
     font-size: 0.95rem;
@@ -585,11 +578,11 @@ body.dark-mode .pagination-container,
     text-align: center;
     box-shadow:
         0 4px 12px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+        inset 0 0 0 1px var(--line);
 }
 
 .pagination-btn:hover {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     transform: translateY(-2px);
     border-color: var(--line-strong);
 }
@@ -609,7 +602,7 @@ body.dark-mode .pagination-container,
 
 .pagination-btn.disabled:hover {
     transform: none;
-    background: var(--glass-bg);
+    background: var(--surface);
 }
 
 .pagination-ellipsis {
@@ -750,4 +743,91 @@ body:not(.dark-mode) .loading {
     .entry-hash {
         min-width: 4em;
     }
+}
+
+/* 扁平归一 */
+body { background: var(--page-bg); }
+:root { --glass-bg: var(--surface); --shadow: none; --primary-color: var(--text-subtle); }
+.log-main, .log-sidebar-widget {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+.log-month-item { border-radius: var(--radius-sm); }
+
+/* 扁平化：更新日志改为编辑式时间线 */
+.log-layout { max-width: 1120px; margin: 100px auto 48px; gap: 48px; padding: 0 24px; }
+.log-main { background: transparent; border: 0; padding: 0; }
+.log-main .page-title,
+.log-layout .page-title {
+  text-align: left;
+  margin: 0 0 28px;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+.update-card {
+  margin: 0;
+  padding: 24px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.update-card h2 {
+  margin: 0 0 12px;
+  padding-left: 0;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.update-card h2::before { display: none; }
+.log-sidebar { width: 260px; top: 88px; }
+.log-sidebar-widget {
+  margin: 0;
+  padding: 18px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.log-sidebar-widget:first-child { padding-top: 0; border-top: 0; }
+.log-sidebar-widget h3 {
+  margin-bottom: 12px;
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.log-month-item { padding: 8px 0; border-radius: 0; }
+.log-month-item:hover { background: transparent; }
+@media (max-width: 900px) {
+  .log-layout { flex-direction: column; margin-top: 88px; padding: 0 16px; }
+  .log-sidebar { position: static; width: 100%; max-height: none; }
+}
+
+/* 更新标签：低饱和、无渐变 */
+.tag {
+  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 600;
+  transition: none;
+}
+.tag:hover { transform: none; box-shadow: none; }
+.tag.update { background: var(--accent-soft); color: var(--accent); border: 1px solid transparent; }
+.tag.optimize { background: var(--ok-soft); color: var(--ok); border: 1px solid transparent; }
+.tag.add { background: var(--violet-soft); color: var(--violet); border: 1px solid transparent; }
+.tag.fix { background: var(--danger-soft); color: var(--danger); border: 1px solid transparent; }
+.tag.default { background: var(--surface-soft); color: var(--text-subtle); border: 1px solid transparent; }
+.entry-hash {
+  color: var(--text-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
 }

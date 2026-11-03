@@ -127,10 +127,10 @@ function renderCalendar() {
             const monthName = `${data.year}年 ${monthNames[data.month - 1]}`;
 
             calendarHTML += `
-                    <a href="javascript:void(0)" class="month-item" data-month-key="${key}">
+                    <button type="button" class="month-item" data-month-key="${key}">
                         <span class="month-name">${monthName}</span>
                         <span class="month-count">${data.count}</span>
-                    </a>
+                    </button>
                     `;
         });
     }

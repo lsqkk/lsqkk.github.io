@@ -10,7 +10,7 @@
         }
         h1 {
             margin-bottom: 10px;
-            color: #4cc9f0;
+            color: var(--accent);
             text-align: center;
         }
         .description {
@@ -32,7 +32,7 @@
             min-width: 500px;
             max-width: 800px;
             background-color: #16213e;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
@@ -45,7 +45,7 @@
             flex: 0 0 300px;
             background-color: #16213e;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         .control-group {
@@ -54,7 +54,7 @@
         .control-group h3 {
             margin-top: 0;
             margin-bottom: 15px;
-            color: #4cc9f0;
+            color: var(--accent);
             border-bottom: 1px solid #2d3746;
             padding-bottom: 5px;
         }
@@ -71,7 +71,7 @@
         input[type="range"] {
             width: 100%;
             height: 8px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             background: #2d3746;
             outline: none;
             -webkit-appearance: none;
@@ -81,7 +81,7 @@
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: #4cc9f0;
+            background: var(--accent);
             cursor: pointer;
         }
         .color-scheme {
@@ -94,12 +94,12 @@
             padding: 8px;
             text-align: center;
             background-color: #2d3746;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             transition: background-color 0.2s;
         }
         .color-option.active {
-            background-color: #4cc9f0;
+            background-color: var(--accent);
             color: #1a1a2e;
         }
         .legend {
@@ -113,11 +113,11 @@
             max-width: 800px;
             background-color: #16213e;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         .instructions h3 {
-            color: #4cc9f0;
+            color: var(--accent);
             margin-top: 0;
         }
         .instructions ul {
@@ -148,3 +148,27 @@
         a:hover {
             color: orange;
         }
+/* 暗色实验台：沿用全站令牌 */
+html, body {
+  --page-bg: #0f1115; --surface: #171a20; --surface-strong: #1b1f26; --surface-soft: #14171c;
+  --text-main: #e7e9ee; --text-subtle: #a3adbb; --text-soft: #828c9a;
+  --line: #2a2f37; --line-strong: #3a404a; --line-soft: #23272e;
+  --accent: #7aa2ff; --accent-soft: rgba(122, 162, 255, .14); --accent-2: #4fd1c5;
+  --shadow-main: 0 1px 2px rgba(0,0,0,.5); --shadow-soft: 0 1px 2px rgba(0,0,0,.4);
+  color-scheme: dark; background: var(--page-bg); color: var(--text-main);
+}
+body { padding: 100px 24px 48px; align-items: stretch; }
+h1 { text-align: left; color: var(--text-main); font-size: clamp(30px, 4.5vw, 44px); font-weight: 650; letter-spacing: -0.025em; margin: 0 0 8px; }
+.description { max-width: none; text-align: left; color: var(--text-subtle); font-size: 14px; margin-bottom: 28px; }
+.container { max-width: 1120px; margin: 0 auto; justify-content: flex-start; gap: 32px; }
+.canvas-container { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: none; }
+.controls { background: transparent; border: 0; border-left: 1px solid var(--line); border-radius: 0; padding: 0 0 0 28px; box-shadow: none; }
+.control-group h3 { color: var(--text-soft); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px; }
+input[type="range"] { background: var(--line); }
+input[type="range"]::-webkit-slider-thumb { background: var(--accent); }
+.color-option { background: transparent; border: 1px solid var(--line); color: var(--text-subtle); border-radius: var(--radius-sm); }
+.color-option.active { background: var(--surface-soft); border-color: var(--accent); color: var(--text-main); }
+.legend { color: var(--text-soft); }
+.instructions { max-width: none; margin-top: 32px; background: transparent; border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 18px 0 0; box-shadow: none; color: var(--text-subtle); }
+.instructions h3 { color: var(--text-soft); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+@media (max-width: 900px) { body { padding: 88px 16px 32px; } .controls { border-left: 0; border-top: 1px solid var(--line); padding: 24px 0 0; } .canvas-container { min-width: 0; } }

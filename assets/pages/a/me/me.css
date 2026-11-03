@@ -1,7 +1,7 @@
         :root {
-            --primary-color: #3498db;
+            --primary-color: var(--accent);
             --secondary-color: #2c3e50;
-            --accent-color: #e74c3c;
+            --accent-color: var(--danger);
             --light-color: #ecf0f1;
             --dark-color: #2c3e50;
             --gradient: linear-gradient(135deg, var(--primary-color), var(--accent-color));
@@ -36,9 +36,9 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: var(--glass-bg-solid);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px var(--glass-shadow);
+            background-color: var(--surface-strong);
+
+            box-shadow: none;
             z-index: 1000;
             transition: all 0.3s ease;
         }
@@ -97,7 +97,7 @@
             height: 3px;
             background: var(--gradient);
             transition: width 0.3s ease;
-            border-radius: 3px;
+            border-radius: var(--radius-sm);
         }
 
         .nav-links a:hover::after {
@@ -148,7 +148,7 @@
             width: 80px;
             height: 5px;
             background: var(--gradient);
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
         }
 
         /* 英雄区域 */
@@ -156,7 +156,7 @@
             height: 100vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/assets/img/bg.png');
+            background: var(--surface-soft);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -206,12 +206,12 @@
             background: var(--gradient);
             color: white;
             text-decoration: none;
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             font-weight: 600;
             transition: all 0.3s ease;
             animation: fadeInUp 1s ease 0.4s;
             animation-fill-mode: both;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: none;
             position: relative;
             overflow: hidden;
             z-index: 1;
@@ -243,8 +243,8 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            background: var(--glass-bg);
-            border-radius: 20px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
             padding: 40px;
@@ -296,13 +296,13 @@
             border-radius: 50%;
             object-fit: cover;
             border: 5px solid white;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: none;
             transition: all 0.5s ease;
         }
 
         .profile-img:hover {
             transform: scale(1.03);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: none;
         }
 
         /* 能力与成就部分 */
@@ -318,10 +318,10 @@
         }
 
         .skill-card {
-            background: var(--glass-bg);
+            background: var(--surface);
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px var(--glass-shadow);
+            border-radius: var(--radius-md);
+            box-shadow: none;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -394,10 +394,10 @@
         }
 
         .achievement-item {
-            background: var(--glass-bg);
-            border-radius: 15px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
             overflow: hidden;
-            box-shadow: 0 10px 30px var(--glass-shadow);
+            box-shadow: none;
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(16px);
@@ -452,9 +452,9 @@
 
         .portfolio-item {
             position: relative;
-            border-radius: 15px;
+            border-radius: var(--radius-md);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: none;
             height: 300px;
             transition: all 0.3s ease;
         }
@@ -537,9 +537,9 @@
             font-style: italic;
             margin: 40px 0;
             padding: 30px;
-            border-radius: 15px;
-            background: var(--glass-bg);
-            box-shadow: 0 10px 30px var(--glass-shadow);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            box-shadow: none;
             position: relative;
         }
 
@@ -566,10 +566,10 @@
             font-size: 1.2rem;
             line-height: 1.8;
             margin-bottom: 40px;
-            background: var(--glass-bg);
+            background: var(--surface);
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px var(--glass-shadow);
+            border-radius: var(--radius-md);
+            box-shadow: none;
         }
 
         /* 页脚 */
@@ -691,8 +691,8 @@ body.dark-mode {
 }
 
 body.dark-mode nav {
-    background-color: var(--glass-bg);
-    box-shadow: 0 2px 20px var(--glass-shadow);
+    background-color: var(--surface);
+    box-shadow: none;
 }
 
 body.dark-mode .card,
@@ -703,7 +703,7 @@ body.dark-mode .timeline-item,
 body.dark-mode .contact-form,
 body.dark-mode .about-text,
 body.dark-mode .stat-item {
-    background: var(--glass-bg);
+    background: var(--surface);
     color: var(--text-main);
 }
 
@@ -720,3 +720,17 @@ body.dark-mode footer {
     .skill-card:hover { transform: none !important; }
     .btn:hover { transform: none !important; }
 }
+
+/* 扁平归一 */
+body { color: var(--text-main); }
+.hero { background: var(--surface-soft); color: var(--text-main); }
+.hero::before { display: none; }
+
+.hero { height: auto; min-height: 68vh; padding: 140px 0 84px; }
+.hero .btn {
+  background: var(--text-main);
+  color: var(--surface-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+.hero .btn:hover { background: var(--text-main); opacity: 0.85; transform: none; box-shadow: none; }

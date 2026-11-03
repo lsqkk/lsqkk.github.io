@@ -2,9 +2,9 @@
     /* 假设顶栏高度为 60px，请根据您 nav.css 中的 .header 实际高度调整 */
     --header-height: 60px;
     --bg-light: #f0f2f5;
-    --main-blue: #248dfd;
-    --main-green: #7dd894;
-    --main-red: #ff5328;
+    --main-blue: var(--accent);
+    --main-green: var(--ok);
+    --main-red: var(--danger);
     --card-bg-opacity: 0.2;
     --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     --card-border: 1px solid rgba(255, 255, 255, 0.3);
@@ -13,7 +13,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: url('/assets/img/bg.png') no-repeat center center fixed;
+    background: var(--page-bg);
     background-size: cover;
     color: #333;
     transition: background-color 0.3s;
@@ -38,7 +38,7 @@ body {
     font-size: 2.2em;
     font-weight: 700;
     color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: none;
     opacity: 0;
     animation: share-title-in 0.5s ease 0.05s forwards;
 }
@@ -86,12 +86,12 @@ body {
 .card {
     background-color: rgba(255, 255, 255, var(--card-bg-opacity));
     /* 半透明白色 */
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     box-shadow: var(--card-shadow);
     /* 柔和阴影 */
-    backdrop-filter: blur(10px);
+
     /* 核心：毛玻璃效果 */
-    -webkit-backdrop-filter: blur(10px);
+
     /* 兼容性 */
     border: var(--card-border);
     /* 柔和边框 */
@@ -120,12 +120,12 @@ h2 {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     font-size: 16px;
     transition: all 0.2s;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--surface-strong);
     color: #333;
 }
 
@@ -145,7 +145,7 @@ h2 {
     color: white;
     padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -162,7 +162,7 @@ h2 {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     font-size: 16px;
     transition: all 0.25s ease, transform 0.15s ease;
@@ -203,7 +203,7 @@ h2 {
 }
 
 .zip-button {
-    background-color: #f7b731;
+    background-color: var(--warn);
     /* 醒目黄色 */
     box-shadow: 0 2px 4px rgba(247, 183, 49, 0.4);
     margin-top: 15px;
@@ -219,7 +219,7 @@ h2 {
     margin-top: 20px;
     padding: 15px;
     background-color: rgba(245, 245, 245, 0.9);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     text-align: left;
     white-space: pre-wrap;
     word-break: break-all;
@@ -232,7 +232,7 @@ h2 {
 .progress-bar-container {
     height: 8px;
     background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     margin-top: 15px;
     overflow: hidden;
 }
@@ -252,8 +252,8 @@ h2 {
     margin-bottom: 15px;
     text-align: left;
     border: 1px dashed rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius-lg);
+    background-color: var(--surface);
     font-size: 14px;
 }
 
@@ -276,7 +276,7 @@ h2 {
     margin: 8px 0;
     padding: 10px;
     background-color: rgba(0, 122, 255, 0.1);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     color: #007aff;
     text-decoration: none;
     font-weight: 500;
@@ -307,7 +307,7 @@ h2 {
 
     .app-title {
         color: #e6f0ff;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+        text-shadow: none;
     }
 
     .card {
@@ -350,4 +350,111 @@ h2 {
         background-color: rgba(46, 108, 212, 0.18);
         color: #9ec2ff;
     }
+}
+
+/* 扁平归一 */
+body { background: var(--page-bg); color: var(--text-main); }
+:root { --card-bg-opacity: 1; --card-shadow: none; --card-border: 1px solid var(--line); }
+.card, .download-list a, .progress-bar-container {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--text-main);
+}
+
+/* 扁平归一 */
+.container { width: 100%; max-width: 760px; padding: 100px 24px 48px; }
+.app-title {
+  margin: 0 0 28px;
+  color: var(--text-main);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  text-align: left;
+  opacity: 1;
+  animation: none;
+}
+.card {
+  padding: 24px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.card h2 { margin: 0 0 16px; color: var(--text-main); font-size: 15px; font-weight: 600; }
+.app-input {
+  padding: 11px 12px;
+  color: var(--text-main);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+.app-input::placeholder { color: var(--text-soft); }
+.app-input:focus { outline: none; border-color: var(--line-strong); box-shadow: 0 0 0 3px var(--accent-soft); }
+.app-button {
+  padding: 10px 14px;
+  color: var(--surface-strong);
+  background: var(--text-main);
+  border: 1px solid var(--text-main);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+  transition: opacity 0.16s ease;
+}
+.app-button:hover:not(:disabled) { transform: none; opacity: 0.85; box-shadow: none; }
+.app-button:active:not(:disabled) { transform: none; }
+.app-button:disabled { color: var(--text-soft); background: var(--surface-soft); border-color: var(--line); }
+.file-select-label {
+  padding: 12px;
+  color: var(--text-main);
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  box-shadow: none;
+}
+.file-select-label:hover { transform: none; filter: none; background: var(--surface-soft); }
+.secondary-btn { color: var(--text-subtle); background: transparent; border: 1px solid var(--line); }
+.zip-button { color: var(--text-main); background: var(--surface-soft); border: 1px solid var(--line); }
+.secondary-btn:hover, .zip-button:hover { transform: none; filter: none; background: var(--surface-soft); }
+#status {
+  margin-top: 14px;
+  padding: 12px;
+  color: var(--text-subtle);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+}
+.progress-bar-container { height: 4px; background: var(--line-soft); border-radius: 2px; }
+.progress-bar { background: var(--text-main); }
+@media (max-width: 640px) { .container { padding: 90px 16px 40px; } }
+
+.main-content-wrapper { align-items: stretch; }
+.container { margin: 0 auto; }
+.container .page-title {
+  margin: 0 0 24px;
+  text-align: left;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+
+.main-content-wrapper .page-title {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto 24px;
+  text-align: left;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
 }

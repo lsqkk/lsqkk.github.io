@@ -295,7 +295,7 @@ function renderStats() {
 
     return `
         <div class="log-sidebar-widget">
-            <h3>📊 统计概览</h3>
+            <h3>统计概览</h3>
             <div class="log-stats">
                 <div class="log-stat-item">
                     <span>更新条目</span>
@@ -357,7 +357,7 @@ function renderHeatmap() {
 
     return `
         <div class="log-sidebar-widget">
-            <h3>🔥 贡献热力图</h3>
+            <h3>贡献热力图</h3>
             <div class="heatmap-wrapper">
                 ${monthLabelsHtml}
                 <div class="heatmap-body">
@@ -421,7 +421,7 @@ function renderMonthList() {
 
     let html = `
         <div class="log-sidebar-widget">
-            <h3>📅 月份索引</h3>
+            <h3>月份索引</h3>
             <div class="log-month-list">
     `;
 

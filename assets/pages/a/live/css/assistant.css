@@ -5,7 +5,7 @@
             --card-bg: rgba(255, 255, 255, 0.08);
             --text-color: #ffffff;
             --text-secondary: #b8b8b8;
-            --border-radius: 12px;
+            --border-radius: var(--radius-md);
             --transition: all 0.3s ease;
         }
         * {
@@ -61,14 +61,14 @@
             margin-bottom: 10px;
             padding: 10px;
             background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             min-height: 0;
         }
         .message {
             margin-bottom: 8px;
             padding: 8px 12px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             border-left: 3px solid var(--secondary-color);
             font-size: 0.8rem;
         }
@@ -112,7 +112,7 @@
             padding: 8px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             color: var(--text-color);
             font-size: 0.8rem;
         }
@@ -121,14 +121,14 @@
             background: var(--secondary-color);
             color: #000;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             font-weight: bold;
             transition: var(--transition);
             font-size: 0.8rem;
         }
         #chat-send-btn:hover {
-            background: #06b6b3;
+            background: var(--accent-2);
         }
         .stats-grid {
             display: grid;
@@ -168,7 +168,7 @@
         .control-btn {
             padding: 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             cursor: pointer;
             font-size: 1rem;
             transition: var(--transition);
@@ -180,7 +180,7 @@
         }
         #stop-stream-btn {
             background: rgba(255, 71, 87, 0.2);
-            color: #ff4757;
+            color: var(--danger);
             border: 1px solid rgba(255, 71, 87, 0.3);
         }
         #stop-stream-btn:hover {
@@ -236,13 +236,13 @@
             margin-bottom: 10px;
             padding: 10px;
             background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
         }
         .message {
             margin-bottom: 8px;
             padding: 8px 12px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             border-left: 3px solid var(--secondary-color);
             font-size: 0.8rem;
         }
@@ -286,9 +286,9 @@
         }
         .messages::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 2px;
+            border-radius: var(--radius-sm);
         }
         .messages::-webkit-scrollbar-thumb {
             background: var(--secondary-color);
-            border-radius: 2px;
+            border-radius: var(--radius-sm);
         }

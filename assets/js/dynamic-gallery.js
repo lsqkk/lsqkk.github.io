@@ -106,10 +106,111 @@
     }
 
     // --- Current modal state (for keyboard + touch) ---
+    let modalEl = null;
     let modalGalleryId = '';
     let modalIndex = 0;
     let touchStartX = 0;
     let touchStartY = 0;
+    let lastFocus = null;
+
+    function ensureModal() {
+        if (modalEl) return modalEl;
+
+        modalEl = document.createElement('div');
+        modalEl.className = 'gallery-modal';
+        modalEl.setAttribute('role', 'dialog');
+        modalEl.setAttribute('aria-modal', 'true');
+        modalEl.setAttribute('aria-label', '图片查看');
+        modalEl.innerHTML = `
+            <div class="gallery-modal-content">
+                <button type="button" class="close-btn" data-gallery-close aria-label="关闭预览">&times;</button>
+                <div class="gallery-modal-main" id="gallery-modal-main">
+                    <img class="current-image" alt="">
+                    <button type="button" class="gallery-nav-btn gallery-prev-btn" data-gallery-prev aria-label="上一张"><span>‹</span></button>
+                    <button type="button" class="gallery-nav-btn gallery-next-btn" data-gallery-next aria-label="下一张"><span>›</span></button>
+                    <div class="gallery-counter"></div>
+                </div>
+                <div class="gallery-thumbnails"></div>
+            </div>
+        `;
+
+        modalEl.addEventListener('click', (event) => {
+            if (event.target === modalEl) closeGallery();
+        });
+        modalEl.querySelector('[data-gallery-close]')?.addEventListener('click', closeGallery);
+        modalEl.querySelector('[data-gallery-prev]')?.addEventListener('click', () => changeImage(modalGalleryId, modalIndex - 1));
+        modalEl.querySelector('[data-gallery-next]')?.addEventListener('click', () => changeImage(modalGalleryId, modalIndex + 1));
+
+        const thumbs = modalEl.querySelector('.gallery-thumbnails');
+        thumbs?.addEventListener('click', (event) => {
+            const target = event.target instanceof Element ? event.target.closest('.thumbnail') : null;
+            if (!target) return;
+            changeImage(modalGalleryId, Number(target.dataset.index || '0'));
+        });
+
+        const mainArea = modalEl.querySelector('#gallery-modal-main');
+        if (mainArea) {
+            mainArea.addEventListener('touchstart', (event) => {
+                touchStartX = event.touches[0].clientX;
+                touchStartY = event.touches[0].clientY;
+            }, { passive: true });
+
+            mainArea.addEventListener('touchend', (event) => {
+                const images = galleryStore.get(modalGalleryId);
+                if (!images) return;
+                const dx = event.changedTouches[0].clientX - touchStartX;
+                const dy = event.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+                    if (dx < 0 && modalIndex < images.length - 1) changeImage(modalGalleryId, modalIndex + 1);
+                    else if (dx > 0 && modalIndex > 0) changeImage(modalGalleryId, modalIndex - 1);
+                }
+            }, { passive: true });
+        }
+
+        return modalEl;
+    }
+
+    function updateModal() {
+        const images = galleryStore.get(modalGalleryId) || [];
+        if (!images.length || !modalEl) return;
+
+        const image = modalEl.querySelector('.current-image');
+        if (image instanceof HTMLImageElement) {
+            image.classList.remove('is-loaded');
+            image.src = images[modalIndex];
+            image.alt = `图片 ${modalIndex + 1} / ${images.length}`;
+            const markLoaded = () => image.classList.add('is-loaded');
+            if (image.complete && image.naturalWidth > 0) markLoaded();
+            else image.addEventListener('load', markLoaded, { once: true });
+        }
+
+        const counter = modalEl.querySelector('.gallery-counter');
+        if (counter) counter.textContent = `${modalIndex + 1} / ${images.length}`;
+
+        const prev = modalEl.querySelector('[data-gallery-prev]');
+        const next = modalEl.querySelector('[data-gallery-next]');
+        if (prev instanceof HTMLElement) prev.style.display = modalIndex === 0 ? 'none' : '';
+        if (next instanceof HTMLElement) next.style.display = modalIndex === images.length - 1 ? 'none' : '';
+
+        const thumbs = modalEl.querySelector('.gallery-thumbnails');
+        if (thumbs) {
+            thumbs.innerHTML = images.map((url, i) => `
+                <img src="${url}" class="thumbnail ${i === modalIndex ? 'active' : ''}" data-index="${i}" alt="缩略图 ${i + 1}" loading="lazy">
+            `).join('');
+            requestAnimationFrame(() => {
+                const active = thumbs.querySelector('.thumbnail.active');
+                if (active instanceof HTMLElement) {
+                    thumbs.scrollLeft = active.offsetLeft - thumbs.offsetWidth / 2 + active.offsetWidth / 2;
+                }
+            });
+        }
+
+        [images[modalIndex - 1], images[modalIndex + 1]].forEach((url) => {
+            if (!url) return;
+            const preload = new Image();
+            preload.src = url;
+        });
+    }
 
     /**
      * @param {string} galleryId
@@ -119,80 +220,30 @@
         const images = galleryStore.get(galleryId);
         if (!images || images.length === 0) return;
 
-        const existing = document.querySelector('.gallery-modal');
-        if (existing) existing.remove();
-
         modalGalleryId = galleryId;
         modalIndex = index;
 
-        const modal = document.createElement('div');
-        modal.className = 'gallery-modal';
-        modal.innerHTML = `
-            <div class="gallery-modal-content">
-                <button type="button" class="close-btn" onclick="DynamicGallery.close()" aria-label="关闭预览">&times;</button>
-                <div class="gallery-modal-main" id="gallery-modal-main">
-                    <img src="${images[index]}" class="current-image" alt="全屏图片">
-                    <button type="button" class="gallery-nav-btn gallery-prev-btn" ${index === 0 ? 'style="display:none"' : ''} onclick="DynamicGallery.change('${galleryId}', ${index - 1})" aria-label="上一张"><span>❮</span></button>
-                    <button type="button" class="gallery-nav-btn gallery-next-btn" ${index === images.length - 1 ? 'style="display:none"' : ''} onclick="DynamicGallery.change('${galleryId}', ${index + 1})" aria-label="下一张"><span>❯</span></button>
-                    <div class="gallery-counter">${index + 1} / ${images.length}</div>
-                </div>
-                <div class="gallery-thumbnails">
-                    ${images.map((url, i) => `
-                        <img
-                            src="${url}"
-                            class="thumbnail ${i === index ? 'active' : ''}"
-                            onclick="DynamicGallery.change('${galleryId}', ${i})"
-                            alt="缩略图 ${i + 1}">
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) closeGallery();
-        });
-
-        // Touch swipe support
-        const mainArea = modal.querySelector('#gallery-modal-main');
-        if (mainArea) {
-            mainArea.addEventListener('touchstart', (e) => {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-            }, { passive: true });
-
-            mainArea.addEventListener('touchend', (e) => {
-                const currentImages = galleryStore.get(modalGalleryId);
-                if (!currentImages) return;
-                const dx = e.changedTouches[0].clientX - touchStartX;
-                const dy = e.changedTouches[0].clientY - touchStartY;
-                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-                    if (dx < 0 && modalIndex < currentImages.length - 1) {
-                        changeImage(modalGalleryId, modalIndex + 1);
-                    } else if (dx > 0 && modalIndex > 0) {
-                        changeImage(modalGalleryId, modalIndex - 1);
-                    }
-                }
-            }, { passive: true });
+        const firstOpen = !modalEl || !modalEl.isConnected;
+        ensureModal();
+        if (firstOpen) {
+            lastFocus = document.activeElement;
+            document.body.appendChild(modalEl);
+            document.body.classList.add('gallery-open');
         }
+        updateModal();
 
-        document.body.appendChild(modal);
-        document.body.style.overflow = 'hidden';
-
-        // Scroll thumbnail into view
-        requestAnimationFrame(() => {
-            const thumbs = modal.querySelector('.gallery-thumbnails');
-            const active = modal.querySelector('.thumbnail.active');
-            if (thumbs && active instanceof HTMLElement) {
-                thumbs.scrollLeft = active.offsetLeft - thumbs.offsetWidth / 2 + active.offsetWidth / 2;
-            }
-        });
+        if (firstOpen) {
+            modalEl.querySelector('[data-gallery-close]')?.focus({ preventScroll: true });
+        }
     }
 
     function closeGallery() {
-        const modal = document.querySelector('.gallery-modal');
-        if (!modal) return;
-        modal.remove();
-        document.body.style.overflow = 'auto';
+        if (!modalEl) return;
+        modalEl.remove();
+        modalEl = null;
+        document.body.classList.remove('gallery-open');
+        if (lastFocus instanceof HTMLElement) lastFocus.focus({ preventScroll: true });
+        lastFocus = null;
     }
 
     /**

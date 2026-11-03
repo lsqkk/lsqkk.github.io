@@ -1,11 +1,11 @@
         :root {
-            --primary: #6c63ff;
+            --primary: var(--violet);
             --secondary: #ff6b9d;
             --accent: #4ecdc4;
             --light: #f8f9fa;
             --dark: #343a40;
             --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-border: var(--line);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
@@ -16,7 +16,7 @@
         }
 
         body {
-            background: url('/assets/img/bg.png') no-repeat center center fixed;
+            background: var(--page-bg);
             background-size: cover;
             min-height: 100vh;
             padding: 20px;
@@ -37,10 +37,10 @@
             align-items: center;
             padding: 20px;
             margin-bottom: 30px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: var(--surface);
+
+
+            border-radius: var(--radius-lg);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow);
             width: 100%;
@@ -75,7 +75,7 @@
         .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -113,10 +113,10 @@
 
         .board-selector select {
             padding: 10px 15px;
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             border: none;
-            background: var(--glass-bg);
-            backdrop-filter: blur(5px);
+            background: var(--surface);
+
             color: var(--dark);
             font-weight: 500;
             cursor: pointer;
@@ -138,10 +138,10 @@
 
         .user-panel,
         .messages-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: var(--surface);
+
+
+            border-radius: var(--radius-lg);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow);
             padding: 25px;
@@ -197,9 +197,9 @@
         .form-group input,
         .form-group textarea {
             padding: 12px 15px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.7);
+            background: var(--surface);
             font-size: 1rem;
             transition: all 0.3s ease;
         }
@@ -218,8 +218,8 @@
         }
 
         .message {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 15px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
@@ -303,16 +303,16 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
+            background: var(--surface);
+
+            border-radius: var(--radius-lg);
             padding: 30px;
             width: 90%;
             max-width: 500px;
@@ -355,7 +355,7 @@
             background: var(--secondary);
             color: white;
             padding: 5px 10px;
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             font-size: 0.8rem;
             font-weight: 600;
             margin-left: 10px;
@@ -402,7 +402,7 @@
             padding: 15px 25px;
             background: var(--dark);
             color: white;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
@@ -446,10 +446,10 @@
         .search-box input {
             flex-grow: 1;
             padding: 10px 15px;
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             border: none;
-            background: var(--glass-bg);
-            backdrop-filter: blur(5px);
+            background: var(--surface);
+
             color: var(--dark);
             font-weight: 500;
             outline: none;
@@ -472,10 +472,10 @@
         .board-selector select {
             min-width: 200px;
             padding: 10px 15px;
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             border: none;
-            background: var(--glass-bg);
-            backdrop-filter: blur(5px);
+            background: var(--surface);
+
             color: var(--dark);
             font-weight: 500;
             cursor: pointer;
@@ -513,3 +513,71 @@
         #adminLogoutBtn {
             margin-left: 10px;
         }
+/* 扁平归一 */
+body { background: var(--page-bg); }
+:root { --glass-bg: var(--surface); --glass-border: var(--line); --shadow: none; }
+.main-content, .board-controls, .message, .form-group, .modal-content {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--text-main);
+}
+
+/* 扁平归一：贴吧 */
+body { background: var(--page-bg); }
+:root { --primary: var(--text-main); --secondary: var(--text-subtle); --accent: var(--accent); }
+.container { max-width: 1120px; margin: 96px auto 48px; padding: 0 24px; }
+.logo {
+  color: var(--text-main);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  text-shadow: none;
+}
+.btn, .btn-primary, .btn-secondary, .btn-accent {
+  padding: 8px 12px;
+  color: var(--text-subtle);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.btn-primary {
+  color: var(--surface-strong);
+  background: var(--text-main);
+  border-color: var(--text-main);
+}
+.btn:hover, .btn-primary:hover, .btn-secondary:hover, .btn-accent:hover { transform: none; opacity: 0.85; box-shadow: none; }
+.board-controls {
+  padding: 12px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.main-content, .message, .form-group, .modal-content {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  color: var(--text-main);
+}
+.main-content { padding: 20px; }
+.message { padding: 16px; }
+.form-group input, .form-group textarea, .board-selector select, .search-input {
+  color: var(--text-main);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.avatar { border-radius: var(--radius-md); }
+.message-content, .message-author { color: var(--text-main); }
+.message-time, .empty-state { color: var(--text-soft); }
+@media (max-width: 700px) { .container { margin-top: 84px; padding: 0 16px; } }

@@ -4,9 +4,9 @@
     /* 预留顶栏空间 */
     --main-blue: #007aff;
     /* iOS 蓝色 */
-    --main-green: #34c759;
+    --main-green: var(--ok);
     /* 成功绿色 */
-    --main-red: #ff3b30;
+    --main-red: var(--danger);
     /* 警告红色 */
     --bg-light: #f0f2f5;
     /* 极浅背景色 */
@@ -21,11 +21,11 @@ body {
     margin: 0;
     padding: 0;
     /* 使用与 nav.css 协调的半透明背景 */
-    background: url('/assets/img/bg.png') no-repeat center center;
+    background: var(--page-bg);
     background-size: cover;
     position: relative;
     background-attachment: fixed;
-    /* 示例背景，您可以替换为 /assets/img/bg.png */
+    
     color: #333;
     transition: background-color 0.3s;
 }
@@ -53,10 +53,10 @@ body {
 /* 会议控制卡片 */
 .control-card {
     background-color: rgba(255, 255, 255, var(--card-bg-opacity));
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     box-shadow: var(--card-shadow);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+
+
     border: var(--card-border);
     padding: 20px;
     flex: 0 0 300px;
@@ -85,7 +85,7 @@ body {
 .video-card {
     background-color: rgba(0, 0, 0, 0.5);
     /* 视频背景通常用深色 */
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     box-shadow: var(--card-shadow);
     overflow: hidden;
     position: relative;
@@ -110,7 +110,7 @@ body {
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 5px 10px;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     font-size: 0.9em;
 }
 
@@ -132,12 +132,12 @@ h2 {
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     font-size: 16px;
     transition: all 0.2s;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--surface-strong);
     color: #333;
 }
 
@@ -149,7 +149,7 @@ h2 {
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     font-size: 16px;
     transition: all 0.2s;
@@ -196,7 +196,7 @@ h2 {
     justify-content: center;
     padding: 10px 5px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     background-color: var(--control-bg);
     color: #333;
     cursor: pointer;
@@ -226,7 +226,7 @@ h2 {
 .status-log {
     padding: 10px;
     background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     max-height: 150px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -268,3 +268,44 @@ h2 {
         /* 保持比例 */
     }
 }
+/* 扁平归一 */
+body { background: var(--page-bg); color: var(--text-main); }
+:root { --card-bg-opacity: 1; --card-shadow: none; --card-border: 1px solid var(--line); --control-bg: var(--surface-soft); }
+.meeting-container, .control-card, .video-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--text-main);
+}
+.meeting-input { background: var(--surface-soft); border-color: var(--line); color: var(--text-main); }
+
+/* 扁平归一 */
+.video-display-area h1,
+#meeting-title {
+  color: var(--text-main);
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-align: left;
+  text-shadow: none;
+}
+.meeting-action-button {
+  color: var(--surface-strong);
+  background: var(--text-main);
+  border: 1px solid var(--text-main);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+.meeting-action-button:hover { opacity: 0.85; transform: none; box-shadow: none; }
+.meeting-action-button.red-btn { color: var(--danger); background: transparent; border-color: var(--line); }
+.device-btn {
+  color: var(--text-subtle);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.device-btn:hover:not(:disabled) { color: var(--text-main); background: var(--surface-soft); }
+.device-btn.active { color: var(--surface-strong); background: var(--text-main); border-color: var(--text-main); }
+.video-card { background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.video-label { color: var(--text-subtle); }

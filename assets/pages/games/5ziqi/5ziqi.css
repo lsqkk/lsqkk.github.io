@@ -22,7 +22,7 @@
         }
         .light-mode {
             --primary-color: #40E0D0;
-            --background: rgba(255, 255, 255, 0.95);
+            --background: var(--surface-strong);
             --sidebar-bg: rgba(240, 240, 245, 0.9);
             --message-bg: rgba(0, 0, 0, 0.03);
             --text-color: #333;
@@ -53,7 +53,7 @@
         .sidebar {
             width: 280px;
             background: var(--sidebar-bg);
-            backdrop-filter: blur(10px);
+
             border-right: 1px solid var(--border-color);
             height: 100vh;
             overflow-y: auto;
@@ -117,7 +117,7 @@
             width: 100%;
             padding: 12px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--input-bg);
             color: var(--text-color);
             margin-bottom: 10px;
@@ -126,7 +126,7 @@
             width: 100%;
             padding: 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -146,7 +146,7 @@
         .game-header {
             padding: 15px 20px;
             background: var(--sidebar-bg);
-            backdrop-filter: blur(10px);
+
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -172,7 +172,7 @@
             align-items: center;
             justify-content: center;
             background: var(--background);
-            backdrop-filter: blur(10px);
+
             padding: 20px;
         }
         .board-container {
@@ -222,7 +222,7 @@
             display: flex;
             align-items: center;
             padding: 10px 15px;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--message-bg);
             flex: 1;
             max-width: 48%;
@@ -260,7 +260,7 @@
         .restart-btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -280,7 +280,7 @@
         .role-btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             cursor: pointer;
             transition: all 0.3s ease;
             background: var(--input-bg);
@@ -296,7 +296,7 @@
         .profile-setup {
             background: var(--message-bg);
             padding: 20px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             margin: 20px;
             animation: fadeIn 0.3s ease;
             max-width: 500px;
@@ -328,7 +328,7 @@
             width: 100%;
             padding: 12px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--input-bg);
             color: var(--text-color);
             margin-bottom: 15px;
@@ -337,7 +337,7 @@
             width: 100%;
             padding: 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -383,7 +383,7 @@
         }
         ::-webkit-scrollbar-thumb {
             background: var(--primary-color);
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
         }
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(64, 224, 208, 0.7);
@@ -418,7 +418,7 @@
         .winner-box {
             background: var(--sidebar-bg);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             text-align: center;
             max-width: 80%;
         }

@@ -2,7 +2,7 @@
     "logo": {
         "url": "/assets/img/logo_blue.png",
         "alt": "网站logo",
-        "style": "width: 27px; border-radius: 50%; margin: 3px 7px 0px 0px; overflow: hidden;"
+        "style": "width: 30px; height: 30px; object-fit: contain; border-radius: 4px; margin: 0 8px 0 0;"
     },
     "title": {
         "text": "夸克博客",
@@ -26,28 +26,8 @@
             "target": "_self"
         },
         {
-            "name": "API",
-            "link": "https://lsqkk.github.io/quarkdoc/QuarkAPI",
-            "target": "_self"
-        },
-        {
             "name": "实验室",
             "link": "/a",
-            "target": "_self"
-        },
-        {
-            "name": "项目",
-            "link": "/blog/project",
-            "target": "_self"
-        },
-        {
-            "name": "视频",
-            "link": "/blog/qtv",
-            "target": "_self"
-        },
-        {
-            "name": "留言",
-            "link": "/blog/lyb",
             "target": "_self"
         },
         {

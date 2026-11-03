@@ -52,9 +52,9 @@ body {
     color: var(--text-main);
     opacity: 0.55;
     padding: 5px 12px;
-    border-radius: 999px;
-    background: var(--glass-bg-soft);
-    border: 1px solid var(--glass-edge-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
     transition: all 0.2s ease;
 }
 
@@ -79,12 +79,11 @@ body {
 
 /* ---------- 通用面板（玻璃卡） ---------- */
 .sd-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(100%);
-    -webkit-backdrop-filter: blur(20px) saturate(100%);
-    border: 1px solid var(--glass-edge);
+    background: var(--surface);
+
+    border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    box-shadow: 0 8px 32px var(--glass-shadow);
+    box-shadow: none;
     padding: 20px;
     margin-bottom: 20px;
     box-sizing: border-box;
@@ -155,7 +154,7 @@ body {
     gap: 6px;
     padding: 10px 18px;
     font-size: 0.9rem;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
     background: var(--surface-soft);
     color: var(--text-main);
@@ -226,7 +225,7 @@ body {
     background: var(--surface-soft);
     color: var(--text-main);
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     padding: 6px 8px;
     font-size: 0.86rem;
     accent-color: var(--accent);
@@ -301,9 +300,9 @@ body {
     left: 10px;
     bottom: 10px;
     font-size: 0.75rem;
-    background: var(--glass-bg-solid);
-    border: 1px solid var(--glass-edge);
-    border-radius: 8px;
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
     padding: 4px 10px;
     color: var(--text-main);
     pointer-events: none;

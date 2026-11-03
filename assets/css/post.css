@@ -11,7 +11,7 @@
 .post-hero {
     position: relative;
     margin: -40px -40px 18px;
-    border-radius: 18px 18px 0 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     overflow: hidden;
     box-shadow: var(--shadow-main);
     background: var(--surface-card);
@@ -54,19 +54,15 @@
     margin: 0;
     font-size: clamp(2.1rem, 3.4vw, 3rem);
     color: var(--text-main);
-    text-shadow: 0 2px 8px var(--glass-shadow);
+    text-shadow: none;
     line-height: 1.15;
     padding: 12px 20px;
-    border-radius: 14px;
-    background: var(--glass-bg-soft);
-    backdrop-filter: blur(32px) saturate(180%);
-    -webkit-backdrop-filter: blur(32px) saturate(180%);
-    box-shadow:
-        0 4px 12px var(--glass-shadow),
-        0 12px 36px var(--glass-shadow),
-        0 24px 56px var(--glass-shadow),
-        inset 0 1px 0 var(--glass-edge-soft);
-    border: 1px solid var(--glass-edge-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
+
+
+    box-shadow: none;
+    border: 1px solid var(--line-strong);
     max-width: 95%;
 }
 
@@ -91,7 +87,7 @@
     margin: 0 0 10px;
     color: var(--text-main);
     letter-spacing: 0.02em;
-    text-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    text-shadow: none;
 }
 
 .post-description-trigger {
@@ -101,11 +97,11 @@
     justify-content: center;
     width: 28px;
     height: 28px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--accent-soft);
-    background: var(--glass-bg);
+    background: var(--surface);
     color: var(--accent);
-    box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: none;
     cursor: help;
     transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
@@ -113,8 +109,8 @@
 .post-description-trigger:hover,
 .post-description-trigger:focus-visible {
     transform: translateY(-1px);
-    background: var(--glass-bg-strong);
-    box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 20%, transparent);
+    background: var(--surface-strong);
+    box-shadow: none;
     outline: none;
 }
 
@@ -127,13 +123,13 @@
     min-width: 220px;
     max-width: min(42vw, 360px);
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     background: color-mix(in srgb, var(--text-main) 90%, transparent);
     color: var(--text-inverse);
     font-size: 0.84rem;
     line-height: 1.6;
     text-align: left;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.3);
+    box-shadow: none;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.18s ease, transform 0.18s ease;
@@ -202,7 +198,7 @@
 
 .post-content img.post-gallery-image:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 24px var(--glass-shadow-hover);
+    box-shadow: none;
 }
 
 /* 添加段落间距 */
@@ -224,7 +220,7 @@
     height: 1.35em;
     margin: 0 0.08em;
     padding: 0 0.25em;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--accent-soft);
     background: var(--accent-soft);
     color: var(--accent);
@@ -307,7 +303,7 @@
     height: 1.45em;
     margin-left: 0.35em;
     border: 1px solid var(--accent-soft);
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: var(--surface);
     color: var(--accent);
     font-size: 0.78em;
@@ -331,14 +327,12 @@
     align-items: center;
     margin: 24px 0;
     padding: 16px 18px;
-    border-radius: 22px;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--line);
-    background: var(--glass-bg);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge);
-    backdrop-filter: blur(12px) saturate(115%);
-    -webkit-backdrop-filter: blur(12px) saturate(115%);
+    background: var(--surface);
+    box-shadow: none;
+
+
     overflow: hidden;
 }
 
@@ -354,7 +348,7 @@
     transform: translateY(-2px);
     box-shadow:
         0 16px 34px var(--glass-shadow-hover),
-        inset 0 0 0 1px var(--glass-edge-strong);
+        inset 0 0 0 1px var(--line-strong);
     border-color: var(--line-strong);
     border-bottom: none !important;
     padding-bottom: 0 !important;
@@ -381,7 +375,7 @@
     align-items: center;
     max-width: 100%;
     padding: 4px 10px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     font-size: 0.78rem;
     line-height: 1.4;
 }
@@ -422,22 +416,20 @@
     width: 100%;
     height: 108px;
     object-fit: cover;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
     border: 1px solid var(--line);
-    box-shadow: 0 8px 20px var(--glass-shadow);
+    box-shadow: none;
 }
 
 /* ── Post Inline Note ── */
 .post-content .post-note {
   margin: 24px 0;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  background: var(--glass-bg);
-  box-shadow:
-    0 8px 32px var(--glass-shadow),
-    inset 0 0 0 1px var(--glass-edge);
-  backdrop-filter: blur(12px) saturate(115%);
-  -webkit-backdrop-filter: blur(12px) saturate(115%);
+  background: var(--surface);
+  box-shadow: none;
+
+
   overflow: hidden;
   position: relative;
 }
@@ -446,7 +438,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   pointer-events: none;
 }
 
@@ -463,7 +455,7 @@
 }
 
 .post-note.is-danger::before {
-  border: 1px solid color-mix(in srgb, #dc2626 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 18%, transparent);
 }
 
 .post-note-header {
@@ -482,7 +474,7 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 800;
   line-height: 1;
@@ -505,8 +497,8 @@
 }
 
 .post-note.is-danger .post-note-icon {
-  background: color-mix(in srgb, #dc2626 14%, transparent);
-  color: #dc2626;
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
 }
 
 .post-note-title {
@@ -549,50 +541,42 @@
 
 /* ── Dark mode overrides ── */
 body.dark-mode .post-note.is-info {
-  box-shadow:
-    0 8px 32px color-mix(in srgb, var(--accent) 8%, transparent),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
 }
 
 body.dark-mode .post-note.is-warning {
-  box-shadow:
-    0 8px 32px color-mix(in srgb, #d97706 8%, transparent),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
 }
 
 body.dark-mode .post-note.is-tip {
-  box-shadow:
-    0 8px 32px color-mix(in srgb, #059669 8%, transparent),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
 }
 
 body.dark-mode .post-note.is-danger {
-  box-shadow:
-    0 8px 32px color-mix(in srgb, #dc2626 8%, transparent),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
 }
 
 @media (prefers-color-scheme: dark) {
   .post-note.is-info {
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 8%, transparent), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
   }
 
   .post-note.is-warning {
-    box-shadow: 0 8px 32px color-mix(in srgb, #d97706 8%, transparent), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
   }
 
   .post-note.is-tip {
-    box-shadow: 0 8px 32px color-mix(in srgb, #059669 8%, transparent), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
   }
 
   .post-note.is-danger {
-    box-shadow: 0 8px 32px color-mix(in srgb, #dc2626 8%, transparent), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
   }
 }
 
 @media (max-width: 640px) {
   .post-content .post-note {
-    border-radius: 14px;
+    border-radius: var(--radius-md);
   }
 
   .post-note-header {
@@ -617,14 +601,12 @@ body.reduce-motion .post-note {
 /* ── Post File Preview ── */
 .post-content .post-file-preview {
     margin: 24px 0;
-    border-radius: 22px;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--line);
-    background: var(--glass-bg);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge);
-    backdrop-filter: blur(12px) saturate(115%);
-    -webkit-backdrop-filter: blur(12px) saturate(115%);
+    background: var(--surface);
+    box-shadow: none;
+
+
     overflow: hidden;
     transition: box-shadow 0.28s ease;
 }
@@ -641,7 +623,7 @@ body.reduce-motion .post-note {
 }
 
 .post-file-preview-header:hover {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
 }
 
 .post-file-preview-icon {
@@ -650,7 +632,7 @@ body.reduce-motion .post-note {
     justify-content: center;
     width: 46px;
     height: 46px;
-    border-radius: 13px;
+    border-radius: var(--radius-md);
     background: var(--accent-soft);
     color: var(--accent);
     font-size: 0.7rem;
@@ -700,7 +682,7 @@ body.reduce-motion .post-note {
     gap: 5px;
     min-width: 80px;
     padding: 7px 15px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
     font: inherit;
     font-size: 0.82rem;
@@ -713,7 +695,7 @@ body.reduce-motion .post-note {
 }
 
 .post-file-preview-toggle {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     color: var(--text-main);
 }
 
@@ -784,7 +766,7 @@ body.dark-mode .post-file-preview-viewer {
     width: 100%;
     height: 520px;
     border: none;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
     background: #f5f5f5;
 }
 
@@ -803,9 +785,9 @@ body.dark-mode .post-file-preview-frame {
 .post-file-preview-error {
     padding: 12px 18px;
     margin: 24px 0;
-    border-radius: 14px;
-    border: 1px solid color-mix(in srgb, #e53e3e 20%, transparent);
-    background: color-mix(in srgb, #e53e3e 6%, transparent);
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in srgb, var(--danger) 20%, transparent);
+    background: color-mix(in srgb, var(--danger) 6%, transparent);
     color: #c53030;
     font-size: 0.88rem;
 }
@@ -836,11 +818,11 @@ body.dark-mode .post-file-preview-error {
 
     .post-file-preview-frame {
         height: 300px;
-        border-radius: 14px;
+        border-radius: var(--radius-md);
     }
 
     .post-content .post-file-preview {
-        border-radius: 18px;
+        border-radius: var(--radius-lg);
     }
 }
 
@@ -882,7 +864,7 @@ code {
     background-color: var(--code-bg);
     color: var(--code-color);
     padding: 2px 4px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 pre {
@@ -901,19 +883,19 @@ pre {
 
 /* ── Share / donate card ── */
 .post-share-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
+
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
     padding: 24px;
     text-align: center;
     transition: box-shadow 0.28s ease;
 }
 
 .post-share-card:hover {
-    box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
+    box-shadow: none;
 }
 
 .post-share-actions {
@@ -929,9 +911,9 @@ pre {
     align-items: center;
     gap: 6px;
     padding: 10px 20px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     color: var(--text-main);
     font: inherit;
     font-size: 0.9em;
@@ -943,7 +925,7 @@ pre {
 
 .share-button:hover {
     transform: translateY(-2px);
-    background: var(--glass-bg);
+    background: var(--surface);
     border-color: var(--accent-soft);
     box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 12%, transparent);
 }
@@ -1015,7 +997,7 @@ pre {
 /* 单个标签样式 */
 .post-tag {
     padding: 4px 10px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: var(--tag-bg);
     color: var(--tag-color);
     font-size: 0.75em;
@@ -1059,12 +1041,10 @@ pre {
     line-height: 1.3em;
     margin-bottom: 1.3em;
     border-radius: var(--radius-lg);
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+    background: var(--surface);
+
+
+    box-shadow: none;
     padding: 40px;
     border: 1px solid var(--line);
 }
@@ -1097,14 +1077,14 @@ pre {
 .donate-qr {
     width: 160px;
     max-width: 60vw;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px var(--glass-shadow);
+    border-radius: var(--radius-md);
+    box-shadow: none;
 }
 
 .post-content img {
     max-width: 100%;
     height: auto;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
 }
 
 /* ── Comment section (giscus) ── */
@@ -1129,12 +1109,12 @@ pre {
     right: 20px;
     z-index: 99999;
     padding: 10px 20px;
-    border-radius: 999px;
-    background: var(--glass-bg-solid);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-radius: var(--radius-sm);
+    background: var(--surface-strong);
+
+
     border: 1px solid var(--line);
-    box-shadow: 0 12px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
     color: var(--text-main);
     font-size: 0.88rem;
     font-weight: 600;
@@ -1185,7 +1165,7 @@ body.dark-mode .post-toast {
 
     .post-hero {
         margin: -20px -20px 16px;
-        border-radius: 14px 14px 0 0;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
     }
 
     .post-hero-overlay {
@@ -1217,7 +1197,7 @@ body.dark-mode .post-toast {
         grid-template-columns: 1fr;
         padding: 14px;
         gap: 12px;
-        border-radius: 18px;
+        border-radius: var(--radius-lg);
     }
 
     .post-inline-card-media {
@@ -1259,24 +1239,16 @@ body.dark-mode .post-toast {
     .post-hero-title {
         background: rgba(17, 28, 46, 0.55);
         border-color: rgba(134, 171, 226, 0.15);
-        box-shadow:
-            0 4px 12px rgba(0, 0, 0, 0.12),
-            0 12px 36px rgba(0, 0, 0, 0.2),
-            0 24px 56px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: none;
+        text-shadow: none;
     }
 }
 
 body.dark-mode .post-hero-title {
     background: rgba(17, 28, 46, 0.55);
     border-color: rgba(134, 171, 226, 0.15);
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.12),
-        0 12px 36px rgba(0, 0, 0, 0.2),
-        0 24px 56px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
+    text-shadow: none;
 }
 
 body.dark-mode .morenpost {
@@ -1311,4 +1283,244 @@ body.reduce-motion .post-share-card {
 }
 body.reduce-motion .share-button:hover {
     transform: none !important;
+}
+
+/* ============================================================
+   文章详情 — 编辑式阅读版面
+   ============================================================ */
+body.post-layout-page { background: var(--page-bg); }
+
+.post-layout-wrap {
+    max-width: 1080px;
+    padding: 92px 32px 64px;
+    gap: 56px;
+}
+.post-main-column {
+    max-width: 760px;
+    gap: 0;
+}
+.post-layout-wrap .morenpost {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+.post-header { margin-bottom: 20px; }
+
+.post-hero {
+    margin: 0 0 28px;
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+}
+.post-hero-image { transform: none; }
+.post-hero::after {
+    background: linear-gradient(180deg, rgba(10, 12, 16, 0) 34%, rgba(10, 12, 16, 0.74));
+}
+.post-hero-overlay { padding: 22px 24px; }
+.post-hero-title {
+    max-width: 92%;
+    padding: 0;
+    color: #fff;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    text-shadow: none;
+    font-size: clamp(26px, 3.6vw, 40px);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+.post-title-main {
+    margin: 0 0 14px;
+    font-size: clamp(30px, 4.2vw, 46px);
+    font-weight: 650;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-shadow: none;
+}
+
+.post-meta {
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-subtle);
+    font-size: 12px;
+}
+.post-meta-view-icon { color: var(--text-soft); }
+.post-column-note { margin: 0 0 12px; font-size: 12px; color: var(--text-subtle); }
+
+.post-content {
+    font-size: 16.5px;
+    line-height: 1.85;
+    color: var(--text-main);
+}
+.post-content p { margin: 0 0 1.15em; }
+.post-content h2 {
+    margin: 2em 0 0.55em;
+    font-size: 1.5rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+.post-content h3 {
+    margin: 1.6em 0 0.5em;
+    font-size: 1.18rem;
+    font-weight: 600;
+}
+.post-content a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.post-content a:hover { border-bottom-color: var(--accent); }
+
+.post-tags { margin-top: 10px; margin-bottom: 14px; gap: 6px; }
+.post-tag {
+    margin: 0;
+    padding: 2px 7px;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    font-size: 10.5px;
+}
+.post-tag.read-time {
+    color: var(--text-soft);
+    background: transparent;
+    border-color: var(--line);
+}
+.post-tag-link:hover {
+    color: var(--accent);
+    background: transparent;
+    border-color: var(--line-strong);
+}
+
+.post-share-card {
+    margin-top: 44px;
+    padding: 24px 0 0;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+}
+.post-share-card:hover { box-shadow: none; }
+.post-share-actions { justify-content: flex-start; gap: 8px; margin-bottom: 18px; }
+.share-button {
+    padding: 7px 12px;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    font-size: 12px;
+    font-weight: 500;
+    transition: color 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+}
+.share-button:hover {
+    transform: none;
+    color: var(--text-main);
+    background: var(--surface-soft);
+    border-color: var(--line-strong);
+    box-shadow: none;
+}
+.share-button:active { transform: none; }
+.donate-section { text-align: left; }
+.donate-text { font-size: 12px; color: var(--text-subtle); }
+.donate-qr {
+    width: 128px;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    border: 1px solid var(--line);
+}
+
+.post-comment-section { margin-top: 40px; }
+.post-comment-section .morenpost { padding: 0; }
+
+/* 右侧目录栏：竖向分隔的极简信息区 */
+.post-sidebar-group {
+    position: sticky;
+    top: 88px;
+    width: 240px;
+    gap: 0;
+}
+.post-toc-box,
+.post-nav-box,
+.post-related-box,
+.post-footer-box {
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+}
+.post-toc-box:first-child,
+.post-nav-box:first-child,
+.post-related-box:first-child,
+.post-footer-box:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+.post-toc-box .sidebar-main-content,
+.post-nav-box .sidebar-main-content,
+.post-related-box .sidebar-main-content,
+.post-footer-box .sidebar-main-content {
+    padding: 0;
+}
+.post-quick-links a {
+    padding: 7px 0;
+    border-radius: 0;
+    font-size: 12.5px;
+}
+.post-quick-links a:hover {
+    transform: none;
+    background: transparent;
+    color: var(--accent);
+}
+
+/* 浮动按钮 */
+.fab-btn {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-main);
+    font-size: 15px;
+}
+.fab-btn:hover {
+    transform: none;
+    background: var(--surface-soft);
+}
+
+@media (max-width: 1100px) {
+    .post-layout-wrap { padding: 84px 20px 48px; }
+    .post-main-column { max-width: none; }
+}
+@media (max-width: 640px) {
+    .post-layout-wrap { padding: 80px 16px 40px; }
+    .post-content { font-size: 16px; line-height: 1.8; }
+    .post-title-main { font-size: 30px; }
+    .post-hero { margin-bottom: 22px; }
+}
+
+/* 文章侧栏：去掉固定容器的卡片外壳 */
+body.post-layout-page .post-sidebar-group {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+body.dark-mode.post-layout-page .post-sidebar-group {
+    background: transparent;
+}
+
+/* 封面标题需要一层极轻的暗色阴影保证可读性 */
+.post-hero-title { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45); }
+
+@media (max-width: 640px) {
+    .post-header-actions-plain {
+        position: static;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 4px;
+    }
 }

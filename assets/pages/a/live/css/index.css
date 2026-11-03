@@ -6,7 +6,7 @@
            --card-bg-solid: #1a1a2e;
            --text-color: #ffffff;
            --text-secondary: #b8b8b8;
-           --border-radius: 12px;
+           --border-radius: var(--radius-md);
            --blur: blur(10px);
            --transition: all 0.3s ease;
        }
@@ -33,10 +33,10 @@
            margin-bottom: 20px;
            padding: 15px 25px;
            background: var(--card-bg);
-           backdrop-filter: var(--blur);
+
            border-radius: var(--border-radius);
            border: 1px solid rgba(255, 255, 255, 0.1);
-           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+           box-shadow: none;
        }
        .stream-info {
            flex: 1;
@@ -63,7 +63,7 @@
        }
        .status-badge {
            padding: 8px 16px;
-           border-radius: 20px;
+           border-radius: var(--radius-lg);
            font-size: 0.9rem;
            font-weight: bold;
            background: rgba(255, 46, 99, 0.2);
@@ -91,7 +91,7 @@
            background: #000;
            border-radius: var(--border-radius);
            overflow: hidden;
-           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+           box-shadow: none;
            position: relative;
        }
        #live-video {
@@ -129,7 +129,7 @@
        }
        .fallback-status {
            padding: 4px 10px;
-           border-radius: 999px;
+           border-radius: var(--radius-sm);
            background: rgba(8, 217, 214, 0.15);
            color: var(--secondary-color);
            border: 1px solid rgba(8, 217, 214, 0.35);
@@ -149,14 +149,14 @@
            flex: 1;
            min-width: 160px;
            padding: 8px 10px;
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            background: rgba(255, 255, 255, 0.08);
            border: 1px solid rgba(255, 255, 255, 0.12);
            color: var(--text-color);
        }
        .fallback-btn {
            padding: 8px 12px;
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            border: 1px solid rgba(255, 255, 255, 0.15);
            background: rgba(255, 255, 255, 0.05);
            color: var(--text-color);
@@ -172,7 +172,7 @@
            flex: 1;
            min-height: 280px;
            background: #000;
-           border-radius: 10px;
+           border-radius: var(--radius-md);
            border: 1px solid rgba(255, 255, 255, 0.08);
            object-fit: contain;
        }
@@ -182,10 +182,10 @@
        }
        .chat-container {
            background: var(--card-bg);
-           backdrop-filter: var(--blur);
+
            border-radius: var(--border-radius);
            padding: 20px;
-           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+           box-shadow: none;
            display: flex;
            flex-direction: column;
            height: 500px;
@@ -210,13 +210,13 @@
            margin-bottom: 15px;
            padding: 10px;
            background: rgba(0, 0, 0, 0.2);
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
        }
        .message {
            margin-bottom: 12px;
            padding: 10px 15px;
            background: rgba(255, 255, 255, 0.05);
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            border-left: 3px solid var(--secondary-color);
            transition: var(--transition);
        }
@@ -292,7 +292,7 @@
        .avatar-toggle {
            display: flex;
            margin-bottom: 10px;
-           border-radius: 6px;
+           border-radius: var(--radius-md);
            overflow: hidden;
            border: 1px solid rgba(255, 255, 255, 0.1);
        }
@@ -329,7 +329,7 @@
        #avatar-url {
            width: 100%;
            padding: 8px;
-           border-radius: 6px;
+           border-radius: var(--radius-md);
            background: rgba(255, 255, 255, 0.05);
            border: 1px solid rgba(255, 255, 255, 0.1);
            color: var(--text-color);
@@ -339,7 +339,7 @@
        #nickname {
            width: 100%;
            padding: 8px;
-           border-radius: 6px;
+           border-radius: var(--radius-md);
            background: rgba(255, 255, 255, 0.05);
            border: 1px solid rgba(255, 255, 255, 0.1);
            color: var(--text-color);
@@ -349,7 +349,7 @@
            padding: 12px;
            background: rgba(255, 255, 255, 0.05);
            border: 1px solid rgba(255, 255, 255, 0.1);
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            font-size: 1rem;
            color: var(--text-color);
        }
@@ -358,7 +358,7 @@
            background: var(--primary-color);
            color: white;
            border: none;
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            cursor: pointer;
            font-size: 1rem;
            transition: var(--transition);
@@ -376,7 +376,7 @@
            flex: 1;
            padding: 12px;
            border: none;
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            cursor: pointer;
            font-size: 1rem;
            transition: var(--transition);
@@ -401,10 +401,10 @@
        }
        .stats-container {
            background: var(--card-bg);
-           backdrop-filter: var(--blur);
+
            border-radius: var(--border-radius);
            padding: 20px;
-           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+           box-shadow: none;
            margin-bottom: 20px;
            border: 1px solid rgba(255, 255, 255, 0.1);
        }
@@ -435,7 +435,7 @@
            padding: 10px 20px;
            background: rgba(255, 255, 255, 0.05);
            border: 1px solid rgba(255, 255, 255, 0.1);
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            cursor: pointer;
            font-size: 0.9rem;
            color: var(--text-color);
@@ -471,7 +471,7 @@
        .form-group textarea {
            width: 100%;
            padding: 10px;
-           border-radius: 6px;
+           border-radius: var(--radius-md);
            background: rgba(255, 255, 255, 0.05);
            border: 1px solid rgba(255, 255, 255, 0.1);
            color: var(--text-color);
@@ -483,9 +483,9 @@
        }
        .error {
            background: rgba(255, 71, 87, 0.2);
-           color: #ff4757;
+           color: var(--danger);
            padding: 15px;
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            margin-bottom: 20px;
            text-align: center;
            border: 1px solid rgba(255, 71, 87, 0.3);
@@ -501,7 +501,7 @@
            align-items: center;
            justify-content: center;
            z-index: 1000;
-           backdrop-filter: blur(5px);
+
        }
        .autoplay-content {
            background: var(--card-bg-solid);
@@ -510,7 +510,7 @@
            text-align: center;
            max-width: 400px;
            width: 90%;
-           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+           box-shadow: none;
            border: 1px solid rgba(255, 255, 255, 0.1);
        }
        .autoplay-content h3 {
@@ -526,7 +526,7 @@
            color: white;
            border: none;
            padding: 12px 24px;
-           border-radius: 8px;
+           border-radius: var(--radius-lg);
            cursor: pointer;
            font-size: 1rem;
            font-weight: bold;
@@ -544,7 +544,7 @@
            color: white;
            border: none;
            padding: 12px 18px;
-           border-radius: 50px;
+           border-radius: var(--radius-sm);
            cursor: pointer;
            font-size: 0.9rem;
            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -556,7 +556,7 @@
        }
        .floating-audio-btn:hover {
            transform: translateY(-3px);
-           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+           box-shadow: none;
        }
        .markdown-toggle {
            display: flex;
@@ -573,12 +573,12 @@
        }
        .messages::-webkit-scrollbar-track {
            background: rgba(255, 255, 255, 0.05);
-           border-radius: 3px;
+           border-radius: var(--radius-sm);
        }
        .messages::-webkit-scrollbar-thumb {
            background: var(--secondary-color);
-           border-radius: 3px;
+           border-radius: var(--radius-sm);
        }
        .messages::-webkit-scrollbar-thumb:hover {
-           background: #06b6b3;
+           background: var(--accent-2);
        }

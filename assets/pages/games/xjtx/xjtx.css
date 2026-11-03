@@ -1,219 +1,327 @@
-        :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #6b8cae;
-            --accent-color: #ff7e5f;
-            --text-color: #333;
-            --light-bg: rgba(255, 255, 255, 0.6);
-            --glass-effect: blur(10px) saturate(180%);
-        }
+/* ============================================================
+   交大图寻 — 校园照片定位游戏
+   ============================================================ */
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+body.feature-xjtx { padding: 92px 24px 40px; }
 
-        body {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: url('/assets/img/bg.png') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+.feature-xjtx .feature-breadcrumb {
+    max-width: 1120px;
+    margin-bottom: 24px;
+}
 
-        #game-container {
-            text-align: center;
-            background: var(--light-bg);
-            backdrop-filter: var(--glass-effect);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
+.xjtx-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) 360px;
+    gap: 48px;
+    align-items: start;
+    max-width: 1120px;
+    margin: 0 auto;
+}
 
-        #game-container h1 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+/* 照片 */
+.xjtx-stage { min-width: 0; }
 
-        h3 {
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-        }
+.xjtx-photo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+}
 
-        #question-image {
-            height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            background-color: rgba(255, 255, 255, 0.7);
-        }
+.xjtx-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 
-        #question-image img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
-            border-radius: 10px;
-        }
+.xjtx-caption {
+    margin: 14px 0 0;
+    color: var(--text-soft);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+}
 
-        #satellite-map {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--light-bg);
-            backdrop-filter: var(--glass-effect);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            cursor: crosshair;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
+/* 侧栏 */
+.xjtx-panel {
+    position: sticky;
+    top: 88px;
+}
 
-        .map-overlay {
-            position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+.xjtx-kicker {
+    margin: 0 0 10px;
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+}
 
-        .marker {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1001;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        }
+.xjtx-panel h1 {
+    margin: 0 0 12px;
+    color: var(--text-main);
+    font-size: clamp(34px, 4vw, 48px);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+}
 
-        #correct-marker {
-            background: #4CAF50;
-            border: 2px solid white;
-        }
+.xjtx-intro {
+    margin: 0 0 24px;
+    color: var(--text-subtle);
+    font-size: 14px;
+    line-height: 1.8;
+}
 
-        #user-marker {
-            background: #2196F3;
-            border: 2px solid white;
-        }
+.xjtx-primary {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 18px;
+    color: var(--surface-strong);
+    background: var(--text-main);
+    border: 1px solid var(--text-main);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.16s ease;
+}
 
-        #connection-line {
-            position: absolute;
-            background-color: var(--accent-color);
-            transform-origin: 0 50%;
-            height: 3px;
-            z-index: 1000;
-            opacity: 0.8;
-        }
+.xjtx-primary:hover { opacity: 0.84; }
 
-        .stats {
-            margin-top: 25px;
-            padding: 20px;
-            background: var(--light-bg);
-            backdrop-filter: var(--glass-effect);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
+/* 统计 */
+.xjtx-stats {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+}
 
-        .stats p {
-            margin: 8px 0;
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-        }
+.xjtx-stats h2 {
+    margin: 0 0 10px;
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
 
-        .stats span {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
+.xjtx-stats dl {
+    margin: 0;
+    display: grid;
+    gap: 0;
+}
 
-        #game-container button {
-            padding: 12px 25px;
-            margin: 8px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+.xjtx-stats dl > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line-soft);
+}
 
-        #game-container button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-        }
+.xjtx-stats dt {
+    color: var(--text-subtle);
+    font-size: 12.5px;
+}
 
-        #game-container button:active {
-            transform: translateY(0);
-        }
+.xjtx-stats dd {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 999;
-        }
+.xjtx-links {
+    display: flex;
+    gap: 18px;
+    margin-top: 24px;
+    font-size: 12px;
+}
 
-        #map-result {
-            margin-top: 15px;
-            padding: 15px;
-            background: var(--light-bg);
-            backdrop-filter: var(--glass-effect);
-            border-radius: 10px;
-            font-size: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+.xjtx-links a {
+    color: var(--text-subtle);
+    text-decoration: none;
+}
 
-        #map-result p {
-            margin: 8px 0;
-            display: flex;
-            justify-content: space-between;
-        }
+.xjtx-links a:hover { color: var(--accent); }
 
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-            padding: 15px;
-            background: var(--light-bg);
-            backdrop-filter: var(--glass-effect);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+/* 地图弹层 */
+.xjtx-map-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    place-items: center;
+    padding: 24px;
+    background: rgba(15, 17, 21, 0.55);
+}
 
-        .footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+.xjtx-map-modal.is-open { display: grid; }
 
-        .footer a:hover {
-            color: var(--accent-color);
-            text-decoration: underline;
-        }
+body.xjtx-modal-open { overflow: hidden; }
 
-        .game-link {
-            display: inline-block;
-            margin-top: 15px;
-        }
+.xjtx-map-card {
+    width: min(920px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-main);
+}
+
+.xjtx-map-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.xjtx-map-kicker {
+    margin: 0 0 4px;
+    color: var(--text-soft);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+}
+
+.xjtx-map-header h2 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.xjtx-map-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.xjtx-map-close:hover {
+    color: var(--text-main);
+    background: var(--surface-soft);
+}
+
+.map-overlay {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
+    cursor: crosshair;
+}
+
+.map-overlay img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 62vh;
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.marker {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    border: 2px solid var(--surface-strong);
+    box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+#correct-marker {
+    display: none;
+    color: var(--ok);
+    background: var(--ok);
+}
+
+#user-marker {
+    display: none;
+    color: var(--accent);
+    background: var(--accent);
+}
+
+#connection-line {
+    position: absolute;
+    display: none;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.7;
+    transform-origin: 0 50%;
+    z-index: 1;
+}
+
+.xjtx-result {
+    display: grid;
+    gap: 2px;
+    margin-top: 12px;
+    color: var(--text-main);
+    font-size: 13px;
+}
+
+.xjtx-result p {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line-soft);
+}
+
+.xjtx-result p span { font-weight: 600; font-variant-numeric: tabular-nums; }
+.xjtx-result-hint { color: var(--text-subtle) !important; border-bottom: 0 !important; }
+
+.xjtx-map-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+}
+
+.xjtx-map-actions .xjtx-primary { width: auto; min-width: 132px; }
+
+/* 页脚 */
+body.feature-xjtx > .footer {
+    max-width: 1120px;
+    margin: 40px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--text-soft);
+    font-size: 11px;
+    text-align: left;
+}
+
+@media (max-width: 900px) {
+    body.feature-xjtx { padding: 84px 16px 32px; }
+    .xjtx-shell { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .xjtx-panel { position: static; }
+    .xjtx-photo { aspect-ratio: 4 / 3; }
+}
+
+@media (max-width: 560px) {
+    .xjtx-map-modal { padding: 12px; }
+    .xjtx-map-card { padding: 14px; }
+    .map-overlay img { max-height: 56vh; }
+    .xjtx-map-actions .xjtx-primary { width: 100%; }
+}

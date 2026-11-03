@@ -7,7 +7,7 @@
     const UPDATED_EVENT = 'quark-preferences-updated';
     const DEFAULTS = {
         language: 'chinese_simplified',
-        font: 'system',
+        font: 'xwwk',
         motion: 'full',
         cursorTrail: false
     };
@@ -53,6 +53,9 @@
     function normalize(input) {
         const base = input && typeof input === 'object' ? input : {};
         const next = { ...DEFAULTS, ...base };
+        next.fontChosen = typeof base.fontChosen === 'boolean' ? base.fontChosen : false;
+        // 旧版本把“系统默认”当作初始值；未主动选择时迁移到站点默认字库
+        if (!next.fontChosen && next.font === 'system') next.font = DEFAULTS.font;
         if (!FONT_MAP.has(next.font)) next.font = DEFAULTS.font;
         // theme 字段已废弃，强制移除
         delete next.theme;
@@ -190,7 +193,9 @@
     async function update(partial, options = {}) {
         // 强制删除废弃的 theme 字段
         if ('theme' in partial) delete partial.theme;
-        const next = saveLocal({ ...prefs, ...partial, updatedAt: Date.now() });
+        const patch = { ...partial };
+        if ('font' in patch) patch.fontChosen = true;
+        const next = saveLocal({ ...prefs, ...patch, updatedAt: Date.now() });
         if (options.sync !== false) await syncRemote();
         return next;
     }

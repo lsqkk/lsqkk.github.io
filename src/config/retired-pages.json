@@ -63,5 +63,35 @@
     "path": "/games/zy",
     "to": "/tool/",
     "reason": "按用户要求删除通用文本拼接演示"
+  },
+  {
+    "path": "/a/fire-alert2",
+    "to": "/a/",
+    "reason": "项目下线，相关代码与数据不再维护"
+  },
+  {
+    "path": "/a/fire-alert2/dashboard",
+    "to": "/a/",
+    "reason": "项目下线，相关代码与数据不再维护"
+  },
+  {
+    "path": "/a/fire-alert2/forecast",
+    "to": "/a/",
+    "reason": "项目下线，相关代码与数据不再维护"
+  },
+  {
+    "path": "/a/fire-alert2/report",
+    "to": "/a/",
+    "reason": "项目下线，相关代码与数据不再维护"
+  },
+  {
+    "path": "/a/fire-alert2/satellite",
+    "to": "/a/",
+    "reason": "项目下线，相关代码与数据不再维护"
+  },
+  {
+    "path": "/a/uni",
+    "to": "/a/",
+    "reason": "项目下线，相关代码与数据不再维护"
   }
 ]

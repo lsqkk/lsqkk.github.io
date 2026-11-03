@@ -8,6 +8,22 @@
 
 body {
     font-family: var(--site-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+
+/* 扁平体系：内容面板默认不产生模糊层 */
+:where(.home-panel, .sidebar-panel, .footer-card, .morenpost, .post-item,
+    .dynamic-card, .tag-filter, .pagination, .search-container, .search-results,
+    .tool-card, .function-card, .project-card, .message-card, .update-card) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .login-badge {
@@ -15,7 +31,7 @@ body {
     align-items: center;
     gap: 4px;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     font-size: 0.75em;
     font-weight: 600;
     color: var(--accent);
@@ -51,18 +67,18 @@ body {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     font-size: 0.7em;
     font-weight: 700;
     color: #fff;
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    background: linear-gradient(135deg, var(--warn), var(--danger));
     box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
     margin-left: 4px;
     margin-right: 2px;
     vertical-align: middle;
     line-height: 1.3;
     letter-spacing: 0.5px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    text-shadow: none;
 }
 
 body.dark-mode .user-badge {
@@ -116,7 +132,7 @@ body.dark-mode .user-badge {
 }
 
 .page-subtitle a:hover {
-    color: rgba(230, 230, 230, 0.8);
+    color: var(--text-main);
     border-bottom: 1px dashed var(--text-soft);
     padding-bottom: 0;
 }

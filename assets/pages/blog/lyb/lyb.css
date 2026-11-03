@@ -5,12 +5,12 @@
 
 /* -------- Variables -------- */
 :root {
-    --primary: #4a6cf7;
+    --primary: var(--accent);
     --primary-light: #6a88f7;
     --primary-subtle: rgba(74, 108, 247, 0.10);
 
-    --panel-bg: var(--glass-bg);
-    --panel-border: var(--glass-edge-soft);
+    --panel-bg: var(--surface);
+    --panel-border: var(--line);
     --panel-blur: 22px;
 
     --divider: rgba(0, 0, 0, 0.07);
@@ -83,7 +83,7 @@ header {
     gap: 4px;
     padding: 8px 14px;
     background: var(--panel-bg);
-    backdrop-filter: blur(var(--panel-blur));
+
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     color: var(--text);
@@ -106,7 +106,7 @@ header {
     width: 38px;
     height: 38px;
     background: var(--panel-bg);
-    backdrop-filter: blur(var(--panel-blur));
+
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     color: var(--text-secondary);
@@ -135,7 +135,7 @@ header {
     gap: 10px;
     padding: 10px 16px;
     background: var(--panel-bg);
-    backdrop-filter: blur(var(--panel-blur));
+
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
     flex-wrap: wrap;
@@ -189,8 +189,7 @@ header {
 /* -------- Main Section (single glass panel) -------- */
 .main-section {
     background: var(--panel-bg);
-    backdrop-filter: blur(var(--panel-blur));
-    -webkit-backdrop-filter: blur(var(--panel-blur));
+
     border: 1px solid var(--panel-border);
     border-radius: var(--radius-lg);
     overflow: hidden;
@@ -456,7 +455,7 @@ header {
 .sort-btn {
     padding: 5px 12px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
@@ -629,7 +628,7 @@ header {
     padding: 4px 10px;
     background: transparent;
     border: 1px solid rgba(229, 62, 62, 0.3);
-    color: #e53e3e;
+    color: var(--danger);
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.78rem;
@@ -637,9 +636,9 @@ header {
 }
 
 .delete-btn:hover {
-    background: #e53e3e;
+    background: var(--danger);
     color: #fff;
-    border-color: #e53e3e;
+    border-color: var(--danger);
 }
 
 /* -------- Message Content -------- */
@@ -657,7 +656,7 @@ header {
 .message-content code {
     background: var(--divider);
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 0.85em;
 }
 .message-content pre {
@@ -774,7 +773,7 @@ header {
 .lyb-skeleton-body .s-author {
     width: 100px;
     height: 14px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
     background-size: 200% 100%;
     animation: lyb-shimmer 1.8s ease-in-out infinite;
@@ -783,7 +782,7 @@ header {
 .lyb-skeleton-body .s-text {
     width: 85%;
     height: 14px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
     background-size: 200% 100%;
     animation: lyb-shimmer 1.8s ease-in-out infinite;
@@ -792,7 +791,7 @@ header {
 .lyb-skeleton-body .s-text-short {
     width: 55%;
     height: 14px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
     background-size: 200% 100%;
     animation: lyb-shimmer 1.8s ease-in-out infinite;
@@ -801,7 +800,7 @@ header {
 .lyb-skeleton-body .s-time {
     width: 30%;
     height: 12px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--divider-light) 25%, var(--divider) 50%, var(--divider-light) 75%);
     background-size: 200% 100%;
     animation: lyb-shimmer 1.8s ease-in-out infinite;
@@ -942,7 +941,7 @@ body.reduce-motion .lyb-skeleton-body .s-time {
     color: var(--text-secondary);
     background: var(--divider-light);
     padding: 1px 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     margin-left: 4px;
     vertical-align: middle;
 }
@@ -1029,3 +1028,80 @@ body.reduce-motion .lyb-skeleton-body .s-time {
     .admin-inner { flex-direction: column; align-items: stretch; }
     .admin-inner input { min-width: auto; }
 }
+
+/* 扁平归一：去掉大面板，改用分隔线组织 */
+:root {
+  --primary: var(--accent);
+  --primary-light: var(--accent);
+  --primary-subtle: var(--accent-soft);
+  --panel-bg: transparent;
+  --panel-border: transparent;
+  --divider: var(--line);
+  --divider-light: var(--line-soft);
+  --text: var(--text-main);
+  --text-secondary: var(--text-subtle);
+  --text-muted: var(--text-soft);
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+}
+body.dark-mode {
+  --text: var(--text-main);
+  --text-secondary: var(--text-subtle);
+  --text-muted: var(--text-soft);
+}
+.container { max-width: 760px; margin: 100px auto 56px; }
+header { align-items: flex-end; margin-bottom: 24px; }
+.page-title { text-align: left; font-size: clamp(32px, 5vw, 52px); font-weight: 650; letter-spacing: -0.025em; }
+.header-toolbar { gap: 4px; }
+.nav-link, .admin-toggle {
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text-subtle);
+  font-size: 12px;
+}
+.nav-link:hover, .admin-toggle:hover {
+  background: var(--surface-soft);
+  color: var(--text-main);
+  border-color: var(--line-strong);
+  transform: none;
+}
+.main-section {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+.compose-area {
+  padding: 0 0 28px;
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+.compose-identity input[type="text"],
+.compose-identity input[type="password"],
+.compose-input {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+}
+.compose-input { padding: 12px; }
+.messages-header { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.message-row { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.message-row:hover { background: transparent; }
+.submit-btn {
+  background: var(--text-main);
+  color: var(--surface-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+.submit-btn:hover { background: var(--text-main); opacity: 0.85; transform: none; }
+.sort-group { background: transparent; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 2px; }
+.sort-btn { border-radius: 3px; }
+.sort-btn.active { background: var(--text-main); color: var(--surface-strong); }

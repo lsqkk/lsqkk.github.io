@@ -11,7 +11,8 @@
                     ],
                     "description": "浏览所有博客文章，按标签和时间排序",
                     "link": "/posts",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "▤"
                 },
                 {
                     "name": "工具箱",
@@ -21,7 +22,8 @@
                     ],
                     "description": "集合各类实用工具，提高创作和管理效率",
                     "link": "/tool",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "⌘"
                 },
                 {
                     "name": "游戏",
@@ -32,7 +34,8 @@
                     ],
                     "description": "休闲娱乐游戏，提供轻松的互动体验",
                     "link": "/games",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "◉"
                 },
                 {
                     "name": "视频 Q-TV",
@@ -42,7 +45,8 @@
                     ],
                     "description": "视频内容专区，观看和分享站主视频",
                     "link": "/blog/qtv",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "▷"
                 },
                 {
                     "name": "站主动态",
@@ -52,7 +56,8 @@
                     ],
                     "description": "查看站主的最新动态和活动信息",
                     "link": "/blog/dt",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "◇"
                 },
                 {
                     "name": "留言板",
@@ -62,7 +67,8 @@
                     ],
                     "description": "用户留言和反馈交流区域",
                     "link": "/blog/lyb",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "⌁"
                 },
                 {
                     "name": "友链",
@@ -72,7 +78,8 @@
                     ],
                     "description": "友链信息展示区",
                     "link": "/blog/friends",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "⇄"
                 },
                 {
                     "name": "更新日志",
@@ -82,7 +89,8 @@
                     ],
                     "description": "记录网站的功能更新和版本发布信息",
                     "link": "/blog/log",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "↻"
                 },
                 {
                     "name": "项目",
@@ -92,7 +100,8 @@
                     ],
                     "description": "查看站主公开 GitHub 项目仓库",
                     "link": "/blog/project",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "⌗"
                 }
             ]
         },
@@ -107,7 +116,8 @@
                     ],
                     "description": "每日知乎精选内容",
                     "link": "/blog/daily",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "☰"
                 },
                 {
                     "name": "实时热榜",
@@ -117,7 +127,8 @@
                     ],
                     "description": "实时热门话题汇总",
                     "link": "/blog/hot",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "▲"
                 },
                 {
                     "name": "前端实验室",
@@ -127,7 +138,8 @@
                     ],
                     "description": "前端技术实验和效果展示区域",
                     "link": "/a",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "⌬"
                 },
                 {
                     "name": "直播 LIVE",
@@ -137,7 +149,8 @@
                     ],
                     "description": "实时直播功能和互动平台",
                     "link": "/a/live",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "◐"
                 },
                 {
                     "name": "夸克贴吧",
@@ -147,7 +160,8 @@
                     ],
                     "description": "畅所欲言的全站公共论坛",
                     "link": "/blog/tieba",
-                    "target": "_target"
+                    "target": "_target",
+                    "icon": "◫"
                 }
             ]
         },
@@ -162,7 +176,8 @@
                     ],
                     "description": "夸克博客的文档与知识库项目，系统地整理和分享技术笔记、开源项目文档、博客文章的延伸内容以及其他值得记录的知识。由MkDocs构建页面。",
                     "link": "/quarkdoc",
-                    "target": "_self"
+                    "target": "_self",
+                    "icon": "¶"
                 },
                 {
                     "name": "个人学术主页",
@@ -172,7 +187,8 @@
                     ],
                     "description": "我的学术主页。一个基于 Minimal Light 主题修改的学术个人主页模板，适用于本科生、研究生或研究人员展示个人信息、项目经历、竞赛获奖等内容。",
                     "link": "/academic-homepage",
-                    "target": "_self"
+                    "target": "_self",
+                    "icon": "◎"
                 }
             ]
         }

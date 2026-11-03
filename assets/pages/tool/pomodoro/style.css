@@ -48,7 +48,7 @@ body {
     background-color: var(--primary-color);
     color: white;
     padding: 10px 20px;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     text-decoration: none;
     font-weight: 500;
     display: flex;
@@ -72,9 +72,9 @@ body {
 
 .timer-card {
     background-color: var(--card-bg);
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     text-align: center;
     margin-bottom: 30px;
 }
@@ -97,7 +97,7 @@ body {
     width: 100%;
     height: 10px;
     background-color: var(--progress-bg);
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     margin: 30px 0;
     overflow: hidden;
 }
@@ -106,7 +106,7 @@ body {
     height: 100%;
     background-color: var(--accent-color);
     width: 100%;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     transition: width 0.5s linear;
 }
 
@@ -127,7 +127,7 @@ body {
 
 .time-option {
     padding: 10px 25px;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     background-color: var(--card-bg);
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
@@ -143,7 +143,7 @@ body {
 
 .container button {
     padding: 15px 30px;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     border: none;
     font-size: 18px;
     font-weight: 600;
@@ -175,12 +175,12 @@ button:hover:not(:disabled) {
 }
 
 #stop {
-    background-color: #e74c3c;
+    background-color: var(--danger);
     color: white;
 }
 
 #stop:hover:not(:disabled) {
-    background-color: #c0392b;
+    background-color: var(--danger);
 }
 
 #reset {
@@ -239,3 +239,75 @@ button:hover:not(:disabled) {
         padding: 30px 20px;
     }
 }
+/* 扁平归一 */
+:root {
+  --primary-color: var(--text-main);
+  --secondary-color: var(--text-main);
+  --accent-color: var(--accent);
+  --text-color: var(--text-main);
+  --bg-color: var(--page-bg);
+  --card-bg: var(--surface);
+  --button-hover: var(--text-main);
+  --progress-bg: var(--line);
+}
+[data-theme="dark"] {
+  --primary-color: var(--text-main);
+  --secondary-color: var(--text-main);
+  --accent-color: var(--accent);
+  --text-color: var(--text-main);
+  --bg-color: var(--page-bg);
+  --card-bg: var(--surface);
+  --button-hover: var(--text-main);
+  --progress-bg: var(--line);
+}
+body { background: var(--page-bg); color: var(--text-main); }
+.container { padding-top: 96px; }
+.timer-card {
+  padding: 36px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+.timer-title { margin-bottom: 16px; color: var(--text-main); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+.timer { margin: 24px 0; color: var(--text-main); font-size: clamp(64px, 12vw, 96px); font-weight: 300; letter-spacing: -0.03em; }
+.progress-container { height: 4px; margin: 24px 0; background: var(--line-soft); border-radius: 2px; }
+.progress-bar { background: var(--text-main); border-radius: 2px; }
+.time-options { gap: 8px; margin-bottom: 22px; }
+.time-option {
+  padding: 8px 18px;
+  color: var(--text-subtle);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.time-option.active { color: var(--surface-strong); background: var(--text-main); border-color: var(--text-main); }
+.container button {
+  min-width: 100px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  transition: opacity 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+}
+button:hover:not(:disabled) { transform: none; box-shadow: none; }
+#start { color: var(--surface-strong); background: var(--text-main); }
+#start:hover:not(:disabled) { background: var(--text-main); opacity: 0.85; }
+#stop { color: var(--text-subtle); background: transparent; border: 1px solid var(--line); }
+#stop:hover:not(:disabled) { color: var(--text-main); background: var(--surface-soft); }
+#reset { color: var(--text-subtle); background: transparent; border: 1px solid var(--line); }
+#reset:hover:not(:disabled) { color: var(--text-main); background: var(--surface-soft); }
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--text-subtle);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+.footer { padding: 18px; color: var(--text-soft); background: transparent; border-top: 1px solid var(--line); font-size: 11px; }

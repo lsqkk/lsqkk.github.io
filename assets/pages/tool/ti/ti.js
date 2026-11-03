@@ -77,7 +77,7 @@ function startQuiz() {
 function nextQuestion() {
     const remainingPool = masterPool.filter(q => !masteredIds.has(q.id));
     if (remainingPool.length === 0 && queue.length === 0) {
-        document.getElementById('question-display').innerHTML = "✨ 本轮练习已全部掌握！";
+        document.getElementById('question-display').innerHTML = "本轮练习已全部掌握。";
         document.getElementById('answer-hint').innerText = "";
         return;
     }

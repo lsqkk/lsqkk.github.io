@@ -1,1151 +1,509 @@
+/* ============================================================
+   夸克博客 · 设计令牌
+   扁平、内容优先的表面体系。所有页面只消费这里的变量，
+   不再各自定义玻璃材质、暖白底色或高光边缘。
+
+   规则：
+   - 表面=实色（--surface 系列），层级靠描边与留白，不靠模糊和重阴影
+   - 圆角 2/4/6/8/10，列表行不单独成卡
+   - 深色模式在 :root(媒体查询) 与 body.dark-mode 两处同步
+   ============================================================ */
+
 :root {
-  --page-bg: #f5f7fa;
-  --focus-ring: #2367d7;
-  /* Surfaces */
-  --bg-tint: rgba(6, 17, 33, 0.58);
-  --surface: rgba(255, 255, 255, 0.9);
-  --surface-strong: rgba(255, 255, 255, 0.94);
-  --surface-soft: rgba(248, 251, 255, 0.72);
-  --surface-tint: rgba(225, 238, 255, 0.22);
-  --surface-card: rgba(255, 255, 255, 0.2);
-  --surface-overlay: rgba(255, 255, 255, 0.4);
+  color-scheme: light;
 
-  /* Text */
-  --text-main: #17304f;
-  --text-subtle: #5b7391;
-  --text-soft: #7690b0;
-  --text-inverse: #fff;
+  /* 页面与表面 */
+  --page-bg: #f5f6f8;
+  --bg-tint: #eef1f5;
+  --surface: #ffffff;
+  --surface-strong: #ffffff;
+  --surface-soft: #f7f8fa;
+  --surface-tint: rgba(37, 99, 235, 0.05);
+  --surface-card: #ffffff;
+  --surface-overlay: #ffffff;
 
-  /* Accent */
-  --accent: #2367d7;
-  --accent-2: #0ea5a3;
-  --accent-soft: rgba(35, 103, 215, 0.12);
+  /* 文字 */
+  --text-main: #15181d;
+  --text-subtle: #5a6472;
+  --text-soft: #7b8593;
+  --text-inverse: #ffffff;
 
-  /* Lines / Borders */
-  --line: rgba(44, 72, 111, 0.14);
-  --line-strong: rgba(44, 72, 111, 0.22);
-  --line-soft: rgba(255, 255, 255, 0.54);
+  /* 强调色 */
+  --accent: #2563eb;
+  --accent-2: #0f9d94;
+  --accent-soft: rgba(37, 99, 235, 0.09);
+  --focus-ring: #2563eb;
 
-  /* Radius */
-  --radius-xl: 30px;
-  --radius-lg: 24px;
-  --radius-md: 18px;
-  --radius-sm: 12px;
+  /* 语义色：低饱和，避免刺眼 */
+  --ok: #2f7d5b;
+  --ok-soft: rgba(47, 125, 91, 0.10);
+  --warn: #8a6205;
+  --warn-soft: rgba(138, 98, 5, 0.10);
+  --danger: #b4423a;
+  --danger-soft: rgba(180, 66, 58, 0.10);
+  --violet: #6b5ca5;
+  --violet-soft: rgba(107, 92, 165, 0.10);
 
-  /* Shadows */
-  --shadow-main: 0 22px 54px rgba(7, 24, 52, 0.16);
-  --shadow-soft: 0 14px 30px rgba(11, 36, 74, 0.08);
+  /* 描边 */
+  --line: #e4e7ec;
+  --line-strong: #cfd4dc;
+  --line-soft: #eef0f3;
 
-  /* Spacing */
+  /* 圆角：克制到接近直角，大圆角不属于这套体系 */
+  --radius-xl: 10px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+  --radius-xs: 2px;
+  --radius-full: 999px;
+
+  /* 阴影：只保留一层几乎不可见的浮起提示 */
+  --shadow-main: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-xs: 0 1px 1px rgba(16, 24, 40, 0.04);
+
+  /* 间距与动效 */
   --content-gap: 22px;
+  --duration-fast: 150ms;
+  --duration-normal: 240ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Tag colors */
-  --tag-bg: #edf4ff;
-  --tag-color: #2a5da9;
-  --tag-time-bg: #fcf1d8;
-  --tag-time-color: #8a6205;
-  --tag-col-bg: rgba(120, 89, 203, 0.14);
+  /* 标签 */
+  --tag-bg: #eef4ff;
+  --tag-color: #1d4ed8;
+  --tag-time-bg: #fff7e6;
+  --tag-time-color: #8a5a00;
+  --tag-col-bg: #f3edff;
   --tag-col-color: #6d4fc3;
 
-  /*
-   * Glass (温润浊玉) — 全站毛玻璃统一变量
-   * 用法：
-   *   background: var(--glass-bg);                    // 标准玻璃背景
-   *   background: var(--glass-bg-strong);              // 更实一些（hover 等）
-   *   background: var(--glass-bg-soft);                // 更透一些
-   *   background: var(--glass-bg-solid);               // 近乎实心
-   *   box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
-   *   border: 1px solid var(--line);                   // 边框用 line token
-   *   backdrop-filter: blur(22px) saturate(135%);      // blur 值可自定义
-   *
-   * 新页面无需写 body.dark-mode 覆盖——变量自动适应深色模式。
-   * 详见 src/docs/UI/GlassSystem.md
-   */
-  --glass-bg: rgba(253, 250, 242, 0.55);
-  --glass-bg-strong: rgba(253, 250, 242, 0.6);
-  --glass-bg-soft: rgba(253, 250, 242, 0.5);
-  --glass-bg-solid: rgba(253, 250, 242, 0.9);
-  --glass-edge: rgba(255, 250, 235, 0.5);
-  --glass-edge-strong: rgba(255, 250, 235, 0.7);
-  --glass-edge-soft: rgba(255, 250, 235, 0.4);
-  --glass-shadow: rgba(7, 24, 52, 0.12);
-  --glass-shadow-hover: rgba(7, 24, 52, 0.18);
+  /* 兼容层：旧页面仍引用 glass 变量，这里统一映射为扁平表面 */
+  --glass-bg: #ffffff;
+  --glass-bg-strong: #ffffff;
+  --glass-bg-soft: #f7f8fa;
+  --glass-bg-solid: #ffffff;
+  --glass-edge: #e4e7ec;
+  --glass-edge-strong: #cfd4dc;
+  --glass-edge-soft: #eef0f3;
+  --glass-shadow: rgba(16, 24, 40, 0.08);
+  --glass-shadow-hover: rgba(16, 24, 40, 0.12);
 
-  /* Homepage specifics */
-  --intro-bg: rgba(255, 255, 255, 0.92);
-  --sidebar-welcome-bg: rgba(255, 255, 255, 0.9);
-  --hero-title-color: #102d4e;
-  --section-title-color: #153764;
-  --post-title-color: #113f73;
-  --dynamic-title-color: #113b68;
-  --footer-title-color: #163a67;
-  --footer-stat-value: #1d58ba;
-  --popup-container-bg: #fff;
+  /* 首页与浮层 */
+  --intro-bg: #ffffff;
+  --sidebar-welcome-bg: #ffffff;
+  --hero-title-color: #111827;
+  --section-title-color: #111827;
+  --post-title-color: #111827;
+  --dynamic-title-color: #111827;
+  --footer-title-color: #111827;
+  --footer-stat-value: #2563eb;
+  --popup-container-bg: #ffffff;
 
-  /* Misc */
-  --code-bg: rgba(240, 244, 250, 0.66);
-  --code-color: #1f3960;
-  --popup-bg: #fff;
-  --popup-border: #e5edf8;
-  --popup-text: #2d476d;
+  /* 代码与弹窗 */
+  --code-bg: #f6f7f9;
+  --code-color: #1f2937;
+  --popup-bg: #ffffff;
+  --popup-border: #e4e7ec;
+  --popup-text: #334155;
 }
 
-/* @mention 链接（动态中的 QQ @提及）—— 无下划线，自动适配深色模式 */
-.dynamic-content a[href*="user.qzone.qq.com"] {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 500;
-}
-.dynamic-content a[href*="user.qzone.qq.com"]:hover {
-  color: var(--accent-2);
-}
-
-/* ── Dark mode: system preference ── */
+/* ── 深色令牌：跟随系统 ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --page-bg: #0f1724;
-    --focus-ring: #84b7ff;
-    --bg-tint: rgba(4, 10, 22, 0.74);
-    --surface: rgba(17, 28, 46, 0.68);
-    --surface-strong: rgba(18, 30, 50, 0.72);
-    --surface-soft: rgba(21, 35, 56, 0.62);
-    --surface-tint: rgba(66, 108, 170, 0.16);
-    --surface-card: rgba(19, 31, 52, 0.62);
-    --surface-overlay: rgba(15, 23, 42, 0.92);
+    color-scheme: dark;
 
-    --text-main: #e3ecfb;
-    --text-subtle: #b8cde7;
-    --text-soft: #97afcf;
-    --text-inverse: #0b1f3a;
+    --page-bg: #0f1115;
+    --bg-tint: #0f1115;
+    --surface: #171a20;
+    --surface-strong: #1b1f26;
+    --surface-soft: #14171c;
+    --surface-tint: rgba(122, 162, 255, 0.08);
+    --surface-card: #171a20;
+    --surface-overlay: #1b1f26;
 
-    --accent: #84b7ff;
-    --accent-2: #71dcc8;
-    --accent-soft: rgba(122, 176, 255, 0.18);
+    --text-main: #e7e9ee;
+    --text-subtle: #a3adbb;
+    --text-soft: #828c9a;
+    --text-inverse: #0f1115;
 
-    --line: rgba(134, 171, 226, 0.22);
-    --line-strong: rgba(134, 171, 226, 0.34);
-    --line-soft: rgba(171, 199, 241, 0.3);
+    --accent: #7aa2ff;
+    --accent-2: #4fd1c5;
+    --accent-soft: rgba(122, 162, 255, 0.14);
+    --focus-ring: #7aa2ff;
 
-    --shadow-main: 0 20px 42px rgba(0, 0, 0, 0.42);
-    --shadow-soft: 0 12px 26px rgba(0, 0, 0, 0.32);
+    --ok: #63c79a;
+    --ok-soft: rgba(99, 199, 154, 0.14);
+    --warn: #e0b45f;
+    --warn-soft: rgba(224, 180, 95, 0.14);
+    --danger: #ef8b84;
+    --danger-soft: rgba(239, 139, 132, 0.14);
+    --violet: #b0a3e8;
+    --violet-soft: rgba(176, 163, 232, 0.14);
 
-    --tag-bg: rgba(87, 127, 190, 0.34);
-    --tag-color: #d9e8ff;
-    --tag-time-bg: rgba(188, 139, 45, 0.34);
-    --tag-time-color: #ffe2a8;
-    --tag-col-bg: rgba(152, 129, 229, 0.24);
-    --tag-col-color: #ebdeff;
+    --line: #2a2f37;
+    --line-strong: #3a404a;
+    --line-soft: #23272e;
 
-    --code-bg: rgba(21, 35, 58, 0.8);
-    --code-color: #dce8fb;
-    --popup-bg: rgba(15, 24, 41, 0.88);
-    --popup-border: rgba(140, 173, 221, 0.28);
-    --popup-text: #c8daf2;
+    --shadow-main: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.4);
 
-    --glass-bg: rgba(17, 28, 46, 0.55);
-    --glass-bg-strong: rgba(17, 28, 46, 0.65);
-    --glass-bg-soft: rgba(17, 28, 46, 0.45);
-    --glass-bg-solid: rgba(17, 28, 46, 0.85);
-    --glass-edge: rgba(134, 171, 226, 0.12);
-    --glass-edge-strong: rgba(134, 171, 226, 0.2);
-    --glass-edge-soft: rgba(134, 171, 226, 0.08);
+    --tag-bg: rgba(74, 114, 190, 0.28);
+    --tag-color: #d7e6ff;
+    --tag-time-bg: rgba(188, 139, 45, 0.28);
+    --tag-time-color: #ffdf9e;
+    --tag-col-bg: rgba(143, 120, 220, 0.24);
+    --tag-col-color: #e8dcff;
+
+    --glass-bg: #171a20;
+    --glass-bg-strong: #1b1f26;
+    --glass-bg-soft: #14171c;
+    --glass-bg-solid: #1b1f26;
+    --glass-edge: #2a2f37;
+    --glass-edge-strong: #3a404a;
+    --glass-edge-soft: #23272e;
     --glass-shadow: rgba(0, 0, 0, 0.42);
     --glass-shadow-hover: rgba(0, 0, 0, 0.5);
 
-    --intro-bg: rgba(18, 30, 50, 0.72);
-    --sidebar-welcome-bg: rgba(18, 30, 50, 0.7);
+    --intro-bg: #171a20;
+    --sidebar-welcome-bg: #171a20;
     --hero-title-color: var(--text-main);
     --section-title-color: var(--text-main);
     --post-title-color: var(--text-main);
     --dynamic-title-color: var(--text-main);
     --footer-title-color: var(--text-main);
-    --footer-stat-value: #9dc1ff;
-    --popup-container-bg: rgba(15, 24, 41, 0.88);
+    --footer-stat-value: #9db8ff;
+    --popup-container-bg: #1b1f26;
+
+    --code-bg: #14171c;
+    --code-color: #dbe4f3;
+    --popup-bg: #1b1f26;
+    --popup-border: #2a2f37;
+    --popup-text: #c8d3e2;
   }
 }
 
-/* ── Dark mode: manual class toggle (matches user-preferences.js) ── */
+/* ── 深色令牌：手动开关（与 user-preferences.js 同步） ── */
 body.dark-mode {
-  --page-bg: #0f1724;
-  --focus-ring: #84b7ff;
-  --bg-tint: rgba(4, 10, 22, 0.74);
-  --surface: rgba(17, 28, 46, 0.68);
-  --surface-strong: rgba(18, 30, 50, 0.72);
-  --surface-soft: rgba(21, 35, 56, 0.62);
-  --surface-tint: rgba(66, 108, 170, 0.16);
-  --surface-card: rgba(19, 31, 52, 0.62);
-  --surface-overlay: rgba(15, 23, 42, 0.92);
+  color-scheme: dark;
 
-  --text-main: #e3ecfb;
-  --text-subtle: #b8cde7;
-  --text-soft: #97afcf;
-  --text-inverse: #0b1f3a;
+  --page-bg: #0f1115;
+  --bg-tint: #0f1115;
+  --surface: #171a20;
+  --surface-strong: #1b1f26;
+  --surface-soft: #14171c;
+  --surface-tint: rgba(122, 162, 255, 0.08);
+  --surface-card: #171a20;
+  --surface-overlay: #1b1f26;
 
-  --accent: #84b7ff;
-  --accent-2: #71dcc8;
-  --accent-soft: rgba(122, 176, 255, 0.18);
+  --text-main: #e7e9ee;
+  --text-subtle: #a3adbb;
+  --text-soft: #828c9a;
+  --text-inverse: #0f1115;
 
-  --line: rgba(134, 171, 226, 0.22);
-  --line-strong: rgba(134, 171, 226, 0.34);
-  --line-soft: rgba(171, 199, 241, 0.3);
+  --accent: #7aa2ff;
+  --accent-2: #4fd1c5;
+  --accent-soft: rgba(122, 162, 255, 0.14);
+  --focus-ring: #7aa2ff;
 
-  --shadow-main: 0 20px 42px rgba(0, 0, 0, 0.42);
-  --shadow-soft: 0 12px 26px rgba(0, 0, 0, 0.32);
+  --ok: #63c79a;
+  --ok-soft: rgba(99, 199, 154, 0.14);
+  --warn: #e0b45f;
+  --warn-soft: rgba(224, 180, 95, 0.14);
+  --danger: #ef8b84;
+  --danger-soft: rgba(239, 139, 132, 0.14);
+  --violet: #b0a3e8;
+  --violet-soft: rgba(176, 163, 232, 0.14);
 
-  --tag-bg: rgba(87, 127, 190, 0.34);
-  --tag-color: #d9e8ff;
-  --tag-time-bg: rgba(188, 139, 45, 0.34);
-  --tag-time-color: #ffe2a8;
-  --tag-col-bg: rgba(152, 129, 229, 0.24);
-  --tag-col-color: #ebdeff;
+  --line: #2a2f37;
+  --line-strong: #3a404a;
+  --line-soft: #23272e;
 
-  --code-bg: rgba(21, 35, 58, 0.8);
-  --code-color: #dce8fb;
-  --popup-bg: rgba(15, 24, 41, 0.88);
-  --popup-border: rgba(140, 173, 221, 0.28);
-  --popup-text: #c8daf2;
+  --shadow-main: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.4);
 
-  --glass-bg: rgba(17, 28, 46, 0.55);
-  --glass-bg-strong: rgba(17, 28, 46, 0.65);
-  --glass-bg-soft: rgba(17, 28, 46, 0.45);
-  --glass-bg-solid: rgba(17, 28, 46, 0.85);
-  --glass-edge: rgba(134, 171, 226, 0.12);
-  --glass-edge-strong: rgba(134, 171, 226, 0.2);
-  --glass-edge-soft: rgba(134, 171, 226, 0.08);
+  --tag-bg: rgba(74, 114, 190, 0.28);
+  --tag-color: #d7e6ff;
+  --tag-time-bg: rgba(188, 139, 45, 0.28);
+  --tag-time-color: #ffdf9e;
+  --tag-col-bg: rgba(143, 120, 220, 0.24);
+  --tag-col-color: #e8dcff;
+
+  --glass-bg: #171a20;
+  --glass-bg-strong: #1b1f26;
+  --glass-bg-soft: #14171c;
+  --glass-bg-solid: #1b1f26;
+  --glass-edge: #2a2f37;
+  --glass-edge-strong: #3a404a;
+  --glass-edge-soft: #23272e;
   --glass-shadow: rgba(0, 0, 0, 0.42);
   --glass-shadow-hover: rgba(0, 0, 0, 0.5);
 
-  --intro-bg: rgba(18, 30, 50, 0.72);
-  --sidebar-welcome-bg: rgba(18, 30, 50, 0.7);
+  --intro-bg: #171a20;
+  --sidebar-welcome-bg: #171a20;
   --hero-title-color: var(--text-main);
   --section-title-color: var(--text-main);
   --post-title-color: var(--text-main);
   --dynamic-title-color: var(--text-main);
   --footer-title-color: var(--text-main);
-  --footer-stat-value: #9dc1ff;
-  --popup-container-bg: rgba(15, 24, 41, 0.88);
+  --footer-stat-value: #9db8ff;
+  --popup-container-bg: #1b1f26;
+
+  --code-bg: #14171c;
+  --code-color: #dbe4f3;
+  --popup-bg: #1b1f26;
+  --popup-border: #2a2f37;
+  --popup-text: #c8d3e2;
 }
 
-/* ════════════════════════════════════════════════════
-   Dark Mode — Element Overrides
-   Merged from dark-mode.css into tokens.css to
-   eliminate a separate HTTP request.
-   ════════════════════════════════════════════════════ */
-
-@media (prefers-color-scheme: dark) {
-
-  /* Base page */
-  body { color: var(--text-main); }
-
-  .page-title,
-  .page-subtitle,
-  .section-title,
-  .category-title {
-    color: var(--text-main);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
-  }
-
-  .copyright,
-  footer,
-  .footer-content,
-  .footer-links a,
-  .footer-column p,
-  .footer-column li {
-    color: var(--text-soft);
-  }
-
-  .posts-container .posts-fold-toggle,
-  .posts-container .post-title {
-    color: var(--text-main);
-  }
-
-  .posts-container .post-date,
-  .posts-container .posts-fold-count {
-    color: var(--text-soft);
-  }
-
-  .posts-container .post-tag {
-    background: var(--tag-bg);
-    color: var(--tag-color);
-  }
-
-  .posts-container .post-tag.read-time {
-    background: var(--tag-time-bg);
-    color: var(--tag-time-color);
-    border-color: var(--line);
-  }
-
-  .posts-container .page-btn {
-    background: rgba(31, 49, 78, 0.72);
-    color: var(--text-main);
-    border-color: var(--line);
-  }
-
-  /* Post content */
-  .morenpost,
-  .sidebar-content,
-  .sidebar-footer {
-    background: var(--glass-bg);
-    border-color: var(--line);
-    box-shadow: var(--shadow-main);
-  }
-
-  .morenpost,
-  .morenpost p,
-  .morenpost li,
-  .post-title-main,
-  .post-meta,
-  .post-column-note,
-  .donate-text,
-  .sidebar-main-content,
-  .sidebar-footer a {
-    color: var(--text-main);
-  }
-
-  .morenpost a,
-  .post-column-link {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  .post-tag {
-    background: var(--tag-bg);
-    color: var(--tag-color);
-  }
-
-  .post-tag.read-time {
-    background: var(--tag-time-bg);
-    color: var(--tag-time-color);
-    border-color: var(--line);
-  }
-
-  .post-content table { color: var(--text-main); }
-
-  .post-content th,
-  .post-content td {
-    border-color: var(--line);
-  }
-
-  /* Sidebar / FAB */
-  .sidebar-toggle {
-    background: var(--surface-strong);
-    border: 1px solid var(--line);
-    color: var(--text-main);
-    box-shadow: var(--shadow-main);
-  }
-
-  .sidebar-toggle:hover {
-    background: rgba(36, 52, 84, 0.9);
-  }
-
-  .fab-btn {
-    background: var(--surface-strong);
-    border: 1px solid var(--line);
-    color: var(--text-main);
-    box-shadow: var(--shadow-main);
-  }
-
-  .fab-btn:hover {
-    background: rgba(36, 52, 84, 0.9);
-  }
-
-  .toc-highlight {
-    background: rgba(110, 168, 255, 0.2);
-    border-color: rgba(110, 168, 255, 0.35);
-  }
-
-  .sidebar-backdrop {
-    background: rgba(2, 6, 23, 0.55);
-  }
-
-  /* Post annotations */
-  .post-annotation-modal {
-    background: rgba(2, 6, 23, 0.68);
-  }
-
-  .post-annotation-popover,
-  .post-annotation-tooltip,
-  .post-annotation-modal-panel {
-    background: var(--surface-overlay);
-    border-color: var(--line);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    color: var(--text-main);
-  }
-
-  .post-annotation-modal-title,
-  .post-annotation-user,
-  .post-annotation-comment-text {
-    color: var(--text-main);
-  }
-
-  .post-annotation-quote {
-    color: var(--text-main);
-    background: rgba(30, 41, 59, 0.8);
-    border-left-color: rgba(96, 165, 250, 0.6);
-  }
-
-  .post-annotation-profile {
-    background: rgba(30, 41, 59, 0.7);
-    border-color: var(--line);
-  }
-
-  .post-annotation-comment {
-    background: rgba(15, 23, 42, 0.82);
-    border-color: var(--line);
-  }
-
-  .post-annotation-comment-time {
-    color: var(--text-soft);
-  }
-
-  .post-annotation-comment-actions button {
-    background: rgba(30, 41, 59, 0.9);
-    color: var(--text-main);
-    border-color: var(--line);
-  }
-
-  .post-annotation-form textarea,
-  .post-annotation-profile-row input[type="text"] {
-    background: rgba(15, 23, 42, 0.9);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .post-annotation-btn {
-    border-color: var(--line);
-  }
-
-  .post-annotation-close {
-    color: var(--text-soft);
-  }
-
-  .post-annotation-empty {
-    color: var(--text-soft);
-  }
-
-  .index-announcement-title,
-  .index-announcement-body {
-    color: var(--text-main);
-  }
-
-  /* Sidebar nav */
-  .sidebar h4,
-  .toc-item a,
-  .sidebar-footer a,
-  #toc-loading {
-    color: var(--text-main);
-  }
-
-  .toc-item a:hover {
-    color: #ffffff;
-  }
-
-  .contact-chip {
-    background: rgba(18, 30, 50, 0.66);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .latest-video-body {
-    background: rgba(18, 30, 50, 0.76);
-    border-top-color: var(--line);
-  }
-
-  .github-stat {
-    background: rgba(24, 38, 62, 0.72);
-    border-color: var(--line);
-  }
-
-  code {
-    background: var(--code-bg);
-    color: var(--code-color);
-  }
-
-  pre {
-    background: rgba(21, 35, 58, 0.8);
-    border: 1px solid var(--line);
-  }
-
-  /* Tool / Function / Project cards */
-  .tools-grid .tool-card,
-  .functions-grid .function-card,
-  .project-grid .project-card,
-  .friends-section .glass-card,
-  .info-section .glass-card,
-  .daily-section,
-  .calendar-container,
-  .filter-status,
-  .pagination-container,
-  .update-card,
-  .project-card,
-  .video-card,
-  .controls,
-  .user-info,
-  .messages-panel,
-  .user-panel,
-  .message,
-  .modal-content,
-  .message-form,
-  .message-card,
-  .admin-panel,
-  .reply-card,
-  .search-box input,
-  .board-selector select {
-    background: var(--surface);
-    border-color: var(--line);
-    color: var(--text-main);
-    box-shadow: var(--shadow-main);
-  }
-
-  .tool-name,
-  .function-name,
-  .function-desc,
-  .function-category,
-  .tool-category,
-  .project-title,
-  .project-desc,
-  .project-updated,
-  .friend-name,
-  .friend-desc,
-  .my-info-item .info-label,
-  .my-info-item .info-value,
-  .daily-header,
-  .article-title,
-  .article-meta,
-  .update-card,
-  .update-card h2,
-  .update-card p,
-  .update-card li,
-  .project-head p,
-  .video-title,
-  .video-meta,
-  .video-stats .stat,
-  .logo h1,
-  .message-content,
-  .message-time,
-  .form-group label,
-  .empty-state,
-  .calendar-header h3,
-  .weekday,
-  .pagination-info {
-    color: var(--text-main);
-  }
-
-  .tool-link,
-  .function-link,
-  .project-open,
-  .back-home,
-  .chat-link,
-  .notice-link,
-  .copy-hint,
-  .platform-title,
-  .update-time {
-    color: var(--accent);
-  }
-
-  .tool-link,
-  .function-link,
-  .project-open,
-  .sort-btn,
-  .pagination button,
-  .submit-btn,
-  .admin-btn,
-  .btn {
-    background: rgba(39, 67, 108, 0.62);
-    border-color: var(--line);
-  }
-
-  .game-section-title {
-    color: var(--text-main);
-    border-bottom-color: var(--line);
-  }
-
-  .game-card {
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
-  }
-
-  .game-card-overlay {
-    background: linear-gradient(transparent, rgba(4, 10, 20, 0.88));
-  }
-
-  .dynamic-card,
-  .calendar-widget,
-  .pagination,
-  .month-item {
-    background: var(--surface);
-    border-color: var(--line);
-  }
-
-  .dynamic-title,
-  .calendar-title,
-  .month-item,
-  .page-btn,
-  .page-info {
-    color: var(--text-main);
-  }
-
-  .dynamic-date {
-    color: var(--text-soft);
-  }
-
-  .dynamic-content {
-    color: var(--text-main);
-  }
-
-  .dynamic-content.is-clamped::before {
-    background: linear-gradient(90deg, rgba(9, 18, 35, 0), rgba(8, 16, 30, 0.85));
-  }
-
-  .dynamic-content.is-clamped::after {
-    color: var(--accent);
-    background: rgba(8, 16, 30, 0.9);
-  }
-
-  .dynamic-detail-link {
-    color: var(--accent);
-  }
-
-  .dynamic-entry-stats {
-    color: var(--text-soft);
-  }
-
-  .month-item.active,
-  .page-btn.active {
-    background: var(--accent-soft);
-    color: #ffffff;
-  }
-
-  .main-content,
-  .category-nav,
-  .content-area,
-  .platform-header {
-    background: var(--surface);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .category-item,
-  .platform-title,
-  #update-time,
-  .hot-item,
-  .hot-title,
-  .hot-meta,
-  .description {
-    color: var(--text-main);
-  }
-
-  .category-item:hover,
-  .category-item.active {
-    background: var(--accent-soft);
-  }
-
-  .admin-panel input,
-  .message-form input,
-  .message-form textarea,
-  .search-box input,
-  .board-selector select,
-  .calendar-day,
-  .page-number {
-    background: rgba(30, 47, 74, 0.66);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .search-box input::placeholder,
-  .message-form input::placeholder,
-  .message-form textarea::placeholder {
-    color: var(--text-soft);
-  }
-
-  /* Homepage overrides */
-  body.home-page .main-content,
-  body.home-page .sidebar-index {
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  body.home-page .dynamic-feed .dynamic-card,
-  body.home-page .recent-posts .post-item-link {
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-  }
-
-  body.home-page .recent-posts .post-item {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  body.home-page .dynamic-feed .dynamic-card:hover {
-    background: transparent;
-    transform: none;
-  }
-
-  body.home-page .footer-card {
-    border-radius: 28px;
-    overflow: hidden;
-  }
+/* ── 全局基线 ── */
+html {
+  background: var(--page-bg);
 }
 
-/* ── Same rules for the manual class toggle ── */
-body.dark-mode {
-
-  body { color: var(--text-main); }
-
-  .page-title,
-  .page-subtitle,
-  .section-title,
-  .category-title {
-    color: var(--text-main);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
-  }
-
-  .copyright,
-  footer,
-  .footer-content,
-  .footer-links a,
-  .footer-column p,
-  .footer-column li {
-    color: var(--text-soft);
-  }
-
-  .posts-container .posts-fold-toggle,
-  .posts-container .post-title {
-    color: var(--text-main);
-  }
-
-  .posts-container .post-date,
-  .posts-container .posts-fold-count {
-    color: var(--text-soft);
-  }
-
-  .posts-container .post-tag {
-    background: var(--tag-bg);
-    color: var(--tag-color);
-  }
-
-  .posts-container .post-tag.read-time {
-    background: var(--tag-time-bg);
-    color: var(--tag-time-color);
-    border-color: var(--line);
-  }
-
-  .posts-container .page-btn {
-    background: rgba(31, 49, 78, 0.72);
-    color: var(--text-main);
-    border-color: var(--line);
-  }
-
-  .morenpost,
-  .sidebar-content,
-  .sidebar-footer {
-    background: var(--glass-bg);
-    border-color: var(--line);
-    box-shadow: var(--shadow-main);
-  }
-
-  .morenpost,
-  .morenpost p,
-  .morenpost li,
-  .post-title-main,
-  .post-meta,
-  .post-column-note,
-  .donate-text,
-  .sidebar-main-content,
-  .sidebar-footer a {
-    color: var(--text-main);
-  }
-
-  .morenpost a,
-  .post-column-link {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  .post-tag {
-    background: var(--tag-bg);
-    color: var(--tag-color);
-  }
-
-  .post-tag.read-time {
-    background: var(--tag-time-bg);
-    color: var(--tag-time-color);
-    border-color: var(--line);
-  }
-
-  .post-content table { color: var(--text-main); }
-
-  .post-content th,
-  .post-content td {
-    border-color: var(--line);
-  }
-
-  .sidebar-toggle {
-    background: var(--surface-strong);
-    border: 1px solid var(--line);
-    color: var(--text-main);
-    box-shadow: var(--shadow-main);
-  }
-
-  .sidebar-toggle:hover {
-    background: rgba(36, 52, 84, 0.9);
-  }
-
-  .fab-btn {
-    background: var(--surface-strong);
-    border: 1px solid var(--line);
-    color: var(--text-main);
-    box-shadow: var(--shadow-main);
-  }
-
-  .fab-btn:hover {
-    background: rgba(36, 52, 84, 0.9);
-  }
-
-  .toc-highlight {
-    background: rgba(110, 168, 255, 0.2);
-    border-color: rgba(110, 168, 255, 0.35);
-  }
-
-  .sidebar-backdrop {
-    background: rgba(2, 6, 23, 0.55);
-  }
-
-  .post-annotation-modal {
-    background: rgba(2, 6, 23, 0.68);
-  }
-
-  .post-annotation-popover,
-  .post-annotation-tooltip,
-  .post-annotation-modal-panel {
-    background: var(--surface-overlay);
-    border-color: var(--line);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    color: var(--text-main);
-  }
-
-  .post-annotation-modal-title,
-  .post-annotation-user,
-  .post-annotation-comment-text {
-    color: var(--text-main);
-  }
-
-  .post-annotation-quote {
-    color: var(--text-main);
-    background: rgba(30, 41, 59, 0.8);
-    border-left-color: rgba(96, 165, 250, 0.6);
-  }
-
-  .post-annotation-profile {
-    background: rgba(30, 41, 59, 0.7);
-    border-color: var(--line);
-  }
-
-  .post-annotation-comment {
-    background: rgba(15, 23, 42, 0.82);
-    border-color: var(--line);
-  }
-
-  .post-annotation-comment-time {
-    color: var(--text-soft);
-  }
-
-  .post-annotation-comment-actions button {
-    background: rgba(30, 41, 59, 0.9);
-    color: var(--text-main);
-    border-color: var(--line);
-  }
-
-  .post-annotation-form textarea,
-  .post-annotation-profile-row input[type="text"] {
-    background: rgba(15, 23, 42, 0.9);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .post-annotation-btn {
-    border-color: var(--line);
-  }
-
-  .post-annotation-close {
-    color: var(--text-soft);
-  }
-
-  .post-annotation-empty {
-    color: var(--text-soft);
-  }
-
-  .index-announcement-title,
-  .index-announcement-body {
-    color: var(--text-main);
-  }
-
-  .sidebar h4,
-  .toc-item a,
-  .sidebar-footer a,
-  #toc-loading {
-    color: var(--text-main);
-  }
-
-  .toc-item a:hover {
-    color: #ffffff;
-  }
-
-  .contact-chip {
-    background: rgba(18, 30, 50, 0.66);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .latest-video-body {
-    background: rgba(18, 30, 50, 0.76);
-    border-top-color: var(--line);
-  }
-
-  .github-stat {
-    background: rgba(24, 38, 62, 0.72);
-    border-color: var(--line);
-  }
-
-  code {
-    background: var(--code-bg);
-    color: var(--code-color);
-  }
-
-  pre {
-    background: rgba(21, 35, 58, 0.8);
-    border: 1px solid var(--line);
-  }
-
-  .tools-grid .tool-card,
-  .functions-grid .function-card,
-  .project-grid .project-card,
-  .friends-section .glass-card,
-  .info-section .glass-card,
-  .daily-section,
-  .calendar-container,
-  .filter-status,
-  .pagination-container,
-  .update-card,
-  .project-card,
-  .video-card,
-  .controls,
-  .user-info,
-  .messages-panel,
-  .user-panel,
-  .message,
-  .modal-content,
-  .message-form,
-  .message-card,
-  .admin-panel,
-  .reply-card,
-  .search-box input,
-  .board-selector select {
-    background: var(--surface);
-    border-color: var(--line);
-    color: var(--text-main);
-    box-shadow: var(--shadow-main);
-  }
-
-  .tool-name,
-  .function-name,
-  .function-desc,
-  .function-category,
-  .tool-category,
-  .project-title,
-  .project-desc,
-  .project-updated,
-  .friend-name,
-  .friend-desc,
-  .my-info-item .info-label,
-  .my-info-item .info-value,
-  .daily-header,
-  .article-title,
-  .article-meta,
-  .update-card,
-  .update-card h2,
-  .update-card p,
-  .update-card li,
-  .project-head p,
-  .video-title,
-  .video-meta,
-  .video-stats .stat,
-  .logo h1,
-  .message-content,
-  .message-time,
-  .form-group label,
-  .empty-state,
-  .calendar-header h3,
-  .weekday,
-  .pagination-info {
-    color: var(--text-main);
-  }
-
-  .tool-link,
-  .function-link,
-  .project-open,
-  .back-home,
-  .chat-link,
-  .notice-link,
-  .copy-hint,
-  .platform-title,
-  .update-time {
-    color: var(--accent);
-  }
-
-  .tool-link,
-  .function-link,
-  .project-open,
-  .sort-btn,
-  .pagination button,
-  .submit-btn,
-  .admin-btn,
-  .btn {
-    background: rgba(39, 67, 108, 0.62);
-    border-color: var(--line);
-  }
-
-  .game-section-title {
-    color: var(--text-main);
-    border-bottom-color: var(--line);
-  }
-
-  .game-card {
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
-  }
-
-  .game-card-overlay {
-    background: linear-gradient(transparent, rgba(4, 10, 20, 0.88));
-  }
-
-  .dynamic-card,
-  .calendar-widget,
-  .pagination,
-  .month-item {
-    background: var(--surface);
-    border-color: var(--line);
-  }
-
-  .dynamic-title,
-  .calendar-title,
-  .month-item,
-  .page-btn,
-  .page-info {
-    color: var(--text-main);
-  }
-
-  .dynamic-date {
-    color: var(--text-soft);
-  }
-
-  .dynamic-content {
-    color: var(--text-main);
-  }
-
-  .dynamic-content.is-clamped::before {
-    background: linear-gradient(90deg, rgba(9, 18, 35, 0), rgba(8, 16, 30, 0.85));
-  }
-
-  .dynamic-content.is-clamped::after {
-    color: var(--accent);
-    background: rgba(8, 16, 30, 0.9);
-  }
-
-  .dynamic-detail-link {
-    color: var(--accent);
-  }
-
-  .dynamic-entry-stats {
-    color: var(--text-soft);
-  }
-
-  .month-item.active,
-  .page-btn.active {
-    background: var(--accent-soft);
-    color: #ffffff;
-  }
-
-  .main-content,
-  .category-nav,
-  .content-area,
-  .platform-header {
-    background: var(--surface);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .category-item,
-  .platform-title,
-  #update-time,
-  .hot-item,
-  .hot-title,
-  .hot-meta,
-  .description {
-    color: var(--text-main);
-  }
-
-  .category-item:hover,
-  .category-item.active {
-    background: var(--accent-soft);
-  }
-
-  .admin-panel input,
-  .message-form input,
-  .message-form textarea,
-  .search-box input,
-  .board-selector select,
-  .calendar-day,
-  .page-number {
-    background: rgba(30, 47, 74, 0.66);
-    border-color: var(--line);
-    color: var(--text-main);
-  }
-
-  .search-box input::placeholder,
-  .message-form input::placeholder,
-  .message-form textarea::placeholder {
-    color: var(--text-soft);
-  }
-
-  body.home-page .main-content,
-  body.home-page .sidebar-index {
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  body.home-page .dynamic-feed .dynamic-card,
-  body.home-page .recent-posts .post-item-link {
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-  }
-
-  body.home-page .recent-posts .post-item {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  body.home-page .dynamic-feed .dynamic-card:hover {
-    background: transparent;
-    transform: none;
-  }
-
-  body.home-page .footer-card {
-    border-radius: 28px;
-    overflow: hidden;
-  }
+body {
+  background: var(--page-bg);
+  color: var(--text-main);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-main);
+}
+
+/* ── 深色兼容层：旧页面中写死的浅色表面在此统一回正 ── */
+body.dark-mode .page-title,
+body.dark-mode .page-subtitle,
+body.dark-mode .section-title,
+body.dark-mode .category-title,
+body.dark-mode .post-title-main,
+body.dark-mode .dynamic-title,
+body.dark-mode .post-title {
+  color: var(--text-main);
+  text-shadow: none;
+}
+
+body.dark-mode .copyright,
+body.dark-mode footer,
+body.dark-mode .footer-content,
+body.dark-mode .footer-links a,
+body.dark-mode .footer-column p,
+body.dark-mode .footer-column li {
+  color: var(--text-soft);
+}
+
+body.dark-mode .morenpost,
+body.dark-mode .sidebar-content,
+body.dark-mode .sidebar-footer,
+body.dark-mode .post-item,
+body.dark-mode .tag-filter,
+body.dark-mode .posts-fold-panel,
+body.dark-mode .pagination,
+body.dark-mode .search-container,
+body.dark-mode .search-results,
+body.dark-mode .dynamic-card,
+body.dark-mode .calendar-widget,
+body.dark-mode .month-item,
+body.dark-mode .main-content,
+body.dark-mode .category-nav,
+body.dark-mode .content-area,
+body.dark-mode .platform-header,
+body.dark-mode .tools-grid .tool-card,
+body.dark-mode .functions-grid .function-card,
+body.dark-mode .project-grid .project-card,
+body.dark-mode .friends-section .glass-card,
+body.dark-mode .info-section .glass-card,
+body.dark-mode .daily-section,
+body.dark-mode .calendar-container,
+body.dark-mode .filter-status,
+body.dark-mode .pagination-container,
+body.dark-mode .update-card,
+body.dark-mode .project-card,
+body.dark-mode .video-card,
+body.dark-mode .controls,
+body.dark-mode .user-info,
+body.dark-mode .messages-panel,
+body.dark-mode .user-panel,
+body.dark-mode .message,
+body.dark-mode .modal-content,
+body.dark-mode .message-form,
+body.dark-mode .message-card,
+body.dark-mode .admin-panel,
+body.dark-mode .reply-card,
+body.dark-mode .post-annotation-popover,
+body.dark-mode .post-annotation-tooltip,
+body.dark-mode .post-annotation-modal-panel {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--text-main);
+  box-shadow: none;
+}
+
+body.dark-mode .morenpost p,
+body.dark-mode .morenpost li,
+body.dark-mode .post-meta,
+body.dark-mode .post-column-note,
+body.dark-mode .donate-text,
+body.dark-mode .sidebar-main-content,
+body.dark-mode .sidebar-footer a,
+body.dark-mode .dynamic-content,
+body.dark-mode .dynamic-title,
+body.dark-mode .calendar-title,
+body.dark-mode .page-btn,
+body.dark-mode .page-info,
+body.dark-mode .category-item,
+body.dark-mode .platform-title,
+body.dark-mode .hot-item,
+body.dark-mode .hot-title,
+body.dark-mode .hot-meta,
+body.dark-mode .description,
+body.dark-mode .tool-name,
+body.dark-mode .function-name,
+body.dark-mode .function-desc,
+body.dark-mode .function-category,
+body.dark-mode .tool-category,
+body.dark-mode .project-title,
+body.dark-mode .project-desc,
+body.dark-mode .project-updated,
+body.dark-mode .friend-name,
+body.dark-mode .friend-desc,
+body.dark-mode .my-info-item .info-label,
+body.dark-mode .my-info-item .info-value,
+body.dark-mode .daily-header,
+body.dark-mode .article-title,
+body.dark-mode .article-meta,
+body.dark-mode .video-title,
+body.dark-mode .video-meta,
+body.dark-mode .video-stats .stat,
+body.dark-mode .logo h1,
+body.dark-mode .message-content,
+body.dark-mode .message-time,
+body.dark-mode .form-group label,
+body.dark-mode .empty-state,
+body.dark-mode .calendar-header h3,
+body.dark-mode .weekday,
+body.dark-mode .pagination-info,
+body.dark-mode .post-annotation-modal-title,
+body.dark-mode .post-annotation-user,
+body.dark-mode .post-annotation-comment-text {
+  color: var(--text-main);
+}
+
+body.dark-mode .tool-link,
+body.dark-mode .function-link,
+body.dark-mode .project-open,
+body.dark-mode .back-home,
+body.dark-mode .chat-link,
+body.dark-mode .notice-link,
+body.dark-mode .copy-hint,
+body.dark-mode .platform-title,
+body.dark-mode .update-time,
+body.dark-mode .dynamic-detail-link,
+body.dark-mode .morenpost a,
+body.dark-mode .post-column-link,
+body.dark-mode .sidebar h4,
+body.dark-mode .toc-item a,
+body.dark-mode #toc-loading {
+  color: var(--accent);
+}
+
+body.dark-mode .post-annotation-quote,
+body.dark-mode .post-annotation-profile,
+body.dark-mode .post-annotation-comment,
+body.dark-mode .post-annotation-comment-actions button,
+body.dark-mode .contact-chip,
+body.dark-mode .latest-video-body,
+body.dark-mode .github-stat,
+body.dark-mode .admin-panel input,
+body.dark-mode .message-form input,
+body.dark-mode .message-form textarea,
+body.dark-mode .search-box input,
+body.dark-mode .board-selector select,
+body.dark-mode .calendar-day,
+body.dark-mode .page-number,
+body.dark-mode .tool-link,
+body.dark-mode .function-link,
+body.dark-mode .project-open,
+body.dark-mode .sort-btn,
+body.dark-mode .pagination button,
+body.dark-mode .submit-btn,
+body.dark-mode .admin-btn,
+body.dark-mode .btn {
+  background: var(--surface-soft);
+  color: var(--text-main);
+  border-color: var(--line);
+}
+
+body.dark-mode .post-annotation-form textarea,
+body.dark-mode .post-annotation-profile-row input[type="text"] {
+  background: var(--surface-soft);
+  border-color: var(--line);
+  color: var(--text-main);
+}
+
+body.dark-mode .search-box input::placeholder,
+body.dark-mode .message-form input::placeholder,
+body.dark-mode .message-form textarea::placeholder {
+  color: var(--text-soft);
+}
+
+body.dark-mode .sidebar-toggle,
+body.dark-mode .fab-btn {
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  color: var(--text-main);
+  box-shadow: none;
+}
+
+body.dark-mode .sidebar-toggle:hover,
+body.dark-mode .fab-btn:hover {
+  background: var(--surface-soft);
+}
+
+body.dark-mode code {
+  background: var(--code-bg);
+  color: var(--code-color);
+}
+
+body.dark-mode pre {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  color: var(--text-main);
+}
+
+body.dark-mode .post-content table { color: var(--text-main); }
+body.dark-mode .post-content th,
+body.dark-mode .post-content td { border-color: var(--line); }
+
+body.dark-mode .sidebar-backdrop { background: rgba(0, 0, 0, 0.55); }
+body.dark-mode .post-annotation-modal { background: rgba(0, 0, 0, 0.62); }
+
+body.dark-mode .toc-highlight {
+  background: var(--accent-soft);
+  border-color: var(--line-strong);
+}
+
+body.dark-mode .dynamic-content.is-clamped::before {
+  background: linear-gradient(90deg, rgba(15, 17, 21, 0), rgba(15, 17, 21, 0.92));
+}
+
+body.dark-mode .dynamic-content.is-clamped::after {
+  color: var(--accent);
+  background: rgba(15, 17, 21, 0.96);
+}
+
+/* 旧首页的玻璃/卡片在深色下统一为实色 */
+body.dark-mode .main-content,
+body.dark-mode .sidebar-index {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+body.dark-mode .dynamic-feed .dynamic-card,
+body.dark-mode .recent-posts .post-item,
+body.dark-mode .recent-posts .post-item-link {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }

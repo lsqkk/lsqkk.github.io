@@ -6,82 +6,117 @@ let stats = {
     lastUpdate: null
 };
 
+const MAP = {
+    width: 50,
+    height: 70,
+    scoreMax: 5000,
+    zeroDistance: 70,
+    kmPerUnit: 15.7,
+    perfectDistance: 5
+};
+
+function $id(id) {
+    return document.getElementById(id);
+}
+
 async function loadQuestion() {
-    const data = Array.isArray(window.__XJTX_DATA__) ? window.__XJTX_DATA__ : await fetch('/assets/pages/games/xjtx/data.json').then((response) => response.json());
+    const data = Array.isArray(window.__XJTX_DATA__)
+        ? window.__XJTX_DATA__
+        : await fetch('/assets/pages/games/xjtx/data.json').then((response) => response.json());
     currentQuestion = data[Math.floor(Math.random() * data.length)];
 
-    document.getElementById('question-image').innerHTML = `
-                <img src="/assets/pages/games/xjtx/images/${currentQuestion.image}" alt="题目图片">
-            `;
+    $id('question-image').innerHTML = `
+        <img src="/assets/pages/games/xjtx/images/${currentQuestion.image}" alt="校园题目照片">
+    `;
+}
+
+function resetMapState() {
+    userCoords = null;
+    ['correct-marker', 'user-marker', 'connection-line'].forEach((id) => {
+        const el = $id(id);
+        if (el) el.style.display = 'none';
+    });
+    const result = $id('map-result');
+    if (result) result.innerHTML = '';
+    const submit = $id('submit-btn');
+    if (submit) {
+        submit.textContent = '确定';
+        submit.onclick = submitAnswer;
+    }
 }
 
 function showMap() {
-    document.getElementById('satellite-map').style.display = 'block';
-    document.body.insertAdjacentHTML('beforeend', '<div class="overlay"></div>');
+    resetMapState();
+    $id('satellite-map').classList.add('is-open');
+    document.body.classList.add('xjtx-modal-open');
+}
 
-    const mapImg = document.getElementById('map-image');
-    mapImg.onclick = function (e) {
-        const rect = mapImg.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width * 50;
-        const y = (e.clientY - rect.top) / rect.height * 70;
-        userCoords = { x: Math.round(x), y: Math.round(y) };
+function closeMap() {
+    $id('satellite-map').classList.remove('is-open');
+    document.body.classList.remove('xjtx-modal-open');
+}
 
-        const marker = document.getElementById('user-marker');
-        marker.style.left = `${e.clientX - rect.left}px`;
-        marker.style.top = `${e.clientY - rect.top}px`;
-        marker.style.display = 'block';
-    };
+function pickMapPoint(event) {
+    const mapImg = $id('map-image');
+    const rect = mapImg.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width * MAP.width;
+    const y = (event.clientY - rect.top) / rect.height * MAP.height;
+    userCoords = { x: Math.round(x), y: Math.round(y) };
+
+    const marker = $id('user-marker');
+    marker.style.left = `${event.clientX - rect.left}px`;
+    marker.style.top = `${event.clientY - rect.top}px`;
+    marker.style.display = 'block';
+}
+
+function scoreForDistance(distance) {
+    if (distance <= MAP.perfectDistance) return MAP.scoreMax;
+    if (distance >= MAP.zeroDistance) return 0;
+    return Math.round(MAP.scoreMax * (1 - distance / MAP.zeroDistance));
 }
 
 function submitAnswer() {
-    if (!currentQuestion || !userCoords) return;
+    if (!currentQuestion || !userCoords) {
+        const result = $id('map-result');
+        if (result) result.innerHTML = '<p class="xjtx-result-hint">请先在地图上点选一个位置。</p>';
+        return;
+    }
+
     const dx = currentQuestion.x - userCoords.x;
     const dy = currentQuestion.y - userCoords.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const actualDistance = distance * 15.7;
-    let score = 0;
+    const actualDistance = distance * MAP.kmPerUnit;
+    const score = scoreForDistance(distance);
 
-    if (distance <= 5) {
-        score = 5000;
-    } else if (distance >= 70) {
-        score = 0;
-    } else {
-        score = Math.round(5000 * (1 - distance / 70));
-    }
-
-    const mapImg = document.getElementById('map-image');
+    const mapImg = $id('map-image');
     const rect = mapImg.getBoundingClientRect();
 
-    // 更新正确标记
-    const correctMarker = document.getElementById('correct-marker');
-    correctMarker.style.left = `${(currentQuestion.x / 50 * rect.width)}px`;
-    correctMarker.style.top = `${(currentQuestion.y / 70 * rect.height)}px`;
+    const correctMarker = $id('correct-marker');
+    correctMarker.style.left = `${(currentQuestion.x / MAP.width * rect.width)}px`;
+    correctMarker.style.top = `${(currentQuestion.y / MAP.height * rect.height)}px`;
     correctMarker.style.display = 'block';
 
-    // 绘制连接线
-    const userX = parseFloat(document.getElementById('user-marker').style.left);
-    const userY = parseFloat(document.getElementById('user-marker').style.top);
+    const userMarker = $id('user-marker');
+    const userX = parseFloat(userMarker.style.left);
+    const userY = parseFloat(userMarker.style.top);
     const correctX = parseFloat(correctMarker.style.left);
     const correctY = parseFloat(correctMarker.style.top);
 
-    const line = document.getElementById('connection-line');
-    const length = Math.sqrt(Math.pow(correctX - userX, 2) + Math.pow(correctY - userY, 2));
+    const line = $id('connection-line');
+    const length = Math.sqrt((correctX - userX) ** 2 + (correctY - userY) ** 2);
     const angle = Math.atan2(correctY - userY, correctX - userX);
-
     line.style.width = `${length}px`;
     line.style.left = `${userX}px`;
     line.style.top = `${userY}px`;
     line.style.transform = `rotate(${angle}rad)`;
     line.style.display = 'block';
 
-    // 更新结果展示
-    document.getElementById('map-result').innerHTML = `
-                <p>实际距离：<span>${actualDistance.toFixed(1)}米</span></p>
-                <p>得分：<span>${score}</span></p>
-            `;
+    $id('map-result').innerHTML = `
+        <p>实际距离 <span>${actualDistance.toFixed(1)} 米</span></p>
+        <p>本局得分 <span>${score}</span></p>
+    `;
 
-    // 切换按钮功能
-    const submitBtn = document.getElementById('submit-btn');
+    const submitBtn = $id('submit-btn');
     submitBtn.textContent = '下一题';
     submitBtn.onclick = nextQuestion;
 
@@ -89,21 +124,8 @@ function submitAnswer() {
 }
 
 function nextQuestion() {
-    // 重置地图元素
-    document.getElementById('satellite-map').style.display = 'none';
-    document.querySelector('.overlay')?.remove();
-
-    // 清除标记和连线
-    document.getElementById('correct-marker').style.display = 'none';
-    document.getElementById('user-marker').style.display = 'none';
-    document.getElementById('connection-line').style.display = 'none';
-    document.getElementById('map-result').innerHTML = '';
-
-    // 重置按钮功能
-    const submitBtn = document.getElementById('submit-btn');
-    submitBtn.textContent = '确定';
-    submitBtn.onclick = submitAnswer;
-
+    closeMap();
+    resetMapState();
     loadQuestion();
 }
 
@@ -115,23 +137,30 @@ function updateStats(score) {
 
     stats.total++;
     stats.scores.push(score);
-
     localStorage.setItem('gameStats', JSON.stringify(stats));
 
-    document.getElementById('total-questions').textContent = stats.total;
-    document.getElementById('high-score').textContent = Math.max(...stats.scores);
-    document.getElementById('low-score').textContent = Math.min(...stats.scores);
-    document.getElementById('average-score').textContent =
+    $id('total-questions').textContent = stats.total;
+    $id('high-score').textContent = Math.max(...stats.scores);
+    $id('low-score').textContent = Math.min(...stats.scores);
+    $id('average-score').textContent =
         (stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length).toFixed(1);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     const savedStats = localStorage.getItem('gameStats');
     if (savedStats) {
-        stats = JSON.parse(savedStats);
+        try {
+            stats = JSON.parse(savedStats);
+        } catch {
+            stats = { total: 0, scores: [], lastUpdate: null };
+        }
         if (new Date().toDateString() !== stats.lastUpdate) {
             stats = { total: 0, scores: [], lastUpdate: new Date().toDateString() };
         }
     }
+    $id('map-image').addEventListener('click', pickMapPoint);
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && $id('satellite-map').classList.contains('is-open')) closeMap();
+    });
     loadQuestion();
 });

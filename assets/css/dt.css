@@ -6,14 +6,11 @@
 .dynamic-card,
 .calendar-widget,
 .pagination {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+    background: var(--surface);
+
+    box-shadow: none;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
 }
 
 body {
@@ -85,7 +82,7 @@ body {
 
 .dynamic-content img {
     max-width: 100%;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     margin: 1rem 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -127,7 +124,7 @@ body {
 .pagination {
     display: inline-flex;
     gap: 5px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     padding: 8px;
 }
 
@@ -136,7 +133,7 @@ body {
     height: 36px;
     border: none;
     background: transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     color: var(--text-main);
     font-size: 14px;
     cursor: pointer;
@@ -193,7 +190,7 @@ body {
 .month-item {
     padding: 12px 15px;
     background: var(--surface);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -217,7 +214,7 @@ body {
     background: var(--primary-color);
     color: white;
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     font-size: 12px;
     min-width: 20px;
     text-align: center;
@@ -261,8 +258,8 @@ body {
 }
 
 .dt-skeleton-card {
-    background: var(--glass-bg);
-    border-radius: 12px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     border: 1px solid var(--line);
@@ -274,7 +271,7 @@ body {
 .dt-skeleton-card .s-title {
     width: 55%;
     height: 24px;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
     background-size: 200% 100%;
     animation: dt-shimmer 1.8s ease-in-out infinite;
@@ -283,7 +280,7 @@ body {
 .dt-skeleton-card .s-date {
     width: 30%;
     height: 14px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
     background-size: 200% 100%;
     animation: dt-shimmer 1.8s ease-in-out infinite;
@@ -291,7 +288,7 @@ body {
 
 .dt-skeleton-card .s-line {
     height: 14px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
     background-size: 200% 100%;
     animation: dt-shimmer 1.8s ease-in-out infinite;
@@ -310,7 +307,7 @@ body {
 .dt-skeleton-card .s-btn {
     width: 80px;
     height: 32px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
     background-size: 200% 100%;
     animation: dt-shimmer 1.8s ease-in-out infinite;
@@ -322,4 +319,104 @@ body.reduce-motion .dt-skeleton-card .s-line,
 body.reduce-motion .dt-skeleton-card .s-btn {
     animation: none;
     background: var(--surface);
+}
+
+/* 扁平化：动态时间线 */
+body { min-height: 100vh; padding: 104px 24px 48px; background: var(--page-bg); }
+.dynamic-container { max-width: 760px; }
+.dynamic-header { text-align: left; margin-bottom: 28px; }
+.dynamic-header h1,
+.dynamic-header .page-title { margin: 0; font-size: clamp(32px, 5vw, 48px); font-weight: 650; letter-spacing: -0.025em; }
+.dynamic-card {
+    padding: 24px 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+    transition: none;
+}
+.dynamic-card:hover { transform: none; }
+.dynamic-title { font-size: 18px; font-weight: 600; letter-spacing: -0.015em; }
+.dynamic-date { font-size: 11.5px; }
+.dynamic-content { font-size: 14.5px; line-height: 1.8; color: var(--text-subtle); }
+.dynamic-action-btn,
+.dynamic-submit-btn {
+    padding: 6px 10px;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    font-size: 11.5px;
+}
+.dynamic-action-btn:hover,
+.dynamic-submit-btn:hover { background: var(--surface-soft); color: var(--text-main); }
+.calendar-widget, .pagination {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* 月历与版面收尾 */
+.dynamic-header .page-title { text-align: left; }
+.dynamic-layout { gap: 48px; }
+.dynamic-sidebar { width: 200px; flex: 0 0 200px; }
+.dynamic-main { flex: 1; min-width: 0; }
+.calendar-title {
+    justify-content: flex-start;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    color: var(--text-soft);
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: left;
+}
+.calendar-title i { display: none; }
+.month-list { gap: 0; }
+.month-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    color: var(--text-subtle);
+    font: inherit;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line-soft);
+    border-radius: 0;
+    font-size: 13px;
+    transition: color 0.16s ease;
+}
+.month-item:hover {
+    color: var(--text-main);
+    background: transparent;
+    transform: none;
+}
+.month-name { font-size: 13px; font-weight: 400; }
+.month-count {
+    min-width: 0;
+    padding: 0;
+    color: var(--text-soft);
+    background: transparent;
+    border-radius: 0;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+.month-item.active {
+    color: var(--text-main);
+    background: transparent;
+    font-weight: 600;
+}
+.month-item.active .month-count { color: var(--accent); background: transparent; }
+.dynamic-main .gallery-container { max-width: 520px; }
+@media (max-width: 768px) {
+    .dynamic-layout { flex-direction: column; gap: 28px; }
+    .dynamic-sidebar { width: 100%; flex: none; }
 }

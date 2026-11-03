@@ -53,7 +53,7 @@ main {
   background: linear-gradient(45deg, var(--accent), var(--accent-2));
   color: #fff;
   padding: 12px 30px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   font-weight: 600;
   box-shadow: 0 4px 15px color-mix(in srgb, var(--accent) 40%, transparent);
@@ -62,7 +62,7 @@ main {
 
 .cta-button:hover {
   filter: brightness(1.05);
-  box-shadow: 0 7px 20px color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: none;
   transform: translateY(-3px);
 }
 
@@ -100,7 +100,7 @@ main {
   width: 0;
   height: 2px;
   background: linear-gradient(to right, var(--accent), var(--accent-2));
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   transition: width 0.35s ease;
 }
 
@@ -112,7 +112,7 @@ main {
   content: '';
   width: 5px;
   height: 22px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(to bottom, var(--accent), var(--accent-2));
   flex-shrink: 0;
 }
@@ -141,7 +141,7 @@ main {
   width: 80px;
   height: 3px;
   background: linear-gradient(to right, var(--accent), var(--accent-2));
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── Project cards ── */
@@ -152,13 +152,12 @@ main {
 }
 
 .project-card {
-  background: var(--glass-bg);
-  border-radius: 18px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   padding: 25px;
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+
   border: 1px solid var(--line);
-  box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
   transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
@@ -191,8 +190,8 @@ main {
 }
 
 .project-card:hover {
-  background: var(--glass-bg-strong);
-  box-shadow: 0 12px 40px var(--glass-shadow-hover), inset 0 0 0 1px var(--glass-edge-strong);
+  background: var(--surface-strong);
+  box-shadow: none;
   transform: translateY(-5px);
 }
 
@@ -232,11 +231,10 @@ main {
 
 /* ── Footer ── */
 footer {
-  background: var(--glass-bg-solid);
+  background: var(--surface-strong);
   border-top: 1px solid var(--line);
   padding: 40px 0 20px;
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+
 }
 
 .footer-content {
@@ -316,8 +314,8 @@ footer {
 .error {
   text-align: center;
   padding: 20px;
-  border-radius: 14px;
-  background: var(--glass-bg-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
   color: var(--text-subtle);
 }
 
@@ -334,17 +332,17 @@ footer {
 }
 
 .lab-skeleton-card {
-  background: var(--glass-bg);
-  border-radius: 18px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
   padding: 25px;
   border: 1px solid var(--line);
-  backdrop-filter: blur(10px);
+
 }
 
 .lab-skeleton-card .s-top {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   margin-bottom: 15px;
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
   background-size: 200% 100%;
@@ -354,7 +352,7 @@ footer {
 .lab-skeleton-card .s-name {
   width: 60%;
   height: 22px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   margin-bottom: 12px;
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
   background-size: 200% 100%;
@@ -364,7 +362,7 @@ footer {
 .lab-skeleton-card .s-desc {
   width: 90%;
   height: 14px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   margin-bottom: 20px;
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
   background-size: 200% 100%;
@@ -374,7 +372,7 @@ footer {
 .lab-skeleton-card .s-link {
   width: 100px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: linear-gradient(90deg, var(--surface) 25%, var(--surface-tint) 50%, var(--surface) 75%);
   background-size: 200% 100%;
   animation: lab-shimmer 1.8s ease-in-out infinite;

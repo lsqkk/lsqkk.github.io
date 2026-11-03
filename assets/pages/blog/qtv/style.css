@@ -79,9 +79,8 @@ header {
   gap: 14px;
   padding: 14px 22px;
   background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border-radius: 18px;
+
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.24);
   box-shadow: 0 8px 28px rgba(7, 24, 52, 0.10);
   transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
@@ -92,7 +91,7 @@ header {
 .user-info:hover {
   transform: translateY(-3px);
   background: rgba(255, 255, 255, 0.24);
-  box-shadow: 0 14px 36px rgba(7, 24, 52, 0.16);
+  box-shadow: none;
 }
 
 .user-avatar {
@@ -143,14 +142,11 @@ header {
   gap: 16px;
   padding: 16px 22px;
   margin: 24px 0 28px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(22px) saturate(135%);
-  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  background: var(--surface);
+
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  box-shadow:
-    0 8px 32px var(--glass-shadow),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
 }
 
 /* .controls 内文字颜色使用 token —— 注意覆盖 tokens.css 中的 .dark-mode 全局规则 */
@@ -173,14 +169,14 @@ header {
   border-right: none;
   border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   font-size: 0.95rem;
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   transition: border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
   outline: none;
 }
 
 .search-box input:focus {
   border-color: var(--accent);
-  background: var(--glass-bg-strong);
+  background: var(--surface-strong);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
@@ -252,14 +248,11 @@ header {
 
 /* === Video Card === */
 .video-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px) saturate(130%);
-  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  background: var(--surface);
+
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  box-shadow:
-    0 6px 24px var(--glass-shadow),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -273,9 +266,7 @@ header {
 
 .video-card:hover {
   transform: translateY(-5px);
-  box-shadow:
-    0 16px 40px var(--glass-shadow-hover),
-    inset 0 0 0 1px var(--glass-edge-strong);
+  box-shadow: none;
   border-color: var(--line-strong);
 }
 
@@ -307,12 +298,12 @@ header {
   bottom: 10px;
   right: 10px;
   padding: 3px 9px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   font-size: 0.78rem;
   font-weight: 600;
   background: rgba(0, 0, 0, 0.72);
   color: #fff;
-  backdrop-filter: blur(4px);
+
   letter-spacing: 0.02em;
 }
 
@@ -381,11 +372,9 @@ header {
 .skeleton-card {
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--glass-bg);
+  background: var(--surface);
   border: 1px solid var(--line);
-  box-shadow:
-    0 6px 24px var(--glass-shadow),
-    inset 0 0 0 1px var(--glass-edge);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -412,7 +401,7 @@ header {
 
 .skeleton-line {
   height: 14px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(
     90deg,
     var(--surface) 25%,
@@ -426,7 +415,7 @@ header {
 .skeleton-line:first-child {
   height: 18px;
   width: 92%;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   margin-bottom: 4px;
 }
 
@@ -438,7 +427,7 @@ header {
   width: 100%;
   height: 1px;
   margin: 4px 0;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .skeleton-line:nth-child(4) {
@@ -465,9 +454,8 @@ header {
   padding: 10px 22px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--glass-bg);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  background: var(--surface);
+
   color: var(--text-main);
   font-size: 0.92rem;
   cursor: pointer;
@@ -480,7 +468,7 @@ header {
   color: #fff;
   border-color: var(--accent);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px var(--glass-shadow-hover);
+  box-shadow: none;
 }
 
 .pagination button:active:not(:disabled) {
@@ -497,10 +485,10 @@ header {
   font-size: 0.9rem;
   color: var(--text-subtle);
   padding: 8px 18px;
-  background: var(--glass-bg-soft);
+  background: var(--surface-soft);
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  backdrop-filter: blur(10px);
+
 }
 
 /* ═══════════════════════════════════════════════
@@ -516,11 +504,11 @@ header {
 .error {
   text-align: center;
   padding: 32px 20px;
-  color: #e53e3e;
-  background: var(--glass-bg-soft);
-  backdrop-filter: blur(14px) saturate(130%);
+  color: var(--danger);
+  background: var(--surface-soft);
+
   border-radius: var(--radius-md);
-  border: 1px solid color-mix(in srgb, #e53e3e 30%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, var(--line));
   margin: 20px 0;
 }
 
@@ -537,9 +525,8 @@ footer {
 }
 
 footer .container {
-  background: var(--glass-bg-soft);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  background: var(--surface-soft);
+
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
   padding: 20px 24px;
@@ -680,3 +667,43 @@ body.reduce-motion .user-info:hover {
     font-size: 0.85rem;
   }
 }
+
+/* 扁平归一：浅色视频库 */
+body { background: var(--page-bg) !important; color: var(--text-main); }
+.page-title { color: var(--text-main) !important; text-align: left; font-size: clamp(32px, 5vw, 52px); font-weight: 650; letter-spacing: -0.025em; }
+header { margin: 100px auto 24px; padding: 0; text-align: left; color: var(--text-main); }
+.page-subtitle { color: var(--text-subtle) !important; margin: 0 0 24px; text-align: left; font-size: 13px; }
+.container { max-width: 1120px; padding: 0 24px 48px; }
+.user-container { justify-content: flex-start; gap: 10px; }
+.user-info { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: none; }
+.user-info:hover { transform: none; background: var(--surface-soft); box-shadow: none; }
+.user-avatar { border-color: var(--line); box-shadow: none; }
+.user-avatar:hover { transform: none; }
+.user-name { color: var(--text-main); font-size: 13px; }
+.user-signature { color: var(--text-subtle); font-size: 11.5px; }
+.controls {
+  padding: 12px 0;
+  margin: 20px 0 24px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.search-box input { background: var(--surface); border-color: var(--line); border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.search-box button { color: var(--surface-strong); background: var(--text-main); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.search-box button:hover { filter: none; opacity: 0.85; }
+.sort-btn { border-radius: var(--radius-sm); font-size: 12.5px; }
+.sort-btn:hover { color: var(--text-main); background: var(--surface-soft); border-color: var(--line-strong); }
+.sort-btn.active { color: var(--surface-strong); background: var(--text-main); border-color: var(--text-main); }
+.video-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: none; }
+.video-card:hover { transform: none; border-color: var(--line-strong); box-shadow: none; }
+.video-title { color: var(--text-main); font-size: 14px; font-weight: 600; }
+.video-meta, .video-stats { color: var(--text-soft); font-size: 11.5px; }
+.video-cover { border-radius: var(--radius-md) var(--radius-md) 0 0; }
+.skeleton-card, .skeleton-cover, .skeleton-line { background: var(--surface-soft); }
+@media (max-width: 640px) { header { margin-top: 88px; padding: 0 16px; } .container { padding: 0 16px 32px; } .controls { flex-direction: column; align-items: flex-start; } }
+
+header { max-width: 1120px; padding: 0 24px; }
+@media (max-width: 640px) { header { padding: 0 16px; } }

@@ -13,11 +13,11 @@ body {
 .container {
     max-width: 600px;
     padding: 2.5rem;
-    background: var(--glass-bg-solid);
-    border-radius: 16px;
-    box-shadow: 0 12px 40px var(--glass-shadow);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-edge-soft);
+    background: var(--surface-strong);
+    border-radius: var(--radius-md);
+    box-shadow: none;
+
+    border: 1px solid var(--line);
     opacity: 0;
     transform: scale(0.96) translateY(10px);
     animation: notfound-container-in 0.5s ease 0.1s forwards;
@@ -93,7 +93,7 @@ p {
     margin: 1.5rem 0;
     padding: 1.2rem;
     background: rgba(74, 111, 165, 0.08);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     border-left: 4px solid #4a6fa5;
     text-align: left;
     animation: slideIn 0.5s ease-out;
@@ -127,7 +127,7 @@ p {
 .suggestion-item {
     padding: 0.8rem;
     background: white;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     border: 1px solid #e1e8f0;
     transition: all 0.25s ease;
     opacity: 0;
@@ -183,7 +183,7 @@ p {
     background: linear-gradient(135deg, #4a6fa5, #5a7bb5);
     color: white;
     text-decoration: none;
-    border-radius: 50px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -198,7 +198,7 @@ p {
 .btn:hover {
     background: linear-gradient(135deg, #3a5a8f, #4a6fa5);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(74, 111, 165, 0.4);
+    box-shadow: none;
 }
 
 .btn:active {
@@ -259,7 +259,7 @@ body.dark-mode {
 }
 
 body.dark-mode .container {
-    background: var(--glass-bg);
+    background: var(--surface);
     border-color: var(--line);
 }
 
@@ -272,7 +272,7 @@ body.dark-mode p {
 }
 
 body.dark-mode .suggestion-item {
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     border-color: var(--line);
 }
 
@@ -293,3 +293,101 @@ body.dark-mode .countdown {
     }
     .btn:hover { transform: none !important; }
 }
+/* 扁平 404：实色背景、无卡片外壳、无浮动装饰 */
+body {
+    background: var(--page-bg);
+    min-height: 100vh;
+}
+.container {
+    max-width: 560px;
+    padding: 40px 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    transform: none;
+    animation: none;
+}
+h1 {
+    margin: 0 0 8px;
+    font-size: clamp(84px, 16vw, 140px);
+    line-height: 0.9;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    color: var(--text-main);
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    opacity: 1;
+    animation: none;
+}
+h2 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-main);
+    opacity: 1;
+    transform: none;
+    animation: none;
+}
+p {
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: var(--text-subtle);
+    opacity: 1;
+    transform: none;
+    animation: none;
+}
+.emoji {
+    display: none;
+}
+
+/* 按钮与建议区扁平化 */
+.buttons {
+    justify-content: flex-start;
+    gap: 10px;
+    margin: 28px 0 20px;
+    opacity: 1;
+    animation: none;
+}
+.btn {
+    min-width: 0;
+    padding: 10px 18px;
+    color: var(--surface-strong);
+    background: var(--text-main);
+    border: 1px solid var(--text-main);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: none;
+    transform: none;
+}
+.btn:hover {
+    background: var(--text-main);
+    opacity: 0.84;
+    transform: none;
+    box-shadow: none;
+}
+.btn:active { transform: none; }
+.btn::after { display: none; }
+.suggestions {
+    margin: 20px 0;
+    padding: 0 0 0 14px;
+    background: transparent;
+    border: 0;
+    border-left: 1px solid var(--line-strong);
+    border-radius: 0;
+    animation: none;
+}
+.suggestion-title { color: var(--text-main); font-size: 13px; }
+.suggestion-item {
+    padding: 8px 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    opacity: 1;
+    transform: none;
+    animation: none;
+}
+.suggestion-item:hover { transform: none; box-shadow: none; }
+.suggestion-link { color: var(--accent); font-size: 13px; }

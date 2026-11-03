@@ -24,7 +24,7 @@
 
         .light-mode {
             --primary-color: #40E0D0;
-            --background: rgba(255, 255, 255, 0.95);
+            --background: var(--surface-strong);
             --sidebar-bg: rgba(240, 240, 245, 0.9);
             --message-bg: rgba(0, 0, 0, 0.03);
             --text-color: #333;
@@ -61,7 +61,7 @@
         .sidebar {
             width: 280px;
             background: var(--sidebar-bg);
-            backdrop-filter: blur(10px);
+
             border-right: 1px solid var(--border-color);
             height: 100vh;
             overflow-y: auto;
@@ -136,7 +136,7 @@
             width: 100%;
             padding: 12px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--input-bg);
             color: var(--text-color);
             margin-bottom: 10px;
@@ -146,7 +146,7 @@
             width: 100%;
             padding: 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -170,7 +170,7 @@
         .chat-header {
             padding: 15px 20px;
             background: var(--sidebar-bg);
-            backdrop-filter: blur(10px);
+
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -197,7 +197,7 @@
             overflow-y: auto;
             padding: 20px;
             background: var(--background);
-            backdrop-filter: blur(10px);
+
         }
 
         .messages-list {
@@ -209,8 +209,8 @@
             background: var(--message-bg);
             padding: 15px;
             margin-bottom: 15px;
-            border-radius: 12px;
-            backdrop-filter: blur(5px);
+            border-radius: var(--radius-md);
+
             display: flex;
             align-items: flex-start;
             gap: 12px;
@@ -268,7 +268,7 @@
         .input-area {
             padding: 15px;
             background: var(--sidebar-bg);
-            backdrop-filter: blur(10px);
+
             border-top: 1px solid var(--border-color);
             display: flex;
             gap: 10px;
@@ -279,7 +279,7 @@
             flex: 1;
             padding: 12px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--input-bg);
             color: var(--text-color);
             resize: none;
@@ -289,7 +289,7 @@
         .send-btn {
             padding: 12px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -305,7 +305,7 @@
         .profile-setup {
             background: var(--message-bg);
             padding: 20px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             margin: 20px;
             animation: fadeIn 0.3s ease;
         }
@@ -340,7 +340,7 @@
             width: 100%;
             padding: 12px 15px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--input-bg);
             color: var(--text-color);
             margin-bottom: 15px;
@@ -350,7 +350,7 @@
             width: 100%;
             padding: 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             background: var(--primary-color);
             color: white;
             cursor: pointer;
@@ -396,7 +396,7 @@
 
         ::-webkit-scrollbar-thumb {
             background: var(--primary-color);
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
         }
 
         ::-webkit-scrollbar-thumb:hover {

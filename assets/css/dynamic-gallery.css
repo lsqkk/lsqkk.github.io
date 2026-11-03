@@ -14,7 +14,7 @@
     border: none;
     padding: 0;
     background: transparent;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.25s ease;
@@ -42,7 +42,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     pointer-events: none;
 }
 
@@ -93,7 +93,7 @@
     max-width: 1200px;
     height: 90vh;
     background: #fff;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -208,7 +208,7 @@
     font-size: 14px;
     background: rgba(0, 0, 0, 0.5);
     padding: 4px 14px;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
     white-space: nowrap;
     z-index: 2;
     pointer-events: none;
@@ -235,7 +235,7 @@
     min-width: 80px;
     width: 80px;
     object-fit: cover;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.2s, transform 0.2s;
@@ -268,4 +268,111 @@ body.dark-mode .gallery-item:not(.is-loaded) {
         rgba(17, 28, 46, 0.5) 75%
     );
     background-size: 200% 100%;
+}
+
+/* ============================================================
+   画廊：收敛为轻量、可键盘操作的查看器
+   ============================================================ */
+body.gallery-open { overflow: hidden; }
+
+.gallery-item {
+    border-radius: var(--radius-md);
+    transition: opacity 0.16s ease;
+}
+.gallery-item:hover { transform: none; opacity: 0.9; }
+.gallery-overlay { border-radius: var(--radius-md); font-size: 1.4rem; font-weight: 600; }
+
+.gallery-modal {
+    z-index: 3000;
+    padding: 24px;
+    background: rgba(10, 12, 16, 0.92);
+}
+
+.gallery-modal-content {
+    width: min(1200px, 100%);
+    height: min(90vh, 900px);
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: none;
+    overflow: hidden;
+}
+
+.close-btn {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: rgba(15, 17, 21, 0.55);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 400;
+}
+.close-btn:hover { background: rgba(15, 17, 21, 0.82); }
+
+.gallery-modal-main { background: #0b0d11; }
+
+.current-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.current-image.is-loaded { opacity: 1; }
+
+.gallery-nav-btn span {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius-sm);
+}
+.gallery-nav-btn:hover span { background: rgba(0, 0, 0, 0.65); }
+
+.gallery-counter {
+    bottom: 12px;
+    padding: 3px 10px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: var(--radius-xs);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.gallery-thumbnails {
+    height: auto;
+    padding: 10px;
+    gap: 6px;
+    background: var(--surface-strong);
+    border-top: 1px solid var(--line);
+    scrollbar-color: var(--line-strong) transparent;
+}
+
+.thumbnail {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    border-radius: var(--radius-sm);
+    opacity: 0.55;
+}
+.thumbnail.active {
+    opacity: 1;
+    border: 0;
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    transform: none;
+}
+
+@media (max-width: 640px) {
+    .gallery-modal { padding: 0; }
+    .gallery-modal-content {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+    }
+    .close-btn { top: 10px; right: 10px; }
 }

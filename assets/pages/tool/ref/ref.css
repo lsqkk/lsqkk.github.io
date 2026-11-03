@@ -1,12 +1,12 @@
         :root {
-            --primary-color: #4a90e2;
+            --primary-color: var(--accent);
             --secondary-color: #5dade2;
-            --accent-color: #e74c3c;
+            --accent-color: var(--danger);
             --light-bg: #2e2e2e;
             --dark-text: #ffffff;
             --light-text: #787878;
             --border-color: #ecf0f1;
-            --success-color: #2ecc71;
+            --success-color: var(--ok);
         }
 
         body {
@@ -34,8 +34,8 @@
         }
 
         .container {
-            background-color: rgba(255, 255, 255, 0.683);
-            border-radius: 10px;
+            background-color: var(--surface);
+            border-radius: var(--radius-md);
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
@@ -61,7 +61,7 @@
             border: 1px solid var(--border-color);
             color: var(--dark-text);
             padding: 10px;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: left;
@@ -101,7 +101,7 @@
             flex: 1;
             padding: 10px;
             border: 1px solid var(--border-color);
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             font-size: 0.95em;
         }
 
@@ -115,7 +115,7 @@
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 0.95em;
             transition: background-color 0.3s;
@@ -133,7 +133,7 @@
 
         .btn {
             padding: 10px 15px;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             border: none;
             cursor: pointer;
             font-size: 0.9em;
@@ -156,7 +156,7 @@
         }
 
         .btn-success:hover {
-            background-color: #27ae60;
+            background-color: var(--ok);
         }
 
         .result-area {
@@ -174,7 +174,7 @@
         .reference-output {
             background-color: #f8f9fa;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             border-left: 3px solid var(--primary-color);
             margin-bottom: 10px;
             white-space: pre-wrap;
@@ -196,7 +196,7 @@
             color: white;
             border: none;
             padding: 12px 25px;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 0.9em;
             display: inline-flex;
@@ -263,7 +263,7 @@
             bottom: 0;
             background-color: var(--border-color);
             transition: .4s;
-            border-radius: 24px;
+            border-radius: var(--radius-xl);
         }
 
         .slider:before {

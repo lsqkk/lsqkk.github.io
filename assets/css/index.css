@@ -1,10 +1,5 @@
 body.home-page {
-    background:
-        radial-gradient(circle at top left, rgba(108, 167, 255, 0.2), transparent 34%),
-        radial-gradient(circle at top right, rgba(26, 188, 156, 0.16), transparent 30%),
-        linear-gradient(160deg, var(--bg-tint), rgba(8, 24, 46, 0.42)),
-        url('/assets/img/bg.png') no-repeat center center fixed;
-    background-size: cover;
+    background: var(--page-bg);
     color: var(--text-main);
 }
 
@@ -18,16 +13,14 @@ body.home-page .sidebar-index {
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+
 }
 
 body.home-page .recent-posts .post-item {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 16px 0 !important;
@@ -69,8 +62,7 @@ body.home-page .recent-posts .post-item {
     border-radius: var(--radius-lg);
     background: var(--surface);
     box-shadow: var(--shadow-main);
-    backdrop-filter: blur(12px) saturate(128%);
-    -webkit-backdrop-filter: blur(12px) saturate(128%);
+
     transition: transform 0.34s ease, box-shadow 0.34s ease, border-color 0.34s ease, background-color 0.4s ease;
 }
 
@@ -78,27 +70,22 @@ body.home-page .recent-posts .post-item {
 body.home-page .home-panel,
 body.home-page .sidebar-panel,
 body.home-page .footer-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    box-shadow:
-        0 22px 54px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge);
+    background: var(--surface);
+
+    box-shadow: none;
 }
 body.home-page .home-panel:hover,
 body.home-page .sidebar-panel:hover,
 body.home-page .footer-card:hover {
-    box-shadow:
-        0 24px 56px var(--glass-shadow-hover),
-        inset 0 0 0 1px var(--glass-edge-strong);
+    box-shadow: none;
 }
 
 body.home-page .intro-combo-panel {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
 }
 
 body.home-page .sidebar-welcome-panel {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
 }
 
 .home-panel,
@@ -111,7 +98,7 @@ body.home-page .sidebar-welcome-panel {
 .sidebar-panel:hover,
 .footer-card:hover {
     border-color: var(--line-strong);
-    box-shadow: 0 24px 56px var(--glass-shadow-hover);
+    box-shadow: none;
 }
 
 .home-block,
@@ -190,7 +177,7 @@ body.home-page .sidebar-welcome-panel {
 
 .hero-avatar-link:hover::before {
     border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 0 24px rgba(59, 130, 246, 0.2);
+    box-shadow: none;
     animation: avatar-ring-pulse 2.2s ease-in-out infinite;
 }
 
@@ -204,14 +191,14 @@ body.home-page .sidebar-welcome-panel {
     height: 124px;
     border-radius: 50%;
     border: 4px solid rgba(255, 255, 255, 0.95);
-    box-shadow: 0 18px 36px rgba(15, 44, 84, 0.22);
+    box-shadow: none;
     object-fit: cover;
     transition: transform 0.45s ease, box-shadow 0.45s ease, border-color 0.45s ease;
 }
 
 .hero-avatar-link:hover .hero-avatar {
     border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 20px 44px rgba(59, 130, 246, 0.25);
+    box-shadow: none;
 }
 
 .hero-title {
@@ -276,10 +263,10 @@ body.home-page .sidebar-welcome-panel {
     max-width: 46px;
     height: 46px;
     padding: 0 5px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--line);
     color: #173b69;
-    background: rgba(255, 255, 255, 0.58);
+    background: var(--surface);
     overflow: hidden;
     box-sizing: border-box;
     transition: max-width 0.85s ease, padding 0.85s ease, transform 0.24s ease, border-color 0.24s ease, background-color 0.24s ease;
@@ -293,7 +280,7 @@ body.home-page .sidebar-welcome-panel {
     border-color: rgba(35, 103, 215, 0.24);
     background: rgba(249, 252, 255, 0.88);
     transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(35, 103, 215, 0.1);
+    box-shadow: none;
 }
 
 .contact-icon {
@@ -346,13 +333,13 @@ body.home-page .sidebar-welcome-panel {
     height: 44px;
     border-radius: 50%;
     border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.58);
+    background: var(--surface);
 }
 
 .social-link:hover {
     transform: translateY(-2px);
     border-color: rgba(35, 103, 215, 0.24);
-    box-shadow: 0 10px 20px rgba(35, 103, 215, 0.09);
+    box-shadow: none;
 }
 
 .social-link-icon {
@@ -396,7 +383,7 @@ body.home-page .sidebar-welcome-panel {
     width: 0;
     height: 2px;
     background: var(--accent);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     transform: translateX(-50%);
     transition: width 0.35s ease, opacity 0.35s ease;
     opacity: 0;
@@ -425,7 +412,7 @@ body.home-page .sidebar-welcome-panel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #e57b14;
+    color: var(--warn);
 }
 
 .rss-link:hover {
@@ -555,7 +542,7 @@ body.home-page .sidebar-welcome-panel {
     align-items: center;
     gap: 4px;
     padding: 3px 10px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: #edf4ff;
     color: #2a5da9;
     font-size: 0.76rem;
@@ -589,7 +576,7 @@ body.home-page .sidebar-welcome-panel {
 .post-cover-wrap {
     position: relative;
     height: 96px;
-    border-radius: 16px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-soft);
 }
@@ -675,7 +662,7 @@ body.home-page .sidebar-welcome-panel {
     font-size: 12px;
     background: rgba(247, 252, 255, 0.96);
     padding: 1px 6px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
 }
 
 .dynamic-entry-footer {
@@ -698,7 +685,7 @@ body.home-page .sidebar-welcome-panel {
     border: 1px solid rgba(35, 103, 215, 0.16);
     background: rgba(240, 247, 255, 0.9);
     color: #1d58ba;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     padding: 6px 13px;
     font-size: 0.82rem;
     font-weight: 700;
@@ -881,7 +868,7 @@ body.home-page .sidebar-welcome-panel {
     padding: 12px 0;
     text-decoration: none;
     transition: transform 0.32s ease, color 0.3s ease, background-color 0.34s ease, border-color 0.34s ease;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
 }
 
 .index-log-tag {
@@ -890,7 +877,7 @@ body.home-page .sidebar-welcome-panel {
     justify-content: center;
     min-width: 46px;
     padding: 2px 10px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     color: #fff;
     font-size: 0.74rem;
     font-weight: 700;
@@ -901,11 +888,11 @@ body.home-page .sidebar-welcome-panel {
 }
 
 .index-log-tag.optimize {
-    background: #20a168;
+    background: var(--ok);
 }
 
 .index-log-tag.add {
-    background: #7759cb;
+    background: var(--violet);
 }
 
 .index-log-tag.fix {
@@ -957,13 +944,13 @@ body.home-page .sidebar-welcome-panel {
     text-decoration: none;
     color: inherit;
     transition: transform 0.32s ease, background-color 0.34s ease, border-color 0.34s ease, opacity 0.34s ease;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
 }
 
 .online-preview-avatar {
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     display: grid;
     place-items: center;
     overflow: hidden;
@@ -990,7 +977,7 @@ body.home-page .sidebar-welcome-panel {
     min-width: 22px;
     height: 22px;
     padding: 0 6px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     color: var(--accent);
     background: var(--accent-soft);
     font-size: 0.75rem;
@@ -1027,7 +1014,7 @@ body.home-page .sidebar-welcome-panel {
 .github-promo-branch {
     color: var(--accent);
     background: var(--accent-soft);
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     padding: 3px 10px;
     font-size: 0.74rem;
     font-weight: 700;
@@ -1078,7 +1065,7 @@ body.home-page .sidebar-welcome-panel {
 
 .latest-video-cover-wrap {
     position: relative;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-soft);
 }
@@ -1096,7 +1083,7 @@ body.home-page .sidebar-welcome-panel {
     bottom: 10px;
     color: #fff;
     font-size: 0.78rem;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     background: rgba(7, 21, 43, 0.78);
     padding: 3px 7px;
 }
@@ -1127,7 +1114,7 @@ body.home-page .sidebar-welcome-panel {
     text-decoration: none;
     color: inherit;
     transition: transform 0.34s ease, background-color 0.36s ease, opacity 0.34s ease;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
 }
 
 .friend-link-item:hover {
@@ -1189,7 +1176,7 @@ body.home-page .sidebar-welcome-panel {
 .footer-card {
     padding: 22px 24px;
     overflow: hidden;
-    border-radius: 28px;
+    border-radius: var(--radius-xl);
     opacity: 0;
     transform: translateY(16px);
     animation: footer-card-in 0.5s ease 0.5s forwards;
@@ -1253,7 +1240,7 @@ body.home-page .sidebar-welcome-panel {
     text-decoration: none;
     color: inherit;
     transition: transform 0.28s ease, box-shadow 0.28s ease, background-color 0.28s ease;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     padding-left: 8px;
     padding-right: 8px;
     margin: 0 -8px;
@@ -1298,11 +1285,10 @@ body.home-page .sidebar-welcome-panel {
     width: min(540px, 92vw);
     max-height: 80vh;
     overflow: hidden;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
     background: #fff;
-    box-shadow: 0 20px 44px rgba(6, 16, 36, 0.36);
-    backdrop-filter: blur(10px) saturate(125%);
-    -webkit-backdrop-filter: blur(10px) saturate(125%);
+    box-shadow: none;
+
 }
 
 .popup-header,
@@ -1335,7 +1321,7 @@ body.home-page .sidebar-welcome-panel {
 .popup-close-btn,
 .popup-confirm-btn {
     border: 1px solid #c7d8f0;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: #f5f9ff;
     color: #234a82;
     cursor: pointer;
@@ -1400,7 +1386,7 @@ body.home-page .sidebar-welcome-panel {
     .home-panel,
     .sidebar-panel {
         padding: 18px;
-        border-radius: 20px;
+        border-radius: var(--radius-lg);
     }
 
     .intro-combo-panel {
@@ -1483,12 +1469,7 @@ body.home-page .sidebar-welcome-panel {
 
 @media (prefers-color-scheme: dark) {
     body.home-page {
-        background:
-            radial-gradient(circle at top left, rgba(66, 120, 210, 0.2), transparent 34%),
-            radial-gradient(circle at top right, rgba(44, 167, 155, 0.12), transparent 32%),
-            linear-gradient(160deg, var(--bg-tint), rgba(4, 12, 24, 0.82)),
-            url('/assets/img/bg.png') no-repeat center center fixed;
-        background-size: cover;
+        background: var(--page-bg);
     }
 
     .hero-title,
@@ -1569,8 +1550,7 @@ body.home-page .sidebar-welcome-panel {
         background: transparent;
         border: none;
         box-shadow: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
+
         border-radius: 0;
     }
 
@@ -1590,13 +1570,8 @@ body.home-page .sidebar-welcome-panel {
     }
 }
 
-body.dark-mode body.home-page {
-    background:
-        radial-gradient(circle at top left, rgba(66, 120, 210, 0.2), transparent 34%),
-        radial-gradient(circle at top right, rgba(44, 167, 155, 0.12), transparent 32%),
-        linear-gradient(160deg, var(--bg-tint), rgba(4, 12, 24, 0.82)),
-        url('/assets/img/bg.png') no-repeat center center fixed;
-    background-size: cover;
+body.dark-mode.home-page {
+    background: var(--page-bg);
 }
 
 body.dark-mode .hero-title,
@@ -1676,8 +1651,7 @@ body.dark-mode .recent-posts .post-item {
     background: transparent;
     border: none;
     box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+
     border-radius: 0;
 }
 
@@ -1789,7 +1763,7 @@ body.reduce-motion .hero-avatar-link:hover .hero-avatar {
     display: inline-block;
     height: 22px;
     width: 60px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
 }
 
 .loading-placeholder,
@@ -1878,7 +1852,7 @@ body.dark-mode .skeleton {
 
 /* Post cover skeleton */
 .post-cover-wrap.img-skeleton-wrap {
-    border-radius: 16px;
+    border-radius: var(--radius-md);
 }
 
 /* Friend icon skeleton */
@@ -1926,7 +1900,7 @@ body.dark-mode .skeleton {
 
 .video-skeleton .skeleton-cover {
     aspect-ratio: 16 / 9;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
 }
 
 .video-skeleton .skeleton-title {
@@ -1960,7 +1934,7 @@ body.dark-mode .skeleton {
 .github-skeleton .skeleton-branch {
     height: 22px;
     width: 60px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
 }
 
 .github-skeleton .skeleton-desc {
@@ -2036,7 +2010,7 @@ body.dark-mode .skeleton {
 .online-skeleton .skeleton-avatar {
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
 }
 
 .online-skeleton .skeleton-name {
@@ -2117,18 +2091,403 @@ body.dark-mode .skeleton-block {
     background-size: 200% 100%;
 }
 
+/* ============================================================
+   首页：编辑式排版
+   无卡片、无模糊、无位移悬停；层级来自字号、留白和分隔线。
+   ============================================================ */
+body.home-page .main-layout {
+    max-width: 1280px;
+    padding: 108px 32px 56px;
+    gap: 64px;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+}
+body.home-page .main-content { gap: 56px; }
+body.home-page .sidebar-index {
+    position: sticky;
+    top: 88px;
+    gap: 0;
+}
 
-/* More content, less chrome: the homepage follows the directory typography. */
-body.home-page .main-layout { padding-top:98px; gap:28px; }
-body.home-page .home-panel, body.home-page .sidebar-panel, body.home-page .footer-card { background:var(--surface-strong); border:1px solid var(--line); border-radius:16px; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
-body.home-page .home-panel:hover, body.home-page .sidebar-panel:hover, body.home-page .footer-card:hover { box-shadow:none; border-color:var(--line); }
-body.home-page .home-block, body.home-page .index-sidebar-section { opacity:1; transform:none; animation:none; }
-body.home-page .intro-combo-panel { padding:32px; }
-body.home-page .hero-title { font-size:clamp(28px,3vw,40px); font-weight:650; letter-spacing:-.04em; }
-body.home-page .section-head { padding-bottom:16px; }
-body.home-page .post-item-link { cursor:pointer; }
-body.home-page .post-title { font-weight:600; }
-body.home-page .post-title a { color:inherit; text-decoration:none; }
-body.home-page .post-title a:hover { color:var(--accent); }
-body.home-page .sidebar-panel { padding:22px; }
-@media(max-width:640px) { body.home-page .main-layout { padding:84px 16px 20px; } body.home-page .intro-combo-panel { padding:24px 20px; } }
+/* 所有面板外壳退场 */
+body.home-page .home-panel,
+body.home-page .sidebar-panel,
+body.home-page .footer-card {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+body.home-page .home-panel:hover,
+body.home-page .sidebar-panel:hover,
+body.home-page .footer-card:hover {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+body.home-page .home-block,
+body.home-page .index-sidebar-section {
+    opacity: 1;
+    transform: none;
+    animation: none;
+}
+
+/* 介绍区 */
+body.home-page .intro-combo-panel {
+    display: grid;
+    gap: 20px;
+    padding: 0 0 42px;
+    border-bottom: 1px solid var(--line);
+}
+body.home-page .intro-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    text-align: left;
+}
+body.home-page .hero-avatar-link { margin: 0; }
+body.home-page .hero-avatar-link::before { display: none; }
+body.home-page .hero-avatar-link:hover { transform: none; }
+body.home-page .hero-avatar {
+    width: 64px;
+    height: 64px;
+    border: 1px solid var(--line);
+    box-shadow: none;
+}
+body.home-page .hero-avatar-link:hover .hero-avatar {
+    border-color: var(--line-strong);
+    box-shadow: none;
+}
+body.home-page .hero-title {
+    font-size: clamp(30px, 3.6vw, 46px);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+}
+body.home-page .intro-copy {
+    max-width: 62ch;
+    margin: 0;
+    text-align: left;
+}
+body.home-page .welcome-title {
+    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+body.home-page .welcome-text {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--text-subtle);
+}
+body.home-page .typewriter-container {
+    min-height: 0;
+    justify-content: flex-start;
+}
+body.home-page .typewriter {
+    text-align: left;
+    color: var(--text-subtle);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+body.home-page .intro-links { justify-items: start; gap: 16px; }
+body.home-page .contact-chips,
+body.home-page .social-icons {
+    justify-content: flex-start;
+    gap: 8px;
+}
+body.home-page .contact-chip {
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    padding: 7px 11px;
+    gap: 6px;
+    color: var(--text-main);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: visible;
+}
+body.home-page .contact-chip:hover,
+body.home-page .contact-chip.is-open {
+    max-width: none;
+    padding: 7px 11px;
+    background: var(--surface-soft);
+    border-color: var(--line-strong);
+    transform: none;
+    box-shadow: none;
+}
+body.home-page .contact-icon {
+    width: auto;
+    height: auto;
+    font-size: 12px;
+    color: var(--text-subtle);
+    transform: none;
+}
+body.home-page .contact-text {
+    max-width: none;
+    opacity: 1;
+    transform: none;
+    gap: 6px;
+}
+body.home-page .contact-label,
+body.home-page .contact-value {
+    font-size: 11.5px;
+    font-weight: 500;
+}
+body.home-page .contact-value { max-width: 220px; color: var(--text-subtle); }
+body.home-page .social-link {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+}
+body.home-page .social-link:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--surface-soft);
+    border-color: var(--line-strong);
+}
+body.home-page .social-link-icon { width: 18px; height: 18px; border-radius: 0; }
+
+/* 区块标题 */
+body.home-page .section-head {
+    margin-bottom: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+}
+body.home-page .section-title-link,
+body.home-page .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+}
+body.home-page .section-title-link a:hover { color: var(--text-main); }
+body.home-page .section-title-link a::after { display: none; }
+
+/* 文章列表 */
+body.home-page .content-list { padding-inline: 0; }
+body.home-page .post-item-link {
+    grid-template-columns: minmax(0, 1fr) 124px;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+}
+body.home-page .post-item-link:first-child { padding-top: 22px; }
+body.home-page .post-item-link:hover {
+    transform: none;
+    background: transparent;
+}
+body.home-page .post-title {
+    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--text-main);
+}
+body.home-page .post-title a { color: inherit; text-decoration: none; }
+body.home-page .post-title a:hover { color: var(--accent); }
+body.home-page .post-date { font-size: 11.5px; font-weight: 400; }
+body.home-page .post-tags { margin-top: 10px; gap: 6px; }
+body.home-page .post-tag {
+    padding: 2px 7px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--text-subtle);
+    font-size: 10.5px;
+}
+body.home-page .post-tag.read-time,
+body.home-page .post-tag-col {
+    background: transparent;
+    color: var(--text-subtle);
+}
+body.home-page .post-cover-wrap {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+}
+body.home-page .post-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+body.home-page .more-link {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* 动态流 */
+body.home-page .dynamic-card {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+}
+body.home-page .dynamic-card:hover {
+    transform: none;
+    background: transparent;
+}
+body.home-page .dynamic-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+body.home-page .dynamic-content {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-subtle);
+}
+body.home-page .dynamic-entry-footer { margin-top: 12px; }
+body.home-page .dynamic-like-btn {
+    padding: 4px 9px;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+}
+body.home-page .dynamic-comment-preview { border-top: 1px solid var(--line-soft); }
+
+/* 侧栏：一条竖排的分隔线列表 */
+body.home-page .index-sidebar-section {
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+}
+body.home-page .index-sidebar-section:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+body.home-page .sidebar-title { margin-bottom: 12px; }
+body.home-page .sidebar-welcome-panel { padding-bottom: 24px; }
+body.home-page .sidebar-welcome-block + .sidebar-welcome-block {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-soft);
+}
+body.home-page .time {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+body.home-page .date,
+body.home-page .greeting,
+body.home-page .tip {
+    font-size: 12.5px;
+    color: var(--text-subtle);
+}
+body.home-page .index-log-item,
+body.home-page .friend-link-item,
+body.home-page .message-preview-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-soft);
+}
+body.home-page .index-log-item:hover,
+body.home-page .friend-link-item:hover {
+    transform: none;
+    background: transparent;
+}
+body.home-page .friend-icon { border-radius: var(--radius-sm); }
+
+@media (max-width: 1120px) {
+    body.home-page .main-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 48px;
+        padding: 96px 24px 48px;
+    }
+    body.home-page .sidebar-index { position: static; }
+}
+@media (max-width: 640px) {
+    body.home-page .main-layout { padding: 88px 16px 40px; gap: 40px; }
+    body.home-page .intro-combo-panel { padding-bottom: 32px; }
+    body.home-page .hero-avatar { width: 52px; height: 52px; }
+    body.home-page .hero-title { font-size: 30px; }
+    body.home-page .post-item-link { grid-template-columns: minmax(0, 1fr) 88px; gap: 16px; }
+    body.home-page .post-title { font-size: 15.5px; }
+    body.home-page .contact-value { max-width: 150px; }
+}
+
+/* 侧栏欢迎区：统一左对齐与低噪声层级 */
+body.home-page .sidebar-welcome-panel .time,
+body.home-page .sidebar-welcome-panel .date,
+body.home-page .sidebar-welcome-panel .greeting,
+body.home-page .sidebar-welcome-panel .tip,
+body.home-page .sidebar-welcome-panel .info {
+    text-align: left;
+}
+body.home-page .sidebar-welcome-panel .time {
+    margin: 0 0 6px;
+    color: var(--text-main);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+body.home-page .sidebar-welcome-panel .date {
+    margin: 0;
+    color: var(--text-subtle);
+    font-size: 12px;
+}
+body.home-page .sidebar-welcome-panel .greeting {
+    margin-bottom: 6px;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 600;
+}
+body.home-page .sidebar-welcome-panel .tip {
+    border-left: 1px solid var(--line-strong);
+    color: var(--text-subtle);
+    font-style: normal;
+    font-size: 12.5px;
+    line-height: 1.7;
+    padding-left: 12px;
+}
+
+@media (max-width: 640px) {
+    body.home-page .post-item-link { grid-template-columns: minmax(0, 1fr); }
+    body.home-page .post-cover-wrap { display: none; }
+}
+
+/* 更新日志标签：低饱和语义色 */
+body.home-page .index-log-tag,
+.index-log-tag {
+    min-width: 0;
+    padding: 2px 7px;
+    border-radius: var(--radius-xs);
+    font-size: 10.5px;
+    font-weight: 600;
+}
+.index-log-tag.update { background: var(--accent-soft); color: var(--accent); }
+.index-log-tag.optimize { background: var(--ok-soft); color: var(--ok); }
+.index-log-tag.add { background: var(--violet-soft); color: var(--violet); }
+.index-log-tag.fix { background: var(--danger-soft); color: var(--danger); }
+.index-log-tag.default { background: var(--surface-soft); color: var(--text-subtle); }
+
+
+/* 首页动态九宫格：收敛宽度，给文字留呼吸 */
+body.home-page .dynamic-feed .gallery-container {
+    max-width: 520px;
+    margin-top: 14px;
+}
+body.home-page .dynamic-feed .gallery-row {
+    gap: 8px;
+    margin-bottom: 8px;
+}
+body.home-page .dynamic-feed .gallery-item,
+body.home-page .dynamic-feed .gallery-overlay {
+    border-radius: var(--radius-md);
+}
+@media (max-width: 640px) {
+    body.home-page .dynamic-feed .gallery-container { max-width: 100%; }
+}

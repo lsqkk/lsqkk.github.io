@@ -4,14 +4,11 @@
 
 .dynamic-detail-card {
     margin-bottom: 1rem;
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+    background: var(--surface);
+
+    box-shadow: none;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 1.5rem;
 }
 
@@ -33,7 +30,7 @@
     border: 1px solid var(--accent-soft);
     background: var(--accent-soft);
     color: var(--accent);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     padding: 8px 12px;
     cursor: pointer;
     font-size: 0.92rem;
@@ -45,14 +42,13 @@
 }
 
 .dynamic-comments-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     box-shadow:
         0 4px 16px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+        inset 0 0 0 1px var(--line);
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 1rem;
 }
 
@@ -70,7 +66,7 @@
 .dynamic-comment-form input,
 .dynamic-comment-form textarea {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     padding: 10px;
     background: var(--surface);
     color: var(--text-main);
@@ -91,7 +87,7 @@
 
 .dynamic-comment-item {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     padding: 10px;
     background: var(--surface);
 }
@@ -106,7 +102,7 @@
     border: 1px solid var(--accent-soft);
     background: var(--accent-soft);
     color: var(--accent);
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     padding: 3px 10px;
     font-size: 0.8rem;
     cursor: pointer;
@@ -127,7 +123,7 @@
 
 .dynamic-reply-item {
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     padding: 8px 10px;
     background: var(--surface);
 }
@@ -158,7 +154,7 @@
     border: 1px solid var(--accent-soft);
     background: var(--accent-soft);
     color: var(--accent);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     padding: 5px 10px;
     font-size: 0.84rem;
     cursor: pointer;
@@ -188,7 +184,7 @@
 .dynamic-comment-avatar {
     width: 30px;
     height: 30px;
-    border-radius: 9px;
+    border-radius: var(--radius-lg);
     background: var(--accent-soft);
     display: grid;
     place-items: center;
@@ -226,4 +222,38 @@
     justify-content: center;
     gap: 14px;
     flex-wrap: wrap;
+}
+
+/* 扁平化：动态详情 */
+.dynamic-detail-container { max-width: 760px; }
+body { background: var(--page-bg); }
+.dynamic-detail-card {
+    margin: 0;
+    padding: 24px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+}
+.dynamic-detail-card h1,
+.dynamic-detail-title { font-size: clamp(30px, 4.5vw, 44px); font-weight: 650; letter-spacing: -0.02em; }
+.dynamic-action-btn,
+.dynamic-submit-btn {
+    padding: 6px 10px;
+    color: var(--text-subtle);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    font-size: 11.5px;
+}
+.dynamic-action-btn:hover,
+.dynamic-submit-btn:hover { background: var(--surface-soft); color: var(--text-main); }
+.dynamic-comments-panel {
+    padding: 24px 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
 }

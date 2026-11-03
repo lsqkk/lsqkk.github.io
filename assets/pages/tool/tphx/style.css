@@ -1,7 +1,7 @@
         :root {
             --primary: #6e48aa;
             --secondary: #9d50bb;
-            --accent: #4776e6;
+            --accent: var(--accent);
             --text: #f8f9fa;
             --bg: rgba(255, 255, 255, 0.1);
             --glass: rgba(255, 255, 255, 0.1);
@@ -10,11 +10,11 @@
         }
 
         body {
-            background: url('/assets/img/bg.png') no-repeat center center fixed;
+            background: var(--page-bg);
             background-size: cover;
             color: var(--text);
             min-height: 100vh;
-            text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+            text-shadow: none;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -26,15 +26,15 @@
 
         .container {
             background: var(--bg);
-            backdrop-filter: blur(16px);
-            border-radius: 20px;
+
+            border-radius: var(--radius-lg);
             padding: 30px;
             box-shadow: var(--shadow);
             border: var(--border);
             max-width: 800px;
             width: 90%;
             text-align: center;
-            backdrop-filter: blur(10px);
+
         }
 
         .container h1 {
@@ -62,14 +62,14 @@
 
         .btn {
             padding: 12px 24px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             border: none;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(5px);
+
             background: var(--glass);
             color: var(--text);
             display: flex;
@@ -88,7 +88,7 @@
         }
 
         .btn-accent {
-            background: linear-gradient(45deg, #4776e6, #4facfe);
+            background: linear-gradient(45deg, var(--accent), var(--accent));
         }
 
         .btn-danger {
@@ -128,7 +128,7 @@
 
         .settings {
             background: var(--glass);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             padding: 15px;
             margin: 20px 0;
             display: flex;
@@ -154,7 +154,7 @@
         input[type="number"] {
             background: rgba(0, 0, 0, 0.2);
             border: var(--border);
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
             padding: 8px 12px;
             color: var(--text);
             width: 80px;
@@ -162,7 +162,7 @@
 
         .drop-area {
             border: 2px dashed var(--glass);
-            border-radius: 20px;
+            border-radius: var(--radius-lg);
             padding: 40px;
             margin: 20px 0;
             transition: all 0.3s;
@@ -194,7 +194,7 @@
         #display-img {
             max-width: 100%;
             max-height: 60vh;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             box-shadow: var(--shadow);
             display: none;
             margin: 20px auto;
@@ -245,3 +245,69 @@
                 text-align: left;
             }
         }
+/* 扁平深色工作区 */
+body {
+  background: #121419;
+  color: #e7e9ee;
+  text-shadow: none;
+  padding: 104px 20px 48px;
+}
+:root {
+  --text: #e7e9ee;
+  --bg: #191c22;
+  --glass: #1f232b;
+  --shadow: none;
+  --border: 1px solid #2a2f37;
+}
+.container {
+  background: #191c22;
+  border: 1px solid #2a2f37;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  text-align: left;
+}
+.container h1 {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: #e7e9ee;
+}
+.subtitle { color: #a3adbb; }
+.btn {
+  background: #1f232b;
+  border: 1px solid #2a2f37;
+  border-radius: var(--radius-sm);
+  color: #e7e9ee;
+}
+.btn:hover { transform: none; box-shadow: none; background: #252a33; }
+.file-upload, .drop-area, .settings, .control-panel, .setting-row {
+  background: #191c22;
+  border-color: #2a2f37;
+  border-radius: var(--radius-sm);
+  color: #e7e9ee;
+}
+
+/* 浅色统一 */
+body { background: var(--page-bg); color: var(--text-main); }
+.control-panel {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  color: var(--text-main);
+}
+.control-panel label, .control-panel h2, .control-panel h3 { color: var(--text-main); }
+.btn {
+  color: var(--text-main);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.btn-primary { color: var(--surface-strong); background: var(--text-main); border-color: var(--text-main); }
+.btn-accent { color: var(--accent); background: transparent; border-color: var(--line); }
+.btn-danger { color: var(--danger); background: transparent; border-color: var(--line); }
+.btn:hover { color: var(--text-main); background: var(--surface-soft); transform: none; box-shadow: none; }
+.file-upload, .drop-area, .settings, .setting-row {
+  color: var(--text-main);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+}
+.drop-area { border-style: dashed; border-color: var(--line-strong); color: var(--text-subtle); }
+.drop-area .icon { color: var(--text-soft); }

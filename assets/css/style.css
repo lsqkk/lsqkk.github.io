@@ -8,7 +8,7 @@
 
 ::-webkit-scrollbar-thumb {
     background: rgba(100, 120, 150, 0.3);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -42,9 +42,8 @@ body.sidebar-open {
 }
 
 .post-item {
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    background: var(--surface);
+
     border-radius: var(--radius-sm);
     padding: 20px;
     margin: 15px 0;
@@ -54,7 +53,7 @@ body.sidebar-open {
 }
 
 button {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     border: none;
     border-radius: var(--radius-sm);
 }
@@ -64,16 +63,13 @@ button {
 }
 
 .search-result-item {
-    background: var(--glass-bg);
+    background: var(--surface);
     margin: 10px;
     padding: 10px;
     border-bottom: 1px solid var(--line);
     border-radius: var(--radius-md);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    box-shadow:
-        0 8px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge);
+
+    box-shadow: none;
 }
 
 .search-result-item:hover {
@@ -123,8 +119,7 @@ button {
 .post-related-box,
 .post-footer-box {
     background: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+
     border: none;
     border-radius: 0;
     box-shadow: none;
@@ -210,17 +205,17 @@ button {
 .fab-btn {
     width: 46px;
     height: 46px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
     border: 1px solid var(--line);
     background: var(--surface-strong);
-    backdrop-filter: blur(6px);
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.2);
+    box-shadow: none;
     color: var(--text-main);
     gap: 6px;
     padding: 0 10px;
@@ -284,7 +279,7 @@ button {
     min-width: 28px;
     height: 28px;
     padding: 0 9px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: var(--accent-soft);
     color: var(--accent);
     font-size: 0.78rem;
@@ -314,7 +309,7 @@ button {
     padding: 6px 10px;
     color: var(--text-main);
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     transition: color 0.18s ease, transform 0.18s ease, background 0.18s ease;
     position: relative;
     z-index: 1;
@@ -399,7 +394,7 @@ button {
 .toc-skeleton-count {
     height: 28px;
     width: 28px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
 }
 
 .toc-skeleton-list {
@@ -413,7 +408,7 @@ button {
 
 .toc-skeleton-line {
     height: 16px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .toc-skeleton-h1 {
@@ -583,7 +578,7 @@ button {
     min-width: 24px;
     height: 24px;
     padding: 0 7px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: var(--accent-soft);
     color: var(--accent);
     font-size: 0.74rem;
@@ -615,7 +610,7 @@ button {
     position: fixed;
     inset: 0;
     background: rgba(15, 23, 42, 0.28);
-    backdrop-filter: blur(2px);
+
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -653,11 +648,10 @@ button {
         height: 100vh;
         z-index: 2000;
         padding: 80px 14px 20px;
-        background: var(--glass-bg);
-        backdrop-filter: blur(22px) saturate(135%);
-        -webkit-backdrop-filter: blur(22px) saturate(135%);
+        background: var(--surface);
+
         border: none;
-        box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+        box-shadow: none;
         overflow-y: auto;
         opacity: 1;
         pointer-events: auto;
@@ -669,8 +663,7 @@ button {
     .post-sidebar-group.active .post-related-box,
     .post-sidebar-group.active .post-footer-box {
         background: none;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
+
         border: none;
         border-radius: 0;
         box-shadow: none;
@@ -764,12 +757,11 @@ button {
         width: 240px;
         left: calc((100vw - min(1120px, 100vw)) / 2 + 20px + 800px + 24px);
         z-index: 1;
-        background: var(--glass-bg);
-        backdrop-filter: blur(22px) saturate(135%);
-        -webkit-backdrop-filter: blur(22px) saturate(135%);
+        background: var(--surface);
+
         border: 1px solid var(--line);
         border-radius: var(--radius-md);
-        box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+        box-shadow: none;
     }
 
     body.post-layout-page .post-sidebar-scroll {
@@ -810,7 +802,7 @@ button {
     .fab-btn {
         width: 44px;
         height: 44px;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
     }
 }
 
@@ -821,18 +813,17 @@ button {
 
 .sidebar-main-content::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .sidebar-main-content::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .sidebar-main-content::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
 }
-
 
 /* 深色模式：侧栏玻璃变透明，保留模糊和边缘光 */
 @media (prefers-color-scheme: dark) {
@@ -848,7 +839,7 @@ body.dark-mode.post-layout-page .post-sidebar-group {
 /* 移动端深色模式：减轻背景黑块感 */
 body.dark-mode .sidebar-backdrop {
     background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(1px);
+
 }
 
 @media (max-width: 1100px) {
@@ -869,12 +860,12 @@ body.dark-mode .sidebar-backdrop {
     gap: 10px;
     margin-bottom: 10px;
     padding: 15px;
-    backdrop-filter: blur(10px);
+
 }
 
 .tag-btn {
     padding: 5px 12px;
-    border-radius: 15px;
+    border-radius: var(--radius-md);
     background: var(--accent-soft);
     color: var(--accent);
     border: none;
@@ -910,23 +901,21 @@ body.dark-mode .sidebar-backdrop {
 }
 
 .main-content {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border-radius: var(--radius-md);
     padding: 20px;
     border: 1px solid var(--line);
-    box-shadow: 0 8px 32px var(--glass-shadow);
+    box-shadow: none;
 }
 
 .sidebar-index {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border-radius: var(--radius-md);
     padding: 20px;
     border: 1px solid var(--line);
-    box-shadow: 0 8px 32px var(--glass-shadow);
+    box-shadow: none;
     flex: 0 0 300px;
     align-self: flex-start;
     height: auto !important;
@@ -987,9 +976,8 @@ body.dark-mode .sidebar-backdrop {
 }
 
 .footer-content {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border-radius: var(--radius-md);
     padding: 20px;
     margin-top: 20px;
@@ -1027,7 +1015,7 @@ body.dark-mode .sidebar-backdrop {
 }
 
 .language-selector option {
-    background-color: #7abd9a;
+    background-color: var(--accent);
     color: white;
 }
 
@@ -1084,4 +1072,81 @@ body.reduce-motion .online-preview-card,
 body.reduce-motion .index-log-item {
     transition: none !important;
     transform: none !important;
+}
+
+/* ============================================================
+   共享容器与页脚 — 扁平层
+   ============================================================ */
+.main-layout {
+    max-width: 1280px;
+    gap: 48px;
+    padding: 24px;
+}
+
+.main-content,
+.sidebar-index {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.footer-content {
+    margin: 0;
+    padding: 28px 0 36px;
+    color: var(--text-soft);
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    font-size: 11.5px;
+    text-align: left;
+}
+
+.footer-content a { color: var(--text-subtle); }
+.footer-content a:hover { color: var(--accent); }
+
+/* 旧列表项统一为分隔线行 */
+.post-item {
+    margin: 0;
+    padding: 20px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.search-result-item {
+    margin: 0;
+    padding: 14px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.search-result-item:hover { background: transparent; }
+
+/* 表单控件基线 */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    border-radius: var(--radius-sm);
+}
+
+@media (max-width: 768px) {
+    .main-layout { gap: 36px; padding: 16px; }
+    .footer-container { padding: 0 16px; }
 }

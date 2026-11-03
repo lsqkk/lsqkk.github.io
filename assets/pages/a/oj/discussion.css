@@ -7,13 +7,12 @@
 #newDiscussionForm {
     margin-bottom: 20px;
     padding: 18px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     color: var(--text-main);
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
 }
 
 #newDiscussionForm h3 {
@@ -77,10 +76,10 @@
 
 .avatar-toggle {
     display: flex;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     flex-shrink: 0;
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
 }
 
 .avatar-toggle button {
@@ -132,7 +131,7 @@
     width: 60px;
     height: 30px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
 }
 
@@ -161,14 +160,13 @@
     box-sizing: border-box;
     width: 100%;
     padding: 10px 12px;
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     color: var(--text-main);
     font-size: 0.95em;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+
 }
 
 #newDiscussionForm input::placeholder,
@@ -203,7 +201,7 @@
     background: var(--oj-accent);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
     font-weight: bold;
@@ -239,23 +237,22 @@
 }
 
 .discussion-summary {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     color: var(--text-main);
     padding: 15px;
     margin-bottom: 15px;
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
     transition: background 0.24s ease, transform 0.24s ease, box-shadow 0.24s ease;
     cursor: pointer;
 }
 
 .discussion-summary:hover {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge-strong);
+    box-shadow: none;
 }
 
 .summary-title {
@@ -279,7 +276,7 @@
     gap: 4px;
     margin-left: 6px;
     padding: 1px 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     font-size: 0.75em;
     font-weight: 600;
     color: var(--text-main);
@@ -301,13 +298,13 @@
     background-size: cover;
     background-position: center;
     vertical-align: middle;
-    border: 2px solid var(--glass-edge);
+    border: 2px solid var(--line);
 }
 
 .problem-tag {
     background: var(--oj-accent);
     padding: 3px 10px;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     color: #fff;
     font-weight: 500;
     font-size: 0.85em;
@@ -316,13 +313,12 @@
 
 /* ── 讨论详情 ── */
 .discussion-detail-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     color: var(--text-main);
-    box-shadow: 0 8px 32px var(--glass-shadow), inset 0 0 0 1px var(--glass-edge);
+    box-shadow: none;
     padding: 25px;
     margin-top: 20px;
 }
@@ -353,10 +349,10 @@
 }
 
 .post-content pre {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     border: 1px solid var(--line);
     padding: 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     overflow-x: auto;
     font-family: 'Consolas', 'Courier New', monospace;
     color: var(--text-main);
@@ -364,9 +360,9 @@
 }
 
 .post-content code {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     color: #ffcc99;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 0.9em;
@@ -378,11 +374,11 @@
 }
 
 .reply-card {
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     border-left: 4px solid var(--oj-accent);
     padding: 15px;
     margin-bottom: 15px;
-    border-radius: 0 6px 6px 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 .reply-header {
@@ -449,10 +445,10 @@
 }
 
 .back-to-list-btn {
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     border: 1px solid var(--line);
     color: var(--text-main);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 8px 15px;
     cursor: pointer;
     transition: background 0.24s ease, transform 0.24s ease;
@@ -463,7 +459,7 @@
 }
 
 .back-to-list-btn:hover {
-    background: var(--glass-bg);
+    background: var(--surface);
     transform: translateY(-1px);
 }
 
@@ -478,8 +474,8 @@
 .page-btn {
     padding: 8px 16px;
     border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--glass-bg-soft);
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
     color: var(--text-main);
     cursor: pointer;
     transition: background 0.2s ease;
@@ -492,7 +488,7 @@
 }
 
 .page-btn:hover:not(.active) {
-    background: var(--glass-bg-strong);
+    background: var(--surface-strong);
 }
 
 /* ── Responsive ── */

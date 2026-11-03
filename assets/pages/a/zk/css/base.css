@@ -6,7 +6,7 @@
     --light-color: #f8f9fa;
     --dark-color: #202124;
     --gray-color: #5f6368;
-    --border-radius: 8px;
+    --border-radius: var(--radius-lg);
     --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 * {

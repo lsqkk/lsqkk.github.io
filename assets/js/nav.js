@@ -194,7 +194,7 @@ const defaultNavConfig = {
     logo: {
         url: "/assets/img/logo_blue.png",
         alt: "网站logo",
-        style: "width: 27px; border-radius: 50%; margin: 3px 7px 0px 0px; overflow: hidden;"
+        style: "width: 30px; height: 30px; object-fit: contain; border-radius: 4px; margin: 0 8px 0 0;"
     },
     title: {
         text: "夸克博客",
@@ -205,9 +205,6 @@ const defaultNavConfig = {
         { name: "工具", link: "/tool", target: "blank" },
         { name: "游戏", link: "/games", target: "blank" },
         { name: "实验室", link: "/a", target: "blank" },
-        { name: "项目", link: "/blog/project", target: "blank" },
-        { name: "视频", link: "/blog/qtv", target: "blank" },
-        { name: "留言", link: "/blog/lyb", target: "blank" },
         { name: "更多", link: "/blog", target: "blank" }
     ],
     login: {
@@ -320,7 +317,7 @@ function generateNavHTML(config) {
             <div class="header-left">
                 <img src="${config.logo.url}" alt="${config.logo.alt}"
                 style="${config.logo.style}">
-                <a href="${buildLocalizedUrl(config.title.link)}" style="color: white; text-decoration: none;">
+                <a href="${buildLocalizedUrl(config.title.link)}" class="header-title-link">
                     <h1>${config.title.text}</h1>
                 </a>
                 <!-- 移动端汉堡菜单按钮 -->

@@ -1,10 +1,10 @@
 :root {
     --header-height: 60px;
-    --main-blue: #248dfd;
-    --main-green: #34c759;
-    --main-red: #ff5328;
-    --main-orange: #f7b731;
-    --main-purple: #af52de;
+    --main-blue: var(--accent);
+    --main-green: var(--ok);
+    --main-red: var(--danger);
+    --main-orange: var(--warn);
+    --main-purple: var(--violet);
     --main-teal: #5ac8fa;
     --card-bg-opacity: 0.2;
     --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -14,7 +14,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: url('/assets/img/bg.png') no-repeat center center fixed;
+    background: var(--page-bg);
     background-size: cover;
     color: #333;
 }
@@ -36,10 +36,9 @@ body {
 
 .card-remote {
     background-color: rgba(255, 255, 255, var(--card-bg-opacity));
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     box-shadow: var(--card-shadow);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+
     border: var(--card-border);
     padding: 30px;
     text-align: center;
@@ -57,11 +56,11 @@ h2 {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     font-size: 16px;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--surface-strong);
     color: #333;
     text-transform: uppercase;
 }
@@ -70,7 +69,7 @@ h2 {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     box-sizing: border-box;
     font-size: 16px;
     border: none;
@@ -126,7 +125,7 @@ h2 {
     cursor: pointer;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     transition: all 0.15s;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     min-height: 48px;
@@ -151,7 +150,7 @@ h2 {
 .control-btn.screen-end   { background: var(--main-red); }
 
 .control-btn.ptr-laser { background: var(--main-orange); }
-.control-btn.ptr-pen   { background: #8e44ad; }
+.control-btn.ptr-pen   { background: var(--violet); }
 .control-btn.ptr-arrow { background: #2c3e50; }
 .control-btn.ptr-eraser { background: #e67e22; }
 .control-btn.ptr-hide  { background: #636e72; }
@@ -163,7 +162,7 @@ h2 {
 #projector-status-box {
     border: 2px solid var(--main-blue);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background-color: rgba(0, 122, 255, 0.05);
 }
 
@@ -178,7 +177,7 @@ h2 {
     margin-top: 15px;
     padding: 12px 15px;
     background-color: rgba(245, 245, 245, 0.9);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     text-align: left;
     word-break: break-all;
     border: 1px solid rgba(0, 0, 0, 0.05);
@@ -224,7 +223,7 @@ h2 {
     .card-remote {
         background-color: rgba(17, 28, 46, 0.7);
         border: 1px solid rgba(138, 173, 220, 0.35);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        box-shadow: none;
     }
 
     h2 { color: #e2ecff; }
@@ -251,8 +250,89 @@ h2 {
 
 .main-content-wrapper-remote { box-sizing:border-box; width:100%; padding:100px 20px 40px; }
 .container-remote { box-sizing:border-box; width:100%; max-width:520px; padding:0; }
-.card-remote { background:var(--surface-strong); color:var(--text-main); border:1px solid var(--line); border-radius:16px; box-shadow:none; backdrop-filter:none; }
+.card-remote { background:var(--surface-strong); color:var(--text-main); border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:none; }
 .card-remote h2 { color:var(--text-main); font-size:20px; }
 .card-remote p { color:var(--text-subtle); }
 .remote-input { color:var(--text-main); background:var(--surface-soft); border-color:var(--line); }
 @media(max-width:640px) { .main-content-wrapper-remote { padding:84px 16px 30px; } .card-remote { padding:24px 20px; } }
+
+/* 扁平归一 */
+body { background: var(--page-bg); color: var(--text-main); }
+:root { --card-bg-opacity: 1; --card-shadow: none; --card-border: 1px solid var(--line); }
+.card-remote, .container-remote, .alert-error {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  color: var(--text-main);
+}
+.remote-input { background: var(--surface-soft); border-color: var(--line); color: var(--text-main); }
+
+/* 扁平归一 */
+.main-content-wrapper-remote { padding: 100px 24px 48px; }
+.container-remote { max-width: 760px; }
+.container-remote .page-title {
+  margin: 0 0 24px;
+  text-align: left;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.card-remote {
+  padding: 24px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+.card-remote h2 { margin: 0 0 16px; color: var(--text-main); font-size: 15px; font-weight: 600; }
+.remote-input {
+  padding: 10px 12px;
+  color: var(--text-main);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.remote-button-primary {
+  padding: 10px 14px;
+  color: var(--surface-strong);
+  background: var(--text-main);
+  border: 1px solid var(--text-main);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.remote-button-primary:hover { opacity: 0.85; }
+.remote-button-secondary {
+  color: var(--text-main);
+  background: transparent;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.remote-button-secondary:hover { background: var(--surface-soft); }
+.control-btn { border-radius: var(--radius-sm); box-shadow: none; font-weight: 600; }
+#status, .status-log, .alert-error {
+  color: var(--text-subtle);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+}
+@media (max-width: 640px) { .main-content-wrapper-remote { padding: 90px 16px 40px; } }
+
+.main-content-wrapper-remote { align-items: stretch; }
+.main-content-wrapper-remote .page-title {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto 24px;
+  text-align: left;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+
+.container-remote { margin: 0 auto; }

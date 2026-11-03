@@ -2,7 +2,7 @@
     --search-line: rgba(45, 73, 112, 0.16);
     --search-text: #1b2a40;
     --search-muted: #58708f;
-    --search-accent: #2f6edb;
+    --search-accent: var(--accent);
 }
 
 .search-body {
@@ -18,21 +18,19 @@
     margin: 100px auto 0;
     max-width: 980px;
     padding: 0 24px;
-    text-shadow: 0 2px 8px var(--glass-shadow);
+    text-shadow: none;
 }
 
 .search-shell {
     max-width: 980px;
     margin: 20px auto 60px;
     padding: 28px 28px 18px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px) saturate(135%);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
+    background: var(--surface);
+
+
     border: 1px solid var(--search-line);
-    border-radius: 20px;
-    box-shadow:
-        0 14px 32px var(--glass-shadow),
-        inset 0 0 0 1px var(--glass-edge-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
 }
 
 .search-box {
@@ -45,15 +43,15 @@
 .search-box input {
     flex: 1;
     padding: 10px 14px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--search-line);
-    background: var(--glass-bg-soft);
+    background: var(--surface-soft);
     color: var(--search-text);
 }
 
 .search-box button {
     padding: 9px 18px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--search-line);
     background: var(--accent-soft);
     color: var(--search-accent);
@@ -155,7 +153,7 @@
     background: rgba(59, 130, 246, 0.2);
     color: inherit;
     padding: 0 2px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
 }
 
 .search-result-badge {
@@ -168,7 +166,7 @@
     background: rgba(37, 99, 235, 0.12);
     border: 1px solid rgba(37, 99, 235, 0.3);
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     margin-left: 8px;
 }
 
@@ -177,7 +175,7 @@
     align-items: center;
     gap: 4px;
     padding: 2px 8px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: rgba(47, 110, 219, 0.12);
     color: var(--search-accent);
     font-size: 0.74rem;
@@ -247,7 +245,7 @@
 body.dark-mode .search-page-title,
 body.dark-mode .search-result-title {
     color: var(--search-text);
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    text-shadow: none;
 }
 
 body.dark-mode .search-tag {
@@ -286,4 +284,60 @@ body.dark-mode .search-tag-col {
         flex-direction: column;
         align-items: stretch;
     }
+}
+
+/* 扁平化：搜索页按编辑式版面组织 */
+.search-page-title {
+    margin: 108px auto 0;
+    max-width: 880px;
+    padding: 0 24px;
+    text-align: left;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    text-shadow: none;
+}
+.search-shell {
+    max-width: 880px;
+    margin: 24px auto 64px;
+    padding: 0 24px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+.search-box {
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+}
+.search-box input {
+    padding: 11px 13px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+}
+.search-box input:focus {
+    outline: none;
+    border-color: var(--line-strong);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.search-box button {
+    padding: 10px 16px;
+    color: var(--surface-strong);
+    background: var(--text-main);
+    border: 1px solid var(--text-main);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity 0.16s ease;
+}
+.search-box button:hover { transform: none; box-shadow: none; opacity: 0.82; }
+.search-box button:active { transform: none; }
+.search-results { margin-top: 16px; }
+.search-result { padding: 16px 0; }
+@media (max-width: 640px) {
+    .search-page-title { margin-top: 92px; padding: 0 16px; }
+    .search-shell { padding: 0 16px; }
 }

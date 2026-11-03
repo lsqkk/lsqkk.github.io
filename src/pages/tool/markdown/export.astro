@@ -189,10 +189,54 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 padding: 0 !important;
             }
         }
+        /* 扁平归一 */
+        body { background: var(--page-bg); color: var(--text-main); }
+        .app-layout { max-width: 1280px; padding: 100px 24px 48px; gap: 16px; }
+        .glass-panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            box-shadow: none;
+            padding: 20px;
+            margin: 0;
+        }
+        .glass-panel h2, .glass-panel h3 { color: var(--text-main); font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+        .custom-input, .custom-select, .custom-textarea {
+            color: var(--text-main);
+            background: var(--surface-soft);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+        }
+        .custom-input::placeholder, .custom-textarea::placeholder { color: var(--text-soft); }
+        .custom-input:focus, .custom-select:focus, .custom-textarea:focus {
+            border-color: var(--line-strong);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+            background: var(--surface);
+        }
+        .custom-btn {
+            color: var(--surface-strong);
+            background: var(--text-main);
+            border: 1px solid var(--text-main);
+            border-radius: var(--radius-sm);
+            font-size: 12.5px;
+            font-weight: 600;
+            box-shadow: none;
+        }
+        .custom-btn:hover { background: var(--text-main); opacity: 0.85; box-shadow: none; }
+        .custom-btn:active { transform: none; }
+        .style-group { padding: 0; background: transparent; border-radius: 0; }
+        .style-group label { color: var(--text-subtle); font-size: 12.5px; font-weight: 500; }
+        #preview { color: var(--text-main); font-size: 14px; line-height: 1.8; }
+        @media (max-width: 900px) {
+            .app-layout { flex-direction: column; padding: 90px 16px 32px; }
+            .sidebar { width: 100%; }
+        }
     </style>
     <style id="custom-styles"></style>
 
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+
 </head>
 
 <body>
@@ -201,7 +245,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
         <div class="editor-section">
             <div class="glass-panel" style="flex-grow: 1; padding: 15px; display: flex; flex-direction: column;">
-                <h2>✏️ Markdown 编辑</h2>
+                <h2>Markdown 编辑</h2>
                 <textarea id="markdown-input" class="custom-textarea" placeholder="在此输入 Markdown 文本..."></textarea>
                 <div class="btn-group">
                     <button id="save-content-btn" class="custom-btn" title="保存 Markdown 文本到浏览器">💾 保存内容</button>
@@ -213,7 +257,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
         <div class="sidebar">
             <div class="glass-panel customization-panel">
-                <h3>🎨 样式定制</h3>
+                <h3>样式定制</h3>
                 <div class="style-group">
                     <label for="font-family">全局字体</label>
                     <input type="text" id="font-family" class="custom-input" value="sans-serif">
@@ -237,12 +281,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                     <input type="color" id="h1-color" class="custom-input" value="#1a531a">
                 </div>
 
-                <button id="save-styles-btn" class="custom-btn" style="width: 100%; margin-bottom: 10px;">✨
-                    保存定制样式</button>
+                <button id="save-styles-btn" class="custom-btn" style="width: 100%; margin-bottom: 10px;">保存定制样式</button>
             </div>
 
             <div class="glass-panel export-panel">
-                <h3>📤 导出设置</h3>
+                <h3>导出设置</h3>
                 <div class="style-group">
                     <h4>纸张样式 (PDF)</h4>
                     <label for="paper-size">纸张大小</label>
@@ -264,7 +307,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
         <div class="preview-section" id="preview-container">
             <div class="glass-panel" style="flex-grow: 1; overflow: hidden; padding: 0;">
-                <h2>👀 预览</h2>
+                <h2>预览</h2>
                 <div id="preview">
                     <h1>欢迎使用定制化 Markdown 编辑器</h1>
                     <p>在这里，您可以输入 **Markdown** 文本，并在右侧实时预览其效果。</p>
