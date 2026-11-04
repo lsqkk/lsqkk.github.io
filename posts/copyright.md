@@ -1,126 +1,77 @@
 ---
-title: "关于本站 & 版权声明"
-description: "关于本站 & 版权声明"
+title: "关于本站与版权声明"
+description: "夸克博客的内容、技术、数据使用和授权说明"
 date: 2025-02-01
 tags: 网站
 ---
 
-# 关于本站 & 版权声明
+# 关于本站与版权声明
 
-## 网站简介
+夸克博客（Quark Blog）是[蓝色奇夸克](https://github.com/lsqkk)维护的个人网站，记录学习、生活与思考，也提供浏览器工具、多人游戏和前端实验。
 
-夸克博客（Quark Blog）是由站主 **蓝色奇夸克** 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）+ Astro 构建，部署于 GitHub Pages，并通过 Firebase RTDB、Vercel 与自有域名等提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信、统一账号与登录中心等多种能力，打造一个功能丰富、体验流畅的个人技术实验平台。
+[网站主页](https://lsqkk.github.io/) · [源码仓库](https://github.com/lsqkk/lsqkk.github.io) · [RSS 订阅](/posts/rss.xml) · [联系邮箱](mailto:jsxzznz@163.com)
 
-## 版权信息
+## 网站如何运行
 
-- **网站开发者**：[蓝色奇夸克](https://github.com/lsqkk)
-- **托管平台**：[GitHub Pages](https://pages.github.com/)
-- **背景图片**：动画电影《云之彼端，约定的地方》（云のむこう、约束の场所）海报，源自 [bilibili 番剧页](https://www.bilibili.com/bangumi/play/ss2545)
-- **文章版权**：本站所有博客文章均由站主 **蓝色奇夸克** 原创撰写，未经授权禁止转载或用于商业用途，详情见开源协议。
-- **RSS订阅**：[https://lsqkk.github.io/posts/rss.xml](https://lsqkk.github.io/posts/rss.xml)
-- **版权期限**：Copyright © 2024 – 2026 蓝色奇夸克 All rights reserved. 
+页面由 Astro 根据 Markdown、JSON 与组件生成，交互主要使用原生 JavaScript、CSS、Canvas 和 WebRTC。静态文件部署在 GitHub Pages；需要在线服务的功能通过 Vercel Serverless、Firebase Realtime Database 或相关第三方服务实现。
 
-## 第三方服务声明
+界面采用实色表面、细分隔线与响应式排版，跟随系统深浅主题。阅读、工具、动态与游戏使用各自适合的布局；默认使用霞鹜文楷，字体、语言和动态效果可在网站设置中调整。
 
-本站部分功能依赖以下第三方 API 或服务，特此说明并致谢：
+## 内容与代码的授权
 
-### 服务列表
+### 文章
 
-| 项目名称 | 站内用途说明 | 官方网站 |
-|----------|----------|----------|
-| KaTeX | 文章数学公式渲染 | [https://katex.org](https://katex.org) |
-| Postimages | 部分图片托管 | [https://postimages.org](https://postimages.org) |
-| Cloudflare R2 | 站点图床和文件存储桶 | [https://www.cloudflare.com/zh-cn/developer-platform/products/r2/](https://www.cloudflare.com/zh-cn/developer-platform/products/r2/) |
-| Firebase Realtime Database | 站点实时数据库 | [https://firebase.google.com](https://firebase.google.com) |
-| Cloudflare Turnstile | 人机安全验证 | [https://www.cloudflare.com/products/turnstile/](https://www.cloudflare.com/products/turnstile/) |
-| GitHub OAuth | GitHub 登录授权 | [https://docs.github.com/apps/oauth-apps](https://docs.github.com/apps/oauth-apps) |
-| giscus | 文章页底评论系统 | [https://giscus.app/zh-CN](https://giscus.app/zh-CN) |
-| Vercel | Serverless 函数托管与域名服务 | [https://vercel.com](https://vercel.com) |
-| 不蒜子 | 网站访问量统计 | [https://www.busuanzi.cc](https://www.busuanzi.cc) |
-| HYTangMeiRen55W | 网站默认字体 | [https://hanyi.com.cn](https://hanyi.com.cn) |
+除单篇另有标注外，本站原创文章采用[知识共享署名—非商业性使用—相同方式共享 4.0 国际许可协议（CC BY-NC-SA 4.0）](https://creativecommons.org/licenses/by-nc-sa/4.0/)。
 
-### API 列表
+在该协议范围内分享或改编时，请保留作者、原文链接和许可说明，并注明修改；改编内容按协议规定的相同许可发布。商业使用或协议范围以外的授权，请联系站主。
 
-| API 名称 | 站内用途说明 | 官方网站 |
-|----------|----------|----------|
-| ipapi | 原生时钟获取地理位置 | [https://ipapi.co](https://ipapi.co) |
-| Bing 壁纸 API | 原生时钟背景图 | [https://bing.img.run/api.html](https://bing.img.run/api.html) |
-| OpenWeather API | 天气预报功能数据源 | [https://openweathermap.org/api](https://openweathermap.org/api) |
-| 声网 Agora API | 直播推流与播放 | [https://www.agora.io](https://www.agora.io) |
-| uapis API | 视频、热榜等数据接口 | [https://uapis.cn](https://uapis.cn) |
-| 北梦 API | 访客 IP 信息、热搜聚合等 | [https://api.b52m.cn](https://api.b52m.cn) |
-| 妖狐 API | 夸克数字人项目智能体 | [https://api.yaohud.cn](https://api.yaohud.cn) |
-| 慕名 API | 夸克数字人语音返回 | [https://api.suol.cc](https://api.suol.cc) |
-| DeepSeek API | DeepSeek WebUI 及其他 AI 项目 | [https://api.deepseek.com](https://api.deepseek.com) |
-| Github API | 展示个人仓库信息 | [https://api.github.com](https://api.github.com) |
-| 在线文本数据库 | 夸克贴吧内容存放 | [https://api.textdb.online](https://api.textdb.online) |
+文章中的引用、转载、图片、音视频、附件与其他第三方材料不因收录在文章中而获得原创文章的授权。使用这些材料时，请核对其来源及各自的许可。
 
-## 技术架构说明
+### 站点代码
 
-本站采用 **纯原生前端技术栈** 开发，不依赖 React、Vue 等主流框架，重点实现以下能力：
+站点代码按仓库内的 [LICENSE](https://github.com/lsqkk/lsqkk.github.io/blob/main/LICENSE) 授权，其文本为 **GNU Affero General Public License v3.0（AGPLv3）**。复制、修改和分发时，以完整许可证及对应文件的版权声明为准。[GNU 官方许可证说明](https://www.gnu.org/licenses/agpl-3.0.html)可供查阅。
 
-- 统一设计的 Aero 风格 UI
-- 基于 Canvas 的互动游戏与绘图工具
-- 通过 Firebase RTDB 实现的实时协同功能（聊天、留言、对战游戏等）
-- 集成 WebRTC 实现无信令服务器的 P2P 文件传输
-- 使用 Vercel 云函数托管敏感 API 与自定义服务
-- 自动化内容更新（文章生成、视频同步、动态搬运等）
-- 登录与账号系统：GitHub OAuth + 站内账号，支持账号中心、用户主页、在线用户与管理页面
+第三方代码、图标、字体与素材保留各自的许可和版权声明，不能将整个资源目录视为统一的原创素材授权包。
 
-## 免责声明
+## 数据保存在什么地方
 
-1. 本站所有内容仅为个人技术分享与实验目的，不构成任何正式建议或承诺。
-2. 对于因使用本站内容、工具或链接而导致的任何直接或间接损失，本站不承担任何责任。
-3. 本站部分功能依赖第三方服务，其可用性、准确性及安全性不由本站控制。
-4. 用户在使用本站提供的工具或服务时，应遵守相关法律法规，不得用于非法或侵犯他人权益的用途。
-5. 本站保留在不事先通知的情况下修改、暂停或终止部分或全部服务的权利。
-6. 任何单位或个人认为本站内容涉嫌侵犯其合法权益，请及时通过邮件联系，本站将依法进行处理。
-7. 因不可抗力（如黑客攻击、系统维护、网络故障等）导致的服务中断或数据丢失，本站不承担责任。
-8. 凡以任何方式直接或间接使用本站者，视为自愿接受本声明的全部条款。
+- **本机数据**：阅读清单、私人摘录、阅读想法、偏好及部分工具状态保存在浏览器中。阅读工作台不把清单、摘录与想法上传到服务器，可主动导出手记和 JSON 备份；清除浏览器数据会移除未备份内容。
+- **公开互动**：评论、留言、动态互动、实时房间等按功能写入对应在线服务。提交前应注意该区域的公开范围，不要发布个人敏感信息。
+- **登录与账号**：GitHub 登录通过 OAuth 获取身份资料；站内账号及相关资料使用站点账号服务。密码、验证码、会话与服务端配置按对应功能处理。
+- **文件与媒体**：上传图床的文件可能生成公开链接；实时传输、会议、语音识别及其他媒体功能的权限和数据流以页面操作说明为准。
+- **外部请求**：访问统计、评论、地图、翻译、媒体与 AI 等功能可能向其服务商发起请求。浏览器本地保存的阅读记录与全站已有在线服务属于不同的数据范围。
 
-## 使用条款
+## 使用的服务与资源
 
-1. 本站资源仅供个人学习、研究或非商业用途使用。
-2. 未经明确授权，不得将本站内容用于商业用途或进行再分发。
-3. 使用本站服务时，应遵守中华人民共和国相关法律法规，包括但不限于：
-   - 《互联网信息服务管理办法》
-   - 《中华人民共和国电信条例》
-   - 《计算机信息网络国际联网安全保护管理办法》
-   - 《互联网电子公告服务管理规定》
-4. 禁止利用本站从事任何违反法律法规或侵害他人合法权益的行为。
+下表列出主要依赖；具体功能是否发起请求取决于所访问页面、设置和启用的服务。
 
-## 转载与使用协议
+| 服务或资源 | 用途 |
+| --- | --- |
+| [Astro](https://astro.build/) / [GitHub Pages](https://pages.github.com/) | 内容构建与静态站点托管 |
+| [Vercel](https://vercel.com/) | 独立 Serverless API |
+| [Firebase Realtime Database](https://firebase.google.com/products/realtime-database) | 公开互动、账号资料、协作与实时房间 |
+| [GitHub OAuth](https://docs.github.com/apps/oauth-apps) / [GitHub API](https://docs.github.com/rest) | 身份授权、仓库信息及相关功能 |
+| [Cloudflare R2](https://developers.cloudflare.com/r2/) | 文件存储与上传 |
+| [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/) / [Resend](https://resend.com/) | 人机验证与邮件验证码 |
+| [giscus](https://giscus.app/zh-CN) | 文章底部评论 |
+| [不蒜子](https://www.busuanzi.cc/) | 页面访问统计 |
+| [KaTeX](https://katex.org/) / [Mermaid](https://mermaid.js.org/) / [highlight.js](https://highlightjs.org/) | 公式、图表与代码展示；代码也使用构建期 Shiki 高亮 |
+| [Font Awesome Free](https://fontawesome.com/license/free) / [霞鹜文楷](https://github.com/lxgw/LxgwWenKai) | 图标与可选阅读字库；默认阅读字体来自霞鹜文楷 |
+| [天地图](https://www.tianditu.gov.cn/) / [Agora](https://www.agora.io/) | 地图与部分音视频功能 |
+| [uapis](https://uapis.cn/) / [北梦 API](https://api.b52m.cn/) | 视频、聚合内容或可选访客问候；IP 问候默认关闭 |
+| [妖狐 API](https://api.yaohud.cn/) / [慕名 API](https://api.suol.cc/) / [TextDB](https://textdb.online/) | 数字人文字与语音、贴吧等特定页面 |
+| 用户配置的 AI、搜索或翻译服务 | 根据具体页面、模型、端点及语言选择提供能力 |
 
-- **文章内容**：默认采用 [知识共享 署名-非商业性使用-相同方式共享 4.0 国际许可协议（CC BY-NC-SA 4.0）](https://creativecommons.org/licenses/by-nc-sa/4.0/)。
-- **站点代码**：采用 [GNU General Public License v3.0（GPLv3）](https://www.gnu.org/licenses/gpl-3.0.html) 开源协议。
-- **特别说明**：如需商业使用或特殊授权，请通过邮件联系获取书面许可。
+历史文章与动态还可能引用 Bing、Postimages、GitHub 图床等外部图片。外链内容及第三方服务的可用性、条款和数据处理规则由相应提供方决定。
 
-## 版权投诉
+## 使用与反馈
 
-本站尊重知识产权，如您认为本站内容侵犯了您的合法权益，请提供以下材料发送至 **[jsxzznz@163.com](mailto:jsxzznz@163.com)**：
+本站内容用于个人分享、学习与实验，工具结果和文章观点不保证适用于所有场景。请根据具体用途自行核对信息，并在发布内容或处理文件时尊重他人的权利。实验性功能、外部接口和在线房间可能因网络、配置或维护而暂时不可用。
 
-1. 权利人的身份证明与权属证明
-2. 涉嫌侵权的具体内容链接（URL）
-3. 侵权情况的简要说明及相关证据
+如发现错误、失效链接、数据问题或疑似侵权内容，请通过[邮件](mailto:jsxzznz@163.com)或[仓库 Issues](https://github.com/lsqkk/lsqkk.github.io/issues)联系。版权相关反馈请附上具体链接、权利依据与简要说明，便于核实处理。
 
-我们将在收到有效投诉后 **5 个工作日内** 进行核实并处理。
-
-## 网站资质
-
-- **软件著作权**：“夸克博客APP”已登记软件著作权，登记号见下图：
-
-  ![软著](/assets/img/copyright.png)
-
-- **备案情况**：本站为个人非商业性质博客，托管于 GitHub Pages（服务器位于境外），不涉及盈利行为，依据中国现行规定无需进行 ICP 备案。
+本页说明不替代各许可证完整文本和页面具体提示。
 
 ---
 
-**最后更新**：2026年3月15日
-
-**维护者**：[蓝色奇夸克](https://github.com/lsqkk)
-
-**联系邮箱**：[jsxzznz@163.com](mailto:jsxzznz@163.com)
-
-**网站主页**：[https://lsqkk.github.io](https://lsqkk.github.io)
-
-**网站仓库**：[https://github.com/lsqkk/lsqkk.github.io](https://github.com/lsqkk/lsqkk.github.io)
+说明维护日期：2026-11-04。文章初始发布日期保留在页首。

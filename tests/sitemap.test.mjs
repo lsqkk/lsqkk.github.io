@@ -11,8 +11,12 @@ async function fixture(t) {
   t.after(()=>fs.rm(root,{recursive:true,force:true}));
   const index='<sitemapindex><sitemap><loc>https://example.test/sitemap-0.xml</loc></sitemap></sitemapindex>';
   await fs.mkdir(path.join(root,'json'));
+  await fs.mkdir(path.join(root,'posts'));
+  const canonical='https://example.test/posts/test';
+  const article='<body class="post-layout-page"><link rel="canonical" href="'+canonical+'"><meta property="og:url" content="'+canonical+'"><script type="application/ld+json">'+JSON.stringify({'@type':'BlogPosting',headline:'Test article',mainEntityOfPage:{'@id':canonical}})+'</script></body>';
   await Promise.all(Object.entries({
     'index.html':'<!doctype html><title>Test</title>',
+    'posts/test.html':article,
     'sitemap-index.xml':index,
     'sitemap.xml':index,
     'sitemap-0.xml':'<urlset>'+['/','/tool/','/games/','/a/','/blog/'].map(route=>'<url><loc>https://example.test'+route+'</loc></url>').join('')+'</urlset>',
@@ -39,4 +43,20 @@ test('an empty sitemap cannot pass verification',async t=>{
 test('an index must not read child files outside the build directory',async t=>{
   const f=await fixture(t);const xml='<sitemapindex><loc>https://example.test/%2e%2e%2foutside.xml</loc></sitemapindex>';
   await fs.writeFile(path.join(f.root,'sitemap-index.xml'),xml);await fs.writeFile(path.join(f.root,'sitemap.xml'),xml);assert.notEqual(f.run().status,0);
+});
+
+test('article metadata rejects a malformed canonical route',async t=>{
+  const f=await fixture(t),file=path.join(f.root,'posts/test.html');
+  await fs.writeFile(file,(await fs.readFile(file,'utf8')).replaceAll('/posts/test','/test'));
+  const result=f.run();assert.notEqual(result.status,0);assert.match(result.stderr,/Incorrect article canonical/);
+});
+test('article metadata rejects invalid JSON-LD',async t=>{
+  const f=await fixture(t),file=path.join(f.root,'posts/test.html');
+  await fs.writeFile(file,(await fs.readFile(file,'utf8')).replace(/<script[^>]*>[\s\S]*?<\/script>/,'<script type="application/ld+json">{broken}</script>'));
+  assert.notEqual(f.run().status,0);
+});
+test('article metadata rejects inconsistent share URLs',async t=>{
+  const f=await fixture(t),file=path.join(f.root,'posts/test.html');
+  await fs.writeFile(file,(await fs.readFile(file,'utf8')).replace('property="og:url" content="https://example.test/posts/test"','property="og:url" content="https://example.test/wrong"'));
+  const result=f.run();assert.notEqual(result.status,0);assert.match(result.stderr,/Open Graph URL differs/);
 });

@@ -1,81 +1,42 @@
 ---
-import fs from "node:fs/promises";
-import path from "node:path";
 import LuxuryBackground from "../../components/LuxuryBackground.astro";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-
-const PROJECT_ROOT = process.cwd();
-
-// 1. 新页面通常会读取 nav.json，供 nav.js 使用
-const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
-const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
-
-// 2. 如果页面有构建期需要的本地 JSON，可按需取消注释并修改路径
-// const pageDataPath = path.join(PROJECT_ROOT, "assets", "pages", "tool", "demo", "demo.json");
-// const pageData = JSON.parse(await fs.readFile(pageDataPath, "utf8"));
-
-// 3. 页面级元信息
-const pageName = "页面名";
-const pageNameEn = "PAGE";
-const pageTitle = `${pageName} / ${pageNameEn} - ${SITE_TITLE}`;
-const pageDescription = `${SITE_TITLE} 的${pageName}页面描述。`;
-const currentYear = new Date().getFullYear();
+import navConfig from "../../config/json/nav.json";
+import {SITE_TITLE, SITE_LOGO_URL, SITE_URL} from "@siteConfig";
+// This file is a source template, outside src/pages. Adjust relative imports after copying.
+const pageName = "页面名称";
+const description = "用一句话说明页面解决什么问题。";
 ---
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{pageTitle}</title>
-    <meta name="description" content={pageDescription} />
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
-    <link rel="stylesheet" href="/assets/css/basic.css" />
-
-    <!-- 按页面需要选择保留 -->
-    <link rel="stylesheet" href="/assets/css/cursor.css" />
-    <link rel="stylesheet" href="/assets/css/fa-local.css" />
-
-    <!-- 页面专属样式建议放在 assets/pages/... -->
-    <link rel="stylesheet" href="/assets/pages/section/demo/demo.css" />
-
-    <!--
-      玻璃卡片系统：背景用 var(--glass-bg)，边框用 var(--line)，边缘光用 var(--glass-edge)
-      变量自动适应深色模式，无需写 body.dark-mode 覆盖。
-      完整文档见 src/docs/UI/GlassSystem.md
-    -->
-    <!-- 如果页面脚本需要构建期预载数据，就在这里注入 -->
-    <script is:inline define:vars={{ navConfig }}>
-      window.__NAV_CONFIG__ = navConfig;
-      // window.__PAGE_DATA__ = pageData;
-    </script>
-
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
-  </head>
-
-  <body class="luxury-body">
-    <LuxuryBackground />
-
-    <main class="container">
-      <h1 class="page-title">{pageName} / {pageNameEn}</h1>
-
-      <!-- 主内容区：建议使用带页面前缀的类名，避免与公共样式冲突 -->
-      <section class="glass-card demo-section">
-        <h2 class="demo-section-title">页面简介</h2>
-        <p class="demo-section-text">
-          这里放页面主体内容。若页面是列表、工具或检索页，可在此继续拆分为多个 section。
-        </p>
-      </section>
-
-      <!-- 如页面内容较完整、需要正式页尾，可保留版权区 -->
-      <div class="copyright">
-        <a href="/posts/copyright">© 2024 - {currentYear} {pageName} / {SITE_TITLE} All rights reserved.</a>
-      </div>
-    </main>
-
-    <!-- 页面专属脚本 -->
-    <script is:inline src="/assets/pages/section/demo/demo.js"></script>
-
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageName} - {SITE_TITLE}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={new URL(Astro.url.pathname, SITE_URL)} />
+  <link rel="icon" href={SITE_LOGO_URL} />
+  <link rel="stylesheet" href="/assets/css/basic.css" />
+  <link rel="stylesheet" href="/assets/css/nav.css" />
+  <script is:inline define:vars={{navConfig}}>window.__NAV_CONFIG__ = navConfig;</script>
+  <script is:inline defer src="/assets/js/nav.js"></script>
+</head>
+<body class="luxury-body">
+  <LuxuryBackground />
+  <main class="example-shell">
+    <header><h1>{pageName}</h1><p>{description}</p></header>
+    <section aria-labelledby="example-title">
+      <h2 id="example-title">主要内容</h2>
+      <p>在这里实现页面任务；链接使用真实地址，交互提供结果与失败反馈。</p>
+    </section>
+    <footer><a href="/">{SITE_TITLE}</a> · <a href="/posts/copyright">关于本站</a></footer>
+  </main>
+</body>
 </html>
+<style>
+  .example-shell { max-width:1100px; margin:auto; padding:110px var(--page-gutter,24px) 40px; color:var(--text-main); }
+  .example-shell header { margin-bottom:36px; }
+  .example-shell h1 { font-size:clamp(28px,5vw,48px); }
+  .example-shell p { color:var(--text-subtle); line-height:1.8; }
+  .example-shell section { border-top:1px solid var(--line); padding-top:24px; }
+  .example-shell footer { border-top:1px solid var(--line); margin-top:48px; padding-top:20px; font-size:12px; }
+</style>

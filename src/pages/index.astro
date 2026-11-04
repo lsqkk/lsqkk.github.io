@@ -1,4 +1,5 @@
 ---
+import ReadingDeskEntry from "../components/ReadingDeskEntry.astro";
 import LuxuryBackground from "../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import { readFileSync } from "node:fs";
@@ -154,6 +155,7 @@ const homePreloaded = {
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/index.css" />
+    <link rel="stylesheet" href="/assets/css/reading-desk.css" />
     <link rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <script is:inline define:vars={{ navConfig, homePreloaded, popups }}>
       window.__NAV_CONFIG__ = navConfig;
@@ -228,6 +230,7 @@ const homePreloaded = {
               )}
             </section>
         )}
+        <ReadingDeskEntry />
         {hasMainSection("recent_articles") && (
             <section class="home-block home-panel content-section">
               <div class="section-head recent-header">

@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadHomeConfig();
 
     // 先加载市级俏皮话数据
-    await loadCityBanterData();
+    if (document.getElementById('welcome-info')) await loadCityBanterData();
 
     // 然后加载其他内容 - 添加存在性检查
     if (document.getElementById('recent-posts')) {
@@ -177,8 +177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         getVisitorInfo(); // 此时cityBanterData应该已经加载完成
     }
 
-    setInterval(updateTime, 1000);
-    setInterval(updateGreeting, 60000);
+    if (document.getElementById('hours')) setInterval(updateTime, 1000);
+    if (document.getElementById('greeting')) setInterval(updateGreeting, 60000);
 
     initFooterStats();
 });

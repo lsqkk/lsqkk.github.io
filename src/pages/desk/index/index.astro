@@ -1,0 +1,74 @@
+---
+import { readFileSync } from 'node:fs';
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
+import navConfig from '../../../config/json/nav.json';
+import paths from '../../../config/reading-paths.json';
+import { minutes } from '../../../../assets/js/reading-desk-store.mjs';
+const posts = JSON.parse(readFileSync(process.cwd()+'/posts/posts.json','utf8'));
+const articles = posts.filter(post=>!['about.md','copyright.md'].includes(post.file)).map(post=>({...post,url:'/posts/'+post.file.replace(/\.md$/,''),minutes:minutes(post.wordCount)}));
+const routes = paths.map(route=>({...route,steps:route.steps.map(step=>({...step,post:articles.find(post=>post.file===step.file)})).filter(step=>step.post)}));
+---
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>拾页 · 阅读工作台 - {SITE_TITLE}</title>
+  <meta name="description" content="用手边的几分钟发现一篇好文章，沿主题路线阅读，把原文和自己的想法一起留下。拾页，一张属于你的阅读桌。" />
+  <link rel="canonical" href={new URL('/desk/',SITE_URL)} /><link rel="icon" href={SITE_LOGO_URL} />
+  <link rel="stylesheet" href="/assets/css/basic.css" /><link rel="stylesheet" href="/assets/css/nav.css" /><link rel="stylesheet" href="/assets/css/reading-desk.css" />
+  <script is:inline define:vars={{navConfig}}>window.__NAV_CONFIG__ = navConfig;</script>
+  <script is:inline defer src="/assets/js/nav.js"></script>
+  <noscript><style>.desk-workspace,.desk-notes,.desk-backup,.desk-path-actions button,.desk-sections a:not([href="#paths"]){display:none!important}</style></noscript>
+</head>
+<body class="desk-page">
+  <a href="#desk-main" class="desk-skip">跳到阅读工作台</a>
+  <main class="desk-shell" id="desk-main">
+    <header class="desk-hero">
+      <div class="desk-eyebrow"><span aria-hidden="true">⌑</span> QUARK / A PLACE FOR YOUR CURIOSITY</div>
+      <div class="desk-hero-line"><h1>拾页<span>把好奇心，<br />留成下一页。</span></h1>
+        <div class="desk-colophon"><span>READ A LITTLE.<br />KEEP SOMETHING.</span><p>一张属于你的阅读桌。<br />不必一次读完，也不用空手离开。</p></div>
+      </div>
+      <nav class="desk-sections" aria-label="工作台区域"><a href="#discover"><small>01</small> 此刻读什么 <span>↘</span></a><a href="#paths"><small>02</small> 沿线探索 <span>↘</span></a><a href="#notes"><small>03</small> 我的摘录 <span data-note-count>0</span></a></nav>
+    </header>
+    <p class="desk-storage-note">清单和摘录仅保存在此浏览器，无需登录。换设备前，可在页底导出备份。</p>
+    <noscript><p class="desk-notice">启用 JavaScript 后可按时间选读、管理清单与摘录。下方主题路线仍可直接阅读。</p></noscript>
+    <div class="desk-workspace">
+      <section class="desk-discover" id="discover" aria-labelledby="discover-title">
+        <div class="desk-section-label"><span>01 / 留一点时间给阅读</span><span aria-hidden="true">◷</span></div>
+        <h2 id="discover-title">你现在，有几分钟？</h2>
+        <div class="desk-budget"><label for="desk-time">大约 <output id="desk-time-value" for="desk-time">10</output> 分钟</label><input id="desk-time" type="range" min="3" max="35" step="1" value="10" /><div class="desk-range-labels" aria-hidden="true"><span>片刻 · 3 min</span><span>沉浸 · 35 min</span></div></div>
+        <div class="desk-topics" role="group" aria-label="按兴趣筛选"><button type="button" data-topic="all" aria-pressed="true">随处看看</button><button type="button" data-topic="build" aria-pressed="false">动手创造</button><button type="button" data-topic="science" aria-pressed="false">理解世界</button><button type="button" data-topic="human" aria-pressed="false">人间观察</button></div>
+        <div class="desk-result-head"><p id="desk-match-status" role="status">依据字数估算，图表与动手实践请额外留时。</p><button type="button" id="desk-shuffle">换一组 ↻</button></div>
+        <div id="desk-matches" class="desk-matches"></div>
+        <a class="desk-text-link" href="/posts">或按自己的节奏，浏览全部文章 ↗</a>
+      </section>
+      <aside class="desk-queue" aria-labelledby="queue-title">
+        <div class="desk-section-label"><span>下次，从这里开始</span><span aria-hidden="true">↗</span></div>
+        <div class="desk-queue-title"><h2 id="queue-title" tabindex="-1">待读书签</h2><span id="desk-queue-count">00</span></div>
+        <p id="desk-queue-summary">给下一次打开博客，留一个入口。</p>
+        <div id="desk-queue-list" role="region" aria-label="待读清单，可上下滚动" tabindex="0"></div>
+        <div class="desk-queue-foot"><span aria-hidden="true">⌑</span><p>文章页也能加入清单。<br />读到喜欢的句子，选中后点「摘录到拾页」。</p></div>
+      </aside>
+    </div>
+    <section class="desk-paths" id="paths" aria-labelledby="paths-title">
+      <div class="desk-section-label"><span>02 / 让文章之间发生连接</span><span>READING PATHS</span></div>
+      <div class="desk-section-heading"><h2 id="paths-title">不止读一篇，<br />沿一个问题走走。</h2><p>这里的连接来自编辑选择，<br />每一步，都写下了为什么。</p></div>
+      <div class="desk-path-grid">{routes.map(route=><article class="desk-path">
+        <div class="desk-path-top"><span>{route.number}</span><span>{route.steps.length} 篇 · 约 {route.steps.reduce((sum,step)=>sum+step.post.minutes,0)} 分钟</span></div>
+        <h3>{route.title}</h3><p class="desk-path-description">{route.description}</p>
+        <ol>{route.steps.map(step=><li><a href={step.post.url}>{step.post.title}<span aria-hidden="true">↗</span></a><p>{step.why}</p><small>约 {step.post.minutes} 分钟</small></li>)}</ol>
+        <div class="desk-path-actions"><button type="button" data-add-path={route.id}>整条路线加入待读 +</button><a href={route.tool.href}>{route.tool.label} ↗</a></div>
+      </article>)}</div>
+    </section>
+    <section id="notes" class="desk-notes" aria-labelledby="notes-title">
+      <div class="desk-section-label"><span>03 / 读过之后，留下什么</span><span>FIELD NOTES</span></div>
+      <div class="desk-section-heading"><div><h2 id="notes-title">值得留下的，<br />还有你自己的想法。</h2><p>摘录保留原文出处；想法留给自己。编辑后会自动保存在此浏览器。</p></div><button type="button" id="desk-export-md">导出阅读手记 ↓</button></div>
+      <div id="desk-notes-list"></div>
+    </section>
+    <footer class="desk-footer"><div><a href="/">← {SITE_TITLE}</a><p>阅读可以很轻，留下的东西可以很重。</p></div><div class="desk-backup"><button type="button" id="desk-export-json">备份 JSON</button><label for="desk-import" class="desk-import-label">导入备份<input type="file" id="desk-import" accept=".json,application/json" /></label><small>导入会合并，不覆盖已有内容。最多 200 篇待读 / 500 条摘录。</small></div></footer>
+    <div class="desk-toast" role="status" aria-live="polite" id="desk-status" hidden></div>
+  </main>
+  <script is:inline type="application/json" id="desk-data" set:html={JSON.stringify({articles,routes}).replace(/</g,'\\u003c')}></script>
+  <script is:inline type="module" src="/assets/js/reading-desk.js"></script>
+</body>
+</html>

@@ -768,7 +768,7 @@
     }
 
     function bindSelectionEvents() {
-        document.addEventListener('mouseup', () => {
+        const refreshSelection = () => {
             setTimeout(() => {
                 const selection = window.getSelection();
                 if (!selection || !selection.rangeCount || selection.isCollapsed) {
@@ -802,6 +802,17 @@
                 state.pendingText = text;
                 showPopover(range.getBoundingClientRect());
             }, 0);
+        };
+        document.addEventListener('mouseup', refreshSelection);
+        document.addEventListener('keyup', (event) => { if (event.key === 'Shift' || event.key.startsWith('Arrow')) refreshSelection(); });
+        document.addEventListener('touchend', () => setTimeout(refreshSelection, 200), { passive: true });
+        document.addEventListener('keydown', (event) => {
+            if (ui.popover.style.display !== 'flex') return;
+            if (event.key === 'Escape') hidePopover();
+            if (event.key === 'Tab' && !event.shiftKey && !ui.popover.contains(document.activeElement)) {
+                event.preventDefault();
+                ui.popover.querySelector('button').focus();
+            }
         });
 
         document.addEventListener('mousedown', (evt) => {
@@ -862,9 +873,12 @@
     function createUI() {
         ui.popover = document.createElement('div');
         ui.popover.className = 'post-annotation-popover';
+        ui.popover.setAttribute('role', 'toolbar');
+        ui.popover.setAttribute('aria-label', '所选文字操作');
         ui.popover.innerHTML = `
             <button type="button" data-action="like">点赞这段</button>
             <button type="button" data-action="comment">评论这段</button>
+            <button type="button" data-action="desk">摘录到拾页</button>
         `;
         document.body.appendChild(ui.popover);
 
@@ -946,6 +960,12 @@
                 buttons.forEach((btn) => { btn.disabled = false; });
             }
         }
+
+        ui.popover.querySelector('[data-action="desk"]').addEventListener('mousedown', (event) => event.preventDefault());
+        ui.popover.querySelector('[data-action="desk"]').addEventListener('click', () => {
+            document.dispatchEvent(new CustomEvent('quark:clip-selection', { detail: { text: state.pendingText } }));
+            hidePopover();
+        });
 
         ui.popover.querySelector('[data-action="like"]').addEventListener('click', () => handlePopoverAction(true));
         ui.popover.querySelector('[data-action="comment"]').addEventListener('click', () => handlePopoverAction(false));

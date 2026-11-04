@@ -13,12 +13,17 @@
     "gen:rss": "node scripts/generate-rss.mjs",
     "sync:public": "node scripts/sync-public.mjs",
     "typecheck": "tsc -p jsconfig.json --noEmit",
-    "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check assets/pages/blog/lyb/lyb.js && node --check assets/pages/tool/spotdiff/spotdiff.js",
+    "check:syntax": "node --check assets/js/index.js && node --check assets/js/popup.js && node --check assets/js/message.js && node --check assets/pages/blog/lyb/lyb.js && node --check assets/pages/tool/spotdiff/spotdiff.js && node --check assets/js/reading-desk.js && node --check assets/js/reading-desk-store.mjs && node --check assets/js/post-reading-desk.js && node --check assets/js/reading-desk-entry.js",
     "check:words": "node scripts/verify-spy-words.mjs",
     "test:spy-signal": "node --test \"tests/spy-signal/**/*.test.mjs\"",
     "test:sitemap": "node --test tests/sitemap.test.mjs",
     "test:ui": "node tests/ui/site-smoke.cjs",
-    "test:ui:polish": "node tests/ui/site-polish.cjs"
+    "test:ui:polish": "node tests/ui/site-polish.cjs",
+    "test:desk": "node --test tests/reading-desk.test.mjs",
+    "test:ui:desk": "node tests/ui/reading-desk.cjs",
+    "test:ui:followup": "node tests/ui/ui-followup.cjs",
+    "check:docs": "node scripts/verify-docs.mjs",
+    "demo:capture": "node scripts/capture-demo.cjs"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",
@@ -32,5 +37,9 @@
     "@aws-sdk/client-s3": "^3.888.0",
     "@aws-sdk/s3-request-presigner": "^3.888.0",
     "firebase-admin": "^12.0.0"
-  }
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "license": "AGPL-3.0-only"
 }

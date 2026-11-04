@@ -343,12 +343,12 @@
       <content:encoded><![CDATA[关于我 我是蓝色奇夸克 一名永远在路上的求知者，一个相信技术有温度的理想家。 “无穷的远方，无数的人们，都和我有关” 这句箴言，是我理解世界的方式，也是我搭建这个博客的初心。 从焦虑到创造 这个博客的诞生，始于一份数字时代的焦虑——那些在Markdown中流淌的思考碎片，需要一个安放灵魂的家园。 在GitHub的海洋里，我找到了这片自留地。 如今，AI的浪潮正以惊人的速度重塑着我们的世界。从两年前的“AI元年”到今日DeepSeek R]]></content:encoded>
     </item>
     <item>
-      <title>关于本站 &amp; 版权声明</title>
+      <title>关于本站与版权声明</title>
       <link>https://lsqkk.github.io/posts/copyright</link>
       <guid isPermaLink="true">https://lsqkk.github.io/posts/copyright</guid>
       <pubDate>Fri, 31 Jan 2025 16:00:00 GMT</pubDate>
       <description>网站</description>
-      <content:encoded><![CDATA[关于本站 &amp; 版权声明 网站简介 夸克博客（Quark Blog）是由站主 蓝色奇夸克 独立开发与维护的个人技术博客，基于原生前端技术栈（HTML/CSS/JavaScript + Canvas）+ Astro 构建，部署于 GitHub Pages，并通过 Firebase RTDB、Vercel 与自有域名等提供增强支持。本站致力于探索在静态站点中实现动态功能的可行性，融合实时数据库、音视频推流、WebRTC 通信、统一账号与登录中]]></content:encoded>
+      <content:encoded><![CDATA[关于本站与版权声明 夸克博客（Quark Blog）是 维护的个人网站，记录学习、生活与思考，也提供浏览器工具、多人游戏和前端实验。 · · · 网站如何运行 页面由 Astro 根据 Markdown、JSON 与组件生成，交互主要使用原生 JavaScript、CSS、Canvas 和 WebRTC。静态文件部署在 GitHub Pages；需要在线服务的功能通过 Vercel Serverless、Firebase Realtim]]></content:encoded>
     </item>
     <item>
       <title>摘不下的面具</title>

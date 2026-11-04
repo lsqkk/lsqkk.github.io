@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path');
 let playwright;try{playwright=require('playwright')}catch{const {execFileSync}=require('node:child_process');const root=execFileSync('npm.cmd',['root','-g'],{encoding:'utf8',shell:true}).trim();playwright=require(path.join(root,'playwright'))}
-const base=process.env.BASE_URL||'http://127.0.0.1:4323';
+const base=process.env.BASE_URL||'http://127.0.0.1:4321';
 (async()=>{const browser=await playwright.chromium.launch();let count=0;const check=(name,ok)=>{assert(ok,name);count++};try{
 for(const theme of ['light','dark'])for(const width of [320,390,768,1440]){
 const ctx=await browser.newContext({viewport:{width,height:900},colorScheme:theme,reducedMotion:'reduce'});

@@ -1,38 +1,18 @@
-# Firebase RTDB 配置调用说明
+# Firebase RTDB 配置
 
-## 功能概述
-通过 `__API_BASE__/api/firebase-config` 动态注入 Firebase 配置，避免在前端硬编码敏感信息。推荐搭配 `assets/js/firebase-ready.js` 使用，确保配置与 SDK 就绪后再初始化。
+`/api/firebase-config` 提供浏览器配置脚本；`assets/js/firebase-ready.js` 统一加载依赖、等待配置并复用 Firebase 实例。
 
-## 推荐用法（QuarkFirebaseReady）
-### 1. HTML 中引入
-```html
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+~~~html
 <script src="__API_BASE__/api/firebase-config?v=1"></script>
 <script src="/assets/js/firebase-ready.js"></script>
-```
+~~~
 
-### 2. JS 中初始化
-```javascript
-async function initDb() {
-  if (!window.QuarkFirebaseReady) throw new Error('Firebase就绪模块未加载');
-  const database = await window.QuarkFirebaseReady.ensureDatabase({ loadConfig: true });
-  // database 即 firebase.database()
-  return database;
-}
-```
+~~~js
+const database = await window.QuarkFirebaseReady.ensureDatabase({loadConfig:true});
+~~~
 
-## 传统用法（不推荐）
-如果必须自行初始化，确保在 `firebaseConfig` 注入完成后执行。
-```javascript
-if (typeof firebaseConfig !== 'undefined') {
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-}
-```
+页面需处理配置请求、SDK 或数据库权限失败，不让可独立使用的本地功能一起卡住。避免重复初始化或自己轮询全局变量。
 
-## 重要说明
-- 必须使用 `__API_BASE__/api/firebase-config`，不要写死 `api.130923.xyz`。
-- `firebase-ready.js` 会负责等待配置加载并保证单例初始化，建议所有新页面使用。
-- 如需切换项目，只需在 Vercel 环境变量中更新配置，无需改前端。
-> ⚠ **白名单提示**：域名变更需同步更新 `api/firebase-config.js` 的允许列表，否则配置注入会被拒绝。
+浏览器配置中的 API key、项目 ID 和数据库 URL 可以被客户端读取，不能当作服务端秘密。`FIREBASE_SERVICE_ACCOUNT` / `FIREBASE_SERVICE_ACCOUNT_JSON` 仅供 Serverless Admin SDK 使用，不返回给前端。数据访问的最终边界是数据库规则与处理器权限。
+
+来源设置在 `api/_cors.js`，环境变量见[部署说明](../迁移部署说明.md)。新增房间路径需在实际 Firebase 项目中设置规则；不要从“前端能拿到配置”推断所有路径都允许读写。

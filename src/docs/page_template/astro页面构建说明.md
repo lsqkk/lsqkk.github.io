@@ -1,291 +1,42 @@
-# Astro 页面构建说明
-
-设计或生成新页面前，应先阅读仓库根目录 [CLAUDE.md](/CLAUDE.md) 与 `src/docs/` 中相关说明，优先以当前代码结构和已有页面实践为准，不延续过时写法。
-
-本文档主要面向 `src/pages/**/*.astro` 新页面，尤其适用于独立功能页、聚合页、工具页、实验页等未使用独立 Layout 的场景。
-
-## 1. 页面放置与资源目录
-
-### 页面路由
-- Astro 路由文件放在 `src/pages/`
-- 路由目录结构应直接反映最终 URL，例如：
-  - `src/pages/tool/demo/index/index.astro` -> `/tool/demo`
-  - `src/pages/a/live/assistant.astro` -> `/a/live/assistant`
-
-### 页面专属资源
-- 页面专属 JS / CSS / JSON 统一放在 `assets/pages/` 的对应分区中，不要混放到 `src/pages/`
-- 当前主要分区：
-  - `assets/pages/a/`
-  - `assets/pages/blog/`
-  - `assets/pages/games/`
-  - `assets/pages/tool/`
-- 若页面需要构建期读取 JSON，可直接在 frontmatter 中从仓库源目录读取
-- 若页面需要运行时读取 JSON，应通过 `fetch('/json/...')` 或静态资源路径真实读取，禁止模拟数据
-
-### 不要手改的目录
-- 不要直接修改：
-  - `public/`
-  - `dist/`
-  - `posts/posts.json`
-  - `public/json/posts.json`
-  - `dist/json/site-pages.json`
-
-## 2. 新页面的默认开发方式
-
-本仓库当前大量页面并未统一套 Layout，而是直接在 `.astro` 中：
-
-1. 在 `---` frontmatter 里读取本地配置或数据
-2. 导入背景组件与站点常量
-3. 在 `<head>` 中引入公共样式与页面专属样式
-4. 通过 `define:vars` 将构建期数据注入到 `window.__XXX__`
-5. 在 `<body>` 中放背景、主体容器与页面脚本
-
-因此，新页面默认也应延续这一模式，除非该页明显更适合复用现有 Layout。
-
-同时，在项目读取过程中，如果发现有若干页面可合并一套复用 Layout ，可直接抽离并加以修改。本仓库允许一切提升代码复用的改进。
-
-## 3. Frontmatter 规范
-
-### 建议保留的通用导入
-
-```astro
----
-import fs from "node:fs/promises";
-import path from "node:path";
-import LuxuryBackground from "../../../components/LuxuryBackground.astro";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-
-const PROJECT_ROOT = process.cwd();
-const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
-const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
-
-const pageTitle = `页面中文名 - ${SITE_TITLE}`;
-const pageDescription = `${SITE_TITLE} 的页面描述`;
-const currentYear = new Date().getFullYear();
----
-```
-
-### 实际约定
-- `process.cwd()` 作为仓库根目录起点
-- 配置文件优先从源码目录读取，例如：
-  - `src/config/json/nav.json`
-  - `src/config/json/index.json`
-  - `assets/pages/.../*.json`
-  - `assets/md/*.md`
-  - `posts/posts.json`
-- 站点标题与图标统一优先使用 `@siteConfig`
-- 页面标题通常写成：
-  - `页面名 - ${SITE_TITLE}`
-  - `页面名 / EN - ${SITE_TITLE}`
-  - `页面名 | 别名 - ${SITE_TITLE}`
-
-### 读取本地数据的建议
-- 构建期就确定的数据：在 frontmatter 里 `fs.readFile + JSON.parse`
-- 页面首屏必须立即用到的数据：优先构建期注入
-- 数据量较大或需要用户操作后再加载：前端脚本中按需 `fetch`
-- Markdown 文本若需要预解析，可在 frontmatter 中先处理，再以 `set:html` 输出
-
-## 4. Head 区域通用约定
-
-### 建议包含的基础标签
-- `<meta charset="UTF-8" />`
-- `<meta name="viewport" content="width=device-width, initial-scale=1.0" />`
-- `<title>{pageTitle}</title>`
-- `<meta name="description" content={pageDescription} />`
-- `<link rel="icon" href={SITE_LOGO_URL} type="image/png" />`
-- `<link rel="stylesheet" href="/assets/css/basic.css" />`
-
-### 按需引入的常见资源
-- `cursor.css` + `cursor-trail.js`
-  - 页面有明显交互、视觉氛围需要统一时可启用
-  - 如果页面更强调简洁、专业工具属性，可省略
-- `dark-mode.css`（已合并到 `tokens.css`，不再单独引入）
-  - 暗色模式样式已通过 `basic.css` → `tokens.css` 自动加载
-- `style.css`
-  - 首页或沿用全站若干常见样式时再引入
-- Font Awesome CDN
-  - 页面确实使用 `fa-` 图标时再引入
-- `/json/manifest.json`
-  - 不是每页都必须引入，但公共页面或入口页可以保留
-
-### `define:vars` 用法
-当页面 JS 需要直接消费构建期数据时，优先使用：
-
-```astro
-<script is:inline define:vars={{ navConfig, pageData }}>
-  window.__NAV_CONFIG__ = navConfig;
-  window.__PAGE_DATA__ = pageData;
-</script>
-```
-
-约定：
-- 全局变量命名统一使用大写下划线风格，如 `__NAV_CONFIG__`
-- 只注入页面脚本真正需要的数据，避免塞入无关大对象
-- 页面脚本中优先读取预载数据，不重复请求
-
-## 5. 背景与整体视觉
-
-### 背景
-
-当前仓库统一使用 `LuxuryBackground` 组件：
-- 覆盖全站所有页面（功能页、聚合页、文章页、工具页等）
-- 带有渐变背景与导航 hover 数据
-- 需要配合 `body class="luxury-body"` 使用
-- 浅色模式下为柔和底纹，无大面积光晕干扰；深色模式下自动切换为深色背景
-
-### 视觉风格要求
-- 延续本站浊玉玻璃拟态风格，参考UI文档
-
-### 字体与标题
-- 不在 `body` 上重新设置 `font-family`
-- 页面主标题若使用通用样式，可直接使用 `class="page-title"`
-- 标题较正式时推荐写成：`中文名 / ENGLISH`
-
-## 6. Body 结构建议
-
-一个独立页面通常保持以下结构：
-
-```astro
-<body>
-  <LuxuryBackground />
-
-  <div class="container">
-    <h1 class="page-title">页面名 / PAGE</h1>
-    <section class="glass-card">
-      页面主体
-    </section>
-  </div>
-
-  <script is:inline src="/assets/pages/xxx/xxx.js"></script>
-</body>
-```
-
-建议：
-- 页面主体用一层语义明确的外壳，如 `container`、`page-shell`、`search-shell`
-- 复杂页面可拆成 `section` / `article` / `aside`
-- 需要首屏即交互的页面，尽量让主要功能在首屏可见
-
-## 7. 样式与命名规范
-
-### 样式冲突
-- `nav.js` 及相关公共样式会使用一部分通用类名
-- 避免在页面里再定义过于泛化的类名，例如：
-  - `header`
-  - `nav`
-  - `menu`
-  - `title`
-  - `button`
-- 推荐使用带页面语义前缀的命名，例如：
-  - `search-shell`
-  - `tool-card`
-  - `weather-panel`
-
-### 响应式
-- 所有新页面都应至少检查移动端首屏
-- 宽布局请加断点处理，不要让卡片在手机上横向溢出
-- 长表格、代码块、筛选器要考虑窄屏折叠方式
-
-## 8. 脚本与交互规范
-
-### 页面脚本
-- 页面专属脚本放在 `assets/pages/...`
-- 公共能力优先复用 `assets/js/` 中已有脚本
-- Astro 页面中引入脚本时，优先：
-
-```astro
-<script is:inline src="/assets/pages/tool/demo/demo.js"></script>
-```
-### 本地存储
-- 未要求接入 Firebase 或服务端时，用户个性化状态可使用 `localStorage`
-- 键名要专业、稳定、可读，例如：
-  - `quarkWeatherCity`
-  - `quarkToolDraft`
-
-## 9. 数据展示约定
-
-### 长列表
-若页面展示 50 条以上数据，建议至少补齐以下能力中的一项或多项：
-- 分页
-- 懒加载
-- 搜索 / 筛选
-- URL 参数同步，如 `?page=2&tag=Astro`
-
-### 搜索收录与聚合页
-如果新页面需要在导航、聚合页或搜索里出现，通常还需要同步更新：
-- `assets/pages/blog/functions.json`
-- `assets/pages/a/projects.json`
-- `assets/pages/games/game.json`
-- `assets/pages/tool/tool.json`
-- `src/config/json/nav.json`
-
-若修改了这些聚合文件，还应留意：
-- 首页
-- `/posts`
-- `/search`
-- 对应聚合页
-
-## 附：文章 Markdown 内联组件
-
-文章 Markdown 中还支持通过 HTML 标签嵌入特殊交互组件：
-
-### 引用卡片
-
-```html
-<div id="card" title="标题" intro="简介" tag="标签" href="链接" image="图片URL"></div>
-```
-
-### 文件预览（2026-06 新增）
-
-```html
-<filepreview src="/assets/pdf/xxx.pdf" title="显示名称" size="96KB"></filepreview>
-```
-
-详情见 `src/docs/页面和功能/文章内联组件说明.md`
-
-## 10. 版权与页尾
-
-当页面是独立功能页、工具页或用户能长期访问的正式页面时，可在页尾恰当位置增加版权信息：
-
-```astro
-<div class="copyright">
-  <a href="/posts/copyright">© 2024 - {currentYear} 页面名 / {SITE_TITLE} All rights reserved.</a>
-</div>
-```
-
-说明：
-- 是否显示页尾版权，取决于页面密度和视觉方案，不强制每页都加
-- 若用户明确要求或页面较完整正式，建议添加
-
-## 11. 新页面完成后至少检查
-
-### 必查项
-- 页面标题、描述、favicon 是否正确
-- 移动端是否溢出
-- dark mode 下文字与卡片是否可读
-- 是否误用生成目录或错误路径
-- 是否需要同步聚合 JSON、导航或说明文档
-- 是否遵守了本说明和UI文档的其他要求
-
-### 建议执行
-```bash
-npm run build
-```
-
-必要时补充：
-
-```bash
-npm run typecheck
-npm run check:syntax
-```
-
-## 12. 推荐工作流
-
-1. 先确认页面应放在 `src/pages` 的哪个路由层级
-2. 再规划 `assets/pages/...` 下的专属资源目录
-3. 复制 [page_template.astro](/d:/git/lsqkk/lsqkk.github.io/src/docs/page_template/page_template.astro) 作为初始模板
-4. 按页面是否需要构建期数据，决定 frontmatter 读取内容
-5. 引入 `LuxuryBackground` 组件并给 `body` 添加 `class="luxury-body"`
-6. 接入脚本、样式、预载数据
-7. 检查聚合页、搜索与构建结果
-
-若新增的是可复用页面模式，也应顺手更新本目录文档或模板，避免后续继续复制旧写法。
+# Astro 页面构建
+
+页面文件位于 `src/pages/`，专属静态资源位于 `assets/pages/`，共享资源位于 `assets/css/` 和 `assets/js/`。
+
+## 先选择现有布局
+
+- 文章使用 `PostLayout.astro`，内容进入 `posts/` 和 Astro 内容集合。
+- 工具、游戏、实验室和功能导航目录使用 `CatalogLayout.astro`。
+- 实时房间优先核对 `RealtimeRoomLayout.astro` 及已有房间实现。
+- 独立交互应用可使用单独页面，复用导航、站点配置与主题令牌。
+
+[基础模板](page_template.astro)在文档目录中，不参与路由。复制后调整相对导入、页面名称与真实资源；模板本身不引用不存在的 demo JS/CSS。
+
+## 路由和配置
+
+当前生产配置是 `build.format: "file"`。例如 `src/pages/tool/example/index/index.astro` 输出 `tool/example/index.html`，供 `/tool/example/` 访问。开发模式通过适配处理目录入口，生产验收仍使用 build + preview。
+
+站点身份从 `@siteConfig` 获取；导航配置可直接导入 `src/config/json/nav.json`。构建期读取资源时以 `process.cwd()` 或源码 JSON import 为起点，不用编译后 `import.meta.url` 去猜仓库资源路径。
+
+确定的标题、正文和目录入口在 Astro 中输出。只注入客户端真正需要的数据；`define:vars` 可供传统脚本读取。内嵌 JSON 需转义小于号，用户文本不直接写进 HTML。
+
+## 样式
+
+引入 `/assets/css/basic.css`，按需要引入导航与页面样式。主题来自 `tokens.css`，表面使用 `--surface*` / `--line*`。`LuxuryBackground` 实际提供实色背景与导航数据，组件名称不代表装饰材质。
+
+使用页面前缀类名，避免覆盖全局 header、button 等选择器。字体由站点偏好统一管理，输入控件继承，代码保持等宽。图标用本地 `fa-local.css` 或提取的 SVG。
+
+正文、结果与链接默认可见，不依赖入场动画。移动端保留共享 gutter、安全区和实际触控范围；表格与代码使用局部横向滚动。进一步说明见[设计原则](../UI/UIDesignPrinciples.md)。
+
+## 脚本和在线能力
+
+静态资源脚本使用绝对公开路径；ESM 通过 `type="module"` 引入。首次开发或修改 `assets/` 后同步 `public/`，不直接编辑生成目录。
+
+API 地址使用 `__API_BASE__` 或页面明确传入的配置。账号资料通过 `QuarkUserProfile` 获取；Firebase 通过 `QuarkFirebaseReady` 初始化。处理失败、空数据、重复绑定与断线，不将真实云端数据用于布局回归。
+
+弹窗和抽屉处理焦点、Esc、滚动锁和指针可见性。对保存、复制、下载、上传等操作给出成功与失败反馈；本地数据说明保存范围并提供必要的导出。
+
+## 登记与验收
+
+根据页面用途修改相应目录 JSON，核对导航、站内搜索、sitemap 与必要的旧地址跳转。下线入口维护 `retired-pages.json`，而不是留下断链。
+
+运行适用的语法、文档和功能检查，再做正式构建。浏览器检查深浅主题、320px 起的屏宽、键盘操作和失败状态。详细命令见[维护索引](../README.md)。

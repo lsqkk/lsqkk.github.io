@@ -1,27 +1,9 @@
-# GitHub 令牌调用说明
+# GitHub API 与 OAuth 配置
 
-## 功能概述
-通过 `__API_BASE__/api/keys?names=github` 动态获取 GitHub 令牌，避免在前端硬编码泄露。
+GitHub 登录由 `api/github-user.js` 在服务端用 `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` 交换 OAuth code。前端授权入口在 `src/config/json/nav.json`，迁移时同步修改 client_id 和 redirect_uri。
 
-## 重要更新
-图床上传已迁移到 Cloudflare R2，不再依赖 GitHub Token。GitHub Token 仅在需要调用 GitHub API 时使用。
+`api/keys.js` 还提供 `names=github` 的浏览器配置映射，对应 `GITHUB_API_KEY`。该映射与 OAuth 登录不是同一条调用链，不能在文档中把 API token 写成 OAuth 必需项。当前图床上传使用 R2，不依赖 GitHub 上传 token。
 
-## 快速开始
-```html
-<script src="__API_BASE__/api/keys?names=github"></script>
-<script>
-async function fetchRepos() {
-  if (typeof GITHUB_API_KEY === 'undefined') return;
-  const resp = await fetch('https://api.github.com/user/repos', {
-    headers: { Authorization: `Bearer ${GITHUB_API_KEY}` }
-  });
-  const data = await resp.json();
-  console.log(data);
-}
-</script>
-```
+通过配置脚本返回的 token 能在浏览器中读取，不能把它视为隐藏凭据的方案。需要保密或具有写权限的令牌应留在服务端；公开仓库信息优先使用满足需求的公开 API。
 
-## 注意事项
-> ⚠ **白名单提示**：域名变更需同步更新 `api/keys.js` 的允许列表，否则前端无法拿到令牌。
-
-- 令牌更新只需改 Vercel 环境变量 `GITHUB_API_KEY`。
+所有来源设置集中在 `api/_cors.js`。按需调用明确的名称，不请求不使用的映射；服务端环境变量不填写进公开 JSON。

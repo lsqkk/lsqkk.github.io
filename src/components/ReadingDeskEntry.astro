@@ -1,0 +1,12 @@
+---
+interface Props { compact?: boolean; }
+const { compact=false }=Astro.props;
+---
+<section class="desk-home" aria-label="拾页阅读工作台">
+  <div class="desk-home-heading"><h2>拾页 <small>THE READING DESK</small></h2><span class="desk-home-mark" aria-hidden="true">⌑</span></div>
+  <p>{compact?'不确定先读什么？给好奇心留几分钟，按时间选一篇，或沿一条主题路线走走。':'手边有几分钟，就读几分钟。沿一个问题探索，把喜欢的句子和自己的想法一起留下。'}</p>
+  <div class="desk-home-summary" data-desk-home-summary hidden></div>
+  <div class="desk-home-links"><a href="/desk/?time=5">读一小会儿 <span>05′ ↗</span></a><a href="/desk/?time=15">深入读一篇 <span>15′ ↗</span></a><a href="/desk/#paths">沿线探索 <span>→</span></a></div>
+</section>
+
+<script is:inline type="module" src="/assets/js/reading-desk-entry.js"></script>

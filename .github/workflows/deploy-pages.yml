@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Setup Pages
@@ -33,6 +33,11 @@ jobs:
 
       - name: Install deps
         run: npm ci
+
+      - name: Check source and documentation
+        run: |
+          npm run check:syntax
+          npm run check:docs
 
       - name: Build
         run: npm run build

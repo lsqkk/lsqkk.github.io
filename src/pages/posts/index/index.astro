@@ -1,4 +1,5 @@
 ---
+import ReadingDeskEntry from "../../../components/ReadingDeskEntry.astro";
 import LuxuryBackground from "../../../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -23,6 +24,7 @@ const currentYear = new Date().getFullYear();
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/posts.css" />
+    <link rel="stylesheet" href="/assets/css/reading-desk.css" />
     <link rel="stylesheet" href="/assets/css/fa-local.css" />
     <script is:inline define:vars={{ navConfig, postsData }}>
       window.__NAV_CONFIG__ = navConfig;
@@ -42,6 +44,7 @@ const currentYear = new Date().getFullYear();
         <i class="fa-solid fa-rss"></i>
         RSS订阅链接: <a href={SITE_URL + "/posts/rss.xml"} target="_blank">{SITE_URL}/posts/rss.xml</a>
       </h2>
+      <ReadingDeskEntry compact />
       <div id="searchResults" class="search-results"></div>
       <div class="posts-fold-panel" id="tagFilterPanel">
         <button class="posts-fold-toggle" type="button" data-target="tagFilterWrap">

@@ -1,0 +1,17 @@
+---
+import {readFileSync} from 'node:fs';
+import paths from '../config/reading-paths.json';
+const {postPath}=Astro.props;
+const slug=String(postPath).replace(/^\/?posts\//,'').replace(/\.md$/,'').replace(/^\//,'').toLowerCase();
+const route=paths.find(route=>route.steps.some(step=>step.file.replace(/\.md$/,'').toLowerCase()===slug));
+const posts=route?JSON.parse(readFileSync(process.cwd()+'/posts/posts.json','utf8')):[];
+const steps=route?.steps.map(step=>({...step,post:posts.find(post=>post.file===step.file)}))||[];
+---
+{route&&<section class="desk-context" aria-label="沿主题路线继续阅读">
+  <div class="desk-context-head"><span>这篇文章，也在一条路线上</span><a href="/desk/#paths">拾页 / 沿线探索 ↗</a></div>
+  <h2>{route.title}</h2>
+  <ol>{steps.map((step,index)=><li class:list={{'is-current':step.file.replace(/\.md$/,'').toLowerCase()===slug}}>
+    <span aria-hidden="true">{String(index+1).padStart(2,'0')}</span>
+    <div>{step.file.replace(/\.md$/,'').toLowerCase()===slug?<strong aria-current="step">{step.post.title} <small>正在读</small></strong>:<a href={'/posts/'+step.file.replace(/\.md$/,'')}>{step.post.title} ↗</a>}<p>{step.why}</p></div>
+  </li>)}</ol>
+</section>}

@@ -15,6 +15,17 @@
                     "icon": "▤"
                 },
                 {
+                    "name": "拾页 · 阅读工作台",
+                    "categories": [
+                        "阅读",
+                        "本地优先"
+                    ],
+                    "description": "按空闲时间选读、沿主题路线探索，保存摘录与想法，带出处导出阅读手记",
+                    "link": "/desk/",
+                    "target": "_self",
+                    "icon": "⌑"
+                },
+                {
                     "name": "工具箱",
                     "categories": [
                         "实用工具",

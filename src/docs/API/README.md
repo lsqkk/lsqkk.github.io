@@ -1,73 +1,43 @@
-# 常用无服务器 API 调用说明
+# Serverless API
 
-以下为项目内常用 `/api` 接口的功能、方法与配置简述。
+源码在仓库根目录 `api/`，由独立 Vercel 项目提供。前端使用 `src/config/json/api.json` 中的 `apiBase`；静态构建在资源与 HTML 中替换 `__API_BASE__`。本地 Astro 预览不直接运行这些函数。
 
-> ⚠ **白名单提示**：多数 API 有来源白名单校验，域名变更后若未同步更新 `api/*.js` 内的允许列表，前端会直接被拒绝或验证失败。
+## 路由
 
-## /api/keys
-- 作用：向前端注入密钥（如 `TIANDITU_KEY`、`OPENWEATHER_API_KEY` 等）
-- 方法：`GET`
-- 示例：`__API_BASE__/api/keys?names=tianditu`
-- 环境变量：`TIANDITU_KEY`、`OPENWEATHER_API_KEY`、`QUARKCHAT_API_KEY`、`GITHUB_API_KEY`
-- 说明：域名变更需更新 `api/keys.js` 允许列表
+| 方法 / 路由 | 参数与行为 | 源文件 |
+| --- | --- | --- |
+| GET `/api/firebase-config` | 返回浏览器可读 Firebase 配置脚本，配合 `firebase-ready.js` | [firebase-config.js](../../../api/firebase-config.js) |
+| GET `/api/keys?names=tianditu` | 返回指定名称的浏览器可读配置脚本；支持逗号分隔 | [keys.js](../../../api/keys.js) |
+| GET `/api/github-user?code=...` | 用 OAuth code 获取 GitHub 用户资料，服务端使用 client secret | [github-user.js](../../../api/github-user.js) |
+| POST `/api/admin?action=auth` | `{passwordHash}`，返回管理员 token 与过期时间 | [admin.js](../../../api/admin.js) |
+| POST `/api/admin?action=verify` | `{token}`，校验管理员会话 | [admin.js](../../../api/admin.js) |
+| POST `/api/email?action=send` | `{email,purpose}`，发送验证码并返回校验 token | [email.js](../../../api/email.js) |
+| POST `/api/email?action=verify` | `{email,code,token,purpose}`，校验验证码 | [email.js](../../../api/email.js) |
+| GET / POST `/api/db` | GET 查询允许路径；POST `{path,op,value}`，op 为 set / update / remove / push | [db.js](../../../api/db.js) |
+| POST `/api/r2-presign` | `{originalName,contentType,folder}`，返回上传签名与公开地址 | [r2-presign.js](../../../api/r2-presign.js) |
+| POST `/api/turnstile-verify` | `{token,purpose}`，验证人机校验结果 | [turnstile-verify.js](../../../api/turnstile-verify.js) |
+| GET `/api/ip` | 返回请求 IP 相关信息 | [ip.js](../../../api/ip.js) |
+| GET `/api/stream-proxy?url=...` | 媒体流代理 | [stream-proxy.js](../../../api/stream-proxy.js) |
+| POST `/api/stream-proxy?target=...` | 按处理器支持的目标代理 AI 搜索请求 | [stream-proxy.js](../../../api/stream-proxy.js) |
 
-## /api/firebase-config
-- 作用：注入 Firebase 配置
-- 方法：`GET`
-- 配套：`/assets/js/firebase-ready.js`
+管理员与邮箱分别使用同一处理器的 action 参数。路由和字段以对应源码为准，不能根据旧文档推导出独立函数文件。
 
-## /api/admin-auth
-- 作用：管理员密码校验，返回 token
-- 方法：`POST`
-- 参数：`{ passwordHash }`
-- 环境变量：`ADMIN_PASSWORD_HASH`、`ADMIN_SESSION_SECRET`
+## 配置与访问边界
 
-## /api/admin-verify
-- 作用：校验管理员 token
-- 方法：`POST`
-- 参数：`{ token }`
+环境变量按功能配置，清单见[部署说明](../迁移部署说明.md)。来源匹配集中于 [api/_cors.js](../../../api/_cors.js)，各处理器使用的匹配方式并不完全相同。迁移域名、协议或本地端口后需要核对配置。
 
-## /api/db
-- 作用：Firebase RTDB 代理（读写）
-- 方法：`GET` / `POST`
-- GET 参数：`path`，可选查询参数 `orderByChild` / `startAt` / `endAt` / `equalTo` / `limitToFirst` / `limitToLast`
-- POST 参数：`{ path, op, value }`，op 可为 `set` / `update` / `remove` / `push`
-- 环境变量：`FIREBASE_SERVICE_ACCOUNT`(或 `FIREBASE_SERVICE_ACCOUNT_JSON`)、`FIREBASE_DATABASE_URL`
-- 说明：允许路径在 `api/db.js` 内白名单维护
+`/api/keys` 的映射包括天地图、数字人、GitHub 和保留的天气服务字段。按需明确传入 names，避免请求未配置的无关项。没有使用对应功能时，不必补齐所有值。
 
-## /api/r2-presign
-- 作用：生成 R2 预签名上传链接
-- 方法：`POST`
-- 参数：`{ originalName, contentType, folder }`
-- 环境变量：`R2_ACCESS_KEY_ID`、`R2_SECRET_ACCESS_KEY`、`R2_ENDPOINT`、`R2_BUCKET`、`R2_PUBLIC_BASE_URL`
+配置脚本会把内容交给浏览器，不能依靠这种注入方式保密。Firebase 浏览器配置不等于 Admin 服务账号；数据库规则、服务端凭据和操作权限需要分别维护。CORS 也不能替代身份认证和业务授权。
 
-## /api/turnstile-verify
-- 作用：Turnstile 人机验证
-- 方法：`POST`
-- 参数：`{ token, purpose }`
-- 环境变量：`TURNSTILE_SECRET_KEY`
+## 配套文档
 
-## /api/email-send
-- 作用：发送邮箱验证码（Resend）
-- 方法：`POST`
-- 参数：`{ email, purpose }`
-- 环境变量：`RESEND_API_KEY`、`RESEND_FROM`、`EMAIL_TOKEN_SECRET`
+- [Firebase 配置](firebaseRTDB配置调用说明.md)
+- [管理员会话](管理员密钥调用说明.md)
+- [Turnstile](安全验证Turnstile说明.md)
+- [天地图配置](天地图密钥调用说明.md)
+- [GitHub 配置](GitHub令牌调用说明.md)
+- [R2 上传](R2上传与图床说明.md)
+- [用户资料同步](用户资料同步机制.md)
 
-## /api/email-verify
-- 作用：校验邮箱验证码
-- 方法：`POST`
-- 参数：`{ email, code, token, purpose }`
-- 环境变量：`EMAIL_TOKEN_SECRET`
-
-## /api/github-user
-- 作用：GitHub OAuth 用户信息读取
-- 方法：`GET`
-- 依赖：GitHub OAuth 配置与 `GITHUB_API_KEY`
-
-## /api/ip
-- 作用：返回请求 IP（用于安全/风控）
-- 方法：`GET`
-
-## /api/stream-proxy
-- 作用：流式代理（用于大模型流式输出）
-- 方法：`POST`
+布局测试不会发送真实验证码、上传文件或修改在线房间。接口集成验收应在明确的服务配置和测试数据下进行。

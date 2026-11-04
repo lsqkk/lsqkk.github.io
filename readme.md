@@ -1,187 +1,122 @@
-<h1 align="center" style="color:#355fe9;">Quark Blog 夸克博客</h1>
-<h3 align="center">不只「博客」，不止「前端」</h3>
-<br>
+# Quark Blog · 夸克博客
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat&logo=javascript&logoColor=black" alt="JavaScript">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white" alt="HTML5">
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white" alt="CSS3">
-  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black" alt="Firebase">
-  <br>
-  <img src="https://img.shields.io/badge/WebRTC-333333?style=flat&logo=webrtc&logoColor=white" alt="WebRTC">
-  <img src="https://img.shields.io/badge/Canvas-000000?style=flat&logo=html5&logoColor=white" alt="Canvas">
-  <img src="https://img.shields.io/badge/Astro-FF5D01?style=flat&logo=astro&logoColor=white" alt="Astro">
-  <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white" alt="Vercel">
-  <img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/GitHub%20Pages-222222?style=flat&logo=githubpages&logoColor=white" alt="GitHub Pages">
-</p>
+蓝色奇夸克的个人网站，记录学习、生活与思考，也放着一些可以直接使用的工具、多人游戏和前端实验。
 
-一个基于 Astro 5 构建的静态 + 动态结合博客站点模板，同时也是[@蓝色奇夸克](https://github.com/lsqkk) 的个人网站仓库。静态页面由 GitHub Pages 托管，动态能力通过独立的 Vercel Serverless API 提供，前端交互以原生 JavaScript、Canvas、WebRTC 和 Firebase RTDB 为核心。
+[访问网站](https://lsqkk.github.io/) · [文章](https://lsqkk.github.io/posts/) · [工具](https://lsqkk.github.io/tool/) · [游戏](https://lsqkk.github.io/games/) · [实验室](https://lsqkk.github.io/a/) · [RSS](https://lsqkk.github.io/posts/rss.xml)
 
+## DEMO
 
-**网站演示**：[夸克博客](https://lsqkk.github.io)
+下图为仓库构建后的真实页面截图。桌面与手机使用同一套响应式布局，颜色跟随系统深浅主题。预览运行后可用 `npm run demo:capture` 重新生成截图，地址由 `BASE_URL` 指定。
 
+| 首页 | 文章阅读 |
+| --- | --- |
+| [![首页](docs/demo/home.jpg)](https://lsqkk.github.io/) | [![文章阅读](docs/demo/article.jpg)](https://lsqkk.github.io/posts/2026/2604) |
 
-## 项目特点
+| 工具目录 | 游戏目录 |
+| --- | --- |
+| [![工具目录](docs/demo/tools.jpg)](https://lsqkk.github.io/tool/) | [![游戏目录](docs/demo/games.jpg)](https://lsqkk.github.io/games/) |
 
-- Astro 5 + Markdown + `astro:content` 驱动内容页与静态构建
-- 原生 JavaScript 为主，保留轻量运行时与较强浏览器可控性
-- GitHub Pages 托管静态站点，Vercel 仅承接 `/api` Serverless
-- Firebase RTDB 支持留言、评论、在线状态、实时互动等动态能力
-- 支持 GitHub OAuth、站内账号、Turnstile、人机验证、邮件验证码等认证能力
-- 提供自定义、可扩展的 Quark CLI，封装构建、文章创建、日志更新与推送流程
-- 提供 `quark web` 本地管理面板，可视化编辑站点 JSON 配置并执行常用维护命令
+## 网站里有什么
 
-> 更多技术细节及本站使用服务清单，欢迎查看[更新日志](/blog/log)以及[关于本站](/posts/copyright.md)。
+- **阅读与记录**：Markdown 文章、标签与专栏、全文搜索、RSS、目录、代码与公式，以及按时间选读、主题路线、待读清单和私人摘录。
+- **生活与交流**：动态、图片画廊、留言、友链、账号中心与用户主页。
+- **工具**：Markdown 编辑与导出、图片处理、科学计算、参考文献、OCR、语音识别、打字练习、番茄钟、文件闪传和 PPT 遥控。
+- **游戏**：五子棋、谍报风云、每日答题和交大校园图寻。
+- **实验室**：校园全景、地图、物理可视化、WebRTC 通信与 AI 交互等项目。
 
-## 技术架构
+界面以实色表面、细分隔线和留白组织内容。页面结构与正文由 Astro 输出，交互主要使用原生 JavaScript；字体、语言和动态效果可在站内设置中调整。联网功能需要相应服务配置，其可用性不等同于静态页面构建成功。
 
-> 本仓库不是“单平台一键部署”的常见纯静态模板。
+## 本地运行
 
-项目构建流程如下：
+使用 Node.js 22.12+ 与 npm。Python CLI 是可选维护工具，浏览和构建静态站点不要求安装 Python。
 
-1. GitHub Pages 负责部署 Astro 构建产物 `dist/`
-2. Vercel 负责部署根目录 `api/` 下的 Serverless 函数
-3. 前端通过 `src/config/json/api.json` 中的 `apiBase` 指向你的 API 域名
+~~~sh
+npm ci
+npm run build
+npm run preview
+~~~
 
-这意味着迁移时至少要完成两件事：
+打开终端打印的 Local 地址，默认是 `http://localhost:4321`。端口占用时以实际输出为准。
 
-- 把静态站点部署到你自己的 GitHub Pages 或其他静态托管
-- 把本仓库导入到你自己的 Vercel 项目，并补齐所需环境变量
+开发时运行 `npm run dev`；首次启动或修改静态资源、JSON 配置后，先执行 `npm run sync:public` 和 `npm run gen:fa-icons`。Astro 路由和模板支持热更新，`assets/` 中的资源通过同步步骤提供给浏览器。生产验收使用 `build + preview`。
 
-## 快速开始
+可选的 Quark CLI：
 
-### 如何迁移使用与部署
-
-完整的迁移部署说明见于以下文档：
-
-- [迁移部署指南](src/docs/迁移部署说明.md)
-- [构建与数据产物说明](src/docs/构建与数据产物说明.md)
-- [Serverless API 说明](src/docs/API/README.md)
-
-它们将涉及GitHub Pages 静态部署、Vercel Serverless 导入与环境变量配置、`API_BASE`绑定域名、第三方服务接入等。
-
-如果你只是想先跑通一个“只含静态博客页面”的版本，可以先按照以下步骤完成本地构建和 GitHub Pages 部署。但只要你需要评论、留言、登录、数据库、上传或其他动态功能，就必须继续完成 Vercel Serverless 与相关环境变量配置。
-
-### 本地初始化
-
-点击本项目仓库上方 `Use this template` 或直接 `Fork` 创建你的新项目并**克隆到本地**。推荐使用 **VSCode** 管理项目，下述 Quark 工具部分功能（如文章快捷创建）依赖 VSCode 实现。
-
-```bash
-# 可选但推荐：创建虚拟环境
+~~~sh
 python -m venv .venv
-.venv\Scripts\activate
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 安装 Quark CLI
-pip install -e .
-
-# 可选：查看帮助
+# 激活当前终端对应的虚拟环境后：
+python -m pip install -r requirements.txt
+python -m pip install -e .
 quark --help
+~~~
 
-npm install
-pip install -r requirements.txt
-pip install -e .
-```
+`quark serve` 默认构建后预览；`quark serve --dev` 启动开发服务器；`quark web` 打开本地配置面板。文章创建、日志整理和图片上传等命令见 [维护文档](src/docs/README.md)。
 
-### 本地构建与预览
+## 架构与部署
 
-```bash
-npm run build
-quark serve
-```
+~~~text
+Markdown / JSON / Astro / assets
+              │
+        npm run build
+              │
+             dist ──────────── GitHub Pages
+                                  │
+                       按页面需要请求 API
+                                  │
+                         Vercel / Firebase
+~~~
 
-或使用 Quark CLI:
+- **静态站点**：Astro 5、Markdown 内容集合、原生 JS/CSS；GitHub Actions 构建 `dist/` 并部署到 GitHub Pages。
+- **动态 API**：根目录 `api/` 中的 Vercel Serverless 函数，提供配置注入、OAuth、邮件验证、数据库代理和上传签名等。
+- **数据与通信**：Firebase RTDB 支撑评论、协同与实时房间；部分通信使用 WebRTC；文件上传使用 Cloudflare R2。
+- **本地数据**：阅读清单、私人摘录及部分工具状态存于浏览器，换设备前需要备份。
+- **构建优化**：本地图标提取、CSS/JS 压缩、搜索索引、RSS、sitemap 与产物校验。
 
-```bash
-quark build
-quark serve
-```
+迁移自己的站点需要更换站点身份、API 地址、来源白名单及启用功能所需的服务配置。仅运行静态构建不会自动配置在线服务。详见 [部署说明](src/docs/迁移部署说明.md) 与 [API 文档](src/docs/API/README.md)。
 
-访问 `http://localhost:4321`，若页面正常渲染，说明本地构建链路可用。
+## 源码与配置
 
-### 常用命令
+| 位置 | 用途 |
+| --- | --- |
+| `src/pages/`、`src/layouts/`、`src/components/` | 路由、布局与组件 |
+| `posts/` | 文章源码；`posts.json`、`rss.xml` 由脚本生成 |
+| `assets/` | 静态资源、页面脚本、公开数据和附件 |
+| `src/config/json/` | 导航、首页、字体、API 地址与展示开关 |
+| `src/config/reading-paths.json` | 阅读路线 |
+| `src/config/retired-pages.json` | 下线页面与兼容跳转 |
+| `api/` | 动态 API 源码 |
+| `scripts/`、`quark/` | 构建检查与维护工具 |
+| `src/docs/` | 架构、功能与维护说明 |
+| `docs/demo/` | README 截图，不复制到网站资源目录 |
 
-```bash
-quark new          # 新建文章
-quark build        # 完整构建
-quark serve        # 启动 Astro 开发服务器（HMR 热更新）
-quark web          # 打开本地管理面板 Web UI
-quark updatelog    # 根据 Git 提交刷新日志
+`public/`、`dist/`、`.quark-artifact/` 是生成目录，不直接编辑。私有凭据和本地资料放在已忽略的 `private/` 或环境变量中。
 
-npm run build
-npm run typecheck
+## 验证
+
+~~~sh
 npm run check:syntax
-```
+npm run check:docs
+npm run test:sitemap
+npm run test:desk
+npm run test:spy-signal
+npm run build
+~~~
 
-### 配置入口
+UI 测试需要可解析的 Playwright 和已安装的 Chromium。先启动生产预览，再在另一个终端运行：
 
-常见站点配置集中于 `src/config/json/`，可通过 `quark web` 打开本地管理面板编辑，也可继续手动维护:
+~~~sh
+npm run test:ui
+npm run test:ui:polish
+npm run test:ui:desk
+npm run test:ui:followup
+~~~
 
-- `api.json`: 前端注入的 API 基地址
-- `nav.json`: 导航、标题、GitHub OAuth 地址、Turnstile site key
-- `index.json`: 首页个人信息与展示数据
-- `index_config.json`: 首页板块开关与排序
-- `friends.json`: 友链数据
-- `manifest.json`: PWA 配置
-- `popups.json`: 首页弹窗配置
+默认测试地址为 `http://127.0.0.1:4321`，可以通过 `BASE_URL` 环境变量指定预览地址。截图写入已忽略的 `test-results/`。布局用例会隔离外部服务，不能替代认证、云端数据库或音视频服务的集成验收。
 
-站点图片资源主要位于 `assets/img/`，需要替换:
+`npm run typecheck` 检查 `jsconfig.json` 声明的渐进类型范围，目前仍有历史诊断；处理方式见 [类型说明](src/docs/TypeScript规范说明.md)。
 
-- `bg.png`
-- `logo_blue.png`
-- `favicon.ico`
-- `touxiang.png`
+## 许可与联系
 
+站点代码采用仓库 [LICENSE](LICENSE) 中的 **GNU Affero General Public License v3.0（AGPLv3）**。文章默认采用 **CC BY-NC-SA 4.0**，单篇另有说明时以该说明为准。第三方库、字体、图片和其他引用资料保留各自的权利与许可，不因包含在仓库中而重新授权。
 
-## 项目目录概览
-
-```text
-.
-├── api/                 # Vercel Serverless 函数
-├── assets/              # 静态资源源目录
-├── posts/               # 博文源码与生成数据
-├── public/              # 构建前同步产物，不建议手改
-├── src/
-│   ├── components/
-│   ├── config/json/
-│   ├── docs/
-│   ├── layouts/
-│   ├── pages/
-│   └── utils/
-├── scripts/             # 构建与同步脚本
-├── quark/               # Python CLI
-├── dist/                # Astro 构建产物
-└── vercel.json          # Vercel 仅承接 API，不负责静态构建
-```
-
-## 许可证
-
-需要注意的是，本仓库使用 GPLv3 协议，此协议支持自由查看、学习、修改、搭建自己的版本，但需保证：
-- 在使用我的代码时必须保留我的署名 [lsqkk / 蓝色奇夸克 / Quark](https://github.com/lsqkk)；
-- 修改后发布的版本必须继续遵守 GPLv3 协议。
-
-许可证详情见 [LICENSE](LICENSE) 。
-
-## 支持与反馈
-
-如果你喜欢这个网站的思路或实现，欢迎**点亮右上角的 star ⭐！**
-
-如果你还对其技术架构感兴趣，也欢迎你：
-
-- **Issues**：反馈 bug 或提出技术建议
-- **Discussions**：欢迎交流原生开发、实时协同、无服务架构等技术话题
-
----
-
-<h3 align="center">「无穷的远方，无数的人们，都和我有关」</h3>
-
-<p align="center"> 
-  <a href="https://github.com/lsqkk?tab=followers"><img src="https://img.shields.io/github/followers/lsqkk?label=Followers&style=plastic" height="25px" alt="github follow" /></a>
-  <a href="https://scholar.google.com/citations?user=lsqkk"><img src="https://img.shields.io/badge/scholar-4385FE.svg?&style=plastic&logo=google-scholar&logoColor=white" alt="Google Scholar" height="25px"></a>
-  <a href="mailto:jsxzznz@gmail.com"><img src="https://img.shields.io/badge/gmail-%23D14836.svg?&style=plastic&logo=gmail&logoColor=white" height="25px" alt="Email"></a>
-  <a href="https://www.zhihu.com/people/jsxzznz"><img src="https://img.shields.io/badge/知乎-0079FF.svg?style=plastic&logo=zhihu&logoColor=white" height="25px" alt="知乎"></a>
-</p>
+[关于本站与版权](https://lsqkk.github.io/posts/copyright) · [提交问题](https://github.com/lsqkk/lsqkk.github.io/issues) · [联系站主](mailto:jsxzznz@163.com)

@@ -37,8 +37,22 @@ import fs from "node:fs";
 import path from "node:path";
 const readTime = Math.ceil(wordCount / 400);
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, AUTHOR_NAME, AUTHOR_URL } from "@siteConfig";
+import ReadingPathContext from "../components/ReadingPathContext.astro";
 import LuxuryBackground from "../components/LuxuryBackground.astro";
 const currentYear = new Date().getFullYear();
+const canonicalUrl = new URL("/posts/" + currentPostPath.replace(/^\/?posts\//, "").replace(/^\//, ""), SITE_URL).href;
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: postTitle,
+  description: postDescription,
+  datePublished: date,
+  wordCount,
+  author: {"@type": "Person", name: AUTHOR_NAME, url: AUTHOR_URL},
+  publisher: {"@type": "Person", name: AUTHOR_NAME},
+  mainEntityOfPage: {"@type": "WebPage", "@id": canonicalUrl},
+  keywords: tags.join(", "),
+};
 
 function buildColumnHref(columnName: string): string {
   return `/posts/${encodeURIComponent(columnName)}`;
@@ -64,35 +78,13 @@ try {
     <meta property="og:description" content={postDescription} />
     <meta property="og:type" content="article" />
     <meta property="og:image" content={SITE_LOGO_URL} />
-    <meta property="og:url" content={SITE_URL + currentPostPath} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={postTitle} />
     <meta name="twitter:description" content={postDescription} />
     <link rel="alternate" type="application/rss+xml" title="夸克博客 RSS" href="/posts/rss.xml" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        "headline": {postTitle ? JSON.stringify(postTitle) : "未命名文章"},
-        "description": {postDescription ? JSON.stringify(postDescription) : "无描述"},
-        "datePublished": {date ? JSON.stringify(date) : "null"},
-        "wordCount": {wordCount || 0},
-        "author": {
-          "@type": "Person",
-          "name": {AUTHOR_NAME ? JSON.stringify(AUTHOR_NAME) : "null"},
-          "url": {AUTHOR_URL ? JSON.stringify(AUTHOR_URL) : "null"}
-        },
-        "publisher": {
-          "@type": "Person",
-          "name": {AUTHOR_NAME ? JSON.stringify(AUTHOR_NAME) : "null"}
-        },
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": {(SITE_URL + currentPostPath) ? JSON.stringify(SITE_URL + currentPostPath) : "null"}
-        },
-        "keywords": {tags && tags.length > 0 ? JSON.stringify(tags.join(", ")) : "null"}
-      }
-    </script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, "\\u003c")}></script>
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
@@ -101,6 +93,7 @@ try {
     <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css" />
     <link rel="stylesheet" href="/assets/css/code.css" />
     <link rel="stylesheet" href="/assets/css/reading-compass.css" />
+    <link rel="stylesheet" href="/assets/css/reading-desk.css" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="stylesheet" href="/assets/css/fa-local.css" />
     <script is:inline src="/assets/js/nav.js"></script>
@@ -217,6 +210,7 @@ try {
       </div>
     </div>
 
+      <ReadingPathContext postPath={currentPostPath} />
       <div class="post-share-card">
         <div class="post-share-actions">
           <button class="share-button" onclick="copyLink()">复制本文链接</button>
@@ -293,6 +287,7 @@ try {
               <div class="post-quick-links">
                 <a href="/index.html">博客主页</a>
                 <a href="/posts">文章</a>
+                <a href="/desk/">拾页阅读桌</a>
                 <a href="/games">夸克游戏</a>
                 <a href="/a/qai">Q-AI WebUI</a>
                 <a href="/tool">更多工具</a>
@@ -311,6 +306,7 @@ try {
     <script is:inline id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script>
     <script is:inline src="/assets/js/post-standalone.js"></script>
     <script is:inline defer src="/assets/js/reading-compass.js"></script>
+    <script is:inline type="module" src="/assets/js/post-reading-desk.js"></script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", () => {
         const content = document.getElementById("content");
