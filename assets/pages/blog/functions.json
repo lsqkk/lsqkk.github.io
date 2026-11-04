@@ -177,7 +177,7 @@
             ]
         },
         {
-            "name": "仓库 Pages",
+            "name": "我的其他网站",
             "functions": [
                 {
                     "name": "夸克文档 QuarkDoc",
@@ -200,6 +200,50 @@
                     "link": "/academic-homepage",
                     "target": "_self",
                     "icon": "◎"
+                },
+                {
+                    "name": "知识边界",
+                    "categories": [
+                        "通识测试",
+                        "自我探索"
+                    ],
+                    "description": "一个有趣的通识测试，探索你的知识边界。",
+                    "link": "https://kn-bo.130923.xyz/",
+                    "target": "_blank",
+                    "icon": "⊙"
+                },
+                {
+                    "name": "个人网站画廊",
+                    "categories": [
+                        "个人主页",
+                        "网站画廊"
+                    ],
+                    "description": "我的个人网站与项目画廊。",
+                    "link": "https://130923.xyz/",
+                    "target": "_blank",
+                    "icon": "▧"
+                },
+                {
+                    "name": "佛系消消消纯净版",
+                    "categories": [
+                        "数独",
+                        "扫雷"
+                    ],
+                    "description": "一个结合数独与扫雷的小游戏。",
+                    "link": "/foxi-cow-sudoku/",
+                    "target": "_self",
+                    "icon": "▦"
+                },
+                {
+                    "name": "问题链：马克思主义思想问题地形",
+                    "categories": [
+                        "马克思主义",
+                        "学习"
+                    ],
+                    "description": "一个以问题链梳理马克思主义思想的学习网站。",
+                    "link": "https://marxism.130923.xyz/",
+                    "target": "_blank",
+                    "icon": "⌁"
                 }
             ]
         }
