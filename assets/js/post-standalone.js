@@ -1,5 +1,5 @@
 /**
- * post-standalone.js 
+ * post-standalone.js
  * 修改说明：移除 fetch/parse 逻辑，仅保留 DOM 处理和 UI 增强。
  */
 // @ts-check
@@ -8,9 +8,17 @@
 document.addEventListener('DOMContentLoaded', async () => {
     initPostUI();
     wrapPostTables();
-    await initPostGallery();
     initSidebarToggle();
     initBackToTop();
+    document.querySelectorAll('.post-description-trigger').forEach(button => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.setAttribute('aria-expanded', 'false');
+        button.setAttribute('aria-label', '文章简介：' + (button.getAttribute('data-tooltip') || '暂无简介'));
+        button.addEventListener('click', () => button.setAttribute('aria-expanded', String(button.getAttribute('aria-expanded') !== 'true')));
+        button.addEventListener('blur', () => button.setAttribute('aria-expanded', 'false'));
+        button.addEventListener('keydown', event => { if (event.key === 'Escape') { button.setAttribute('aria-expanded', 'false'); button.blur(); } });
+    });
+    void initPostGallery();
 
     // 如果 KaTeX 已经加载，渲染公式；否则等待加载
     if (window.renderMathInElement) {
@@ -154,18 +162,25 @@ async function initPostGallery() {
 }
 
 function initSidebarToggle() {
-    const toggle = document.querySelector('.sidebar-toggle');
-    if (toggle instanceof HTMLElement) {
-        toggle.setAttribute('aria-expanded', 'false');
-    }
-    // On mobile, toggle post-toc-sidebar visibility
-    const tocSidebar = document.getElementById('postTocSidebar');
-    if (tocSidebar) {
-        const isWide = window.matchMedia('(min-width: 1201px)').matches;
-        if (!isWide) {
-            tocSidebar.classList.remove('active');
+    const group = document.querySelector('.post-sidebar-group');
+    const toggle = /** @type {HTMLButtonElement | null} */ (document.querySelector('.sidebar-toggle'));
+    if (!(group instanceof HTMLElement)) return;
+    const close = () => { if (group.classList.contains('active')) { toggleSidebar(); toggle?.focus(); } };
+    group.querySelector('.post-sidebar-close')?.addEventListener('click', close);
+    group.addEventListener('click', event => { if (event.target instanceof Element && event.target.closest('.toc-item a')) close(); });
+    document.addEventListener('keydown', event => {
+        if (!group.classList.contains('active')) return;
+        if (event.key === 'Escape') { event.preventDefault(); close(); }
+        if (event.key === 'Tab') {
+            const items = Array.from(group.querySelectorAll('a[href],button,[tabindex="0"]')).filter(el => el.getClientRects().length);
+            const first = items[0], last = items[items.length-1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); if (last instanceof HTMLElement) last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); if (first instanceof HTMLElement) first.focus(); }
         }
-    }
+    });
+    window.matchMedia('(min-width:1101px)').addEventListener('change', event => {
+        if (event.matches) { group.classList.remove('active'); document.body.classList.remove('sidebar-open'); document.querySelector('.sidebar-backdrop')?.classList.remove('active'); toggle?.setAttribute('aria-expanded','false'); }
+    });
 }
 
 function initBackToTop() {
@@ -173,10 +188,14 @@ function initBackToTop() {
     if (!(button instanceof HTMLElement)) return;
     const updateVisibility = () => {
         if (window.scrollY > 240) {
+            button.setAttribute('aria-hidden', 'false');
+            button.tabIndex = 0;
             button.style.opacity = '1';
             button.style.pointerEvents = 'auto';
             button.style.transform = 'translateY(0)';
         } else {
+            button.setAttribute('aria-hidden', 'true');
+            button.tabIndex = -1;
             button.style.opacity = '0';
             button.style.pointerEvents = 'none';
             button.style.transform = 'translateY(6px)';
@@ -185,7 +204,7 @@ function initBackToTop() {
     updateVisibility();
     window.addEventListener('scroll', updateVisibility, { passive: true });
     button.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: document.documentElement.dataset.motion === 'reduce' || matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
     });
 }
 
@@ -232,6 +251,12 @@ function updateSidebarMask() {
 
 // 2. 渲染元数据和基础 UI
 function initPostUI() {
+    const cover = document.querySelector('.post-hero-image');
+    if (cover instanceof HTMLImageElement) {
+        const failed = () => cover.closest('.post-hero')?.classList.add('is-image-missing');
+        cover.addEventListener('error', failed, { once: true });
+        if (cover.complete && cover.naturalWidth === 0) failed();
+    }
     const tagsContainer = document.getElementById('post-tags-container');
     if (!(tagsContainer instanceof HTMLElement)) return;
     const date = tagsContainer.getAttribute('data-date');
@@ -316,13 +341,13 @@ function generateTOC() {
 
     headings.forEach(function (heading, index) {
         var level = heading.tagName.toLowerCase();
-        var id = 'heading-' + index;
+        var id = heading.id || 'heading-' + index;
         heading.id = id;
         html += [
             '<div class="toc-item ' + level + '" data-heading="' + id + '">',
-            '  <a href="#' + id + '">',
+            '  <a href="#' + encodeURIComponent(id) + '">',
             '    <span class="toc-item-marker">&gt;</span>',
-            '    <span class="toc-item-text">' + heading.textContent + '</span>',
+            '    <span class="toc-item-text">' + heading.textContent.replace(/[&<>"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char])) + '</span>',
             '  </a>',
             '</div>'
         ].join('\n');
@@ -371,8 +396,11 @@ function initTOCSpy() {
     };
 
     updateActive();
+    let pending = false;
     window.addEventListener('scroll', () => {
-        window.requestAnimationFrame(updateActive);
+        if (pending) return;
+        pending = true;
+        window.requestAnimationFrame(() => { pending = false; updateActive(); });
     }, { passive: true });
     window.addEventListener('resize', updateActive);
 }
@@ -552,11 +580,13 @@ function toggleSidebar() {
     if (!(group instanceof HTMLElement)) return;
     const willOpen = !group.classList.contains('active');
     group.classList.toggle('active', willOpen);
+    const closeButton = group.querySelector('.post-sidebar-close');
+    if (willOpen && closeButton instanceof HTMLElement) closeButton.focus();
     document.body.classList.toggle('sidebar-open', willOpen);
     if (backdrop instanceof HTMLElement) {
         backdrop.classList.toggle('active', willOpen);
     }
-    const toggle = document.querySelector('.sidebar-toggle');
+    const toggle = /** @type {HTMLButtonElement | null} */ (document.querySelector('.sidebar-toggle'));
     if (toggle instanceof HTMLElement) {
         toggle.setAttribute('aria-expanded', String(willOpen));
     }

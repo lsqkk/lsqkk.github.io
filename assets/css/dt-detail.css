@@ -257,3 +257,8 @@ body { background: var(--page-bg); }
     border-radius: 0;
     box-shadow: none;
 }
+
+.dynamic-detail-container { width:100%; box-sizing:border-box; }
+.dynamic-entry-footer { flex-wrap:wrap; }
+.dynamic-comment-text { overflow-wrap:anywhere; }
+.dynamic-action-btn, .dynamic-submit-btn { min-height:40px; }

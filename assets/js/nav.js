@@ -320,12 +320,7 @@ function generateNavHTML(config) {
                 <a href="${buildLocalizedUrl(config.title.link)}" class="header-title-link">
                     <h1>${config.title.text}</h1>
                 </a>
-                <!-- 移动端汉堡菜单按钮 -->
-                <button class="hamburger-menu" id="hamburgerMenu" aria-label="打开导航菜单" aria-controls="mobilenavsidebar" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+
             </div>
             <div class="header-nav-container">
                 <ul class="header-nav">
@@ -375,6 +370,12 @@ function generateNavHTML(config) {
                     <div class="nav-login-tip">登录后享受更多权益</div>
                 </div>
                 <div class="header-user" id="header-user"></div>
+                <!-- 移动端菜单始终位于操作区最右侧 -->
+                <button class="hamburger-menu" id="hamburgerMenu" aria-label="打开导航菜单" aria-controls="mobilenavsidebar" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </div>
@@ -523,8 +524,20 @@ function initializeSidebar() {
     const sidebarOverlay = document.getElementById('navsidebarOverlay');
 
     if (hamburgerMenu) {
-        hamburgerMenu.addEventListener('click', openSidebar);
+        hamburgerMenu.addEventListener('click', () => { openSidebar(); sidebarClose?.focus(); });
     }
+    document.addEventListener('keydown', event => {
+        const sidebar = document.getElementById('mobilenavsidebar');
+        if (!sidebar?.classList.contains('active')) return;
+        if (event.key === 'Escape') { closeSidebar(); hamburgerMenu?.focus(); }
+        if (event.key === 'Tab') {
+            const items = Array.from(sidebar.querySelectorAll('a,button,input,select')).filter(el => el.getClientRects().length);
+            const first = items[0], last = items[items.length-1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); if (last instanceof HTMLElement) last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); if (first instanceof HTMLElement) first.focus(); }
+        }
+    });
+    window.matchMedia('(min-width:769px)').addEventListener('change', event => { if (event.matches) closeSidebar(); });
     if (sidebarClose) {
         sidebarClose.addEventListener('click', closeSidebar);
     }
@@ -997,10 +1010,10 @@ function renderUserProfile() {
         : (login ? (loginType === 'local' ? `qb_${login}` : `gh_${login}`) : '');
     const spaceUrl = identifier ? `/space?user=${encodeURIComponent(identifier)}` : '/space';
     const inner = `
-        <div class="user-pill">
+        <button class="user-pill nav-user-trigger" type="button" aria-label="打开用户菜单" aria-expanded="false">
             <img class="user-avatar" src="${avatarUrl}" alt="avatar">
             <span class="user-name">${nickname}</span>
-        </div>
+        </button>
     `;
     const dropdown = `
         <div class="nav-user-menu">
@@ -1027,10 +1040,12 @@ function renderUserProfile() {
     `;
 
     if (headerUser) headerUser.innerHTML = wrapped;
-    if (mobileUser) mobileUser.innerHTML = inner;
+    if (mobileUser) mobileUser.innerHTML = inner
+        .replace(/<button[^>]*>/, '<a class="user-pill" href="' + buildLocalizedUrl('/a/account') + '">')
+        .replace('</button>', '</a>');
 
     if (headerUser) {
-        bindUserMenuHover(headerUser);
+        bindUserMenu(headerUser);
         headerUser.querySelectorAll('[data-action="logout"]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
@@ -1046,25 +1061,30 @@ function renderUserProfile() {
     }
 }
 
-function bindUserMenuHover(root) {
+function bindUserMenu(root) {
     const wrap = root.querySelector('.nav-user-wrap');
     if (!(wrap instanceof HTMLElement)) return;
-    let hideTimer = null;
     const open = () => {
-        if (hideTimer) {
-            window.clearTimeout(hideTimer);
-            hideTimer = null;
-        }
         wrap.classList.add('is-open');
+        wrap.querySelector('.nav-user-trigger')?.setAttribute('aria-expanded', 'true');
     };
-    const close = () => {
-        if (hideTimer) window.clearTimeout(hideTimer);
-        hideTimer = window.setTimeout(() => {
-            wrap.classList.remove('is-open');
-        }, 200);
-    };
-    wrap.addEventListener('mouseenter', open);
-    wrap.addEventListener('mouseleave', close);
+    const trigger = wrap.querySelector('.nav-user-trigger');
+    if (!(trigger instanceof HTMLButtonElement)) return;
+    trigger?.addEventListener('click', () => {
+        const expanded = trigger.getAttribute('aria-expanded') === 'true';
+        if (expanded) { wrap.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); trigger.blur(); }
+        else open();
+    });
+    wrap.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            event.stopPropagation(); wrap.classList.remove('is-open');
+            trigger?.setAttribute('aria-expanded', 'false'); trigger?.focus();
+        }
+    });
+    document.addEventListener('pointerdown', event => {
+        if (event.target instanceof Node && !wrap.contains(event.target)) { wrap.classList.remove('is-open'); trigger?.setAttribute('aria-expanded', 'false'); }
+    });
+
 }
 
 window.renderNavUserProfile = renderUserProfile;

@@ -17,7 +17,8 @@
     "check:words": "node scripts/verify-spy-words.mjs",
     "test:spy-signal": "node --test \"tests/spy-signal/**/*.test.mjs\"",
     "test:sitemap": "node --test tests/sitemap.test.mjs",
-    "test:ui": "node tests/ui/site-smoke.cjs"
+    "test:ui": "node tests/ui/site-smoke.cjs",
+    "test:ui:polish": "node tests/ui/site-polish.cjs"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",

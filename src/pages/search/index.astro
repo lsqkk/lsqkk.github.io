@@ -103,7 +103,7 @@ const fulltextIndex = {
     <h1 class="search-page-title">站内搜索</h1>
     <div class="search-shell">
       <div class="search-box">
-        <input type="text" id="siteSearchInput" placeholder="输入关键词，按回车搜索..." />
+        <input type="text" id="siteSearchInput" aria-label="搜索本站文章、动态与页面" placeholder="输入关键词，按回车搜索..." />
         <button id="siteSearchBtn">搜索</button>
       </div>
       <div class="search-mode">
@@ -115,7 +115,7 @@ const fulltextIndex = {
       <div class="search-actions">
         <a id="bingSearchLink" class="bing-link" href={`https://cn.bing.com/search?q=site%3A${SITE_DOMAIN}`} target="_blank" rel="noreferrer">使用必应全站搜索</a>
       </div>
-      <div id="siteSearchStatus" class="search-status">请输入关键词开始搜索</div>
+      <div id="siteSearchStatus" class="search-status" role="status" aria-live="polite">请输入关键词开始搜索</div>
       <div id="siteSearchResults" class="search-results"></div>
     </div>
 

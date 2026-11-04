@@ -196,3 +196,17 @@
 .code-language[data-language="md"]::before {
     background-color: #083fa1;
 }
+/* Preserve Shiki's light/dark palette; custom headers follow the page surface. */
+body.post-layout-page .post-content pre { max-width:100%; border-color:var(--line); scrollbar-width:thin; overscroll-behavior-x:contain; }
+body.post-layout-page .post-content pre code { background:transparent; color:inherit; display:block; min-width:max-content; }
+.post-content .code-header { position:sticky; left:0; width:100%; background:var(--surface-soft); color:var(--text-main); border-color:var(--line); }
+.code-language { color:var(--text-subtle); }
+.copy-code-btn { min-height:34px; background:var(--surface); color:var(--text-main); border:1px solid var(--line); }
+.copy-code-btn:hover { transform:none; background:var(--accent-soft); color:var(--accent); }
+.copy-code-btn::before { content:'⧉'; }
+@media (prefers-color-scheme:dark) {
+  .post-content .astro-code, .post-content .astro-code span { color:var(--shiki-dark,inherit) !important; background-color:var(--shiki-dark-bg,var(--code-bg)) !important; }
+}
+
+
+.post-content pre code, .post-content pre code * { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }

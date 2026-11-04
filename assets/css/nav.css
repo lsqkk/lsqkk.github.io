@@ -336,7 +336,6 @@
     z-index: 20;
 }
 
-.nav-user-wrap:hover .nav-user-menu,
 .nav-user-wrap.is-open .nav-user-menu {
     opacity: 1;
     visibility: visible;
@@ -871,3 +870,43 @@
     border-bottom-color: var(--line);
     box-shadow: none;
 }
+
+/* A profile is an avatar on touch screens, with a full circular hit target. */
+.nav-user-trigger { cursor:pointer; font:inherit; }
+.nav-user-wrap:focus-within .nav-user-menu { opacity:1; visibility:visible; pointer-events:auto; transform:none; transition-delay:0s; }
+.nav-user-menu { max-width:calc(100vw - 32px); }
+.nav-user-name { max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nav-user-actions :is(a,button) { min-height:40px; }
+.nav-user-menu::before { content:''; position:absolute; inset:-9px 0 auto; height:9px; }
+.mobile-navsidebar { height:100dvh; overscroll-behavior:contain; }
+@media (max-width:768px) {
+  .header-content { padding-inline:max(16px,env(safe-area-inset-left)); gap:8px; }
+  .header .header-user .user-pill { width:44px; height:44px; padding:6px; border:0; border-radius:50%; background:transparent; justify-content:center; }
+  .header-user .user-avatar { width:30px; height:30px; }
+  .hamburger-menu, .navsidebar-close { min-width:44px; min-height:44px; }
+  .header h1 { font-size:16px; }
+}
+
+@media (hover:none) { .nav-user-wrap:not(.is-open):not(:focus-within) .nav-user-menu { visibility:hidden; opacity:0; pointer-events:none; } }
+
+
+@media (max-width:768px) {
+  .hamburger-menu { width:44px; height:44px; padding:12px 11px; justify-content:center; gap:5px; }
+  .hamburger-menu span { flex:0 0 1.5px; width:22px; }
+}
+.nav-user-wrap:focus-within:not(.is-open) .nav-user-menu { opacity:0; visibility:hidden; pointer-events:none; }
+
+/* Mobile chrome: a quiet icon row, with 44px invisible touch targets. */
+@media (max-width:768px) {
+  .header-content { padding-inline:max(16px,env(safe-area-inset-left)); gap:12px; }
+  .header-left { min-width:0; gap:8px; }
+  .header-left img { width:28px; height:28px; }
+  .header-right { gap:2px; margin-left:auto; align-items:center; }
+  .header .nav-settings-btn, .header .nav-settings-btn:hover { width:44px; height:44px; min-width:44px; min-height:44px; background:transparent; border:0; border-radius:50%; color:var(--text-subtle); font-size:16px; }
+  .header .header-login a { min-height:44px; height:44px; padding:0 10px; border:0; background:transparent; color:var(--text-main); font-size:13px; font-weight:500; }
+  .hamburger-menu { margin:0; flex-shrink:0; }
+  .hamburger-menu span { width:20px; }
+  .header-user:empty { display:none; }
+  .header h1 { font-size:16px; }
+}
+@media (max-width:360px) { .header-content { padding-inline:12px; gap:8px; } .header-right { gap:0; } }

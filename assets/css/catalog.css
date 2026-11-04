@@ -120,3 +120,16 @@
 }
 @media (max-width:460px) { .catalog-grid { grid-template-columns:minmax(0,1fr); } .catalog-card:not(:has(.game-cover)) { flex-direction:row; } .catalog-card-top { padding:20px 0 20px 18px; align-items:flex-start; } .catalog-card-index { display:none; } .catalog-card:not(:has(.game-cover)) .catalog-card-body { padding:18px; } .catalog-card h3 { font-size:15px; } .game-cover { height:158px; } .catalog-search kbd { display:none; } }
 @media (prefers-reduced-motion:reduce) { .catalog-page *, .catalog-page *::before, .catalog-page *::after { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+
+/* Stay steady under the pointer; categories form a swipeable index. */
+.catalog-wrap { padding-inline:max(var(--page-gutter), env(safe-area-inset-left)); }
+.catalog-card:hover { transform:none; box-shadow:none; border-color:var(--accent); }
+.catalog-card:focus-visible { outline-offset:3px; border-color:var(--accent); }
+.catalog-section-number { color:var(--text-soft); font-size:22px; }
+.catalog-categories { overscroll-behavior-x:contain; scrollbar-width:thin; }
+.catalog-card-body { min-width:0; }
+.catalog-result { font-variant-numeric:tabular-nums; }
+@media (max-width:700px) {
+  .catalog-categories { margin-inline:calc(-1 * var(--page-gutter)); padding-inline:var(--page-gutter); scroll-padding-inline:var(--page-gutter); }
+  .catalog-categories a { min-height:44px; }
+}

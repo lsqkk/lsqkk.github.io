@@ -341,3 +341,12 @@ body.dark-mode .search-tag-col {
     .search-page-title { margin-top: 92px; padding: 0 16px; }
     .search-shell { padding: 0 16px; }
 }
+
+/* Search uses site tokens in both resolved themes. */
+.search-body { --search-text:var(--text-main); --search-muted:var(--text-subtle); --search-line:var(--line); --search-accent:var(--accent); }
+.search-body .search-shell, .search-body .search-results { background:transparent; }
+.search-page-title, .search-shell { padding-inline:var(--page-gutter); }
+.search-box input { min-width:0; color:var(--text-main); }
+.search-result-title, .search-result-snippet { overflow-wrap:anywhere; }
+.search-box button { min-height:44px; }
+.search-result mark { background:var(--accent-soft); color:var(--accent); border-radius:2px; }

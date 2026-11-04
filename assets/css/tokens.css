@@ -292,22 +292,6 @@ body.dark-mode .footer-column li {
   color: var(--text-soft);
 }
 
-body.dark-mode .morenpost,
-body.dark-mode .sidebar-content,
-body.dark-mode .sidebar-footer,
-body.dark-mode .post-item,
-body.dark-mode .tag-filter,
-body.dark-mode .posts-fold-panel,
-body.dark-mode .pagination,
-body.dark-mode .search-container,
-body.dark-mode .search-results,
-body.dark-mode .dynamic-card,
-body.dark-mode .calendar-widget,
-body.dark-mode .month-item,
-body.dark-mode .main-content,
-body.dark-mode .category-nav,
-body.dark-mode .content-area,
-body.dark-mode .platform-header,
 body.dark-mode .tools-grid .tool-card,
 body.dark-mode .functions-grid .function-card,
 body.dark-mode .project-grid .project-card,
@@ -402,7 +386,6 @@ body.dark-mode .dynamic-detail-link,
 body.dark-mode .morenpost a,
 body.dark-mode .post-column-link,
 body.dark-mode .sidebar h4,
-body.dark-mode .toc-item a,
 body.dark-mode #toc-loading {
   color: var(--accent);
 }
@@ -493,7 +476,6 @@ body.dark-mode .dynamic-content.is-clamped::after {
 }
 
 /* 旧首页的玻璃/卡片在深色下统一为实色 */
-body.dark-mode .main-content,
 body.dark-mode .sidebar-index {
   background: transparent;
   border-color: transparent;

@@ -100,6 +100,7 @@ try {
     <link id="dynamic-gallery-style" rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
     <link id="post-annotation-style" rel="stylesheet" href="/assets/css/post-annotation.css" />
     <link rel="stylesheet" href="/assets/css/code.css" />
+    <link rel="stylesheet" href="/assets/css/reading-compass.css" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="stylesheet" href="/assets/css/fa-local.css" />
     <script is:inline src="/assets/js/nav.js"></script>
@@ -127,7 +128,8 @@ try {
               src={coverUrl}
               alt={postTitle}
               class="post-hero-image"
-              loading="lazy"
+              loading="eager"
+              fetchpriority="high"
               decoding="async"
               referrerpolicy="no-referrer"
             />
@@ -238,7 +240,8 @@ try {
           </a>
         </div>
       </div><!-- /.post-main-column -->
-      <aside class="post-sidebar-group">
+      <aside class="post-sidebar-group" id="post-sidebar" aria-label="文章目录和相关阅读">
+        <button class="post-sidebar-close" type="button" aria-label="关闭文章目录">×</button>
         <div class="post-sidebar-scroll">
         <div class="post-toc-box" id="postTocBox">
           <div class="sidebar-content">
@@ -307,6 +310,7 @@ try {
     <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline id="post-annotation-script" defer src="/assets/js/post-annotation.js"></script>
     <script is:inline src="/assets/js/post-standalone.js"></script>
+    <script is:inline defer src="/assets/js/reading-compass.js"></script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", () => {
         const content = document.getElementById("content");
@@ -373,7 +377,7 @@ try {
     ></script>
 
     <div class="post-fab-stack">
-      <button class="fab-btn sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="打开目录" aria-expanded="false">☰</button>
+      <button class="fab-btn sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="打开目录" aria-expanded="false" aria-controls="post-sidebar">☰</button>
       <button class="fab-btn back-to-top" type="button" aria-label="回到顶部">
         <span class="back-to-top-icon">↑</span>
         <span class="back-to-top-text">回到顶部</span>

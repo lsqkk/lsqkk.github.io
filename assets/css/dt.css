@@ -420,3 +420,14 @@ body { min-height: 100vh; padding: 104px 24px 48px; background: var(--page-bg); 
     .dynamic-layout { flex-direction: column; gap: 28px; }
     .dynamic-sidebar { width: 100%; flex: none; }
 }
+
+/* Mobile timeline: keep the month selector compact instead of a wall of rows. */
+@media (max-width:768px) {
+  body { padding-inline:var(--page-gutter); }
+  .month-list { display:flex; overflow-x:auto; gap:8px; overscroll-behavior-x:contain; }
+  .month-item { flex:0 0 auto; width:auto; gap:12px; min-height:44px; padding:8px 12px; border:1px solid var(--line); }
+  .month-item.active { border-color:var(--accent); color:var(--accent); }
+}
+.dynamic-entry-footer { flex-wrap:wrap; gap:10px; }
+.dynamic-comment-text { overflow-wrap:anywhere; }
+.dynamic-action-btn, .dynamic-submit-btn { min-height:40px; }

@@ -1,0 +1,34 @@
+/* Small, quiet landmarks. Everything remains in the document flow. */
+.reading-compass { margin:22px 0 28px; padding-block:12px; border-block:1px solid var(--line); color:var(--text-subtle); }
+.reading-compass-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; font-size:11px; }
+.reading-position { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.reading-controls { display:flex; align-items:center; flex-shrink:0; gap:14px; }
+.reading-percent { color:var(--accent); font-variant-numeric:tabular-nums; min-width:3ch; text-align:right; }
+.reading-measure { color:var(--text-subtle); background:transparent; padding:6px 0 6px 12px; border-left:1px solid var(--line); border-radius:0; font-size:11px; cursor:pointer; }
+.reading-measure[aria-pressed=true] { color:var(--accent); }
+.chapter-ruler { display:flex; gap:4px; padding-top:6px; overflow-x:auto; scrollbar-width:thin; }
+.chapter-ruler .chapter-tick { flex:1 0 14px; position:relative; min-width:14px; height:28px; padding:0; border:0; background:transparent; }
+.chapter-tick::before { content:''; position:absolute; inset:11px 0; background:var(--line-strong); border-radius:1px; }
+.chapter-tick::after { content:''; position:absolute; top:11px; left:0; height:6px; width:var(--chapter-read,0%); border-radius:1px; background:var(--accent); }
+.chapter-tick[aria-current]::before { outline:1px solid var(--accent); outline-offset:2px; }
+.chapter-tick:hover::before { background:var(--accent-soft); }
+.reading-seam { display:flex; align-items:center; gap:12px; margin-top:10px; padding-left:12px; border-left:2px solid var(--accent); }
+.reading-seam button { min-height:36px; background:transparent; border:0; color:var(--accent); font-size:12px; cursor:pointer; }
+.reading-seam button:first-child { flex:1; min-width:0; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.reading-seam button:last-child { width:36px; flex-shrink:0; color:var(--text-subtle); font-size:18px; }
+.post-content .overflow-guide { display:flex; justify-content:space-between; gap:16px; border-top:1px solid var(--line); background:linear-gradient(to right,var(--accent) var(--overflow-read,0%),transparent var(--overflow-read,0%)) top left/100% 1px no-repeat; padding:7px 0; margin-top:-14px; margin-bottom:20px; color:var(--text-subtle); font-size:10px; letter-spacing:.03em; }
+.post-content .overflow-guide[hidden] { display:none; }
+.post-content .table-scroll + .overflow-guide { margin-top:-6px; }
+body.reading-narrow .post-content { max-width:58ch; margin-inline:auto; }
+@media (max-width:640px) {
+  .reading-compass-meta { font-size:10px; }
+  .reading-measure { display:none; }
+  .chapter-ruler .chapter-tick { min-height:36px; }
+  .chapter-tick::before { top:15px; bottom:15px; }
+  .chapter-tick::after { top:15px; }
+}
+@media print {
+  .reading-compass,.overflow-guide,.post-fab-stack,.post-sidebar-group,.header,.post-share-card,.post-comment-section { display:none !important; }
+  body.post-layout-page .post-layout-wrap { display:block; padding:0; max-width:none; }
+  body.reading-narrow .post-content { max-width:none; }
+}

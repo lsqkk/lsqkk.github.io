@@ -398,3 +398,12 @@ body {
     .post-item { gap: 0; }
     .post-cover-wrap { display: none; }
 }
+
+/* Keep filters in the page plane and pagination comfortable on small screens. */
+.posts-container { padding-inline:max(var(--page-gutter), env(safe-area-inset-left)); }
+.posts-container .page-subtitle { overflow-wrap:anywhere; padding-inline:0; }
+.post-item { min-width:0; }
+.post-item .post-info { min-width:0; }
+.pagination { flex-wrap:wrap; gap:8px; }
+.page-btn { min-width:40px; min-height:40px; }
+.post-tags { flex-wrap:wrap; row-gap:8px; }

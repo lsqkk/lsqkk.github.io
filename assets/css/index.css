@@ -2491,3 +2491,31 @@ body.home-page .dynamic-feed .gallery-overlay {
 @media (max-width: 640px) {
     body.home-page .dynamic-feed .gallery-container { max-width: 100%; }
 }
+
+/* Compact change ledger: type and copy stay together at every width. */
+body.home-page .main-layout { padding-left:max(var(--page-gutter), env(safe-area-inset-left)); padding-right:max(var(--page-gutter), env(safe-area-inset-right)); }
+body.home-page .main-content, body.home-page .sidebar-index { min-width:0; }
+body.home-page .index-log-item { grid-template-columns:max-content minmax(0,1fr); column-gap:10px; row-gap:3px; align-items:baseline; border-radius:0; }
+body.home-page .index-log-tag { grid-column:1; grid-row:1; min-width:0; white-space:nowrap; align-self:baseline; font-size:11px; }
+body.home-page .index-log-detail { grid-column:2; white-space:normal; overflow:visible; font-weight:400; line-height:1.7; }
+body.home-page .index-log-date { grid-column:2; color:var(--text-subtle); font:11px/1.5 var(--site-font-family); font-variant-numeric:tabular-nums; }
+body.home-page .index-log-item:hover .index-log-detail { color:var(--accent); }
+body.home-page .post-date { white-space:nowrap; font-variant-numeric:tabular-nums; }
+body.home-page .dynamic-entry-footer { flex-wrap:wrap; gap:10px; }
+body.home-page .contact-value { overflow-wrap:anywhere; }
+body.home-page .footer-container { padding-inline:var(--page-gutter); }
+body.home-page .more-link, body.home-page .sidebar-more-link { display:inline-flex; align-items:center; min-height:40px; }
+@media (max-width:640px) {
+  body.home-page .hero-title { font-size:clamp(26px,7vw,32px); line-height:1.25; }
+  body.home-page .main-content { gap:40px; }
+  body.home-page .section-head { gap:12px; flex-wrap:wrap; }
+  body.home-page .post-tags { row-gap:8px; }
+}
+
+
+body.home-page .dynamic-entry-footer { flex-direction:row; align-items:center; }
+body.home-page .latest-video-body, body.home-page .latest-video-card { background:transparent; box-shadow:none; }
+body.home-page .footer-stat { border-radius:0; background:transparent; }
+@media (max-width:640px) {
+  body.home-page .footer-stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 20px; }
+}

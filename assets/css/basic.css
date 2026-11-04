@@ -158,3 +158,20 @@ input, textarea, select { accent-color:var(--accent); }
 @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
 
 .catalog-page > .header-placeholder, .feature-page > .header-placeholder, .home-page > .header-placeholder { display:none; }
+
+/* Shared reading and touch geometry. Keep landscape safe areas independent. */
+:root { --page-gutter: clamp(22px, 5.6vw, 32px); --anchor-offset: 88px; }
+html { scroll-padding-top: 0; }
+:where(h1,h2,h3,h4,h5,h6,[id]) { scroll-margin-top: var(--anchor-offset); }
+:where(p,li,h1,h2,h3,h4,.page-subtitle) { overflow-wrap: anywhere; }
+:where(input,textarea,select) { color: var(--text-main); }
+:where(button,a,input,textarea,select) { -webkit-tap-highlight-color: transparent; }
+:where(button,a) { touch-action: manipulation; }
+:where(button:disabled,input:disabled,select:disabled) { cursor: not-allowed; opacity: .55; }
+:where(input,textarea)::placeholder { color: var(--text-subtle); opacity: 1; }
+@media (max-width:768px) {
+  :where(input:not([type=checkbox]):not([type=radio]),textarea,select) { font-size:16px; }
+  .page-subtitle { padding-inline:0; }
+}
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+html[data-motion=reduce] *, html[data-motion=reduce] *::before, html[data-motion=reduce] *::after { scroll-behavior:auto !important; }

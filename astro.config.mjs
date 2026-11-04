@@ -585,6 +585,7 @@ export default defineConfig({
   }), sitemapCompat(), apiBaseInjector(), optimizeStatic()],
   redirects: process.argv.includes("dev") ? buildDevRedirects() : undefined,
   markdown: {
+    shikiConfig: { themes: { light: "github-light", dark: "github-dark" } },
     remarkRehype: {
       allowDangerousHtml: true,
     },

@@ -1,7 +1,7 @@
 // 代码高亮和复制功能
 document.addEventListener('DOMContentLoaded', function () {
     // 初始化 highlight.js
-    hljs.highlightAll();
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
 
     // 为代码块添加标题栏和复制按钮
     addCodeBlockHeaders();
