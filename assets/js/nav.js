@@ -730,63 +730,131 @@ function initializeNavHoverMenus() {
 }
 
 // 多语言翻译功能
-let translationLoading = false;
+let translationReady = false;
+let translationPromise = null;
+let translationTimer;
+let translationHadError = false;
+function translationStatus(message, failed = false) {
+    let status = document.querySelector('.translation-status');
+    if (!status) {
+        status = document.createElement('div');
+        status.className = 'translation-status';
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        document.body.append(status);
+    }
+    if (status.dataset.message === message && status.dataset.failed === String(failed)) return;
+    status.dataset.message = message;
+    status.dataset.failed = String(failed);
+    status.replaceChildren(document.createTextNode(message));
+    status.hidden = !message;
+    if (failed) {
+        const retry = document.createElement('button');
+        retry.type = 'button'; retry.textContent = '重试';
+        retry.onclick = () => translationReady ? location.reload() : performLanguageChange(currentLanguage, {force:true});
+        status.append(retry);
+    }
+}
 function initializeTranslation() {
-    if (currentLanguage === DEFAULT_LANGUAGE || translationLoading) return;
-    translationLoading = true;
-    const script = document.createElement('script');
-    script.src = 'https://cdn.staticfile.net/translate.js/3.17.0/translate.js';
-    script.onerror = () => { translationLoading = false; console.warn('Translation service unavailable'); };
-    script.onload = function () {
-        // 1. 基础配置：设置本地语种并隐藏自动生成的选择框
-        translate.language.setLocal(DEFAULT_LANGUAGE);
-        translate.selectLanguageTag.show = false; // 确保隐藏自带选择框
-        if (translate.service && typeof translate.service.use === 'function') {
-            translate.service.use('client.edge');
-        }
-
-        // 2. 初始化完成后同步当前状态
-        syncLanguagePickers(currentLanguage);
-        performLanguageChange(currentLanguage, { force: true });
-    };
-    document.head.appendChild(script);
+    if (currentLanguage === DEFAULT_LANGUAGE) return;
+    if (translationPromise) return translationPromise;
+    translationStatus('正在加载翻译…');
+    translationPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '/assets/js/vendor/translate-3.18.66.js';
+        const timer = setTimeout(() => { script.remove(); reject(new Error('Translation load timed out')); }, 12000);
+        script.onerror = () => { clearTimeout(timer); script.remove(); reject(new Error('Translation unavailable')); };
+        script.onload = () => { clearTimeout(timer); resolve(); };
+        document.head.append(script);
+    }).then(() => {
+        const engine = window.translate;
+        engine.language.setLocal(DEFAULT_LANGUAGE);
+        engine.selectLanguageTag.show = false;
+        // The previous Edge auth endpoint now returns HTTP 404.
+        engine.service.use('giteeAI');
+        engine.request.api.host = ['https://giteeai.zvo.cn/'];
+        // The public channel allows at most two requests per two seconds.
+        // Serialize language batches and retry transient throttling before rendering.
+        const post = engine.request.post.bind(engine.request);
+        let queue = Promise.resolve();
+        engine.request.post = (path, data, done, abnormal) => {
+            if (path !== engine.request.api.translate) return post(path, data, done, abnormal);
+            queue = queue.then(async () => {
+                const texts = JSON.parse(decodeURIComponent(data.text));
+                const translated = [];
+                for (let offset = 0; offset < texts.length; offset += 20) {
+                    const batch = {...data, text:encodeURIComponent(JSON.stringify(texts.slice(offset, offset + 20)))};
+                    let result;
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        await new Promise(resolve => setTimeout(resolve, attempt ? 3000 : 1500));
+                        try {
+                            const response = await fetch('https://giteeai.zvo.cn/translate.json', {
+                                method:'POST',
+                                referrerPolicy:'no-referrer',
+                                body:new URLSearchParams({from:batch.from, to:batch.to, text:decodeURIComponent(batch.text)}),
+                                signal:AbortSignal.timeout(15000)
+                            });
+                            result = response.ok ? {response:await response.json()} : {xhr:{status:response.status}};
+                        } catch { result = {xhr:{status:0}}; }
+                        if (result.response?.result === 1) break;
+                    }
+                    if (result.response?.result !== 1) {
+                        translationHadError = true;
+                        translationStatus('部分内容翻译失败，请稍后重试。', true);
+                        if (result.response) done(result.response);
+                        else if (abnormal) abnormal(result.xhr);
+                        return;
+                    }
+                    translated.push(...result.response.text);
+                }
+                done({result:1, from:data.from, to:data.to, text:translated});
+            }).catch(error => {
+                translationHadError = true;
+                translationStatus('翻译暂时不可用，请稍后重试。', true);
+                console.warn(error);
+            });
+        };
+        engine.ignore.tag.push('pre', 'code');
+        engine.ignore.class.push('language-picker', 'translation-status');
+        engine.listener.start();
+        engine.lifecycle.execute.renderFinish.push(() => {
+            clearTimeout(translationTimer);
+            if (!translationHadError) translationStatus('');
+        });
+        translationReady = true;
+        performLanguageChange(currentLanguage, {force:true});
+    }).catch(error => {
+        translationPromise = null;
+        translationStatus('翻译暂时不可用，请稍后重试。', true);
+        console.warn(error);
+    });
+    return translationPromise;
 }
 
-// 4. 封装统一的语言切换执行函数
 function performLanguageChange(targetLanguage, options = {}) {
     const normalizedLanguage = normalizeLanguageCode(targetLanguage);
-    const { force = false } = options;
     const previousLanguage = currentLanguage;
     currentLanguage = normalizedLanguage;
-
     persistLanguagePreference(normalizedLanguage);
     updateCurrentPageLanguageUrl(normalizedLanguage);
     updateDocumentLanguage(normalizedLanguage);
     updateLocalizedLinks();
-
-    document.querySelectorAll('.language-selector').forEach(sel => {
-        sel.value = normalizedLanguage;
-    });
+    document.querySelectorAll('.language-selector').forEach(sel => { sel.value = normalizedLanguage; });
     syncLanguagePickers(normalizedLanguage);
-
-    if (!window.translate || typeof translate.changeLanguage !== 'function') {
+    if (!translationReady) {
         if (normalizedLanguage !== DEFAULT_LANGUAGE) initializeTranslation();
+        else translationStatus('');
         return;
     }
-
-    if (!force && normalizedLanguage === previousLanguage) {
-        return;
-    }
-
-    // 在切换前，特别是切回中文时，尝试清除该语种的缓存
-    if (normalizedLanguage === DEFAULT_LANGUAGE) {
-    }
-
-    // 执行语言切换
-    translate.changeLanguage(normalizedLanguage);
-
-    // 强制进行一次翻译执行，确保内容更新，特别是从其他语言切回中文时
-    translate.execute();
+    if (!options.force && normalizedLanguage === previousLanguage) return;
+    clearTimeout(translationTimer);
+    translationHadError = false;
+    if (normalizedLanguage !== DEFAULT_LANGUAGE) {
+        translationStatus('正在翻译…');
+        translationTimer = setTimeout(() => translationStatus('翻译服务响应超时，请重试。', true), 90000);
+    } else translationStatus('');
+    // changeLanguage executes translation itself and reloads from the source when switching back.
+    window.translate.changeLanguage(normalizedLanguage);
 }
 
 function syncLanguagePickers(targetLanguage) {
@@ -1191,7 +1259,7 @@ function initNavScrollWheel() {
 function initializeAll() {
     if (window.QuarkUserPreferences && typeof window.QuarkUserPreferences.get === 'function') {
         const prefLanguage = window.QuarkUserPreferences.get().language;
-        if (prefLanguage && prefLanguage !== currentLanguage) {
+        if (!getLanguageFromUrl() && prefLanguage && prefLanguage !== currentLanguage) {
             currentLanguage = normalizeLanguageCode(prefLanguage);
         }
     }
@@ -1229,7 +1297,7 @@ function initializeAll() {
         checkLoginStatus();
     });
     window.addEventListener('quark-preferences-updated', (event) => {
-        const nextLanguage = event && event.detail ? normalizeLanguageCode(event.detail.language) : getStoredLanguage();
+        const nextLanguage = getLanguageFromUrl() || (event && event.detail ? normalizeLanguageCode(event.detail.language) : getStoredLanguage());
         if (nextLanguage && nextLanguage !== currentLanguage) {
             performLanguageChange(nextLanguage, { force: true });
         } else {

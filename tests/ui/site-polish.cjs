@@ -57,23 +57,9 @@ const routes=['/','/posts/','/posts/about','/posts/2026/2615','/search?q=高考'
     await ctx.route('**/*',route=>route.request().url().startsWith(base) ? route.continue() : route.abort());
     const page=await ctx.newPage(); const errors=[]; page.on('pageerror',err=>errors.push(err.message));
     await page.goto(base+'/posts/2026/2615');
-    await page.waitForSelector('.chapter-tick');
-    check('fresh reading has no spurious resume prompt',await page.locator('.reading-seam').count()===0);
+    await page.waitForSelector('.post-content');
+    check('article progress and chapter ruler removed',await page.locator('.reading-percent,.chapter-ruler,.reading-seam').count()===0);
     check('hidden back-to-top is removed from tab order',await page.locator('.back-to-top').getAttribute('tabindex')==='-1');
-    await page.locator('.chapter-tick').nth(2).click();
-    await page.waitForTimeout(250);
-    check('chapter ruler moves to intended heading',await page.locator('.post-content h2').nth(2).evaluate(el=>Math.abs(el.getBoundingClientRect().top-88)<8));
-    check('one active chapter',await page.locator('.chapter-tick[aria-current]').count()===1);
-    await page.waitForTimeout(1700);
-    await page.evaluate(()=>history.replaceState(null,'',location.pathname));
-    await page.goto(base+'/tool/');
-    await page.goto(base+'/posts/2026/2615');
-    await page.waitForSelector('.reading-seam');
-    check('return stitch does not jump automatically',await page.evaluate(()=>scrollY<100));
-    await page.locator('.reading-seam button').first().click();
-    check('return stitch resumes reading',await page.evaluate(()=>scrollY>240));
-    check('return stitch dismisses after use',await page.locator('.reading-seam').count()===0);
-
     await page.locator('.sidebar-toggle').click();
     check('drawer opens with opaque surface',await page.locator('.post-sidebar-group').evaluate(el=>el.classList.contains('active')&&getComputedStyle(el).backgroundColor!=='rgba(0, 0, 0, 0)'));
     check('drawer receives focus',await page.locator('.post-sidebar-close').evaluate(el=>el===document.activeElement));

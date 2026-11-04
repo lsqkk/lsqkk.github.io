@@ -2,7 +2,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 
 const navConfigPath = path.join(process.cwd(), "src", "config", "json", "nav.json");
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
@@ -37,9 +36,8 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
     <script is:inline src="/assets/js/user-profile.js"></script>
 </head>
 
-<body class="manage-body luxury-body">
+<body class="manage-body">
     <script is:inline src="/assets/js/nav.js"></script>
-    <LuxuryBackground />
 
     <div class="manage-shell">
         <header class="manage-header">

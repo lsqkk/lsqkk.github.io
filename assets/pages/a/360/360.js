@@ -458,13 +458,18 @@ function renderSceneList(filter = '') {
     });
 
     if (filtered.length === 0) {
-        el.sceneList.innerHTML = '<p style="text-align:center;color:#666;">未找到匹配的场景</p>';
+        el.sceneList.innerHTML = '<p class="scene-empty">未找到匹配的场景</p>';
         return;
     }
 
     filtered.forEach((scene) => {
         const sceneItem = document.createElement('div');
         sceneItem.className = 'scene-item';
+        sceneItem.tabIndex = 0;
+        sceneItem.setAttribute('role', 'button');
+        sceneItem.addEventListener('keydown', event => {
+            if (event.target === sceneItem && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); sceneItem.click(); }
+        });
         if (scene.id) sceneItem.dataset.sceneId = scene.id;
         if (currentScene && currentScene.id === scene.id) {
             sceneItem.classList.add('active');
@@ -482,7 +487,7 @@ function renderSceneList(filter = '') {
         sceneItem.addEventListener('click', () => {
             selectScene(scene);
             if (isMobile) {
-                el.leftPanel?.classList.remove('panel-mobile-visible');
+                setPanelOpen(false);
             }
         });
         if (isAdmin) {
@@ -1637,6 +1642,7 @@ function setPanelOpen(open) {
     }
     if (el.panelToggleBtn) {
         el.panelToggleBtn.classList.toggle('opened', shouldOpen);
+        el.panelToggleBtn.setAttribute('aria-expanded', String(shouldOpen));
         el.panelToggleBtn.innerHTML = shouldOpen
             ? '<i class="fas fa-chevron-left"></i><span>收起侧栏</span>'
             : '<i class="fas fa-list"></i>';

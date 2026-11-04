@@ -2096,10 +2096,10 @@ body.dark-mode .skeleton-block {
    无卡片、无模糊、无位移悬停；层级来自字号、留白和分隔线。
    ============================================================ */
 body.home-page .main-layout {
-    max-width: 1280px;
+    max-width: 1160px;
     padding: 108px 32px 56px;
-    gap: 64px;
-    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 56px;
+    grid-template-columns: minmax(0, 1fr) 280px;
     align-items: start;
 }
 body.home-page .main-content { gap: 56px; }

@@ -46,7 +46,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     </div>
 
     <!-- 侧栏展开/收起按钮 -->
-    <button class="panel-fab" id="panelToggleBtn" aria-label="展开或收起侧栏">
+    <button class="panel-fab" id="panelToggleBtn" type="button" aria-controls="leftPanel" aria-expanded="false" aria-label="展开或收起侧栏">
         <i class="fas fa-list"></i>
     </button>
 
@@ -54,7 +54,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <div class="control-panel" id="leftPanel">
         <div class="panel-header">
             <h3 class="panel-title">XJTU 360°</h3>
-            <button class="toggle-btn" id="collapseLeft">
+            <button class="toggle-btn" id="collapseLeft" type="button" aria-label="收起侧栏">
                 <i class="fas fa-minus"></i>
             </button>
         </div>
@@ -67,7 +67,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" id="searchInput" placeholder="搜索地点或贡献者...">
+                <input type="text" class="search-input" id="searchInput" aria-label="搜索地点或贡献者" placeholder="搜索地点或贡献者...">
             </div>
             <div class="map-card">
                 <div class="map-header">
