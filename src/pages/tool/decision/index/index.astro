@@ -1,0 +1,83 @@
+---
+import LuxuryBackground from '../../../../components/LuxuryBackground.astro';
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
+import navConfig from '../../../../config/json/nav.json';
+import presets from '../../../../../assets/pages/tool/decision/presets.json';
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>权衡 · 决策实验室 - {SITE_TITLE}</title>
+    <meta name="description" content="把在意的因素放到同一张桌上：比较方案、调整偏好，探索结论在什么条件下改变。本地保存，支持备份与 Markdown 导出。" />
+    <link rel="canonical" href={new URL('/tool/decision/', SITE_URL)} />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/nav.css" />
+    <link rel="stylesheet" href="/assets/pages/tool/decision/decision.css" />
+    <script is:inline define:vars={{ navConfig }}>window.__NAV_CONFIG__ = navConfig;</script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
+  </head>
+  <body class="luxury-body decision-page">
+    <LuxuryBackground />
+    <a class="decision-skip" href="#decision-editor">跳到比较表</a>
+    <main class="decision-wrap">
+      <nav class="decision-breadcrumb" aria-label="当前位置"><a href="/tool/">工具箱</a><span aria-hidden="true">/</span><span>权衡</span></nav>
+      <header class="decision-hero">
+        <div><p class="decision-eyebrow">QUARK / THE DECISION LAB</p><h1>权衡<span>把在意的事，看清楚。</span></h1><p>几个方案，各有各的好。给因素一点分量，看看取舍，也看看改变主意的可能。</p></div>
+        <svg class="decision-hero-art" viewBox="0 0 180 100" fill="none" aria-hidden="true"><path class="decision-art-grid" d="M10 30H170M10 50H170M10 70H170M40 10V90M90 10V90M140 10V90"/><path class="decision-art-a" d="M16 76L162 22"/><path class="decision-art-b" d="M16 30L162 64"/><circle cx="95" cy="47" r="10" class="decision-art-circle"/><circle cx="95" cy="47" r="3" class="decision-art-dot"/></svg>
+      </header>
+      <noscript><div class="decision-noscript"><h2>这张比较桌需要 JavaScript</h2><p>它在浏览器中计算和保存。你也可以在纸上为每个因素分配权重，再将各项评分乘以权重相加。</p><a href="/tool/">返回工具箱 →</a></div></noscript>
+      <div data-decision-app hidden>
+        <div class="decision-starters"><span>从这里开始</span><div role="group" aria-label="选择示例或新建比较">{presets.map((preset, i) => <button type="button" data-preset={i}>{preset.name}<span aria-hidden="true">↗</span></button>)}</div><p data-preset-hint>{presets[0].hint}</p></div>
+        <div class="decision-document">
+          <label for="decision-title" class="decision-sr">这次比较的标题</label><input id="decision-title" type="text" maxlength="100" value={presets[0].state.title} />
+          <div class="decision-save"><span data-save-dot aria-hidden="true"></span><span role="status" data-save-state>准备本地草稿</span></div>
+        </div>
+        <div class="decision-workspace">
+          <section class="decision-editor" id="decision-editor" tabindex="-1" aria-labelledby="matrix-title">
+            <div class="decision-section-title"><h2 id="matrix-title"><span>01</span> 摆上桌面</h2><span>2–5 个方案 · 最多 6 个因素</span></div>
+            <div class="decision-options" data-options></div>
+            <div class="decision-editor-toolbar"><p>评分 <strong>0–10</strong>，越满意分越高。</p><button type="button" data-add-option>＋ 方案</button></div>
+            <div class="decision-matrix-wrap"><table class="decision-matrix"><caption class="decision-sr">因素、重要程度与各方案的满意度评分</caption><thead data-matrix-head></thead><tbody data-matrix></tbody></table></div>
+            <div class="decision-editor-footer"><button type="button" data-add-criterion>＋ 因素</button><button type="button" data-undo disabled>↶ 撤销一步</button></div>
+            <p class="decision-hint">重要程度可以随意分配，系统会换算成占比。费用、耗时等因素，也请换成“有多满意”来打分。</p>
+          </section>
+          <aside class="decision-result" aria-labelledby="result-title">
+            <div class="decision-section-title"><h2 id="result-title" tabindex="-1"><span>02</span> 看见取舍</h2><span>加权得分 / 10</span></div>
+            <div class="decision-verdict" data-verdict></div>
+            <div class="decision-ranking" data-ranking></div>
+            <div class="decision-legend" data-legend aria-label="各颜色对应的因素"></div>
+            <p class="decision-result-note">条形中的每一段，是一个因素带来的分数。它们相加，得到当前总分。</p>
+            <details class="decision-method"><summary>这份比较怎么算？</summary><p>每项评分 × 该因素占比，再相加。所有因素都填好且总重要程度大于零时，才显示排名。显示值保留两位小数，排序使用原始精度。</p><p>结果只反映你填入的偏好。可以把遗漏的因素补进来，也可以带着结果继续思考。</p></details>
+          </aside>
+        </div>
+        <div class="decision-mobile-dock" data-mobile-dock hidden><div><span data-mobile-dock-label>当前比较</span><strong data-mobile-dock-value></strong></div><a href="#result-title">查看取舍 <span aria-hidden="true">↓</span></a></div>
+        <section class="decision-scenario" aria-labelledby="scenario-title">
+          <div class="decision-section-title"><h2 id="scenario-title"><span>03</span> 如果，我更在意……</h2><span>偏好沙盘</span></div>
+          <p class="decision-scenario-intro">有些选择很稳，有些只差一点偏好。移动一条线，看看你的结论在哪里转弯。</p>
+          <div data-scenario-empty class="decision-scenario-empty" hidden>填完评分、设置重要程度，并保留至少两个因素，就能探索偏好变化。</div>
+          <div class="decision-scenario-grid" data-scenario-body>
+            <div class="decision-scenario-controls">
+              <label for="scenario-criterion">想重新考虑的因素</label><select id="scenario-criterion"></select>
+              <div class="decision-share-heading"><label for="scenario-share">让它占我的考虑</label><output for="scenario-share" data-scenario-share>0%</output></div>
+              <input type="range" id="scenario-share" min="0" max="100" step="1" value="30" />
+              <div class="decision-range-ends"><span>完全不在意</span><span>只在意这一项</span></div>
+              <p class="decision-scenario-verdict" role="status" data-scenario-verdict></p>
+              <button type="button" data-scenario-reset>回到当前偏好</button>
+              <p class="decision-hint" data-scenario-note>沙盘不会修改上面的草稿，其余因素按原比例分配剩余权重。</p>
+            </div>
+            <div class="decision-scenario-visual"><div data-scenario-chart></div><div class="decision-chart-key" data-scenario-key></div><div class="decision-intervals" data-scenario-intervals></div><p class="decision-hint">横轴是所选因素的占比，纵轴是总分。区间边界显示到小数一位，交界处可能并列。</p></div>
+          </div>
+        </section>
+        <footer class="decision-filebar"><div><strong>把思考带走</strong><p>草稿只保存在此浏览器，清理数据前记得备份。</p></div><div class="decision-file-actions"><button type="button" data-export="markdown">导出 Markdown ↗</button><button type="button" data-export="json">备份 JSON</button><label class="decision-import" for="decision-import">导入备份<input id="decision-import" type="file" accept=".json,application/json" /></label></div></footer>
+        <p class="decision-notice" role="status" aria-live="polite" data-notice></p>
+      </div>
+      <footer class="decision-footer"><a href="/tool/">← 回到工具箱</a><span>给每一个选择，多一点清晰。</span><a href="/posts/copyright">{SITE_TITLE}</a></footer>
+    </main>
+    <dialog class="decision-confirm" aria-labelledby="decision-confirm-title"><form method="dialog"><p class="decision-eyebrow">更换比较</p><h2 id="decision-confirm-title">替换当前草稿？</h2><p data-confirm-message></p><p>建议先关闭此窗口，备份当前内容。替换后也可点击“撤销一步”恢复。</p><div><button value="cancel" autofocus>保留当前草稿</button><button value="replace" class="decision-primary">替换草稿</button></div></form></dialog>
+    <script type="application/json" id="decision-presets" set:html={JSON.stringify(presets).replace(/</g, '\u003c')} />
+    <script is:inline type="module" src="/assets/pages/tool/decision/decision.js"></script>
+  </body>
+</html>

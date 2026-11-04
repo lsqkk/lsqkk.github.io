@@ -1,5 +1,6 @@
 ---
 import ReadingDeskEntry from "../components/ReadingDeskEntry.astro";
+import PocketShelf from "../components/PocketShelf.astro";
 import LuxuryBackground from "../components/LuxuryBackground.astro";
 import fs from "node:fs/promises";
 import { readFileSync } from "node:fs";
@@ -231,6 +232,7 @@ const homePreloaded = {
             </section>
         )}
         <ReadingDeskEntry />
+        <PocketShelf compact />
         {hasMainSection("recent_articles") && (
             <section class="home-block home-panel content-section">
               <div class="section-head recent-header">

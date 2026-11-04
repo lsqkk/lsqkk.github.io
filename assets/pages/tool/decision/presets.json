@@ -1,0 +1,41 @@
+[
+  {
+    "name": "周末怎么过",
+    "hint": "一个轻松的示例，先拖动重要程度，看看选择如何变化。",
+    "state": {
+      "version": 1,
+      "title": "留半天，给自己充个电",
+      "options": [{"id":"walk","name":"城市散步"},{"id":"hike","name":"郊外徒步"},{"id":"home","name":"在家充电"}],
+      "criteria": [
+        {"id":"energy","name":"恢复精力","weight":4,"scores":{"walk":8,"hike":7,"home":9}},
+        {"id":"time","name":"时间从容","weight":3,"scores":{"walk":8,"hike":4,"home":10}},
+        {"id":"novelty","name":"有新鲜感","weight":2,"scores":{"walk":7,"hike":10,"home":3}},
+        {"id":"cost","name":"开销轻松","weight":1,"scores":{"walk":8,"hike":5,"home":10}}
+      ]
+    }
+  },
+  {
+    "name": "下一个学什么",
+    "hint": "示例分数只演示方法，请按自己的经验重新评分。",
+    "state": {
+      "version": 1,
+      "title": "下个月，把时间投入哪里",
+      "options": [{"id":"code","name":"做一个小项目"},{"id":"book","name":"系统读一本书"},{"id":"course","name":"上一门课程"}],
+      "criteria": [
+        {"id":"curiosity","name":"我有多好奇","weight":4,"scores":{"code":9,"book":7,"course":6}},
+        {"id":"practice","name":"能用到多少","weight":3,"scores":{"code":9,"book":6,"course":8}},
+        {"id":"schedule","name":"时间能否配合","weight":3,"scores":{"code":5,"book":9,"course":7}}
+      ]
+    }
+  },
+  {
+    "name": "从空白开始",
+    "hint": "写下至少两个方案，再给每个因素评分。空白评分不会被当成零分。",
+    "state": {
+      "version": 1,
+      "title": "我正在考虑的一个选择",
+      "options": [{"id":"a","name":"方案 A"},{"id":"b","name":"方案 B"}],
+      "criteria": [{"id":"first","name":"我最看重的事","weight":5,"scores":{"a":null,"b":null}},{"id":"second","name":"另一个重要因素","weight":5,"scores":{"a":null,"b":null}}]
+    }
+  }
+]

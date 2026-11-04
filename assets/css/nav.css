@@ -156,7 +156,7 @@
     align-items: center;
 }
 
-.header-search input {
+.header .header-search input {
     width: 172px;
     height: 32px;
     padding: 0 32px 0 11px;
@@ -411,7 +411,7 @@
     pointer-events: none;
 }
 
-.language-trigger {
+.header .language-trigger, .navsidebar-language .language-trigger {
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
@@ -479,7 +479,7 @@
     z-index: 9000;
 }
 
-.language-menu button {
+.language-menu button, .language-menu.language-menu-body button {
     width: 100%;
     padding: 7px 9px;
     color: var(--text-main);

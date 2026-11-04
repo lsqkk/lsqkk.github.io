@@ -1,5 +1,6 @@
 /* 拾页: an open reading table, using the site's existing light/dark tokens. */
 .desk-page { margin:0; background:var(--surface); color:var(--text-main); }
+.desk-page > .header-placeholder { display:none; }
 .desk-page *, .desk-home * { box-sizing:border-box; }
 .desk-shell { max-width:1220px; margin:auto; padding:124px max(var(--page-gutter,24px),env(safe-area-inset-left)) 36px; }
 .desk-shell a { color:inherit; text-decoration:none; }

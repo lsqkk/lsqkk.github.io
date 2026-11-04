@@ -33,19 +33,28 @@ const currentYear = new Date().getFullYear();
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
 
-  <body class="luxury-body">
+  <body class="luxury-body posts-index-page">
     <LuxuryBackground />
 
     <script is:inline src="/assets/js/nav.js"></script>
 
     <div class="posts-container">
-      <h1 class="page-title">文章 / POSTS</h1>
-      <h2 class="page-subtitle">
-        <i class="fa-solid fa-rss"></i>
-        RSS订阅链接: <a href={SITE_URL + "/posts/rss.xml"} target="_blank">{SITE_URL}/posts/rss.xml</a>
-      </h2>
-      <ReadingDeskEntry compact />
+      <header class="posts-index-header"><div><p>QUARK / NOTES & IDEAS</p><h1 class="page-title">文章</h1></div><a href={SITE_URL + "/posts/rss.xml"} class="posts-rss"><i class="fa-solid fa-rss" aria-hidden="true"></i> 订阅 RSS ↗</a></header>
+      <div class="posts-index-layout">
+      <main class="posts-index-main" aria-label="文章列表">
+      <div class="posts-list-status"><span id="postsListStatus" role="status">共 {postsData.length} 篇文章</span><button type="button" id="postsResetFilters" hidden>清除筛选 ×</button></div>
       <div id="searchResults" class="search-results"></div>
+      <div id="posts"></div>
+      <div class="pagination" id="pagination">
+        <button class="page-btn prev-btn" onclick="prevPage()">上一页</button>
+        <div class="page-numbers" id="pageNumbers"></div>
+        <button class="page-btn next-btn" onclick="nextPage()">下一页</button>
+      </div>
+      </main>
+      <aside class="posts-index-rail" aria-label="阅读与文章筛选">
+      <ReadingDeskEntry compact />
+      <a class="posts-mobile-desk" href="/desk/">拾页阅读桌 ↗</a>
+      <details class="posts-index-filters" data-post-filters open><summary>标签与专栏 <span aria-hidden="true">⌄</span></summary>
       <div class="posts-fold-panel" id="tagFilterPanel">
         <button class="posts-fold-toggle" type="button" data-target="tagFilterWrap">
           <i class="fa-solid fa-tag"></i>标签 <span class="posts-fold-count" id="tagCount">0</span>
@@ -62,11 +71,8 @@ const currentYear = new Date().getFullYear();
           <div id="columnFilter" class="tag-filter"></div>
         </div>
       </div>
-      <div id="posts"></div>
-      <div class="pagination" id="pagination">
-        <button class="page-btn prev-btn" onclick="prevPage()">上一页</button>
-        <div class="page-numbers" id="pageNumbers"></div>
-        <button class="page-btn next-btn" onclick="nextPage()">下一页</button>
+      </details>
+      </aside>
       </div>
     </div>
 

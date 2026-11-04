@@ -445,3 +445,31 @@
 }
 .my-info-item:hover { background: var(--surface); border-color: var(--line); transform: none; }
 .glass-card { border-radius: var(--radius-lg); }
+.friends-page { margin:0; }
+.friends-page > .header-placeholder { display:none; }
+.friends-page .page-content { display:grid; grid-template-columns:minmax(0,1fr) 290px; grid-template-areas:'title title' 'friends info' 'footer footer'; column-gap:38px; max-width:1220px; margin:0 auto; padding:104px var(--page-gutter) 28px; }
+.friends-page .page-title { grid-area:title; margin:0; padding-bottom:24px; text-align:left; font-size:clamp(32px,5vw,48px); border-bottom:1px solid var(--line); }
+.friends-page .friends-section { grid-area:friends; min-width:0; }
+.friends-page .info-section { grid-area:info; min-width:0; }
+.friends-page .page-footer { grid-area:footer; }
+.friends-page .section-title { margin-top:24px; }
+.friends-page .friends-container { max-width:none; padding:0; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.friends-page .friend-card { opacity:1; transform:none; animation:none; }
+.friends-page .friend-card-header { padding:18px; gap:12px; }
+.friends-page .friend-card-body { padding:14px 18px 18px; }
+.friends-page .friend-nickname { font-size:16px; }
+.friends-page .friend-describe { font-size:12px; margin-bottom:12px; }
+.friends-page .friend-link { min-height:32px; align-self:flex-start; }
+.friends-page .info-section .glass-card { padding:0; border:0; background:transparent; }
+.friends-page .my-info-grid { grid-template-columns:minmax(0,1fr); gap:0; margin-bottom:16px; }
+.friends-page .my-info-item { border:0; border-bottom:1px solid var(--line); border-radius:0; padding:12px 30px 12px 0; background:transparent; }
+.friends-page .my-info-item:hover { background:var(--surface-soft); }
+.friends-page .my-info-item:focus-visible { outline:2px solid var(--focus-ring); outline-offset:3px; }
+.friends-page .info-value { font-size:12px; padding:0; }
+.friends-page .copy-icon { right:4px; top:18px; font-size:12px; }
+.friends-page .info-label { font-size:11px; }
+.friends-page .copy-hint { display:none; }
+.friends-page .my-info-note { padding:12px; border:1px solid var(--line); background:var(--surface); font-size:12px; line-height:1.8; display:block; }
+.friend-initial { display:grid; place-items:center; background:var(--accent-soft); color:var(--accent); font-size:20px; }
+@media(max-width:950px) { .friends-page .page-content { grid-template-columns:minmax(0,1fr); grid-template-areas:'title' 'friends' 'info' 'footer'; padding-top:88px; } .friends-page .my-info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24px; } }
+@media(max-width:540px) { .friends-page .friends-container, .friends-page .my-info-grid { grid-template-columns:minmax(0,1fr); } .friends-page .section-title { margin-top:22px; } }

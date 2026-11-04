@@ -21,12 +21,12 @@ function initCopyFunctionality() {
     const infoItems = document.querySelectorAll('.my-info-item');
 
     infoItems.forEach(item => {
-        item.addEventListener('click', function () {
+        item.tabIndex=0;item.setAttribute('role','button');item.setAttribute('aria-label','复制'+item.querySelector('.info-label').textContent);
+        item.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();item.click();}});
+        item.addEventListener('click', async function () {
             const textToCopy = this.getAttribute('data-copy');
-            copyToClipboard(textToCopy);
-
-            // 显示复制成功提示
-            showCopyToast(`已复制: ${textToCopy}`);
+            const copied=await copyToClipboard(textToCopy);
+            showCopyToast(copied?`已复制: ${textToCopy}`:'复制未成功，请选择文字后手动复制。');
         });
     });
 }
@@ -35,16 +35,13 @@ function initCopyFunctionality() {
  * 复制文本到剪贴板
  * @param {string} text - 要复制的文本
  */
-function copyToClipboard(text) {
+async function copyToClipboard(text) {
     // 使用现代剪贴板API
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(err => {
-            console.error('复制失败: ', err);
-            fallbackCopy(text);
-        });
+        try { await navigator.clipboard.writeText(text);return true; } catch { return fallbackCopy(text); }
     } else {
         // 降级方案
-        fallbackCopy(text);
+        return fallbackCopy(text);
     }
 }
 
@@ -53,6 +50,7 @@ function copyToClipboard(text) {
  * @param {string} text - 要复制的文本
  */
 function fallbackCopy(text) {
+    const before=document.activeElement;
     const textArea = document.createElement('textarea');
     textArea.value = text;
     textArea.style.position = 'fixed';
@@ -61,13 +59,15 @@ function fallbackCopy(text) {
     textArea.focus();
     textArea.select();
 
+    let copied=false;
     try {
-        document.execCommand('copy');
+        copied=document.execCommand('copy');
     } catch (err) {
         console.error('降级复制失败: ', err);
     }
 
     document.body.removeChild(textArea);
+    before?.focus({preventScroll:true});return copied;
 }
 
 /**
@@ -155,10 +155,9 @@ function createFriendCard(friend) {
 
     card.innerHTML = `
         <div class="friend-card-header">
-            <img src="${friend.icon || '/assets/img/default-avatar.png'}" 
-                 alt="${friend.nickname} 头像" 
-                 class="friend-icon"
-                 onerror="this.onerror=null; this.src='/assets/img/default-avatar.png';">
+            <img src="${friend.icon || ''}"
+                 alt="${friend.nickname} 头像"
+                 class="friend-icon" loading="lazy">
             <div class="friend-name-container">
                 <div class="friend-nickname">${friend.nickname || '未命名'}</div>
                 <div class="friend-url">${friend.url || '无链接'}</div>
@@ -177,5 +176,8 @@ function createFriendCard(friend) {
         </div>
     `;
 
+    const avatar=card.querySelector('.friend-icon');
+    const fallback=()=>{const initial=document.createElement('span');initial.className='friend-icon friend-initial';initial.textContent=String(friend.nickname||'友').slice(0,1);initial.setAttribute('aria-hidden','true');avatar.replaceWith(initial);};
+    if(friend.icon)avatar.addEventListener('error',fallback,{once:true});else fallback();
     return card;
 }

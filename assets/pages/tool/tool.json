@@ -4,6 +4,12 @@
       "name": "生活",
       "tools": [
         {
+          "name": "权衡 · 决策实验室",
+          "url": "/tool/decision",
+          "target": "_self",
+          "description": "比较几个方案的取舍，拖动偏好，看看结论在哪里改变。支持本地草稿与导出。"
+        },
+        {
           "name": "智能番茄钟",
           "url": "/tool/pomodoro",
           "target": "_self",

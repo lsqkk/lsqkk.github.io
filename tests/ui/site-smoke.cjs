@@ -33,7 +33,8 @@ function check(name,value){assert(value,name);passed++;}
     await page.locator('[data-category="category-1"]').click();
     check('category combines with keyword',await page.locator('[data-catalog-empty]').isVisible());
     await page.locator('[data-catalog-reset]').click();
-    check('reset restores the catalogue',await page.locator('[data-catalog-card]:visible').count()===20);
+    const toolData=JSON.parse(fs.readFileSync(path.join(__dirname,'../../assets/pages/tool/tool.json'),'utf8'));
+    check('reset restores the catalogue',await page.locator('[data-catalog-card]:visible').count()===toolData.categories.reduce((sum,group)=>sum+group.tools.length,0));
     await page.goto(base+'/tool/?q=计算&category=category-1');
     check('shared filter URL restores the result',await page.locator('[data-catalog-card]:visible').count()===1);
     await page.locator('[data-catalog-search]').blur();await page.keyboard.press('/');

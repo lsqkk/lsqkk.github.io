@@ -20,11 +20,13 @@
 
 - **阅读与记录**：Markdown 文章、标签与专栏、全文搜索、RSS、目录、代码与公式，以及按时间选读、主题路线、待读清单和私人摘录。
 - **生活与交流**：动态、图片画廊、留言、友链、账号中心与用户主页。
-- **工具**：Markdown 编辑与导出、图片处理、科学计算、参考文献、OCR、语音识别、打字练习、番茄钟、文件闪传和 PPT 遥控。
+- **工具**：权衡决策实验室、Markdown 编辑与导出、图片处理、科学计算、参考文献、OCR、语音识别、打字练习、番茄钟、文件闪传和 PPT 遥控。
 - **游戏**：五子棋、谍报风云、每日答题和交大校园图寻。
 - **实验室**：校园全景、地图、物理可视化、WebRTC 通信与 AI 交互等项目。
 
 界面以实色表面、细分隔线和留白组织内容。页面结构与正文由 Astro 输出，交互主要使用原生 JavaScript；字体、语言和动态效果可在站内设置中调整。联网功能需要相应服务配置，其可用性不等同于静态页面构建成功。
+
+目录支持卡片与紧凑列表，通过“随行架”在工具、游戏、实验室和首页之间保留常用入口。[权衡](src/docs/页面和功能/权衡决策实验室.md)支持加权比较、贡献拆解和偏好沙盘，草稿保存在浏览器，可导出 JSON 与 Markdown。
 
 ## 本地运行
 
@@ -98,6 +100,7 @@ npm run check:syntax
 npm run check:docs
 npm run test:sitemap
 npm run test:desk
+npm run test:decision
 npm run test:spy-signal
 npm run build
 ~~~
@@ -109,6 +112,8 @@ npm run test:ui
 npm run test:ui:polish
 npm run test:ui:desk
 npm run test:ui:followup
+npm run test:ui:decision
+npm run test:ui:layout
 ~~~
 
 默认测试地址为 `http://127.0.0.1:4321`，可以通过 `BASE_URL` 环境变量指定预览地址。截图写入已忽略的 `test-results/`。布局用例会隔离外部服务，不能替代认证、云端数据库或音视频服务的集成验收。

@@ -4,8 +4,9 @@ if(meta&&content) {
   const post={url:'/posts/'+String(meta.dataset.postPath||location.pathname).replace(/^\/?posts\//,'').replace(/^\/+|\.md$/g,''),title:meta.dataset.postTitle,minutes:minutes(meta.dataset.wordCount)};
   const bar=document.createElement('div');bar.className='desk-post-bar';
   const save=document.createElement('button');save.type='button';save.textContent='+ 留到下次读';save.setAttribute('aria-pressed','false');
-  const clip=document.createElement('button');clip.type='button';clip.textContent='摘录选中文字';clip.title='先在正文选中文字，再点击摘录；手机也可以使用选中后出现的菜单。';
-  const link=document.createElement('a');link.href='/desk/';link.textContent='拾页 · 我的阅读桌 ↗';bar.append(save,clip,link);content.before(bar);
+  const clip=document.createElement('button');clip.type='button';clip.textContent='摘录';clip.setAttribute('aria-label','摘录选中文字');clip.title='先在正文选中文字，再点击摘录；手机也可以使用选中后出现的菜单。';
+  const link=document.createElement('a');link.href='/desk/';link.textContent='我的拾页 ↗';bar.append(save,clip,link);
+  const tools=document.querySelector('[data-post-reading-tools]');if(tools)tools.prepend(bar);else content.before(bar);
   const toast=document.createElement('div');toast.className='desk-post-toast';toast.role='status';toast.setAttribute('aria-live','polite');toast.hidden=true;document.body.append(toast);
   let selected=null,timer;
   function tell(message,success=false){toast.replaceChildren(document.createTextNode(message));if(success){const a=document.createElement('a');a.href='/desk/#notes';a.textContent='写下想法 ↗';toast.append(a);}toast.hidden=false;clearTimeout(timer);timer=setTimeout(()=>toast.hidden=true,6500);}

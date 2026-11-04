@@ -407,3 +407,47 @@ body {
 .pagination { flex-wrap:wrap; gap:8px; }
 .page-btn { min-width:40px; min-height:40px; }
 .post-tags { flex-wrap:wrap; row-gap:8px; }
+
+.posts-index-page > .header-placeholder { display:none; }
+.posts-index-page .posts-container { max-width:1220px; padding-top:104px; }
+.posts-index-header { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding-bottom:25px; border-bottom:1px solid var(--line); }
+.posts-index-header p { margin:0 0 12px; font:10px/1.5 system-ui; letter-spacing:.15em; color:var(--text-subtle); }
+.posts-index-header .page-title { margin:0; }
+.posts-rss { color:var(--text-subtle); font-size:12px; text-decoration:none; min-height:38px; display:flex; align-items:center; }
+.posts-rss:hover { color:var(--accent); }
+.posts-index-layout { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:50px; padding-top:24px; }
+.posts-index-main { min-width:0; }
+.posts-list-status { display:flex; justify-content:space-between; align-items:center; gap:15px; min-height:32px; font-size:12px; color:var(--text-subtle); }
+.posts-list-status button { font:inherit; padding:4px 0; border:0; background:transparent; color:var(--accent); cursor:pointer; }
+.posts-list-status button[hidden] { display:none; }
+.posts-index-main .search-results:empty { display:none; }
+.posts-index-rail { position:sticky; top:88px; align-self:start; max-height:calc(100dvh - 112px); overflow-y:auto; min-width:0; border-left:1px solid var(--line); padding-left:26px; scrollbar-width:thin; }
+.posts-index-rail .desk-home { margin:0 0 22px; padding:0 0 22px; border-top:0; }
+.posts-index-rail .desk-home h2 { font-size:20px; }
+.posts-index-rail .desk-home-heading small, .posts-index-rail .desk-home-mark { display:none; }
+.posts-index-rail .desk-home p { font-size:12px; line-height:1.8; margin-block:12px; }
+.posts-index-rail .desk-home-links { display:grid; gap:4px; }
+.posts-index-rail .desk-home-links a { justify-content:space-between; padding:9px 0; font-size:12px; }
+.posts-index-rail .posts-fold-panel:first-child { border-top:0; }
+.posts-index-rail .tag-filter { gap:6px; padding-top:0; }
+.posts-index-rail .tag-btn { font-size:11px; padding:6px 9px; }
+.posts-index-filters > summary, .posts-mobile-desk { display:none; }
+.posts-index-page .post-item { padding:20px 0; }
+.posts-index-page .post-cover-wrap { flex-basis:120px; }
+.post-cover-wrap[hidden] { display:none; }
+@media(max-width:1000px) {
+  .posts-index-page .posts-container { padding-top:88px; }
+  .posts-index-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:'rail' 'list'; gap:16px; padding-top:16px; }
+  .posts-index-main { grid-area:list; }
+  .posts-index-rail { grid-area:rail; display:flex; align-items:center; justify-content:space-between; gap:15px; position:relative; top:auto; padding:0; border:0; max-height:none; overflow:visible; }
+  .posts-index-rail > .desk-home { display:none; }
+  .posts-mobile-desk { display:block; color:var(--accent); font-size:12px; text-decoration:none; min-height:44px; line-height:44px; }
+  .posts-index-filters > summary { display:flex; gap:24px; min-height:44px; align-items:center; padding:0 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--surface); font-size:12px; list-style:none; cursor:pointer; }
+  .posts-index-filters > summary::-webkit-details-marker { display:none; }
+  .posts-index-filters[open] > summary { color:var(--accent); border-color:var(--accent); }
+  .posts-index-filters[open] > .posts-fold-panel { position:relative; background:var(--surface-overlay); }
+  .posts-index-filters[open] { position:absolute; top:0; right:0; width:min(460px,100%); padding:0 16px 14px; border:1px solid var(--line-strong); border-radius:var(--radius-md); background:var(--surface-overlay); z-index:20; box-sizing:border-box; max-height:60dvh; overflow-y:auto; }
+  .posts-index-filters[open] > summary { margin:0 -16px; border:0; padding-inline:16px; justify-content:space-between; }
+  .posts-index-filters .posts-fold-toggle { padding-block:12px; }
+}
+@media(max-width:460px) { .posts-rss { font-size:11px; } .posts-index-header { padding-bottom:20px; } }

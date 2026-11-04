@@ -1,6 +1,7 @@
 ---
 import LuxuryBackground from '../components/LuxuryBackground.astro';
 import GameCover from '../components/GameCover.astro';
+import PocketShelf from '../components/PocketShelf.astro';
 import navConfig from '../config/json/nav.json';
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
 interface Item { name: string; href: string; description?: string; icon?: string; tags?: string[]; }
@@ -39,15 +40,26 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
           {destinations.map(item => <a href={item.href} aria-current={Astro.url.pathname.replace(/\/$/,'') === item.href.replace(/\/$/,'') ? 'page' : undefined}>{item.label}<span aria-hidden="true">↗</span></a>)}
         </nav>
       </header>
+      <aside class="catalog-rail" aria-label="目录搜索与随行架">
       <div class="catalog-toolbar" hidden data-catalog-toolbar>
         <label class="catalog-search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
           <span class="catalog-sr">搜索{title}</span>
-          <input type="search" placeholder={'搜索' + title + '名称或用途…'} data-catalog-search autocomplete="off" />
+          <input type="search" placeholder="搜索名称或用途…" data-catalog-search autocomplete="off" />
+          <button type="button" class="catalog-search-clear" data-catalog-clear hidden aria-label="清空搜索">×</button>
           <kbd aria-hidden="true">/</kbd>
         </label>
         <p class="catalog-result" role="status" aria-live="polite" data-catalog-result>共 {total} 项</p>
+        <div class="catalog-view-switch" role="group" aria-label="浏览布局">
+          <button type="button" data-catalog-view="grid" aria-pressed="true" aria-label="卡片布局" title="卡片布局">▦</button>
+          <button type="button" data-catalog-view="list" aria-pressed="false" aria-label="紧凑列表" title="紧凑列表">☰</button>
+        </div>
       </div>
+      <details class="catalog-pocket-disclosure" data-pocket-disclosure hidden open>
+        <summary>随行架 <span data-pocket-summary>0</span><span class="catalog-pocket-chevron" aria-hidden="true">⌄</span></summary>
+        <PocketShelf />
+      </details>
+      </aside>
       <div class="catalog-layout">
         <nav class="catalog-categories" aria-label="按分类浏览">
           <span class="catalog-nav-label">分类浏览</span>
@@ -60,13 +72,13 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
             <div class="catalog-grid">
               {group.items.map((item, index) => {
                 const external = /^https?:\/\//.test(item.href) && !item.href.startsWith(SITE_URL + '/');
-                return <a class="catalog-card" href={item.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} data-catalog-card data-search={[item.name, item.description, group.name, ...(item.tags || [])].filter(Boolean).join(' ').toLocaleLowerCase()}>
+                return <div class="catalog-item" data-catalog-item><a class="catalog-card" href={item.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} data-catalog-card data-search={[item.name, item.description, group.name, ...(item.tags || [])].filter(Boolean).join(' ').toLocaleLowerCase()}>
                   {kind === 'games' ? <GameCover href={item.href} name={item.name} /> : <div class="catalog-card-top"><span class="catalog-card-icon" aria-hidden="true">{item.icon || (kind === 'lab' ? '⌘' : kind === 'blog' ? '·' : ['◷','∑','¶','⇄','◇'][groupIndex % 5])}</span><span class="catalog-card-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span></div>}
                   <div class="catalog-card-body"><h3>{item.name}<span class="catalog-card-arrow" aria-hidden="true">↗</span></h3>
                   {item.description && <p>{item.description}</p>}
                   {item.tags?.length && <div class="catalog-card-tags">{item.tags.map(tag=><span>{tag}</span>)}</div>}
                   {external && <span class="catalog-external">外部网站 · 新标签页打开</span>}</div>
-                </a>;
+                </a>{!external && <button class="catalog-pin" type="button" data-pocket-pin={item.href.replace(/\/$/,'')} hidden aria-label={'收藏' + item.name} aria-pressed="false">☆</button>}</div>;
               })}
             </div>
           </section>)}

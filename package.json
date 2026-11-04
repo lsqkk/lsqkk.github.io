@@ -22,6 +22,9 @@
     "test:desk": "node --test tests/reading-desk.test.mjs",
     "test:ui:desk": "node tests/ui/reading-desk.cjs",
     "test:ui:followup": "node tests/ui/ui-followup.cjs",
+    "test:decision": "node --test tests/decision.test.mjs tests/pocket.test.mjs",
+    "test:ui:decision": "node tests/ui/decision-pocket.cjs",
+    "test:ui:layout": "node tests/ui/layout-density.cjs",
     "check:docs": "node scripts/verify-docs.mjs",
     "demo:capture": "node scripts/capture-demo.cjs"
   },

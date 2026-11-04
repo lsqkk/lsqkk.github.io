@@ -315,3 +315,11 @@ body.reduce-motion .toggle-card input {
 .btn.primary:hover { background: var(--text-main); opacity: 0.85; transform: none; box-shadow: none; }
 .btn.primary:active { transform: none; }
 @media (max-width: 640px) { .settings-hero { padding-top: 88px; } }
+.settings-body { margin:0; }
+.settings-body > .header-placeholder { display:none; }
+.settings-shell { width:min(1080px,calc(100% - 2 * var(--page-gutter))); }
+.settings-section, .settings-panel, .settings-actions { animation:none; opacity:1; transform:none; }
+.setting-field { font-size:13px; font-weight:500; }
+.setting-field select { font-weight:400; }
+.setting-field select:focus { transform:none; }
+.settings-actions .btn { min-height:44px; }

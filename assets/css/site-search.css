@@ -350,3 +350,8 @@ body.dark-mode .search-tag-col {
 .search-result-title, .search-result-snippet { overflow-wrap:anywhere; }
 .search-box button { min-height:44px; }
 .search-result mark { background:var(--accent-soft); color:var(--accent); border-radius:2px; }
+.search-body > .header-placeholder { display:none; }
+.search-options { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 20px; padding:5px 0 10px; border-bottom:1px solid var(--line); }
+.search-options .search-mode, .search-options .search-actions { margin:0; }
+.search-options .search-toggle, .search-options .bing-link { font-size:12px; font-weight:400; min-height:36px; display:inline-flex; align-items:center; }
+@media(max-width:720px) { .search-body .search-box { flex-direction:row; } .search-body .search-box input { width:100%; min-width:0; } .search-body .search-box button { flex-shrink:0; } }

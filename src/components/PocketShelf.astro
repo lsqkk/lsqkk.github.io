@@ -1,0 +1,24 @@
+---
+import { pocketCatalog } from '../utils/pocket-catalog';
+interface Props { compact?: boolean; }
+const { compact = false } = Astro.props;
+---
+<section class:list={['pocket-shelf', { 'pocket-compact': compact }]} data-pocket-shelf data-compact={compact ? 'true' : undefined} hidden aria-label="随行架">
+  <div class="pocket-heading">
+    <div><h2>随行架 <small>KEEP CLOSE</small></h2><p>把常用的放在手边。</p></div>
+    <span class="pocket-local">仅此浏览器</span>
+  </div>
+  <div class="pocket-controls">
+    <div class="pocket-switch" role="group" aria-label="随行架内容">
+      <button type="button" data-pocket-tab="pins" aria-pressed="true">已收藏 <span data-pocket-count>0</span></button>
+      <button type="button" data-pocket-tab="recent" aria-pressed="false">最近打开</button>
+    </div>
+    <button class="pocket-clear" type="button" data-pocket-clear hidden>清除记录</button>
+  </div>
+  <div class="pocket-items" data-pocket-items></div>
+  <p class="pocket-empty" data-pocket-empty>点击入口旁的 ☆，留下你会再次用到的工具、游戏或实验。</p>
+  <p class="pocket-status" role="status" data-pocket-status></p>
+  <script type="application/json" data-pocket-manifest set:html={JSON.stringify(pocketCatalog).replace(/</g, '\u003c')} />
+</section>
+<link rel="stylesheet" href="/assets/css/pocket.css" />
+<script is:inline type="module" src="/assets/js/pocket.js"></script>

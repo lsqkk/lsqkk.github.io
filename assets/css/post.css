@@ -1571,3 +1571,7 @@ body.post-layout-page .post-hero-title { max-width:calc(100% - 38px); }
 .post-hero.is-image-missing .post-hero-overlay { position:relative; padding:0; }
 body.post-layout-page .post-hero.is-image-missing .post-hero-title { color:var(--text-main); text-shadow:none; }
 .post-hero.is-image-missing .post-header-actions-hero { top:4px; right:0; }
+.post-layout-page .post-meta { margin-bottom:12px; padding-bottom:12px; }
+.post-layout-page .post-tags { margin-block:8px 16px; }
+.post-layout-page .post-content > :first-child { margin-top:0; }
+.post-layout-page .post-sidebar-scroll > .post-reading-tools + .post-toc-box { padding-top:0; }

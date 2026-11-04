@@ -6,7 +6,18 @@
     const toolbar = document.createElement('div');
     toolbar.className = 'reading-compass';
     toolbar.innerHTML = '<button class="reading-measure" type="button" aria-pressed="false" title="切换为更短的正文行宽">收窄行宽</button>';
-    content.before(toolbar);
+    const tools = document.querySelector('[data-post-reading-tools]');
+    if (tools) {
+      tools.append(toolbar);
+      const wide = matchMedia('(min-width:1101px)');
+      const place = () => {
+        const focused = tools.contains(document.activeElement) ? document.activeElement : null;
+        if (wide.matches) document.querySelector('.post-sidebar-scroll')?.prepend(tools);
+        else content.before(tools);
+        focused?.focus({preventScroll:true});
+      };
+      wide.addEventListener('change',place); place();
+    } else content.before(toolbar);
     const measure = toolbar.querySelector('.reading-measure');
     measure.addEventListener('click', () => {
       const before = toolbar.getBoundingClientRect().top;

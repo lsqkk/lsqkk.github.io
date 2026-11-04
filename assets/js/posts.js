@@ -25,6 +25,10 @@ function updateFilterCounts() {
 function initFoldPanels() {
     document.querySelectorAll('.posts-fold-toggle').forEach(btn => {
         if (!(btn instanceof HTMLButtonElement)) return;
+        btn.setAttribute('aria-controls',btn.dataset.target);
+        btn.setAttribute('aria-expanded','false');
+        const initialPanel=document.getElementById(btn.dataset.target);
+        if(initialPanel)initialPanel.inert=true;
         btn.addEventListener('click', () => {
             const targetId = btn.dataset.target;
             if (!targetId) return;
@@ -33,6 +37,8 @@ function initFoldPanels() {
             if (!(panel instanceof HTMLElement) || !(wrapper instanceof HTMLElement)) return;
 
             const isOpen = wrapper.classList.contains('open');
+            btn.setAttribute('aria-expanded',String(!isOpen));
+            panel.inert=isOpen;
             if (isOpen) {
                 panel.style.maxHeight = `${panel.scrollHeight}px`;
                 requestAnimationFrame(() => {
@@ -147,6 +153,21 @@ async function loadPosts() {
     initFoldPanels();
     renderPosts();
     renderPagination();
+    const filterDrawer=document.querySelector('[data-post-filters]');
+    if(filterDrawer) {
+        const wide=matchMedia('(min-width:1001px)');
+        filterDrawer.open=wide.matches;
+        wide.addEventListener('change',()=>filterDrawer.open=wide.matches);
+        document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!wide.matches&&filterDrawer.open){filterDrawer.open=false;filterDrawer.querySelector('summary').focus();}});
+        document.addEventListener('click',event=>{if(!wide.matches&&filterDrawer.open&&!filterDrawer.contains(event.target))filterDrawer.open=false;});
+    }
+    document.getElementById('postsResetFilters')?.addEventListener('click',()=>{
+        currentTag='全部';currentColumn='全部';currentPage=1;
+        const url=new URL(location.href);['tag','columns','search'].forEach(key=>url.searchParams.delete(key));history.replaceState(null,'',url);
+        const searchInput=document.getElementById('searchInput');if(searchInput)searchInput.value='';
+        document.getElementById('searchResults').style.display='none';document.getElementById('posts').style.display='block';
+        setFilterPanelsVisible(true);renderTagFilter();renderColumnFilter();renderPosts();renderPagination();
+    });
 
     // 使用事件委托替代内联 onclick（一次性绑定，避免 DOM 重建导致事件丢失）
     setupFilterDelegation();
@@ -206,6 +227,8 @@ function performSearch(searchTerm) {
         setFilterPanelsVisible(true);
         document.getElementById('posts').style.display = 'block';
         document.getElementById('pagination').style.display = 'flex';
+        const url=new URL(location.href);url.searchParams.delete('search');history.replaceState(null,'',url);
+        renderPosts();renderPagination();
         return;
     }
 
@@ -214,6 +237,8 @@ function performSearch(searchTerm) {
         (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchTermLower))) ||
         (post.columns && post.columns.some(column => column.toLowerCase().includes(searchTermLower)))
     );
+    const status=document.getElementById('postsListStatus');if(status)status.textContent=`找到 ${searchResults.length} 篇文章`;
+    const reset=document.getElementById('postsResetFilters');if(reset)reset.hidden=false;
 
     const searchResultsContainer = document.getElementById('searchResults');
     searchResultsContainer.innerHTML = '';
@@ -305,6 +330,12 @@ function renderTagFilter() {
 
 function bindPostCardLinks(container) {
     if (!(container instanceof HTMLElement)) return;
+    container.querySelectorAll('.post-cover').forEach(image=>{
+        if(image.dataset.fallbackBound)return;image.dataset.fallbackBound='true';
+        const fallback=()=>{const wrap=image.closest('.post-cover-wrap');if(wrap)wrap.hidden=true;};
+        image.addEventListener('error',fallback,{once:true});
+        if(image.complete&&image.naturalWidth===0)fallback();
+    });
     container.querySelectorAll('.post-item-link').forEach((item) => {
         if (!(item instanceof HTMLElement)) return;
         if (item.dataset.bound === 'true') return;
@@ -406,6 +437,9 @@ function getFilteredPosts() {
 // 渲染文章列表
 function renderPosts() {
     const postsToShow = getCurrentPagePosts();
+    const filters=[currentTag,currentColumn].filter(value=>value!=='全部');
+    const status=document.getElementById('postsListStatus');if(status)status.textContent=`${filters.length?filters.join(' · ')+' · ':''}共 ${getFilteredPosts().length} 篇文章`;
+    const reset=document.getElementById('postsResetFilters');if(reset)reset.hidden=!filters.length;
 
     const list = postsToShow.map(post => {
         // 计算阅读时长
