@@ -1,5 +1,5 @@
 /**
- * 夸克博客 OJ 提交记录页逻辑 (Submission Record Page)
+ * 奇夸克 OJ 提交记录页逻辑 (Submission Record Page)
  * 依赖于 ./js/utils.js
  */
 

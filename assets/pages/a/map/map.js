@@ -90,7 +90,7 @@ function initLayers() {
         minZoom: 1,
         subdomains: subdomains,
         tileSize: 256,
-        attribution: '© 天地图 & 夸克博客'
+        attribution: '© 天地图 & 奇夸克'
     });
 
     // 矢量注记
@@ -99,7 +99,7 @@ function initLayers() {
         minZoom: 1,
         subdomains: subdomains,
         tileSize: 256,
-        attribution: '© 天地图 & 夸克博客'
+        attribution: '© 天地图 & 奇夸克'
     });
 
     // 卫星影像
@@ -108,7 +108,7 @@ function initLayers() {
         minZoom: 1,
         subdomains: subdomains,
         tileSize: 256,
-        attribution: '© 天地图 & 夸克博客'
+        attribution: '© 天地图 & 奇夸克'
     });
 
     // 影像注记
@@ -117,7 +117,7 @@ function initLayers() {
         minZoom: 1,
         subdomains: subdomains,
         tileSize: 256,
-        attribution: '© 天地图 & 夸克博客'
+        attribution: '© 天地图 & 奇夸克'
     });
 
     // 地形地图
@@ -126,7 +126,7 @@ function initLayers() {
         minZoom: 1,
         subdomains: subdomains,
         tileSize: 256,
-        attribution: '© 天地图 & 夸克博客'
+        attribution: '© 天地图 & 奇夸克'
     });
 
     // 地形注记
@@ -135,7 +135,7 @@ function initLayers() {
         minZoom: 1,
         subdomains: subdomains,
         tileSize: 256,
-        attribution: '© 天地图 & 夸克博客'
+        attribution: '© 天地图 & 奇夸克'
     });
 
     // 创建图层组

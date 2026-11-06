@@ -91,9 +91,9 @@ export default async function handler(req, res) {
     const token = buildToken(payload, tokenSecret);
 
     const subjectMap = {
-      login: '夸克博客登录验证码',
-      register: '夸克博客注册验证码',
-      reset: '夸克博客重置密码验证码',
+      login: '奇夸克登录验证码',
+      register: '奇夸克注册验证码',
+      reset: '奇夸克重置密码验证码',
     };
     const subject = subjectMap[purpose] || subjectMap.login;
 

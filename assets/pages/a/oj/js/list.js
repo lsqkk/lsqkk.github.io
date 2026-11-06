@@ -1,5 +1,5 @@
 /**
- * 夸克博客 OJ 题目列表页逻辑 (Problem List Page)
+ * 奇夸克 OJ 题目列表页逻辑 (Problem List Page)
  * 依赖于 ./utils.js (utils.js 必须先加载)
  */
 

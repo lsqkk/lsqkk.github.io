@@ -10,8 +10,8 @@ const MAX_ITEMS = 50;
 
 // Read site config
 let SITE_URL = "https://lsqkk.github.io";
-let SITE_TITLE = "Quark Blog";
-let SITE_DESC = "夸克博客";
+let SITE_TITLE = "奇夸克";
+let SITE_DESC = "奇夸克";
 try {
   const apiRaw = fsSync.readFileSync(path.join(ROOT, "src", "config", "json", "api.json"), "utf-8");
   const apiConfig = JSON.parse(apiRaw);
@@ -20,7 +20,7 @@ try {
 try {
   const navRaw = fsSync.readFileSync(path.join(ROOT, "src", "config", "json", "nav.json"), "utf-8");
   const navConfig = JSON.parse(navRaw);
-  if (navConfig?.title?.en) SITE_TITLE = navConfig.title.en;
+  if (navConfig?.title?.text) SITE_TITLE = navConfig.title.text;
 } catch { /* use default */ }
 try {
   const indexRaw = fsSync.readFileSync(path.join(ROOT, "src", "config", "json", "index.json"), "utf-8");

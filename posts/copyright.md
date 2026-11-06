@@ -1,13 +1,13 @@
 ---
 title: "关于本站与版权声明"
-description: "夸克博客的内容、技术、数据使用和授权说明"
+description: "奇夸克的内容、技术、数据使用和授权说明"
 date: 2025-02-01
 tags: 网站
 ---
 
 # 关于本站与版权声明
 
-夸克博客（Quark Blog）是[蓝色奇夸克](https://github.com/lsqkk)维护的个人网站，记录学习、生活与思考，也提供浏览器工具、多人游戏和前端实验。
+奇夸克（Strange Quark）是[蓝色奇夸克](https://github.com/lsqkk)维护的个人网站，记录学习、生活与思考，也提供浏览器工具、多人游戏和前端实验。
 
 [网站主页](https://lsqkk.github.io/) · [源码仓库](https://github.com/lsqkk/lsqkk.github.io) · [RSS 订阅](/posts/rss.xml) · [联系邮箱](mailto:jsxzznz@163.com)
 

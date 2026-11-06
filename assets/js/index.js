@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 100);
 
     function initTypewriter() {
-        const phrases = getHomeConfig().phrases || ['欢迎访问 Quark Blog ~'];
+        const phrases = getHomeConfig().phrases || ['欢迎访问奇夸克 ~'];
         const safeTypewriterElement = /** @type {HTMLElement} */ (typewriterElement);
         let phraseIndex = 0;
         let charIndex = 0;
@@ -445,7 +445,7 @@ function getGreetingName() {
 // 随机提示语 - 添加存在性检查
 function getRandomTip() {
     const tips = getHomeConfig().tips;
-    if (!tips || tips.length === 0) return '欢迎访问 Quark Blog ~';
+    if (!tips || tips.length === 0) return '欢迎访问奇夸克 ~';
     return tips[Math.floor(Math.random() * tips.length)];
 }
 
@@ -1300,6 +1300,7 @@ async function loadGithubRepoCard() {
     container.innerHTML = createSkeletonHTML('github');
 
     const repoUrl = 'https://github.com/lsqkk/lsqkk.github.io';
+    const repoDescription = '奇夸克 | 基于 Astro 的个人网站，分享笔记、工具、游戏和前端实验。';
     const fallbackHtml = `
         <div class="github-promo-main">
             <div class="github-promo-head">
@@ -1307,7 +1308,7 @@ async function loadGithubRepoCard() {
                     ${faIcon('github')}<span>lsqkk.github.io</span>
                 </a>
             </div>
-            <p class="github-promo-desc">夸克博客 | 基于原生技术栈的个人网站，分享笔记、工具、游戏、前端实验等。</p>
+            <p class="github-promo-desc">${repoDescription}</p>
             <div class="github-promo-foot">
                 <span class="github-updated">由 Astro 构建</span>
                 <a class="github-open-link" href="${repoUrl}" target="_blank">打开仓库</a>
@@ -1330,7 +1331,7 @@ async function loadGithubRepoCard() {
                     </a>
                     <span class="github-promo-branch">${repo.default_branch || 'main'}</span>
                 </div>
-                <p class="github-promo-desc">${repo.description || '个人博客源码仓库，欢迎访问与交流。'}</p>
+                <p class="github-promo-desc">${repoDescription}</p>
                 <div class="github-promo-stats">
                     <div class="github-stat">
                         <div class="github-stat-label">Stars</div>
@@ -1460,16 +1461,6 @@ function setDefaultContent() {
             <!-- 其他默认社交图标 -->
         `;
         initSkeletonImages(socialContainer);
-    }
-
-    const announcementContainer = document.getElementById('announcement-container');
-    if (announcementContainer) {
-        announcementContainer.innerHTML = `
-            <div class="index-announcement-text">
-                <span class="index-announcement-title">想要更方便的阅读博文、移动端获得更好的阅读体验？</span>
-                <span class="index-announcement-body">欢迎<a href="/assets/apk/QuarkBlog.apk">下载『夸克博客』APP</a>！</span>
-            </div>
-        `;
     }
 }
 

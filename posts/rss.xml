@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
   <channel>
-    <title>Quark Blog</title>
+    <title>奇夸克</title>
     <description>蓝色奇夸克 - 分享技术、生活与思考。</description>
     <link>https://lsqkk.github.io/</link>
     <language>zh-cn</language>
@@ -311,12 +311,12 @@
       <content:encoded><![CDATA[这真的是个“低门槛”时代吗 （首发于我的公众号 奇夸客 ） 是的各位读者，你没有看错。 如果你关注了我的公众号，那么你大概率也关注了@梦之泽 ，他昨天刚刚发了相同标题的文章。 我为什么要以同样的标题再写一篇文章？说实话第一眼看到这个标题挺戳我的，因为这就是我寒假大量依赖AI搭建我的个人博客之后的感受： 通用AI时代的到来，大大地降低了普通人使用、获取先进技术的门槛。 当然看完他的文章，发现并不是在说技术方面的“门槛”，而是关于社会意识形]]></content:encoded>
     </item>
     <item>
-      <title>夸克博客全面接入DeepSeek</title>
+      <title>奇夸克全面接入DeepSeek</title>
       <link>https://lsqkk.github.io/posts/2025/2506</link>
       <guid isPermaLink="true">https://lsqkk.github.io/posts/2025/2506</guid>
       <pubDate>Thu, 27 Feb 2025 16:00:00 GMT</pubDate>
       <description>报告, 前端</description>
-      <content:encoded><![CDATA[夸克博客全面接入DeepSeek 今天，我们非常高兴地宣布，夸克博客已经全面接入了DeepSeek——一款强大的人工智能助手。这标志着我们在内容创作和用户体验方面迈出了重要的一步。 DeepSeek是什么？ DeepSeek是一款基于深度学习技术的人工智能助手，它能够理解自然语言并生成高质量的文本内容。无论是回答问题、撰写文章，还是提供创意灵感，DeepSeek都能以惊人的速度和准确性完成任务。 为什么接入DeepSeek？ 在夸克博客]]></content:encoded>
+      <content:encoded><![CDATA[奇夸克全面接入DeepSeek 今天，我们非常高兴地宣布，奇夸克已经全面接入了DeepSeek——一款强大的人工智能助手。这标志着我们在内容创作和用户体验方面迈出了重要的一步。 DeepSeek是什么？ DeepSeek是一款基于深度学习技术的人工智能助手，它能够理解自然语言并生成高质量的文本内容。无论是回答问题、撰写文章，还是提供创意灵感，DeepSeek都能以惊人的速度和准确性完成任务。 为什么接入DeepSeek？ 在奇夸克，我们]]></content:encoded>
     </item>
     <item>
       <title>博客移动端App正式上线</title>
@@ -324,7 +324,7 @@
       <guid isPermaLink="true">https://lsqkk.github.io/posts/2025/2504</guid>
       <pubDate>Fri, 21 Feb 2025 16:00:00 GMT</pubDate>
       <description>报告</description>
-      <content:encoded><![CDATA[博客移动端App正式上线 今天，2025年2月22日，站主非常兴奋地宣布，蓝色奇夸克的博客移动端App——“夸克博客”正式上线了！这是一款专为安卓移动端设计的应用程序，旨在为用户提供更加便捷、舒适的阅读体验。 使用木函App打造 “夸克博客”是基于一个木函App开发的。一个木函App以其强大的灵活性和高效性，为开发者提供了丰富的工具和资源。 主题色：蓝色 蓝色一直以来都是我博客的标志性颜色。它象征着智慧、深邃和宁静，与我博客的内容风格完]]></content:encoded>
+      <content:encoded><![CDATA[博客移动端App正式上线 更新：Android App 已停止维护，安装包已下架。手机上可通过浏览器访问 。 今天，2025年2月22日，站主非常兴奋地宣布，奇夸克的 Android App正式上线了！这是一款专为安卓移动端设计的应用程序，旨在为用户提供更加便捷、舒适的阅读体验。 使用木函App打造 这款 App是基于一个木函App开发的。一个木函App以其强大的灵活性和高效性，为开发者提供了丰富的工具和资源。 主题色：蓝色 蓝色一直以]]></content:encoded>
     </item>
     <item>
       <title>2025 年西交校园大使宣讲总结</title>
@@ -348,7 +348,7 @@
       <guid isPermaLink="true">https://lsqkk.github.io/posts/copyright</guid>
       <pubDate>Fri, 31 Jan 2025 16:00:00 GMT</pubDate>
       <description>网站</description>
-      <content:encoded><![CDATA[关于本站与版权声明 夸克博客（Quark Blog）是 维护的个人网站，记录学习、生活与思考，也提供浏览器工具、多人游戏和前端实验。 · · · 网站如何运行 页面由 Astro 根据 Markdown、JSON 与组件生成，交互主要使用原生 JavaScript、CSS、Canvas 和 WebRTC。静态文件部署在 GitHub Pages；需要在线服务的功能通过 Vercel Serverless、Firebase Realtim]]></content:encoded>
+      <content:encoded><![CDATA[关于本站与版权声明 奇夸克（Strange Quark）是 维护的个人网站，记录学习、生活与思考，也提供浏览器工具、多人游戏和前端实验。 · · · 网站如何运行 页面由 Astro 根据 Markdown、JSON 与组件生成，交互主要使用原生 JavaScript、CSS、Canvas 和 WebRTC。静态文件部署在 GitHub Pages；需要在线服务的功能通过 Vercel Serverless、Firebase Realt]]></content:encoded>
     </item>
     <item>
       <title>摘不下的面具</title>

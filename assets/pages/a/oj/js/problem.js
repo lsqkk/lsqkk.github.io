@@ -1,5 +1,5 @@
 /**
- * 夸克博客 OJ 题目详情页逻辑 (Problem Detail Page)
+ * 奇夸克 OJ 题目详情页逻辑 (Problem Detail Page)
  * 依赖于 Judge0 API 和 ./utils.js (utils.js 必须先加载)
  */
 

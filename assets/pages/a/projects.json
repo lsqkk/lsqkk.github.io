@@ -35,7 +35,7 @@
         {
           "name": "夸克LIVE直播间",
           "link": "live",
-          "description": "夸克博客实时互动直播平台",
+          "description": "奇夸克实时互动直播平台",
           "icon": "fa-broadcast-tower"
         },
         {
@@ -97,7 +97,7 @@
           "icon": "fa-image"
         },
         {
-          "name": "夸克博客留言板",
+          "name": "奇夸克留言板",
           "link": "/blog/lyb",
           "description": "用户互动与留言交流平台，支持实时评论和消息通知",
           "icon": "fa-comments"

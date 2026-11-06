@@ -149,7 +149,7 @@ function initializeStreamListener() {
             // 更新页面显示的直播标题和描述
             if (streamInfo.title) {
                 document.getElementById('stream-title').textContent = streamInfo.title;
-                document.title = `${streamInfo.title} - 夸克博客直播间`;
+                document.title = `${streamInfo.title} - 奇夸克直播间`;
             }
 
             if (streamInfo.description) {

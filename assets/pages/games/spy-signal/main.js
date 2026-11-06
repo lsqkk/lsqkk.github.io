@@ -405,7 +405,7 @@ function readStored(key) {
 }
 
 /**
- * 读取站点登录身份（夸克博客的 GitHub / 站内账号）。
+ * 读取站点登录身份（奇夸克的 GitHub / 站内账号）。
  * 复用全站统一的 `QuarkUserProfile`，它已经处理好了"登录用哪个昵称/头像、
  * 未登录用本地昵称/颜色"的优先级，这里不重复造一套。
  * @returns {{ hasSiteIdentity: boolean, nickname: string, avatar: { type: string, color: string, url: string }, login: string }}

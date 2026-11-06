@@ -669,7 +669,7 @@ function updateWatermark(scene) {
         return;
     }
     if (scene && scene.contributor) {
-        el.watermark.textContent = `交大360° | 夸克博客 | ${scene.contributor} | ${scene.name}`;
+        el.watermark.textContent = `交大360° | 奇夸克 | ${scene.contributor} | ${scene.name}`;
         el.watermark.style.display = 'block';
     } else {
         el.watermark.style.display = 'none';

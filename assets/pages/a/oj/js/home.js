@@ -1,7 +1,7 @@
 // ./js/home.js
 
 /**
- * 夸克博客 OJ 首页逻辑 (Home Page)
+ * 奇夸克 OJ 首页逻辑 (Home Page)
  * 包括运势抽取、随机跳题和本地数据展示
  * 依赖于 utils.js 中的 localStorage 操作
  */

@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = [
     {name = "蓝色奇夸克", email = "jsxzznz@163.com"},
 ]
-description = "夸克博客管理命令行工具"
+description = "奇夸克管理命令行工具"
 readme = "readme.md"
 requires-python = ">=3.7"
 dependencies = [

@@ -21,7 +21,7 @@ const apiConfig = readJson(API_PATH, {});
 
 export const SITE_TITLE = typeof navConfig?.title?.text === "string" && navConfig.title.text.trim()
   ? navConfig.title.text.trim()
-  : "夸克博客";
+  : "奇夸克";
 
 export const SITE_LOGO_URL = typeof navConfig?.logo?.url === "string" && navConfig.logo.url.trim()
   ? navConfig.logo.url.trim()

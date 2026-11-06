@@ -4,7 +4,7 @@
  *
  * 结构上刻意分三块、每块只做一件事：
  *   身份 → 创建房间（含血量设置）→ 加入房间（点开才输码）
- * 已经登录夸克博客时直接用博客昵称与头像，不再让人重复填；未登录才展开
+ * 已经登录奇夸克时直接用博客昵称与头像，不再让人重复填；未登录才展开
  * "昵称 + 头像底色" 的手动表单。选择会记进 localStorage，下次免填。
  */
 
@@ -143,7 +143,7 @@ function identityBlock(options) {
         avatar({ name: identity.siteNickname, ...identity.siteAvatar }, { size: "lg" }),
         el("div", { class: "ss-identity-text" }, [
           el("span", { class: "ss-identity-name", text: identity.siteNickname }),
-          el("span", { class: "ss-identity-note", text: "已使用夸克博客登录身份" }),
+          el("span", { class: "ss-identity-note", text: "已使用奇夸克登录身份" }),
         ]),
         el("button", {
           class: "ss-btn ss-btn-ghost ss-btn-chip",
@@ -210,7 +210,7 @@ function identityBlock(options) {
           })
         : el("p", {
             class: "ss-hint",
-            text: "登录夸克博客后可直接使用博客昵称与头像，无需每次填写。",
+            text: "登录奇夸克后可直接使用博客昵称与头像，无需每次填写。",
           }),
     );
   }

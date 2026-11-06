@@ -197,7 +197,7 @@ const defaultNavConfig = {
         style: "width: 30px; height: 30px; object-fit: contain; border-radius: 4px; margin: 0 8px 0 0;"
     },
     title: {
-        text: "夸克博客",
+        text: "奇夸克",
         link: "/"
     },
     navItems: [
