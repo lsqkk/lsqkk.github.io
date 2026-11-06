@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quarkblog-cache-v3';
+const CACHE_NAME = 'quarkblog-cache-v4';
 
 const PRECACHE_URLS = [
   '/',
