@@ -214,6 +214,7 @@ async function runSearch(keyword, fulltextEnabled) {
             const meta = postMetaMap.get(path) || null;
             merged.set(path, {
                 path,
+                href: typeof page.href === 'string' && /^\/(?![\/\\])/.test(page.href) ? page.href : undefined,
                 title: page.title || (meta?.title || buildTitle(path, postTitleMap)),
                 meta,
                 kind: meta ? 'post' : 'page'
@@ -256,6 +257,7 @@ async function runSearch(keyword, fulltextEnabled) {
             };
             merged.set(path, {
                 path,
+                href: existing?.href,
                 title: item.title || existing?.title || buildTitle(path, postTitleMap),
                 meta,
                 snippet,
@@ -344,10 +346,11 @@ async function runSearch(keyword, fulltextEnabled) {
         ` : '');
         const badge = item.kind === 'post' && item.snippet ? `<span class="search-result-badge">文章全文</span>` : '';
         const snippetHtml = item.snippet ? `<div class="search-result-snippet">${item.snippet}</div>` : '';
+        const href = escapeHtml(item.href || `/${item.path}`);
         return `
-            <div class="search-result" data-href="/${item.path}">
+            <div class="search-result" data-href="${href}">
                 <div class="search-result-title">${item.title}${badge}</div>
-                <div class="search-result-meta">/${item.path}</div>
+                <div class="search-result-meta">${href}</div>
                 ${metaHtml}
                 ${snippetHtml}
             </div>

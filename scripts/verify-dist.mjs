@@ -62,6 +62,20 @@ async function main() {
   await read(new URL(declared).pathname.replace(/^\//,''));
   const pages=JSON.parse(await read('json/site-pages.json'));
   assert(pages.length>0,'Search pages index is empty');
+  const settings = await read('settings.html');
+  for (const id of ['appearance', 'notifications', 'ai']) {
+    assert(settings.includes(`id="${id}"`), 'Missing settings section: '+id);
+  }
+  const routes = new Map(pages.map(({path,href}) => [path,href]));
+  assert.equal(routes.get('settings'),'/settings','Settings search link must target settings.html');
+  assert.equal(routes.get('tool'),'/tool/','Tool directory search link must target its index.html');
+  const exists = (relative) => fs.stat(path.join(root,relative)).then(stat => stat.isFile(), () => false);
+  for (const {path: slug, href} of pages) {
+    assert(href === '/'+slug || href === '/'+slug+'/', 'Invalid indexed route: '+slug);
+    const file = decodeURI(slug);
+    if (await exists(file+'/index.html')) assert.equal(href,'/'+slug+'/','Directory route must end in a slash: '+slug);
+    else if (await exists(file+'.html')) assert.equal(href,'/'+slug,'File route must omit trailing slash: '+slug);
+  }
   console.log('verify-dist passed: sitemap index, '+children.length+' child file(s), '+urls.length+' URLs, legacy alias, robots and search index');
 }
 main().catch(error=>{console.error('verify-dist failed:',error);process.exitCode=1;});

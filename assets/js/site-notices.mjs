@@ -66,7 +66,7 @@ export function mountNotices() {
     dialog.innerHTML = `<header><div><small>QUARK · INBOX</small><h2 id="quark-notice-title">通知中心</h2></div>
         <form method="dialog"><button aria-label="关闭通知">×</button></form></header>
         <div class="quark-notice-body"></div><footer>
-        <a href="/settings/#notifications">通知设置与日程</a></footer>`;
+        <a href="/settings#notifications">通知设置与日程</a></footer>`;
     document.body.append(dialog);
     const body = dialog.querySelector('.quark-notice-body');
     const footer = dialog.querySelector('footer');

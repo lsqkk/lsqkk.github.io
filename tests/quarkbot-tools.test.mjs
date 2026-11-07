@@ -74,7 +74,8 @@ test('an unclosed wrapper recovers complete searches and requests a final answer
     const fetchOriginal = globalThis.fetch;
     globalThis.location = { origin: 'https://site.test' };
     globalThis.fetch = async (url) => Response.json(url === '/json/site-pages.json'
-        ? [{ path: 'tool/ocr', title: '二维码与 OCR' }] : null);
+        ? [{ path: 'tool/ocr', href: '/tool/ocr/', title: '二维码与 OCR' },
+            { path: 'posts/ocr', href: '/posts/ocr', title: '二维码文章' }] : null);
     t.after(() => { delete globalThis.location; globalThis.fetch = fetchOriginal; });
     let round = 0;
     window.QuarkLLMConfig = {
@@ -86,6 +87,7 @@ test('an unclosed wrapper recovers complete searches and requests a final answer
             }
             assert(!request.tools);
             assert(request.messages[0].content.includes('https://site.test/tool/ocr/'));
+            assert(request.messages[0].content.includes('"href":"/posts/ocr"'));
             return stream({ content: '找到了二维码工具。' });
         },
     };

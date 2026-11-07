@@ -15,6 +15,10 @@ const searchTool = {
 };
 
 let indexPromise;
+export function siteRouteKey(pathname) {
+    return pathname.replace(/\/index(?:\.html)?\/?$/, '').replace(/\/+$/, '') || '/';
+}
+
 async function getIndex() {
     if (indexPromise) return indexPromise;
     const files = ['/json/site-pages.json', '/json/posts.json', '/assets/pages/tool/tool.json',
@@ -26,13 +30,14 @@ async function getIndex() {
         } catch { return null; }
     })).then(([pages, posts, tools, labs, blog, games]) => {
         const records = new Map();
-        const add = (path, title, type, description = '') => {
+        const add = (path, title, type, description = '', indexedHref) => {
             if (!path || !title) return;
             const url = new URL(path, location.origin);
             if (url.origin !== location.origin) return;
-            const href = url.pathname.replace(/\/index(?:\.html)?\/?$/, '/').replace(/\/$/, '') + '/';
-            if (/^\/(?:api|login|settings|space|admin)(?:\/|$)|\/manage\//i.test(href)) return;
-            records.set(href, { href, url: new URL(href, location.origin).href,
+            const key = siteRouteKey(url.pathname);
+            if (/^\/(?:api|login|settings|space|admin)(?:\/|$)|\/manage(?:\/|$)/i.test(key)) return;
+            const href = indexedHref || records.get(key)?.href || (url.pathname.endsWith('/') && key !== '/' ? key + '/' : key);
+            records.set(key, { href, url: new URL(href, location.origin).href,
                 title: String(title).slice(0, 140), type, description: String(description).slice(0, 220) });
         };
         const addCatalog = (catalog, collection, prefix, type) => {
@@ -49,7 +54,10 @@ async function getIndex() {
         add('/a/', '实验室', '导航');
         add('/a/qai/', 'QAI WebUI', '实验室', '支持自定义模型的 AI 对话工作台');
         add('/a/terminal/', 'Quark 终端', '实验室', '网页命令行和 AI 对话');
-        (Array.isArray(pages) ? pages : []).forEach((page) => add('/' + page.path, page.title, '页面'));
+        (Array.isArray(pages) ? pages : []).forEach((page) => {
+            const href = typeof page.href === 'string' && /^\/(?![\/\\])/.test(page.href) ? page.href : undefined;
+            add('/' + page.path, page.title, '页面', '', href);
+        });
         (Array.isArray(posts) ? posts : []).forEach((post) => add(
             post.file && `/posts/${post.file.replace(/\.md$/, '')}`, post.title, '文章',
             [post.description || post.summary, ...(post.tags || [])].filter(Boolean).join(' · ')));

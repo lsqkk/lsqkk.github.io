@@ -468,34 +468,26 @@ function apiBaseInjector() {
             });
           }
 
-          const readTitle = async (pathValue) => {
-            const candidates = [];
-            if (!pathValue || pathValue === "") {
-              candidates.push(path.join(distRoot, "index.html"));
-            } else if (pathValue.endsWith(".html")) {
-              candidates.push(path.join(distRoot, pathValue));
-            } else {
-              candidates.push(path.join(distRoot, pathValue, "index.html"));
-              candidates.push(path.join(distRoot, `${pathValue}.html`));
-            }
-
-            for (const filePath of candidates) {
-              const html = await readIfExists(filePath);
+          const readPage = async (pathValue) => {
+            let slug = pathValue;
+            try { slug = decodeURI(pathValue); } catch {}
+            const href = `/${pathValue}`;
+            const candidates = pathValue.endsWith(".html")
+              ? [[slug, href]]
+              : [[`${slug}/index.html`, `${href}/`], [`${slug}.html`, href]];
+            for (const [file, route] of candidates) {
+              const html = await readIfExists(path.join(distRoot, file));
               if (!html) continue;
-              const match = html.match(/<title>([^<]+)<\/title>/i);
-              if (match && match[1]) {
-                return match[1].trim();
-              }
+              return { href: route, title: html.match(/<title>([^<]+)<\/title>/i)?.[1].trim() || href };
             }
-            return "";
+            return { href, title: href };
           };
 
           const entries = [];
           for (const pathValue of urlSet) {
-            const title = await readTitle(pathValue);
             entries.push({
               path: pathValue,
-              title: title || (pathValue ? `/${pathValue}` : "首页"),
+              ...await readPage(pathValue),
             });
           }
 
@@ -555,10 +547,12 @@ function apiBaseInjector() {
 
           const mergedMap = new Map();
           entries.forEach((item) => mergedMap.set(item.path, item));
-          extraEntries.forEach((item) => {
-            if (!item.path) return;
-            if (!mergedMap.has(item.path)) mergedMap.set(item.path, item);
-          });
+          for (const item of extraEntries) {
+            if (!item.path) continue;
+            if (mergedMap.has(item.path)) continue;
+            const { href } = await readPage(item.path);
+            mergedMap.set(item.path, { ...item, href });
+          }
 
           const outPath = path.join(distJsonDir, "site-pages.json");
           await fs.writeFile(outPath, JSON.stringify(Array.from(mergedMap.values()), null, 2), "utf-8");

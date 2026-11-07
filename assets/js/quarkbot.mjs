@@ -1,4 +1,4 @@
-import { searchSite, runHarness, appendRunDetails } from './llm-harness.mjs';
+import { searchSite, runHarness, appendRunDetails, siteRouteKey } from './llm-harness.mjs';
 import { getQuarkBotTools } from './quarkbot-tools.mjs';
 
 const siteRoots = /^\/(?:a|blog|desk|games|posts|search|settings|tool|space|login)(?:\/|$)/i;
@@ -7,18 +7,18 @@ const absoluteLink = String.raw`https?:\/\/(?:[a-z0-9.-]+(?::\d+)?|[\p{L}\p{N}.-
 const linkTokens = new RegExp(`${absoluteLink}${pathTail}|(?<![\\w/])\\/[a-z0-9%._~-]+${pathTail}`, 'giu');
 
 function linkifyReply(root, sources, { streaming = false } = {}) {
-    const sourcePaths = new Set(sources.map(({ href }) => href.replace(/\/$/, '')));
+    const sourcePaths = new Map(sources.map(({ href }) => [siteRouteKey(href), href]));
     function resolve(raw) {
         if (!/^(https?:\/\/|\/(?![\/\\]))/i.test(raw)) return '';
         let url;
         try { url = new URL(raw, location.origin); } catch { return ''; }
         if (url.username || url.password || !['http:', 'https:'].includes(url.protocol)) return '';
-        const path = url.pathname;
-        const isSource = sourcePaths.has(path.replace(/\/$/, ''));
+        const path = siteRouteKey(url.pathname);
+        const sourcePath = sourcePaths.get(path);
         const onSite = url.origin === location.origin || url.hostname === 'lsqkk.github.io';
-        if (!onSite && !isSource) return '';
-        if (!isSource && path !== '/' && !siteRoots.test(path)) return '';
-        return new URL(path + url.search + url.hash, location.origin).href;
+        if (!onSite && !sourcePath) return '';
+        if (!sourcePath && path !== '/' && !siteRoots.test(path)) return '';
+        return new URL((sourcePath || path) + url.search + url.hash, location.origin).href;
     }
 
     for (const anchor of root.querySelectorAll('a[href]')) {
@@ -110,7 +110,7 @@ export function mountBot({ loadScript }) {
     panel.setAttribute('aria-labelledby', 'quark-bot-title');
     panel.innerHTML = `<header><div><small>QUARK · 网站助手</small><h2 id="quark-bot-title">QuarkBot</h2></div>
         <form method="dialog"><button aria-label="关闭 QuarkBot">×</button></form></header>
-        <div class="quark-bot-meta"><span data-context></span><a href="/settings/#ai">连接设置</a><button data-clear type="button">清空对话</button></div>
+        <div class="quark-bot-meta"><span data-context></span><a href="/settings#ai">连接设置</a><button data-clear type="button">清空对话</button></div>
         <div class="quark-bot-log" role="log" aria-live="polite"></div>
         <p class="quark-bot-status" role="status"></p>
         <form class="quark-bot-form">

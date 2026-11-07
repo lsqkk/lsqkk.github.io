@@ -12,6 +12,7 @@ async function fixture(t) {
   const index='<sitemapindex><sitemap><loc>https://example.test/sitemap-0.xml</loc></sitemap></sitemapindex>';
   await fs.mkdir(path.join(root,'json'));
   await fs.mkdir(path.join(root,'posts'));
+  await fs.mkdir(path.join(root,'tool'));
   const canonical='https://example.test/posts/test';
   const article='<body class="post-layout-page"><link rel="canonical" href="'+canonical+'"><meta property="og:url" content="'+canonical+'"><script type="application/ld+json">'+JSON.stringify({'@type':'BlogPosting',headline:'Test article',mainEntityOfPage:{'@id':canonical}})+'</script></body>';
   await Promise.all(Object.entries({
@@ -21,7 +22,9 @@ async function fixture(t) {
     'sitemap.xml':index,
     'sitemap-0.xml':'<urlset>'+['/','/tool/','/games/','/a/','/blog/'].map(route=>'<url><loc>https://example.test'+route+'</loc></url>').join('')+'</urlset>',
     'robots.txt':'User-agent: *\nSitemap: https://example.test/sitemap-index.xml\n',
-    'json/site-pages.json':'[{"path":"tool","title":"Tools"}]'
+    'settings.html':'<section id="appearance"></section><section id="notifications"></section><section id="ai"></section>',
+    'tool/index.html':'<title>Tools</title>',
+    'json/site-pages.json':JSON.stringify([{path:'tool',href:'/tool/',title:'Tools'},{path:'settings',href:'/settings',title:'Settings'},{path:'posts/test',href:'/posts/test',title:'Test'}])
   }).map(([file,content])=>fs.writeFile(path.join(root,file),content)));
   return {root,run:()=>spawnSync(process.execPath,[verifier,root],{encoding:'utf8'})};
 }
@@ -59,4 +62,11 @@ test('article metadata rejects inconsistent share URLs',async t=>{
   const f=await fixture(t),file=path.join(f.root,'posts/test.html');
   await fs.writeFile(file,(await fs.readFile(file,'utf8')).replace('property="og:url" content="https://example.test/posts/test"','property="og:url" content="https://example.test/wrong"'));
   const result=f.run();assert.notEqual(result.status,0);assert.match(result.stderr,/Open Graph URL differs/);
+});
+test('the search index rejects a directory URL for a flat HTML page',async t=>{
+  const f=await fixture(t),file=path.join(f.root,'json/site-pages.json');
+  const pages=JSON.parse(await fs.readFile(file,'utf8'));
+  pages.find(page=>page.path==='posts/test').href='/posts/test/';
+  await fs.writeFile(file,JSON.stringify(pages));
+  const result=f.run();assert.notEqual(result.status,0);assert.match(result.stderr,/File route must omit trailing slash/);
 });
