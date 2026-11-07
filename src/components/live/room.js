@@ -9,6 +9,9 @@ const playerNote = find("player-note");
 const playButton = find("play");
 const retry = find("retry");
 const edge = find("edge");
+const backupPlayer = find("backup-player");
+const backupActions = find("backup-actions");
+const backupToggle = find("backup-toggle");
 const form = find("chat-form");
 const nickname = form.elements.nickname;
 const message = form.elements.message;
@@ -33,6 +36,7 @@ let polling = false;
 let pollTimer;
 let displayedIds = [];
 let revision = "";
+let backupEnabled = true;
 
 try {
   nickname.value = localStorage.getItem("quark-live-nickname") || "";
@@ -64,6 +68,28 @@ function cover(title, detail, canRetry = false) {
   find("standby-title").textContent = title;
   find("standby-text").textContent = detail;
 }
+
+function updateBackup() {
+  const offline = connection === "offline";
+  const showBackup = offline && backupEnabled;
+  backupActions.hidden = !offline;
+  if (showBackup && !backupPlayer.hasAttribute("src")) {
+    backupPlayer.src = backupPlayer.dataset.src;
+  } else if (!showBackup && backupPlayer.hasAttribute("src")) {
+    backupPlayer.removeAttribute("src");
+  }
+  backupPlayer.hidden = !showBackup;
+  if (offline) {
+    standby.hidden = showBackup;
+    backupToggle.textContent = showBackup ? "收起备播" : "播放备播";
+    playerNote.textContent = showBackup ? "备播 · 联合国网络电视 · 预录节目" : "本页会自动检查开播状态";
+  }
+}
+
+backupToggle.addEventListener("click", () => {
+  backupEnabled = !backupEnabled;
+  updateBackup();
+});
 
 function stopPlayback() {
   if (!player) return;
@@ -228,8 +254,8 @@ function updateRoom(data) {
     if (!player && Date.now() >= retryAt) void startPlayback();
   } else {
     cover("现在未开播", "开播后，画面会在这里出现。");
-    playerNote.textContent = "本页会自动检查开播状态";
   }
+  updateBackup();
 
   chatEnabled = Boolean(nextId && data.chatOpen);
   updateChatControls();
@@ -249,6 +275,7 @@ async function poll() {
     connection = "unavailable";
     badge.dataset.state = connection;
     badge.textContent = "连接中断";
+    updateBackup();
     chatEnabled = false;
     updateChatControls();
     if (!player) {

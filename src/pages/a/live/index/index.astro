@@ -4,6 +4,12 @@ import "../../../../components/live/room.css";
 
 const mediaOrigin = "https://live.130923.xyz";
 const canonical = new URL("/a/live/", mediaOrigin).href;
+const backupPage = "https://webtv.un.org/zh/asset/k14n/k14nebtsoa";
+const backupPlayer = new URL("https://cdnapisec.kaltura.com/p/2503451/embedPlaykitJs/uiconf_id/49754663");
+backupPlayer.searchParams.set("iframeembed", "true");
+backupPlayer.searchParams.set("playlist_id", "1_4nebtsoa");
+backupPlayer.searchParams.set("config[playback]", JSON.stringify({ autoplay: true, muted: true, audioLanguage: "zh" }));
+backupPlayer.searchParams.set("config[ui]", JSON.stringify({ locale: "zh_cn" }));
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -46,6 +52,14 @@ const canonical = new URL("/a/live/", mediaOrigin).href;
           <section class="screen" aria-label="直播画面">
             <div class="stage">
               <video data-video controls playsinline preload="auto" aria-label="夸克直播播放器" hidden></video>
+              <iframe
+                data-backup-player
+                data-src={backupPlayer.href}
+                title="联合国网络电视 24 小时预录频道"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowfullscreen
+                hidden
+              ></iframe>
               <div class="standby" data-standby>
                 <svg class="orbit" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true">
                   <defs>
@@ -74,6 +88,10 @@ const canonical = new URL("/a/live/", mediaOrigin).href;
             <div class="screen-footer">
               <span class="stream-note" data-player-note>正在检查直播状态</span>
               <button class="button edge" type="button" data-edge hidden>回到直播</button>
+              <div class="backup-actions" data-backup-actions hidden>
+                <a href={backupPage} target="_blank" rel="noopener noreferrer">官方观看页</a>
+                <button class="button edge" type="button" data-backup-toggle>收起备播</button>
+              </div>
             </div>
           </section>
 

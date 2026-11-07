@@ -117,8 +117,9 @@ h1 { margin: 0; font-size: clamp(28px, 4vw, 47px); line-height: 1.15; letter-spa
 .room-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(285px, 320px); gap: 16px; }
 .screen, .chat { min-width: 0; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); overflow: hidden; }
 .stage { position: relative; isolation: isolate; aspect-ratio: 16 / 9; background: #080a0d; }
-.stage video, .standby { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stage video, .stage iframe, .standby { position: absolute; inset: 0; width: 100%; height: 100%; }
 .stage video { object-fit: contain; }
+.stage iframe { border: 0; }
 .standby { display: grid; place-items: center; text-align: center; background: #111726; }
 .orbit { position: absolute; inset: 0; width: 100%; height: 100%; }
 .standby-content { position: relative; padding: 12px; }
@@ -142,6 +143,8 @@ h1 { margin: 0; font-size: clamp(28px, 4vw, 47px); line-height: 1.15; letter-spa
 .screen-footer { display: flex; min-height: 51px; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 14px; border-top: 1px solid var(--line); }
 .stream-note { color: var(--muted); font-size: 13px; }
 .edge { min-height: 33px; }
+.backup-actions { display: flex; flex: none; align-items: center; gap: 10px; font-size: 12px; }
+.backup-actions a { color: var(--accent); text-underline-offset: 3px; }
 .chat { display: flex; flex-direction: column; min-height: 0; }
 .chat-header { display: flex; align-items: center; gap: 9px; padding: 16px; border-bottom: 1px solid var(--line); }
 .chat-header svg { width: 20px; height: 20px; color: var(--accent); }
