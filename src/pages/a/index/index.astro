@@ -1,6 +1,9 @@
 ---
 import CatalogLayout from '../../../layouts/CatalogLayout.astro';
+import LabPreview from '../../../components/LabPreview.astro';
 import data from '../../../../assets/pages/a/projects.json';
 const groups = data.categories.map(group=>({name:group.name,items:group.projects.map(item=>({name:item.name,href:item.link.startsWith('/')||/^https?:/.test(item.link)?item.link:'/a/'+item.link,description:item.description}))}));
 ---
-<CatalogLayout title="实验室" eyebrow="QUARK / IDEAS IN THE MAKING" description="把想法变成可以触摸的体验。探索可视化、实时协作、AI 与 Web 的更多可能。" groups={groups} kind="lab" />
+<CatalogLayout title="实验室" eyebrow="QUARK / IDEAS IN THE MAKING" description="把想法变成可以触摸的体验。探索可视化、实时协作、AI 与 Web 的更多可能。" groups={groups} kind="lab">
+  <LabPreview slot="rail-extra" />
+</CatalogLayout>

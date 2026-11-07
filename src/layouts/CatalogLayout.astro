@@ -40,7 +40,7 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
           {destinations.map(item => <a href={item.href} aria-current={Astro.url.pathname.replace(/\/$/,'') === item.href.replace(/\/$/,'') ? 'page' : undefined}>{item.label}<span aria-hidden="true">↗</span></a>)}
         </nav>
       </header>
-      <aside class="catalog-rail" aria-label="目录搜索与随行架">
+      <aside class="catalog-rail" aria-label={Astro.slots.has("rail-extra") ? "目录搜索、随行架与实验预览" : "目录搜索与随行架"}>
       <div class="catalog-toolbar" hidden data-catalog-toolbar>
         <label class="catalog-search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
@@ -55,6 +55,7 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
           <button type="button" data-catalog-view="list" aria-pressed="false" aria-label="紧凑列表" title="紧凑列表">☰</button>
         </div>
       </div>
+      <slot name="rail-extra" />
       <details class="catalog-pocket-disclosure" data-pocket-disclosure hidden open>
         <summary>随行架 <span data-pocket-summary>0</span><span class="catalog-pocket-chevron" aria-hidden="true">⌄</span></summary>
         <PocketShelf />

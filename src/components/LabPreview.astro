@@ -1,0 +1,115 @@
+<details class="lab-preview" data-lab-preview>
+  <summary>
+    <span><span class="lab-index">01 / TRY IT</span><strong>实验预览</strong></span>
+    <span class="lab-chevron" aria-hidden="true">⌄</span>
+  </summary>
+  <div class="lab-body">
+    <div class="lab-modes" role="group" aria-label="选择演示" data-lab-modes hidden>
+      <button type="button" data-mode="wave" aria-pressed="true">波纹</button>
+      <button type="button" data-mode="spectrum" aria-pressed="false">频谱</button>
+    </div>
+    <button type="button" class="lab-surface" aria-describedby="lab-hint" data-lab-surface hidden>
+      <canvas aria-hidden="true"></canvas>
+      <span class="lab-surface-label" aria-hidden="true" data-lab-label>WAVE FIELD</span>
+      <span class="lab-plus" aria-hidden="true">＋</span>
+    </button>
+    <p id="lab-hint" data-lab-hint>点一下，看看波纹怎样从落点散开。</p>
+    <a href="/a/physics/" data-lab-link>打开 Physics 项目 ↗</a>
+    <noscript><style>#lab-hint { display: none; }</style></noscript>
+  </div>
+</details>
+
+<style>
+  .lab-preview {
+    grid-column: 1 / -1;
+    margin-bottom: 22px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text-main);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 12px;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+  summary > span:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+  summary strong { font-size: 13px; font-weight: 600; }
+  .lab-index { color: var(--accent); font: 9px ui-monospace, monospace; letter-spacing: .08em; }
+  .lab-chevron { color: var(--text-subtle); font-size: 16px; transition: transform 150ms ease; }
+  .lab-preview[open] .lab-chevron { transform: rotate(180deg); }
+  .lab-body { padding: 0 12px 12px; }
+
+  .lab-modes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+    padding: 3px;
+    border-radius: 7px;
+    background: var(--surface-soft);
+    margin-bottom: 9px;
+  }
+
+  .lab-modes button {
+    min-height: 36px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text-subtle);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .lab-modes button[aria-pressed="true"] {
+    border-color: var(--line);
+    background: var(--surface);
+    color: var(--accent);
+  }
+
+  .lab-surface {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 136px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    color: var(--text-subtle);
+    background:
+      radial-gradient(circle, var(--line-strong) 1px, transparent 1.2px) 0 0 / 14px 14px,
+      linear-gradient(138deg, var(--accent-soft), var(--surface));
+    text-align: start;
+    cursor: crosshair;
+    touch-action: manipulation;
+  }
+
+  .lab-surface canvas { display: block; width: 100%; height: 100%; }
+  .lab-surface-label, .lab-plus { position: absolute; pointer-events: none; }
+  .lab-surface-label { inset: 10px auto auto 9px; font: 8px ui-monospace, monospace; letter-spacing: .12em; }
+  .lab-plus { inset: auto 8px 5px auto; color: var(--accent); font-size: 15px; }
+  .lab-body p { margin: 9px 0 3px; color: var(--text-subtle); font-size: 11px; line-height: 1.65; }
+  .lab-body a { display: inline-flex; align-items: center; min-height: 32px; color: var(--accent); font-size: 12px; text-decoration: none; }
+  .lab-body a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .lab-preview [hidden] { display: none; }
+
+  @media (max-width: 1000px) {
+    .lab-preview { margin-bottom: 0; }
+    summary { min-height: 44px; padding-block: 8px; }
+    .lab-surface { height: 122px; }
+  }
+</style>
+
+<script>
+  import { initLabPreview } from "../scripts/lab-preview";
+
+  const preview = document.querySelector<HTMLDetailsElement>("[data-lab-preview]");
+  if (preview) initLabPreview(preview);
+</script>

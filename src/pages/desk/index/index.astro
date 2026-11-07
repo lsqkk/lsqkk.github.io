@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
 import navConfig from '../../../config/json/nav.json';
 import paths from '../../../config/reading-paths.json';
+import ReadingRouteMap from '../../../components/ReadingRouteMap.astro';
 import { minutes } from '../../../../assets/js/reading-desk-store.mjs';
 const posts = JSON.parse(readFileSync(process.cwd()+'/posts/posts.json','utf8'));
 const articles = posts.filter(post=>!['about.md','copyright.md'].includes(post.file)).map(post=>({...post,url:'/posts/'+post.file.replace(/\.md$/,''),minutes:minutes(post.wordCount)}));
@@ -53,10 +54,10 @@ const routes = paths.map(route=>({...route,steps:route.steps.map(step=>({...step
     <section class="desk-paths" id="paths" aria-labelledby="paths-title">
       <div class="desk-section-label"><span>02 / 让文章之间发生连接</span><span>READING PATHS</span></div>
       <div class="desk-section-heading"><h2 id="paths-title">不止读一篇，<br />沿一个问题走走。</h2><p>这里的连接来自编辑选择，<br />每一步，都写下了为什么。</p></div>
-      <div class="desk-path-grid">{routes.map(route=><article class="desk-path">
+      <div class="desk-path-grid">{routes.map((route, index)=><article class="desk-path">
         <div class="desk-path-top"><span>{route.number}</span><span>{route.steps.length} 篇 · 约 {route.steps.reduce((sum,step)=>sum+step.post.minutes,0)} 分钟</span></div>
         <h3>{route.title}</h3><p class="desk-path-description">{route.description}</p>
-        <ol>{route.steps.map(step=><li><a href={step.post.url}>{step.post.title}<span aria-hidden="true">↗</span></a><p>{step.why}</p><small>约 {step.post.minutes} 分钟</small></li>)}</ol>
+        <ReadingRouteMap id={route.id} title={route.title} steps={route.steps} tone={index} />
         <div class="desk-path-actions"><button type="button" data-add-path={route.id}>整条路线加入待读 +</button><a href={route.tool.href}>{route.tool.label} ↗</a></div>
       </article>)}</div>
     </section>

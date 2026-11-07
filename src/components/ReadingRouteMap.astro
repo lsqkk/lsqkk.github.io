@@ -1,0 +1,165 @@
+---
+interface Step {
+  why: string;
+  post: { title: string; minutes: number; url: string };
+}
+interface Props { id: string; title: string; steps: Step[]; tone: number }
+const { id, title, steps, tone } = Astro.props;
+const stationId = (index: number) => `route-${id}-${index + 1}`;
+---
+<ol data-route-fallback>
+  {steps.map(step => (
+    <li>
+      <a href={step.post.url}>{step.post.title}<span aria-hidden="true">↗</span></a>
+      <p>{step.why}</p>
+      <small>约 {step.post.minutes} 分钟</small>
+    </li>
+  ))}
+</ol>
+{steps.length > 0 && (
+  <div class:list={["route-map", `route-tone-${tone}`]} data-route-map hidden>
+    <div class="route-stops" role="group" aria-label={`${title}的阅读站点`} style={`--route-count: ${steps.length}`}>
+      {steps.map((step, index) => (
+        <button type="button" data-route-stop aria-label={`第 ${index + 1} 站：${step.post.title}`}
+          aria-pressed={index === 0 ? "true" : "false"} aria-controls={stationId(index)}>
+          <span class="route-node" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          <span class="route-station-label" aria-hidden="true">第 {index + 1} 站</span>
+        </button>
+      ))}
+    </div>
+    <div class="route-detail" aria-live="polite">
+      {steps.map((step, index) => (
+        <section class="route-panel" id={stationId(index)} data-route-panel hidden={index !== 0}>
+          <span class="route-time">第 {index + 1} 站 <span aria-hidden="true">/</span> 约 {step.post.minutes} 分钟</span>
+          <h4>{step.post.title}</h4>
+          <p>{step.why}</p>
+          <a href={step.post.url}>阅读这篇 <span aria-hidden="true">↗</span></a>
+        </section>
+      ))}
+    </div>
+  </div>
+)}
+
+<style>
+  .route-map {
+    --route-ink: var(--accent);
+    flex: 1;
+    margin-bottom: 22px;
+  }
+
+  .route-tone-1 { --route-ink: #177477; }
+  .route-tone-2 { --route-ink: #7354ae; }
+  :global(body.dark-mode) .route-tone-1 { --route-ink: #66c9c2; }
+  :global(body.dark-mode) .route-tone-2 { --route-ink: #c4aaff; }
+
+  .route-stops {
+    display: grid;
+    grid-template-columns: repeat(var(--route-count), 48px);
+    justify-content: space-between;
+    position: relative;
+    isolation: isolate;
+    margin: 0 0 10px;
+  }
+
+  .route-stops::before, .route-stops::after {
+    content: "";
+    position: absolute;
+    inset: 21px 24px auto;
+    height: 2px;
+    z-index: -1;
+    background: var(--line-strong);
+  }
+
+  .route-stops::after {
+    background: var(--route-ink);
+    transform: scaleX(var(--route-progress, 0));
+    transform-origin: left;
+    transition: transform 240ms ease;
+  }
+
+  .route-stops button {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 2px;
+    min-width: 0;
+    padding: 4px 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+  }
+
+  .route-stops button:hover { background: transparent; color: var(--route-ink); }
+  .route-node {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--text-subtle);
+    font: 11px ui-monospace, monospace;
+    transition: color 160ms, background-color 160ms, border-color 160ms;
+  }
+
+  .route-stops button[data-reached] .route-node { border-color: var(--route-ink); color: var(--route-ink); }
+  .route-stops button[aria-pressed="true"] .route-node {
+    border-color: var(--route-ink);
+    background: var(--route-ink);
+    color: var(--surface);
+    box-shadow: 0 0 0 3px var(--surface), 0 0 0 4px var(--line);
+  }
+
+  .route-station-label { color: var(--text-subtle); font-size: 9px; line-height: 1.8; }
+  .route-detail {
+    min-height: 172px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-inline-start: 2px solid var(--route-ink);
+    border-radius: 0 6px 6px 0;
+    background: var(--surface-soft);
+  }
+
+  .route-time { color: var(--route-ink); font-size: 10px; }
+  .route-time > span { margin-inline: 4px; }
+  .route-panel h4 { margin: 7px 0; color: var(--text-main); font-size: 14px; line-height: 1.6; font-weight: 600; }
+  .route-panel p { margin: 0; color: var(--text-subtle); font-size: 12px; line-height: 1.8; }
+  .route-panel a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--route-ink); font-size: 12px; }
+  .route-panel a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html:not([data-motion="reduce"])) .route-panel:not([hidden]) {
+      animation: route-arrive 180ms ease-out;
+    }
+  }
+
+  :global(html[data-motion="reduce"]) .route-stops::after { transition: none; }
+
+  @keyframes route-arrive {
+    from { opacity: .35; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  for (const map of document.querySelectorAll<HTMLElement>("[data-route-map]")) {
+    const stops = [...map.querySelectorAll<HTMLButtonElement>("[data-route-stop]")];
+    const panels = [...map.querySelectorAll<HTMLElement>("[data-route-panel]")];
+
+    const showStop = (selected: number) => {
+      map.style.setProperty("--route-progress", String(selected / Math.max(1, stops.length - 1)));
+      stops.forEach((stop, index) => {
+        stop.setAttribute("aria-pressed", String(index === selected));
+        stop.toggleAttribute("data-reached", index <= selected);
+        panels[index].hidden = index !== selected;
+      });
+    };
+
+    stops.forEach((stop, index) => stop.addEventListener("click", () => showStop(index)));
+    showStop(0);
+    const fallback = map.parentElement?.querySelector<HTMLElement>("[data-route-fallback]");
+    if (fallback) fallback.hidden = true;
+    map.hidden = false;
+  }
+</script>
