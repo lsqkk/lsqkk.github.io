@@ -1,0 +1,17 @@
+[Unit]
+Description=Quark Live status and chat
+After=quark-mediamtx.service
+
+[Service]
+DynamicUser=yes
+EnvironmentFile=-/etc/quark-live/room.env
+ExecStart=/usr/bin/python3 -B /opt/quark-live/room-server.py
+Restart=on-failure
+RestartSec=3s
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

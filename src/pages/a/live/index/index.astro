@@ -1,194 +1,115 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_LOGO_URL, SITE_TITLE, SITE_URL } from "@siteConfig";
+import "../../../../components/live/room.css";
+
+const mediaOrigin = "https://live.130923.xyz";
+const canonical = new URL("/a/live/", mediaOrigin).href;
 ---
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101216" />
+    <meta name="description" content="蓝色奇夸克的个人直播间。开播时打开网页即可观看，也可以在聊天室打个招呼。" />
+    <link rel="icon" href={SITE_LOGO_URL} />
+    <link rel="canonical" href={canonical} />
+    <title>夸克直播间 · {SITE_TITLE}</title>
+  </head>
+  <body>
+    <div class="broadcast" data-media-origin={mediaOrigin}>
+      <header class="masthead">
+        <a class="home-link" href={SITE_URL} aria-label="奇夸克首页">
+          <img src={SITE_LOGO_URL} width="28" height="28" alt="" />
+          <span>奇夸克</span>
+        </a>
+        <span class="masthead-label">直播间</span>
+        <button class="button share" type="button" data-share>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M10 13a4 4 0 0 0 6 .4l3-3a4 4 0 0 0-5.7-5.7L11.5 6.5m2.5 4.5a4 4 0 0 0-6-.4l-3 3a4 4 0 0 0 5.7 5.7l1.8-1.8" stroke-linecap="round" /></svg>
+          <span>分享直播间</span>
+        </button>
+      </header>
 
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script is:inline src="https://download.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
-    <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
-    <title>直播间 / LIVE - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/pages/a/live/css/index.css">
-
-
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">    <script is:inline src="/assets/js/cursor-trail.js"></script>
-</head>
-
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="stream-info">
-                <div class="stream-title">
-                    <i class="fas fa-video"></i>
-                    <span id="stream-title">直播房间</span>
-                </div>
-                <div class="stream-description" id="stream-description">欢迎来到直播间！</div>
-            </div>
-            <div class="stream-status">
-                <div class="status-badge" id="status">等待连接...</div>
-                <div class="audio-status" id="audio-status">
-                    <i class="fas fa-volume-mute"></i>
-                    <span>音频等待中</span>
-                </div>
-            </div>
+      <main class="room">
+        <div class="room-heading">
+          <div>
+            <p class="channel-label"><span></span> QUARK LIVE</p>
+            <h1>夸克直播间</h1>
+          </div>
+          <div class="room-state">
+            <span class="elapsed" data-elapsed hidden></span>
+            <span class="badge" data-status role="status">正在连接</span>
+          </div>
         </div>
 
-        <div id="error-message" class="error" style="display: none;"></div>
-
-        <div class="live-container">
-            <div class="video-container">
-                <div id="video-placeholder" class="video-placeholder">
-                    <div class="fallback-player">
-                        <div class="fallback-header">
-                            <span class="fallback-title">备用频道</span>
-                            <span class="fallback-status" id="fallback-status">准备中</span>
-                        </div>
-                        <div class="fallback-controls">
-                            <label class="fallback-label" for="fallback-select">频道</label>
-                            <select id="fallback-select" class="fallback-select"></select>
-                            <button id="fallback-reload" class="fallback-btn" type="button">刷新列表</button>
-                        </div>
-                        <video id="fallback-video" class="fallback-video" controls playsinline></video>
-                        <div class="fallback-note">如播放失败，可尝试切换其他频道。</div>
-                    </div>
+        <div class="room-grid">
+          <section class="screen" aria-label="直播画面">
+            <div class="stage">
+              <video data-video controls playsinline preload="auto" aria-label="夸克直播播放器" hidden></video>
+              <div class="standby" data-standby>
+                <svg class="orbit" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true">
+                  <defs>
+                    <pattern id="standby-grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" stroke="#53698e" stroke-opacity=".17" /></pattern>
+                    <radialGradient id="standby-glow"><stop stop-color="#273f7c" stop-opacity=".72" /><stop offset="1" stop-color="#101622" stop-opacity="0" /></radialGradient>
+                    <linearGradient id="standby-orbit"><stop stop-color="#839bff" stop-opacity=".64" /><stop offset="1" stop-color="#586cc4" stop-opacity=".07" /></linearGradient>
+                  </defs>
+                  <path d="M0 0h800v460H0z" fill="url(#standby-grid)" />
+                  <ellipse cx="400" cy="209" rx="404" ry="270" fill="url(#standby-glow)" />
+                  <g transform="rotate(-24 400 218)" stroke="url(#standby-orbit)">
+                    <ellipse cx="400" cy="218" rx="190" ry="105" /><ellipse cx="400" cy="218" rx="265" ry="147" /><ellipse cx="400" cy="218" rx="343" ry="191" />
+                    <circle cx="665" cy="218" r="4.5" fill="#a6b8ff" stroke="none" /><circle cx="214" cy="239" r="3.5" fill="#f59c80" stroke="none" />
+                  </g>
+                </svg>
+                <div class="standby-content">
+                  <div class="signal-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="24" cy="24" r="3" fill="currentColor" stroke="none" /><path d="M17 17a10 10 0 0 0 0 14m14-14a10 10 0 0 1 0 14M11 11a18.5 18.5 0 0 0 0 26m26-26a18.5 18.5 0 0 1 0 26" /></svg>
+                  </div>
+                  <h2 data-standby-title>正在连接直播间</h2>
+                  <p data-standby-text>正在检查直播状态。</p>
+                  <button class="button primary" type="button" data-retry hidden>重试连接</button>
                 </div>
-                <video id="live-video" style="display: none;" controls autoplay muted playsinline></video>
+              </div>
+              <button class="button play" type="button" data-play hidden>点击播放</button>
             </div>
-
-            <div class="chat-container">
-                <div class="chat-header">
-                    <h3><i class="fas fa-comments"></i> 实时聊天</h3>
-                    <div class="message-count">消息: <span id="message-count">0</span></div>
-                </div>
-                <div class="messages" id="messages">
-                    <div class="message">
-                        <div class="message-header">
-                            <div class="message-avatar" style="background: #4a6cf7">系</div>
-                            <span class="user">系统</span>
-                            <span class="time" id="current-time"></span>
-                        </div>
-                        <div class="message-content">欢迎来到直播房间！直播开始后这里会显示实时聊天</div>
-                    </div>
-                </div>
-
-                <div class="message-input-container">
-                    <div class="user-avatar-input">
-                        <div class="avatar-preview" id="avatar-preview" style="background: #4a6cf7">A</div>
-                        <div class="avatar-options" id="avatar-options">
-                            <div class="avatar-toggle">
-                                <button class="toggle-btn active" id="color-toggle">颜色</button>
-                                <button class="toggle-btn" id="image-toggle">图片URL</button>
-                            </div>
-                            <div class="color-picker" id="color-picker">
-                                <div class="color-option selected" style="background: #4a6cf7"></div>
-                                <div class="color-option" style="background: #f56565"></div>
-                                <div class="color-option" style="background: #48bb78"></div>
-                                <div class="color-option" style="background: #ed8936"></div>
-                                <div class="color-option" style="background: #9f7aea"></div>
-                            </div>
-                            <input type="text" id="avatar-url" placeholder="图片URL (jpg, png, webp)"
-                                style="display: none;">
-                            <input type="text" id="nickname" placeholder="昵称" value="观众">
-                        </div>
-                    </div>
-                    <input type="text" id="message-input" placeholder="输入消息...">
-                    <button id="send-btn">发送</button>
-                </div>
-                <div class="markdown-toggle">
-                    <input type="checkbox" id="use-markdown" checked>
-                    <label for="use-markdown">使用Markdown格式</label>
-                </div>
-                <div class="action-buttons">
-                    <button id="like-btn" class="action-btn">
-                        <i class="fas fa-heart"></i>
-                        <span>点赞</span>
-                    </button>
-                </div>
+            <div class="screen-footer">
+              <span class="stream-note" data-player-note>正在检查直播状态</span>
+              <button class="button edge" type="button" data-edge hidden>回到直播</button>
             </div>
+          </section>
+
+          <aside class="chat" id="chat" aria-labelledby="chat-title">
+            <div class="chat-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.5 11.5a7.8 7.8 0 0 1-8 7.5c-1 0-1.9-.2-2.7-.4L5 20l1.4-3.9a7.1 7.1 0 0 1-1.9-4.6 7.8 7.8 0 0 1 8-7.5 7.8 7.8 0 0 1 8 7.5Z" stroke-linejoin="round" /><path d="M9 11.5h7" stroke-linecap="round" /></svg>
+              <h2 id="chat-title">聊天室</h2>
+              <span class="chat-state" data-chat-state>连接中</span>
+            </div>
+            <div class="chat-feed" data-feed tabindex="0" aria-label="聊天消息">
+              <div class="chat-empty" data-chat-empty>
+                <strong>这里还很安静</strong>
+                <p data-chat-empty-note>开播后可以在这里打个招呼。</p>
+              </div>
+              <ol class="messages" data-messages aria-live="polite" aria-relevant="additions"></ol>
+            </div>
+            <form class="chat-form" data-chat-form>
+              <label class="name-row">昵称 <input name="nickname" maxlength="20" placeholder="访客" disabled /></label>
+              <div class="compose">
+                <input name="message" aria-label="聊天消息" maxlength="200" placeholder="等开播后再聊" autocomplete="off" disabled />
+                <button class="button primary" type="submit" disabled>发送</button>
+              </div>
+              <p class="form-note" data-chat-note role="status"></p>
+            </form>
+          </aside>
         </div>
 
-        <div class="stats-container">
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="viewer-count">0</div>
-                    <div class="stat-label">在线观众</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="like-count">0</div>
-                    <div class="stat-label">总点赞数</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="message-count-stat">0</div>
-                    <div class="stat-label">消息数量</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="stream-duration">00:00</div>
-                    <div class="stat-label">直播时长</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="controls">
-            <button class="control-btn" onclick="toggleFullscreen()">
-                <i class="fas fa-expand"></i>
-                全屏切换
-            </button>
-            <button class="control-btn" onclick="testAudio()">
-                <i class="fas fa-volume-up"></i>
-                测试音频
-            </button>
-            <button class="control-btn" onclick="toggleMute()">
-                <i class="fas fa-volume-mute"></i>
-                静音切换
-            </button>
-            <button class="control-btn" onclick="copyInviteLink()">
-                <i class="fas fa-share"></i>
-                复制邀请链接
-            </button>
-            <button class="control-btn" onclick="toggleManualPanel()">
-                <i class="fas fa-cog"></i>
-                手动连接
-            </button>
-            <button class="control-btn" onclick="reconnect()">
-                <i class="fas fa-redo"></i>
-                重新连接
-            </button>
-        </div>
-
-        <div class="manual-panel" id="manual-panel">
-            <h3><i class="fas fa-tools"></i> 手动连接</h3>
-            <div class="form-group">
-                <label for="manual-token">Token</label>
-                <textarea id="manual-token" placeholder="请输入Token" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="manual-channel">频道名称</label>
-                <input type="text" id="manual-channel" placeholder="请输入频道名称" value="lsqkk">
-            </div>
-            <button class="control-btn" onclick="connectManually()">
-                <i class="fas fa-plug"></i>
-                连接
-            </button>
-        </div>
+        <footer class="room-footer">
+          <span>蓝色奇夸克的个人直播间</span>
+          <a href="/a/live/streamer">主播设置</a>
+        </footer>
+        <p class="sr-only" data-share-status role="status"></p>
+      </main>
     </div>
-
-    <!-- Firebase SDK -->
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-    <!-- HLS.js for video streaming -->
-    <script is:inline src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-    <!-- Font Awesome (CSS CDN to avoid kit CORS) -->
-    <link rel="stylesheet" href="/assets/css/fa-local.css" />
-
-    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
-
-    <script is:inline src="/assets/pages/a/live/js/index.js"></script>
-</body>
-
+    <script>
+      import "../../../../components/live/room.js";
+    </script>
+  </body>
 </html>
-

@@ -1,0 +1,32 @@
+logLevel: info
+api: true
+apiAddress: 127.0.0.1:9997
+rtsp: false
+rtmp: false
+webrtc: false
+moq: false
+srt: true
+srtAddress: :8890
+hls: true
+hlsAddress: 127.0.0.1:8888
+hlsVariant: fmp4
+hlsAlwaysRemux: true
+hlsSegmentDuration: 2s
+hlsAllowOrigins: ["*"]
+authInternalUsers:
+  - user: any
+    ips: ["127.0.0.1"]
+    permissions:
+      - action: api
+  - user: any
+    permissions:
+      - action: read
+        path: quark
+      # SRT is the only publish protocol and requires the path passphrase.
+      - action: publish
+        path: quark
+paths:
+  quark:
+    source: publisher
+    overridePublisher: false
+    srtPublishPassphrase: "__SRT_PASSPHRASE__"

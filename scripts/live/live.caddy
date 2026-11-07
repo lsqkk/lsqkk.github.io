@@ -1,0 +1,31 @@
+live.130923.xyz {
+	tls {
+		issuer acme {
+			disable_http_challenge
+			timeout 3m
+		}
+	}
+
+	header X-Content-Type-Options nosniff
+
+	@room path /api/room /api/chat
+	handle @room {
+		reverse_proxy 127.0.0.1:8790 {
+			header_up X-Quark-Client {remote_host}
+		}
+	}
+
+	@hls {
+		method GET HEAD OPTIONS
+		path /quark/*.m3u8 /quark/*.mp4 /quark/*.m4s /quark/*.ts
+	}
+	handle @hls {
+		reverse_proxy 127.0.0.1:8888
+	}
+
+	handle {
+		root * /var/www/quark-live
+		redir / /a/live/ 302
+		file_server
+	}
+}
