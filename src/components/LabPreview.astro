@@ -10,10 +10,10 @@
     </div>
     <button type="button" class="lab-surface" aria-describedby="lab-hint" data-lab-surface hidden>
       <canvas aria-hidden="true"></canvas>
-      <span class="lab-surface-label" aria-hidden="true" data-lab-label>WAVE FIELD</span>
+      <span class="lab-surface-label" aria-hidden="true" data-lab-label>WAVE TABLE</span>
       <span class="lab-plus" aria-hidden="true">＋</span>
     </button>
-    <p id="lab-hint" data-lab-hint>点一下，看看波纹怎样从落点散开。</p>
+    <p id="lab-hint" data-lab-hint>点在波面上，看一道波沿着细线传开。</p>
     <a href="/a/physics/" data-lab-link>打开 Physics 项目 ↗</a>
     <noscript><style>#lab-hint { display: none; }</style></noscript>
   </div>
@@ -22,7 +22,7 @@
 <style>
   .lab-preview {
     grid-column: 1 / -1;
-    margin-bottom: 22px;
+    margin-top: 22px;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-md);
     background: var(--surface);
@@ -77,15 +77,15 @@
     position: relative;
     display: block;
     width: 100%;
-    height: 136px;
+    height: 146px;
     padding: 0;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 7px;
     color: var(--text-subtle);
     background:
-      radial-gradient(circle, var(--line-strong) 1px, transparent 1.2px) 0 0 / 14px 14px,
-      linear-gradient(138deg, var(--accent-soft), var(--surface));
+      radial-gradient(ellipse at 64% 28%, color-mix(in srgb, #50bfbd 11%, transparent), transparent 72%),
+      linear-gradient(147deg, var(--surface), var(--accent-soft));
     text-align: start;
     cursor: crosshair;
     touch-action: manipulation;
@@ -101,7 +101,7 @@
   .lab-preview [hidden] { display: none; }
 
   @media (max-width: 1000px) {
-    .lab-preview { margin-bottom: 0; }
+    .lab-preview { margin-top: 0; }
     summary { min-height: 44px; padding-block: 8px; }
     .lab-surface { height: 122px; }
   }

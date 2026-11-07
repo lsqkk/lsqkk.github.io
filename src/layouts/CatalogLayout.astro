@@ -55,11 +55,11 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
           <button type="button" data-catalog-view="list" aria-pressed="false" aria-label="紧凑列表" title="紧凑列表">☰</button>
         </div>
       </div>
-      <slot name="rail-extra" />
       <details class="catalog-pocket-disclosure" data-pocket-disclosure hidden open>
         <summary>随行架 <span data-pocket-summary>0</span><span class="catalog-pocket-chevron" aria-hidden="true">⌄</span></summary>
         <PocketShelf />
       </details>
+      <slot name="rail-extra" />
       </aside>
       <div class="catalog-layout">
         <nav class="catalog-categories" aria-label="按分类浏览">
