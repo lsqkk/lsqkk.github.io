@@ -11,6 +11,7 @@ const { title, eyebrow, description, groups, kind = 'tool' } = Astro.props;
 const total = groups.reduce((sum, group) => sum + group.items.length, 0);
 const sections = groups.map((group, index) => ({ ...group, id: 'category-' + index }));
 const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'游戏'}, {href:'/a/',label:'实验室'}, {href:'/blog/',label:'功能导航'}];
+const canonicalPath = Astro.url.pathname.replace(/\/index\/?$/, '/').replace(/\/?$/, '/');
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -19,7 +20,7 @@ const destinations = [{href:'/tool/',label:'工具箱'}, {href:'/games/',label:'
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title} - {SITE_TITLE}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={new URL(Astro.url.pathname, SITE_URL)} />
+    <link rel="canonical" href={new URL(canonicalPath, SITE_URL)} />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/nav.css" />

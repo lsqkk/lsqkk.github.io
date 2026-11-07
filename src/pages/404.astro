@@ -1,6 +1,5 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-import LuxuryBackground from "../components/LuxuryBackground.astro";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -8,32 +7,35 @@ import LuxuryBackground from "../components/LuxuryBackground.astro";
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
     <title>404 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
     <link rel="stylesheet" href="/assets/css/cursor.css" />
     <link rel="stylesheet" href="/assets/css/404.css" />
     <script is:inline src="/assets/js/cursor-trail.js"></script>
   </head>
-  <body class="luxury-body">
-    <LuxuryBackground />
-    <div class="container">
-      <h2>{SITE_TITLE}</h2>
-      <div class="emoji">🌌</div>
-      <h1>404</h1>
-      <p>你似乎来到了没有知识的荒原……</p>
-
-      <div id="searchSuggestions" class="suggestions" style="display: none;">
-        <p class="suggestion-title">您要找的是不是：</p>
-        <div id="suggestionList" class="suggestion-list"></div>
-      </div>
-
-      <div class="buttons">
-        <a href="/#home-content" class="btn">返回首页</a>
-        <a href="/games" class="btn">玩会游戏</a>
-      </div>
-
-      <div class="countdown" id="countdown">5 秒后自动回到首页</div>
-    </div>
+  <body class="not-found">
+    <main class="not-found-main">
+      <p class="not-found-label">{SITE_TITLE} <span aria-hidden="true">/</span> 404</p>
+      <h1>找不到这个页面</h1>
+      <p class="not-found-description">地址可能已变更。可以搜索文章、工具和其他页面。</p>
+      <form class="not-found-search" action="/search/" method="get" role="search" aria-label="站内搜索">
+        <label for="not-found-query">搜索站内</label>
+        <div>
+          <input id="not-found-query" type="search" name="q" placeholder="输入关键词" required />
+          <button type="submit">搜索</button>
+        </div>
+      </form>
+      <section id="searchSuggestions" class="not-found-suggestions" aria-labelledby="suggestion-title" hidden>
+        <h2 id="suggestion-title">你可能在找</h2>
+        <ul id="suggestionList"></ul>
+      </section>
+      <nav class="not-found-actions" aria-label="继续浏览">
+        <a href="/#home-content">返回首页</a>
+        <a href="/tool/">打开工具箱</a>
+        <a href="/games/">浏览游戏</a>
+      </nav>
+    </main>
 
     <script is:inline src="/assets/js/404.js"></script>
   </body>

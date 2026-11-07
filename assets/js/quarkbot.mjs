@@ -18,7 +18,8 @@ function linkifyReply(root, sources, { streaming = false } = {}) {
         const onSite = url.origin === location.origin || url.hostname === 'lsqkk.github.io';
         if (!onSite && !sourcePath) return '';
         if (!sourcePath && path !== '/' && !siteRoots.test(path)) return '';
-        return new URL((sourcePath || path) + url.search + url.hash, location.origin).href;
+        const route = sourcePath || (path === '/' || path.endsWith('.html') ? path : path + '/');
+        return new URL(route + url.search + url.hash, location.origin).href;
     }
 
     for (const anchor of root.querySelectorAll('a[href]')) {
@@ -110,7 +111,7 @@ export function mountBot({ loadScript }) {
     panel.setAttribute('aria-labelledby', 'quark-bot-title');
     panel.innerHTML = `<header><div><small>QUARK · 网站助手</small><h2 id="quark-bot-title">QuarkBot</h2></div>
         <form method="dialog"><button aria-label="关闭 QuarkBot">×</button></form></header>
-        <div class="quark-bot-meta"><span data-context></span><a href="/settings#ai">连接设置</a><button data-clear type="button">清空对话</button></div>
+        <div class="quark-bot-meta"><span data-context></span><a href="/settings/#ai">连接设置</a><button data-clear type="button">清空对话</button></div>
         <div class="quark-bot-log" role="log" aria-live="polite"></div>
         <p class="quark-bot-status" role="status"></p>
         <form class="quark-bot-form">

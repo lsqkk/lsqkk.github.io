@@ -98,7 +98,7 @@ export function getQuarkBotTools(query, { includePage, showReadingResults } = {}
                 当前: appearance[key].choices[current[key]]?.[0],
                 可用: Object.values(appearance[key].choices).map(([label]) => label),
             }]));
-            return { result: { settings, settingsUrl: '/settings#appearance' }, detail: Object.keys(settings).join('、') };
+            return { result: { settings, settingsUrl: '/settings/#appearance' }, detail: Object.keys(settings).join('、') };
         }));
         const allowed = explicitChanges(query);
         if (Object.keys(allowed).length) {
@@ -113,7 +113,7 @@ export function getQuarkBotTools(query, { includePage, showReadingResults } = {}
                 const applied = await prefs.update(args, { sync: false });
                 const settings = Object.fromEntries(patch.map(([key]) => [appearance[key].label, appearance[key].choices[applied[key]][0]]));
                 const detail = Object.entries(settings).map(([label, value]) => `${label}：${value}`).join('，');
-                return { result: { applied: settings, settingsUrl: '/settings#appearance' }, detail, receipt: `已应用：${detail}。` };
+                return { result: { applied: settings, settingsUrl: '/settings/#appearance' }, detail, receipt: `已应用：${detail}。` };
             }, properties));
         }
     }

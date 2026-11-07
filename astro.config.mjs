@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import sitemapCompat from "./scripts/sitemap-compat.mjs";
+import directoryPages from "./scripts/directory-pages.mjs";
 import optimizeStatic from "./scripts/optimize-static.mjs";
 import retiredPages from "./src/config/retired-pages.json" with { type: "json" };
 import rehypeRaw from "rehype-raw";
@@ -584,10 +585,10 @@ export default defineConfig({
     },
     serialize(item) {
       const url = new URL(item.url);
-      url.pathname = url.pathname.replace(/\/index(?:\.html)?\/?$/, '/');
+      url.pathname = url.pathname.replace(/\/index(?:\.html)?\/?$/, '/').replace(/\/?$/, '/');
       return { ...item, url: url.href };
     },
-  }), sitemapCompat(), apiBaseInjector(), optimizeStatic()],
+  }), sitemapCompat(), directoryPages(), apiBaseInjector(), optimizeStatic()],
   redirects: process.argv.includes("dev") ? buildDevRedirects() : undefined,
   markdown: {
     shikiConfig: { themes: { light: "github-light", dark: "github-dark" } },

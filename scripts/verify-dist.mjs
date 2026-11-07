@@ -25,24 +25,29 @@ async function main() {
     assert(urls.some(value=>new URL(value).pathname.replace(/\/$/,'')===route.replace(/\/$/,'')), 'Missing sitemap route: '+route);
   }
   // Article metadata must be parseable and point at the actual post route.
-  async function postFiles(directory) {
+  async function htmlFiles(directory) {
     const result=[];
     for(const entry of await fs.readdir(directory,{withFileTypes:true})) {
       const name=path.join(directory,entry.name);
-      if(entry.isDirectory())result.push(...await postFiles(name));
+      if(entry.isDirectory())result.push(...await htmlFiles(name));
       else if(entry.name.endsWith(".html"))result.push(name);
     }
     return result;
   }
+  await read('404.html');
+  const pagesOnDisk = await htmlFiles(root);
+  for (const file of pagesOnDisk) {
+    assert(path.basename(file)==='index.html' || file===path.join(root,'404.html'), 'Unexpected flat HTML file: '+file);
+  }
   let articleCount=0;
-  for(const file of await postFiles(path.join(root,"posts"))) {
+  for(const file of pagesOnDisk.filter(file=>file.startsWith(path.join(root,"posts")+path.sep))) {
     const html=await fs.readFile(file,"utf8");
     if(!html.includes("post-layout-page"))continue;
     const canonicalTag=(html.match(/<link\b[^>]*\brel="canonical"[^>]*>/)||[])[0]||"";
     const canonical=(canonicalTag.match(/\bhref="([^"]+)"/)||[])[1];
     const openGraph=(html.match(/property="og:url"\s+content="([^"]+)"/)||[])[1];
     assert(canonical,"Missing article canonical: "+file);
-    const expected="/"+path.relative(root,file).split(path.sep).join("/").replace(/\.html$/,"");
+    const expected="/"+path.relative(root,file).split(path.sep).join("/").replace(/index\.html$/,"");
     assert.equal(new URL(canonical).origin,new URL(urls[0]).origin,"Article origin differs from sitemap: "+file);
     assert.equal(decodeURI(new URL(canonical).pathname),decodeURI(expected),"Incorrect article canonical: "+file);
     assert.equal(openGraph,canonical,"Open Graph URL differs from canonical: "+file);
@@ -62,19 +67,18 @@ async function main() {
   await read(new URL(declared).pathname.replace(/^\//,''));
   const pages=JSON.parse(await read('json/site-pages.json'));
   assert(pages.length>0,'Search pages index is empty');
-  const settings = await read('settings.html');
+  const settings = await read('settings/index.html');
   for (const id of ['appearance', 'notifications', 'ai']) {
     assert(settings.includes(`id="${id}"`), 'Missing settings section: '+id);
   }
   const routes = new Map(pages.map(({path,href}) => [path,href]));
-  assert.equal(routes.get('settings'),'/settings','Settings search link must target settings.html');
+  assert.equal(routes.get('settings'),'/settings/','Settings search link must target its index.html');
   assert.equal(routes.get('tool'),'/tool/','Tool directory search link must target its index.html');
   const exists = (relative) => fs.stat(path.join(root,relative)).then(stat => stat.isFile(), () => false);
   for (const {path: slug, href} of pages) {
     assert(href === '/'+slug || href === '/'+slug+'/', 'Invalid indexed route: '+slug);
     const file = decodeURI(slug);
     if (await exists(file+'/index.html')) assert.equal(href,'/'+slug+'/','Directory route must end in a slash: '+slug);
-    else if (await exists(file+'.html')) assert.equal(href,'/'+slug,'File route must omit trailing slash: '+slug);
   }
   console.log('verify-dist passed: sitemap index, '+children.length+' child file(s), '+urls.length+' URLs, legacy alias, robots and search index');
 }

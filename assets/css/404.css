@@ -1,393 +1,83 @@
-body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
+.not-found {
+    box-sizing: border-box;
+    display: grid;
     align-items: center;
-    text-align: center;
+    justify-items: center;
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+        max(72px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     color: var(--text-main);
+    background: var(--page-bg);
 }
-
-.container {
-    max-width: 600px;
-    padding: 2.5rem;
-    background: var(--surface-strong);
-    border-radius: var(--radius-md);
-    box-shadow: none;
-
+.not-found-main {
+    box-sizing: border-box;
+    width: min(100%, 36rem);
+    min-width: 0;
+    padding: clamp(18px, 5vw, 40px);
     border: 1px solid var(--line);
-    opacity: 0;
-    transform: scale(0.96) translateY(10px);
-    animation: notfound-container-in 0.5s ease 0.1s forwards;
-}
-
-@keyframes notfound-container-in {
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-h1 {
-    font-size: 4rem;
-    margin: 0.5rem 0;
-    color: #4a6fa5;
-    font-weight: 700;
-    background: linear-gradient(135deg, #4a6fa5, #6b8cbc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    opacity: 0;
-    animation: notfound-h1-in 0.5s ease 0.25s forwards;
-}
-
-@keyframes notfound-h1-in {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-h2 {
-    font-size: 1.5rem;
-    color: var(--accent);
-    margin-bottom: 1rem;
-    font-weight: 600;
-    opacity: 0;
-    transform: translateY(8px);
-    animation: notfound-fade-in 0.4s ease 0.35s forwards;
-}
-
-p {
-    font-size: 1.1rem;
-    margin: 1rem 0 1.5rem;
-    color: var(--text-subtle);
-    line-height: 1.6;
-    opacity: 0;
-    transform: translateY(8px);
-    animation: notfound-fade-in 0.4s ease 0.45s forwards;
-}
-
-@keyframes notfound-fade-in {
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.emoji {
-    font-size: 5rem;
-    margin-bottom: 1rem;
-    display: block;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-/* 建议区域样式 */
-.suggestions {
-    margin: 1.5rem 0;
-    padding: 1.2rem;
-    background: rgba(74, 111, 165, 0.08);
-    border-radius: var(--radius-md);
-    border-left: 4px solid #4a6fa5;
-    text-align: left;
-    animation: slideIn 0.5s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.suggestion-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #4a6fa5;
-    margin-bottom: 0.8rem;
-}
-
-.suggestion-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.suggestion-item {
-    padding: 0.8rem;
-    background: white;
     border-radius: var(--radius-lg);
-    border: 1px solid #e1e8f0;
-    transition: all 0.25s ease;
-    opacity: 0;
-    transform: translateX(-8px);
-    animation: suggestion-item-in 0.35s ease forwards;
+    background: var(--surface);
 }
-
-.suggestion-item:nth-child(1) { animation-delay: 0.5s; }
-.suggestion-item:nth-child(2) { animation-delay: 0.57s; }
-.suggestion-item:nth-child(3) { animation-delay: 0.64s; }
-
-@keyframes suggestion-item-in {
-    to { opacity: 1; transform: translateX(0); }
+.not-found-label {
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .06em;
 }
-
-.suggestion-item:hover {
-    transform: translateX(6px);
-    box-shadow: 0 4px 12px rgba(74, 111, 165, 0.15);
-    border-color: #4a6fa5;
+.not-found-main h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.75rem, 6vw, 3rem);
+    line-height: 1.2;
 }
-
-.suggestion-link {
-    color: #4a6fa5;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-    display: block;
-    padding: 0.3rem 0;
-    transition: color 0.2s ease;
+.not-found-description { margin: 0 0 22px; color: var(--text-subtle); }
+.not-found-search label, .not-found-suggestions h2 { display: block; margin: 0 0 8px; font-size: .9rem; font-weight: 650; }
+.not-found-search > div { display: flex; gap: 8px; }
+.not-found-search input {
+    box-sizing: border-box;
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-soft);
+    color: var(--text-main);
+    font: inherit;
+    font-size: max(16px, 1rem);
 }
-
-.suggestion-link:hover {
-    color: #3a5a8f;
-    text-decoration: underline;
-}
-
-/* 按钮区域 */
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0 1.5rem;
-    flex-wrap: wrap;
-    opacity: 0;
-    animation: notfound-fade-in 0.4s ease 0.7s forwards;
-}
-
-.btn {
+.not-found-search button, .not-found-actions a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.9rem 2rem;
-    background: linear-gradient(135deg, #4a6fa5, #5a7bb5);
-    color: white;
-    text-decoration: none;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 6px 12px;
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    min-width: 140px;
-    box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.btn:hover {
-    background: linear-gradient(135deg, #3a5a8f, #4a6fa5);
-    transform: translateY(-3px);
-    box-shadow: none;
-}
-
-.btn:active {
-    transform: translateY(-1px);
-}
-
-.btn::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-}
-
-.btn:hover::after {
-    left: 100%;
-}
-
-.countdown {
-    font-size: 0.9rem;
-    color: #777;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-}
-
-/* 响应式设计 */
-@media (max-width: 640px) {
-    .container {
-        margin: 1rem;
-        padding: 2rem 1.5rem;
-    }
-
-    h1 {
-        font-size: 3.2rem;
-    }
-
-    .emoji {
-        font-size: 4rem;
-    }
-
-    .buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .btn {
-        width: 100%;
-        max-width: 280px;
-    }
-}
-
-body.dark-mode {
-    background: linear-gradient(135deg, #0d1420 0%, #1a1f2c 100%);
-}
-
-body.dark-mode .container {
-    background: var(--surface);
-    border-color: var(--line);
-}
-
-body.dark-mode h1 {
-    color: #84b7ff;
-}
-
-body.dark-mode p {
-    color: var(--text-soft);
-}
-
-body.dark-mode .suggestion-item {
     background: var(--surface-soft);
-    border-color: var(--line);
-}
-
-body.dark-mode .suggestion-item:hover {
-    border-color: var(--accent);
-}
-
-body.dark-mode .countdown {
-    color: var(--text-soft);
-    border-top-color: var(--line);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .container, h1, h2, p, .buttons, .suggestion-item {
-        animation: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-    }
-    .btn:hover { transform: none !important; }
-}
-/* 扁平 404：实色背景、无卡片外壳、无浮动装饰 */
-body {
-    background: var(--page-bg);
-    min-height: 100vh;
-}
-.container {
-    max-width: 560px;
-    padding: 40px 0;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    opacity: 1;
-    transform: none;
-    animation: none;
-}
-h1 {
-    margin: 0 0 8px;
-    font-size: clamp(84px, 16vw, 140px);
-    line-height: 0.9;
-    font-weight: 650;
-    letter-spacing: -0.03em;
     color: var(--text-main);
-    background: none;
-    -webkit-text-fill-color: currentColor;
-    opacity: 1;
-    animation: none;
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
 }
-h2 {
-    margin: 0 0 12px;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-main);
-    opacity: 1;
-    transform: none;
-    animation: none;
+.not-found-search button { flex-shrink: 0; background: var(--accent); color: var(--text-inverse); border-color: var(--accent); }
+.not-found-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.not-found-main :is(a, button):hover { border-color: var(--accent); text-decoration: underline; }
+.not-found-main :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.not-found-suggestions { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); }
+.not-found-suggestions ul { margin: 0; padding: 0; list-style: none; }
+.not-found-suggestions a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px 10px;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 6px 0;
+    color: var(--accent);
+    overflow-wrap: anywhere;
 }
-p {
-    margin: 0 0 24px;
-    font-size: 14px;
-    color: var(--text-subtle);
-    opacity: 1;
-    transform: none;
-    animation: none;
-}
-.emoji {
-    display: none;
-}
-
-/* 按钮与建议区扁平化 */
-.buttons {
-    justify-content: flex-start;
-    gap: 10px;
-    margin: 28px 0 20px;
-    opacity: 1;
-    animation: none;
-}
-.btn {
-    min-width: 0;
-    padding: 10px 18px;
-    color: var(--surface-strong);
-    background: var(--text-main);
-    border: 1px solid var(--text-main);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 600;
-    box-shadow: none;
-    transform: none;
-}
-.btn:hover {
-    background: var(--text-main);
-    opacity: 0.84;
-    transform: none;
-    box-shadow: none;
-}
-.btn:active { transform: none; }
-.btn::after { display: none; }
-.suggestions {
-    margin: 20px 0;
-    padding: 0 0 0 14px;
-    background: transparent;
-    border: 0;
-    border-left: 1px solid var(--line-strong);
-    border-radius: 0;
-    animation: none;
-}
-.suggestion-title { color: var(--text-main); font-size: 13px; }
-.suggestion-item {
-    padding: 8px 0;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    opacity: 1;
-    transform: none;
-    animation: none;
-}
-.suggestion-item:hover { transform: none; box-shadow: none; }
-.suggestion-link { color: var(--accent); font-size: 13px; }
+.not-found-suggestions small { color: var(--text-subtle); }
