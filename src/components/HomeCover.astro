@@ -1,6 +1,12 @@
 <section class="quark-cover" data-quark-cover data-nav-after aria-labelledby="quark-cover-title">
-  <canvas aria-hidden="true"></canvas>
-  <h1 id="quark-cover-title">奇夸克</h1>
+  <div class="cover-stage">
+    <canvas aria-hidden="true"></canvas>
+    <div class="cover-identity">
+      <p class="cover-wordmark" lang="en">Strange Quark</p>
+      <h1 id="quark-cover-title">奇夸克</h1>
+      <p class="cover-caption">技术 · 生活 · 思考</p>
+    </div>
+  </div>
   <div class="cover-actions">
     <nav class="cover-links" aria-label="首页快捷入口">
       <a href="/posts/">文章</a>
@@ -27,16 +33,33 @@
     --cover-glow-secondary: #e1f1f3;
     position: relative;
     isolation: isolate;
-    display: grid;
-    place-items: center;
     min-block-size: 100vh;
     min-block-size: 100svh;
     overflow: clip;
     color: var(--cover-ink);
+  }
+
+  .cover-stage {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    transform: translateY(var(--cover-lift, 0px));
     background:
       radial-gradient(ellipse at 84% 14%, var(--cover-glow-secondary), transparent 54%),
       radial-gradient(ellipse at 14% 88%, var(--cover-glow), transparent 57%),
       var(--cover-paper);
+  }
+
+  .quark-cover::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: min(22svh, 180px);
+    background: linear-gradient(transparent, var(--page-bg, var(--cover-paper)));
+    opacity: var(--cover-progress, 0);
+    pointer-events: none;
   }
 
   :global(body.dark-mode) .quark-cover {
@@ -56,7 +79,44 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+    opacity: calc(1 - var(--cover-progress, 0) * .8);
+    filter: blur(calc(3px * var(--cover-progress, 0)));
     mask-image: linear-gradient(transparent 2%, #000 20%, #000 80%, transparent 98%);
+  }
+
+  .cover-identity {
+    display: grid;
+    justify-items: center;
+    gap: clamp(8px, 2.15vh, 21px);
+    padding: 0 16px;
+    text-align: center;
+    opacity: calc(1 - var(--cover-progress, 0) * .9);
+    filter: blur(calc(11px * var(--cover-progress, 0)));
+  }
+
+  .cover-wordmark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--cover-muted);
+    font-family: system-ui, sans-serif;
+    font-size: clamp(10px, 1.4vw, 12px);
+    font-weight: 600;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+
+  .cover-wordmark::before, .cover-wordmark::after {
+    content: "";
+    inline-size: clamp(14px, 3vw, 30px);
+    block-size: 1px;
+    background: var(--cover-edge);
+  }
+
+  .cover-caption {
+    color: var(--cover-muted);
+    font-size: clamp(13px, 1.55vw, 16px);
+    letter-spacing: .13em;
   }
 
   h1 {
@@ -70,11 +130,14 @@
 
   .cover-actions {
     position: absolute;
+    z-index: 1;
     inset-inline: 0;
     inset-block-end: max(22px, env(safe-area-inset-bottom));
     display: grid;
     justify-items: center;
     gap: 12px;
+    transform: translateY(var(--cover-lift, 0px));
+    opacity: max(0, calc(1 - var(--cover-progress, 0) * 2.5));
   }
 
   .cover-links {
@@ -122,7 +185,8 @@
 
   @media (max-height: 420px) {
     .quark-cover { min-block-size: max(300px, 100svh); }
-    h1 { font-size: clamp(3rem, 17svh, 5rem); }
+    .cover-identity { gap: 5px; }
+    h1 { font-size: clamp(2.5rem, 14svh, 4.5rem); }
     .cover-actions { gap: 4px; inset-block-end: 10px; }
   }
 </style>
