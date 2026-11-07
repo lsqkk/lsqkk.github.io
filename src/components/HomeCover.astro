@@ -1,0 +1,136 @@
+<section class="quark-cover" data-quark-cover data-nav-after aria-labelledby="quark-cover-title">
+  <canvas aria-hidden="true"></canvas>
+  <h1 id="quark-cover-title">奇夸克</h1>
+  <div class="cover-actions">
+    <nav class="cover-links" aria-label="首页快捷入口">
+      <a href="/posts/">文章</a>
+      <a href="/tool/">工具</a>
+      <a href="/blog/project/">项目</a>
+    </nav>
+    <a class="cover-next" href="#home-content" aria-label="向下进入首页内容">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 5v14m-5-5 5 5 5-5" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
+  </div>
+</section>
+
+<style>
+  .quark-cover {
+    --cover-paper: #f7f9fd;
+    --cover-ink: #192842;
+    --cover-muted: #465673;
+    --cover-edge: #cfd9e8;
+    --cover-surface: #ffffffa8;
+    --cover-glow: #dde8fb;
+    --cover-glow-secondary: #e1f1f3;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    min-block-size: 100vh;
+    min-block-size: 100svh;
+    overflow: clip;
+    color: var(--cover-ink);
+    background:
+      radial-gradient(ellipse at 84% 14%, var(--cover-glow-secondary), transparent 54%),
+      radial-gradient(ellipse at 14% 88%, var(--cover-glow), transparent 57%),
+      var(--cover-paper);
+  }
+
+  :global(body.dark-mode) .quark-cover {
+    --cover-paper: #0d1626;
+    --cover-ink: #eaf2ff;
+    --cover-muted: #b0c3dd;
+    --cover-edge: #415675;
+    --cover-surface: #17253cd9;
+    --cover-glow: #182c4e;
+    --cover-glow-secondary: #102d37;
+  }
+
+  canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mask-image: linear-gradient(transparent 2%, #000 20%, #000 80%, transparent 98%);
+  }
+
+  h1 {
+    font-size: clamp(3.75rem, 11vw, 9rem);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding-inline-start: 0.1em;
+    white-space: nowrap;
+  }
+
+  .cover-actions {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: max(22px, env(safe-area-inset-bottom));
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+  }
+
+  .cover-links {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--cover-edge);
+    border-radius: 999px;
+    background: var(--cover-surface);
+  }
+
+  .cover-links a, .cover-next {
+    display: grid;
+    place-items: center;
+    color: var(--cover-muted);
+    text-decoration: none;
+    border-radius: 999px;
+    transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+  }
+
+  .cover-links a {
+    min-block-size: 34px;
+    padding-inline: 14px;
+    font-size: 13px;
+  }
+
+  .cover-next {
+    inline-size: 46px;
+    block-size: 46px;
+    border: 1px solid var(--cover-edge);
+    background: var(--cover-surface);
+  }
+
+  .cover-links a:hover, .cover-next:hover {
+    color: var(--cover-ink);
+    background: var(--cover-glow);
+  }
+
+  .cover-next:hover { transform: translateY(2px); }
+
+  a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media (max-height: 420px) {
+    .quark-cover { min-block-size: max(300px, 100svh); }
+    h1 { font-size: clamp(3rem, 17svh, 5rem); }
+    .cover-actions { gap: 4px; inset-block-end: 10px; }
+  }
+</style>
+
+<script>
+  import { animateCover } from "../scripts/home-cover";
+
+  const cover = document.querySelector<HTMLElement>("[data-quark-cover]");
+  const canvas = cover?.querySelector("canvas");
+  if (cover && canvas) animateCover(cover, canvas);
+</script>

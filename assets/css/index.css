@@ -3,6 +3,21 @@ body.home-page {
     color: var(--text-main);
 }
 
+/* The homepage navigation enters with the content below the cover. */
+body.home-page > .header {
+    position: sticky;
+}
+
+body.home-page > .header-placeholder {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html:not([data-motion="reduce"]):has(.quark-cover) {
+        scroll-behavior: smooth;
+    }
+}
+
 body.home-page .main-layout {
     display: grid !important;
 }

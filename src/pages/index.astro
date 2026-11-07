@@ -2,6 +2,7 @@
 import ReadingDeskEntry from "../components/ReadingDeskEntry.astro";
 import PocketShelf from "../components/PocketShelf.astro";
 import LuxuryBackground from "../components/LuxuryBackground.astro";
+import HomeCover from "../components/HomeCover.astro";
 import fs from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -171,11 +172,12 @@ const homePreloaded = {
   </head>
 
   <body class="home-page luxury-body">
+    <HomeCover />
     <script is:inline src="/assets/js/nav.js"></script>
     <LuxuryBackground />
 
     <div class="main-layout">
-      <main class="main-content">
+      <main class="main-content" id="home-content" tabindex="-1">
         {(hasMainSection("avatar_nickname") ||
           hasMainSection("welcome_section") ||
           hasMainSection("typewriter") ||

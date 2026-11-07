@@ -436,7 +436,9 @@ const navConfig = getNavConfig();
 // Deferred and synchronous callers share one DOM-based mount.
 function mountNavigation() {
     if (document.querySelector('.header')) return;
-    document.body.insertAdjacentHTML('afterbegin', generateNavHTML(navConfig));
+    const mountAfter = document.querySelector('[data-nav-after]');
+    if (mountAfter) mountAfter.insertAdjacentHTML('afterend', generateNavHTML(navConfig));
+    else document.body.insertAdjacentHTML('afterbegin', generateNavHTML(navConfig));
 }
 if (document.body) mountNavigation();
 else document.addEventListener('DOMContentLoaded', mountNavigation, { once: true });
@@ -1340,12 +1342,14 @@ function initializeNavScrollBehavior() {
     let lastY = window.scrollY;
     let ticking = false;
     const threshold = 8;
+    const mountAfter = document.querySelector('[data-nav-after]');
 
     const update = () => {
         const currentY = window.scrollY;
         const delta = currentY - lastY;
         if (Math.abs(delta) > threshold) {
-            if (currentY > 120 && delta > 0) {
+            const coverEnd = mountAfter ? currentY + mountAfter.getBoundingClientRect().bottom : 0;
+            if (currentY > coverEnd + 120 && delta > 0) {
                 header.classList.add('header-hidden');
             } else if (delta < 0) {
                 header.classList.remove('header-hidden');
