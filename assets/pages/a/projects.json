@@ -62,9 +62,9 @@
       "name": "AI 与开发实验",
       "projects": [
         {
-          "name": "夸克数字人",
-          "link": "quarkchat",
-          "description": "支持语音/文字可视化对话的数字人交互平台",
+          "name": "QuarkBot",
+          "link": "quarkbot",
+          "description": "和站点助手聊天，继续或管理从各个页面发起的对话",
           "icon": "fa-robot"
         },
         {

@@ -1,5 +1,10 @@
 [
   {
+    "path": "/a/quarkchat",
+    "to": "/a/quarkbot/",
+    "reason": "数字人下线，站点助手与会话记录已移至 QuarkBot"
+  },
+  {
     "path": "/tool/time",
     "to": "/tool/",
     "reason": "普通时钟演示，缺少独立工具价值"

@@ -60,9 +60,9 @@ body:has(.header [data-quark-notice-open]) .quark-notice-launcher,
 .quark-site-dialog header { border-bottom: 1px solid var(--line); }
 .quark-site-dialog footer { border-top: 1px solid var(--line); }
 .quark-site-dialog header h2 { margin: 0; color: inherit; font-size: 1.45rem; }
-.quark-site-dialog small, .quark-bot-meta { color: var(--text-subtle); }
+.quark-site-dialog small { color: var(--text-subtle); }
 .quark-site-dialog header small { color: var(--accent); font-weight: 700; letter-spacing: .08em; }
-.quark-site-dialog button, .quark-bot-options select, #announcement-container button {
+.quark-site-dialog button, .quark-bot-chat button, .quark-bot-options select, #announcement-container button {
     padding: 5px 9px;
     font: inherit;
     border: 1px solid var(--line);
@@ -71,8 +71,8 @@ body:has(.header [data-quark-notice-open]) .quark-notice-launcher,
     background: var(--surface);
     cursor: pointer;
 }
-.quark-site-dialog button:hover, #announcement-container button:hover { border-color: var(--accent); }
-.quark-site-dialog button:disabled { opacity: .55; cursor: wait; }
+.quark-site-dialog button:hover, .quark-bot-chat button:hover, #announcement-container button:hover { border-color: var(--accent); }
+.quark-site-dialog button:disabled, .quark-bot-chat button:disabled { opacity: .55; cursor: wait; }
 .quark-site-dialog header button { min-width: 36px; font-size: 1.1rem; }
 .quark-site-dialog a { color: var(--accent); }
 .quark-site-dialog :focus-visible, .quark-bot-launcher:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
@@ -91,14 +91,55 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
     position: fixed;
     inset: auto max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) auto;
     margin: 0;
-    width: min(420px, calc(100% - 24px));
+    width: min(424px, calc(100% - 24px));
+    border-radius: 15px;
 }
 .quark-bot-panel::backdrop { background: #0a102026; }
-.quark-bot-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 12px; }
-.quark-bot-meta > span { margin-right: auto; }
-.quark-bot-log { min-height: 90px; max-height: 40dvh; overflow: auto; padding: 6px 12px; }
-.quark-bot-message { padding: 9px 11px; margin: 6px 0; background: var(--surface-soft); border-radius: 8px; overflow-wrap: anywhere; }
-.quark-bot-message.is-user { background: var(--accent-soft); margin-left: 20px; }
+.quark-bot-chat [hidden] { display: none !important; }
+.quark-bot-launcher, .quark-bot-avatar { --bot-visor: var(--surface); color: var(--ok); }
+.quark-bot-launcher {
+    background: var(--surface);
+    border-color: var(--ok);
+    border-radius: 14px;
+    width: 46px;
+    height: 46px;
+}
+.quark-bot-launcher:hover { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+.quark-bot-face { display: block; width: 34px; height: 34px; }
+.quark-bot-visor { fill: var(--bot-visor); }
+.quark-bot-eyes { fill: currentColor; transform-box: fill-box; transform-origin: center; }
+.quark-bot-avatar { display: grid; place-items: center; flex: none; width: 39px; height: 39px; border-radius: 11px; background: var(--ok-soft); }
+@media (prefers-reduced-motion: no-preference) {
+    html:not([data-motion="reduce"]) .quark-bot-launcher:hover .quark-bot-eyes { animation: quark-bot-blink .42s ease-in-out; }
+    html:not([data-motion="reduce"]) .quark-bot-chat[data-state="thinking"] .quark-bot-eyes { animation: quark-bot-blink 1.65s ease-in-out infinite; }
+}
+@keyframes quark-bot-blink { 0%, 100% { transform: scaleY(1); } 45%, 55% { transform: scaleY(.2); } }
+.quark-bot-chat .quark-bot-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 13px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+}
+.quark-bot-heading { flex: 1; min-width: 0; }
+.quark-bot-chat .quark-bot-heading h2 { margin: 0; font: 690 1.03rem/1.22 system-ui, sans-serif; letter-spacing: -.02em; }
+.quark-bot-heading > span { display: flex; gap: 7px; align-items: baseline; white-space: nowrap; color: var(--text-subtle); font-size: .79rem; }
+.quark-bot-heading > span > span { overflow: hidden; text-overflow: ellipsis; }
+.quark-bot-heading a { flex: none; }
+.quark-bot-actions { display: flex; align-items: center; gap: 5px; flex: none; font-size: .82rem; }
+.quark-bot-chat .quark-bot-actions button { min-width: 29px; min-height: 30px; padding: 3px 7px; font-size: inherit; }
+.quark-bot-actions form { margin: 0; }
+.quark-bot-actions a { padding: 4px; text-decoration: none; white-space: nowrap; }
+.quark-bot-actions a:hover { text-decoration: underline; }
+.quark-bot-log { min-height: 126px; max-height: 46dvh; overflow: auto; padding: 9px 13px; overscroll-behavior: contain; }
+.quark-bot-message { width: fit-content; max-width: 100%; box-sizing: border-box; padding: 7px 10px; margin: 6px 0; background: var(--surface-soft); border-radius: 3px 11px 11px 11px; overflow-wrap: anywhere; }
+.quark-bot-message > small { display: block; margin-bottom: 2px; color: var(--text-subtle); font-size: .75rem; }
+.quark-bot-message.is-user { background: var(--ok-soft); margin-left: auto; max-width: 88%; border-radius: 11px 3px 11px 11px; }
+.quark-bot-message.quark-bot-welcome { background: transparent; padding-inline: 0; }
+.quark-bot-welcome > small { display: none; }
+.quark-bot-welcome > .quark-bot-content { font-size: 1.12em; }
 .quark-bot-content:not(.is-markdown) { white-space: pre-wrap; }
 .quark-bot-message p { margin: 4px 0; }
 .quark-bot-content :is(h1, h2, h3, h4, h5, h6) { margin: .65em 0 .25em; font-size: 1em; line-height: 1.4; }
@@ -115,27 +156,61 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
 .quark-bot-reading-results { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 .quark-bot-reading-results ul { margin: 5px 0; padding-inline-start: 1.4em; }
 .quark-bot-reading-results li { margin-block: 3px; }
-.quark-bot-suggestions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.quark-bot-suggestions button { padding: 3px 7px; font-size: .75rem; color: var(--text-subtle); }
-.quark-bot-status { margin: 0 12px; min-height: 1.5em; color: var(--text-subtle); }
-.quark-bot-form { padding: 0 12px 12px; }
-.quark-bot-form > div { display: flex; justify-content: flex-end; gap: 8px; }
-.quark-bot-form > .quark-bot-options { justify-content: flex-start; align-items: center; flex-wrap: wrap; }
-.quark-bot-form [data-send] { background: var(--accent); color: var(--text-inverse); border-color: var(--accent); }
-.quark-bot-scope { display: flex; gap: 6px; align-items: center; }
+.quark-bot-suggestions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+.quark-bot-suggestions button { padding: 4px 8px; font-size: .78rem; color: var(--ok); background: var(--ok-soft); }
+.quark-bot-status { margin: 0 14px 3px; color: var(--text-subtle); font-size: .82rem; }
+.quark-bot-status:empty { margin: 0; }
+.quark-bot-form {
+    margin: 4px 12px 10px;
+    padding: 4px 7px 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--surface-soft);
+}
+.quark-bot-form:focus-within { border-color: var(--ok); }
+.quark-bot-options { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; font-size: .78rem; }
+.quark-bot-options select { padding: 3px 4px; max-width: 100%; }
+.quark-bot-scope { display: flex; gap: 2px; align-items: center; white-space: nowrap; color: var(--text-subtle); }
+.quark-bot-scope input { accent-color: var(--ok); }
+.quark-bot-send { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+.quark-bot-chat .quark-bot-send button { min-height: 32px; padding: 3px 6px; }
+.quark-bot-chat .quark-bot-send [data-send] {
+    display: grid;
+    place-items: center;
+    min-width: 32px;
+    color: var(--surface);
+    background: var(--ok);
+    border-color: var(--ok);
+}
 .quark-bot-form textarea {
     box-sizing: border-box;
     display: block;
     width: 100%;
-    margin: 5px 0 8px;
-    padding: 8px;
-    border: 1px solid var(--line-strong);
+    margin: 0 0 3px;
+    padding: 5px;
+    border: 0;
     border-radius: 6px;
-    background: var(--surface);
+    background: transparent;
     color: var(--text-main);
     font: inherit;
     resize: vertical;
 }
+.quark-bot-chat .quark-bot-form textarea:focus-visible { outline-offset: -2px; }
+.quark-bot-chat .quark-bot-footer {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 13px;
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text-subtle);
+    font-size: .79rem;
+}
+.quark-bot-footer a { white-space: nowrap; }
+.quark-bot-footer > div { display: flex; flex: none; align-items: center; gap: 6px; }
+.quark-bot-chat .quark-bot-footer button { padding: 2px 5px; }
+.quark-bot-storage-status { margin: 0; padding: 6px 13px; background: var(--warn-soft); color: var(--warn); font-size: .8rem; }
 .quark-run-details { margin-top: 8px; color: var(--text-subtle); font-size: .86em; }
 .quark-run-details summary { cursor: pointer; }
 .quark-run-details a { display: block; width: fit-content; }

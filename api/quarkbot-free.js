@@ -9,7 +9,7 @@ const origins = [...ALLOWED_ORIGINS, 'https://130923.xyz', 'https://www.130923.x
 const gateway = 'https://ai-gateway.vercel.sh/v1/chat/completions';
 const model = 'alibaba/qwen3.5-flash';
 const dailySiteLimit = 120;
-const dailyIpLimit = 15;
+const dailyIpLimit = 40;
 const maxRequestBytes = 48 * 1024;
 
 function chatPayload(body) {

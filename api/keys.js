@@ -25,7 +25,6 @@ export default function handler(req, res) {
   const keyMap = {
     tianditu: process.env.TIANDITU_KEY,
     openweather: process.env.OPENWEATHER_API_KEY,
-    quarkchat: process.env.QUARKCHAT_API_KEY,
     github: process.env.GITHUB_API_KEY
   };
 
@@ -49,9 +48,7 @@ export default function handler(req, res) {
       ? 'TIANDITU_KEY'
       : name === 'openweather'
         ? 'OPENWEATHER_API_KEY'
-        : name === 'quarkchat'
-          ? 'QUARKCHAT_API_KEY'
-          : 'GITHUB_API_KEY';
+        : 'GITHUB_API_KEY';
     return `window.${varName} = "${value}";`;
   }).filter(Boolean);
 
