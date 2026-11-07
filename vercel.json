@@ -2,5 +2,8 @@
   "framework": null,
   "installCommand": "npm install --no-audit --no-fund",
   "buildCommand": "echo \"Skip Vercel static build (GitHub Pages handles site build)\"",
+  "functions": {
+    "api/quarkbot-free.js": { "maxDuration": 45 }
+  },
   "outputDirectory": "."
 }

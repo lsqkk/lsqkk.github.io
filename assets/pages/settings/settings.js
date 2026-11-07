@@ -83,7 +83,7 @@ aiForm.onsubmit = (event) => {
     try {
         config.saveSettings(readConnection());
         showConnection();
-        setStatus('aiStatus', '连接已保存在此浏览器，三个入口均可使用。');
+        setStatus('aiStatus', '连接已保存在此浏览器，可用于 QAI WebUI、Quark 终端和 QuarkBot 的自定义 API 模式。');
     } catch (error) { setStatus('aiStatus', error.message); }
 };
 byId('testAI').onclick = async () => {

@@ -1,34 +1,6 @@
 // /api/db.js - minimal Firebase RTDB proxy (read-only for now)
-import admin from 'firebase-admin';
+import { getDatabase } from './_firebase-admin.js';
 import { resolveOrigin } from './_cors.js';
-
-let app;
-
-function initAdmin() {
-  if (app) return app;
-  if (admin.apps && admin.apps.length) {
-    app = admin.app();
-    return app;
-  }
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if (!raw) {
-    throw new Error('Missing FIREBASE_SERVICE_ACCOUNT');
-  }
-  let serviceAccount;
-  try {
-    serviceAccount = JSON.parse(raw);
-  } catch (err) {
-    throw new Error('Invalid FIREBASE_SERVICE_ACCOUNT JSON');
-  }
-  if (serviceAccount.private_key && typeof serviceAccount.private_key === 'string') {
-    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
-  }
-  app = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DATABASE_URL
-  });
-  return app;
-}
 
 function isAllowedOrigin(req) {
   const requestOrigin = resolveOrigin(req, ['localhost:8000', 'lsqkk.github.io']);
@@ -102,8 +74,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    initAdmin();
-    const db = admin.database();
+    const db = getDatabase();
 
     if (req.method === 'GET') {
       const query = {

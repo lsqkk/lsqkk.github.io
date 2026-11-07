@@ -19,6 +19,7 @@
 | GET `/api/ip` | 返回请求 IP 相关信息 | [ip.js](../../../api/ip.js) |
 | GET `/api/stream-proxy?url=...` | 媒体流代理 | [stream-proxy.js](../../../api/stream-proxy.js) |
 | POST `/api/stream-proxy?target=...` | 按处理器支持的目标代理 AI 搜索请求 | [stream-proxy.js](../../../api/stream-proxy.js) |
+| POST `/api/quarkbot-free` | QuarkBot 免费对话，固定模型、共享日限额，流式返回 | [quarkbot-free.js](../../../api/quarkbot-free.js) |
 
 管理员与邮箱分别使用同一处理器的 action 参数。路由和字段以对应源码为准，不能根据旧文档推导出独立函数文件。
 

@@ -325,7 +325,7 @@ async function main() {
 
   if (apiBase && apiBase.includes("http")) {
     const files = await walk(PUBLIC_DIR);
-    const textExts = new Set([".js", ".css", ".html", ".json", ".xml", ".svg"]);
+    const textExts = new Set([".js", ".mjs", ".css", ".html", ".json", ".xml", ".svg"]);
     for (const file of files) {
       const ext = path.extname(file).toLowerCase();
       if (!textExts.has(ext)) continue;

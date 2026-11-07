@@ -108,7 +108,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
         </section>
 
         <section id="ai" class="settings-section">
-          <div><h2>AI 与网站助手</h2><p>QuarkBot、QAI WebUI 和网页 Quark 终端共用连接。</p>
+          <div><h2>AI 与网站助手</h2><p>QuarkBot 默认使用站点免费 AI。也可以在助手面板里选择「自定义 API」，使用下方与 QAI WebUI、网页 Quark 终端共享的连接。</p>
             <div class="settings-ai-links"><a href="/a/qai/">打开 QAI WebUI</a><a href="/a/terminal/">打开 Quark 终端</a></div>
           </div>
           <div class="settings-stack">
@@ -131,7 +131,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
         </section>
 
         <section id="privacy" class="settings-section">
-          <div><h2>隐私与本地数据</h2><p>本站服务器不会接收 API Key。发起请求时，浏览器把密钥和本次请求内容直接发送给你配置的模型提供商。</p></div>
+          <div><h2>隐私与本地数据</h2><p>使用自定义 API 时，浏览器将密钥和请求直接发给你配置的模型提供商。QuarkBot 的站点免费 AI 会经本站转发对话内容和选定的公开页面摘录。</p></div>
           <div class="settings-stack">
             <p>密钥以浏览器本地存储保存。账号同步仅包含站点偏好，导出的偏好也不含密钥或聊天记录。</p>
             <div class="settings-row">

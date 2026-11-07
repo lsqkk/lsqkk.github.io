@@ -62,7 +62,7 @@ body:has(.header [data-quark-notice-open]) .quark-notice-launcher,
 .quark-site-dialog header h2 { margin: 0; color: inherit; font-size: 1.45rem; }
 .quark-site-dialog small, .quark-bot-meta { color: var(--text-subtle); }
 .quark-site-dialog header small { color: var(--accent); font-weight: 700; letter-spacing: .08em; }
-.quark-site-dialog button, #announcement-container button {
+.quark-site-dialog button, .quark-bot-options select, #announcement-container button {
     padding: 5px 9px;
     font: inherit;
     border: 1px solid var(--line);
@@ -120,6 +120,7 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
 .quark-bot-status { margin: 0 12px; min-height: 1.5em; color: var(--text-subtle); }
 .quark-bot-form { padding: 0 12px 12px; }
 .quark-bot-form > div { display: flex; justify-content: flex-end; gap: 8px; }
+.quark-bot-form > .quark-bot-options { justify-content: flex-start; align-items: center; flex-wrap: wrap; }
 .quark-bot-form [data-send] { background: var(--accent); color: var(--text-inverse); border-color: var(--accent); }
 .quark-bot-scope { display: flex; gap: 6px; align-items: center; }
 .quark-bot-form textarea {

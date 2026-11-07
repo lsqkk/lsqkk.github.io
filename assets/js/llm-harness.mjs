@@ -91,7 +91,8 @@ export async function searchSite(query, signal) {
     }).filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 6).map((item) => item.record);
 }
 
-export async function runHarness({ settings, body, useSearch, extraTools = [], signal, onProgress = () => {}, onText }) {
+export async function runHarness({ settings, body, useSearch, extraTools = [], signal, onProgress = () => {}, onText,
+    requestChat = window.QuarkLLMConfig.requestChat, retryRequests = true }) {
     const config = window.QuarkLLMConfig;
     const messages = [...body.messages];
     const sources = new Map();
@@ -154,16 +155,16 @@ export async function runHarness({ settings, body, useSearch, extraTools = [], s
             signal?.throwIfAborted();
             let response;
             try {
-                response = await config.requestChat(settings, request, signal);
+                response = await requestChat(settings, request, signal);
             } catch (error) {
-                if (attempt || signal?.aborted || !(error instanceof TypeError)) throw error;
+                if (!retryRequests || attempt || signal?.aborted || !(error instanceof TypeError)) throw error;
             }
             if (response?.ok) return readChatCompletion(response, {
                 apiKey: settings.apiKey, signal, onUpdate: (update) => {
                     if (update.content) onText?.(accumulatedText(update.content));
                 }
             });
-            if (response && (attempt || ![408, 429, 500, 502, 503, 504].includes(response.status))) {
+            if (response && (!retryRequests || attempt || ![408, 429, 500, 502, 503, 504].includes(response.status))) {
                 throw new Error(await config.parseErrorResponse(response, settings.apiKey));
             }
             if (response?.body) void response.body.cancel().catch(() => {});
