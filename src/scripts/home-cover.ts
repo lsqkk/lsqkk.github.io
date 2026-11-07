@@ -14,8 +14,7 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
   let frame = 0;
   let last = 0;
   let visible = false;
-  let lastCoverScroll = -1;
-  let lift = 0;
+  let atTop = window.scrollY <= 0;
   let colors: CanvasGradient[] = [];
 
   const reduced = () => motion.matches || root.dataset.motion === "reduce";
@@ -71,18 +70,7 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
     }
   }
 
-  function updateCoverScroll() {
-    // The cover starts at the top of the document, before the sticky navigation.
-    const distance = Math.min(height, Math.max(0, window.scrollY));
-    if (distance === lastCoverScroll) return;
-    lastCoverScroll = distance;
-    lift = distance * .88;
-    cover.style.setProperty("--cover-lift", `${lift}px`);
-    cover.style.setProperty("--cover-progress", (height ? distance / height : 0).toFixed(3));
-  }
-
   function tick(now: number) {
-    updateCoverScroll();
     const elapsed = last ? Math.min(now - last, 40) : 0;
     last = now;
     phase += elapsed * 0.00032;
@@ -95,7 +83,7 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
   }
 
   function syncPlayback() {
-    const active = visible && !document.hidden && !reduced();
+    const active = visible && atTop && !document.hidden && !reduced();
     if (active && !frame) frame = requestAnimationFrame(tick);
     if (!active && frame) {
       cancelAnimationFrame(frame);
@@ -104,10 +92,6 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
     }
     if (reduced()) {
       phase = 0;
-      lastCoverScroll = -1;
-      lift = 0;
-      cover.style.removeProperty("--cover-lift");
-      cover.style.removeProperty("--cover-progress");
       pointer.strength = pointer.targetStrength = 0;
       draw();
     }
@@ -115,8 +99,6 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
 
   new ResizeObserver(([entry]) => {
     ({ width, height } = entry.contentRect);
-    lastCoverScroll = -1;
-    if (!reduced()) updateCoverScroll();
     const scale = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(width * scale);
     canvas.height = Math.round(height * scale);
@@ -132,10 +114,10 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
   }).observe(cover);
 
   cover.addEventListener("pointermove", (event) => {
-    if (event.pointerType === "touch" || reduced()) return;
+    if (event.pointerType === "touch" || !atTop || reduced()) return;
     const bounds = cover.getBoundingClientRect();
     pointer.targetX = event.clientX - bounds.left;
-    pointer.targetY = event.clientY - bounds.top - lift;
+    pointer.targetY = event.clientY - bounds.top;
     if (pointer.strength < 0.05) {
       pointer.x = pointer.targetX;
       pointer.y = pointer.targetY;
@@ -143,6 +125,15 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
     pointer.targetStrength = 1;
   }, { passive: true });
   cover.addEventListener("pointerleave", () => { pointer.targetStrength = 0; });
+
+  // Freeze the last canvas frame during the exit, leaving scrolling to CSS.
+  window.addEventListener("scroll", () => {
+    const nextAtTop = window.scrollY <= 0;
+    if (nextAtTop === atTop) return;
+    atTop = nextAtTop;
+    if (!atTop) pointer.targetStrength = 0;
+    syncPlayback();
+  }, { passive: true });
 
   motion.addEventListener("change", syncPlayback);
   document.addEventListener("visibilitychange", syncPlayback);

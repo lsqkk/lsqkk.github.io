@@ -3,22 +3,22 @@
     <canvas aria-hidden="true"></canvas>
     <div class="cover-identity">
       <p class="cover-wordmark" lang="en">Strange Quark</p>
-      <h1 id="quark-cover-title">奇夸克</h1>
+      <h1 id="quark-cover-title" data-title="奇夸克"><span class="cover-title-sharp">奇夸克</span></h1>
       <p class="cover-caption">技术 · 生活 · 思考</p>
     </div>
-  </div>
-  <div class="cover-actions">
-    <nav class="cover-links" aria-label="首页快捷入口">
-      <a href="/posts/">文章</a>
-      <a href="/tool/">工具</a>
-      <a href="/blog/project/">项目</a>
-    </nav>
-    <a class="cover-next" href="#home-content" aria-label="向下进入首页内容">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 5v14m-5-5 5 5 5-5" stroke="currentColor" stroke-width="1.5"
-          stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-    </a>
+    <div class="cover-actions">
+      <nav class="cover-links" aria-label="首页快捷入口">
+        <a href="/posts/">文章</a>
+        <a href="/tool/">工具</a>
+        <a href="/blog/project/">项目</a>
+      </nav>
+      <a class="cover-next" href="#home-content" aria-label="向下进入首页内容">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14m-5-5 5 5 5-5" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -32,34 +32,25 @@
     --cover-glow: #dde8fb;
     --cover-glow-secondary: #e1f1f3;
     position: relative;
-    isolation: isolate;
     min-block-size: 100vh;
     min-block-size: 100svh;
-    overflow: clip;
+    /* Clip the viewport-fixed stage at the leading edge of the homepage. */
+    clip-path: inset(0);
     color: var(--cover-ink);
   }
 
   .cover-stage {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+    inset: 0 0 auto;
+    block-size: 100vh;
+    block-size: 100svh;
     isolation: isolate;
     display: grid;
     place-items: center;
-    transform: translateY(var(--cover-lift, 0px));
     background:
       radial-gradient(ellipse at 84% 14%, var(--cover-glow-secondary), transparent 54%),
       radial-gradient(ellipse at 14% 88%, var(--cover-glow), transparent 57%),
       var(--cover-paper);
-  }
-
-  .quark-cover::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0;
-    height: min(22svh, 180px);
-    background: linear-gradient(transparent, var(--page-bg, var(--cover-paper)));
-    opacity: var(--cover-progress, 0);
-    pointer-events: none;
   }
 
   :global(body.dark-mode) .quark-cover {
@@ -79,8 +70,6 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: calc(1 - var(--cover-progress, 0) * .8);
-    filter: blur(calc(3px * var(--cover-progress, 0)));
     mask-image: linear-gradient(transparent 2%, #000 20%, #000 80%, transparent 98%);
   }
 
@@ -90,8 +79,6 @@
     gap: clamp(8px, 2.15vh, 21px);
     padding: 0 16px;
     text-align: center;
-    opacity: calc(1 - var(--cover-progress, 0) * .9);
-    filter: blur(calc(11px * var(--cover-progress, 0)));
   }
 
   .cover-wordmark {
@@ -126,6 +113,7 @@
     letter-spacing: 0.1em;
     padding-inline-start: 0.1em;
     white-space: nowrap;
+    display: grid;
   }
 
   .cover-actions {
@@ -136,8 +124,6 @@
     display: grid;
     justify-items: center;
     gap: 12px;
-    transform: translateY(var(--cover-lift, 0px));
-    opacity: max(0, calc(1 - var(--cover-progress, 0) * 2.5));
   }
 
   .cover-links {
@@ -183,8 +169,66 @@
     outline-offset: 3px;
   }
 
+  .cover-title-sharp, h1::after {
+    grid-area: 1 / 1;
+  }
+
+  /* Keep the blur radius fixed and crossfade the two title layers. */
+  h1::after {
+    content: attr(data-title) / "";
+    filter: blur(clamp(3px, .55vw, 7px));
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  @supports (animation-timeline: view()) and (animation-range: exit) {
+    @media (prefers-reduced-motion: no-preference) {
+      :global(html:not([data-motion="reduce"])) .quark-cover {
+        view-timeline-name: --quark-cover-exit;
+      }
+
+      :global(html:not([data-motion="reduce"])) .quark-cover :is(.cover-identity, .cover-title-sharp, canvas),
+      :global(html:not([data-motion="reduce"])) .quark-cover h1::after {
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --quark-cover-exit;
+        animation-range: exit;
+      }
+
+      .cover-identity, canvas { animation-name: quark-cover-fade; }
+      .cover-title-sharp { animation-name: quark-cover-sharp; }
+      h1::after { animation-name: quark-cover-soft; }
+    }
+  }
+
+  @keyframes quark-cover-fade {
+    from { opacity: 1; }
+    to { opacity: .2; }
+  }
+
+  @keyframes quark-cover-sharp {
+    from { opacity: 1; }
+    38%, to { opacity: 0; }
+  }
+
+  @keyframes quark-cover-soft {
+    from { opacity: 0; }
+    38%, to { opacity: 1; }
+  }
+
+  :global(html[data-motion="reduce"]) .cover-stage {
+    position: absolute;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cover-stage { position: absolute; }
+  }
+
   @media (max-height: 420px) {
     .quark-cover { min-block-size: max(300px, 100svh); }
+    .cover-stage { block-size: max(300px, 100svh); }
     .cover-identity { gap: 5px; }
     h1 { font-size: clamp(2.5rem, 14svh, 4.5rem); }
     .cover-actions { gap: 4px; inset-block-end: 10px; }
