@@ -157,7 +157,10 @@ function mountConversation(panel, loadScript, workspace) {
           <span class="quark-bot-avatar">${botFace}</span>
           <div class="quark-bot-heading"><h2 id="quark-bot-title">QuarkBot</h2><span data-context></span></div>
           ${workspace ? `<div class="quark-bot-actions">
-              <button type="button" data-rename>重命名</button><button type="button" data-delete>删除</button>
+              <button type="button" data-rename aria-label="重命名" title="重命名"><span>重命名</span>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 5 3 3M4 16l.5-3.5L13 4l3 3-8.5 8.5L4 16Z"/></svg></button>
+              <button type="button" data-delete aria-label="删除" title="删除"><span>删除</span>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2M6 6l.7 10h6.6L14 6m-5 3v4m2-4v4"/></svg></button>
             </div>` : `<div class="quark-bot-actions">
               <button type="button" data-new-chat aria-label="新建对话" title="新建对话">＋</button>
               <a data-workspace-link href="${sessionUrl()}">会话页 <span aria-hidden="true">↗</span></a>
@@ -200,7 +203,10 @@ function mountConversation(panel, loadScript, workspace) {
     const rename = panel.querySelector('[data-rename]');
     const remove = panel.querySelector('[data-delete]');
     const list = workspace?.querySelector('[data-chat-list]');
+    const count = workspace?.querySelector('[data-chat-count]');
     const filter = workspace?.querySelector('[data-chat-filter]');
+    const library = list?.closest('details');
+    const compactWorkspace = workspace && matchMedia('(max-width: 700px)');
     const storageStatus = panel.querySelector('.quark-bot-storage-status');
     let current = null;
     let controller;
@@ -268,9 +274,14 @@ function mountConversation(panel, loadScript, workspace) {
     function renderLog() {
         log.replaceChildren();
         if (!current?.turns.length) {
-            const welcome = addMessage('assistant', workspace ? '从这里开个新话题，也可以接着聊你在其他页面发起的对话。'
+            const welcome = addMessage('assistant', workspace ? '今天想聊什么？'
                 : info.type === '文章' ? '读到哪儿卡住了？可以问我。' : '想找点东西，还是随便聊聊？');
             welcome.classList.add('quark-bot-welcome');
+            if (workspace) {
+                const hint = document.createElement('p');
+                hint.textContent = '可以问站内的文章和工具，也可以从对话记录里接着聊。';
+                welcome.append(hint);
+            }
             welcome.append(suggestions);
             return;
         }
@@ -291,8 +302,12 @@ function mountConversation(panel, loadScript, workspace) {
     function renderList() {
         if (!list) return;
         const term = filter.value.trim().toLowerCase();
-        const sessions = listSessions().filter(({ title, source }) =>
+        const allSessions = listSessions();
+        count.textContent = String(allSessions.length);
+        count.setAttribute('aria-label', `${allSessions.length} 条对话`);
+        const sessions = allSessions.filter(({ title, source }) =>
             !term || `${title} ${source.title}`.toLowerCase().includes(term));
+        const scrollTop = list.scrollTop;
         list.replaceChildren();
         for (const session of sessions) {
             const item = document.createElement('li');
@@ -307,8 +322,12 @@ function mountConversation(panel, loadScript, workspace) {
             button.append(title, meta);
             button.onclick = () => {
                 selectSession(session);
-                if (matchMedia('(max-width: 700px)').matches) list.closest('details').open = false;
-                input.focus({ preventScroll: true });
+                if (compactWorkspace.matches) {
+                    library.open = false;
+                    library.querySelector('summary').focus({ preventScroll: true });
+                } else {
+                    list.querySelector('[aria-current]')?.focus({ preventScroll: true });
+                }
             };
             item.append(button);
             list.append(item);
@@ -319,6 +338,7 @@ function mountConversation(panel, loadScript, workspace) {
             empty.textContent = term ? '没有匹配的对话' : '这里会显示此浏览器里的对话。';
             list.append(empty);
         }
+        list.scrollTop = scrollTop;
     }
 
     function updateControls() {
@@ -329,8 +349,10 @@ function mountConversation(panel, loadScript, workspace) {
         panel.dataset.state = busy ? 'thinking' : 'idle';
         if (workspace) {
             rename.disabled = busy || !current;
-            const url = sessionUrl(current?.id);
-            if (location.pathname + location.search !== url) window.history.replaceState(null, '', url);
+            const url = new URL(location.href);
+            if (current) url.searchParams.set('chat', current.id);
+            else url.searchParams.delete('chat');
+            if (url.href !== location.href) window.history.replaceState(window.history.state, '', url);
         } else {
             workspaceLink.href = sessionUrl(current?.id);
             workspaceLink.target = busy ? '_blank' : '_self';
@@ -343,7 +365,10 @@ function mountConversation(panel, loadScript, workspace) {
         if (workspace && from && siteRouteKey(from.path) !== siteRouteKey(source.path) && /^\/(?![\/\\])/.test(from.path)) {
             const link = document.createElement('a');
             link.href = from.path;
-            link.textContent = '原页面 ↗';
+            link.setAttribute('aria-label', '原页面 ↗');
+            const label = document.createElement('span');
+            label.textContent = '原页面 ';
+            link.append(label, '↗');
             link.title = from.title;
             contextLabel.append(link);
         }
@@ -391,6 +416,9 @@ function mountConversation(panel, loadScript, workspace) {
         } catch { showStorageError(); }
     };
     if (workspace) {
+        const updateLibrary = () => { library.open = !compactWorkspace.matches; };
+        compactWorkspace.addEventListener('change', updateLibrary);
+        updateLibrary();
         filter.oninput = renderList;
         rename.onclick = async () => {
             if (!current || controller) return;

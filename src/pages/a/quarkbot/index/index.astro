@@ -1,5 +1,6 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from '@siteConfig';
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
+import navConfig from '../../../../config/json/nav.json';
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -8,28 +9,43 @@ import { SITE_TITLE, SITE_LOGO_URL } from '@siteConfig';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="和 QuarkBot 聊聊，继续或管理从奇夸克各个页面发起的对话。" />
     <title>QuarkBot 会话 - {SITE_TITLE}</title>
+    <link rel="canonical" href={new URL('/a/quarkbot/', SITE_URL)} />
     <link rel="icon" href={SITE_LOGO_URL} />
-    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/nav.css" />
     <link rel="stylesheet" href="/assets/css/quarkbot-workspace.css" />
+    <script is:inline define:vars={{ navConfig }}>window.__NAV_CONFIG__ = navConfig;</script>
+    <script is:inline defer src="/assets/js/user-preferences.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
   </head>
   <body class="quark-bot-page">
-    <main class="quark-bot-workspace" data-quarkbot-workspace>
-      <nav class="quark-bot-page-nav" aria-label="站点">
-        <a href="/a/">← 实验室</a>
-        <a href="/a/qai/">QAI WebUI <span aria-hidden="true">↗</span></a>
+    <a class="quark-bot-skip" href="#quarkbot-main">跳到 QuarkBot</a>
+    <main class="quark-bot-workspace" id="quarkbot-main" data-quarkbot-workspace>
+      <nav class="quark-bot-breadcrumb" aria-label="当前位置">
+        <a href="/a/">实验室</a><span aria-hidden="true">/</span><span aria-current="page">QuarkBot</span>
       </nav>
       <header class="quark-bot-page-header">
         <div>
           <h1>QuarkBot</h1>
-          <p>在站内随时开聊，回这里接着聊。</p>
+          <p>从站内任何页面开聊，回来接着问。</p>
         </div>
-        <button type="button" data-new-chat>＋ 新建对话</button>
+        <div class="quark-bot-page-actions">
+          <a href="/a/qai/" title="模型参数、预设和附件">QAI WebUI <span aria-hidden="true">↗</span></a>
+          <button type="button" data-new-chat disabled><span aria-hidden="true">＋</span> 新建对话</button>
+        </div>
       </header>
       <div class="quark-bot-layout">
         <details class="quark-bot-library" open>
-          <summary>对话记录</summary>
+          <summary>
+            <span>对话记录</span>
+            <span class="quark-bot-count" data-chat-count aria-label="0 条对话">0</span>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
           <div class="quark-bot-library-inner">
-            <input type="search" data-chat-filter aria-label="查找对话" placeholder="查找标题或原页面" />
+            <label class="quark-bot-library-search">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="m12 12 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input type="search" data-chat-filter aria-label="查找对话" placeholder="查找标题或原页面" autocomplete="off" />
+            </label>
             <ul data-chat-list aria-label="对话列表"></ul>
             <p>记录保存在此浏览器。</p>
           </div>
@@ -39,7 +55,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from '@siteConfig';
           <noscript>请启用 JavaScript 后使用 QuarkBot。</noscript>
         </section>
       </div>
-      <p class="quark-bot-webui-note">想调整模型参数、管理预设或使用附件？<a href="/a/qai/">打开 QAI WebUI ↗</a></p>
     </main>
   </body>
 </html>
