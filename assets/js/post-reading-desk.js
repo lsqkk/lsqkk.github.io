@@ -1,7 +1,7 @@
-import {createDesk,minutes} from './reading-desk-store.mjs';
+import {createDesk,deskPostFromMeta} from './reading-desk-store.mjs';
 const desk=createDesk(),meta=document.getElementById('post-tags-container'),content=document.querySelector('.post-content');
-if(meta&&content) {
-  const post={url:'/posts/'+String(meta.dataset.postPath||location.pathname).replace(/^\/?posts\//,'').replace(/^\/+|\.md$/g,''),title:meta.dataset.postTitle,minutes:minutes(meta.dataset.wordCount)};
+const post=meta&&deskPostFromMeta(meta.dataset);
+if(post&&content) {
   const bar=document.createElement('div');bar.className='desk-post-bar';
   const save=document.createElement('button');save.type='button';save.textContent='+ 留到下次读';save.setAttribute('aria-pressed','false');
   const clip=document.createElement('button');clip.type='button';clip.textContent='摘录';clip.setAttribute('aria-label','摘录选中文字');clip.title='先在正文选中文字，再点击摘录；手机也可以使用选中后出现的菜单。';

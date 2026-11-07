@@ -12,6 +12,11 @@ export function postURL(value) {
     return url.pathname.replace(/\/$/, '') + url.hash;
   } catch { return ''; }
 }
+export function deskPostFromMeta({ postPath, postTitle, wordCount }) {
+  const path = postPath || globalThis.location?.pathname || '';
+  const url = postURL('/posts/' + path.replace(/^\/?posts\//, '').replace(/^\/+|\.md$/g, ''));
+  return url && postTitle ? { url, title: postTitle, minutes: minutes(wordCount) } : null;
+}
 export function normalize(raw) {
   if (!raw || raw.version !== 1 || !Array.isArray(raw.queue) || !Array.isArray(raw.clips)) throw new Error('这不是拾页 v1 备份文件');
   const queue = new Map(), clips = new Map();

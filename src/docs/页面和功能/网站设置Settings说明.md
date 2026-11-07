@@ -16,6 +16,8 @@
 
 QuarkBot、QAI WebUI 和网页 Quark 终端共用浏览器中的 OpenAI 兼容连接。浏览器直接向所选提供商发送 API Key 和当次请求，本站服务与账号同步均不接收密钥。可在设置里测试连接、清除本机密钥，并控制 QuarkBot 的页面摘录与站内搜索权限。
 
+可以直接对 QuarkBot 说「换成深色模式」「把文章字号调大」或「减少动效」。助手根据本轮请求选择工具，并即时应用明确指定的外观设置。也可以请它查看公开站点通知，或在文章页读取当前文章目录。
+
 偏好由 `assets/js/user-preferences.js` 统一管理，保存到 `localStorage` 的 `quark_site_preferences`。若用户已登录，会同步到 Firebase RTDB：
 
 ```text

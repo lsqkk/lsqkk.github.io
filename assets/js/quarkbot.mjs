@@ -1,9 +1,10 @@
 import { searchSite, runHarness, appendRunDetails } from './llm-harness.mjs';
+import { getQuarkBotTools } from './quarkbot-tools.mjs';
 
 const siteRoots = /^\/(?:a|blog|desk|games|posts|search|settings|tool|space|login)(?:\/|$)/i;
 const linkTokens = /https?:\/\/[^\s<>"“”「」。，、；！？（）【】`]+|(?<![\w/])\/[\w%.-]+(?:\/[\w%.-]*)*(?:[?#][\w%&=.?#/-]+)?/gi;
 
-function linkifyReply(root, sources) {
+function linkifyReply(root, sources, { scanText = true } = {}) {
     const sourcePaths = new Set(sources.map(({ href }) => href.replace(/\/$/, '')));
     function resolve(raw) {
         if (!/^(https?:\/\/|\/(?![\/\\]))/i.test(raw)) return '';
@@ -28,6 +29,7 @@ function linkifyReply(root, sources) {
         if (/^https?:\/\//i.test(label) && resolve(label) === href) anchor.textContent = href;
         anchor.href = href;
     }
+    if (!scanText) return;
     for (const code of root.querySelectorAll('code')) {
         if (code.closest('pre, a')) continue;
         const label = code.textContent.trim();
@@ -69,15 +71,15 @@ function linkifyReply(root, sources) {
 function pageInfo() {
     const path = location.pathname.replace(/\/index(?:\.html)?\/?$/, '/');
     if (/^\/posts\/.+/.test(path) && document.querySelector('.post-content')) {
-        return { type: '文章', guide: '结合公开正文解释概念，提炼要点，并明确哪些信息来自文章。', suggestions: ['总结这篇文章', '解释文中的关键概念', '找相关文章'] };
+        return { type: '文章', guide: '结合公开正文解释概念，提炼要点，并明确哪些信息来自文章。', suggestions: ['总结这篇文章', '列出这篇文章的目录', '把这篇留到下次读'] };
     }
     if (/^\/tool\/.+/.test(path)) {
         return { type: '工具', guide: '先说明工具用途，再给出操作步骤和适用场景，使用页面上实际存在的控件名称。', suggestions: ['这个工具怎么用？', '给一个使用示例', '找其他相关工具'] };
     }
     if (path === '/') {
-        return { type: '首页', guide: '帮访客找到文章、工具和实验室入口。推荐具体页面前先查站内索引。', suggestions: ['找一个 OCR 工具', '有什么好用的站内工具？', '找 OrangePi 文章'] };
+        return { type: '首页', guide: '帮访客找到文章、工具和实验室入口。推荐具体页面前先查站内索引。', suggestions: ['找一个 OCR 工具', '拾页里下一篇读什么？', '找 OrangePi 文章'] };
     }
-    return { type: /^\/a\//.test(path) ? '实验室' : '站点页面', guide: '解释当前页面用途，或用站内搜索给出下一步入口。', suggestions: ['介绍这个页面', '站内有哪些 AI 工具？', '找一个番茄钟'] };
+    return { type: /^\/a\//.test(path) ? '实验室' : '站点页面', guide: '解释当前页面用途，或用站内搜索给出下一步入口。', suggestions: ['介绍这个页面', '把主题切换为深色', '看看最新的站点通知'] };
 }
 
 function pageContext(info, includePage) {
@@ -135,14 +137,14 @@ export function mountBot({ loadScript }) {
         include.checked = pref().botContext !== false;
         panel.querySelector('[data-context]').textContent = `当前页面 · ${info.type}`;
     };
-    const addMessage = (role, content, markdown = false) => {
+    const addMessage = (role, content) => {
         const message = document.createElement('article');
         message.className = `quark-bot-message is-${role}`;
         const label = document.createElement('small');
         label.textContent = role === 'user' ? '你' : 'QuarkBot';
         const body = document.createElement('div');
-        if (markdown && window.QuarkSafeMarkdown) body.innerHTML = window.QuarkSafeMarkdown(content);
-        else body.textContent = content;
+        body.className = 'quark-bot-content';
+        body.textContent = content;
         message.append(label, body);
         log.append(message);
         log.scrollTop = log.scrollHeight;
@@ -182,9 +184,30 @@ export function mountBot({ loadScript }) {
         send.disabled = search.disabled = true;
         stop.hidden = false;
         suggestions.remove();
-        addMessage('user', query);
+        const requestMessage = addMessage('user', query);
         let pending;
+        let streamText = '';
+        let renderFrame = 0;
         let interrupted = false;
+        const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 28;
+        const renderReply = (message, text, sources, scanText) => {
+            const output = message.querySelector('.quark-bot-content');
+            const markdown = Boolean(window.marked && window.QuarkSafeMarkdown);
+            output.classList.toggle('is-markdown', markdown);
+            if (markdown) output.innerHTML = window.QuarkSafeMarkdown(text);
+            else output.textContent = text;
+            linkifyReply(output, sources, { scanText });
+        };
+        const scheduleReply = () => {
+            if (renderFrame || !pending?.isConnected) return;
+            renderFrame = requestAnimationFrame(() => {
+                renderFrame = 0;
+                if (!pending.isConnected) return;
+                const follow = nearBottom();
+                renderReply(pending, streamText, [], false);
+                if (follow) log.scrollTop = log.scrollHeight;
+            });
+        };
         try {
             if (!localOnly) {
                 status.textContent = '正在读取本机连接设置…';
@@ -214,38 +237,67 @@ export function mountBot({ loadScript }) {
                     ...history.slice(-10), { role: 'user', content: query }]
             };
             const markdownReady = Promise.all([loadScript('/assets/js/marked.min.js', 'marked'),
-                loadScript('/assets/js/safe-markdown.js', 'QuarkSafeMarkdown')]).catch(() => {});
+                loadScript('/assets/js/safe-markdown.js', 'QuarkSafeMarkdown')]).then(() => {
+                if (controller === run && streamText) scheduleReply();
+            }).catch(() => {});
+            const showReadingResults = ({ items, budget, hasWaiting }) => {
+                if (!requestMessage.isConnected || signal.aborted) return;
+                pending ??= addMessage('assistant', '');
+                const card = document.createElement('section');
+                card.className = 'quark-bot-reading-results';
+                const heading = document.createElement('strong');
+                heading.textContent = budget === null ? '拾页 · 接着读' : `拾页 · ${budget} 分钟内可读`;
+                card.append(heading);
+                if (items.length) {
+                    const list = document.createElement('ul');
+                    for (const item of items) {
+                        const row = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = item.url;
+                        link.textContent = item.title;
+                        row.append(link, ` · 约 ${item.minutes} 分钟`);
+                        list.append(row);
+                    }
+                    card.append(list);
+                } else {
+                    const empty = document.createElement('p');
+                    empty.textContent = hasWaiting ? '待读清单里暂时没有符合时长的文章。' : '你的待读清单暂时是空的。';
+                    card.append(empty);
+                }
+                const desk = document.createElement('a');
+                desk.href = '/desk/';
+                desk.textContent = '打开拾页';
+                card.append(desk);
+                pending.querySelector('.quark-bot-reading-results')?.remove();
+                pending.append(card);
+                log.scrollTop = log.scrollHeight;
+            };
             const result = await runHarness({
-                settings, body, useSearch: pref().botSearch !== false, signal,
+                settings, body, useSearch: pref().botSearch !== false,
+                extraTools: getQuarkBotTools(query, { includePage: include.checked, showReadingResults }), signal,
                 onProgress: (message) => { status.textContent = message; },
                 onText: (text) => {
-                    if (!text) {
-                        pending?.remove();
-                        pending = undefined;
-                        return;
-                    }
+                    if (!requestMessage.isConnected) return;
                     pending ??= addMessage('assistant', '');
                     pending.classList.add('is-streaming');
-                    pending.querySelector('div').textContent = text;
+                    streamText = text;
+                    scheduleReply();
                     status.textContent = '正在输出…';
-                    log.scrollTop = log.scrollHeight;
                 }
             });
-            interrupted = Boolean(result.stopped);
+            if (!requestMessage.isConnected) return;
+            interrupted = Boolean(result.stopped || signal.aborted);
             if (!interrupted) {
-                signal.throwIfAborted();
                 history.push({ role: 'user', content: query }, { role: 'assistant', content: result.text });
                 if (history.length > 10) history.splice(0, history.length - 10);
             }
             await markdownReady;
-            if (pending && !pending.isConnected) return;
-            if (run.signal.aborted && !pending) return;
-            const message = pending || addMessage('assistant', result.text);
+            if (!requestMessage.isConnected) return;
+            cancelAnimationFrame(renderFrame);
+            const follow = nearBottom();
+            const message = pending || addMessage('assistant', '');
             message.classList.remove('is-streaming');
-            const output = message.querySelector('div');
-            if (window.QuarkSafeMarkdown) output.innerHTML = window.QuarkSafeMarkdown(result.text);
-            else output.textContent = result.text;
-            linkifyReply(output, result.sources);
+            renderReply(message, result.text, result.sources, true);
             appendRunDetails(message, result);
             const copy = document.createElement('button');
             copy.type = 'button';
@@ -255,18 +307,24 @@ export function mountBot({ loadScript }) {
                 catch { copy.textContent = '复制失败'; }
             };
             message.append(copy);
+            if (follow) log.scrollTop = log.scrollHeight;
         } catch (error) {
-            pending?.classList.remove('is-streaming');
+            if (pending?.isConnected && streamText) {
+                const follow = nearBottom();
+                pending.classList.remove('is-streaming');
+                renderReply(pending, streamText, [], true);
+                if (follow) log.scrollTop = log.scrollHeight;
+            }
             if (!run.signal.aborted) {
                 addMessage('assistant', error.name === 'TimeoutError' ? '请求超时。' : `请求失败：${error.message}`);
                 input.value ||= query;
             }
         } finally {
+            cancelAnimationFrame(renderFrame);
             controller = undefined;
             send.disabled = search.disabled = false;
             stop.hidden = true;
             status.textContent = interrupted ? '已停止 · 保留部分回复' : run.signal.aborted ? '已停止' : '';
-            log.scrollTop = log.scrollHeight;
         }
     }
     form.onsubmit = (event) => { event.preventDefault(); void submit(false); };

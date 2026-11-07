@@ -99,10 +99,22 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
 .quark-bot-log { min-height: 90px; max-height: 40dvh; overflow: auto; padding: 6px 12px; }
 .quark-bot-message { padding: 9px 11px; margin: 6px 0; background: var(--surface-soft); border-radius: 8px; overflow-wrap: anywhere; }
 .quark-bot-message.is-user { background: var(--accent-soft); margin-left: 20px; }
-.quark-bot-message.is-streaming > div { white-space: pre-wrap; }
+.quark-bot-content:not(.is-markdown) { white-space: pre-wrap; }
 .quark-bot-message p { margin: 4px 0; }
-.quark-bot-message pre { max-width: 100%; overflow: auto; }
+.quark-bot-content :is(h1, h2, h3, h4, h5, h6) { margin: .65em 0 .25em; font-size: 1em; line-height: 1.4; }
+.quark-bot-content :is(h1, h2) { font-size: 1.12em; }
+.quark-bot-content :is(ul, ol) { margin: .35em 0; padding-inline-start: 1.5em; }
+.quark-bot-content blockquote { margin: .45em 0; padding-inline-start: 10px; border-inline-start: 3px solid var(--line-strong); }
+.quark-bot-content code { font: .9em ui-monospace, Consolas, monospace; }
+.quark-bot-content :not(pre) > code { padding: 1px 4px; border-radius: 4px; background: var(--surface); }
+.quark-bot-content pre { max-width: 100%; overflow-x: auto; margin: .5em 0; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.quark-bot-content table { display: block; max-width: 100%; overflow-x: auto; margin: .5em 0; border-collapse: collapse; }
+.quark-bot-content :is(th, td) { padding: 4px 8px; border: 1px solid var(--line); }
+.quark-bot-content th { background: var(--surface); }
 .quark-bot-message > button { margin-top: 5px; }
+.quark-bot-reading-results { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.quark-bot-reading-results ul { margin: 5px 0; padding-inline-start: 1.4em; }
+.quark-bot-reading-results li { margin-block: 3px; }
 .quark-bot-suggestions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .quark-bot-suggestions button { padding: 3px 7px; font-size: .75rem; color: var(--text-subtle); }
 .quark-bot-status { margin: 0 12px; min-height: 1.5em; color: var(--text-subtle); }
