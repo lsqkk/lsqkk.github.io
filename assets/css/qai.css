@@ -1,35 +1,17 @@
-/* --- 全局变量与重置 --- */
-:root {
-  --bg-main: #ffffff;
-  --bg-sidebar: #f8f9fa;
-  --bg-msg-user: #f4f4f7;
-  --bg-msg-bot: #ffffff;
-  --text-main: #202123;
-  --text-muted: #6e6e80;
-  --border: #e5e5e5;
-  --accent: #10a37f;
-  --accent-dark: #0e8c6d;
-  --accent-light: rgba(16, 163, 127, 0.1);
-  --danger: var(--danger);
+body.qai-body {
+  --bg-main: var(--page-bg);
+  --bg-sidebar: var(--surface-strong);
+  --bg-msg-user: var(--surface-soft);
+  --bg-msg-bot: var(--surface);
+  --text-muted: var(--text-subtle);
+  --border: var(--line);
+  --accent-dark: color-mix(in srgb, var(--accent) 82%, var(--text-main));
+  --accent-light: var(--accent-soft);
   --danger-dark: var(--danger);
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
-  --radius: 8px;
-  --radius-lg: 16px;
-  --font-mono: 'SF Mono', 'Fira Code', monospace;
-}
-
-.dark-mode {
-  --bg-main: #212121;
-  --bg-sidebar: #171717;
-  --bg-msg-user: #2f2f2f;
-  --bg-msg-bot: #212121;
-  --text-main: #ececf1;
-  --text-muted: #9a9a9a;
-  --border: #3d3d3d;
-  --accent-light: rgba(16, 163, 127, 0.15);
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow: var(--shadow-main);
+  --shadow-lg: var(--shadow-soft);
+  --radius: var(--radius-md);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 * {
@@ -49,6 +31,43 @@ body {
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
+.qai-body :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+.qai-workbench {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  max-width: 800px;
+  margin: 0 auto 8px;
+}
+.qai-workbench button { padding: 5px 9px; }
+.qai-workbench [aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+#qai-run-state { color: var(--text-subtle); font-size: 12px; overflow-wrap: anywhere; min-width: 0; }
+#qai-checkpoint {
+  box-sizing: border-box;
+  margin: auto;
+  padding: 20px;
+  width: min(460px, calc(100% - 24px));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text-main);
+  background: var(--surface);
+}
+#qai-checkpoint::backdrop { background: #0a10205c; }
+#qai-checkpoint form { display: grid; gap: 12px; }
+#qai-checkpoint p { font-size: 13px; color: var(--text-subtle); }
+#qai-checkpoint textarea {
+  width: 100%;
+  padding: 9px;
+  background: var(--surface-soft);
+  color: var(--text-main);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+.qai-body .quark-bot-launcher { bottom: max(142px, env(safe-area-inset-bottom)); }
+.qai-body #chat-history > .bot-msg > .quark-run-details { flex-basis: 100%; }
 
 /* --- 布局结构 --- */
 #main-container {
@@ -2414,41 +2433,6 @@ label.toggle-label {
 /* ============================================================
    Q-AI WebUI — 与全站表面体系对齐
    ============================================================ */
-:root {
-  --bg-main: #f5f6f8;
-  --bg-sidebar: #ffffff;
-  --bg-msg-user: #f7f8fa;
-  --bg-msg-bot: #ffffff;
-  --text-main: #15181d;
-  --text-muted: #5a6472;
-  --border: #e4e7ec;
-  --accent: #2563eb;
-  --accent-dark: #1d4ed8;
-  --accent-light: rgba(37, 99, 235, 0.09);
-  --danger: #b4423a;
-  --danger-dark: #8f332d;
-  --shadow: none;
-  --shadow-lg: 0 1px 2px rgba(16, 24, 40, 0.05);
-  --radius: 6px;
-  --radius-lg: 10px;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-.dark-mode {
-  --bg-main: #0f1115;
-  --bg-sidebar: #1b1f26;
-  --bg-msg-user: #14171c;
-  --bg-msg-bot: #171a20;
-  --text-main: #e7e9ee;
-  --text-muted: #a3adbb;
-  --border: #2a2f37;
-  --accent: #7aa2ff;
-  --accent-dark: #6b93e8;
-  --accent-light: rgba(122, 162, 255, 0.14);
-  --danger: #ef8b84;
-  --danger-dark: #d9756e;
-  --shadow: none;
-  --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
 
 body {
   background: var(--page-bg);

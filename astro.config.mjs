@@ -572,7 +572,18 @@ function apiBaseInjector() {
 
 export default defineConfig({
   site: "https://lsqkk.github.io", // canonical URL (also in src/config/site.js)
-  integrations: [sitemap({
+  integrations: [{
+    name: "quark-site-services",
+    hooks: {
+      "astro:config:setup": ({ injectScript }) => {
+        injectScript("head-inline", `try {
+          const theme = JSON.parse(localStorage.getItem('quark_site_preferences') || '{}').theme;
+          if (theme === 'light' || theme === 'dark') document.documentElement.dataset.siteTheme = theme;
+        } catch {}`);
+        injectScript("page", `const entry = '/assets/js/site-services.mjs'; import(/* @vite-ignore */ entry);`);
+      },
+    },
+  }, sitemap({
     filter(url) {
       const pathname = new URL(url).pathname.replace(/\/index(?:\.html)?\/?$/, "").replace(/\/$/, "");
       return !retiredPages.some(page => page.path === pathname);

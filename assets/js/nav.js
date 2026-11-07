@@ -20,10 +20,12 @@ if (!document.querySelector('script[src="/assets/js/firebase-ready.js"]')) {
     firebaseReadyScript.defer = true;
     document.head.appendChild(firebaseReadyScript);
 }
-const preferenceScript = document.createElement('script');
-preferenceScript.src = '/assets/js/user-preferences.js';
-preferenceScript.defer = true;
-document.head.appendChild(preferenceScript);
+if (!document.querySelector('script[src="/assets/js/user-preferences.js"]')) {
+    const preferenceScript = document.createElement('script');
+    preferenceScript.src = '/assets/js/user-preferences.js';
+    preferenceScript.defer = true;
+    document.head.appendChild(preferenceScript);
+}
 const activityScript = document.createElement('script');
 activityScript.src = '/assets/js/user-activity.js';
 activityScript.defer = true;
@@ -387,6 +389,10 @@ function generateNavHTML(config) {
                         ${svgIcon('search')}
                     </button>
                 </div>
+                <button class="nav-settings-btn" type="button" data-quark-notice-open aria-label="通知中心" title="通知中心">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+                    <span class="quark-notice-dot" hidden></span>
+                </button>
                 <a class="nav-settings-btn" href="${buildLocalizedUrl('/settings')}" aria-label="网站设置" title="网站设置">
                     ${svgIcon('gear')}
                 </a>
@@ -1338,6 +1344,7 @@ function initializeAll() {
     });
 }
 
+let navThemeBound = false;
 function initializeNavThemeMode() {
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -1358,6 +1365,8 @@ function initializeNavThemeMode() {
 
     applyTheme();
 
+    if (navThemeBound) return;
+    navThemeBound = true;
     if (typeof darkModeQuery.addEventListener === 'function') {
         darkModeQuery.addEventListener('change', applyTheme);
     } else if (typeof darkModeQuery.addListener === 'function') {

@@ -24,6 +24,7 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
     <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="/assets/js/user-profile.js"></script>
     <script is:inline src="/assets/js/user-preferences.js"></script>
+    <script is:inline src="/assets/js/llm-shared.js"></script>
     <script is:inline src="/assets/js/nav.js"></script>
   </head>
   <body class="settings-body luxury-body">
@@ -35,48 +36,120 @@ const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
         <p id="settingsSyncHint">设置会保存在本机；登录后会同步到账号。</p>
       </header>
 
-      <section class="settings-panel">
-        <div class="settings-section">
+      <div class="settings-layout">
+        <nav class="settings-menu" aria-label="设置分类">
+          <a href="#appearance">外观与阅读</a>
+          <a href="#notifications">通知与日程</a>
+          <a href="#ai">AI 与网站助手</a>
+          <a href="#privacy">隐私与本地数据</a>
+        </nav>
+        <div class="settings-panel">
+        <section id="appearance" class="settings-section">
           <div>
-            <h2>基础偏好</h2>
-            <p>这些选项会影响全站导航、阅读和基础交互。</p>
+            <h2>外观与阅读</h2>
+            <p>设置网站配色、文字和动效。</p>
           </div>
           <div class="settings-grid">
             <label class="setting-field">
+              <span>主题</span>
+              <select id="settingTheme" data-preference="theme">
+                <option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option>
+              </select>
+            </label>
+            <label class="setting-field">
               <span>默认语言</span>
-              <select id="settingLanguage"></select>
+              <select id="settingLanguage" data-preference="language"></select>
             </label>
             <label class="setting-field">
               <span>站点字体</span>
-              <select id="settingFont"></select>
+              <select id="settingFont" data-preference="font"></select>
+            </label>
+            <label class="setting-field">
+              <span>文章字号</span>
+              <select data-preference="readingSize">
+                <option value="normal">标准</option><option value="large">大</option><option value="extra">特大</option>
+              </select>
             </label>
             <label class="setting-field">
               <span>动效强度</span>
-              <select id="settingMotion">
+              <select id="settingMotion" data-preference="motion">
+                <option value="system">跟随系统</option>
                 <option value="full">完整动效</option>
                 <option value="reduce">减少动效</option>
               </select>
             </label>
+            <label class="toggle-card">
+              <input id="settingCursorTrail" type="checkbox" data-preference="cursorTrail" />
+              <span><strong>指针轨迹</strong><small>鼠标跟随光效</small></span>
+            </label>
           </div>
-        </div>
+        </section>
 
-        <div class="settings-section compact">
-          <label class="toggle-card">
-            <input id="settingCursorTrail" type="checkbox" />
-            <span>
-              <strong>指针轨迹</strong>
-              <small>关闭后会隐藏全站鼠标跟随光效。</small>
-            </span>
-          </label>
-        </div>
+        <section id="notifications" class="settings-section">
+          <div><h2>通知与日程</h2><p>铃铛里可查看当前和往期通知。提醒按此设备日期生效。</p></div>
+          <div class="settings-stack">
+            <label class="toggle-card"><input type="checkbox" data-preference="noticePopups" /><span><strong>自动弹出通知</strong><small>每次日程只自动弹出一次</small></span></label>
+            <label class="toggle-card"><input type="checkbox" data-preference="noticeCelebrations" /><span><strong>节日庆祝弹窗</strong><small>在节日当天显示庆祝通知</small></span></label>
+            <button type="button" class="btn ghost" data-quark-notice-open>打开通知中心</button>
+            <details class="settings-details">
+              <summary>管理本机提醒</summary>
+              <form id="personalNoticeForm" class="settings-stack">
+                <label class="setting-field"><span>标题</span><input name="title" required maxlength="80" /></label>
+                <label class="setting-field"><span>内容</span><textarea name="content" maxlength="400" rows="2"></textarea></label>
+                <div class="settings-grid">
+                  <label class="setting-field"><span>提醒日期</span><input name="date" type="date" required /></label>
+                  <label class="setting-field"><span>重复</span><select name="repeat"><option value="once">仅一次</option><option value="annual">每年</option></select></label>
+                </div>
+                <div class="settings-row"><button type="submit" class="btn primary" id="noticeSave">添加提醒</button><button type="button" class="btn ghost" id="noticeCancel" hidden>取消编辑</button></div>
+              </form>
+              <ul id="personalNoticeList" class="settings-list"></ul>
+            </details>
+          </div>
+        </section>
+
+        <section id="ai" class="settings-section">
+          <div><h2>AI 与网站助手</h2><p>QuarkBot、QAI WebUI 和网页 Quark 终端共用连接。</p>
+            <div class="settings-ai-links"><a href="/a/qai/">打开 QAI WebUI</a><a href="/a/terminal/">打开 Quark 终端</a></div>
+          </div>
+          <div class="settings-stack">
+            <form id="aiSettingsForm" class="settings-stack" autocomplete="off">
+              <label class="setting-field"><span>模型服务地址</span><input id="aiBase" type="url" required spellcheck="false" placeholder="https://api.deepseek.com/v1" /></label>
+              <label class="setting-field"><span>模型 ID</span><input id="aiModel" required spellcheck="false" /></label>
+              <label class="setting-field"><span>API Key</span><input id="aiKey" type="password" autocomplete="off" spellcheck="false" /></label>
+              <div class="settings-row">
+                <button type="submit" class="btn primary">保存 AI 连接</button>
+                <button type="button" class="btn ghost" id="testAI">测试连接</button>
+                <label class="settings-inline"><input id="showAIKey" type="checkbox" /> 显示密钥</label>
+              </div>
+              <p id="aiStatus" role="status"></p>
+            </form>
+            <label class="toggle-card"><input type="checkbox" data-preference="botEnabled" /><span><strong>显示 QuarkBot</strong><small>在页面右下角显示助手入口</small></span></label>
+            <label class="toggle-card"><input type="checkbox" data-preference="botContext" /><span><strong>附带当前页面</strong><small>向模型提供页面标题、路径和公开摘录</small></span></label>
+            <label class="toggle-card"><input type="checkbox" data-preference="botSearch" /><span><strong>允许 QuarkBot 调用站内搜索</strong><small>使用支持工具调用的模型</small></span></label>
+            <label class="toggle-card"><input type="checkbox" data-preference="agentSearch" /><span><strong>QAI 默认启用站内工具</strong><small>可在 QAI 输入区随时切换</small></span></label>
+          </div>
+        </section>
+
+        <section id="privacy" class="settings-section">
+          <div><h2>隐私与本地数据</h2><p>本站服务器不会接收 API Key。发起请求时，浏览器把密钥和本次请求内容直接发送给你配置的模型提供商。</p></div>
+          <div class="settings-stack">
+            <p>密钥以浏览器本地存储保存。账号同步仅包含站点偏好，导出的偏好也不含密钥或聊天记录。</p>
+            <div class="settings-row">
+              <button class="btn ghost" id="exportPreferences" type="button">导出站点偏好</button>
+              <button class="btn ghost" id="clearAIKey" type="button">清除本机 AI 密钥</button>
+            </div>
+            <p id="privacyStatus" role="status"></p>
+          </div>
+        </section>
 
         <footer class="settings-actions">
           <button class="btn primary" id="saveSettings" type="button">保存设置</button>
           <button class="btn ghost" id="resetSettings" type="button">恢复默认</button>
-          <span id="settingsStatus">等待操作</span>
+          <span id="settingsStatus" role="status">等待操作</span>
         </footer>
-      </section>
+        </div>
+      </div>
     </main>
-    <script is:inline src="/assets/pages/settings/settings.js"></script>
+    <script is:inline type="module" src="/assets/pages/settings/settings.js"></script>
   </body>
 </html>

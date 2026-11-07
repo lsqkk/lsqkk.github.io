@@ -17,7 +17,6 @@ interface Window {
   __DT_PRELOADED__?: any;
   __DT_DETAIL__?: any;
   __NAV_CONFIG__?: any;
-  __POPUPS_DATA__?: any;
   __NAV_HOVER_DATA__?: any;
   __FULLTEXT_INDEX__?: any;
 
@@ -31,7 +30,6 @@ interface Window {
   renderNavUserProfile?: () => void;
   searchBlog?: (query: string) => void;
   initPostAnnotations?: () => void;
-  checkAndShowPopup?: () => void;
 
   /* Comment system */
   CommentShared?: Record<string, any>;
@@ -79,7 +77,6 @@ declare class QQEmotionParser {
   parse(text: string): string;
 }
 
-declare function checkAndShowPopup(): void;
 
 /* CSS.escape polyfill for older browsers */
 declare namespace CSS {

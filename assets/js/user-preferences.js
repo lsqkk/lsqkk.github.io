@@ -8,8 +8,16 @@
     const DEFAULTS = {
         language: 'chinese_simplified',
         font: 'xwwk',
-        motion: 'full',
-        cursorTrail: false
+        theme: 'system',
+        motion: 'system',
+        cursorTrail: false,
+        readingSize: 'normal',
+        noticePopups: true,
+        noticeCelebrations: true,
+        botEnabled: true,
+        botContext: true,
+        botSearch: true,
+        agentSearch: false
     };
     const FONTS = [
         {
@@ -34,7 +42,7 @@
         }
     ];
     const FONT_MAP = new Map(FONTS.map((item) => [item.id, item]));
-    const MOTION_VALUES = new Set(['full', 'reduce']);
+    const MOTION_VALUES = new Set(['system', 'full', 'reduce']);
 
     let prefs = loadLocal();
     let firebaseReady = false;
@@ -52,22 +60,32 @@
 
     function normalize(input) {
         const base = input && typeof input === 'object' ? input : {};
-        const next = { ...DEFAULTS, ...base };
-        next.fontChosen = typeof base.fontChosen === 'boolean' ? base.fontChosen : false;
+        // Only these site preferences may be sent to the account settings store.
+        const next = {
+            ...DEFAULTS,
+            fontChosen: typeof base.fontChosen === 'boolean' ? base.fontChosen : false,
+            updatedAt: Number(base.updatedAt) || 0
+        };
+        for (const [key, value] of Object.entries(DEFAULTS)) {
+            if (typeof base[key] === typeof value) next[key] = base[key];
+        }
         // 旧版本把“系统默认”当作初始值；未主动选择时迁移到站点默认字库
         if (!next.fontChosen && next.font === 'system') next.font = DEFAULTS.font;
         if (!FONT_MAP.has(next.font)) next.font = DEFAULTS.font;
-        // theme 字段已废弃，强制移除
-        delete next.theme;
+        if (!['system', 'light', 'dark'].includes(next.theme)) next.theme = DEFAULTS.theme;
+        if (!['normal', 'large', 'extra'].includes(next.readingSize)) next.readingSize = DEFAULTS.readingSize;
         if (!MOTION_VALUES.has(next.motion)) next.motion = DEFAULTS.motion;
         next.cursorTrail = typeof base.cursorTrail === 'boolean' ? base.cursorTrail : DEFAULTS.cursorTrail;
         next.language = String(next.language || DEFAULTS.language);
-        next.updatedAt = Number(next.updatedAt || 0);
         return next;
     }
 
     function loadLocal() {
-        return normalize(safeParse(localStorage.getItem(STORAGE_KEY)));
+        try {
+            return normalize(safeParse(localStorage.getItem(STORAGE_KEY)));
+        } catch {
+            return normalize(null);
+        }
     }
 
     function saveLocal(next) {
@@ -83,8 +101,8 @@
         return prefs;
     }
 
-    function isSystemDark() {
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    function isDark(next = prefs) {
+        return next.theme === 'dark' || (next.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     }
 
     function apply(next = prefs) {
@@ -93,14 +111,17 @@
         if (font) document.documentElement.style.setProperty('--site-font-family', font.family);
 
         // data 属性
-        document.documentElement.dataset.motion = next.motion;
+        const reduceMotion = next.motion === 'reduce' || (next.motion === 'system' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        document.documentElement.dataset.motion = reduceMotion ? 'reduce' : 'full';
         document.documentElement.dataset.cursorTrail = next.cursorTrail ? 'on' : 'off';
+        document.documentElement.dataset.siteTheme = next.theme;
+        document.documentElement.dataset.readingSize = next.readingSize;
 
-        const dark = isSystemDark();
+        const dark = isDark(next);
 
         if (document.body) {
             document.body.classList.toggle('dark-mode', dark);
-            document.body.classList.toggle('reduce-motion', next.motion === 'reduce');
+            document.body.classList.toggle('reduce-motion', reduceMotion);
             document.body.classList.toggle('cursor-trail-disabled', !next.cursorTrail);
             // 确保废弃的类不会残留
             document.body.classList.remove('force-light-mode');
@@ -120,6 +141,7 @@
         };
         if (typeof media.addEventListener === 'function') {
             media.addEventListener('change', onChange);
+            window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', onChange);
         } else if (typeof media.addListener === 'function') {
             media.addListener(onChange);
         }
@@ -128,7 +150,7 @@
     function dispatch() {
         try {
             window.dispatchEvent(new CustomEvent(UPDATED_EVENT, {
-                detail: { ...prefs, isDark: isSystemDark() }
+                detail: get()
             }));
         } catch {
             // ignore
@@ -191,8 +213,6 @@
     }
 
     async function update(partial, options = {}) {
-        // 强制删除废弃的 theme 字段
-        if ('theme' in partial) delete partial.theme;
         const patch = { ...partial };
         if ('font' in patch) patch.fontChosen = true;
         const next = saveLocal({ ...prefs, ...patch, updatedAt: Date.now() });
@@ -201,7 +221,7 @@
     }
 
     function get() {
-        return { ...prefs, isDark: isSystemDark() };
+        return { ...prefs, isDark: isDark() };
     }
 
     function getFonts() {
@@ -210,6 +230,7 @@
 
     // ── 公开 API ────────────────────────────────────────────────────
     window.QuarkUserPreferences = {
+        defaults: Object.freeze({ ...DEFAULTS }),
         get,
         getFonts,
         update,
@@ -221,6 +242,13 @@
 
     // ── 初始化 ──────────────────────────────────────────────────────
     apply(prefs);
+    dispatch();
+    window.addEventListener('storage', (event) => {
+        if (event.key !== STORAGE_KEY && event.key !== null) return;
+        prefs = loadLocal();
+        apply(prefs);
+        dispatch();
+    });
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             apply(prefs);

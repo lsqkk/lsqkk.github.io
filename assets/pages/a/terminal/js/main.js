@@ -106,8 +106,14 @@ class Terminal {
     async executeCommand(command) {
         if (!command.trim()) return;
 
-        this.output(`<span style="color:#7ee787">${this.getPrompt()}</span> ${command}`, 'command');
-        this.storage.addCommandToHistory(command);
+        const keyCommand = /^\s*!?llm-key(?:\s|$)/i.test(command);
+        const row = document.createElement('span');
+        const prompt = document.createElement('span');
+        prompt.style.color = '#7ee787';
+        prompt.textContent = this.getPrompt();
+        row.append(prompt, document.createTextNode(` ${keyCommand ? 'llm-key [已隐藏]' : command}`));
+        this.output(row, 'command');
+        if (!keyCommand) this.storage.addCommandToHistory(command);
 
         await this.commands.execute(command);
         this.updatePrompt();

@@ -20,7 +20,6 @@ const PROJECT_ROOT = process.cwd();
 const indexConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "index_config.json");
 const homeConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "index.json");
 const navConfigPath = path.join(PROJECT_ROOT, "src", "config", "json", "nav.json");
-const popupsPath = path.join(PROJECT_ROOT, "src", "config", "json", "popups.json");
 const friendsPath = path.join(PROJECT_ROOT, "src", "config", "json", "friends.json");
 const postsPath = path.join(PROJECT_ROOT, "posts", "posts.json");
 const dynamicDataPath = path.join(PROJECT_ROOT, "assets", "data", "dt.json");
@@ -32,7 +31,6 @@ const projectPath = path.join(PROJECT_ROOT, "assets", "pages", "a", "projects.js
 const indexConfig = JSON.parse(await fs.readFile(indexConfigPath, "utf8"));
 const homeConfig = JSON.parse(await fs.readFile(homeConfigPath, "utf8"));
 const navConfig = JSON.parse(await fs.readFile(navConfigPath, "utf8"));
-const popups = JSON.parse(await fs.readFile(popupsPath, "utf8"));
 const friends = JSON.parse(await fs.readFile(friendsPath, "utf8"));
 const posts = JSON.parse(await fs.readFile(postsPath, "utf8"));
 const dtData = JSON.parse(await fs.readFile(dynamicDataPath, "utf8"));
@@ -83,8 +81,6 @@ const contactItems = [
   },
 ].filter((item) => item.href);
 
-const announcementTitle = homeConfig?.announcement?.title || "";
-const announcementContent = homeConfig?.announcement?.content || "";
 const logCount = typeof homeConfig?.showLogNum === "number" ? homeConfig.showLogNum : 6;
 const recentLogs = parseRecentLogsFromJson(logData, Math.max(1, logCount));
 
@@ -168,10 +164,9 @@ const homePreloaded = {
     <link rel="stylesheet" href="/assets/css/index.css" />
     <link rel="stylesheet" href="/assets/css/reading-desk.css" />
     <link rel="stylesheet" href="/assets/css/dynamic-gallery.css" />
-    <script is:inline define:vars={{ navConfig, homePreloaded, popups }}>
+    <script is:inline define:vars={{ navConfig, homePreloaded }}>
       window.__NAV_CONFIG__ = navConfig;
       window.__HOME_PRELOADED__ = homePreloaded;
-      window.__POPUPS_DATA__ = popups;
     </script>
     <script is:inline defer src="/assets/js/fa-icons.js"></script>
     <script is:inline defer src="/assets/js/cursor-trail.js"></script>
@@ -400,11 +395,11 @@ const homePreloaded = {
         )}
         {hasSidebarSection("announcement") && (
             <section class="index-sidebar-section sidebar-panel">
-              <h3 class="sidebar-title">公告 Announcement</h3>
+              <h3 class="sidebar-title">通知中心</h3>
               <div class="index-announcement" id="announcement-container">
                 <div class="index-announcement-text">
-                  <span class="index-announcement-title">{escapeHtml(announcementTitle)}</span>
-                  <span class="index-announcement-body" set:html={announcementContent}></span>
+                  <span class="index-announcement-title" data-quark-notice-label>站点通知与节日日程</span>
+                  <button type="button" data-quark-notice-open>查看通知</button>
                 </div>
               </div>
             </section>
@@ -526,27 +521,8 @@ const homePreloaded = {
     </div>
     <br /><br />
 
-    <div id="popup-overlay" class="popup-overlay" style="display: none;">
-      <div id="popup-container" class="popup-container">
-        <div class="popup-header">
-          <h3 id="popup-title"></h3>
-          <button id="popup-close" class="popup-close-btn">&times;</button>
-        </div>
-        <div id="popup-content" class="popup-content"></div>
-        <div class="popup-footer">
-          <label class="popup-option">
-            <input type="checkbox" id="popup-never-show" /> 不再显示
-          </label>
-          <button id="popup-confirm" class="popup-confirm-btn">知道了</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="celebration-container"></div>
-
     <script is:inline src="/assets/js/qq-emotion-parser.min.js"></script>
     <script is:inline src="/assets/js/index.js"></script>
-    <script is:inline src="/assets/js/popup.js"></script>
 
     <script is:inline defer src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/js/firebase-ready.js"></script>

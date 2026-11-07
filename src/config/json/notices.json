@@ -1,0 +1,45 @@
+[
+  {
+    "id": "qai-webui",
+    "title": "QAI WebUI · 工作台更新",
+    "content": "QAI 已接入站内搜索工具和会话任务记录。网站设置、QuarkBot 和 Quark 终端共用本机模型连接。",
+    "startDate": "2026-11-07",
+    "kind": "announcement",
+    "action": { "label": "打开 QAI WebUI", "href": "/a/qai/" }
+  },
+  {
+    "id": "2604",
+    "title": "奇夸克一周年！！",
+    "content": "2025 年 1 月 31 日是奇夸克的生日！从最初的一个页面，到今天的文章、工具和实验室，谢谢你一直在这里。",
+    "startDate": "2026-01-28",
+    "endDate": "2026-02-01",
+    "kind": "celebration"
+  },
+  {
+    "id": "site-birthday",
+    "title": "奇夸克生日快乐！",
+    "content": "每年的 1 月 31 日，和我们一起庆祝奇夸克的生日。",
+    "startDate": "2027-01-31",
+    "annual": "01-31",
+    "kind": "celebration",
+    "popup": true
+  },
+  {
+    "id": "new-year",
+    "title": "新年快乐！",
+    "content": "祝你新的一年充满好奇，做成想做的事。",
+    "startDate": "2027-01-01",
+    "annual": "01-01",
+    "kind": "celebration",
+    "popup": true
+  },
+  {
+    "id": "national-day",
+    "title": "国庆快乐！",
+    "content": "祝大家假期愉快，享受假期里的每一份好奇与发现。",
+    "startDate": "2027-10-01",
+    "annual": "10-01",
+    "kind": "celebration",
+    "popup": true
+  }
+]

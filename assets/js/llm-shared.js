@@ -1,4 +1,5 @@
 (() => {
+  if (window.QuarkLLMConfig) return;
   const DEFAULTS = {
     apiKey: "",
     baseUrl: "https://api.deepseek.com/v1",
@@ -47,11 +48,6 @@
       baseUrl: "https://api.groq.com/openai/v1",
       models: ["llama2-70b-4096", "mixtral-8x7b-32768", "gemma-7b-it"]
     },
-    anthropic: {
-      name: "Anthropic",
-      baseUrl: "https://api.anthropic.com/v1",
-      models: ["claude-opus-4-20250509", "claude-sonnet-4-20250509"]
-    },
     custom: {
       name: "自定义",
       baseUrl: "",
@@ -66,14 +62,49 @@
   }
 
   function buildChatEndpoint(baseUrl) {
-    const normalized = normalizeBaseUrl(baseUrl);
-    if (/\/chat\/completions$/i.test(normalized)) {
-      return normalized;
+    const url = providerUrl(baseUrl);
+    if (!/\/chat\/completions$/i.test(url.pathname)) url.pathname = url.pathname.replace(/\/$/, '') + '/chat/completions';
+    return url.href;
+  }
+
+  function providerUrl(baseUrl) {
+    let url;
+    try { url = new URL(normalizeBaseUrl(baseUrl)); }
+    catch { throw new Error('请输入完整的模型服务地址。'); }
+    const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+    if (url.protocol !== 'https:' && !(loopback && url.protocol === 'http:')) {
+      throw new Error('模型服务需要 HTTPS，本机服务可以使用 HTTP。');
     }
-    if (/\/v1\/messages$/i.test(normalized)) {
-      return normalized;
+    if (url.username || url.password || url.search || url.hash) {
+      throw new Error('模型服务地址不能包含凭据、查询参数或片段。');
     }
-    return `${normalized}/chat/completions`;
+    if (url.origin === location.origin || ['api.130923.xyz', 'lsqkk.github.io'].includes(url.hostname)) {
+      throw new Error('请填写模型提供商的地址。站点服务不接收 API 密钥。');
+    }
+    if (/\/v1\/messages\/?$/i.test(url.pathname) || url.hostname === 'api.anthropic.com') {
+      throw new Error('请使用 OpenAI 兼容的 Chat Completions 地址。');
+    }
+    url.pathname = url.pathname.replace(/\/+$/, '');
+    return url;
+  }
+
+  function providerFetch(url, apiKey, options = {}) {
+    return fetch(url, {
+      ...options,
+      headers: { ...options.headers, Authorization: `Bearer ${apiKey}` },
+      credentials: 'omit',
+      redirect: 'error',
+      referrerPolicy: 'no-referrer'
+    });
+  }
+
+  function requestChat(settings, body, signal) {
+    return providerFetch(buildChatEndpoint(settings.baseUrl), settings.apiKey, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal
+    });
   }
 
   function generateId() {
@@ -106,6 +137,7 @@
     const apiKey = String(merged.apiKey || "").trim();
     const baseUrl = normalizeBaseUrl(merged.baseUrl);
     const model = String(merged.model || DEFAULTS.model).trim() || DEFAULTS.model;
+    buildChatEndpoint(baseUrl);
 
     if (apiKey) {
       localStorage.setItem(STORAGE_KEYS.apiKey, apiKey);
@@ -116,6 +148,7 @@
     }
     localStorage.setItem(STORAGE_KEYS.baseUrl, baseUrl);
     localStorage.setItem(STORAGE_KEYS.model, model);
+    window.dispatchEvent(new Event('quark-llm-updated'));
 
     return { apiKey, baseUrl, model };
   }
@@ -123,26 +156,51 @@
   function maskApiKey(apiKey) {
     const key = String(apiKey || "").trim();
     if (!key) return "(未设置)";
-    if (key.length <= 8) return `${key.slice(0, 2)}***${key.slice(-2)}`;
+    if (key.length <= 8) return "••••";
     return `${key.slice(0, 4)}***${key.slice(-4)}`;
   }
 
-  async function parseErrorResponse(response) {
+  function clearCredentials() {
+    localStorage.removeItem(STORAGE_KEYS.apiKey);
+    localStorage.removeItem(STORAGE_KEYS.legacyApiKey);
+    saveProfiles(getProfiles().map(({ apiKey, searchApiKey, ...profile }) => profile));
+    for (const key of ['quark_llm_params', 'commandHistory']) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        if (key === 'quark_llm_params' && value) {
+          delete value.searchApiKey;
+          localStorage.setItem(key, JSON.stringify(value));
+        }
+        if (key === 'commandHistory' && Array.isArray(value)) {
+          localStorage.setItem(key, JSON.stringify(value.filter((command) => !/^\s*!?llm-key\b/i.test(command))));
+        }
+      } catch {}
+    }
+    window.dispatchEvent(new Event('quark-llm-updated'));
+  }
+
+  async function parseErrorResponse(response, apiKey = '') {
     const text = await response.text();
     if (!text) {
       return `请求失败 (${response.status})`;
     }
     try {
       const data = JSON.parse(text);
-      return (
+      const message = (
         data?.error?.message ||
         data?.message ||
         data?.error ||
         `请求失败 (${response.status})`
       );
+      return redactError(message, apiKey);
     } catch (error) {
-      return text || `请求失败 (${response.status})`;
+      return redactError(text, apiKey);
     }
+  }
+
+  function redactError(message, apiKey) {
+    const text = typeof message === 'string' ? message : '模型服务返回错误。';
+    return (apiKey ? text.replaceAll(apiKey, '[已隐藏]') : text).slice(0, 500);
   }
 
   // ===== Profile Management =====
@@ -166,7 +224,6 @@
   }
 
   function setActiveProfile(profileId) {
-    localStorage.setItem(STORAGE_KEYS.activeProfile, profileId);
     const profile = getProfiles().find(p => p.id === profileId);
     if (profile) {
       saveSettings({
@@ -174,6 +231,7 @@
         baseUrl: profile.baseUrl,
         model: profile.model
       });
+      localStorage.setItem(STORAGE_KEYS.activeProfile, profileId);
     }
   }
 
@@ -280,24 +338,16 @@
   // ===== API Helpers =====
 
   async function testConnection(baseUrl, apiKey, model) {
-    const url = buildChatEndpoint(baseUrl);
     const testModel = model || "deepseek-reasoner";
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
+      const response = await requestChat({ baseUrl, apiKey }, {
           model: testModel,
           messages: [{ role: "user", content: "hi" }],
           max_tokens: 1,
           stream: false
-        })
-      });
+      }, AbortSignal.timeout(20000));
       if (response.ok) return { ok: true, status: response.status };
-      const errMsg = await parseErrorResponse(response);
+      const errMsg = await parseErrorResponse(response, apiKey);
       return { ok: false, status: response.status, error: errMsg };
     } catch (err) {
       return { ok: false, error: err.message };
@@ -305,19 +355,12 @@
   }
 
   async function fetchModelList(baseUrl, apiKey) {
-    const normalized = normalizeBaseUrl(baseUrl);
-    const modelsUrl = normalized.includes('/v1/')
-      ? `${normalized}/models`
-      : `${normalized}/models`;
-
     try {
-      const response = await fetch(modelsUrl, {
-        headers: {
-          "Authorization": `Bearer ${apiKey}`
-        }
-      });
+      const url = providerUrl(baseUrl);
+      url.pathname = url.pathname.replace(/\/chat\/completions$/i, '').replace(/\/$/, '') + '/models';
+      const response = await providerFetch(url, apiKey, { signal: AbortSignal.timeout(20000) });
       if (!response.ok) {
-        const errMsg = await parseErrorResponse(response);
+        const errMsg = await parseErrorResponse(response, apiKey);
         return { ok: false, error: errMsg };
       }
       const data = await response.json();
@@ -327,21 +370,7 @@
         .sort();
       return { ok: true, models };
     } catch (err) {
-      const fallbackUrl = normalized.replace(/\/v1$/, '') + '/models';
-      try {
-        const response = await fetch(fallbackUrl, {
-          headers: { "Authorization": `Bearer ${apiKey}` }
-        });
-        if (!response.ok) throw new Error();
-        const data = await response.json();
-        const models = (data?.data || [])
-          .map(m => m.id || m)
-          .filter(Boolean)
-          .sort();
-        return { ok: true, models };
-      } catch {
-        return { ok: false, error: err.message };
-      }
+      return { ok: false, error: err.message };
     }
   }
 
@@ -351,9 +380,11 @@
     PROVIDER_PRESETS,
     getSettings,
     saveSettings,
+    clearCredentials,
     maskApiKey,
     normalizeBaseUrl,
     buildChatEndpoint,
+    requestChat,
     parseErrorResponse,
     generateId,
     getProfiles,

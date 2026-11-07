@@ -108,7 +108,7 @@
 
 /* ── 深色令牌：跟随系统 ── */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-site-theme="light"]) {
     color-scheme: dark;
 
     --page-bg: #0f1115;
@@ -183,7 +183,7 @@
 }
 
 /* ── 深色令牌：手动开关（与 user-preferences.js 同步） ── */
-body.dark-mode {
+:root[data-site-theme="dark"], body.dark-mode {
   color-scheme: dark;
 
   --page-bg: #0f1115;

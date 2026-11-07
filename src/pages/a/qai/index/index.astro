@@ -11,13 +11,15 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
   <link rel="stylesheet" href="/assets/css/basic.css">
   <link rel="stylesheet" href="/assets/css/cursor.css">
   <link rel="stylesheet" href="/assets/css/qai.css">
-  <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script is:inline src="/assets/js/marked.min.js"></script>
+  <script is:inline src="/assets/js/safe-markdown.js"></script>
+  <script is:inline src="/assets/js/user-preferences.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css">
   <link rel="icon" href={SITE_LOGO_URL} type="image/png">
 </head>
 
-<body>
+<body class="qai-body">
   <div id="main-container">
     <!-- ===== 侧栏 ===== -->
     <aside id="sidebar">
@@ -29,7 +31,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
               <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
             </svg>
           </button>
-          <button id="theme-toggle" class="icon-btn" title="切换主题">
+          <button id="theme-toggle" class="icon-btn" title="切换主题" aria-label="切换主题">
             <svg viewBox="0 0 24 24" width="18" height="18">
               <path fill="currentColor" d="M12 3V4.35A7.65 7.65 0 1 0 19.65 12H21A9 9 0 1 1 12 3z" />
             </svg>
@@ -113,6 +115,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
       <div id="chat-history"></div>
 
       <footer id="input-area">
+        <div class="qai-workbench">
+          <button id="qai-tool-mode" type="button" class="secondary-btn" aria-pressed="false">站内工具</button>
+          <button id="qai-checkpoint-open" type="button" class="secondary-btn">会话任务</button>
+          <span id="qai-run-state" role="status">就绪</span>
+        </div>
         <div class="drop-area" id="drop-area">
           <p>已就绪：等待发送文件内容...</p>
         </div>
@@ -148,6 +155,15 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
       </footer>
     </main>
   </div>
+
+  <dialog id="qai-checkpoint" aria-labelledby="qai-checkpoint-title">
+    <form method="dialog">
+      <h2 id="qai-checkpoint-title">会话任务</h2>
+      <p>记录目标、当前进度和下一步。任务备注随会话保存在本机，每轮作为上下文发送给模型。</p>
+      <textarea id="qai-checkpoint-text" maxlength="2400" rows="8" aria-label="会话任务备注" placeholder="目标&#10;已完成&#10;下一步"></textarea>
+      <div class="btn-row"><button type="submit" value="cancel" class="secondary-btn">取消</button><button type="submit" value="save" class="primary-btn">保存任务</button></div>
+    </form>
+  </dialog>
 
   <!-- ===== 设置弹窗（多标签） ===== -->
   <div id="settings-modal" class="modal">
@@ -210,25 +226,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
 
         <hr class="section-divider">
-        <h4 class="section-title">联网搜索</h4>
-
-        <div class="input-group">
-          <label>启用联网搜索</label>
-          <label class="toggle-label">
-            <input type="checkbox" id="web-search-toggle">
-            <span class="toggle-track"><span class="toggle-knob"></span></span>
-            <span class="toggle-text">发送消息时自动搜索网络</span>
-          </label>
-        </div>
-        <div class="input-group">
-          <label>搜索 API 地址</label>
-          <input type="url" id="search-api-url" placeholder="https://api.baidu.com/search">
-        </div>
-        <div class="input-group">
-          <label>搜索 API Key</label>
-          <input type="password" id="search-api-key" placeholder="搜索服务的 API Key">
-        </div>
-        <p class="help-text">请求将通过 Vercel 后端代理转发以解决跨域问题。需在搜索 API 地址填入千帆等 AI 搜索 API 的基础 URL。</p>
+        <p class="help-text">浏览器直连模型服务。API Key 留在本机存储，并仅随请求发送给你选择的模型提供商。<a href="/settings/#ai">管理共享连接</a></p>
       </div>
 
       <!-- Tab 2: 参数 -->

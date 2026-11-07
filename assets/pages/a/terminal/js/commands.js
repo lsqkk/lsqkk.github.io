@@ -181,12 +181,8 @@ class CommandManager {
             return wrapper;
         }
 
-        if (window.marked && typeof window.marked.parse === 'function') {
-            const rawHtml = window.marked.parse(source, {
-                gfm: true,
-                breaks: true
-            });
-            wrapper.innerHTML = this.sanitizeHtml(rawHtml);
+        if (window.QuarkSafeMarkdown) {
+            wrapper.innerHTML = window.QuarkSafeMarkdown(source);
             return wrapper;
         }
 
@@ -211,7 +207,7 @@ class CommandManager {
         if (!this.llmSessionActive || !input) {
             return false;
         }
-        if (input.startsWith('!')) {
+        if (input.startsWith('!') || /^llm-(?:key|base|model|config|history|clear)(?:\s|$)/i.test(input)) {
             return false;
         }
         return true;
@@ -1093,7 +1089,7 @@ LLM:
     async requestLlm(prompt) {
         const settings = window.QuarkLLMConfig.getSettings();
         if (!settings.apiKey) {
-            this.output('未检测到 API Key。请先执行 llm-key <你的key>，或前往 /a/qai 保存。', 'error');
+            this.output('未检测到 API Key。请前往网站设置的「AI 与网站助手」保存连接。', 'error');
             return;
         }
 
@@ -1108,21 +1104,14 @@ LLM:
         this.output('正在连接 LLM...', 'info');
 
         try {
-            const response = await fetch(window.QuarkLLMConfig.buildChatEndpoint(settings.baseUrl), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${settings.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: settings.model,
-                    messages: [...history, { role: 'user', content: prompt }],
-                    stream: false
-                })
-            });
+            const response = await window.QuarkLLMConfig.requestChat(settings, {
+                model: settings.model,
+                messages: [...history, { role: 'user', content: prompt }],
+                stream: false
+            }, AbortSignal.timeout(90000));
 
             if (!response.ok) {
-                throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response));
+                throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response, settings.apiKey));
             }
 
             const data = await response.json();
@@ -1134,6 +1123,8 @@ LLM:
             this.storage.addLlmHistory({ prompt, answer, model: settings.model });
             this.output(`模型: ${settings.model}`, 'success');
             this.output(this.renderMarkdownToElement(answer), 'info');
+        } catch (error) {
+            this.output(`模型请求失败：${this.escapeHtml(error.message)}`, 'error');
         } finally {
             this.llmSessionBusy = false;
         }

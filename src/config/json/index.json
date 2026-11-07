@@ -7,10 +7,6 @@
     "phone": "13092344080"
   },
   "Nickname": "蓝色奇夸克",
-  "announcement": {
-    "content": "一个轻量好用、功能全面的LLM Web UI！现已支持：多模型一键切换、对话管理（文件夹/搜索/导入导出与加密）、消息编辑/重生成/复制/星标；精细参数（温度、Top P/K、惩罚、停止词、种子）；系统提示词预设、上下文token显示与透传、持久角色设定；输入含快捷指令与模板库，流式输出；渲染Markdown、代码高亮、LaTeX、Mermaid及思维链折叠；输出翻译、改写、多回复对比、JSON模式；深色主题，本地存储，API密钥与用量统计，自定义端点，场景预设，等等功能！开箱即用，隐私安全！<a href=\"https://lsqkk.github.io/a/qai\" target=\"_blank\" style=\"color: #007bff; font-weight: bold;\">点此</a>立即体验！",
-    "title": "QAI WebUI 正式发布！"
-  },
   "bloggerLat": 34.252705,
   "bloggerLon": 108.990221,
   "note": "修改此配置以更新主页信息。",

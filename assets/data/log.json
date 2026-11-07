@@ -4,6 +4,321 @@
     "content": "基于仓库 `commits` 记录整理，部分更新可能不及时。\n\n查看完整仓库 `commits` 记录，请前往[博客仓库](https://github.com/lsqkk/lsqkk.github.io)"
   },
   {
+    "date": "2026-11-07",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "refine(lab): give the wave preview a sculpted surface",
+        "commit": "a105ab"
+      },
+      {
+        "type": "新增",
+        "description": "(site): add lab previews and interactive reading routes",
+        "commit": "1a1d6b"
+      },
+      {
+        "type": "修复",
+        "description": "(home): soften the whole cover during scroll",
+        "commit": "28132b"
+      },
+      {
+        "type": "优化",
+        "description": "(home): keep the cover fixed during scroll",
+        "commit": "efba06"
+      },
+      {
+        "type": "新增",
+        "description": "(home): layer the cover transition",
+        "commit": "b00095"
+      },
+      {
+        "type": "修复",
+        "description": "(home): restore mobile sticky nav and smooth cover scroll",
+        "commit": "6aa8d8"
+      },
+      {
+        "type": "修复",
+        "description": "(home): restore cover after direct content entry",
+        "commit": "25d5f4"
+      },
+      {
+        "type": "修复",
+        "description": "(home): prevent cover flash on content entry",
+        "commit": "7faa56"
+      },
+      {
+        "type": "修复",
+        "description": "(home): skip cover for internal home links",
+        "commit": "5fbb44"
+      },
+      {
+        "type": "新增",
+        "description": "(home): add interactive full-screen cover",
+        "commit": "08cd92"
+      }
+    ]
+  },
+  {
+    "date": "2026-11-06",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "重绘了网站logo",
+        "commit": "ee54e8"
+      },
+      {
+        "type": "更新",
+        "description": "品牌 - 网站更名为奇夸克并下架旧版 APK",
+        "commit": "7f8ef5"
+      }
+    ]
+  },
+  {
+    "date": "2026-11-04",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "功能导航新增我的其他网站入口",
+        "commit": "3f6fa6"
+      },
+      {
+        "type": "优化",
+        "description": "打磨内容优先布局并新增随行架与权衡实验室",
+        "commit": "8ba09a"
+      },
+      {
+        "type": "优化",
+        "description": "阅读体验、站点文档与维护收尾",
+        "commit": "405571"
+      },
+      {
+        "type": "优化",
+        "description": "首页与交大360布局并修复多语种翻译",
+        "commit": "d9c3f8"
+      },
+      {
+        "type": "优化",
+        "description": "全站移动端细节与阅读路标",
+        "commit": "d2f609"
+      }
+    ]
+  },
+  {
+    "date": "2026-11-03",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "全站扁平表面视觉系统与页面体验重构",
+        "commit": "ef96be"
+      },
+      {
+        "type": "更新",
+        "description": "package-lock.json",
+        "commit": "87a170"
+      },
+      {
+        "type": "更新",
+        "description": "1",
+        "commit": "66d06d"
+      },
+      {
+        "type": "修复",
+        "description": "repair sitemap, refresh UI and curate tools and games",
+        "commit": "1a42b3"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-16",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "「谍报风云」提示条压过弹窗、修复聊天通知与滚动，并补齐音效与站内确认框",
+        "commit": "c38e20"
+      },
+      {
+        "type": "更新",
+        "description": "「谍报风云」监听改为整队、暗号史上词板、入口一键进房、队内私聊按阶段暂停",
+        "commit": "e044b7"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-15",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "「谍报风云」新增聊天室、选队与掉线移出，并消除整屏抖动",
+        "commit": "337462"
+      },
+      {
+        "type": "修复",
+        "description": "「谍报风云」彻底移除结算面板的数字卡，并让原词无法被渲染",
+        "commit": "6c2fa5"
+      },
+      {
+        "type": "修复",
+        "description": "「谍报风云」回合结算泄露行动方原词",
+        "commit": "e63429"
+      },
+      {
+        "type": "修复",
+        "description": "bug",
+        "commit": "cd94ea"
+      },
+      {
+        "type": "修复",
+        "description": "「谍报风云」博客头像不显示、弹窗挡住光标",
+        "commit": "57fa8d"
+      },
+      {
+        "type": "更新",
+        "description": "「谍报风云」身份体系与入口屏改版",
+        "commit": "c7dca7"
+      },
+      {
+        "type": "更新",
+        "description": "新增网页桌游「谍报风云」复刻版",
+        "commit": "75b7e3"
+      }
+    ]
+  },
+  {
+    "date": "2026-09-21",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "未补充说明",
+        "commit": "61918d"
+      }
+    ]
+  },
+  {
+    "date": "2026-08-16",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "111",
+        "commit": "22455f"
+      },
+      {
+        "type": "更新",
+        "description": "111",
+        "commit": "46e1c0"
+      },
+      {
+        "type": "更新",
+        "description": "未补充说明",
+        "commit": "341cd6"
+      },
+      {
+        "type": "更新",
+        "description": "1",
+        "commit": "f2a57b"
+      },
+      {
+        "type": "更新",
+        "description": "spotdiff.js",
+        "commit": "e6111d"
+      },
+      {
+        "type": "更新",
+        "description": "1",
+        "commit": "edd038"
+      },
+      {
+        "type": "更新",
+        "description": "11",
+        "commit": "94365b"
+      },
+      {
+        "type": "更新",
+        "description": "自动对齐",
+        "commit": "1afcb6"
+      },
+      {
+        "type": "更新",
+        "description": "111",
+        "commit": "b5c65f"
+      },
+      {
+        "type": "更新",
+        "description": "1",
+        "commit": "16e4e4"
+      },
+      {
+        "type": "更新",
+        "description": "111",
+        "commit": "c73ada"
+      },
+      {
+        "type": "新增",
+        "description": "找不同辅助",
+        "commit": "da46b4"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-28",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了文章",
+        "commit": "57d205"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-26",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了史纲复习资料",
+        "commit": "839928"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "entries": [
+      {
+        "type": "优化",
+        "description": "优化了动态@链接样式",
+        "commit": "ce5fc4"
+      },
+      {
+        "type": "更新",
+        "description": "dt.json",
+        "commit": "51e914"
+      },
+      {
+        "type": "修复",
+        "description": "修复动态",
+        "commit": "c113cd"
+      }
+    ]
+  },
+  {
+    "date": "2026-06-24",
+    "entries": [
+      {
+        "type": "更新",
+        "description": "更新了志愿指南",
+        "commit": "501c01"
+      },
+      {
+        "type": "更新",
+        "description": "更新了文章和动态@识别",
+        "commit": "16bbde"
+      },
+      {
+        "type": "更新",
+        "description": "更新了动态和日志",
+        "commit": "0547ff"
+      }
+    ]
+  },
+  {
     "date": "2026-06-23",
     "entries": [
       {

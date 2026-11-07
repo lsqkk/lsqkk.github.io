@@ -2,7 +2,6 @@
 
 /**
  * @typedef {{url: string, icon: string, alt: string}} SocialLink
- * @typedef {{title: string, content: string}} AnnouncementConfig
  * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[], columns?: string[], cover?: string}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
  * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
@@ -21,7 +20,6 @@
  *   Nickname?: string,
  *   welcomeTitle?: string,
  *   welcomeText?: string,
- *   announcement?: AnnouncementConfig
  * }} HomeConfig
  * @typedef {{
  *   homeConfig?: HomeConfig,
@@ -1437,17 +1435,6 @@ function renderHomeConfig(config) {
     const welcomeTextElement = document.getElementById('welcome-text');
     if (welcomeTextElement) welcomeTextElement.textContent = config.welcomeText || '';
 
-    // 渲染公告 - 添加存在性检查
-    const announcementContainer = document.getElementById('announcement-container');
-    if (announcementContainer && config.announcement) {
-        announcementContainer.innerHTML = `
-            <div class="index-announcement-text">
-                <span class="index-announcement-title">${config.announcement.title || ''}</span>
-                <span class="index-announcement-body">${config.announcement.content || ''}</span>
-            </div>
-        `;
-    }
-
 }
 
 // 设置默认内容（备用）
@@ -1494,9 +1481,6 @@ document.addEventListener('DOMContentLoaded', function () {
             loadOnlinePreview();
         }
     });
-
-    // 检查并显示弹窗
-    checkAndShowPopup();
 
     window.addEventListener('resize', () => {
         applyDynamicClamp(document.getElementById('dynamic-entries') || document);
