@@ -1,5 +1,6 @@
 import { searchSite, runHarness, appendRunDetails, siteRouteKey } from './llm-harness.mjs';
 import { getQuarkBotTools } from './quarkbot-tools.mjs';
+import { quotaHeaders, quotaLoginUrl } from './quota-session.mjs';
 import { isSessionChange, listSessions, newSession, preferredMode, readSession, rememberMode, sessionUrl, updateSession } from './quarkbot-sessions.mjs';
 
 const freeEndpoint = '__API_BASE__/api/quarkbot-free';
@@ -11,10 +12,10 @@ const botFace = `<svg class="quark-bot-face" viewBox="0 0 40 40" fill="none" ari
   <path d="M18 30h4" stroke="var(--bot-visor)" stroke-width="1.4" stroke-linecap="round"/>
 </svg>`;
 
-async function requestFreeChat(_settings, body, signal) {
+async function requestFreeChat(body, signal) {
     try {
         return await fetch(freeEndpoint, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json', ...quotaHeaders() },
             body: JSON.stringify(body), credentials: 'omit', redirect: 'error', signal
         });
     } catch (error) {
@@ -184,6 +185,7 @@ function mountConversation(panel, loadScript, workspace) {
           ${workspace ? '' : '<button type="button" data-delete aria-label="清空对话">清空</button>'}
           <a href="/settings/#ai">连接设置</a>
         </div></footer>
+        <p class="quark-bot-storage-status" data-quota-tip hidden><a data-quota-login>登录获取更多免费次数 ↗</a></p>
         <p class="quark-bot-storage-status" role="status" hidden></p>`;
     const info = workspace ? { type: '会话页', suggestions: ['推荐几篇站内文章', '有哪些实用的工具？', '看看最新的站点通知'] } : pageInfo();
     const source = { path: location.pathname, title: workspace ? 'QuarkBot 会话页' : info.type === '首页' ? '首页' : document.title };
@@ -207,7 +209,9 @@ function mountConversation(panel, loadScript, workspace) {
     const filter = workspace?.querySelector('[data-chat-filter]');
     const library = list?.closest('details');
     const compactWorkspace = workspace && matchMedia('(max-width: 700px)');
-    const storageStatus = panel.querySelector('.quark-bot-storage-status');
+    const storageStatus = panel.querySelector('.quark-bot-storage-status[role="status"]');
+    const quotaTip = panel.querySelector('[data-quota-tip]');
+    const quotaLogin = panel.querySelector('[data-quota-login]');
     let current = null;
     let controller;
     let opened = false;
@@ -295,8 +299,9 @@ function mountConversation(panel, loadScript, workspace) {
 
     function showMode() {
         connectionNote.textContent = mode.value === 'free'
-            ? '免费请求由本站转发，限额于北京时间零点刷新。'
+            ? '访客每日 5 次，登录后 40 次。免费请求由本站转发。'
             : '使用本机共享配置，直连模型服务。';
+        if (mode.value !== 'free') quotaTip.hidden = true;
     }
 
     function renderList() {
@@ -558,7 +563,18 @@ function mountConversation(panel, loadScript, workspace) {
             const result = await runHarness({
                 settings, body, useSearch: pref().botSearch !== false,
                 extraTools: getQuarkBotTools(query, { includePage, showReadingResults }), signal,
-                requestChat: freeMode ? requestFreeChat : undefined,
+                requestChat: freeMode ? async (_settings, request, signal) => {
+                    const response = await requestFreeChat(request, signal);
+                    if (response.ok) quotaTip.hidden = true;
+                    else if (response.status === 429) {
+                        const data = await response.clone().json().catch(() => ({}));
+                        if (data?.code === 'GUEST_QUOTA') {
+                            quotaLogin.href = quotaLoginUrl();
+                            quotaTip.hidden = false;
+                        }
+                    }
+                    return response;
+                } : undefined,
                 retryRequests: !freeMode,
                 onProgress: (message) => { status.textContent = message; },
                 onText: (text) => {

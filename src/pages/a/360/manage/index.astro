@@ -117,7 +117,9 @@ const turnstileSiteKey = navConfig?.login?.turnstileSiteKey || "";
                         <div class="helper">通过验证后即可提交审核，防止脚本刷图。</div>
                     </div>
                     <div class="upload-preview" id="uploadPreview"></div>
-                    <div class="upload-status" id="uploadStatus">等待上传</div>
+                    <p>云端上传每天可提交 5 张，登录后可提交 25 张。本地预览和校准随时可用。</p>
+                    <div class="upload-status" id="uploadStatus" role="status">等待上传</div>
+                    <a id="uploadQuotaLogin" href="/login/" hidden>登录获取更多上传次数 ↗</a>
                 </div>
             </div>
 

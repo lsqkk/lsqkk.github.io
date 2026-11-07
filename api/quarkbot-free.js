@@ -1,15 +1,11 @@
-import { createHmac } from 'node:crypto';
-import { isIP } from 'node:net';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { allowOrigin, ALLOWED_ORIGINS } from './_cors.js';
-import { getDatabase } from './_firebase-admin.js';
+import { allowOrigin, SITE_ORIGINS } from './_cors.js';
+import { requestIp, reserveDailyQuota } from './_daily-quota.js';
 
-const origins = [...ALLOWED_ORIGINS, 'https://130923.xyz', 'https://www.130923.xyz', 'http://localhost:4321', 'http://127.0.0.1:4321'];
 const gateway = 'https://ai-gateway.vercel.sh/v1/chat/completions';
 const model = 'alibaba/qwen3.5-flash';
-const dailySiteLimit = 120;
-const dailyIpLimit = 40;
+const limits = { guestLimit: 5, accountLimit: 40, siteLimit: 120 };
 const maxRequestBytes = 48 * 1024;
 
 function chatPayload(body) {
@@ -34,33 +30,17 @@ function chatPayload(body) {
   });
 }
 
-async function reserveQuota(ip) {
-  // Keep only the current Beijing-time day. One transaction reserves both counters.
-  const day = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10);
-  const secret = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  const key = createHmac('sha256', secret).update(`${day}:${ip}`).digest('hex');
-  const result = await getDatabase().ref('quarkbot_free_quota').transaction((current) => {
-    if (current?.day > day) return;
-    const quota = current?.day === day ? current : { day, total: 0, clients: {} };
-    const count = quota.clients[key] || 0;
-    if (quota.total >= dailySiteLimit || count >= dailyIpLimit) return;
-    return { day, total: quota.total + 1, clients: { ...quota.clients, [key]: count + 1 } };
-  }, undefined, false);
-  return result.committed;
-}
-
 export default async function handler(req, res) {
   res.setHeader('Vary', 'Origin');
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (!allowOrigin(req, res, origins)) return res.status(403).json({ error: '来源不受支持。' });
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (!allowOrigin(req, res, SITE_ORIGINS)) return res.status(403).json({ error: '来源不受支持。' });
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: '仅支持 POST。' });
 
   const token = process.env.VERCEL === '1' ? req.headers['x-vercel-oidc-token'] : process.env.VERCEL_OIDC_TOKEN;
-  const ip = req.headers['x-vercel-forwarded-for'];
-  if (!token || typeof ip !== 'string' || !isIP(ip)) {
+  if (!token || !requestIp(req)) {
     return res.status(503).json({ error: '站点免费 AI 暂不可用，可以使用站内搜索或切换到自定义 API。' });
   }
 
@@ -77,9 +57,8 @@ export default async function handler(req, res) {
   const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(40000)]);
   res.once('close', () => controller.abort());
   try {
-    if (!await reserveQuota(ip)) {
-      return res.status(429).json({ error: '今日免费额度已用完，北京时间 00:00 恢复。也可以切换到自定义 API 或使用站内搜索。' });
-    }
+    const quotaError = await reserveDailyQuota(req, 'quarkbot_free_quota', limits);
+    if (quotaError) return res.status(429).json(quotaError);
     const response = await fetch(gateway, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },

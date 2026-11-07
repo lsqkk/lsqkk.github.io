@@ -1,11 +1,11 @@
 // /api/github-user.js - 通过 GitHub OAuth code 获取用户信息
-import { resolveOrigin } from './_cors.js';
+import { allowOrigin, SITE_ORIGINS } from './_cors.js';
+import { issueQuotaSession } from './_quota-session.js';
 
 export default async function handler(req, res) {
-    const requestOrigin = resolveOrigin(req);
-    const isAllowed = Boolean(requestOrigin);
-
-    res.setHeader('Access-Control-Allow-Origin', isAllowed ? requestOrigin : 'false');
+    const isAllowed = allowOrigin(req, res, SITE_ORIGINS);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -67,7 +67,8 @@ export default async function handler(req, res) {
             login: user.login,
             name: user.name,
             avatar_url: user.avatar_url,
-            html_url: user.html_url
+            html_url: user.html_url,
+            quotaSession: Number.isSafeInteger(user.id) ? issueQuotaSession(`github:${user.id}`) : null
         });
     } catch (error) {
         console.error('GitHub OAuth 失败:', error);

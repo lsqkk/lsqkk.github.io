@@ -10,6 +10,8 @@
   const LOGIN_TYPE_KEY = 'quark_login_type';
   const QB_USER_KEY = 'qb_user';
   const QB_LOGIN_KEY = 'qb_login';
+  const loginParams = new URLSearchParams(location.search);
+  const benefitsLogin = loginParams.get('benefits') === '1';
 
   /** @type {Record<string, any>} */
   const el = {};
@@ -242,6 +244,7 @@
   }
 
   function setLocalLogin(profile) {
+    localStorage.removeItem('quark_quota_session');
     localStorage.setItem(LOGIN_TYPE_KEY, 'local');
     localStorage.setItem(QB_LOGIN_KEY, profile.login || '');
     localStorage.setItem(QB_USER_KEY, JSON.stringify(profile));
@@ -370,7 +373,7 @@
         body: JSON.stringify({ email, code, token, purpose })
       });
       const data = await resp.json();
-      return !!(resp.ok && data && data.ok);
+      return resp.ok && data?.ok ? data : null;
     } catch (error) {
       console.error('邮箱验证码校验失败:', error);
       return false;
@@ -620,8 +623,8 @@
     setText(el.loginStatus, '正在验证邮箱...');
     const captchaOk = await verifyTurnstileToken('login', '', el.loginStatus);
     if (!captchaOk) return;
-    const ok = await verifyEmailCode(email, code, 'login');
-    if (!ok) {
+    const verification = await verifyEmailCode(email, code, 'login');
+    if (!verification) {
       setText(el.loginStatus, '邮箱验证码无效或已过期');
       return;
     }
@@ -642,8 +645,10 @@
         nickname,
         avatarUrl: user.avatarUrl || ''
       });
+      const { saveQuotaSession, quotaReturnPath } = await import('/assets/js/quota-session.mjs');
+      saveQuotaSession(verification.quotaSession);
       setText(el.loginStatus, '邮箱登录成功');
-      window.location.href = '/a/account';
+      window.location.href = quotaReturnPath(loginParams.get('next'), '/a/account');
     } catch (error) {
       console.error('邮箱登录失败:', error);
       setText(el.loginStatus, '邮箱登录失败');
@@ -766,9 +771,17 @@
   function bindEvents() {
     if (el.githubBtn) {
       el.githubBtn.addEventListener('click', () => {
-        const url = window.__GITHUB_LOGIN_URL__;
-        if (url) {
-          window.location.href = url;
+        if (window.__GITHUB_LOGIN_URL__) {
+          const url = new URL(window.__GITHUB_LOGIN_URL__);
+          const callback = new URL(url.searchParams.get('redirect_uri') || location.origin);
+          if (callback.origin !== location.origin) {
+            window.location.href = new URL('/login/' + location.search, callback.origin).href;
+            return;
+          }
+          const state = crypto.randomUUID();
+          sessionStorage.setItem('quark_github_oauth', JSON.stringify({ state, next: loginParams.get('next') }));
+          url.searchParams.set('state', state);
+          window.location.href = url.href;
         }
       });
     }
@@ -882,11 +895,13 @@
   function init() {
     initThemeSync();
     cacheElements();
-    if (localStorage.getItem('github_user') || localStorage.getItem('qb_user')) {
+    if (!benefitsLogin && (localStorage.getItem('github_user') || localStorage.getItem('qb_user'))) {
       window.location.href = '/a/account';
       return;
     }
-    switchLoginMode('password');
+    switchLoginMode(benefitsLogin ? 'email' : 'password');
+    const benefitsTip = document.querySelector('[data-quota-login-tip]');
+    if (benefitsTip) benefitsTip.hidden = !benefitsLogin;
     if (el.resetPanel instanceof HTMLElement) {
       el.resetPanel.classList.remove('active');
     }

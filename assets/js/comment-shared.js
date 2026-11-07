@@ -186,6 +186,7 @@
             'qb_user',
             'qb_login',
             'quark_login_type',
+            'quark_quota_session',
             'quark_user_profile',
             'nickname',
             'avatarType',

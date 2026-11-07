@@ -3,6 +3,7 @@
 
 const ALLOWED_DOMAINS = ['localhost:8000', 'lsqkk.github.io', '130923.xyz', 'www.130923.xyz', 'api.130923.xyz'];
 const ALLOWED_ORIGINS = ['http://localhost:8000', 'https://localhost:8000', 'https://lsqkk.github.io'];
+const SITE_ORIGINS = [...ALLOWED_ORIGINS, 'https://130923.xyz', 'https://www.130923.xyz', 'http://localhost:4321', 'http://127.0.0.1:4321'];
 
 /**
  * Resolve the allowed origin from request headers using host matching.
@@ -47,4 +48,4 @@ function allowOrigin(req, res, origins = ALLOWED_ORIGINS) {
   return false;
 }
 
-export { ALLOWED_DOMAINS, ALLOWED_ORIGINS, resolveOrigin, allowOrigin };
+export { ALLOWED_DOMAINS, ALLOWED_ORIGINS, SITE_ORIGINS, resolveOrigin, allowOrigin };

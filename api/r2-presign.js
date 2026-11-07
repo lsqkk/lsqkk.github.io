@@ -2,6 +2,7 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { resolveOrigin } from './_cors.js';
+import { reserveDailyQuota } from './_daily-quota.js';
 
 function getEnv(name) {
   return String(process.env[name] || '').trim();
@@ -40,7 +41,7 @@ export default async function handler(req, res) {
 
   res.setHeader('Access-Control-Allow-Origin', isAllowed ? requestOrigin : 'false');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -93,6 +94,10 @@ export default async function handler(req, res) {
   const objectKey = `${folder}/${year}/${fileName}`;
 
   try {
+    if (folder.replace(/^\/+/, '').split('/')[0].toLowerCase() === 'xjtu360') {
+      const quotaError = await reserveDailyQuota(req, 'xjtu360_upload_quota', { guestLimit: 5, accountLimit: 25 });
+      if (quotaError) return res.status(429).json(quotaError);
+    }
     const client = new S3Client({
       region: 'auto',
       endpoint,

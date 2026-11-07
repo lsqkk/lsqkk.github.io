@@ -1,138 +1,118 @@
-// /api/email.js - 邮箱验证码管理（合并 email-send + email-verify）
-// POST ?action=send   → 发送验证码邮件
-// POST ?action=verify → 验证邮箱验证码
-import crypto from 'node:crypto';
-import { allowOrigin } from './_cors.js';
+// /api/email.js - Send or verify a one-time email challenge.
+import { createHmac, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
+import { allowOrigin, SITE_ORIGINS } from './_cors.js';
+import { getDatabase } from './_firebase-admin.js';
+import { issueQuotaSession } from './_quota-session.js';
 
-// ── Token 工具（send 构建、verify 解析）──
-function buildToken(payload, secret) {
-  const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', secret).update(payloadBase64).digest('hex');
-  return `${payloadBase64}.${signature}`;
-}
-
-function verifyToken(token, secret) {
-  const parts = String(token || '').split('.');
-  if (parts.length !== 2) return null;
-  const [payloadBase64, signature] = parts;
-  const expected = crypto.createHmac('sha256', secret).update(payloadBase64).digest('hex');
-  if (expected !== signature) return null;
-  try {
-    return JSON.parse(Buffer.from(payloadBase64, 'base64url').toString('utf8'));
-  } catch {
-    return null;
-  }
-}
-
-// ── 频率限制 ──
+const subjects = {
+  login: '奇夸克登录验证码',
+  register: '奇夸克注册验证码',
+  reset: '奇夸克重置密码验证码',
+  bind: '奇夸克绑定邮箱验证码'
+};
+const rateWindow = 60_000;
+const lifetime = 10 * 60_000;
 const ipLimiter = new Map();
-const emailLimiter = new Map();
-const RATE_WINDOW_MS = 60 * 1000;
+const digest = (secret, value) => createHmac('sha256', secret).update(value).digest('hex');
 
-function checkRateLimit(ip, email, purpose) {
+async function sendChallenge(req, res, ref, { email, purpose, secret }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !from) return res.status(500).json({ error: 'Missing email configuration' });
+
+  const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').split(',')[0].trim();
+  const key = `${ip}:${purpose}`;
   const now = Date.now();
-  const ipKey = `ip:${ip}:${purpose}`;
-  const emailKey = `mail:${email}:${purpose}`;
-  const ipLast = ipLimiter.get(ipKey) || 0;
-  const mailLast = emailLimiter.get(emailKey) || 0;
-  if (now - ipLast < RATE_WINDOW_MS || now - mailLast < RATE_WINDOW_MS) return false;
-  ipLimiter.set(ipKey, now);
-  emailLimiter.set(emailKey, now);
-  return true;
+  if (now - (ipLimiter.get(key) || 0) < rateWindow) return res.status(429).json({ error: 'Too many requests' });
+  ipLimiter.set(key, now);
+
+  const code = String(randomInt(100000, 1000000));
+  const token = randomBytes(24).toString('base64url');
+  const challenge = {
+    token: digest(secret, token),
+    code: digest(secret, `${token}:${code}`),
+    sentAt: now, expiresAt: now + lifetime, attempts: 0
+  };
+  const result = await ref.transaction((current) => {
+    if (current && now - current.sentAt < rateWindow) return;
+    return challenge;
+  }, undefined, false);
+  if (!result.committed) return res.status(429).json({ error: 'Too many requests' });
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from, to: email, subject: subjects[purpose],
+      html: `<p>你的验证码是 <strong>${code}</strong>，10 分钟内有效。</p>` }),
+    signal: AbortSignal.timeout(12000)
+  });
+  if (!response.ok) return res.status(500).json({ error: 'Email send failed' });
+  return res.status(200).json({ ok: true, token, expiresIn: lifetime });
+}
+
+async function verifyChallenge(res, ref, { body, email, purpose, secret }) {
+  const code = String(body?.code || '').trim();
+  const token = String(body?.token || '').trim();
+  if (!/^\d{6}$/.test(code) || !/^[A-Za-z0-9_-]{32}$/.test(token)) {
+    return res.status(400).json({ ok: false, error: 'Invalid challenge' });
+  }
+  const tokenHash = digest(secret, token);
+  const codeHash = Buffer.from(digest(secret, `${token}:${code}`), 'hex');
+  const attempt = randomBytes(16).toString('hex');
+  const result = await ref.transaction((current) => {
+    // An uncached transaction first receives null. Submit it so RTDB can check the latest value.
+    if (!current) return null;
+    if (current.token !== tokenHash || current.expiresAt <= Date.now() || current.usedBy || current.attempts >= 6) return;
+    if (timingSafeEqual(Buffer.from(current.code, 'hex'), codeHash)) {
+      return { sentAt: current.sentAt, usedBy: attempt };
+    }
+    return { ...current, attempts: current.attempts + 1 };
+  }, undefined, false);
+  if (!result.committed || result.snapshot.val()?.usedBy !== attempt) {
+    return res.status(400).json({ ok: false, error: 'Verification failed' });
+  }
+  if (purpose !== 'login') return res.status(200).json({ ok: true });
+
+  const db = getDatabase();
+  const emailKey = email.replace(/[.#$/\[\]]/g, '_');
+  const login = (await db.ref(`qb_email_index/${emailKey}`).once('value')).val();
+  if (typeof login !== 'string' || !/^[a-z]{3,20}$/.test(login)) return res.status(200).json({ ok: true });
+  const account = (await db.ref(`qb_users/${login}`).once('value')).val();
+  const boundEmail = typeof account?.email === 'string' ? account.email.trim().toLowerCase() : '';
+  const quotaSession = boundEmail === email ? issueQuotaSession(`email:${email}`) : null;
+  return res.status(200).json({ ok: true, ...(quotaSession ? { quotaSession } : {}) });
 }
 
 export default async function handler(req, res) {
-  allowOrigin(req, res);
+  const allowed = allowOrigin(req, res, SITE_ORIGINS);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+  if (!allowed) return res.status(403).json({ error: 'Forbidden' });
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const action = req.query?.action;
-  if (!action || !['send', 'verify'].includes(action)) {
-    return res.status(400).json({ error: 'Invalid action. Use ?action=send or ?action=verify' });
-  }
-
+  if (!['send', 'verify'].includes(action)) return res.status(400).json({ error: 'Invalid action' });
   let body;
-  try {
-    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  } catch {
-    return res.status(400).json({ error: 'Invalid JSON format' });
-  }
+  try { body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body; }
+  catch { return res.status(400).json({ error: 'Invalid JSON format' }); }
 
-  const tokenSecret = process.env.EMAIL_TOKEN_SECRET;
-  if (!tokenSecret) {
-    return res.status(500).json({ error: 'Missing EMAIL_TOKEN_SECRET' });
-  }
-
-  // ── 发送验证码 ──
-  if (action === 'send') {
-    const email = String(body?.email || '').trim().toLowerCase();
-    const purpose = String(body?.purpose || 'login');
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ error: 'Invalid email' });
-    }
-
-    const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').toString().split(',')[0].trim();
-    if (!checkRateLimit(ip, email, purpose)) {
-      return res.status(429).json({ error: 'Too many requests' });
-    }
-
-    const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.RESEND_FROM;
-    if (!apiKey || !from) {
-      return res.status(500).json({ error: 'Missing email configuration' });
-    }
-
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    const expiresInMs = 10 * 60 * 1000;
-    const payload = { email, purpose, code, exp: Date.now() + expiresInMs };
-    const token = buildToken(payload, tokenSecret);
-
-    const subjectMap = {
-      login: '奇夸克登录验证码',
-      register: '奇夸克注册验证码',
-      reset: '奇夸克重置密码验证码',
-    };
-    const subject = subjectMap[purpose] || subjectMap.login;
-
-    try {
-      const resp = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ from, to: email, subject, html: `<p>你的验证码是 <strong>${code}</strong>，10 分钟内有效。</p>` }),
-      });
-      if (!resp.ok) {
-        const text = await resp.text();
-        return res.status(500).json({ error: `Email send failed: ${text.slice(0, 120)}` });
-      }
-      return res.status(200).json({ ok: true, token, expiresIn: expiresInMs });
-    } catch (error) {
-      console.error('Email send failed:', error);
-      return res.status(500).json({ error: 'Email send failed' });
-    }
-  }
-
-  // ── 验证验证码 ──
+  const secret = process.env.EMAIL_TOKEN_SECRET;
+  if (!secret) return res.status(500).json({ error: 'Missing EMAIL_TOKEN_SECRET' });
   const email = String(body?.email || '').trim().toLowerCase();
-  const code = String(body?.code || '').trim();
-  const token = String(body?.token || '').trim();
   const purpose = String(body?.purpose || 'login');
-
-  const payload = verifyToken(token, tokenSecret);
-  if (!payload) {
-    return res.status(400).json({ ok: false, error: 'Invalid token' });
-  }
-  if (payload.exp && Date.now() > payload.exp) {
-    return res.status(400).json({ ok: false, error: 'Token expired' });
-  }
-  if (payload.email !== email || payload.code !== code || payload.purpose !== purpose) {
-    return res.status(400).json({ ok: false, error: 'Verification failed' });
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !Object.hasOwn(subjects, purpose)) {
+    return res.status(400).json({ error: 'Invalid email or purpose' });
   }
 
-  return res.status(200).json({ ok: true });
+  try {
+    const ref = getDatabase().ref(`quark_email_challenges/${purpose}/${digest(secret, email)}`);
+    const args = { body, email, purpose, secret };
+    return await (action === 'send' ? sendChallenge(req, res, ref, args) : verifyChallenge(res, ref, args));
+  } catch (error) {
+    console.error('Email challenge failed:', error.message);
+    return res.status(500).json({ ok: false, error: 'Email challenge unavailable' });
+  }
 }

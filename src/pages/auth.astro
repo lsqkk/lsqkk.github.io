@@ -8,9 +8,16 @@ import LuxuryBackground from "../components/LuxuryBackground.astro";
     <link rel="stylesheet" href="/assets/css/basic.css" />
     <title>登录回调 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
-    <script is:inline>
+    <script is:inline type="module">
+      import { quotaReturnPath, saveQuotaSession } from '/assets/js/quota-session.mjs';
+
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");
+      let pending;
+      try {
+        pending = JSON.parse(sessionStorage.getItem('quark_github_oauth'));
+        sessionStorage.removeItem('quark_github_oauth');
+      } catch {}
       async function fetchGithubUser(authCode) {
         try {
           const resp = await fetch(`__API_BASE__/api/github-user?code=${encodeURIComponent(authCode)}`, { cache: "no-store" });
@@ -21,36 +28,32 @@ import LuxuryBackground from "../components/LuxuryBackground.astro";
           return null;
         }
       }
-      if (code) {
-        localStorage.setItem("github_code", code);
-        localStorage.setItem("quark_login_type", "github");
-        localStorage.removeItem("qb_user");
-        localStorage.removeItem("qb_login");
-        fetchGithubUser(code).then((user) => {
-          if (user) {
-            localStorage.setItem("github_user", JSON.stringify(user));
-            localStorage.removeItem("github_user_error");
-          } else {
-            localStorage.setItem("github_user_error", JSON.stringify({
-              time: Date.now(),
-              message: "github-user fetch failed"
-            }));
-          }
-        }).catch((err) => {
-          localStorage.setItem("github_user_error", JSON.stringify({
-            time: Date.now(),
-            message: String(err || "unknown")
-          }));
-        }).finally(() => {
-          window.location.href = "/#home-content";
-        });
+      const stateMatches = Boolean(pending?.state && urlParams.get('state') === pending.state);
+      const result = code && stateMatches ? await fetchGithubUser(code) : null;
+      if (result?.login) {
+        const { quotaSession, ...user } = result;
+        saveQuotaSession(quotaSession);
+        localStorage.setItem('github_code', code);
+        localStorage.setItem('quark_login_type', 'github');
+        localStorage.setItem('github_user', JSON.stringify(user));
+        localStorage.removeItem('qb_user');
+        localStorage.removeItem('qb_login');
+        localStorage.removeItem('github_user_error');
+        window.location.replace(quotaReturnPath(pending?.next, '/#home-content'));
+      } else {
+        const status = document.getElementById('authStatus');
+        status.textContent = 'GitHub 登录未完成。';
+        const retry = document.createElement('a');
+        retry.href = pending?.next ? `/login/?benefits=1&next=${encodeURIComponent(pending.next)}` : '/login/';
+        retry.textContent = '返回登录';
+        status.append(' ', retry);
       }
     </script>
       <script is:inline src="/assets/js/cursor-trail.js"></script>
 </head>
   <body class="luxury-body">
     <LuxuryBackground />
-    <p>登录中...</p>
+    <p id="authStatus" role="status">登录中...</p>
   </body>
 </html>
 

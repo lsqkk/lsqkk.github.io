@@ -8,13 +8,13 @@
 | --- | --- | --- |
 | GET `/api/firebase-config` | 返回浏览器可读 Firebase 配置脚本，配合 `firebase-ready.js` | [firebase-config.js](../../../api/firebase-config.js) |
 | GET `/api/keys?names=tianditu` | 返回指定名称的浏览器可读配置脚本；支持逗号分隔 | [keys.js](../../../api/keys.js) |
-| GET `/api/github-user?code=...` | 用 OAuth code 获取 GitHub 用户资料，服务端使用 client secret | [github-user.js](../../../api/github-user.js) |
+| GET `/api/github-user?code=...` | 用 OAuth code 获取 GitHub 用户资料和额度会话，服务端使用 client secret | [github-user.js](../../../api/github-user.js) |
 | POST `/api/admin?action=auth` | `{passwordHash}`，返回管理员 token 与过期时间 | [admin.js](../../../api/admin.js) |
 | POST `/api/admin?action=verify` | `{token}`，校验管理员会话 | [admin.js](../../../api/admin.js) |
 | POST `/api/email?action=send` | `{email,purpose}`，发送验证码并返回校验 token | [email.js](../../../api/email.js) |
-| POST `/api/email?action=verify` | `{email,code,token,purpose}`，校验验证码 | [email.js](../../../api/email.js) |
+| POST `/api/email?action=verify` | `{email,code,token,purpose}`，校验一次性验证码，已绑定邮箱登录时返回额度会话 | [email.js](../../../api/email.js) |
 | GET / POST `/api/db` | GET 查询允许路径；POST `{path,op,value}`，op 为 set / update / remove / push | [db.js](../../../api/db.js) |
-| POST `/api/r2-presign` | `{originalName,contentType,folder}`，返回上传签名与公开地址 | [r2-presign.js](../../../api/r2-presign.js) |
+| POST `/api/r2-presign` | `{originalName,contentType,folder}`，返回上传签名与公开地址；全景上传应用访客和账号日限额 | [r2-presign.js](../../../api/r2-presign.js) |
 | POST `/api/turnstile-verify` | `{token,purpose}`，验证人机校验结果 | [turnstile-verify.js](../../../api/turnstile-verify.js) |
 | GET `/api/ip` | 返回请求 IP 相关信息 | [ip.js](../../../api/ip.js) |
 | GET `/api/stream-proxy?url=...` | 媒体流代理 | [stream-proxy.js](../../../api/stream-proxy.js) |

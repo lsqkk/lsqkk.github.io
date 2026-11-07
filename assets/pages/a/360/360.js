@@ -823,6 +823,8 @@ function handleFileSelected(file) {
 }
 
 async function submitUpload() {
+    const quotaLogin = document.getElementById('uploadQuotaLogin');
+    if (quotaLogin) quotaLogin.hidden = true;
     if (!uploadFile) {
         setUploadStatus('请先选择图片');
         return;
@@ -877,7 +879,16 @@ async function submitUpload() {
         resetUploadForm();
     } catch (error) {
         console.error('上传失败:', error);
-        setUploadStatus('上传失败，请稍后重试');
+        if (['GUEST_QUOTA', 'ACCOUNT_QUOTA'].includes(error.code)) {
+            setUploadStatus(error.message);
+            if (quotaLogin && error.code === 'GUEST_QUOTA') {
+                const { quotaLoginUrl } = await import('/assets/js/quota-session.mjs');
+                quotaLogin.href = quotaLoginUrl();
+                quotaLogin.hidden = false;
+            }
+        } else {
+            setUploadStatus('上传失败，请稍后重试');
+        }
     } finally {
         if (el.submitUploadBtn) el.submitUploadBtn.disabled = false;
     }
@@ -895,9 +906,12 @@ function resetUploadForm() {
 }
 
 async function requestPresignedUpload(fileName, contentType, folder) {
+    const { quotaHeaders } = await import('/assets/js/quota-session.mjs');
     const resp = await fetch(`${API_BASE}/api/r2-presign`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...quotaHeaders() },
+        credentials: 'omit',
+        redirect: 'error',
         body: JSON.stringify({
             originalName: fileName,
             contentType: contentType || 'application/octet-stream',
@@ -907,7 +921,7 @@ async function requestPresignedUpload(fileName, contentType, folder) {
 
     const data = await resp.json().catch(() => ({}));
     if (!resp.ok || !data?.uploadUrl || !data?.publicUrl) {
-        throw new Error(data?.error || '获取上传链接失败');
+        throw Object.assign(new Error(data?.error || '获取上传链接失败'), { code: data?.code });
     }
     return data;
 }
