@@ -143,9 +143,18 @@ const homePreloaded = {
   <head>
     <meta charset="UTF-8" />
     <script is:inline>
-      // The fragment is only available in the browser. Set the entry mode before the first paint.
-      const entry = location.hash === "#home-content" ? "data-home-cover-pending" : "data-home-cover-entry";
-      document.documentElement.setAttribute(entry, "");
+      (() => {
+        const enterContent = location.hash === "#home-content";
+        document.documentElement.setAttribute(enterContent ? "data-home-cover-pending" : "data-home-cover-entry", "");
+        if (!enterContent) return;
+
+        // A saved offset can override the fragment on reload or a restored navigation.
+        const previousMode = history.scrollRestoration;
+        history.scrollRestoration = "manual";
+        window.addEventListener("pageshow", () => {
+          setTimeout(() => { history.scrollRestoration = previousMode; }, 0);
+        }, { once: true });
+      })();
     </script>
     <style is:inline>
       html[data-home-cover-pending] [data-quark-cover] { display: none; }
@@ -545,14 +554,10 @@ const homePreloaded = {
         const root = document.documentElement;
         if (!root.hasAttribute("data-home-cover-pending")) return;
 
-        // Restore the cover above the viewport and keep the content at its current position.
+        // Restore the cover for upward scrolling and align the fragment before painting it.
         const content = document.getElementById("home-content");
-        const contentTop = content.getBoundingClientRect().top;
         root.removeAttribute("data-home-cover-pending");
-        window.scrollBy({
-          top: content.getBoundingClientRect().top - contentTop,
-          behavior: "instant",
-        });
+        content.scrollIntoView({ block: "start", behavior: "instant" });
 
         // Enable smooth scrolling only once the user activates the cover arrow.
         document.querySelector(".cover-next").addEventListener("click", () => {
