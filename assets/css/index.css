@@ -13,7 +13,7 @@ body.home-page > .header-placeholder {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    html:not([data-motion="reduce"]):has(.quark-cover) {
+    html[data-home-cover-entry]:not([data-motion="reduce"]) {
         scroll-behavior: smooth;
     }
 }

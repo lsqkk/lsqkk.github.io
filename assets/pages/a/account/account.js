@@ -567,10 +567,10 @@
         if (el.accountLogout) {
             el.accountLogout.addEventListener('click', () => {
                 if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
-                    window.CommentShared.logout('/');
+                    window.CommentShared.logout('/#home-content');
                 } else {
                     localStorage.clear();
-                    window.location.href = '/';
+                    window.location.href = '/#home-content';
                 }
             });
         }

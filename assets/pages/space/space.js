@@ -1009,7 +1009,7 @@
     if (el.logoutBtn) {
       el.logoutBtn.addEventListener('click', function () {
         if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
-          window.CommentShared.logout('/');
+          window.CommentShared.logout('/#home-content');
         }
       });
     }

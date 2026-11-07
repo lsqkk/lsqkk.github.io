@@ -191,7 +191,7 @@ async function init() {
 
             if (seconds <= 0) {
                 clearInterval(redirectTimer);
-                window.location.href = "/";
+                window.location.href = "/#home-content";
             }
         }
     }, 1000);

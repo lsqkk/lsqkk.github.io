@@ -142,6 +142,31 @@ function buildLocalizedUrl(href, language = currentLanguage) {
     }
 }
 
+function homeContentUrl(href) {
+    if (!href || href.includes('#')) return href;
+    try {
+        const url = new URL(href, document.baseURI);
+        if (url.origin === location.origin && (url.pathname === '/' || url.pathname === '/index.html')) {
+            return url.pathname + url.search + '#home-content';
+        }
+    } catch {
+        // Ignore invalid URLs.
+    }
+    return href;
+}
+
+function routeHomeLink(anchor) {
+    const href = anchor.getAttribute('href');
+    const next = anchor.hasAttribute('download') ? href : homeContentUrl(href);
+    if (next !== href) anchor.setAttribute('href', next);
+    return next;
+}
+
+function routeActivatedHomeLink(event) {
+    const anchor = event.target instanceof Element ? event.target.closest('a[href]') : null;
+    if (anchor instanceof HTMLAnchorElement) routeHomeLink(anchor);
+}
+
 function updateCurrentPageLanguageUrl(language) {
     const localizedUrl = buildLocalizedUrl(window.location.pathname + window.location.search + window.location.hash, language);
     if (localizedUrl) {
@@ -181,7 +206,7 @@ function updateLocalizedLinks(root = document) {
     scope.querySelectorAll('a[href]').forEach(anchor => {
         if (!(anchor instanceof HTMLAnchorElement)) return;
         if (anchor.dataset.languageIgnore === 'true') return;
-        const href = anchor.getAttribute('href');
+        const href = routeHomeLink(anchor);
         const localizedHref = buildLocalizedUrl(href, currentLanguage);
         if (localizedHref && localizedHref !== href) {
             anchor.setAttribute('href', localizedHref);
@@ -317,7 +342,7 @@ function generateNavHTML(config) {
             <div class="header-left">
                 <img src="${config.logo.url}" alt="${config.logo.alt}"
                 style="${config.logo.style}">
-                <a href="${buildLocalizedUrl(config.title.link)}" class="header-title-link">
+                <a href="${buildLocalizedUrl(homeContentUrl(config.title.link))}" class="header-title-link">
                     <h1>${config.title.text}</h1>
                 </a>
 
@@ -1119,12 +1144,12 @@ function renderUserProfile() {
         headerUser.querySelectorAll('[data-action="logout"]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 if (window.CommentShared && typeof window.CommentShared.logout === 'function') {
-                    window.CommentShared.logout(buildLocalizedUrl('/'));
+                    window.CommentShared.logout(buildLocalizedUrl('/#home-content'));
                 } else {
                     const savedLanguage = getStoredLanguage();
                     localStorage.clear();
                     persistLanguagePreference(savedLanguage);
-                    window.location.href = buildLocalizedUrl('/');
+                    window.location.href = buildLocalizedUrl('/#home-content');
                 }
             });
         });
@@ -1276,6 +1301,10 @@ function initializeAll() {
     initNavCollapse();
     initNavScrollWheel();
     updateLocalizedLinks();
+    // Normalize links added after initialization before the browser uses their href.
+    for (const type of ['click', 'auxclick', 'contextmenu']) {
+        document.addEventListener(type, routeActivatedHomeLink, true);
+    }
 
     // 延迟执行登录状态检查，确保DOM完全加载
     setTimeout(() => {
