@@ -571,37 +571,41 @@
       return;
     }
 
-    const captchaOk = await verifyTurnstileToken('login', '', el.loginStatus);
-    if (!captchaOk) return;
+    const turnstile = window.QuarkTurnstile;
+    const token = turnstile?.getToken('login');
+    if (!token) {
+      setStatus(el.loginStatus, '请先完成安全校验');
+      return;
+    }
 
     setText(el.loginStatus, '正在登录...');
-
+    if (el.loginSubmit) el.loginSubmit.disabled = true;
     try {
-      const db = await ensureFirebase();
-      const userRef = db.ref(`${DB_USERS}/${username}`);
-      const snap = await userRef.once('value');
-      if (!snap.exists()) {
-        setText(el.loginStatus, '账号不存在');
-        return;
-      }
-      const user = snap.val();
-      const hash = await sha256(`${user.salt}:${password}`);
-      if (hash !== user.passwordHash) {
-        setText(el.loginStatus, '密码错误');
+      const response = await fetch(`${API_BASE}/api/turnstile-verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, purpose: 'password-login', username, password }),
+        credentials: 'omit',
+        redirect: 'error'
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok || !data.profile || !data.quotaSession) {
+        setText(el.loginStatus, data.error || '登录失败，请稍后再试');
         return;
       }
 
-      const nickname = user.nickname || buildNickname(username);
-      setLocalLogin({
-        login: username,
-        nickname,
-        avatarUrl: user.avatarUrl || ''
-      });
+      const { saveQuotaSession, quotaReturnPath } = await import('/assets/js/quota-session.mjs');
+      const profile = data.profile;
+      setLocalLogin({ ...profile, nickname: profile.nickname || buildNickname(username) });
+      saveQuotaSession(data.quotaSession);
       setText(el.loginStatus, '登录成功');
-      window.location.href = '/a/account';
+      window.location.href = quotaReturnPath(loginParams.get('next'), '/a/account');
     } catch (error) {
       console.error('登录失败:', error);
       setText(el.loginStatus, '登录失败，请稍后再试');
+    } finally {
+      turnstile.reset('login');
+      if (el.loginSubmit) el.loginSubmit.disabled = false;
     }
   }
 
@@ -899,7 +903,10 @@
       window.location.href = '/a/account';
       return;
     }
-    switchLoginMode(benefitsLogin ? 'email' : 'password');
+    switchLoginMode('password');
+    if (benefitsLogin && el.loginUsername instanceof HTMLInputElement) {
+      el.loginUsername.value = localStorage.getItem(QB_LOGIN_KEY) || '';
+    }
     const benefitsTip = document.querySelector('[data-quota-login-tip]');
     if (benefitsTip) benefitsTip.hidden = !benefitsLogin;
     if (el.resetPanel instanceof HTMLElement) {

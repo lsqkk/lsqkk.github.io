@@ -24,21 +24,33 @@ export async function reserveDailyQuota(req, root, { guestLimit, accountLimit, s
   const ip = requestIp(req);
   if (!ip) throw new Error('Missing trusted client IP');
   const account = quotaAccount(req);
-  const identity = account ? `account:${account}` : guestIdentity(ip);
+  if (req.headers.authorization && !account) {
+    return { code: 'QUOTA_SESSION_REQUIRED', error: '账号额度凭证已失效，请重新验证当前登录。' };
+  }
+  const identity = account ? `account:${account.subject}` : guestIdentity(ip);
   const limit = account ? accountLimit : guestLimit;
   const day = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10);
   const secret = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  const key = createHmac('sha256', secret).update(`${day}:${identity}`).digest('hex');
+  const hash = (value) => createHmac('sha256', secret).update(`${day}:${value}`).digest('hex');
+  const key = hash(identity);
+  // Legacy password accounts share an additional network ceiling because their records are client-managed.
+  const networkKey = account?.networkLimited ? hash(`password-network:${guestIdentity(ip)}`) : '';
   const result = await getDatabase().ref(root).transaction((current) => {
     if (current?.day > day) return;
     const quota = current?.day === day ? current : { day, total: 0, clients: {} };
     const count = quota.clients?.[key] || 0;
-    if (quota.total >= siteLimit || count >= limit) return;
-    return { day, total: quota.total + 1, clients: { ...quota.clients, [key]: count + 1 } };
+    const networkCount = networkKey ? quota.clients?.[networkKey] || 0 : 0;
+    if (quota.total >= siteLimit || count >= limit || networkCount >= accountLimit) return;
+    const clients = { ...quota.clients, [key]: count + 1 };
+    if (networkKey) clients[networkKey] = networkCount + 1;
+    return { day, total: quota.total + 1, clients };
   }, undefined, false);
   if (result.committed) return null;
   if (result.snapshot.val()?.total >= siteLimit) {
     return { code: 'SITE_QUOTA', error: '全站今天的免费额度已用完，北京时间零点刷新。' };
+  }
+  if (networkKey && result.snapshot.val()?.clients?.[networkKey] >= accountLimit) {
+    return { code: 'ACCOUNT_QUOTA', error: '此网络今天的密码登录额度已用完，北京时间零点刷新。' };
   }
   return account
     ? { code: 'ACCOUNT_QUOTA', error: `你的账号今天已用完 ${limit} 次额度，北京时间零点刷新。` }

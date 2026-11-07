@@ -15,6 +15,13 @@ export function quotaHeaders() {
     return {};
 }
 
+export function quotaNeedsVerification() {
+    try {
+        const hasProfile = localStorage.getItem('github_user') || localStorage.getItem('qb_user');
+        return Boolean(hasProfile) && !quotaHeaders().Authorization;
+    } catch { return false; }
+}
+
 export function quotaLoginUrl() {
     return `/login/?benefits=1&next=${encodeURIComponent(location.pathname + location.search + location.hash)}`;
 }

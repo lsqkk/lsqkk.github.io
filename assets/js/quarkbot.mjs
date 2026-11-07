@@ -1,6 +1,6 @@
 import { searchSite, runHarness, appendRunDetails, siteRouteKey } from './llm-harness.mjs';
 import { getQuarkBotTools } from './quarkbot-tools.mjs';
-import { quotaHeaders, quotaLoginUrl } from './quota-session.mjs';
+import { quotaHeaders, quotaLoginUrl, quotaNeedsVerification } from './quota-session.mjs';
 import { isSessionChange, listSessions, newSession, preferredMode, readSession, rememberMode, sessionUrl, updateSession } from './quarkbot-sessions.mjs';
 
 const freeEndpoint = '__API_BASE__/api/quarkbot-free';
@@ -169,6 +169,7 @@ function mountConversation(panel, loadScript, workspace) {
             </div>`}
         </header>
         <div class="quark-bot-log" role="log" aria-live="polite"></div>
+        <p class="quark-bot-storage-status" data-quota-tip hidden><a data-quota-login></a></p>
         <p class="quark-bot-status" data-run-status role="status"></p>
         <form class="quark-bot-form">
           <textarea aria-label="问 QuarkBot" placeholder="想聊点什么？" rows="2" maxlength="4000" required></textarea>
@@ -185,7 +186,6 @@ function mountConversation(panel, loadScript, workspace) {
           ${workspace ? '' : '<button type="button" data-delete aria-label="清空对话">清空</button>'}
           <a href="/settings/#ai">连接设置</a>
         </div></footer>
-        <p class="quark-bot-storage-status" data-quota-tip hidden><a data-quota-login>登录获取更多免费次数 ↗</a></p>
         <p class="quark-bot-storage-status" role="status" hidden></p>`;
     const info = workspace ? { type: '会话页', suggestions: ['推荐几篇站内文章', '有哪些实用的工具？', '看看最新的站点通知'] } : pageInfo();
     const source = { path: location.pathname, title: workspace ? 'QuarkBot 会话页' : info.type === '首页' ? '首页' : document.title };
@@ -301,7 +301,14 @@ function mountConversation(panel, loadScript, workspace) {
         connectionNote.textContent = mode.value === 'free'
             ? '访客每日 5 次，登录后 40 次。免费请求由本站转发。'
             : '使用本机共享配置，直连模型服务。';
-        if (mode.value !== 'free') quotaTip.hidden = true;
+        quotaTip.hidden = true;
+        if (mode.value === 'free' && quotaNeedsVerification()) showQuotaTip(true);
+    }
+
+    function showQuotaTip(verify) {
+        quotaLogin.href = quotaLoginUrl();
+        quotaLogin.textContent = verify ? '验证当前登录，继续使用账号额度 ↗' : '登录获取更多免费次数 ↗';
+        quotaTip.hidden = false;
     }
 
     function renderList() {
@@ -464,6 +471,10 @@ function mountConversation(panel, loadScript, workspace) {
         const query = input.value.trim();
         if (!query || controller) return;
         const freeMode = mode.value === 'free';
+        if (!localOnly && freeMode && quotaNeedsVerification()) {
+            showQuotaTip(true);
+            return;
+        }
         const run = new AbortController();
         controller = run;
         const signal = AbortSignal.any([run.signal, AbortSignal.timeout(90000)]);
@@ -566,12 +577,10 @@ function mountConversation(panel, loadScript, workspace) {
                 requestChat: freeMode ? async (_settings, request, signal) => {
                     const response = await requestFreeChat(request, signal);
                     if (response.ok) quotaTip.hidden = true;
-                    else if (response.status === 429) {
+                    else if (response.status === 429 || response.status === 401) {
                         const data = await response.clone().json().catch(() => ({}));
-                        if (data?.code === 'GUEST_QUOTA') {
-                            quotaLogin.href = quotaLoginUrl();
-                            quotaTip.hidden = false;
-                        }
+                        if (data?.code === 'GUEST_QUOTA') showQuotaTip(false);
+                        if (data?.code === 'QUOTA_SESSION_REQUIRED') showQuotaTip(true);
                     }
                     return response;
                 } : undefined,

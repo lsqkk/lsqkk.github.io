@@ -96,7 +96,7 @@ export default async function handler(req, res) {
   try {
     if (folder.replace(/^\/+/, '').split('/')[0].toLowerCase() === 'xjtu360') {
       const quotaError = await reserveDailyQuota(req, 'xjtu360_upload_quota', { guestLimit: 5, accountLimit: 25 });
-      if (quotaError) return res.status(429).json(quotaError);
+      if (quotaError) return res.status(quotaError.code === 'QUOTA_SESSION_REQUIRED' ? 401 : 429).json(quotaError);
     }
     const client = new S3Client({
       region: 'auto',

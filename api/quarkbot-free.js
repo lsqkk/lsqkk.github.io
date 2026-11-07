@@ -58,7 +58,7 @@ export default async function handler(req, res) {
   res.once('close', () => controller.abort());
   try {
     const quotaError = await reserveDailyQuota(req, 'quarkbot_free_quota', limits);
-    if (quotaError) return res.status(429).json(quotaError);
+    if (quotaError) return res.status(quotaError.code === 'QUOTA_SESSION_REQUIRED' ? 401 : 429).json(quotaError);
     const response = await fetch(gateway, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },

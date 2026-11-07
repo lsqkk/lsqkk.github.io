@@ -879,11 +879,12 @@ async function submitUpload() {
         resetUploadForm();
     } catch (error) {
         console.error('上传失败:', error);
-        if (['GUEST_QUOTA', 'ACCOUNT_QUOTA'].includes(error.code)) {
+        if (['GUEST_QUOTA', 'ACCOUNT_QUOTA', 'QUOTA_SESSION_REQUIRED'].includes(error.code)) {
             setUploadStatus(error.message);
-            if (quotaLogin && error.code === 'GUEST_QUOTA') {
+            if (quotaLogin && error.code !== 'ACCOUNT_QUOTA') {
                 const { quotaLoginUrl } = await import('/assets/js/quota-session.mjs');
                 quotaLogin.href = quotaLoginUrl();
+                quotaLogin.textContent = error.code === 'QUOTA_SESSION_REQUIRED' ? '验证当前登录 ↗' : '登录获取更多上传次数 ↗';
                 quotaLogin.hidden = false;
             }
         } else {
@@ -906,7 +907,10 @@ function resetUploadForm() {
 }
 
 async function requestPresignedUpload(fileName, contentType, folder) {
-    const { quotaHeaders } = await import('/assets/js/quota-session.mjs');
+    const { quotaHeaders, quotaNeedsVerification } = await import('/assets/js/quota-session.mjs');
+    if (quotaNeedsVerification()) {
+        throw Object.assign(new Error('请验证当前登录后使用账号上传额度。'), { code: 'QUOTA_SESSION_REQUIRED' });
+    }
     const resp = await fetch(`${API_BASE}/api/r2-presign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...quotaHeaders() },
