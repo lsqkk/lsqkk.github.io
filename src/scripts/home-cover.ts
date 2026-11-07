@@ -5,6 +5,8 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const ink = ctx;
+  const softCanvas = cover.querySelector<HTMLCanvasElement>(".cover-scene-soft canvas");
+  const softInk = softCanvas?.getContext("2d");
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
   const root = document.documentElement;
   const pointer = { x: 0, y: 0, strength: 0, targetX: 0, targetY: 0, targetStrength: 0 };
@@ -70,6 +72,20 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
     }
   }
 
+  // Capture the frozen wave frame at half size. The browser only blends opacity while scrolling.
+  function captureSoftWaves() {
+    if (!softInk || !softCanvas || !width || !height) return;
+    const softWidth = Math.ceil(width / 2);
+    const softHeight = Math.ceil(height / 2);
+    if (softCanvas.width !== softWidth || softCanvas.height !== softHeight) {
+      softCanvas.width = softWidth;
+      softCanvas.height = softHeight;
+    }
+    softInk.globalCompositeOperation = "copy";
+    softInk.filter = "blur(2.75px)";
+    softInk.drawImage(canvas, 0, 0, softWidth, softHeight);
+  }
+
   function tick(now: number) {
     const elapsed = last ? Math.min(now - last, 40) : 0;
     last = now;
@@ -105,6 +121,7 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
     ink.setTransform(scale, 0, 0, scale, 0, 0);
     setPalette();
     draw();
+    if (!reduced()) captureSoftWaves();
   }).observe(cover);
 
   new IntersectionObserver(([entry]) => {
@@ -131,7 +148,10 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
     const nextAtTop = window.scrollY <= 0;
     if (nextAtTop === atTop) return;
     atTop = nextAtTop;
-    if (!atTop) pointer.targetStrength = 0;
+    if (!atTop) {
+      pointer.targetStrength = 0;
+      if (!reduced()) captureSoftWaves();
+    }
     syncPlayback();
   }, { passive: true });
 
@@ -141,5 +161,6 @@ export function animateCover(cover: HTMLElement, canvas: HTMLCanvasElement) {
   new MutationObserver(() => {
     setPalette();
     draw();
+    if (!reduced()) captureSoftWaves();
   }).observe(document.body, { attributeFilter: ["class"] });
 }

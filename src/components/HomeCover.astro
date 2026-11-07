@@ -1,11 +1,18 @@
 <section class="quark-cover" data-quark-cover data-nav-after aria-labelledby="quark-cover-title">
   <div class="cover-stage">
-    <canvas aria-hidden="true"></canvas>
-    <div class="cover-identity">
-      <p class="cover-wordmark" lang="en">Strange Quark</p>
-      <h1 id="quark-cover-title" data-title="奇夸克"><span class="cover-title-sharp">奇夸克</span></h1>
-      <p class="cover-caption">技术 · 生活 · 思考</p>
-    </div>
+    {["sharp", "soft"].map(layer => {
+      const Heading = layer === "sharp" ? "h1" : "p";
+      return (
+        <div class:list={["cover-scene", `cover-scene-${layer}`]} aria-hidden={layer === "soft" ? "true" : undefined}>
+          <canvas aria-hidden="true"></canvas>
+          <div class="cover-identity">
+            <p class="cover-wordmark" lang="en">Strange Quark</p>
+            <Heading class="cover-title" id={layer === "sharp" ? "quark-cover-title" : undefined}>奇夸克</Heading>
+            <p class="cover-caption">技术 · 生活 · 思考</p>
+          </div>
+        </div>
+      );
+    })}
     <div class="cover-actions">
       <nav class="cover-links" aria-label="首页快捷入口">
         <a href="/posts/">文章</a>
@@ -45,8 +52,6 @@
     block-size: 100vh;
     block-size: 100svh;
     isolation: isolate;
-    display: grid;
-    place-items: center;
     background:
       radial-gradient(ellipse at 84% 14%, var(--cover-glow-secondary), transparent 54%),
       radial-gradient(ellipse at 14% 88%, var(--cover-glow), transparent 57%),
@@ -106,14 +111,13 @@
     letter-spacing: .13em;
   }
 
-  h1 {
+  .cover-title {
     font-size: clamp(3.75rem, 11vw, 9rem);
     line-height: 1.12;
     font-weight: 800;
     letter-spacing: 0.1em;
     padding-inline-start: 0.1em;
     white-space: nowrap;
-    display: grid;
   }
 
   .cover-actions {
@@ -169,17 +173,22 @@
     outline-offset: 3px;
   }
 
-  .cover-title-sharp, h1::after {
-    grid-area: 1 / 1;
+  .cover-scene {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
   }
 
-  /* Keep the blur radius fixed and crossfade the two title layers. */
-  h1::after {
-    content: attr(data-title) / "";
-    filter: blur(clamp(3px, .55vw, 7px));
+  .cover-scene-soft {
     opacity: 0;
     pointer-events: none;
     user-select: none;
+  }
+
+  .cover-scene-soft .cover-identity {
+    filter: blur(clamp(3.5px, .48vw, 7px));
   }
 
   @supports (animation-timeline: view()) and (animation-range: exit) {
@@ -188,34 +197,27 @@
         view-timeline-name: --quark-cover-exit;
       }
 
-      :global(html:not([data-motion="reduce"])) .quark-cover :is(.cover-identity, .cover-title-sharp, canvas),
-      :global(html:not([data-motion="reduce"])) .quark-cover h1::after {
+      :global(html:not([data-motion="reduce"])) .cover-scene {
         animation-duration: auto;
         animation-timing-function: linear;
         animation-fill-mode: both;
         animation-timeline: --quark-cover-exit;
-        animation-range: exit;
+        animation-range: exit 0% exit 48%;
       }
 
-      .cover-identity, canvas { animation-name: quark-cover-fade; }
-      .cover-title-sharp { animation-name: quark-cover-sharp; }
-      h1::after { animation-name: quark-cover-soft; }
+      .cover-scene-sharp { animation-name: quark-cover-sharp; }
+      .cover-scene-soft { animation-name: quark-cover-soft; }
     }
-  }
-
-  @keyframes quark-cover-fade {
-    from { opacity: 1; }
-    to { opacity: .2; }
   }
 
   @keyframes quark-cover-sharp {
     from { opacity: 1; }
-    38%, to { opacity: 0; }
+    to { opacity: 0; }
   }
 
   @keyframes quark-cover-soft {
     from { opacity: 0; }
-    38%, to { opacity: 1; }
+    to { opacity: 1; }
   }
 
   :global(html[data-motion="reduce"]) .cover-stage {
@@ -230,7 +232,7 @@
     .quark-cover { min-block-size: max(300px, 100svh); }
     .cover-stage { block-size: max(300px, 100svh); }
     .cover-identity { gap: 5px; }
-    h1 { font-size: clamp(2.5rem, 14svh, 4.5rem); }
+    .cover-title { font-size: clamp(2.5rem, 14svh, 4.5rem); }
     .cover-actions { gap: 4px; inset-block-end: 10px; }
   }
 </style>
@@ -239,6 +241,6 @@
   import { animateCover } from "../scripts/home-cover";
 
   const cover = document.querySelector<HTMLElement>("[data-quark-cover]");
-  const canvas = cover?.querySelector("canvas");
+  const canvas = cover?.querySelector<HTMLCanvasElement>(".cover-scene-sharp canvas");
   if (cover && canvas) animateCover(cover, canvas);
 </script>
