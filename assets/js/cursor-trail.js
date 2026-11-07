@@ -85,7 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const style = document.createElement('style');
     style.id = 'cursor-hide-style';
     style.textContent = `
-      * { cursor: none !important; }
+      /* Native modal dialogs sit above the page cursor in the browser top layer. */
+      :where(html:not(:has(dialog:modal))), :where(html:not(:has(dialog:modal))) * { cursor: none !important; }
+      dialog:modal::backdrop { cursor: auto; }
+      body:has(dialog:modal) :is(.custom-cursor, .cursor-follower, .cursor-particle, .cursor-burst-particle) {
+        display: none !important;
+      }
       .popup-overlay * { cursor: auto !important; }
     `;
     document.head.appendChild(style);
@@ -404,6 +409,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 检查弹窗状态
   function isPopupOpen() {
+    if (document.querySelector('dialog:modal')) return true;
     const popup = document.getElementById('popup-overlay');
     return popup && (popup.style.display === 'flex' || popup.style.display === 'block' ||
       popup.classList.contains('active') || popup.classList.contains('open'));
