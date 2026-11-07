@@ -145,13 +145,17 @@ const homePreloaded = {
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
-    <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta charset="UTF-8" />
     <script is:inline>
-      if (location.hash !== "#home-content") {
-        document.documentElement.setAttribute("data-home-cover-entry", "");
-      }
+      // The fragment is only available in the browser. Set the entry mode before the first paint.
+      const entry = location.hash === "#home-content" ? "data-home-content-entry" : "data-home-cover-entry";
+      document.documentElement.setAttribute(entry, "");
     </script>
+    <style is:inline>
+      html[data-home-content-entry] [data-quark-cover] { display: none; }
+      #home-content:focus { outline: none; }
+    </style>
+    <link rel="stylesheet" href="/assets/css/basic.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{SITE_TITLE} — 蓝色奇夸克</title>
     <link rel="manifest" href="/json/manifest.json" />
