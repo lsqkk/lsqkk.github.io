@@ -148,11 +148,11 @@ const homePreloaded = {
     <meta charset="UTF-8" />
     <script is:inline>
       // The fragment is only available in the browser. Set the entry mode before the first paint.
-      const entry = location.hash === "#home-content" ? "data-home-content-entry" : "data-home-cover-entry";
+      const entry = location.hash === "#home-content" ? "data-home-cover-pending" : "data-home-cover-entry";
       document.documentElement.setAttribute(entry, "");
     </script>
     <style is:inline>
-      html[data-home-content-entry] [data-quark-cover] { display: none; }
+      html[data-home-cover-pending] [data-quark-cover] { display: none; }
       #home-content:focus { outline: none; }
     </style>
     <link rel="stylesheet" href="/assets/css/basic.css" />
@@ -563,6 +563,21 @@ const homePreloaded = {
           });
         });
       }
+    </script>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        if (!root.hasAttribute("data-home-cover-pending")) return;
+
+        // Restore the cover above the viewport and keep the content at its current position.
+        const content = document.getElementById("home-content");
+        const contentTop = content.getBoundingClientRect().top;
+        root.removeAttribute("data-home-cover-pending");
+        window.scrollBy({
+          top: content.getBoundingClientRect().top - contentTop,
+          behavior: "instant",
+        });
+      })();
     </script>
 
   </body>
