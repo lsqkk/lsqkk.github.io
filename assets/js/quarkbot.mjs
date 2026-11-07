@@ -2,9 +2,11 @@ import { searchSite, runHarness, appendRunDetails } from './llm-harness.mjs';
 import { getQuarkBotTools } from './quarkbot-tools.mjs';
 
 const siteRoots = /^\/(?:a|blog|desk|games|posts|search|settings|tool|space|login)(?:\/|$)/i;
-const linkTokens = /https?:\/\/[^\s<>"“”「」。，、；！？（）【】`]+|(?<![\w/])\/[\w%.-]+(?:\/[\w%.-]*)*(?:[?#][\w%&=.?#/-]+)?/gi;
+const pathTail = String.raw`[a-z0-9%._~/\-]*(?:\?[a-z0-9%._~+&=:/?@-]*)?(?:#[a-z0-9%._~+&=:/?@-]*)?`;
+const absoluteLink = String.raw`https?:\/\/(?:[a-z0-9.-]+(?::\d+)?|[\p{L}\p{N}.-]+(?=\/))`;
+const linkTokens = new RegExp(`${absoluteLink}${pathTail}|(?<![\\w/])\\/[a-z0-9%._~-]+${pathTail}`, 'giu');
 
-function linkifyReply(root, sources, { scanText = true } = {}) {
+function linkifyReply(root, sources, { streaming = false } = {}) {
     const sourcePaths = new Set(sources.map(({ href }) => href.replace(/\/$/, '')));
     function resolve(raw) {
         if (!/^(https?:\/\/|\/(?![\/\\]))/i.test(raw)) return '';
@@ -29,8 +31,7 @@ function linkifyReply(root, sources, { scanText = true } = {}) {
         if (/^https?:\/\//i.test(label) && resolve(label) === href) anchor.textContent = href;
         anchor.href = href;
     }
-    if (!scanText) return;
-    for (const code of root.querySelectorAll('code')) {
+    for (const code of streaming ? [] : root.querySelectorAll('code')) {
         if (code.closest('pre, a')) continue;
         const label = code.textContent.trim();
         const href = resolve(label);
@@ -52,6 +53,7 @@ function linkifyReply(root, sources, { scanText = true } = {}) {
         let offset = 0;
         for (const match of node.data.matchAll(linkTokens)) {
             const token = match[0].replace(/[.,!?;:]+$/, '');
+            if (streaming && match.index + token.length === node.length && node === textNodes.at(-1)) continue;
             const href = resolve(token);
             if (!href) continue;
             fragment.append(node.data.slice(offset, match.index));
@@ -190,13 +192,13 @@ export function mountBot({ loadScript }) {
         let renderFrame = 0;
         let interrupted = false;
         const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 28;
-        const renderReply = (message, text, sources, scanText) => {
+        const renderReply = (message, text, sources, streaming = false) => {
             const output = message.querySelector('.quark-bot-content');
             const markdown = Boolean(window.marked && window.QuarkSafeMarkdown);
             output.classList.toggle('is-markdown', markdown);
-            if (markdown) output.innerHTML = window.QuarkSafeMarkdown(text);
+            if (markdown) output.innerHTML = window.QuarkSafeMarkdown(text, { bareLinks: false });
             else output.textContent = text;
-            linkifyReply(output, sources, { scanText });
+            linkifyReply(output, sources, { streaming });
         };
         const scheduleReply = () => {
             if (renderFrame || !pending?.isConnected) return;
@@ -204,7 +206,7 @@ export function mountBot({ loadScript }) {
                 renderFrame = 0;
                 if (!pending.isConnected) return;
                 const follow = nearBottom();
-                renderReply(pending, streamText, [], false);
+                renderReply(pending, streamText, [], true);
                 if (follow) log.scrollTop = log.scrollHeight;
             });
         };
@@ -297,7 +299,7 @@ export function mountBot({ loadScript }) {
             const follow = nearBottom();
             const message = pending || addMessage('assistant', '');
             message.classList.remove('is-streaming');
-            renderReply(message, result.text, result.sources, true);
+            renderReply(message, result.text, result.sources);
             appendRunDetails(message, result);
             const copy = document.createElement('button');
             copy.type = 'button';
@@ -312,7 +314,7 @@ export function mountBot({ loadScript }) {
             if (pending?.isConnected && streamText) {
                 const follow = nearBottom();
                 pending.classList.remove('is-streaming');
-                renderReply(pending, streamText, [], true);
+                renderReply(pending, streamText, []);
                 if (follow) log.scrollTop = log.scrollHeight;
             }
             if (!run.signal.aborted) {

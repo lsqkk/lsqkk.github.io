@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { getQuarkBotTools } from '../assets/js/quarkbot-tools.mjs';
 import { runHarness } from '../assets/js/llm-harness.mjs';
+import { readChatCompletion } from '../assets/js/llm-stream.mjs';
 import { createDesk } from '../assets/js/reading-desk-store.mjs';
 
 const findTool = (tools, name) => tools.find((tool) => tool.definition.function.name === name);
@@ -44,6 +45,71 @@ function stream(...deltas) {
     const events = deltas.map((delta) => `data: ${JSON.stringify({ choices: [{ delta }] })}\n\n`);
     return new Response(events.join('') + 'data: [DONE]\n\n', { headers: { 'Content-Type': 'text/event-stream' } });
 }
+
+const rawInvoke = (name, parameters) => `<｜DSML｜ invoke name="${name}">${parameters}</｜DSML｜ invoke>`;
+const rawParam = (name, value) => `<｜DSML｜ parameter name="${name}" string="true">${value}</｜DSML｜ parameter>`;
+const rawTools = (...invokes) => `<｜DSML｜ calls>\n${invokes.join('\n')}\n</｜DSML｜ calls>`;
+
+test('split tool markup stays hidden and later text still streams', async () => {
+    const raw = rawTools(rawInvoke('search_site', rawParam('query', '二维码')));
+    const encoder = new TextEncoder();
+    const chunks = ['我先查一下。', raw.slice(0, 3), raw.slice(3, 7), raw.slice(7, -8), raw.slice(-8), ' 后面的回答。'];
+    const response = new Response(new ReadableStream({
+        start(controller) {
+            for (const content of chunks) {
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`));
+            }
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            controller.close();
+        },
+    }), { headers: { 'Content-Type': 'text/event-stream' } });
+    const visible = [];
+    const result = await readChatCompletion(response, { onUpdate: ({ content }) => visible.push(content) });
+    assert.deepEqual(visible, ['我先查一下。', '我先查一下。 后面的回答。']);
+    assert.equal(result.recoveredCalls[0].function.arguments, '{"query":"二维码"}');
+});
+
+test('an unclosed wrapper recovers complete searches and requests a final answer', async (t) => {
+    mockPreferences();
+    const fetchOriginal = globalThis.fetch;
+    globalThis.location = { origin: 'https://site.test' };
+    globalThis.fetch = async (url) => Response.json(url === '/json/site-pages.json'
+        ? [{ path: 'tool/ocr', title: '二维码与 OCR' }] : null);
+    t.after(() => { delete globalThis.location; globalThis.fetch = fetchOriginal; });
+    let round = 0;
+    window.QuarkLLMConfig = {
+        async requestChat(_settings, request) {
+            if (round++ === 0) {
+                assert(request.tools.some((tool) => tool.function.name === 'search_site'));
+                const content = `先查找工具。\n<｜DSML｜ calls>${rawInvoke('search_site', rawParam('query', '二维码'))}`;
+                return Response.json({ choices: [{ message: { content } }] });
+            }
+            assert(!request.tools);
+            assert(request.messages[0].content.includes('https://site.test/tool/ocr/'));
+            return stream({ content: '找到了二维码工具。' });
+        },
+    };
+    const reply = await runHarness({ settings: {}, body: { messages: [{ role: 'user', content: '找二维码工具' }] }, useSearch: true });
+    assert.equal(reply.text, '先查找工具。\n\n找到了二维码工具。');
+    assert.equal(reply.sources[0].href, '/tool/ocr/');
+    assert.equal(round, 2);
+});
+
+test('plain-text tool markup cannot change website settings', async () => {
+    const state = mockPreferences();
+    let round = 0;
+    window.QuarkLLMConfig = {
+        async requestChat() {
+            if (round++ === 0) return stream({ content: rawTools(rawInvoke('set_site_appearance', rawParam('theme', 'dark'))) });
+            return stream({ content: '请再确认一次。' });
+        },
+    };
+    const reply = await runHarness({ settings: {}, body: { messages: [{ role: 'user', content: query }] },
+        extraTools: getQuarkBotTools(query), useSearch: false });
+    assert.equal(state.theme, 'light');
+    assert.equal(reply.text, '请再确认一次。');
+    assert.equal(round, 2);
+});
 
 for (const failedFollowup of [false, true]) {
     test(failedFollowup ? 'completed changes receive a local receipt if the follow-up fails' : 'tool calls preserve text emitted before the tool round', async () => {

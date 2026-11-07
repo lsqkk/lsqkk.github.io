@@ -97,6 +97,7 @@ export async function runHarness({ settings, body, useSearch, extraTools = [], s
     const toolResults = [];
     const receipts = [];
     let retryFinal = false;
+    let retriedToolFormat = false;
 
     const accumulatedText = (text = '') => [...passages, text].filter(Boolean).join('\n\n');
     const finish = (text, reasoning = '', stopped = false) => ({
@@ -172,7 +173,7 @@ export async function runHarness({ settings, body, useSearch, extraTools = [], s
                 ...body.messages,
             ] : messages;
             onProgress(retryFinal ? '正在根据已有结果继续生成…' : round ? '正在整理工具结果…' : '正在请求模型…');
-            const { message, usage, stopped } = await requestModel({
+            const { message, usage, stopped, leaked, recoveredCalls } = await requestModel({
                 ...body, messages: finalMessages, stream: Boolean(onText), ...(canUseTools ? { tools: definitions } : {})
             });
             if (usage) {
@@ -183,6 +184,33 @@ export async function runHarness({ settings, body, useSearch, extraTools = [], s
             }
             const calls = Array.isArray(message?.tool_calls) ? message.tool_calls.filter((call) => call?.id) : [];
             const content = typeof message?.content === 'string' ? message.content.trim() : '';
+            if (leaked && !calls.length && !stopped) {
+                // Plain-text protocol can recover a read-only search. Writes still require a structured call.
+                const searches = canUseTools && useSearch
+                    ? recoveredCalls.filter((call) => call.function.name === 'search_site'
+                        && typeof JSON.parse(call.function.arguments).query === 'string').slice(0, callsLeft)
+                    : [];
+                if (searches.length) {
+                    if (content) passages.push(content);
+                    for (const call of searches) {
+                        signal?.throwIfAborted();
+                        callsLeft--;
+                        toolResults.push({ tool: 'search_site', result: await execute(call) });
+                    }
+                    retryFinal = true;
+                    continue;
+                }
+                if (canUseTools && !retriedToolFormat) {
+                    if (content) passages.push(content);
+                    retriedToolFormat = true;
+                    messages.unshift({ role: 'system', content: '工具调用必须使用 API 的结构化 tool_calls 字段。请用普通文本回答，或发起结构化工具调用。' });
+                    continue;
+                }
+                if (!content && !retryFinal) {
+                    retryFinal = true;
+                    continue;
+                }
+            }
             if (!calls.length && content) {
                 return finish(content, message.reasoning_content, stopped);
             }
