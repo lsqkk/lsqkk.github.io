@@ -577,6 +577,11 @@ const homePreloaded = {
           top: content.getBoundingClientRect().top - contentTop,
           behavior: "instant",
         });
+
+        // Enable smooth scrolling only once the user activates the cover arrow.
+        document.querySelector(".cover-next").addEventListener("click", () => {
+          root.setAttribute("data-home-cover-entry", "");
+        }, { once: true });
       })();
     </script>
 

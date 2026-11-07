@@ -12,6 +12,13 @@ body.home-page > .header-placeholder {
     display: none;
 }
 
+@media (max-width: 768px) {
+    /* Clip horizontal overflow without trapping the sticky header in a scroll container. */
+    body.home-page:not(.sidebar-open) {
+        overflow-x: clip;
+    }
+}
+
 @media (prefers-reduced-motion: no-preference) {
     html[data-home-cover-entry]:not([data-motion="reduce"]) {
         scroll-behavior: smooth;
