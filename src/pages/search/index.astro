@@ -1,86 +1,8 @@
 ---
-import fs from "node:fs/promises";
-import path from "node:path";
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, SITE_DOMAIN } from "@siteConfig";
 import LuxuryBackground from "../../components/LuxuryBackground.astro";
 
 const pageTitle = `站内搜索 - ${SITE_TITLE}`;
-const PROJECT_ROOT = process.cwd();
-const postsIndexPath = path.join(PROJECT_ROOT, "posts", "posts.json");
-const dtDataPath = path.join(PROJECT_ROOT, "assets", "data", "dt.json");
-
-function stripMarkdown(text: string): string {
-  return String(text || "")
-    .replace(/^---[\s\S]*?---\s*/g, "")
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`[^`]*`/g, " ")
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
-    .replace(/\[[^\]]+\]\([^)]+\)/g, (match) => {
-      const label = match.replace(/\[|\].*$/g, "");
-      return label || " ";
-    })
-    .replace(/@\{uin:\d+,nick:([^,}]+)(?:,who:\d+)?\}/g, " @$1 ")
-    .replace(/^\s{0,3}>\s?/gm, "")
-    .replace(/^\s{0,3}#{1,6}\s*/gm, "")
-    .replace(/^\s{0,3}[-*+]\s+/gm, "")
-    .replace(/^\s{0,3}\d+\.\s+/gm, "")
-    .replace(/<\/?[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-let postsFulltext: Array<Record<string, any>> = [];
-let dynamicFulltext: Array<Record<string, any>> = [];
-
-try {
-  const postsRaw = await fs.readFile(postsIndexPath, "utf8");
-  const posts = JSON.parse(postsRaw);
-  postsFulltext = await Promise.all(
-    (Array.isArray(posts) ? posts : []).map(async (post: any) => {
-      const file = post?.file || "";
-      const title = post?.title || file;
-      const fullPath = file ? path.join(PROJECT_ROOT, "posts", file) : "";
-      let content = "";
-      try {
-        const md = await fs.readFile(fullPath, "utf8");
-        content = stripMarkdown(md);
-      } catch {
-        content = "";
-      }
-      return {
-        type: "post",
-        title,
-        path: file ? `/posts/${String(file).replace(/\.md$/, "")}` : "",
-        tags: Array.isArray(post?.tags) ? post.tags : [],
-        columns: Array.isArray(post?.columns) ? post.columns : [],
-        date: post?.date || "",
-        wordCount: post?.wordCount || 0,
-        content
-      };
-    })
-  );
-} catch {
-  postsFulltext = [];
-}
-
-try {
-  const dtData = JSON.parse(await fs.readFile(dtDataPath, "utf8"));
-  dynamicFulltext = (Array.isArray(dtData) ? dtData : []).map((entry: any) => ({
-    type: "dynamic",
-    id: entry.id,
-    title: entry.title || entry.date,
-    date: entry.date,
-    path: `/blog/dt/${entry.id}`,
-    content: stripMarkdown(entry.content || "")
-  }));
-} catch {
-  dynamicFulltext = [];
-}
-
-const fulltextIndex = {
-  posts: postsFulltext,
-  dynamics: dynamicFulltext
-};
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -93,33 +15,30 @@ const fulltextIndex = {
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" href="/assets/css/site-search.css" />
     <link rel="stylesheet" href="/assets/css/fa-local.css" />
-    <script is:inline define:vars={{ fulltextIndex }}>
-      window.__FULLTEXT_INDEX__ = fulltextIndex;
-    </script>
     <script is:inline src="/assets/js/nav.js"></script>
   </head>
   <body class="search-body luxury-body">
     <LuxuryBackground />
     <h1 class="search-page-title">站内搜索</h1>
     <div class="search-shell">
-      <div class="search-box">
-        <input type="text" id="siteSearchInput" aria-label="搜索本站文章、动态与页面" placeholder="输入关键词，按回车搜索..." />
+      <form class="search-box" id="siteSearchForm">
+        <input type="text" id="siteSearchInput" name="q" maxlength="120" aria-label="搜索本站文章、动态与页面" placeholder="输入关键词，按回车搜索..." />
         <button id="siteSearchBtn">搜索</button>
-      </div>
+      </form>
       <div class="search-options"><div class="search-mode">
         <label class="search-toggle">
-          <input type="checkbox" id="siteSearchFulltext" />
+          <input type="checkbox" id="siteSearchFulltext" name="full" value="1" />
           <span>全文搜索（文章/动态正文）</span>
         </label>
       </div>
       <div class="search-actions">
-        <a id="bingSearchLink" class="bing-link" href={`https://cn.bing.com/search?q=site%3A${SITE_DOMAIN}`} target="_blank" rel="noreferrer">使用必应全站搜索</a>
+        <a id="bingSearchLink" data-site={SITE_DOMAIN} class="bing-link" href={`https://cn.bing.com/search?q=site%3A${SITE_DOMAIN}`} target="_blank" rel="noreferrer">使用必应全站搜索</a>
       </div>
       </div>
       <div id="siteSearchStatus" class="search-status" role="status" aria-live="polite">请输入关键词开始搜索</div>
       <div id="siteSearchResults" class="search-results"></div>
     </div>
 
-    <script is:inline src="/assets/js/site-search.js"></script>
+    <script is:inline type="module" src="/assets/js/site-search.js"></script>
   </body>
 </html>

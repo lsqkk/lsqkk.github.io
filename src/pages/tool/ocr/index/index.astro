@@ -19,6 +19,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="stylesheet" href="/assets/pages/tool/ocr/ocr.css">
     <link rel="stylesheet" href="/assets/css/basic.css">
     <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <link rel="stylesheet" href="/assets/css/tool-handoff.css">
 </head>
 
 <body class="ocr-page luxury-body feature-page feature-ocr">
@@ -32,6 +33,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <p>拖放图片到这里，或点击选择文件</p>
             <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
             <button class="btn" id="selectBtn">选择图片</button>
+            <button class="btn" id="ocrSample" type="button">用示例试一下</button>
         </div>
 
         <div id="imagePreviews"></div>
@@ -55,7 +57,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
-            <div class="status" id="statusText">准备就绪</div>
+            <div class="status" id="statusText" role="status">准备就绪</div>
         </div>
 
         <div style="text-align: center;">
@@ -67,6 +69,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         <div class="action-buttons">
             <button class="btn" id="copyBtn" disabled>复制文本</button>
             <button class="btn" id="exportBtn" disabled>导出为TXT</button>
+            <button class="btn" id="ocrHandoff" type="button" disabled>送到 Markdown</button>
             <button class="btn" id="clearBtn">清空所有</button>
             <button class="btn" id="moreToolsBtn">更多工具</button>
         </div>
@@ -83,7 +86,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <!-- 引入SortableJS实现拖拽排序 -->
     <script is:inline src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-    <script is:inline src="/assets/pages/tool/ocr/ocr.js"></script>
+    <script is:inline type="module" src="/assets/pages/tool/ocr/ocr.js"></script>
 </body>
 
 </html>

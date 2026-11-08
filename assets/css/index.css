@@ -1082,8 +1082,14 @@ body.home-page .sidebar-welcome-panel {
 }
 
 .latest-video-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
     cursor: pointer;
 }
+.latest-video-cover-wrap.is-error::after { content: '封面暂不可用'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-subtle); pointer-events: none; }
+.latest-video-cover-wrap.is-error img { visibility: hidden; }
+.latest-video-fallback { color: var(--text-subtle); font-size: .9rem; }
 
 .latest-video-cover-wrap {
     position: relative;

@@ -1,4 +1,6 @@
 import { searchSite, runHarness, appendRunDetails, siteRouteKey } from './llm-harness.mjs';
+import { openHandoff } from './tool-handoff.mjs';
+import { resumeHref } from './reading-position.mjs';
 import { getQuarkBotTools } from './quarkbot-tools.mjs';
 import { quotaHeaders, quotaLoginUrl, quotaNeedsVerification } from './quota-session.mjs';
 import { isSessionChange, listSessions, newSession, preferredMode, readSession, rememberMode, sessionUrl, updateSession } from './quarkbot-sessions.mjs';
@@ -94,11 +96,23 @@ function linkifyReply(root, sources, { streaming = false } = {}) {
     }
 }
 
+const toolPages = {
+    '/tool/ocr': ['OCR 在浏览器内识别图片。可以加载示例图片、选择识别语言、开始识别，之后将识别结果送到 Markdown。', ['怎么用示例试 OCR？', '识别后如何整理成 PDF？']],
+    '/tool/audio2txt': ['说明麦克风授权、浏览器兼容和复制转写的步骤。', ['无法录音怎么办？', '怎样保存转写结果？']],
+    '/tool/markdown': ['说明如何编辑或新建笔记、接收 OCR 和拾页的内容，以及进入定制导出。', ['怎么接收 OCR 的结果？', '怎么把笔记导出成 PDF？']],
+    '/tool/markdown/export': ['说明样式、纸张和导出步骤。编辑器传来的内容会先显示预览，需要手动应用。', ['如何调整 PDF 排版？', '如何接收上一篇笔记？']],
+    '/tool/ref': ['说明选择文献类型、填写必填项和使用专著示例的步骤。', ['怎样用示例生成一条文献？', '期刊和专著需要哪些字段？']],
+    '/tool/decision': ['用预置示例解释方案、指标权重、偏好沙盘和本地草稿。', ['怎么用示例开始比较？', '怎么判断权重变动会不会改变结果？']],
+    '/desk': ['解释待读、摘录和选择摘录送到 Markdown 的操作。只解释功能，私人摘录和想法留在本机。', ['怎么把几条摘录整理成笔记？', '拾页里下一篇读什么？']],
+};
+
 function pageInfo() {
     const path = location.pathname.replace(/\/index(?:\.html)?\/?$/, '/');
     if (/^\/posts\/.+/.test(path) && document.querySelector('.post-content')) {
         return { type: '文章', guide: '结合公开正文解释概念，提炼要点，并明确哪些信息来自文章。', suggestions: ['总结这篇文章', '列出这篇文章的目录', '把这篇留到下次读'] };
     }
+    const tool = toolPages[siteRouteKey(path)];
+    if (tool) return { type: '工具', guide: tool[0], suggestions: tool[1] };
     if (/^\/tool\/.+/.test(path)) {
         return { type: '工具', guide: '先说明工具用途，再给出操作步骤和适用场景，使用页面上实际存在的控件名称。', suggestions: ['这个工具怎么用？', '给一个使用示例', '找其他相关工具'] };
     }
@@ -140,11 +154,31 @@ export function mountBot({ loadScript }) {
     (document.querySelector('.post-fab-stack') || document.body).append(launcher);
     document.body.append(panel);
     const refresh = mountConversation(panel, loadScript);
+    const viewport = window.visualViewport;
+    function fitViewport() {
+        if (!viewport || !panel.open || viewport.scale > 1.05) return;
+        panel.style.setProperty('--bot-visible-height', viewport.height + 'px');
+        panel.style.setProperty('--bot-keyboard-inset', Math.max(0, innerHeight - viewport.height - viewport.offsetTop) + 'px');
+    }
     launcher.onclick = () => {
         if (panel.open) return;
         refresh(true);
         panel.showModal();
+        fitViewport();
     };
+    viewport?.addEventListener('resize', fitViewport);
+    viewport?.addEventListener('scroll', fitViewport);
+    const outside = (event) => {
+        const rect = panel.getBoundingClientRect();
+        return event.target === panel && (event.clientX < rect.left || event.clientX >= rect.right ||
+            event.clientY < rect.top || event.clientY >= rect.bottom);
+    };
+    let startedOutside = false;
+    panel.addEventListener('pointerdown', (event) => { startedOutside = outside(event); });
+    panel.addEventListener('click', (event) => {
+        if (startedOutside && outside(event)) panel.close();
+        startedOutside = false;
+    });
     function showLauncher() {
         launcher.hidden = window.QuarkUserPreferences?.get().botEnabled === false;
         if (launcher.hidden && panel.open) panel.close();
@@ -273,6 +307,13 @@ function mountConversation(panel, loadScript, workspace) {
             catch { copy.textContent = '复制失败'; }
         };
         message.append(copy);
+        if (kind === 'model' && text.trim()) {
+            const next = document.createElement('button');
+            next.type = 'button';
+            next.textContent = '送到 Markdown';
+            next.onclick = () => openHandoff(next, 'editor', 'QuarkBot 回复', text);
+            message.append(next);
+        }
     }
 
     function renderLog() {
@@ -552,7 +593,7 @@ function mountConversation(panel, loadScript, workspace) {
                     for (const item of items) {
                         const row = document.createElement('li');
                         const link = document.createElement('a');
-                        link.href = item.url;
+                        link.href = resumeHref(item.url);
                         link.textContent = item.title;
                         row.append(link, ` · 约 ${item.minutes} 分钟`);
                         list.append(row);
@@ -607,7 +648,7 @@ function mountConversation(panel, loadScript, workspace) {
             finishReply(message, savedReply);
             if (follow) log.scrollTop = log.scrollHeight;
         } catch (error) {
-            const message = run.signal.aborted ? '已停止。' : error.name === 'TimeoutError' ? '请求超时。' : `请求失败：${error.message}`;
+            const message = run.signal.aborted ? '已停止。' : error.name === 'TimeoutError' ? '请求超时，输入已保留，可以重试。' : `请求失败：${error.message}`;
             savedReply = { kind: run.signal.aborted ? 'stopped' : 'error', text: streamText ? `${streamText}\n\n${message}` : message };
             if (pending?.isConnected && streamText) {
                 const follow = nearBottom();
@@ -616,8 +657,13 @@ function mountConversation(panel, loadScript, workspace) {
                 if (follow) log.scrollTop = log.scrollHeight;
             }
             if (!run.signal.aborted) {
-                addMessage('assistant', message);
+                const failure = addMessage('assistant', message);
                 input.value ||= query;
+                const retry = document.createElement('button');
+                retry.type = 'button';
+                retry.textContent = '重试';
+                retry.onclick = () => { if (!controller) { input.value ||= query; void submit(localOnly); } };
+                if (quotaTip.hidden && !/额度已用完/.test(message)) failure.append(retry);
             }
         } finally {
             cancelAnimationFrame(renderFrame);

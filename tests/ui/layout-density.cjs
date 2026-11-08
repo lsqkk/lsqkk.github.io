@@ -30,7 +30,7 @@ for(const theme of ['light','dark'])for(const width of [320,390,768,1100,1440]){
       check('Escape closes and restores focus',await p.locator('[data-pocket-disclosure] > summary').evaluate(el=>el===document.activeElement)&&!await p.locator('[data-pocket-shelf]').isVisible());
     }
     if(width>768){
-      const fonts=await p.evaluate(()=>({lang:getComputedStyle(document.querySelector('.header .language-trigger')).fontSize,search:getComputedStyle(document.querySelector('.header-search input')).fontSize}));
+      const fonts=await p.evaluate(()=>({lang:getComputedStyle(document.querySelector('.header .language-trigger')).fontSize,search:getComputedStyle(document.querySelector('[data-site-search-open]')).fontSize}));
       check('shared header typography '+route,fonts.lang==='12px'&&fonts.search==='12.5px');
     }
     if(route==='/tool/')await capture(p,'catalogue',width,theme);

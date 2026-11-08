@@ -10,7 +10,9 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <title>Markdown 定制化导出工具 - {SITE_TITLE}</title>
     <link rel="stylesheet" href="/assets/css/basic.css">
     <script is:inline src="/assets/js/nav.js"></script>
-    <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script is:inline src="/assets/js/marked.min.js"></script>
+    <script is:inline src="/assets/js/safe-markdown.js"></script>
+    <link rel="stylesheet" href="/assets/css/tool-handoff.css" />
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -165,25 +167,26 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
         /* 导出时的打印样式：隐藏所有 UI 元素，只打印预览内容 */
         @media print {
-            body>* {
+            body > :not(.app-layout), .app-layout > :not(#preview-container), #preview-container > :not(.glass-panel) {
                 display: none !important;
             }
 
-            #preview-container {
+            body > .app-layout, #preview-container, #preview-container > .glass-panel {
                 display: block !important;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
+                position: static;
+                width: auto;
+                max-width: none;
                 height: auto;
                 margin: 0;
+                padding: 0;
                 border: none;
                 box-shadow: none;
-                background: none;
+                background: white;
                 backdrop-filter: none;
                 -webkit-backdrop-filter: none;
             }
 
+            #preview-container > .glass-panel > :not(#preview) { display: none !important; }
             #preview {
                 overflow: visible !important;
                 padding: 0 !important;
@@ -233,7 +236,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             .sidebar { width: 100%; }
         }
     </style>
-    <style id="custom-styles"></style>
 
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
 
@@ -325,7 +327,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
     </div>
 
-    <script is:inline src="/assets/pages/tool/markdown/export.js"></script>
+    <script is:inline type="module" src="/assets/pages/tool/markdown/export.js"></script>
 </body>
 
 </html>

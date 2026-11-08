@@ -383,12 +383,9 @@ function generateNavHTML(config) {
                 </ul>
             </div>
             <div class="header-right">
-                <div class="header-search">
-                    <input type="text" id="searchInput" placeholder="搜索站内..." autocomplete="off">
-                    <button type="button" class="header-search-btn" onclick="handleGlobalSearch()" aria-label="搜索">
-                        ${svgIcon('search')}
-                    </button>
-                </div>
+                <a class="nav-settings-btn nav-quick-search" href="${buildLocalizedUrl('/search/')}" data-site-search-open aria-label="搜索站内" title="搜索站内 (Ctrl/⌘+K)">
+                    ${svgIcon('search')}<span>搜索</span>
+                </a>
                 <button class="nav-settings-btn" type="button" data-quark-notice-open aria-label="通知中心" title="通知中心">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
                     <span class="quark-notice-dot" hidden></span>
@@ -428,10 +425,6 @@ function generateNavHTML(config) {
         return `<li><a href="${buildLocalizedUrl(item.link)}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`;
     }).join('')}
                 </ul>
-            </div>
-            <div class="navsidebar-search">
-                <input type="text" id="mobileSearchInput" placeholder="搜索站内...">
-                <button onclick="handleMobileSearch()">搜索</button>
             </div>
             <div class="navsidebar-controls">
                 <a class="navsidebar-settings" href="${buildLocalizedUrl('/settings')}">
@@ -493,49 +486,6 @@ else document.addEventListener('DOMContentLoaded', mountNavigation, { once: true
         document.querySelectorAll('.nav-video-item').forEach(el => el.remove());
     }
 })();
-
-// 全局搜索处理函数
-function handleGlobalSearch() {
-    const searchTerm = document.getElementById('searchInput').value.trim();
-
-    if (!searchTerm) {
-        return; // 搜索词为空时不执行任何操作
-    }
-
-    // 检查当前页面是否是文章列表页
-    const currentPath = window.location.pathname;
-    const isArticleListPage = currentPath === '/posts' ||
-        currentPath.endsWith('/posts');
-
-    if (isArticleListPage) {
-        // 如果在文章列表页，调用该页面的搜索函数
-        if (typeof window.searchBlog === 'function') {
-            window.searchBlog();
-        }
-    } else {
-        // 如果在其他页面，跳转到全站搜索页
-        const searchParams = new URLSearchParams();
-        searchParams.set('q', searchTerm);
-        window.location.href = buildLocalizedUrl(`/search?${searchParams.toString()}`);
-    }
-}
-
-// 移动端搜索处理函数
-function handleMobileSearch() {
-    const searchTerm = document.getElementById('mobileSearchInput').value.trim();
-
-    if (!searchTerm) {
-        return;
-    }
-
-    // 关闭侧边栏
-    closeSidebar();
-
-    // 跳转到全站搜索页面
-    const searchParams = new URLSearchParams();
-    searchParams.set('q', searchTerm);
-    window.location.href = buildLocalizedUrl(`/search?${searchParams.toString()}`);
-}
 
 // 侧边栏控制函数
 function openSidebar() {
@@ -984,25 +934,6 @@ function initializeLanguagePickers() {
     });
 }
 
-function initializeSearchInputs() {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                handleGlobalSearch();
-            }
-        });
-    }
-
-    const mobileSearchInput = document.getElementById('mobileSearchInput');
-    if (mobileSearchInput) {
-        mobileSearchInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                handleMobileSearch();
-            }
-        });
-    }
-}
 
 // 检查登录状态（与index.js保持一致）
 function checkLoginStatus() {
@@ -1190,31 +1121,6 @@ function bindUserMenu(root) {
 
 window.renderNavUserProfile = renderUserProfile;
 
-function initNavCollapse() {
-    const header = document.querySelector('.header');
-    const search = document.querySelector('.header-search');
-    if (!header || !search) return;
-
-    const checkOverflow = () => {
-        if (!header.isConnected) return;
-        requestAnimationFrame(() => {
-            if (header.scrollWidth > header.clientWidth + 2) {
-                search.classList.add('search-collapsed');
-            } else {
-                search.classList.remove('search-collapsed');
-            }
-        });
-    };
-
-    let rafId = null;
-    const handleResize = () => {
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(checkOverflow);
-    };
-
-    setTimeout(checkOverflow, 300);
-    window.addEventListener('resize', handleResize, { passive: true });
-}
 
 function initNavScrollWheel() {
     const navContainer = document.querySelector('.header-nav-container');
@@ -1303,8 +1209,7 @@ function initializeAll() {
     initializeNavHoverMenus();
     initializeNavThemeMode();
     initializeNavScrollBehavior();
-    initializeSearchInputs();
-    initNavCollapse();
+    void import('/assets/js/quick-search.mjs').then(({ mountQuickSearch }) => mountQuickSearch(buildLocalizedUrl)).catch(() => {});
     initNavScrollWheel();
     updateLocalizedLinks();
     // Normalize links added after initialization before the browser uses their href.

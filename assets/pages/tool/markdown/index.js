@@ -1,3 +1,5 @@
+import { appendHandoff, openHandoff, showHandoff } from '/assets/js/tool-handoff.mjs';
+
 // DOM 元素
 const markdownInput = document.getElementById('markdown-input');
 const preview = document.getElementById('preview');
@@ -15,6 +17,9 @@ const notesList = document.getElementById('notesList');
 const newNoteName = document.getElementById('newNoteName');
 const addNoteBtn = document.getElementById('addNoteBtn');
 const refreshNotes = document.getElementById('refreshNotes');
+const handoff = document.getElementById('markdownHandoff');
+const draftKey = 'quark.markdown.draft.v1';
+const lastNoteKey = 'quark.markdown.last-note.v1';
 
 // 示例 Markdown 内容
 const sampleMarkdown = `# Markdown 与 TeX 公式示例
@@ -138,7 +143,7 @@ function convertToHTML(md) {
 
     html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
 
-    return html;
+    return window.QuarkSanitizeMarkdownHtml(html, { editor: true });
 }
 
 // 渲染笔记列表
@@ -150,7 +155,7 @@ function renderNotesList() {
         li.dataset.id = note.id;
 
         li.innerHTML = `
-                <span class="note-name">${note.name}</span>
+                <span class="note-name"></span>
                 <div class="note-actions">
                     <button class="note-action-btn edit-note" title="重命名">
                         <i class="fas fa-edit"></i>
@@ -161,6 +166,7 @@ function renderNotesList() {
                 </div>
             `;
 
+        li.querySelector('.note-name').textContent = note.name;
         li.addEventListener('click', (e) => {
             if (!e.target.closest('.note-action-btn')) {
                 loadNote(note.id);
@@ -193,6 +199,7 @@ function loadNote(noteId) {
     const note = notes.find(n => n.id === noteId);
     if (note) {
         currentNoteId = noteId;
+        try { localStorage.setItem(lastNoteKey, noteId); } catch {}
         markdownInput.value = note.content;
         preview.innerHTML = convertToHTML(note.content);
         updateWordCount();
@@ -249,6 +256,7 @@ function deleteNote(noteId) {
 
     if (currentNoteId === noteId) {
         currentNoteId = null;
+        try { localStorage.removeItem(lastNoteKey); } catch {}
         markdownInput.value = '';
         preview.innerHTML = '';
         updateWordCount();
@@ -265,7 +273,10 @@ function saveNotes() {
 
 // 保存当前笔记内容
 function saveCurrentNote() {
-    if (!currentNoteId) return;
+    if (!currentNoteId) {
+        localStorage.setItem(draftKey, markdownInput.value);
+        return;
+    }
 
     const note = notes.find(n => n.id === currentNoteId);
     if (note) {
@@ -597,31 +608,35 @@ function parseInlineNodes(parentNode) {
 }
 
 // 事件监听器
-markdownInput.addEventListener('input', function () {
-    preview.innerHTML = convertToHTML(this.value);
+function refreshEditor() {
+    preview.innerHTML = convertToHTML(markdownInput.value);
     updateWordCount();
     renderAll();
-    saveCurrentNote();
+}
+markdownInput.addEventListener('input', () => {
+    refreshEditor();
+    try { saveCurrentNote(); }
+    catch { showToast('草稿未能保存，请导出或复制当前内容。', true); }
 });
 
 clearBtn.addEventListener('click', function () {
+    if (markdownInput.value.trim() && !confirm('清空当前编辑内容？')) return;
     markdownInput.value = '';
-    preview.innerHTML = '';
-    updateWordCount();
+    markdownInput.dispatchEvent(new Event('input'));
     showToast('已清空输入');
 });
 
 sampleBtn.addEventListener('click', function () {
+    if (markdownInput.value.trim() && !confirm('用示例替换当前编辑内容？')) return;
     markdownInput.value = sampleMarkdown;
-    preview.innerHTML = convertToHTML(sampleMarkdown);
-    updateWordCount();
-    renderAll();
+    markdownInput.dispatchEvent(new Event('input'));
     showToast('已加载示例内容');
 });
 
 downloadHtmlBtn.addEventListener('click', downloadHtml);
 downloadMdBtn.addEventListener('click', downloadMd);
 downloadWordBtn.addEventListener('click', downloadWord);
+handoff.onclick = () => openHandoff(handoff, 'export', 'Markdown 编辑稿', markdownInput.value);
 
 sidebarToggle.addEventListener('click', function () {
     sidebar.classList.toggle('active');
@@ -648,7 +663,39 @@ document.addEventListener('DOMContentLoaded', function () {
         if (window.innerWidth <= 1024) { sidebar.classList.remove('active'); sidebarToggle.style.display = 'block'; } else {
             sidebar.classList.add('active'); sidebarToggle.style.display = 'none';
         }
-    } window.addEventListener('resize',
-        checkWindowSize); checkWindowSize(); // 初始加载示例 
-    sampleBtn.click();
+    }
+    window.addEventListener('resize', checkWindowSize);
+    checkWindowSize();
+
+    const previous = localStorage.getItem(lastNoteKey);
+    if (notes.some(note => note.id === previous)) loadNote(previous);
+    else {
+        markdownInput.value = localStorage.getItem(draftKey) ?? (location.search.includes('handoff=') ? '' : sampleMarkdown);
+        refreshEditor();
+    }
+    showHandoff('editor', markdownInput, [
+        ['新建笔记', (text, title) => {
+            const stored = JSON.parse(localStorage.getItem('markdown-notes') || '[]');
+            const date = new Date().toISOString();
+            const note = { id: crypto.randomUUID(), name: String(title || '接力笔记'), content: text, createdAt: date, updatedAt: date };
+            localStorage.setItem('markdown-notes', JSON.stringify([...stored, note]));
+            notes = [...stored, note];
+            loadNote(note.id);
+        }],
+        ['追加到当前内容', (text) => {
+            const content = appendHandoff(markdownInput.value, text);
+            if (currentNoteId) {
+                const stored = JSON.parse(localStorage.getItem('markdown-notes') || '[]');
+                const note = stored.find(item => item.id === currentNoteId);
+                const old = notes.find(item => item.id === currentNoteId);
+                if (!note || note.content !== old?.content) throw new Error('笔记在另一个标签页发生了变化');
+                note.content = content;
+                note.updatedAt = new Date().toISOString();
+                localStorage.setItem('markdown-notes', JSON.stringify(stored));
+                notes = stored;
+            } else localStorage.setItem(draftKey, content);
+            markdownInput.value = content;
+            refreshEditor();
+        }]
+    ]);
 });

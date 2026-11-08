@@ -42,12 +42,14 @@
           "name": "夸克闪传",
           "link": "share",
           "description": "基于 Firebase RTDB 和 STUN 的 P2P 文件闪传",
+          "tags": ["需要两台设备"],
           "icon": "fa-exchange"
         },
         {
           "name": "夸克会议(双人)",
           "link": "meet",
           "description": "基于 WebRTC 和 Firebase 信令服务器的双人在线会议",
+          "tags": ["双人", "需要摄像头或麦克风"],
           "icon": "fa-video-camera"
         },
         {
@@ -64,7 +66,7 @@
         {
           "name": "QuarkBot",
           "link": "quarkbot",
-          "description": "和站点助手聊天，继续或管理从各个页面发起的对话",
+          "description": "问站内、理解当前页，继续或管理从各页面发起的对话",
           "icon": "fa-robot"
         },
         {

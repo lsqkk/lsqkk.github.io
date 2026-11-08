@@ -44,7 +44,7 @@ body.dark-mode {
   --ss-positive: #1c8a6b;
   /* 实心主色按钮上的文字色：浅色模式下是白字，深色模式下主色本身很亮，必须用深字 */
   --ss-on-accent: #fff;
-  --ss-mono: "SFMono-Regular", "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --ss-mono: var(--site-font-family, inherit);
   --ss-block-bg: var(--surface-card);
   --ss-block-line: var(--line);
 

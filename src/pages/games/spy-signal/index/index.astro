@@ -56,6 +56,7 @@ import { SITE_TITLE } from "@siteConfig";
         用内联 module 引入控制器：assets/ 下的脚本保持 ES 模块原样下发，
         不参与 Astro/Vite 打包，便于与其它小游戏共用同一套调试方式。
     -->
+    <script is:inline data-font-only src="/assets/js/user-preferences.js"></script>
     <script is:inline type="module">
         import { boot } from "/assets/pages/games/spy-signal/main.js";
         boot();

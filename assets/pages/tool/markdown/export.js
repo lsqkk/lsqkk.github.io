@@ -1,8 +1,11 @@
+import { appendHandoff, showHandoff } from '/assets/js/tool-handoff.mjs';
+
 document.addEventListener('DOMContentLoaded', () => {
     // 元素引用
     const markdownInput = document.getElementById('markdown-input');
     const preview = document.getElementById('preview');
-    const customStyles = document.getElementById('custom-styles');
+    const customStyles = document.createElement('style');
+    document.head.append(customStyles);
 
     // 样式输入
     const fontFamilyInput = document.getElementById('font-family');
@@ -114,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePreview() {
         const markdownText = markdownInput.value;
         // 使用 marked 库将 markdown 转换为 HTML
-        preview.innerHTML = marked.parse(markdownText);
+        preview.innerHTML = window.QuarkSafeMarkdown(markdownText, { editor: true });
     }
 
     markdownInput.addEventListener('input', updatePreview);
@@ -152,6 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PDF 导出
     exportPdfBtn.addEventListener('click', () => {
+        if (!window.jspdf?.jsPDF || !window.html2canvas) {
+            window.print();
+            return;
+        }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({
             unit: 'mm',
@@ -231,4 +238,12 @@ document.addEventListener('DOMContentLoaded', () => {
         markdownInput.value = savedContent;
     }
     updatePreview();
+    showHandoff('export', markdownInput, [
+        ['载入为本次导出稿', (text) => {
+            if (markdownInput.value.trim() && !confirm('用接力内容替换当前编辑区？已保存的内容可以重新加载。')) return false;
+            markdownInput.value = text;
+            updatePreview();
+        }],
+        ['追加到当前内容', (text) => { markdownInput.value = appendHandoff(markdownInput.value, text); updatePreview(); }]
+    ]);
 });

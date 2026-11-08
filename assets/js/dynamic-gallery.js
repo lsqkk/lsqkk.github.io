@@ -46,7 +46,7 @@
                 const isOverflow = imgIdx === 8 && total > 9;
                 html += `
                     <button type="button" class="gallery-item${isOverflow ? ' gallery-item-overflow' : ''}" aria-label="查看图片 ${imgIdx + 1}" onclick="DynamicGallery.open('${galleryId}', ${imgIdx})">
-                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img onload="this.closest('.gallery-item')?.classList.add('is-loaded')" onerror="this.closest('.gallery-item')?.classList.add('is-loaded')">
+                        <img src="${image}" alt="动态图片 ${imgIdx + 1}" loading="lazy" data-skeleton-img onload="this.closest('.gallery-item')?.classList.add('is-loaded')" onerror="this.closest('.gallery-item')?.classList.add('is-error')">
                         ${isOverflow ? `<div class="gallery-overlay">+${total - 9}</div>` : ''}
                     </button>
                 `;
@@ -126,6 +126,7 @@
                 <button type="button" class="close-btn" data-gallery-close aria-label="关闭预览">&times;</button>
                 <div class="gallery-modal-main" id="gallery-modal-main">
                     <img class="current-image" alt="">
+                    <a class="gallery-image-source" target="_blank" rel="noopener noreferrer" hidden>图片暂无法显示 · 打开来源 ↗</a>
                     <button type="button" class="gallery-nav-btn gallery-prev-btn" data-gallery-prev aria-label="上一张"><span>‹</span></button>
                     <button type="button" class="gallery-nav-btn gallery-next-btn" data-gallery-next aria-label="下一张"><span>›</span></button>
                     <div class="gallery-counter"></div>
@@ -176,12 +177,19 @@
 
         const image = modalEl.querySelector('.current-image');
         if (image instanceof HTMLImageElement) {
+            const source = modalEl.querySelector('.gallery-image-source');
+            source.hidden = true;
+            source.removeAttribute('href');
+            try {
+                const original = new URL(images[modalIndex], location.href);
+                if (['http:', 'https:'].includes(original.protocol)) source.href = original.href;
+            } catch {}
             image.classList.remove('is-loaded');
+            image.onload = () => image.classList.add('is-loaded');
+            image.onerror = () => { source.hidden = false; };
             image.src = images[modalIndex];
             image.alt = `图片 ${modalIndex + 1} / ${images.length}`;
-            const markLoaded = () => image.classList.add('is-loaded');
-            if (image.complete && image.naturalWidth > 0) markLoaded();
-            else image.addEventListener('load', markLoaded, { once: true });
+            if (image.complete && image.naturalWidth > 0) image.classList.add('is-loaded');
         }
 
         const counter = modalEl.querySelector('.gallery-counter');

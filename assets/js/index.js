@@ -1064,14 +1064,8 @@ async function loadLatestVideo() {
         }
     } catch (error) {
         console.error('加载最新视频失败:', error);
-        const videoContainer = document.getElementById('latest-video-container');
         if (videoContainer) {
-            const section = videoContainer.closest('.index-sidebar-section');
-            if (section) {
-                section.remove();
-            } else {
-                videoContainer.innerHTML = '';
-            }
+            videoContainer.innerHTML = '<p class="latest-video-fallback">站内视频预览暂不可用。 <a href="https://space.bilibili.com/2105459088" target="_blank" rel="noopener noreferrer">去 B 站查看 ↗</a></p>';
         }
     }
 }
@@ -1083,6 +1077,7 @@ async function loadLatestVideo() {
 function renderLatestVideo(video) {
     const container = document.getElementById('latest-video-container');
     if (!container) return;
+    if (!/^BV[0-9a-z]+$/i.test(video.bvid)) throw new Error('Invalid video ID');
 
     // 使用图片代理服务解决防盗链问题
     const proxyCoverUrl = `https://images.weserv.nl/?url=${encodeURIComponent(video.cover)}&w=320&h=180`;
@@ -1093,40 +1088,32 @@ function renderLatestVideo(video) {
     const publishTime = formatVideoTime(video.publish_time);
 
     container.innerHTML = `
-        <div class="latest-video-card">
+        <a class="latest-video-card" href="https://www.bilibili.com/video/${video.bvid}" target="_blank" rel="noopener noreferrer">
             <div class="latest-video-cover-wrap">
                 <img src="${proxyCoverUrl}"
-                     alt="${video.title}"
+                     alt=""
                      class="latest-video-cover"
                      data-skeleton-img
-                     onerror="this.src='https://via.placeholder.com/320x180/1e88e5/ffffff?text=封面加载中'">
+                     onerror="this.parentElement.classList.add('is-error')">
                 <div class="latest-video-duration">
                     ${formatVideoDuration(video.duration)}
                 </div>
             </div>
             <div class="latest-video-body">
-                <h4 class="latest-video-title">
-                    ${video.title}
-                </h4>
+                <h4 class="latest-video-title"></h4>
                 <div class="latest-video-meta">
                     <span>播放: ${playCount}</span>
                     <span>${publishTime}</span>
                 </div>
             </div>
-        </div>
+        </a>
     `;
+    container.querySelector('.latest-video-title').textContent = video.title;
 
     // Initialize skeleton for the newly rendered video cover
     var newCover = container.querySelector('img[data-skeleton-img]');
     if (newCover) initSkeletonImages(newCover.parentNode);
 
-    // 添加点击事件，跳转到B站视频页面
-    const videoCard = container.querySelector('.latest-video-card');
-    if (videoCard instanceof HTMLElement) {
-        videoCard.addEventListener('click', () => {
-            window.open(`https://www.bilibili.com/video/${video.bvid}`, '_blank');
-        });
-    }
 }
 
 // 格式化视频时长（秒 -> MM:SS）

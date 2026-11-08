@@ -17,6 +17,7 @@ const routes = paths.map(route=>({...route,steps:route.steps.map(step=>({...step
   <meta name="description" content="用手边的几分钟发现一篇好文章，沿主题路线阅读，把原文和自己的想法一起留下。拾页，一张属于你的阅读桌。" />
   <link rel="canonical" href={new URL('/desk/',SITE_URL)} /><link rel="icon" href={SITE_LOGO_URL} />
   <link rel="stylesheet" href="/assets/css/basic.css" /><link rel="stylesheet" href="/assets/css/nav.css" /><link rel="stylesheet" href="/assets/css/reading-desk.css" />
+  <link rel="stylesheet" href="/assets/css/tool-handoff.css" />
   <script is:inline define:vars={{navConfig}}>window.__NAV_CONFIG__ = navConfig;</script>
   <script is:inline defer src="/assets/js/nav.js"></script>
   <noscript><style>.desk-workspace,.desk-notes,.desk-backup,.desk-path-actions button,.desk-sections a:not([href="#paths"]){display:none!important}</style></noscript>
@@ -64,6 +65,7 @@ const routes = paths.map(route=>({...route,steps:route.steps.map(step=>({...step
     <section id="notes" class="desk-notes" aria-labelledby="notes-title">
       <div class="desk-section-label"><span>03 / 读过之后，留下什么</span><span>FIELD NOTES</span></div>
       <div class="desk-section-heading"><div><h2 id="notes-title">值得留下的，<br />还有你自己的想法。</h2><p>摘录保留原文出处；想法留给自己。编辑后会自动保存在此浏览器。</p></div><button type="button" id="desk-export-md">导出阅读手记 ↓</button></div>
+      <div class="desk-section-heading"><button type="button" id="desk-send-md" disabled>将所选摘录送到 Markdown</button></div>
       <div id="desk-notes-list"></div>
     </section>
     <footer class="desk-footer"><div><a href="/">← {SITE_TITLE}</a><p>阅读可以很轻，留下的东西可以很重。</p></div><div class="desk-backup"><button type="button" id="desk-export-json">备份 JSON</button><label for="desk-import" class="desk-import-label">导入备份<input type="file" id="desk-import" accept=".json,application/json" /></label><small>导入会合并，不覆盖已有内容。最多 200 篇待读 / 500 条摘录。</small></div></footer>

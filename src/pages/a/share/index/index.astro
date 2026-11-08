@@ -16,6 +16,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <link rel="stylesheet" href="/assets/css/basic.css">
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline src="/assets/js/firebase-ready.js"></script>
     <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 </head>
@@ -65,13 +66,14 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
             <div class="card" id="status-card">
                 <h2>状态信息</h2>
+                <p id="connection-summary" role="status">未连接。创建房间或输入对方的连接码。</p>
+                <button id="return-to-connect" type="button" class="app-button secondary-btn" hidden>返回连接</button>
                 <div id="status">连接状态：未连接</div>
             </div>
 
         </div>
     </div>
 
-    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
     <script is:inline src="/assets/pages/a/share/share.js"></script>
 </body>
 

@@ -1,11 +1,16 @@
 import {createDesk,deskPostFromMeta} from './reading-desk-store.mjs';
+import {resumeHref,trackReading} from './reading-position.mjs';
 const desk=createDesk(),meta=document.getElementById('post-tags-container'),content=document.querySelector('.post-content');
 const post=meta&&deskPostFromMeta(meta.dataset);
 if(post&&content) {
+  const isResuming=new URLSearchParams(location.search).get('resume')==='1';
+  trackReading(post,content);
   const bar=document.createElement('div');bar.className='desk-post-bar';
   const save=document.createElement('button');save.type='button';save.textContent='+ 留到下次读';save.setAttribute('aria-pressed','false');
   const clip=document.createElement('button');clip.type='button';clip.textContent='摘录';clip.setAttribute('aria-label','摘录选中文字');clip.title='先在正文选中文字，再点击摘录；手机也可以使用选中后出现的菜单。';
   const link=document.createElement('a');link.href='/desk/';link.textContent='我的拾页 ↗';bar.append(save,clip,link);
+  const resume=resumeHref(post.url);
+  if(!isResuming&&resume!==post.url&&scrollY<120&&!location.hash){const back=document.createElement('a');back.href=resume;back.textContent='回到上次位置';bar.append(back);}
   const tools=document.querySelector('[data-post-reading-tools]');if(tools)tools.prepend(bar);else content.before(bar);
   const toast=document.createElement('div');toast.className='desk-post-toast';toast.role='status';toast.setAttribute('aria-live','polite');toast.hidden=true;document.body.append(toast);
   let selected=null,timer;

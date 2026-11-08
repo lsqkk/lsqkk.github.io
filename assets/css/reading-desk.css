@@ -180,3 +180,5 @@ body.home-page .desk-home { border-top:0; padding-top:0; }
 .desk-context small { color:var(--accent); font-size:10px; white-space:nowrap; margin-left:10px; }
 .desk-context p { margin:6px 0 0; color:var(--text-subtle); font-size:11px; line-height:1.8; }
 @media(max-width:700px) { .desk-shell { padding-top:56px; } }
+.desk-note-pick { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-size: .85rem; }
+.desk-note-pick input { accent-color: var(--accent); }

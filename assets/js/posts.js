@@ -529,12 +529,5 @@ document.addEventListener('DOMContentLoaded', loadPosts);
 
 // 监听搜索输入框的Enter键
 document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                searchBlog();
-            }
-        });
-    }
+
 });

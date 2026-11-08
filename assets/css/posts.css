@@ -451,3 +451,6 @@ body {
   .posts-index-filters .posts-fold-toggle { padding-block:12px; }
 }
 @media(max-width:460px) { .posts-rss { font-size:11px; } .posts-index-header { padding-bottom:20px; } }
+.posts-local-search { display: flex; gap: 6px; margin-block: 8px 14px; }
+.posts-local-search input, .posts-local-search button { padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--text-main); background: var(--surface); }
+.posts-local-search input { min-width: 0; }

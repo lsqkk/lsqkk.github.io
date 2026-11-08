@@ -237,6 +237,7 @@ function showMessages(list) {
 }
 
 function updateRoom(data) {
+  if (connection === "unavailable") chatNote.textContent = message.value.trim() ? "连接已恢复，可以重新发送。" : "";
   const nextId = data.live ? data.startedAt : null;
   if (nextId !== streamId) {
     stopPlayback();
@@ -278,6 +279,7 @@ async function poll() {
     updateBackup();
     chatEnabled = false;
     updateChatControls();
+    chatNote.textContent = message.value.trim() ? "直播间连接中断，输入已保留。恢复连接后可重新发送。" : "直播间连接中断，正在重连…";
     if (!player) {
       cover("暂时连不上直播间", "稍后会自动重试，也可以手动重连。", true);
       playerNote.textContent = "等待直播服务恢复";

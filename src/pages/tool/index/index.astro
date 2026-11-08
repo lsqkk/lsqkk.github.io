@@ -1,6 +1,6 @@
 ---
 import CatalogLayout from '../../../layouts/CatalogLayout.astro';
 import data from '../../../../assets/pages/tool/tool.json';
-const groups = data.categories.map(group => ({name:group.name,items:group.tools.map(item=>({name:item.name,href:item.url.startsWith('/')||/^https?:/.test(item.url)?item.url:'/tool/'+item.url,description:item.description}))}));
+const groups = data.categories.map(group => ({name:group.name,items:group.tools.map(item=>({name:item.name,href:item.url.startsWith('/')||/^https?:/.test(item.url)?item.url:'/tool/'+item.url,description:item.description,tags:item.tags}))}));
 ---
 <CatalogLayout title="工具箱" eyebrow="QUARK / EVERYDAY TOOLS" description="把琐碎交给工具。找到适合你的效率、学习与创作小帮手，打开就能用。" groups={groups} />

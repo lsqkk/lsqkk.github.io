@@ -43,6 +43,10 @@ const currentYear = new Date().getFullYear();
       <div class="posts-index-layout">
       <main class="posts-index-main" aria-label="文章列表">
       <div class="posts-list-status"><span id="postsListStatus" role="status">共 {postsData.length} 篇文章</span><button type="button" id="postsResetFilters" hidden>清除筛选 ×</button></div>
+      <form class="posts-local-search" role="search" onsubmit="event.preventDefault(); searchBlog();">
+        <input type="search" id="searchInput" aria-label="筛选文章" placeholder="筛选文章标题或标签" />
+        <button type="submit">筛选</button>
+      </form>
       <div id="searchResults" class="search-results"></div>
       <div id="posts"></div>
       <div class="pagination" id="pagination">

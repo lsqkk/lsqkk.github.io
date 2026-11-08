@@ -1,0 +1,33 @@
+.quick-search {
+    width: min(600px, calc(100% - 24px));
+    max-height: min(78dvh, 650px);
+    box-sizing: border-box;
+    margin: clamp(12px, 12vh, 100px) auto auto;
+    padding: 16px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    color: var(--text-main);
+}
+.quick-search::backdrop { background: #07102066; }
+.quick-search * { cursor: auto !important; }
+.quick-search :is(button, a) { cursor: pointer !important; }
+.quick-search header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.quick-search h2 { margin: 0; font-size: 1.1rem; }
+.quick-search button { border: 1px solid var(--line); background: var(--surface-soft); color: inherit; border-radius: var(--radius-sm); }
+.quick-search [data-close] { width: 44px; height: 44px; font-size: 1.25rem; }
+.quick-search input { box-sizing: border-box; width: 100%; margin-top: 8px; padding: 10px; font-size: 16px; color: inherit; background: var(--surface-soft); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.quick-search-status { margin: 10px 0 4px; font-size: .85rem; color: var(--text-subtle); }
+.quick-search .search-result { position: relative; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.quick-search .search-result-title { display: inline-block; padding-block: 4px; font-weight: 700; color: inherit; }
+.quick-search .search-result-title::after { content: ""; position: absolute; inset: 0; }
+.quick-search .search-result:has(.is-selected), .quick-search .search-result:hover { background: var(--accent-soft); }
+.quick-search .search-result-badge { margin-left: 8px; font-size: .78rem; color: var(--accent); }
+.quick-search .search-result-meta { margin: 0; font-size: .84rem; color: var(--text-subtle); }
+.quick-search-example { margin: 6px 6px 2px 0; padding: 6px 9px; }
+.quick-search footer { margin-top: 12px; font-size: .88rem; }
+@media (max-width: 600px) {
+    .quick-search { margin-top: max(12px, env(safe-area-inset-top)); max-height: calc(100dvh - 24px); }
+}

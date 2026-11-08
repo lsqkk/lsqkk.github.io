@@ -1,4 +1,6 @@
 import {createDesk,toMarkdown} from './reading-desk-store.mjs';
+import {openHandoff} from './tool-handoff.mjs';
+import {resumeHref} from './reading-position.mjs';
 const desk=createDesk();
 const {articles,routes}=JSON.parse(document.getElementById('desk-data').textContent);
 const $=id=>document.getElementById(id);
@@ -45,6 +47,15 @@ function matches() {
   $('desk-match-status').textContent=candidates.length+' 篇适合此刻 · 每篇时长独立估算，实践请额外留时';
   $('desk-shuffle').disabled=candidates.length<=3;
 }
+const selectedClips = new Set();
+const sendNotes = $('desk-send-md');
+const updateSendNotes = () => { sendNotes.disabled = selectedClips.size === 0; };
+sendNotes.onclick = () => {
+  const clips = desk.read().clips.filter((clip) => selectedClips.has(clip.id));
+  if (!clips.length) { status('先选中要整理的摘录。'); return; }
+  openHandoff(sendNotes, 'editor', '拾页摘录', toMarkdown({ queue: [], clips }, location.origin));
+};
+
 function queue() {
   const data=desk.read(),waiting=data.queue.filter(item=>!item.completed),list=$('desk-queue-list');
   $('desk-queue-count').textContent=String(waiting.length).padStart(2,'0');
@@ -52,7 +63,7 @@ function queue() {
   list.replaceChildren();
   if(!data.queue.length){const empty=make('div','desk-queue-empty');empty.append(make('span','','⌑'),document.createTextNode('还没有放下书签。点文章旁的 +，或收下一整条路线。'));list.append(empty);}
   data.queue.forEach((post,index)=>{
-    const row=make('article','desk-queue-item'+(post.completed?' is-complete':'')),link=make('a','',post.title);link.href=post.url;row.append(link,make('small','',post.completed?'已读完':'约 '+post.minutes+' 分钟'));
+    const row=make('article','desk-queue-item'+(post.completed?' is-complete':'')),link=make('a','',post.title);link.href=post.completed?post.url:resumeHref(post.url);row.append(link,make('small','',post.completed?'已读完':'约 '+post.minutes+' 分钟'));
     const controls=make('div','desk-queue-controls');
     const complete=action(post.completed?'重新待读':'标为读完',(post.completed?'重新待读：':'标为读完：')+post.title,()=>{if(!desk.complete(post.url))status(desk.error);});
     complete.dataset.focusKey='complete:'+post.url;complete.setAttribute('aria-pressed',String(post.completed));controls.append(complete);
@@ -64,6 +75,9 @@ function queue() {
 }
 function notes() {
   const data=desk.read(),list=$('desk-notes-list');list.replaceChildren();
+  const ids=new Set(data.clips.map(clip=>clip.id));
+  for(const id of selectedClips)if(!ids.has(id))selectedClips.delete(id);
+  updateSendNotes();
   document.querySelector('[data-note-count]').textContent=data.clips.length;
   if(!data.clips.length){
     const empty=make('div','desk-note-empty'),body=make('div');empty.append(make('span','','“'));
@@ -74,6 +88,12 @@ function notes() {
   for(const clip of data.clips) {
     const row=make('article','desk-note'),source=make('div');source.append(make('blockquote','',clip.text));
     const link=make('a','desk-note-source','出自 '+clip.title+' ↗');link.href=clip.url;source.append(link);
+    const pick=make('label','desk-note-pick');
+    const checkbox=make('input');
+    checkbox.type='checkbox';checkbox.checked=selectedClips.has(clip.id);
+    checkbox.setAttribute('aria-label','选择摘录：'+clip.title);
+    checkbox.onchange=()=>{if(checkbox.checked)selectedClips.add(clip.id);else selectedClips.delete(clip.id);updateSendNotes();};
+    pick.append(checkbox,'加入接力笔记');source.append(pick);
     const thought=make('div','desk-note-thought'),label=make('label','','此刻，我想到……');label.htmlFor=clip.id;
     const input=make('textarea');input.id=clip.id;input.value=clip.note;input.maxLength=4000;input.placeholder='和某段经历、另一个问题，或者另一篇文章的联系。';
     const bottom=make('div','desk-note-bottom'),saved=make('span','',clip.note?'已保存在此浏览器':'只对你自己可见');

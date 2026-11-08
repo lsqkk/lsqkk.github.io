@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="280" viewBox="0 0 920 280">
+  <rect width="920" height="280" fill="#fff"/>
+  <g font-family="Arial, sans-serif" fill="#111">
+    <text x="56" y="86" font-size="44" font-weight="700">Quark OCR sample</text>
+    <text x="56" y="151" font-size="30">Turn an image into editable text.</text>
+    <text x="56" y="202" font-size="30">Send the result to the Markdown editor.</text>
+  </g>
+</svg>

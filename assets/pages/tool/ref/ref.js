@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    const sample = document.getElementById('ref-sample');
+    sample.addEventListener('click', () => {
+        const fields = [...document.querySelectorAll('#monograph-form input')];
+        if (fields.some(input => input.value.trim()) && !confirm('用示例替换当前专著表单？')) return;
+        const values = ['张三', '示例书名', '北京', '示例出版社', '2024', '12-15'];
+        fields.forEach((input, i) => { input.value = values[i] || ''; });
+        document.querySelector('#monograph-form .generate-btn').click();
+    });
+
     // 生成参考文献逻辑
     const generateButtons = document.querySelectorAll('.generate-btn');
 

@@ -89,9 +89,10 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
 
 .quark-bot-panel {
     position: fixed;
-    inset: auto max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) auto;
+    inset: auto max(12px, env(safe-area-inset-right)) calc(max(12px, env(safe-area-inset-bottom)) + var(--bot-keyboard-inset, 0px)) auto;
     margin: 0;
     width: min(424px, calc(100% - 24px));
+    max-height: min(720px, calc(var(--bot-visible-height, 100dvh) - 24px));
     border-radius: 15px;
 }
 .quark-bot-panel::backdrop { background: #0a102026; }
@@ -216,4 +217,8 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
 .quark-run-details a { display: block; width: fit-content; }
 @media (max-width: 480px) {
     .quark-bot-log { max-height: 34dvh; }
+    .quark-bot-panel .quark-bot-log { min-height: 0; }
+    .quark-bot-chat .quark-bot-form textarea { font-size: 16px; }
+    .quark-bot-chat .quark-bot-send button { min-height: 40px; }
+    body:has(:is(textarea, [contenteditable="true"]):focus) .quark-bot-launcher { visibility: hidden; }
 }

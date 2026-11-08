@@ -109,6 +109,7 @@
         // 字体
         const font = FONT_MAP.get(next.font) || FONT_MAP.get(DEFAULTS.font);
         if (font) document.documentElement.style.setProperty('--site-font-family', font.family);
+        if (fontOnly) return;
 
         // data 属性
         const reduceMotion = next.motion === 'reduce' || (next.motion === 'system' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -241,6 +242,7 @@
     };
 
     // ── 初始化 ──────────────────────────────────────────────────────
+    const fontOnly = document.currentScript?.hasAttribute('data-font-only');
     apply(prefs);
     dispatch();
     window.addEventListener('storage', (event) => {
@@ -249,6 +251,7 @@
         apply(prefs);
         dispatch();
     });
+    if (fontOnly) return;
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             apply(prefs);

@@ -107,6 +107,7 @@
 }
 
 .search-result {
+    position: relative;
     display: block;
     padding: 14px 4px;
     text-decoration: none;
@@ -125,12 +126,16 @@
 }
 
 .search-result-title {
+    display: inline;
     font-weight: 700;
     color: var(--search-text);
     margin-bottom: 4px;
 }
+.search-result-title::after { content: ""; position: absolute; inset: 0; }
+.search-result-tags a { position: relative; }
 
 .search-result-meta {
+    margin-block: 4px 0;
     color: var(--search-muted);
     font-size: 0.86rem;
 }

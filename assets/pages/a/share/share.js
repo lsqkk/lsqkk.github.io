@@ -1,5 +1,6 @@
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+let database;
+const roomListeners = [];
+let connectionTimer;
 
 // 完整的 STUN/TURN 服务器列表 - 增加 TURN 以应对严格 NAT (如教育网)
 const STUN_SERVERS = [
@@ -65,6 +66,20 @@ const downloadListDiv = document.getElementById('download-list');
 const cleanRoomBtn = document.getElementById('clean-room-btn');
 const currentFileInfoP = document.getElementById('current-file-info');
 const zipDownloadBtn = document.getElementById('zip-download-btn');
+const connectionSummary = document.getElementById('connection-summary');
+const returnToConnect = document.getElementById('return-to-connect');
+
+function connectionState(state, message) {
+    if (state !== 'connecting') clearTimeout(connectionTimer);
+    connectionSummary.dataset.connectionState = state;
+    connectionSummary.textContent = message;
+    returnToConnect.hidden = !currentRoomCode || state !== 'unavailable';
+}
+
+function listenRoom(ref, event, listener) {
+    ref.on(event, listener, () => connectionState('unavailable', '房间同步失败，请检查网络后返回连接。'));
+    roomListeners.push(() => ref.off(event, listener));
+}
 
 const GUEST_FILE_LIMIT = 20;
 const LOGGED_FILE_LIMIT = 50;
@@ -87,7 +102,7 @@ function getFileLimit() {
 
 /** 记录状态 */
 function logStatus(message) {
-    statusDiv.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}\n` + statusDiv.innerHTML;
+    statusDiv.prepend(document.createTextNode(`[${new Date().toLocaleTimeString()}] ${message}\n`));
     if (statusDiv.scrollTop > 0) statusDiv.scrollTop = 0;
     console.log(message);
 }
@@ -122,13 +137,13 @@ async function cleanRoomData(roomCode) {
 }
 
 /** 重置界面到初始状态 */
-function resetUI() {
+function resetUI(keepFiles = false) {
     joinSection.style.display = 'block';
     transferSection.style.display = 'none';
     transferTitle.textContent = '等待连接...';
     sendBtn.textContent = '等待连接...';
     sendBtn.disabled = true;
-    fileInput.value = '';
+    if (!keepFiles) fileInput.value = '';
     fileListUL.style.display = 'none';
     fileListUL.innerHTML = '';
     currentFileInfoP.textContent = '';
@@ -138,15 +153,19 @@ function resetUI() {
     updateProgress(0);
 
     currentRoomCode = null;
-    filesToSend = [];
+    if (!keepFiles) filesToSend = [];
     currentFileIndex = 0;
     currentFileBuffer = [];
     totalFilesToReceive = 0;
     filesReceivedCount = 0;
     receivedFiles = []; // 清空已接收文件列表
     hasSentCodePrompt = false;
+    roomListeners.splice(0).forEach((unsubscribe) => unsubscribe());
 
     if (peerConnection) {
+        peerConnection.oniceconnectionstatechange = null;
+        peerConnection.onicecandidate = null;
+        peerConnection.ondatachannel = null;
         peerConnection.close();
         peerConnection = null;
     }
@@ -155,6 +174,7 @@ function resetUI() {
         dataChannel = null;
     }
     logStatus('界面已重置。');
+    connectionState('idle', '未连接。可以重新创建或加入房间。');
 }
 
 // -----------------------------------------------------------
@@ -188,17 +208,16 @@ function createPeerConnection(roomCode, isSenderDevice) {
 
     peerConnection.oniceconnectionstatechange = () => {
         logStatus(`ICE 连接状态: ${peerConnection.iceConnectionState}`);
-        if (peerConnection.iceConnectionState === 'connected') {
+        if (['connected', 'completed'].includes(peerConnection.iceConnectionState)) {
             logStatus('✅ P2P 连接建立成功！');
-            transferTitle.textContent = `连接成功！`;
-            if (isSender) {
-                sendBtn.textContent = filesToSend.length > 0 ? `发送 ${filesToSend.length} 个文件` : '请选择文件';
-                sendBtn.disabled = filesToSend.length === 0;
-            } else {
-                transferTitle.textContent = '等待发送方传输文件...';
-            }
+            if (dataChannel?.readyState === 'open') connectionState('connected', '已连接。');
         } else if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'closed') {
             logStatus('❌ P2P 连接断开或失败。请检查连接码和网络环境。');
+            connectionState('unavailable', '连接已中断。请检查网络，再返回连接。');
+            sendBtn.disabled = true;
+        } else if (peerConnection.iceConnectionState === 'disconnected') {
+            connectionState('connecting', '连接不稳定，正在尝试恢复…');
+            sendBtn.disabled = true;
         }
     };
 
@@ -218,7 +237,11 @@ function createPeerConnection(roomCode, isSenderDevice) {
 /** DataChannel 的通用设置 */
 function setupDataChannel(channel) {
     channel.onopen = () => {
+        if (dataChannel !== channel) return;
         logStatus('DataChannel 打开，可以开始传输数据。');
+        connectionState('connected', '已连接。');
+        transferTitle.textContent = isSender ? '连接成功！' : '等待发送方传输文件…';
+        if (isSender) renderSelectedFiles();
     };
     channel.onclose = () => {
         logStatus('DataChannel 关闭。');
@@ -244,22 +267,31 @@ function setupDataChannel(channel) {
 
 async function createSenderOffer(roomCode) {
     createPeerConnection(roomCode, true);
+    const connection = peerConnection;
     transferTitle.textContent = `连接码：${roomCode}。正在等待ICE生成...`;
 
     try {
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        await database.ref(`rooms/${roomCode}/sender/sdp`).set(peerConnection.localDescription.toJSON());
+        const offer = await connection.createOffer();
+        if (connection !== peerConnection) return;
+        await connection.setLocalDescription(offer);
+        if (connection !== peerConnection) return;
+        await database.ref(`rooms/${roomCode}/sender/sdp`).set(connection.localDescription.toJSON());
 
-        database.ref(`rooms/${roomCode}/receiver/sdp`).on('value', async (snapshot) => {
+        if (connection !== peerConnection) return;
+        listenRoom(database.ref(`rooms/${roomCode}/receiver/sdp`), 'value', async (snapshot) => {
             const answer = snapshot.val();
-            if (answer && !peerConnection.currentRemoteDescription) {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-                listenForIceCandidates(roomCode, 'receiver');
+            if (answer && connection === peerConnection && !connection.currentRemoteDescription) {
+                try {
+                    await connection.setRemoteDescription(new RTCSessionDescription(answer));
+                    if (connection === peerConnection) listenForIceCandidates(roomCode, 'receiver');
+                } catch {
+                    if (connection === peerConnection) connectionState('unavailable', '无法连接对方设备，请返回连接重试。');
+                }
             }
         });
     } catch (e) {
         logStatus(`❌ 发送方 Offer 失败: ${e.message}`);
+        if (connection === peerConnection) connectionState('unavailable', '无法建立房间，请返回连接重试。');
     }
 }
 
@@ -267,31 +299,41 @@ async function createReceiverAnswer(roomCode) {
     createPeerConnection(roomCode, false);
     transferTitle.textContent = `连接码：${roomCode}。正在等待发送方响应...`;
 
-    database.ref(`rooms/${roomCode}/sender/sdp`).once('value').then(async (snapshot) => {
+    const connection = peerConnection;
+    await database.ref(`rooms/${roomCode}/sender/sdp`).once('value').then(async (snapshot) => {
+        if (connection !== peerConnection) return;
         const offer = snapshot.val();
         if (!offer) {
             logStatus(`❌ 房间 ${roomCode} 不存在 Offer。`);
+            connectionState('unavailable', '没有找到这个房间，请确认对方已生成连接码。');
             return;
         }
 
         try {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            await database.ref(`rooms/${roomCode}/receiver/sdp`).set(peerConnection.localDescription.toJSON());
-            listenForIceCandidates(roomCode, 'sender');
+            await connection.setRemoteDescription(new RTCSessionDescription(offer));
+            if (connection !== peerConnection) return;
+            const answer = await connection.createAnswer();
+            if (connection !== peerConnection) return;
+            await connection.setLocalDescription(answer);
+            if (connection !== peerConnection) return;
+            await database.ref(`rooms/${roomCode}/receiver/sdp`).set(connection.localDescription.toJSON());
+            if (connection === peerConnection) listenForIceCandidates(roomCode, 'sender');
         } catch (e) {
             logStatus(`❌ 接收方 Answer 失败: ${e.message}`);
+            if (connection === peerConnection) connectionState('unavailable', '无法加入房间，请检查连接码和网络。');
         }
+    }).catch(() => {
+        if (connection === peerConnection) connectionState('unavailable', '暂时无法读取房间，请返回连接重试。');
     });
 }
 
 function listenForIceCandidates(roomCode, remoteRole) {
-    database.ref(`rooms/${roomCode}/${remoteRole}/iceCandidates`).on('child_added', (snapshot) => {
+    const connection = peerConnection;
+    listenRoom(database.ref(`rooms/${roomCode}/${remoteRole}/iceCandidates`), 'child_added', async (snapshot) => {
         const candidate = snapshot.val();
-        if (candidate) {
+        if (candidate && connection === peerConnection) {
             try {
-                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                await connection.addIceCandidate(new RTCIceCandidate(candidate));
             } catch (e) {
                 logStatus(`❌ 添加 ICE 候选者失败: ${e.message}`);
             }
@@ -543,6 +585,10 @@ fileInput.addEventListener('change', (e) => {
         logStatus(`⚠️ 最多选择 ${limit} 个文件${isLoggedUser() ? '' : '（登录后可提升至 50）'}，已自动截取前 ${limit} 个。`);
     }
     filesToSend = selected.slice(0, limit);
+    renderSelectedFiles();
+});
+
+function renderSelectedFiles() {
     fileListUL.innerHTML = '';
     currentFileIndex = 0; // 重置索引
 
@@ -554,7 +600,7 @@ fileInput.addEventListener('change', (e) => {
             fileListUL.appendChild(li);
         });
 
-        if (peerConnection && peerConnection.iceConnectionState === 'connected') {
+        if (dataChannel?.readyState === 'open') {
             sendBtn.textContent = `发送 ${filesToSend.length} 个文件`;
             sendBtn.disabled = false;
         } else {
@@ -566,7 +612,7 @@ fileInput.addEventListener('change', (e) => {
         sendBtn.textContent = '请选择文件';
         sendBtn.disabled = true;
     }
-});
+}
 
 // 监听：点击发送按钮
 sendBtn.addEventListener('click', () => {
@@ -578,25 +624,56 @@ sendBtn.addEventListener('click', () => {
     }
 });
 
-// 监听：创建/加入/清理按钮
+async function beginConnection(roomCode, sending) {
+    joinBtn.disabled = createBtn.disabled = true;
+    connectionState('connecting', '正在连接闪传服务…');
+    try {
+        if (!database) {
+            if (!window.firebase?.database) throw new Error('Firebase unavailable');
+            const config = await window.QuarkFirebaseReady.loadConfigScript({
+                id: 'share-firebase-config', force: true, timeout: 8000
+            });
+            if (!window.firebase.apps.length) window.firebase.initializeApp(config);
+            database = window.firebase.database();
+        }
+        joinSection.style.display = 'none';
+        transferSection.style.display = 'block';
+        connectionState('connecting', '等待另一台设备连接…');
+        clearTimeout(connectionTimer);
+        connectionTimer = setTimeout(() => {
+            if (currentRoomCode === roomCode && dataChannel?.readyState !== 'open') {
+                connectionState('unavailable', '连接超时，请确认另一台设备已打开闪传，再返回连接。');
+            }
+        }, 30000);
+        renderSelectedFiles();
+        if (sending) await createSenderOffer(roomCode);
+        else await createReceiverAnswer(roomCode);
+    } catch {
+        if (!currentRoomCode) {
+            joinSection.style.display = 'block';
+            transferSection.style.display = 'none';
+        }
+        connectionState('unavailable', '闪传服务暂不可用。请检查网络后重试，连接码已保留。');
+    } finally {
+        joinBtn.disabled = createBtn.disabled = false;
+    }
+}
+
 createBtn.addEventListener('click', () => {
-    const roomCode = generateRoomCode();
-    roomCodeInput.value = roomCode;
-    joinSection.style.display = 'none';
-    transferSection.style.display = 'block';
-    createSenderOffer(roomCode);
+    roomCodeInput.value = generateRoomCode();
+    void beginConnection(roomCodeInput.value, true);
 });
 
 joinBtn.addEventListener('click', () => {
     const roomCode = roomCodeInput.value.toUpperCase().trim();
-    if (roomCode.length !== 3) {
+    if (!/^[A-Z]{3}$/.test(roomCode)) {
         logStatus('❌ 连接码必须是三位大写字母。');
+        connectionState('idle', '请输入三位英文字母作为连接码。');
         return;
     }
-    joinSection.style.display = 'none';
-    transferSection.style.display = 'block';
-    createReceiverAnswer(roomCode);
+    void beginConnection(roomCode, false);
 });
+returnToConnect.onclick = () => { resetUI(true); roomCodeInput.focus(); };
 
 cleanRoomBtn.addEventListener('click', () => {
     cleanRoomData(currentRoomCode);

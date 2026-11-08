@@ -1,3 +1,5 @@
+import { searchSite } from './site-search-index.mjs';
+export { searchSite, siteRouteKey } from './site-search-index.mjs';
 import { readChatCompletion } from './llm-stream.mjs';
 
 const searchTool = {
@@ -13,83 +15,6 @@ const searchTool = {
         }
     }
 };
-
-let indexPromise;
-export function siteRouteKey(pathname) {
-    return pathname.replace(/\/index(?:\.html)?\/?$/, '').replace(/\/+$/, '') || '/';
-}
-
-async function getIndex() {
-    if (indexPromise) return indexPromise;
-    const files = ['/json/site-pages.json', '/json/posts.json', '/assets/pages/tool/tool.json',
-        '/assets/pages/a/projects.json', '/assets/pages/blog/functions.json', '/assets/pages/games/game.json'];
-    indexPromise = Promise.all(files.map(async (url) => {
-        try {
-            const response = await fetch(url, { redirect: 'error' });
-            return response.ok ? await response.json() : null;
-        } catch { return null; }
-    })).then(([pages, posts, tools, labs, blog, games]) => {
-        const records = new Map();
-        const add = (path, title, type, description = '', indexedHref) => {
-            if (!path || !title) return;
-            const url = new URL(path, location.origin);
-            if (url.origin !== location.origin) return;
-            const key = siteRouteKey(url.pathname);
-            if (/^\/(?:api|login|settings|space|admin)(?:\/|$)|\/manage(?:\/|$)/i.test(key)) return;
-            const href = indexedHref || records.get(key)?.href || (url.pathname.endsWith('/') && key !== '/' ? key + '/' : key);
-            records.set(key, { href, url: new URL(href, location.origin).href,
-                title: String(title).slice(0, 140), type, description: String(description).slice(0, 220) });
-        };
-        const addCatalog = (catalog, collection, prefix, type) => {
-            (catalog?.categories || []).flatMap((category) => category[collection] || []).forEach((item) => {
-                const path = item.url || item.link;
-                if (path) add(/^(\/|https?:)/i.test(path) ? path : `/${prefix}${path}`,
-                    item.name, type, item.description || item.desc || item.intro || '');
-            });
-        };
-        add('/', '奇夸克首页', '导航');
-        add('/tool/', '工具箱', '导航');
-        add('/posts/', '文章与博客', '导航');
-        add('/games/', '游戏目录', '导航', '休闲游戏、多人游戏和经典游戏');
-        add('/a/', '实验室', '导航');
-        add('/a/qai/', 'QAI WebUI', '实验室', '支持自定义模型的 AI 对话工作台');
-        add('/a/terminal/', 'Quark 终端', '实验室', '网页命令行和 AI 对话');
-        (Array.isArray(pages) ? pages : []).forEach((page) => {
-            const href = typeof page.href === 'string' && /^\/(?![\/\\])/.test(page.href) ? page.href : undefined;
-            add('/' + page.path, page.title, '页面', '', href);
-        });
-        (Array.isArray(posts) ? posts : []).forEach((post) => add(
-            post.file && `/posts/${post.file.replace(/\.md$/, '')}`, post.title, '文章',
-            [post.description || post.summary, ...(post.tags || [])].filter(Boolean).join(' · ')));
-        addCatalog(tools, 'tools', 'tool/', '工具');
-        addCatalog(labs, 'projects', 'a/', '实验室');
-        addCatalog(blog, 'functions', 'blog/', '博客');
-        for (const key of ['multiplayer', 'singlePlayer', 'classic']) {
-            for (const game of games?.[key] || []) {
-                if (game.link) add(game.link.startsWith('/') ? game.link : `/games/${game.link}`, game.name, '游戏', game.description);
-            }
-        }
-        if (![pages, posts, tools, labs, blog, games].some(Boolean)) indexPromise = undefined;
-        return [...records.values()];
-    }).catch((error) => { indexPromise = undefined; throw error; });
-    return indexPromise;
-}
-
-export async function searchSite(query, signal) {
-    const keyword = String(query || '').trim().slice(0, 120).toLowerCase();
-    if (!keyword) return [];
-    signal?.throwIfAborted();
-    const records = await getIndex();
-    signal?.throwIfAborted();
-    const terms = [...new Set([keyword, ...keyword.split(/[\s，。、；,!?]+/).filter(Boolean)])];
-    return records.map((record) => {
-        const title = record.title.toLowerCase();
-        const description = record.description.toLowerCase();
-        const score = terms.reduce((sum, term) => sum + (title === term ? 20 : title.includes(term) ? 8
-            : record.href.toLowerCase().includes(term) ? 4 : description.includes(term) ? 2 : 0), 0);
-        return { record, score };
-    }).filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 6).map((item) => item.record);
-}
 
 export async function runHarness({ settings, body, useSearch, extraTools = [], signal, onProgress = () => {}, onText,
     requestChat = window.QuarkLLMConfig.requestChat, retryRequests = true }) {

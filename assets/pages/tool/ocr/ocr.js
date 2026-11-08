@@ -1,3 +1,5 @@
+import { openHandoff } from '/assets/js/tool-handoff.mjs';
+
 // 获取DOM元素
 const fileInput = document.getElementById('fileInput');
 const selectBtn = document.getElementById('selectBtn');
@@ -13,6 +15,31 @@ const progressBar = document.getElementById('progressBar');
 const statusText = document.getElementById('statusText');
 const languageSelect = document.getElementById('language');
 const currentYearSpan = document.getElementById('currentYear');
+const handoff = document.getElementById('ocrHandoff');
+const sample = document.getElementById('ocrSample');
+const updateResultActions = () => {
+    copyBtn.disabled = exportBtn.disabled = handoff.disabled = !resultText.value.trim();
+};
+resultText.addEventListener('input', updateResultActions);
+handoff.onclick = () => openHandoff(handoff, 'editor', 'OCR 识别结果', resultText.value);
+sample.onclick = async () => {
+    try {
+        const image = new Image();
+        image.src = '/assets/pages/tool/ocr/sample.svg';
+        await image.decode();
+        const canvas = document.createElement('canvas');
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        canvas.getContext('2d').drawImage(image, 0, 0);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve));
+        if (!blob) throw new Error();
+        languageSelect.value = 'eng';
+        handleFiles([new File([blob], 'quark-ocr-sample.png', { type: 'image/png' })]);
+    } catch {
+        progressContainer.style.display = 'block';
+        statusText.textContent = '示例图片加载失败，可以重新点击或选择自己的图片。';
+    }
+};
 
 // 设置当前年份
 currentYearSpan.textContent = new Date().getFullYear();
@@ -21,7 +48,7 @@ currentYearSpan.textContent = new Date().getFullYear();
 let uploadedImages = [];
 
 // 初始化拖拽排序
-let sortable = new Sortable(imagePreviews, {
+if (window.Sortable) new window.Sortable(imagePreviews, {
     animation: 150,
     handle: '.drag-handle',
     ghostClass: 'dragging',
@@ -151,6 +178,7 @@ recognizeBtn.addEventListener('click', async () => {
 
     // 清空结果文本框
     resultText.value = '';
+    updateResultActions();
     resultText.readOnly = false;
 
     // 禁用按钮防止重复点击
@@ -228,17 +256,14 @@ recognizeBtn.addEventListener('click', async () => {
         statusText.textContent = `识别完成! 共识别了 ${uploadedImages.length} 张图片`;
         progressBar.style.width = '100%';
 
-        // 启用操作按钮
-        copyBtn.disabled = false;
-        exportBtn.disabled = false;
-
     } catch (err) {
         console.error(err);
-        statusText.textContent = '识别失败: ' + err.message;
+        statusText.textContent = '识别暂未完成，图片仍在。请检查网络后重新开始。';
     } finally {
         // 恢复按钮状态
         recognizeBtn.disabled = false;
         recognizeBtn.textContent = '开始识别';
+        updateResultActions();
     }
 });
 
@@ -289,8 +314,7 @@ clearBtn.addEventListener('click', () => {
     resultText.value = '';
     resultText.readOnly = true;
     recognizeBtn.disabled = true;
-    copyBtn.disabled = true;
-    exportBtn.disabled = true;
+    updateResultActions();
     progressContainer.style.display = 'none';
     statusText.textContent = '准备就绪';
 

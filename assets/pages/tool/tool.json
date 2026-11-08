@@ -36,7 +36,7 @@
           "name": "Q-AI WebUI",
           "url": "/a/qai",
           "target": "_self",
-          "description": "在浏览器中与 AI 对话、检索和探索。"
+          "description": "配置模型、预设与附件，管理长对话。"
         },
         {
           "name": "高级科学计算器",
@@ -71,13 +71,15 @@
           "name": "语音识别",
           "url": "/tool/audio2txt",
           "target": "_self",
-          "description": "将语音内容转成文字，便于整理和检索。"
+          "description": "将语音内容转成文字，便于整理和检索。",
+          "tags": ["需要麦克风"]
         },
         {
           "name": "文字识别",
           "url": "/tool/ocr",
           "target": "_self",
-          "description": "从图片中识别文字，减少手工录入。"
+          "description": "从图片中识别文字，减少手工录入。",
+          "tags": ["本地处理"]
         },
         {
           "name": "Markdown 编辑器",
@@ -106,7 +108,8 @@
           "name": "夸克闪传 QuarkShare",
           "url": "/a/share",
           "target": "_self",
-          "description": "通过浏览器直接传送文件给另一台设备。"
+          "description": "通过浏览器直接传送文件给另一台设备。",
+          "tags": ["需要两台设备"]
         },
         {
           "name": "PPT遥控器",

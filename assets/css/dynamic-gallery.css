@@ -376,3 +376,7 @@ body.gallery-open { overflow: hidden; }
     }
     .close-btn { top: 10px; right: 10px; }
 }
+.gallery-item.is-error::before { content: '图片暂不可用'; position: absolute; inset: 0; display: grid; place-items: center; padding: 4px; font-size: .75rem; color: var(--text-subtle); }
+.gallery-item.is-error img { visibility: hidden; }
+.gallery-item.is-error:not(.is-loaded) { animation: none; background: var(--surface-soft); }
+.gallery-image-source:not([hidden]) { position: absolute; inset: 45% 12px auto; text-align: center; color: white; }
