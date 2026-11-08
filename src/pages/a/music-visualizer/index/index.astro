@@ -3,75 +3,72 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>霓虹音乐可视化器 - {SITE_TITLE}</title>
+    <title>声音频谱实验室 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline src="/assets/js/nav.js"></script>
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
     <link rel="stylesheet" href="/assets/pages/a/music-visualizer/music.css">
+    <script is:inline defer src="/assets/js/nav.js"></script>
 </head>
-
-<body>
-    <div id="container">
-        <div id="ui">
-            <h1>NEON VISUALIZER 音乐可视化</h1>
-            <div class="tagline">沉浸式音乐视觉体验</div>
-
-            <div class="controls">
-                <button id="playBtn" class="control-btn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="white">
-                        <path d="M8 5v14l11-7z" />
-                    </svg>
-                    播放音乐
-                </button>
-
-                <input type="file" id="audioInput" accept="audio/*">
-                <label for="audioInput" class="file-label">
-                    <svg class="icon" viewBox="0 0 24 24" fill="white">
-                        <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" />
-                    </svg>
-                    上传音乐
-                </label>
-
-                <button id="changeMode" class="control-btn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="white">
-                        <path
-                            d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-3-9h3.63L9 15.2V17h6v-2h-3.63L15 10.8V9H9v2z" />
-                    </svg>
-                    切换模式
-                </button>
-            </div>
-
-            <div class="visualization-controls">
-                <button class="viz-btn active" data-viz="particles">粒子</button>
-                <button class="viz-btn" data-viz="waves">波形</button>
-                <button class="viz-btn" data-viz="spectrum">频谱</button>
-                <button class="viz-btn" data-viz="rings">光环</button>
-            </div>
-
-            <div class="color-palette">
-                <div class="color-option active" style="background: linear-gradient(135deg, #ff00cc, #3333ff);"
-                    data-color="neon"></div>
-                <div class="color-option" style="background: linear-gradient(135deg, #00ffcc, #0066ff);"
-                    data-color="ocean"></div>
-                <div class="color-option" style="background: linear-gradient(135deg, #ff9900, #ff3366);"
-                    data-color="sunset"></div>
-                <div class="color-option" style="background: linear-gradient(135deg, #66ff33, #00ccff);"
-                    data-color="forest"></div>
-            </div>
+<body class="feature-page music-page">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/a/">实验室</a></nav>
+    <main class="container">
+        <h1>声音频谱实验室</h1>
+        <p class="subtitle">边听边看声音的频率变化，给难辨的片段标上起止点，反复听。</p>
+        <div class="music-actions">
+            <button type="button" id="playBtn">播放扫频示例</button>
+            <label for="audioInput">选择本地音频</label>
+            <input type="file" id="audioInput" accept="audio/*">
         </div>
-
-        <div class="visualization-info pulse">
-            可视化模式: <span id="modeDisplay">粒子</span> | 色彩: <span id="colorDisplay">霓虹</span>
+        <p id="audioStatus" role="status">可以载入录音或音乐，音频文件在当前浏览器播放。</p>
+        <audio id="player" controls preload="metadata" aria-label="音频播放器" hidden></audio>
+        <div id="loopControls" class="music-actions" hidden>
+            <button type="button" id="markA">标记 A 点</button>
+            <button type="button" id="markB">标记 B 点</button>
+            <button type="button" id="loopToggle" aria-pressed="false">循环 A–B</button>
+            <button type="button" id="clearLoop">清除标记</button>
         </div>
-    </div>
+        <p id="loopStatus" role="status" hidden></p>
 
-    <script is:inline src="/assets/js/three.min.js"></script>
-    <script is:inline src="/assets/js/OrbitControls.js"></script>
-    <script is:inline src="/assets/pages/a/music-visualizer/music.js"></script>
+        <div class="music-actions visualization-controls" aria-label="声音视图">
+            <button type="button" data-viz="spectrogram" aria-pressed="true">滚动声谱</button>
+            <button type="button" data-viz="particles" aria-pressed="false">粒子</button>
+            <button type="button" data-viz="waves" aria-pressed="false">波形</button>
+            <button type="button" data-viz="spectrum" aria-pressed="false">频谱</button>
+            <button type="button" data-viz="rings" aria-pressed="false">光环</button>
+        </div>
+        <section id="spectrogramPanel" aria-label="频率随时间的变化">
+            <div class="spectrogram-plot">
+                <canvas id="spectrogram" width="240" height="144" aria-label="滚动声谱图，横轴为时间，纵轴为频率"></canvas>
+                <div class="frequency-axis" aria-hidden="true">
+                    <span style="top:0%">12 kHz</span>
+                    <span style="top:34%">2 kHz</span>
+                    <span style="top:60%">500 Hz</span>
+                    <span style="top:100%">60 Hz</span>
+                </div>
+            </div>
+            <div class="time-axis"><span>约 8 秒前</span><span>现在</span></div>
+            <p class="music-note">越亮表示该频率分量越强。暂停可留住当前画面，跳转播放位置会清除旧画面。</p>
+        </section>
+
+        <section id="scenePanel" aria-label="三维可视化" hidden>
+            <div class="music-actions">
+                <label for="colorScheme">配色</label>
+                <select id="colorScheme">
+                    <option value="neon">霓虹</option>
+                    <option value="ocean">海洋</option>
+                    <option value="sunset">日落</option>
+                    <option value="forest">森林</option>
+                </select>
+            </div>
+            <div id="container"></div>
+        </section>
+    </main>
+    <script is:inline defer src="/assets/js/three.min.js"></script>
+    <script is:inline defer src="/assets/js/OrbitControls.js"></script>
+    <script is:inline type="module" src="/assets/pages/a/music-visualizer/music.js"></script>
 </body>
-
 </html>

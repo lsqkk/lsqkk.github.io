@@ -10,7 +10,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能OCR文字识别 - {SITE_TITLE}</title>
+    <title>OCR 文字识别与原图校对 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <script is:inline defer src="/assets/js/nav.js"></script>
 
@@ -27,10 +27,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 
     <LuxuryBackground />
     <div class="container">
-        <h1>智能 OCR 文字识别</h1>
+        <h1>OCR 文字识别与原图校对</h1>
+        <p class="subtitle">批量识别后，从引擎最拿不准的词开始，点一下就能回到原图。</p>
 
         <div class="upload-area" id="dropArea">
-            <p>拖放图片到这里，或点击选择文件</p>
+            <p>选择、拖放图片，或直接粘贴截图</p>
             <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
             <button class="btn" id="selectBtn">选择图片</button>
             <button class="btn" id="ocrSample" type="button">用示例试一下</button>
@@ -42,7 +43,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <label for="language">识别语言: </label>
             <select id="language" class="ocr-language-select">
                 <option value="eng">English</option>
-                <option value="chi_sim" selected>简体中文</option>
+                <option value="chi_sim+eng" selected>简体中文 + 英语</option>
                 <option value="chi_tra">繁體中文</option>
                 <option value="jpn">日本語</option>
                 <option value="kor">한국어</option>
@@ -64,6 +65,37 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             <button class="btn" id="recognizeBtn" disabled>开始识别</button>
         </div>
 
+        <section id="ocrReview" hidden aria-labelledby="ocrReviewTitle">
+            <h2 id="ocrReviewTitle">疑点校对</h2>
+            <div class="ocr-review-controls">
+                <label for="ocrPage">原图</label>
+                <select id="ocrPage"></select>
+                <label for="ocrThreshold">置信度低于</label>
+                <select id="ocrThreshold">
+                    <option value="60">60</option>
+                    <option value="80" selected>80</option>
+                    <option value="90">90</option>
+                    <option value="101">显示全部</option>
+                </select>
+            </div>
+            <div class="ocr-review-grid">
+                <div class="ocr-source">
+                    <img id="ocrSourceImage" alt="识别文字的原图">
+                    <span id="ocrSourceMark" hidden></span>
+                </div>
+                <div>
+                    <p id="ocrReviewStatus" role="status"></p>
+                    <canvas id="ocrDetail" hidden aria-label="当前疑点的原图局部"></canvas>
+                    <div class="ocr-review-controls">
+                        <button id="ocrPrev" type="button" class="btn">上一处</button>
+                        <button id="ocrNext" type="button" class="btn">下一处</button>
+                        <button id="ocrLocate" type="button" class="btn">选中结果里的词</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <label for="resultText">识别结果（可直接修改）</label>
         <textarea id="resultText" placeholder="识别结果将显示在这里..." readonly></textarea>
 
         <div class="action-buttons">
@@ -80,11 +112,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                 蓝色奇夸克</a> All rights reserved.</p>
         <p>基于Tesseract.js的纯前端OCR工具 - 数据完全在本地处理，不会上传到服务器</p>
     </footer>
-
-    <!-- 引入Tesseract.js库 -->
-    <script is:inline src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <!-- 引入SortableJS实现拖拽排序 -->
-    <script is:inline src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <script is:inline type="module" src="/assets/pages/tool/ocr/ocr.js"></script>
 </body>

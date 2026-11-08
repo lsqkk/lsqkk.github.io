@@ -628,6 +628,28 @@ body.feature-chat-analyzer .container p { color: var(--text-subtle); }
   border-radius: var(--radius-lg);
 }
 .word-item { border-radius: var(--radius-xs); }
+.feature-chat-analyzer .word-list {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+}
+.feature-chat-analyzer .word-item:hover,
+.feature-chat-analyzer .word-item:focus-visible {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+#concordance {
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+}
+#concordanceLines {
+    max-height: 360px;
+    overflow: auto;
+    padding-left: 1.5em;
+    overflow-wrap: anywhere;
+}
+#concordanceLines li { padding: 6px 0; }
+#concordanceLines mark { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .results-header { color: var(--text-main); }
 .progress-container { background: var(--line-soft); border-radius: 2px; }
 .progress-fill { background: var(--text-main); }

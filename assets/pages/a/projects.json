@@ -22,9 +22,9 @@
           "icon": "fa-atom"
         },
         {
-          "name": "音乐可视化",
+          "name": "声音频谱实验室",
           "link": "music-visualizer",
-          "description": "结合粒子系统和 3D 场景的音频可视化实验",
+          "description": "用滚动声谱查看声音变化，标记 A–B 循环反复听，或切换三维可视化。",
           "icon": "fa-music"
         }
       ]

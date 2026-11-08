@@ -2,10 +2,10 @@ import { searchSite, runHarness, appendRunDetails, siteRouteKey } from './llm-ha
 import { openHandoff } from './tool-handoff.mjs';
 import { resumeHref } from './reading-position.mjs';
 import { getQuarkBotTools } from './quarkbot-tools.mjs';
-import { quotaHeaders, quotaLoginUrl, quotaNeedsVerification } from './quota-session.mjs';
+import { quotaLoginUrl, quotaNeedsVerification } from './quota-session.mjs';
+import { requestFreeChat } from './free-ai.mjs';
 import { isSessionChange, listSessions, newSession, preferredMode, readSession, rememberMode, sessionUrl, updateSession } from './quarkbot-sessions.mjs';
 
-const freeEndpoint = '__API_BASE__/api/quarkbot-free';
 const botFace = `<svg class="quark-bot-face" viewBox="0 0 40 40" fill="none" aria-hidden="true">
   <path d="M20 10V6m-2 0h4M8 19H5v7h3m24-7h3v7h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   <rect x="8" y="11" width="24" height="22" rx="8" fill="currentColor"/>
@@ -14,12 +14,9 @@ const botFace = `<svg class="quark-bot-face" viewBox="0 0 40 40" fill="none" ari
   <path d="M18 30h4" stroke="var(--bot-visor)" stroke-width="1.4" stroke-linecap="round"/>
 </svg>`;
 
-async function requestFreeChat(body, signal) {
+async function requestBotFreeChat(body, signal) {
     try {
-        return await fetch(freeEndpoint, {
-            method: 'POST', headers: { 'Content-Type': 'application/json', ...quotaHeaders() },
-            body: JSON.stringify(body), credentials: 'omit', redirect: 'error', signal
-        });
+        return await requestFreeChat(body, signal);
     } catch (error) {
         if (signal.aborted) throw error;
         throw new Error('无法连接站点免费 AI，可以使用站内搜索或切换到自定义 API。');
@@ -616,7 +613,7 @@ function mountConversation(panel, loadScript, workspace) {
                 settings, body, useSearch: pref().botSearch !== false,
                 extraTools: getQuarkBotTools(query, { includePage, showReadingResults }), signal,
                 requestChat: freeMode ? async (_settings, request, signal) => {
-                    const response = await requestFreeChat(request, signal);
+                    const response = await requestBotFreeChat(request, signal);
                     if (response.ok) quotaTip.hidden = true;
                     else if (response.status === 429 || response.status === 401) {
                         const data = await response.clone().json().catch(() => ({}));

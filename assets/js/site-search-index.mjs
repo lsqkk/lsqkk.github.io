@@ -4,6 +4,8 @@ let fulltextPromise;
 const aliases = {
     '/tool/ocr': ['图片转文字', '照片提取文字', '识别图片', '扫描文字'],
     '/tool/audio2txt': ['录音转文字', '音频转文字', '语音转文字', '听写'],
+    '/tool/chat-analyzer': ['聊天记录分析与词云', '聊天词频', '关键词语境'],
+    '/a/music-visualizer': ['音乐可视化', '声谱图', '音频片段循环'],
     '/tool/ref': ['做参考文献', '生成引用', '参考文献格式', 'GB/T 7714'],
     '/tool/pomodoro': ['专注计时', '计时器', '学习计时'],
     '/tool/decision': ['比较方案', '做决策', '利弊比较'],

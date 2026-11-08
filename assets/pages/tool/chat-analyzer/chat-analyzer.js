@@ -1,9 +1,16 @@
-// 全局变量
+import { wordsIn } from './words.mjs';
+import { loadScript } from '/assets/js/load-script.mjs';
+
+const get = id => document.getElementById(id);
+const analyze = get('analyzeBtn');
+const fileInput = get('fileInput');
+const upload = get('uploadArea');
+const chatStatus = get('chatStatus');
+const stopwords = new Set();
 let chatData = '';
-let wordFrequencies = {};
-let specialCounts = { period: 0, question: 0 };
+let generation = 0;
 let analysisResults = {};
-let stopwords = new Set();
+let lookup;
 
 // 初始化排除词列表（与Python版本一致的核心排除词）
 function initStopwords() {
@@ -38,334 +45,232 @@ function initStopwords() {
 }
 
 
-// 文件上传处理
-document.addEventListener('DOMContentLoaded', function () {
-    initStopwords();
 
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const analyzeBtn = document.getElementById('analyzeBtn');
+initStopwords();
 
-    // 点击上传区域触发文件选择
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    // 拖放功能
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('drag-over');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('drag-over');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('drag-over');
-
-        if (e.dataTransfer.files.length) {
-            fileInput.files = e.dataTransfer.files;
-            handleFileSelect();
-        }
-    });
-
-    // 文件选择变化
-    fileInput.addEventListener('change', handleFileSelect);
-
-    function handleFileSelect() {
-        if (fileInput.files.length === 0) return;
-
-        const file = fileInput.files[0];
-
-        // 验证文件类型
-        if (!file.name.toLowerCase().endsWith('.txt')) {
-            alert('请选择.txt格式的文本文件');
-            fileInput.value = '';
-            return;
-        }
-
-        // 显示文件信息
-        fileName.textContent = file.name;
-        fileSize.textContent = formatFileSize(file.size);
-        fileInfo.style.display = 'block';
-
-        // 启用分析按钮
-        analyzeBtn.disabled = false;
-
-        // 读取文件内容
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            chatData = e.target.result;
-        };
-        reader.readAsText(file, 'UTF-8');
-    }
-
-    // 开始分析按钮
-    analyzeBtn.addEventListener('click', startAnalysis);
-
-    // 重置按钮
-    document.getElementById('resetBtn').addEventListener('click', resetAnalysis);
-
-    // 下载按钮
-    document.getElementById('downloadDetailed').addEventListener('click', () => downloadFile('detailed'));
-    document.getElementById('downloadVocab').addEventListener('click', () => downloadFile('vocab'));
-    document.getElementById('downloadSummary').addEventListener('click', () => downloadFile('summary'));
-});
-
-// 格式化文件大小
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+function reset() {
+    generation++;
+    lookup = null;
+    chatData = '';
+    analysisResults = {};
+    fileInput.value = '';
+    get('fileInfo').style.display = 'none';
+    get('resultsSection').style.display = 'none';
+    get('progressContainer').style.display = 'none';
+    get('concordance').hidden = true;
+    get('concordanceLines').replaceChildren();
+    get('wordList').replaceChildren();
+    analyze.disabled = true;
+    chatStatus.textContent = '';
 }
 
-// 开始分析
-function startAnalysis() {
-    if (!chatData) {
-        alert('请先上传聊天记录文件');
+function setText(name, text) {
+    chatData = text;
+    get('fileName').textContent = name;
+    get('fileSize').textContent = new Intl.NumberFormat('zh-CN').format(text.length) + ' 字符';
+    get('fileInfo').style.display = 'block';
+    analyze.disabled = !text.trim();
+    chatStatus.textContent = analyze.disabled ? '文件没有可分析的文字。' : '可以开始分析。';
+}
+
+async function loadFile(file) {
+    reset();
+    if (!file) return;
+    if (!/\.txt$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
+        chatStatus.textContent = '请选择 10 MB 以内的 UTF-8 文本文件（.txt）。';
         return;
     }
-
-    // 获取配置
-    const minFrequency = parseInt(document.getElementById('minFrequency').value) || 20;
-    const enablePunctuationStats = document.getElementById('punctuationStats').checked;
-
-    // 显示进度条和加载动画
-    document.getElementById('progressContainer').style.display = 'block';
-    document.getElementById('loader').style.display = 'block';
-    document.getElementById('analyzeBtn').disabled = true;
-
-    // 重置结果区域
-    document.getElementById('resultsSection').style.display = 'none';
-
-    // 分析过程（模拟进度）
-    simulateProgress();
-
-    // 实际分析（使用setTimeout避免阻塞UI）
-    setTimeout(() => {
-        performAnalysis(minFrequency, enablePunctuationStats);
-    }, 100);
+    const request = generation;
+    chatStatus.textContent = '正在读取文件…';
+    try {
+        const text = await file.text();
+        if (request === generation) setText(file.name, text);
+    } catch {
+        if (request === generation) chatStatus.textContent = '无法读取文件，请重新选择。';
+    }
 }
 
-// 模拟进度显示
-function simulateProgress() {
-    let progress = 0;
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const loaderDetail = document.getElementById('loaderDetail');
+get('chooseChatFile').onclick = () => fileInput.click();
+fileInput.onchange = () => loadFile(fileInput.files[0]);
+upload.ondragover = event => {
+    event.preventDefault();
+    upload.classList.add('drag-over');
+};
+upload.ondragleave = () => upload.classList.remove('drag-over');
+upload.ondrop = event => {
+    event.preventDefault();
+    upload.classList.remove('drag-over');
+    loadFile(event.dataTransfer.files[0]);
+};
+get('chatSample').onclick = () => {
+    reset();
+    setText('读书会示例', [
+        '读书会这周聊科幻小说，大家先选一段最喜欢的原文。',
+        '我读了三篇科幻小说，想从叙事视角来比较。',
+        '我觉得科幻小说里这个城市的设定适合做读书会主题。',
+        '周末读书会可以线上开，书单放群里吧。',
+        '有些科幻小说的开头很慢，读到后面就停不下来。'
+    ].join('\n'));
+    analyze.click();
+};
+get('resetBtn').onclick = reset;
+get('downloadDetailed').onclick = () => downloadFile('detailed');
+get('downloadVocab').onclick = () => downloadFile('vocab');
+get('downloadSummary').onclick = () => downloadFile('summary');
 
-    const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress > 95) progress = 95;
+const punctuation = {
+    period: { label: '[整行都是句号]', pattern: /^[。]+$/u },
+    question: { label: '[整行都是问号]', pattern: /^[？]+$/u }
+};
+const yieldToPage = () => new Promise(resolve => setTimeout(resolve, 0));
 
-        progressFill.style.width = `${progress}%`;
-        progressText.textContent = `${Math.round(progress)}%`;
+analyze.onclick = async () => {
+    if (!chatData.trim()) return;
+    const request = ++generation;
+    lookup = null;
+    const lines = chatData.split(/\r\n|\n|\r/);
+    const minFrequency = Math.max(1, Math.min(1000, Number.parseInt(get('minFrequency').value, 10) || 3));
+    const enablePunctuationStats = get('punctuationStats').checked;
+    const frequencies = new Map();
+    const specialCounts = { period: 0, question: 0 };
+    analyze.disabled = true;
+    get('resultsSection').style.display = 'none';
+    get('concordance').hidden = true;
+    get('concordanceLines').replaceChildren();
+    get('progressContainer').style.display = 'block';
+    chatStatus.textContent = '正在分词和统计…';
 
-        // 更新加载详情
-        if (progress < 30) {
-            loaderDetail.textContent = '正在读取文件内容...';
-        } else if (progress < 60) {
-            loaderDetail.textContent = '正在进行分词处理...';
-        } else {
-            loaderDetail.textContent = '正在统计词频和生成词云...';
-        }
-
-        if (progress >= 100) {
-            clearInterval(interval);
-        }
-    }, 200);
-
-    return interval;
-}
-
-// 执行分析
-function performAnalysis(minFrequency, enablePunctuationStats) {
-    // 重置数据
-    wordFrequencies = {};
-    specialCounts = { period: 0, question: 0 };
-
-    const lines = chatData.split('\n');
-    let totalLines = lines.length;
-    let processedLines = 0;
-
-    // 中文分词简单实现（模拟jieba功能）
-    function simpleChineseSegment(text) {
-        // 移除URL
-        text = text.replace(/https?:\/\/\S+/g, '');
-        // 移除邮箱
-        text = text.replace(/\S+@\S+/g, '');
-        // 保留中文、英文、数字和基本标点
-        text = text.replace(/[^\w\u4e00-\u9fff\s\.\,\!\?，。！？]/g, '');
-        // 合并多个空格
-        text = text.replace(/\s+/g, ' ').trim();
-
-        if (!text) return [];
-
-        // 简单的分词逻辑（实际应用中应该使用更复杂的分词算法）
-        let words = [];
-        let currentWord = '';
-
-        for (let char of text) {
-            // 如果是中文或数字，添加到当前词
-            if (/[\u4e00-\u9fff0-9]/.test(char)) {
-                currentWord += char;
+    let index = 0;
+    while (index < lines.length) {
+        const percent = Math.floor(index * 100 / lines.length) + '%';
+        get('progressFill').style.width = percent;
+        get('progressText').textContent = percent;
+        await yieldToPage();
+        if (request !== generation) return;
+        const deadline = performance.now() + 12;
+        do {
+            const line = lines[index++].trim();
+            if (enablePunctuationStats) {
+                if (punctuation.period.pattern.test(line)) specialCounts.period++;
+                if (punctuation.question.pattern.test(line)) specialCounts.question++;
             }
-            // 如果是英文，添加到当前词
-            else if (/[a-zA-Z]/.test(char)) {
-                currentWord += char;
+            for (const { word } of wordsIn(line)) {
+                if (!stopwords.has(word)) frequencies.set(word, (frequencies.get(word) || 0) + 1);
             }
-            // 如果是分隔符，结束当前词
-            else if (currentWord) {
-                words.push(currentWord);
-                currentWord = '';
-            }
-        }
-
-        // 添加最后一个词
-        if (currentWord) {
-            words.push(currentWord);
-        }
-
-        return words;
+        } while (index < lines.length && performance.now() < deadline);
     }
 
-    // 处理每一行
-    for (let line of lines) {
-        processedLines++;
-
-        // 更新进度（每处理100行更新一次）
-        if (processedLines % 100 === 0) {
-            const progress = Math.min(95, (processedLines / totalLines) * 90);
-            document.getElementById('progressFill').style.width = `${progress}%`;
-            document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
-        }
-
-        const trimmedLine = line.trim();
-
-        // 检查纯标点消息（如果开启）
-        if (enablePunctuationStats) {
-            // 检查是否整行都是句号
-            if (/^[。]+$/.test(trimmedLine)) {
-                specialCounts.period++;
-                continue;
-            }
-
-            // 检查是否整行都是问号
-            if (/^[？]+$/.test(trimmedLine)) {
-                specialCounts.question++;
-                continue;
-            }
-        }
-
-        // 分词和统计
-        const words = simpleChineseSegment(trimmedLine);
-
-        for (let word of words) {
-            if (word) {
-                wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
-            }
-        }
+    const words = [...frequencies].filter(([, count]) => count >= minFrequency);
+    for (const [kind, { label }] of Object.entries(punctuation)) {
+        if (enablePunctuationStats && specialCounts[kind] >= minFrequency) words.push([label, specialCounts[kind]]);
     }
-
-    // 过滤和排序
-    const filteredWords = {};
-    let totalWords = 0;
-
-    for (let [word, freq] of Object.entries(wordFrequencies)) {
-        if (freq >= minFrequency && !stopwords.has(word)) {
-            filteredWords[word] = freq;
-            totalWords++;
-        }
-    }
-
-    // 转换为数组并排序
-    const sortedWords = Object.entries(filteredWords)
-        .sort((a, b) => b[1] - a[1]);
-
-    // 添加特殊标点到结果（如果达到阈值）
-    const finalResults = [...sortedWords];
-
-    if (enablePunctuationStats) {
-        if (specialCounts.period >= minFrequency) {
-            finalResults.push(['[整行都是句号]', specialCounts.period]);
-        }
-        if (specialCounts.question >= minFrequency) {
-            finalResults.push(['[整行都是问号]', specialCounts.question]);
-        }
-
-        // 重新排序
-        finalResults.sort((a, b) => b[1] - a[1]);
-    }
-
-    // 保存分析结果
+    words.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'));
     analysisResults = {
-        words: finalResults,
-        specialCounts,
-        totalLines,
-        filteredCount: finalResults.length,
-        minFrequency,
-        enablePunctuationStats,
+        words, lines, specialCounts, totalLines: lines.length,
+        filteredCount: words.length, minFrequency, enablePunctuationStats,
         timestamp: new Date().toLocaleString('zh-CN')
     };
+    displayResults();
+};
 
-    // 完成进度
-    document.getElementById('progressFill').style.width = '100%';
-    document.getElementById('progressText').textContent = '100%';
-
-    // 显示结果
-    setTimeout(displayResults, 500);
-}
-
-// 显示分析结果
 function displayResults() {
-    // 隐藏进度和加载动画
-    document.getElementById('progressContainer').style.display = 'none';
-    document.getElementById('loader').style.display = 'none';
+    const { words, specialCounts, totalLines, filteredCount, minFrequency, timestamp } = analysisResults;
+    get('progressContainer').style.display = 'none';
+    chatStatus.textContent = '分析完成。点击高频词可以回查原句。';
+    get('statWordCount').textContent = filteredCount;
+    get('statPeriodCount').textContent = specialCounts.period;
+    get('statQuestionCount').textContent = specialCounts.question;
+    get('statTotalLines').textContent = totalLines;
+    get('analysisTime').textContent = timestamp;
+    get('resultsSummary').textContent = '共分析 ' + totalLines + ' 行，发现 ' + filteredCount + ' 个达到阈值的词或标点项（≥ ' + minFrequency + ' 次）。';
 
-    // 更新统计信息
-    document.getElementById('statWordCount').textContent = analysisResults.filteredCount;
-    document.getElementById('statPeriodCount').textContent = analysisResults.specialCounts.period;
-    document.getElementById('statQuestionCount').textContent = analysisResults.specialCounts.question;
-    document.getElementById('statTotalLines').textContent = analysisResults.totalLines;
-
-    // 更新摘要
-    document.getElementById('resultsSummary').textContent =
-        `共分析 ${analysisResults.totalLines} 行，发现 ${analysisResults.filteredCount} 个高频词（出现次数 ≥ ${analysisResults.minFrequency}）`;
-
-    document.getElementById('analysisTime').textContent = analysisResults.timestamp;
-
-    // 显示高频词列表
-    const wordListContainer = document.getElementById('wordList');
-    wordListContainer.innerHTML = '';
-
-    const topWords = analysisResults.words.slice(0, 50);
-    for (let [word, freq] of topWords) {
-        const wordItem = document.createElement('div');
-        wordItem.className = 'word-item';
-        wordItem.innerHTML = `
-                    <span class="word-text">${word}</span>
-                    <span class="word-count">${freq}</span>
-                `;
-        wordListContainer.appendChild(wordItem);
+    const list = get('wordList');
+    list.replaceChildren();
+    for (const [word, frequency] of words.slice(0, 50)) {
+        const item = document.createElement('button');
+        item.className = 'word-item';
+        item.type = 'button';
+        const label = document.createElement('span');
+        label.className = 'word-text';
+        label.textContent = word;
+        const count = document.createElement('span');
+        count.className = 'word-count';
+        count.textContent = frequency;
+        item.append(label, count);
+        item.onclick = () => {
+            lookup = { word, frequency, index: 0 };
+            get('concordance').hidden = false;
+            get('concordanceTitle').textContent = '「' + word + '」的原句';
+            get('concordanceTitle').focus();
+            get('concordanceLines').replaceChildren();
+            void loadMatches();
+        };
+        list.append(item);
     }
-
-    // 生成词云
-    generateWordCloud();
-
-    // 显示结果区域
-    document.getElementById('resultsSection').style.display = 'block';
-
-    // 滚动到结果区域
-    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-
-    // 重新启用分析按钮
-    document.getElementById('analyzeBtn').disabled = false;
+    get('resultsSection').style.display = 'block';
+    const current = generation;
+    get('wordcloudCanvas').hidden = true;
+    get('wordCloudStatus').textContent = '正在加载词云组件…';
+    void loadScript('https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.0/wordcloud2.min.js', 'WordCloud')
+        .then(() => {
+            if (current !== generation) return;
+            get('wordCloudStatus').textContent = '';
+            get('wordcloudCanvas').hidden = false;
+            generateWordCloud();
+        }).catch(() => {
+            if (current === generation) get('wordCloudStatus').textContent = '词云暂不可用，可继续回查原句或导出结果。';
+        });
+    get('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    analyze.disabled = false;
 }
+
+function addMatch(line, number, match) {
+    const start = Math.max(0, match.index - 95);
+    const end = Math.min(line.length, match.index + match.length + 95);
+    const li = document.createElement('li');
+    const mark = document.createElement('mark');
+    mark.textContent = line.slice(match.index, match.index + Math.min(match.length, 95));
+    li.append('第 ' + number + ' 行 · ' + (start > 0 ? '…' : '') + line.slice(start, match.index),
+        mark, line.slice(match.index + match.length, end) + (end < line.length || match.length > 95 ? '…' : ''));
+    get('concordanceLines').append(li);
+}
+
+async function loadMatches() {
+    const request = lookup;
+    if (!request || request.loading) return;
+    request.loading = true;
+    const more = get('moreMatches');
+    const status = get('concordanceStatus');
+    const { lines } = analysisResults;
+    const special = Object.values(punctuation).find(item => item.label === request.word);
+    more.hidden = true;
+    status.textContent = '正在回查原文…';
+    let found = 0;
+    while (request.index < lines.length && found < 20) {
+        await yieldToPage();
+        if (lookup !== request) return;
+        const deadline = performance.now() + 12;
+        do {
+            const line = lines[request.index++];
+            let match;
+            if (special && special.pattern.test(line.trim())) {
+                match = { index: line.indexOf(line.trim()), length: line.trim().length };
+            } else if (!special && line.toLowerCase().includes(request.word)) {
+                for (const token of wordsIn(line)) {
+                    if (token.word === request.word) { match = token; break; }
+                }
+            }
+            if (match) {
+                addMatch(line, request.index, match);
+                found++;
+            }
+        } while (request.index < lines.length && found < 20 && performance.now() < deadline);
+    }
+    request.loading = false;
+    more.hidden = request.index === lines.length;
+    status.textContent = '已列出 ' + get('concordanceLines').childElementCount + ' 行 · 统计共 ' + request.frequency + ' 次';
+}
+get('moreMatches').onclick = loadMatches;
 
 // 生成词云
 function generateWordCloud() {
@@ -436,8 +341,7 @@ function generateWordCloud() {
             };
     }
 
-    // 使用wordcloud2生成词云
-    WordCloud(canvas, {
+    window.WordCloud(canvas, {
         list: wordcloudData,
         gridSize: Math.round(16 * canvas.width / 1024),
         weightFactor: 1,
@@ -576,30 +480,4 @@ function generateSummaryContent() {
     }
 
     return content;
-}
-
-// 重置分析
-function resetAnalysis() {
-    chatData = '';
-    wordFrequencies = {};
-    specialCounts = { period: 0, question: 0 };
-    analysisResults = {};
-
-    // 重置UI
-    document.getElementById('fileInput').value = '';
-    document.getElementById('fileInfo').style.display = 'none';
-    document.getElementById('resultsSection').style.display = 'none';
-    document.getElementById('progressContainer').style.display = 'none';
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('analyzeBtn').disabled = true;
-
-    // 清空词云
-    const canvas = document.getElementById('wordcloudCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 清空词列表
-    document.getElementById('wordList').innerHTML = '';
-
-    alert('已重置所有数据，可以重新上传文件进行分析。');
 }

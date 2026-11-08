@@ -63,7 +63,8 @@ export async function readChatCompletion(response, { apiKey, signal, onUpdate = 
         const markup = splitToolMarkup(hasText ? message.content : '', true);
         if (hasText) message.content = markup.content;
         if (message?.content || message?.reasoning_content) onUpdate(message);
-        return { message, usage: data?.usage, leaked: markup.leaked, recoveredCalls: markup.recoveredCalls };
+        return { message, usage: data?.usage, finishReason: data?.choices?.[0]?.finish_reason,
+            leaked: markup.leaked, recoveredCalls: markup.recoveredCalls };
     }
     if (!response.body) throw new Error('模型服务未返回响应流。');
 
@@ -72,6 +73,7 @@ export async function readChatCompletion(response, { apiKey, signal, onUpdate = 
     const message = { role: 'assistant', content: '', reasoning_content: '' };
     const calls = new Map();
     let usage;
+    let finishReason;
     let buffer = '';
     let rawContent = '';
     let complete = false;
@@ -88,7 +90,9 @@ export async function readChatCompletion(response, { apiKey, signal, onUpdate = 
             throw new Error((apiKey ? error.replaceAll(apiKey, '[已隐藏]') : error).slice(0, 500));
         }
         if (data.usage) usage = data.usage;
-        const delta = data.choices?.[0]?.delta || data.choices?.[0]?.message;
+        const choice = data.choices?.[0];
+        if (choice?.finish_reason) finishReason = choice.finish_reason;
+        const delta = choice?.delta || choice?.message;
         if (!delta) return;
         if (typeof delta.content === 'string') rawContent += delta.content;
         if (typeof delta.reasoning_content === 'string') message.reasoning_content += delta.reasoning_content;
@@ -137,5 +141,5 @@ export async function readChatCompletion(response, { apiKey, signal, onUpdate = 
         message.content = markup.content;
         onUpdate(message);
     }
-    return { message, usage, stopped, leaked: markup.leaked, recoveredCalls: markup.recoveredCalls };
+    return { message, usage, finishReason, stopped, leaked: markup.leaked, recoveredCalls: markup.recoveredCalls };
 }

@@ -1,68 +1,74 @@
 ---
 import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-const currentYear = new Date().getFullYear();
 ---
-
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>实时语音转文字 - {SITE_TITLE}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音转文字与口语整理 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
-    <script is:inline defer src="/assets/js/nav.js"></script>
-    <link rel="stylesheet" href="/assets/pages/tool/audio2txt/audio2txt.css">
     <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <link rel="stylesheet" href="/assets/css/tool-handoff.css">
+    <link rel="stylesheet" href="/assets/pages/tool/audio2txt/audio2txt.css">
+    <script is:inline defer src="/assets/js/nav.js"></script>
 </head>
-
 <body class="luxury-body feature-page feature-audio2txt">
-    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a></nav>
     <LuxuryBackground />
-    <div class="container">
-        <h1>实时语音转文字</h1>
-
-        <div class="feature-scroller">
-            <div class="feature-line active">点击"开始录音"即可将语音实时转为文字</div>
-            <div class="feature-line">转换内容自动保存，关闭页面不会丢失</div>
-            <div class="feature-line">支持移动端使用，兼容主流浏览器</div>
-            <div class="feature-line">一键复制转换结果，方便分享和使用</div>
-            <div class="feature-line">APP内无法录音？试试复制链接到浏览器</div>
-        </div>
-
+    <main class="container">
+        <h1>语音转文字与口语整理</h1>
+        <p class="subtitle">边说边记，保留逐字稿。整理完可以逐句核对，再复制或带进 Markdown。</p>
         <div class="controls">
-            <button id="startBtn" onclick="startRecognition()">
-                <span>开始录音</span>
-            </button>
-            <button id="stopBtn" onclick="stopRecognition()">
-                <span>停止录音</span>
-            </button>
-            <button id="copyBtn" onclick="copyToClipboard()">
-                <span>一键复制</span>
-            </button>
-            <button id="urlBtn" onclick="copyCurrentUrl()">
-                <span>复制链接</span>
-            </button>
+            <label for="speechLanguage">识别语言</label>
+            <select id="speechLanguage">
+                <option value="zh-CN">普通话</option>
+                <option value="zh-HK">粤语</option>
+                <option value="en-US">英语</option>
+                <option value="ja-JP">日语</option>
+            </select>
+            <button id="startBtn" type="button">开始语音识别</button>
+            <button id="stopBtn" type="button" disabled>停止</button>
         </div>
-        <textarea id="transcript" placeholder="录音内容将显示在这里..." spellcheck="false"></textarea>
-        <div class="status" id="status">准备就绪</div>
+        <p class="voice-note">实时识别由浏览器提供，语音可能由浏览器服务处理。原稿自动保存在此浏览器。</p>
+        <p id="status" role="status">准备就绪</p>
+        <p id="interim" class="voice-note" hidden></p>
 
-        <div class="copyright">
-            © 2024 - {currentYear} 蓝色奇夸克 / {SITE_TITLE} All rights reserved.
+        <div class="voice-editors">
+            <section>
+                <h2><label for="transcript">原稿</label></h2>
+                <textarea id="transcript" placeholder="开始识别，或粘贴已有的转写稿…" spellcheck="false"></textarea>
+                <div class="voice-actions">
+                    <button id="copyBtn" type="button" disabled>复制原稿</button>
+                    <button id="originalHandoff" type="button" disabled>原稿送到 Markdown</button>
+                </div>
+            </section>
+            <section>
+                <h2><label for="revision">整理稿</label></h2>
+                <textarea id="revision" placeholder="在这里对照检查和编辑整理结果…" spellcheck="false"></textarea>
+                <div class="voice-actions">
+                    <button id="copyRevision" type="button" disabled>复制整理稿</button>
+                    <button id="revisionHandoff" type="button" disabled>整理稿送到 Markdown</button>
+                </div>
+            </section>
         </div>
-    </div>
 
-    <div class="copy-success" id="copySuccess">已复制到剪贴板！</div>
-
-    <script is:inline src="/assets/pages/tool/audio2txt/audio2txt.js"></script>
+        <section class="voice-cleanup">
+            <h2>整理口语</h2>
+            <p class="voice-note">选中原稿的一段即可单独整理。每次生成会更新右侧整理稿，原稿可随时对照。</p>
+            <div class="voice-actions">
+                <button id="sampleBtn" type="button">试用示例</button>
+                <button id="localCleanup" type="button" disabled>本地去口水词</button>
+                <button id="aiCleanup" type="button" disabled>用免费 AI 整理</button>
+                <button id="cancelCleanup" type="button" hidden>取消</button>
+            </div>
+            <p class="voice-note">本地只删明显停顿词。AI 会结合语境处理口头禅、重复和自我纠正，点击后会发送所选文本或原稿全文，并消耗一次站点免费额度。</p>
+            <p id="cleanupStatus" role="status"></p>
+            <a id="quotaLogin" hidden>登录或验证账号额度 ↗</a>
+        </section>
+    </main>
+    <script is:inline type="module" src="/assets/pages/tool/audio2txt/audio2txt.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-
