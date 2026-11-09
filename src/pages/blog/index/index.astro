@@ -1,6 +1,16 @@
 ---
 import CatalogLayout from '../../../layouts/CatalogLayout.astro';
 import data from '../../../../assets/pages/blog/functions.json';
-const groups = data.categories.map(group=>({name:group.name,items:group.functions.map(item=>({name:item.name,href:item.link,description:item.description,icon:item.icon,tags:item.categories?.slice(0,2)}))}));
+const groups = data.categories.map(group => ({
+  name: group.name,
+  items: group.functions.map(item => ({
+    name: item.name,
+    href: item.link,
+    description: item.description,
+    icon: item.icon,
+    tags: item.categories?.slice(0, 2),
+    isApp: item.type === 'app',
+  })),
+}));
 ---
 <CatalogLayout title="功能导航" eyebrow="QUARK / FIND YOUR WAY" description="文章、动态、工具与那些有趣的小角落。从这里，找到你想去的地方。" groups={groups} kind="blog" />

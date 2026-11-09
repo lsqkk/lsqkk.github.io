@@ -244,6 +244,41 @@
                     "link": "https://marxism.130923.xyz/",
                     "target": "_blank",
                     "icon": "⌁"
+                },
+                {
+                    "name": "窗",
+                    "type": "app",
+                    "categories": [
+                        "自研应用",
+                        "Linux"
+                    ],
+                    "description": "Linux 桌面应用。把此刻的天空，留在桌面。",
+                    "link": "https://chuang.130923.xyz/",
+                    "target": "_blank",
+                    "icon": "⊞"
+                },
+                {
+                    "name": "打扰税",
+                    "type": "app",
+                    "categories": [
+                        "自研应用",
+                        "安卓"
+                    ],
+                    "description": "安卓应用。用通知使用权，把每天收到的通知折算成注意力秒数，按税率表结账，出一张纸质税单。",
+                    "link": "https://ql.130923.xyz/",
+                    "target": "_blank",
+                    "icon": "▤"
+                },
+                {
+                    "name": "公共休息室",
+                    "categories": [
+                        "公共生活",
+                        "劳动史"
+                    ],
+                    "description": "一个购物袋，一本书，一个卖晨报的地方。沿着物件，走进人们争取劳动尊严、公共资源和共同生活的历史。",
+                    "link": "https://the-communist.party/#/?lang=zh",
+                    "target": "_blank",
+                    "icon": "⌂"
                 }
             ]
         }

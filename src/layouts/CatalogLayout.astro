@@ -4,7 +4,7 @@ import GameCover from '../components/GameCover.astro';
 import PocketShelf from '../components/PocketShelf.astro';
 import navConfig from '../config/json/nav.json';
 import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
-interface Item { name: string; href: string; description?: string; icon?: string; tags?: string[]; }
+interface Item { name: string; href: string; description?: string; icon?: string; tags?: string[]; isApp?: boolean; }
 interface Group { name: string; description?: string; items: Item[]; }
 interface Props { title: string; eyebrow: string; description: string; groups: Group[]; kind?: string; }
 const { title, eyebrow, description, groups, kind = 'tool' } = Astro.props;
@@ -79,7 +79,7 @@ const canonicalPath = Astro.url.pathname.replace(/\/index\/?$/, '/').replace(/\/
                   <div class="catalog-card-body"><h3>{item.name}<span class="catalog-card-arrow" aria-hidden="true">↗</span></h3>
                   {item.description && <p>{item.description}</p>}
                   {item.tags?.length && <div class="catalog-card-tags">{item.tags.map(tag=><span>{tag}</span>)}</div>}
-                  {external && <span class="catalog-external">外部网站 · 新标签页打开</span>}</div>
+                  {external && <span class="catalog-external">{item.isApp ? '应用官网' : '外部网站'} · 新标签页打开</span>}</div>
                 </a>{!external && <button class="catalog-pin" type="button" data-pocket-pin={item.href.replace(/\/$/,'')} hidden aria-label={'收藏' + item.name} aria-pressed="false">☆</button>}</div>;
               })}
             </div>
