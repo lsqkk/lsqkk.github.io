@@ -147,7 +147,7 @@
     async function loadPresence() {
         try {
             setText(el.status, '正在加载在线用户...');
-            const resp = await fetch(`${API_BASE}/api/db?path=presence`, { credentials: 'omit' });
+            const resp = await fetch(`${API_BASE}/api/db?path=presence&view=online`, { credentials: 'omit' });
             if (!resp.ok) {
                 throw new Error(`HTTP ${resp.status}`);
             }

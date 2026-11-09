@@ -2,6 +2,8 @@
 import { getDatabase } from './_firebase-admin.js';
 import { resolveOrigin } from './_cors.js';
 
+const onlineWindowMs = 15 * 60 * 1000;
+
 function isAllowedOrigin(req) {
   const requestOrigin = resolveOrigin(req, ['localhost:8000', 'lsqkk.github.io']);
   return requestOrigin;
@@ -53,10 +55,15 @@ function applyQuery(ref, query) {
 
 export default async function handler(req, res) {
   const requestOrigin = isAllowedOrigin(req);
+  const path = String(req.query?.path || req.body?.path || '').trim();
+  const view = req.query?.view;
+  const countView = req.method === 'GET' && path === 'user_activity' && view === 'count';
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Cache-Control', 'no-store');
-  if (requestOrigin) {
+  if (countView) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (requestOrigin) {
     res.setHeader('Access-Control-Allow-Origin', requestOrigin);
   }
 
@@ -64,11 +71,10 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (!requestOrigin) {
+  if (!requestOrigin && !countView) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 
-  const path = String(req.query?.path || req.body?.path || '').trim();
   if (!path || !isAllowedPath(path)) {
     return res.status(400).json({ error: 'Invalid path' });
   }
@@ -77,6 +83,30 @@ export default async function handler(req, res) {
     const db = getDatabase();
 
     if (req.method === 'GET') {
+      const ref = db.ref(path);
+      if (countView) {
+        const snap = await ref.once('value');
+        let count = 0;
+        snap.forEach((user) => {
+          const nickname = user.child('profile/nickname').val();
+          const login = user.child('profile/login').val();
+          if ((typeof nickname === 'string' && nickname.trim())
+              || (typeof login === 'string' && login.trim())) {
+            count++;
+          }
+        });
+        res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300');
+        return res.status(200).json({ ok: true, data: count });
+      }
+
+      if (path === 'presence' && view === 'online') {
+        const snap = await ref.orderByChild('lastSeen')
+          .startAt(Date.now() - onlineWindowMs)
+          .endAt(Number.MAX_SAFE_INTEGER)
+          .once('value');
+        return res.status(200).json({ ok: true, data: snap.val() });
+      }
+
       const query = {
         orderByChild: req.query?.orderByChild,
         startAt: req.query?.startAt,
@@ -85,8 +115,7 @@ export default async function handler(req, res) {
         limitToLast: req.query?.limitToLast,
         limitToFirst: req.query?.limitToFirst
       };
-      const ref = applyQuery(db.ref(path), query);
-      const snap = await ref.once('value');
+      const snap = await applyQuery(ref, query).once('value');
       const data = snap.exists() ? snap.val() : null;
       return res.status(200).json({ ok: true, data });
     }

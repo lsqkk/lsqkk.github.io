@@ -467,26 +467,16 @@ function initFooterStats() {
     void loadFooterUserCount();
     void loadOpenSourceCount();
     void loadTodayCommitCount();
-
-    window.addEventListener('firebase-config-loaded', () => {
-        void loadFooterUserCount();
-    });
 }
 
 async function loadFooterUserCount() {
     const el = document.getElementById('footer-user-total');
     if (!el) return;
     try {
-        const db = await ensureOnlineFirebaseDatabase();
-        const snap = await db.ref('user_activity').once('value');
-        const raw = snap.val() || {};
-        const entries = Object.values(raw);
-        const count = entries.filter((user) => {
-            const profile = user?.profile || {};
-            const nickname = typeof profile.nickname === 'string' ? profile.nickname.trim() : '';
-            const login = typeof profile.login === 'string' ? profile.login.trim() : '';
-            return Boolean(nickname || login);
-        }).length;
+        const response = await fetch('__API_BASE__/api/db?path=user_activity&view=count');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const { data: count } = await response.json();
+        if (!Number.isSafeInteger(count)) throw new Error('Invalid user count');
         el.textContent = String(count);
     } catch (error) {
         console.warn('加载注册用户失败:', error);
@@ -1181,15 +1171,6 @@ function formatDateText(dateText) {
 const ONLINE_WINDOW = 15 * 60 * 1000;
 const ONLINE_PREVIEW_MAX = 4;
 
-async function ensureOnlineFirebaseDatabase() {
-    if (!window.QuarkFirebaseReady) {
-        throw new Error('Firebase就绪模块未加载');
-    }
-    return window.QuarkFirebaseReady.ensureDatabase({
-        scriptId: 'firebase-config-loader-index'
-    });
-}
-
 function getOnlineInitial(name) {
     const value = (name || '').trim();
     if (!value) return 'Q';
@@ -1221,9 +1202,10 @@ async function loadOnlinePreview() {
     if (!container) return;
     container.innerHTML = createSkeletonHTML('online');
     try {
-        const db = await ensureOnlineFirebaseDatabase();
-        const snap = await db.ref('presence').once('value');
-        const raw = snap.val() || {};
+        const response = await fetch('__API_BASE__/api/db?path=presence&view=online', { credentials: 'omit' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const { data } = await response.json();
+        const raw = data || {};
         const now = Date.now();
         const allItems = Object.values(raw)
             .filter((item) => item && item.lastSeen && now - item.lastSeen <= ONLINE_WINDOW)
@@ -1462,12 +1444,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('online-preview')) {
         loadOnlinePreview();
     }
-
-    window.addEventListener('firebase-config-loaded', () => {
-        if (document.getElementById('online-preview')) {
-            loadOnlinePreview();
-        }
-    });
 
     window.addEventListener('resize', () => {
         applyDynamicClamp(document.getElementById('dynamic-entries') || document);

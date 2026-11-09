@@ -14,11 +14,12 @@
 | POST `/api/email?action=send` | `{email,purpose}`，发送验证码并返回校验 token | [email.js](../../../api/email.js) |
 | POST `/api/email?action=verify` | `{email,code,token,purpose}`，校验一次性验证码，已绑定邮箱登录时返回额度会话 | [email.js](../../../api/email.js) |
 | GET / POST `/api/db` | GET 查询允许路径；POST `{path,op,value}`，op 为 set / update / remove / push | [db.js](../../../api/db.js) |
+| GET `/api/db?path=user_activity&view=count` | 只返回用户数，CDN 缓存 5 分钟 | [db.js](../../../api/db.js) |
+| GET `/api/db?path=presence&view=online` | 返回最近 15 分钟在线记录。可在 Firebase 规则的 `presence` 节点增加 `".indexOn": ["lastSeen"]` 以减少数据库读取量 | [db.js](../../../api/db.js) |
 | POST `/api/r2-presign` | `{originalName,contentType,folder}`，返回上传签名与公开地址；全景上传应用访客和账号日限额 | [r2-presign.js](../../../api/r2-presign.js) |
 | POST `/api/turnstile-verify` | `{token,purpose}`，验证人机校验结果 | [turnstile-verify.js](../../../api/turnstile-verify.js) |
 | GET `/api/ip` | 返回请求 IP 相关信息 | [ip.js](../../../api/ip.js) |
-| GET `/api/stream-proxy?url=...` | 媒体流代理 | [stream-proxy.js](../../../api/stream-proxy.js) |
-| POST `/api/stream-proxy?target=...` | 按处理器支持的目标代理 AI 搜索请求 | [stream-proxy.js](../../../api/stream-proxy.js) |
+| GET `/api/stream-proxy?mode=bili&url=...` | 仅代理 `https://uapis.cn` 的 B 站投稿列表与视频详情 JSON | [stream-proxy.js](../../../api/stream-proxy.js) |
 | POST `/api/quarkbot-free` | QuarkBot 免费对话，固定模型、共享日限额，流式返回 | [quarkbot-free.js](../../../api/quarkbot-free.js) |
 
 管理员与邮箱分别使用同一处理器的 action 参数。路由和字段以对应源码为准，不能根据旧文档推导出独立函数文件。
