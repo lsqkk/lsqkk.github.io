@@ -1,8 +1,26 @@
 [
-    {
-        "id": "estest",
-        "title": "科技伦理立场光谱测试",
-        "description": "探索你在人工智能、基因编辑等前沿技术领域的伦理立场与价值取向。",
-        "icon": "🧪"
-    }
+  {
+    "id": "estest",
+    "title": "科技伦理立场光谱测试",
+    "description": "从人工智能到基因编辑，沿四条轴查看自己的取舍。",
+    "category": "立场光谱",
+    "count": 60,
+    "style": "spectrum"
+  },
+  {
+    "id": "evidence-desk",
+    "title": "证据值班室",
+    "description": "审查六条待发布的结论，检验自己的把握是否配得上证据。",
+    "category": "证据校准",
+    "count": 6,
+    "style": "evidence"
+  },
+  {
+    "id": "rule-revision",
+    "title": "规则修订局",
+    "description": "为一座虚构小城修订六条规则，查看你的方案解决了谁的困难，又把成本交给了谁。",
+    "category": "制度推演",
+    "count": 6,
+    "style": "policy"
+  }
 ]

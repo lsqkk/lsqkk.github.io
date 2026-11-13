@@ -72,23 +72,19 @@ class CommandManager {
             .replace(/'/g, '&#39;');
     }
 
-    renderMarkdownToElement(text) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'terminal-block terminal-llm terminal-markdown';
-
+    renderMarkdown(text, wrapper) {
         const source = String(text || '').trim();
         if (!source) {
-            wrapper.textContent = '(空响应)';
-            return wrapper;
+            wrapper.textContent = '等待模型输出…';
+            return;
         }
 
         if (window.QuarkSafeMarkdown) {
             wrapper.innerHTML = window.QuarkSafeMarkdown(source);
-            return wrapper;
+            return;
         }
 
         wrapper.innerHTML = `<p>${this.escapeHtml(source).replace(/\n/g, '<br>')}</p>`;
-        return wrapper;
     }
 
     isLlmSessionActive() {
@@ -764,34 +760,73 @@ class CommandManager {
                 { role: 'assistant', content: entry.answer }
             ]);
 
-        this.output('正在连接 LLM...', 'info');
+        const card = document.createElement('div');
+        card.className = 'terminal-block terminal-llm';
+        const label = document.createElement('p');
+        label.className = 'terminal-llm-status';
+        label.setAttribute('role', 'status');
+        label.textContent = `${settings.model} · 正在连接`;
+        const body = document.createElement('div');
+        body.className = 'terminal-markdown';
+        body.setAttribute('aria-live', 'off');
+        card.append(label, body);
+        this.output(card);
+        let latest = '';
+        let frame = 0;
+        let rendered = '';
+        const render = () => {
+            frame = 0;
+            if (rendered === latest) return;
+            rendered = latest;
+            this.ui.updateOutput(() => this.renderMarkdown(latest, body));
+        };
 
         try {
+            const { readChatCompletion } = await import('/assets/js/llm-stream.mjs');
+            const requestSignal = AbortSignal.any([signal, AbortSignal.timeout(180000)].filter(Boolean));
             const response = await window.QuarkLLMConfig.requestChat(settings, {
                 model: settings.model,
                 messages: [...history, { role: 'user', content: prompt }],
-                stream: false
-            }, AbortSignal.any([signal, AbortSignal.timeout(90000)].filter(Boolean)));
+                stream: true
+            }, requestSignal);
 
             if (!response.ok) {
                 throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response, settings.apiKey));
             }
 
-            const data = await response.json();
-            const answer = data?.choices?.[0]?.message?.content?.trim();
+            label.textContent = `${settings.model} · 生成中`;
+            const { message } = await readChatCompletion(response, {
+                apiKey: settings.apiKey,
+                signal: requestSignal,
+                onUpdate: ({ content, reasoning_content }) => {
+                    if (!content && reasoning_content) {
+                        label.textContent = `${settings.model} · 推理中`;
+                        return;
+                    }
+                    if (!content) return;
+                    label.textContent = `${settings.model} · 生成中`;
+                    latest = content;
+                    if (!frame) frame = requestAnimationFrame(render);
+                }
+            });
+            const answer = message?.content?.trim();
+            if (signal?.aborted) return 130;
             if (!answer) {
                 throw new Error('LLM 未返回有效内容');
             }
 
-            if (signal?.aborted) return 130;
             this.storage.addLlmHistory({ prompt, answer, model: settings.model });
-            this.output(`模型: ${settings.model}`, 'success');
-            this.output(this.renderMarkdownToElement(answer), 'info');
+            label.textContent = `${settings.model} · 完成`;
             return 0;
         } catch (error) {
             if (signal?.aborted) return 130;
+            label.textContent = `${settings.model} · 请求失败`;
             this.output(`模型请求失败：${error.message}`, 'error');
             return 1;
+        } finally {
+            if (frame) cancelAnimationFrame(frame);
+            if (signal?.aborted) label.textContent = `${settings.model} · 已停止`;
+            render();
         }
     }
 

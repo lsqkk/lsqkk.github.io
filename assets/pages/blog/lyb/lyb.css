@@ -1050,58 +1050,115 @@ body.dark-mode {
   --text-secondary: var(--text-subtle);
   --text-muted: var(--text-soft);
 }
-.container { max-width: 760px; margin: 100px auto 56px; }
-header { align-items: flex-end; margin-bottom: 24px; }
-.page-title { text-align: left; font-size: clamp(32px, 5vw, 52px); font-weight: 650; letter-spacing: -0.025em; }
-.header-toolbar { gap: 4px; }
-.nav-link, .admin-toggle {
-  padding: 6px 10px;
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  color: var(--text-subtle);
-  font-size: 12px;
+body.lyb-page {
+    --lyb-board: #f4f6fc;
+    --lyb-paper: #fff;
+    --lyb-line: #dce3f1;
+    --lyb-ink: #1d2743;
+    --lyb-muted: #506180;
+    --lyb-accent: #324bc1;
+    --lyb-tint: #eef1ff;
+    background: var(--lyb-board);
+    color: var(--lyb-ink);
+    color-scheme: light;
 }
-.nav-link:hover, .admin-toggle:hover {
-  background: var(--surface-soft);
-  color: var(--text-main);
-  border-color: var(--line-strong);
-  transform: none;
+body.lyb-page.dark-mode {
+    --lyb-board: #131827;
+    --lyb-paper: #1d2538;
+    --lyb-line: #3b4965;
+    --lyb-ink: #edf2ff;
+    --lyb-muted: #b3c0dc;
+    --lyb-accent: #b6c2ff;
+    --lyb-tint: #303b65;
+    color-scheme: dark;
 }
-.main-section {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  overflow: visible;
-  animation: none;
-  opacity: 1;
-  transform: none;
+.lyb-page [hidden] { display: none !important; }
+.lyb-page .container { max-width: 1240px; margin: 74px auto 56px; padding: 0 8px; }
+.lyb-header { align-items: end; border-bottom: 1px solid var(--lyb-line); padding: 0 0 22px; margin-bottom: 20px; }
+.lyb-header .page-title { text-align: left; color: var(--lyb-ink); font-size: clamp(30px, 5vw, 54px); letter-spacing: -.035em; font-weight: 750; line-height: 1.12; }
+.lyb-header p { margin-top: 7px; color: var(--lyb-muted); }
+.lyb-page .nav-link, .lyb-page .admin-toggle { color: var(--lyb-muted); background: var(--lyb-paper); border: 1px solid var(--lyb-line); border-radius: 9px; }
+.lyb-page .nav-link:hover, .lyb-page .admin-toggle:hover { color: var(--lyb-accent); background: var(--lyb-tint); transform: none; }
+.lyb-page .main-section {
+    display: grid;
+    grid-template-columns: minmax(290px, .9fr) minmax(0, 1.65fr);
+    align-items: start;
+    gap: 20px;
+    background: transparent;
+    border: 0;
+    overflow: visible;
+    animation: none;
+    opacity: 1;
+    transform: none;
 }
-.compose-area {
-  padding: 0 0 28px;
-  animation: none;
-  opacity: 1;
-  transform: none;
+.lyb-page .compose-area, .lyb-page .messages-area {
+    min-width: 0;
+    background: var(--lyb-paper);
+    border: 1px solid var(--lyb-line);
+    border-radius: 16px;
+    padding: 20px;
+    opacity: 1;
+    transform: none;
+    animation: none;
 }
-.compose-identity input[type="text"],
-.compose-identity input[type="password"],
-.compose-input {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
+.lyb-page .compose-area { position: sticky; top: 60px; }
+.lyb-page .compose-area h2 { color: var(--lyb-ink); font-size: 19px; margin-bottom: 13px; }
+.lyb-page :is(.compose-identity input, .compose-input, .reply-inline textarea, .search-input-inline, select) {
+    color: var(--lyb-ink);
+    background: var(--lyb-board);
+    border: 1px solid var(--lyb-line);
+    border-radius: 8px;
 }
-.compose-input { padding: 12px; }
-.messages-header { padding: 16px 0; border-bottom: 1px solid var(--line); }
-.message-row { padding: 18px 0; border-bottom: 1px solid var(--line); }
-.message-row:hover { background: transparent; }
-.submit-btn {
-  background: var(--text-main);
-  color: var(--surface-strong);
-  border-radius: var(--radius-sm);
-  box-shadow: none;
+.lyb-page :is(input, textarea)::placeholder { color: var(--lyb-muted); }
+.lyb-page :is(button, a, input, select, textarea):focus-visible { outline: 2px solid var(--lyb-accent); outline-offset: 2px; }
+.lyb-page .compose-input { min-height: 126px; padding: 12px; }
+.lyb-page .compose-footer { flex-wrap: wrap; gap: 7px; }
+.lyb-page .compose-footer label { margin-right: auto; }
+.lyb-page :is(.lyb-fields, .lyb-feed-tools) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--lyb-muted); font-size: 13px; }
+.lyb-fields { margin: 0 0 10px; }
+.lyb-page select { min-height: 32px; padding: 4px 8px; }
+.lyb-page .lyb-secondary { padding: 7px 11px; border: 1px solid var(--lyb-line); border-radius: 8px; background: var(--lyb-paper); color: var(--lyb-accent); cursor: pointer; }
+.lyb-page .submit-btn { background: #364bc6; color: #fff; border-radius: 8px; box-shadow: none; }
+.lyb-page .submit-btn:hover { background: #2d3fa9; transform: none; }
+.lyb-page .submit-btn:disabled { opacity: .55; cursor: wait; }
+.lyb-preview { min-height: 126px; max-height: 300px; overflow: auto; padding: 12px; background: var(--lyb-board); border: 1px solid var(--lyb-line); border-radius: 8px; }
+.lyb-page .lyb-compose-meta { display: flex; justify-content: space-between; gap: 8px; color: var(--lyb-muted); font-size: 12px; margin-top: 8px; }
+.lyb-page .lyb-compose-meta span:last-child { white-space: nowrap; }
+.lyb-page .messages-header { padding: 0 0 10px; border-bottom: 0; }
+.lyb-page .messages-title { color: var(--lyb-ink); }
+.lyb-page .messages-count { color: var(--lyb-accent); }
+.lyb-page .messages-controls { gap: 7px; }
+.lyb-page .sort-group { background: var(--lyb-board); border: 1px solid var(--lyb-line); border-radius: 8px; padding: 2px; }
+.lyb-page .sort-btn.active { background: var(--lyb-tint); color: var(--lyb-accent); }
+.lyb-page .lyb-feed-tools { border-bottom: 1px solid var(--lyb-line); padding-bottom: 12px; }
+.lyb-feed-status, .lyb-reply-status { font-size: 13px; color: var(--lyb-muted); }
+.lyb-feed-status:not(:empty) { margin: 12px 0; }
+.lyb-page .message-row { padding: 16px 0; border-bottom: 1px solid var(--lyb-line); animation: none; }
+.lyb-page .message-row:hover, .lyb-page .reply-row:hover { background: transparent; }
+.lyb-page .message-header, .lyb-page .reply-header { align-items: center; }
+.lyb-page .message-avatar, .lyb-page .reply-avatar { background: #4258b8; overflow: hidden; }
+.lyb-page :is(.message-avatar, .reply-avatar) img { width: 100%; height: 100%; object-fit: cover; }
+.lyb-page .message-time { color: var(--lyb-muted); }
+.lyb-page .message-content { color: var(--lyb-ink); overflow-wrap: anywhere; }
+.lyb-page .message-content a { color: var(--lyb-accent); }
+.lyb-page .message-content table { display: block; max-width: 100%; overflow-x: auto; }
+.lyb-page .message-content :is(td,th) { padding: 5px 8px; border: 1px solid var(--lyb-line); }
+.lyb-category { color: var(--lyb-accent); background: var(--lyb-tint); border-radius: 99px; padding: 3px 8px; font-size: 12px; margin-left: auto; flex-shrink: 0; }
+.lyb-page .lyb-message-toolbar { justify-content: start; margin-top: 9px; gap: 5px; flex-wrap: wrap; }
+.lyb-page .action-btn[aria-pressed="true"] { background: var(--lyb-tint); color: var(--lyb-accent); }
+.lyb-page .replies { margin-left: 12px; padding-left: 12px; border-left: 2px solid var(--lyb-line); }
+.lyb-page .reply-inline { display: block; margin-left: 0; }
+.lyb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+@media (max-width: 860px) {
+    .lyb-page .main-section { grid-template-columns: minmax(0, 1fr); }
+    .lyb-page .compose-area { position: static; }
 }
-.submit-btn:hover { background: var(--text-main); opacity: 0.85; transform: none; }
-.sort-group { background: transparent; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 2px; }
-.sort-btn { border-radius: 3px; }
-.sort-btn.active { background: var(--text-main); color: var(--surface-strong); }
+@media (max-width: 540px) {
+    body.lyb-page { padding: 12px; }
+    .lyb-page .container { margin-top: 58px; padding: 0; }
+    .lyb-page .compose-area, .lyb-page .messages-area { padding: 13px; }
+    .lyb-page .messages-controls { width: 100%; flex-wrap: wrap; }
+    .lyb-page .search-wrapper { flex: 1; min-width: 112px; }
+    .lyb-page .search-input-inline { width: 100%; }
+}

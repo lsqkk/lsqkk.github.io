@@ -1,58 +1,96 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-const currentYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能番茄钟 - {SITE_TITLE}</title>
+    <meta name="description" content="一轮只做一件事。把突然想到的事放进暂存区，休息前给自己留一条续做线索。">
+    <title>专注接力 · 番茄钟 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline defer src="/assets/js/nav.js"></script>
     <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/pages/tool/pomodoro/style.css">
     <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <link rel="stylesheet" href="/assets/pages/tool/pomodoro/style.css">
+    <script is:inline defer src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/pages/tool/pomodoro/app.js"></script>
 </head>
-
-<body class=" feature-page feature-pomodoro">
-    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
-    <div class="container">
-
-        <div class="timer-card">
-            <h1 class="timer-title">番茄工作法计时器</h1>
-
-            <div class="time-options">
-                <button type="button" class="time-option active" data-time="1500" aria-pressed="true">25 分钟</button>
-                <button type="button" class="time-option" data-time="3000" aria-pressed="false">50 分钟</button>
-
+<body class="feature-page feature-pomodoro">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">/</span><span aria-current="page">番茄钟</span></nav>
+    <main class="focus-shell">
+        <header class="focus-header">
+            <div><h1>专注接力</h1><p>这一轮专注一件事，休息前给下一轮留个起点。</p></div>
+            <div class="focus-toggles">
+                <button type="button" id="focusSound" aria-pressed="true">提示音</button>
+                <button type="button" id="focusNotifications" hidden>开启桌面通知</button>
+                <button type="button" id="themeToggle">外观 · 跟随网站</button>
             </div>
-            <button class="theme-toggle" id="themeToggle" aria-label="切换番茄钟配色">🌓</button>
-            <p class="timer-note">一次只专注一件事。</p>
-            <div id="timer" class="timer" role="timer" aria-label="剩余专注时间">25:00</div>
-
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-
-            <div class="controls">
-                <button id="start">开始</button>
-                <button id="stop" disabled>暂停</button>
-                <button id="reset">重置</button>
-            </div>
+        </header>
+        <div class="focus-grid">
+            <section class="focus-console" aria-label="计时台">
+                <div class="focus-mode" aria-label="计时模式">
+                    <button type="button" id="modeFocus" aria-pressed="true">专注</button>
+                    <button type="button" id="modeBreak" aria-pressed="false">休息</button>
+                </div>
+                <div class="focus-dial" id="focusDial">
+                    <div class="focus-dial-inner">
+                        <span id="focusPhase">准备专注</span>
+                        <div id="timer" role="timer" aria-label="剩余时间">25:00</div>
+                        <span id="focusEnd">按下开始后计时</span>
+                    </div>
+                </div>
+                <div class="focus-actions">
+                    <button type="button" id="start" class="focus-primary">开始</button>
+                    <button type="button" id="stop" disabled>暂停</button>
+                    <button type="button" id="reset">重置</button>
+                </div>
+                <form class="focus-duration" id="focus-duration">
+                    <div class="focus-presets" aria-label="时长预设">
+                        <button type="button" data-time="1500" aria-pressed="true">25 分</button>
+                        <button type="button" data-time="3000" aria-pressed="false">50 分</button>
+                        <button type="button" data-time="300" aria-pressed="false" hidden>5 分</button>
+                        <button type="button" data-time="600" aria-pressed="false" hidden>10 分</button>
+                    </div>
+                    <label for="focus-minutes">自定义分钟</label>
+                    <div class="focus-input-row">
+                        <input id="focus-minutes" type="number" min="1" max="180" required value="25">
+                        <button type="submit">设置</button>
+                    </div>
+                </form>
+                <p id="focus-status" role="status"></p>
+            </section>
+            <aside class="focus-desk" aria-label="专注工作台">
+                <section class="focus-panel">
+                    <label for="focus-task">这一轮要做什么？</label>
+                    <input id="focus-task" maxlength="100" placeholder="例如：给报告写完初稿">
+                </section>
+                <section class="focus-panel">
+                    <h2>续做线索</h2>
+                    <label for="focus-note">留下一步，回来时直接接着做。</label>
+                    <textarea id="focus-note" rows="2" maxlength="300" placeholder="例如：核对第二张图的分母"></textarea>
+                    <div id="focus-handoff" class="focus-handoff" hidden>
+                        <p id="focus-handoff-text"></p>
+                        <button id="focus-handoff-use" type="button">用作本轮任务</button>
+                    </div>
+                </section>
+                <section class="focus-panel">
+                    <h2>打断暂存区</h2>
+                    <form id="focus-inbox-form">
+                        <label for="focus-inbox-input">想到别的事时先记下来，计时照常走。</label>
+                        <div class="focus-input-row">
+                            <input id="focus-inbox-input" maxlength="120" required placeholder="记一条待会儿再看">
+                            <button type="submit">暂存</button>
+                        </div>
+                    </form>
+                    <ul id="focus-inbox"></ul>
+                </section>
+            </aside>
         </div>
-    </div>
-
-    <a class="footer" href="/posts/copyright" target="_blank">
-        © 2024 - {currentYear} 蓝色奇夸克 - {SITE_TITLE} All rights reserved.
-    </a>
-
-    <audio id="alarmSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"
-        preload="none"></audio>
-
-    <script is:inline src="/assets/pages/tool/pomodoro/app.js"> </script>
+        <section class="focus-panel focus-log" aria-labelledby="focus-log-title">
+            <header><h2 id="focus-log-title">专注记录</h2><p id="focus-today">今日 0 轮 · 0 分钟</p></header>
+            <ol id="focus-history"></ol>
+        </section>
+        <p class="focus-privacy">计时、便笺和记录保存在当前浏览器。</p>
+    </main>
 </body>
-
 </html>

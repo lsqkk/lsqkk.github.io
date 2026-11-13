@@ -136,18 +136,19 @@ function displayRecentMessages(messages) {
         const login = message.login || '';
         const guestUid = message.uid || '';
         const shared = window.CommentShared;
+        const escape = (value) => {
+            const span = document.createElement('span');
+            span.textContent = value;
+            return span.innerHTML;
+        };
         const displayName = shared && typeof shared.renderDisplayName === 'function'
             ? shared.renderDisplayName(baseName, login, message.loginType || '', guestUid)
-            : (login
-                ? `${baseName}<span class="login-badge">${message.loginType === 'local'
-                    ? `<span class="login-icon"><img src="/assets/img/logo_blue.png" alt="qb"></span>`
-                    : `<i class="fab fa-github login-icon"></i>`}@${login}</span>`
-                : `${baseName}${guestUid ? `<span class="login-badge guest-badge">@访客${String(guestUid).slice(-4)}</span>` : ''}`);
+            : escape(baseName);
 
         html += `
             <div class="message-preview-item">
                 <div class="message-preview-author">${displayName}</div>
-                <div class="message-preview-text">${content}</div>
+                <div class="message-preview-text">${escape(content)}</div>
                 <div class="message-preview-time">${timeStr}</div>
             </div>
         `;

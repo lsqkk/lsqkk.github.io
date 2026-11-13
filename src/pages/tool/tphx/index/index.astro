@@ -1,68 +1,84 @@
 ---
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
-
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片混淆加密 - {SITE_TITLE}</title>
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline defer src="/assets/js/nav.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="在浏览器中混淆和还原图片，支持旧版空间曲线、行列重排和像素洗牌。">
+    <title>图片混淆与还原 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL}>
     <link rel="stylesheet" href="/assets/pages/tool/tphx/style.css">
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <script is:inline src="/assets/js/user-preferences.js" defer></script>
+    <script is:inline type="module" src="/assets/pages/tool/tphx/app.js"></script>
 </head>
-
-<body class="luxury-body feature-page feature-tphx">
-    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
-    <LuxuryBackground />
-    <div class="container">
-        <h1>图片混淆加密</h1>
-        <p class="subtitle">基于空间填充曲线的图片混淆 - 仅供技术交流使用</p>
-
-        <div class="settings">
-            <div class="setting-row">
-                <label for="iterations">混淆次数:</label>
-                <input type="number" id="iterations" min="1" max="10" value="1">
-            </div>
+<body>
+    <main class="studio">
+        <a class="back" href="/tool/">← 工具箱</a>
+        <header class="intro">
+            <h1>图片混淆与还原</h1>
+            <p>重排图片像素，用同一组参数还原。文件仅在当前浏览器处理。</p>
+        </header>
+        <div class="workspace">
+            <form id="settings" class="panel">
+                <h2>处理方式</h2>
+                <label for="method">混淆算法</label>
+                <select id="method">
+                    <option value="gilbert">空间曲线 · 兼容旧版</option>
+                    <option value="lattice">行列重排</option>
+                    <option value="pixels">像素洗牌</option>
+                </select>
+                <p id="method-help"></p>
+                <div id="rounds-field">
+                    <label for="iterations">混淆次数</label>
+                    <input id="iterations" type="number" min="1" max="10" value="1" required>
+                </div>
+                <div id="seed-field" hidden>
+                    <label for="seed">种子</label>
+                    <div class="inline">
+                        <input id="seed" type="text" maxlength="80" spellcheck="false" autocomplete="off" placeholder="输入或随机生成">
+                        <button id="random" type="button">随机</button>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="enc" class="primary" type="submit" value="encode" disabled>混淆</button>
+                    <button id="dec" type="submit" value="decode" disabled>还原</button>
+                </div>
+                <details>
+                    <summary>导入 / 复制参数</summary>
+                    <label for="recipe">参数码</label>
+                    <textarea id="recipe" rows="2" maxlength="400" spellcheck="false" placeholder="粘贴从这里复制的参数码"></textarea>
+                    <div class="inline">
+                        <button id="import-recipe" type="button">应用</button>
+                        <button id="copy-recipe" type="button">复制当前参数</button>
+                    </div>
+                </details>
+                <p class="note">混淆只能降低可辨识度。还原时请保留原始混淆 PNG，避免平台压缩或缩放。</p>
+            </form>
+            <section class="panel previews" aria-label="图片预览">
+                <label class="drop" id="drop-area">
+                    <input type="file" accept="image/*" id="ipt">
+                    <strong>选择或拖入图片</strong>
+                    <span>也可粘贴截图 · 最多 1200 万像素</span>
+                </label>
+                <div class="comparison">
+                    <figure>
+                        <figcaption>输入 <span id="image-size"></span></figcaption>
+                        <div class="preview"><img id="source-img" alt="输入图片" hidden><span>等待图片</span></div>
+                    </figure>
+                    <figure>
+                        <figcaption>结果 <span id="result-kind"></span></figcaption>
+                        <div class="preview"><img id="display-img" alt="处理结果" hidden><span>等待处理</span></div>
+                    </figure>
+                </div>
+                <div class="result-bar">
+                    <button id="reuse" type="button" disabled>用结果继续</button>
+                    <button id="download" class="primary" type="button" disabled>下载 PNG</button>
+                </div>
+            </section>
         </div>
-
-        <div class="control-panel">
-            <div class="file-upload btn btn-primary">
-                <span>选择图片</span>
-                <input type="file" accept="image/*" id="ipt">
-            </div>
-            <button id="enc" class="btn btn-primary">混淆</button>
-            <button id="dec" class="btn btn-accent">解混淆</button>
-            <button id="download" class="btn">下载结果</button>
-        </div>
-
-        <div id="drop-area" class="drop-area">
-            <div class="icon">📁</div>
-            <p>拖放图片到此处上传</p>
-        </div>
-
-        <img id="display-img" alt="处理后的图片将显示在这里">
-
-        <div class="footer">
-            <a href="lsqkk.github.io/posts/copyright" target="_blank">© 2024 - <span id="current-year"></span> {SITE_TITLE} /
-                蓝色奇夸克 All rights reserved.</a>
-            <a href="lsqkk.github.io/tool" target="_blank">更多工具</a>
-        </div>
-    </div>
-
-    <script is:inline src="/assets/pages/tool/tphx/app.js"></script>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+    </main>
 </body>
-
 </html>
-
-
-
-
-
-

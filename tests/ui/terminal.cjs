@@ -41,6 +41,15 @@ async function checkTerminal(browser) {
         if (message === '继续聊天') {
             return route.fulfill({ json: { choices: [{ message: { content: '**聊天答复**' } }] } });
         }
+        if (message === '流式示例') {
+            assert.equal(requestBody.stream, true);
+            return route.fulfill({
+                contentType: 'text/event-stream',
+                body: ['**流式', '答复**'].map((content) =>
+                    'data: ' + JSON.stringify({ choices: [{ delta: { content } }] }) + '\n\n'
+                ).join('') + 'data: [DONE]\n\n'
+            });
+        }
 
         const { task } = JSON.parse(message);
         if (task === '中断请求') {
@@ -171,20 +180,32 @@ async function checkTerminal(browser) {
     await run('llm');
     await run('继续聊天');
     assert.equal(await log.locator('strong').last().innerText(), '聊天答复');
+    await run('流式示例');
+    assert.equal(await log.locator('.terminal-markdown strong').last().innerText(), '流式答复');
     await run('!pwd');
     assert.equal(await log.locator('.output-line').last().innerText(), '/tmp');
     await run('llm-off');
+    await page.getByRole('button', { name: '排查报错' }).click();
+    assert.match(await input.inputValue(), /^llm 分析这段报错/);
+    assert.equal(await input.evaluate((el) => el.value.slice(el.selectionStart, el.selectionEnd)), '【内容】');
+    await input.fill('');
     await input.press('Control+l');
     assert.equal(await log.innerText(), '');
 
     await page.locator('#terminal-theme').selectOption('light');
-    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light');
-    assert.equal(await page.evaluate(() => getComputedStyle(document.body).colorScheme), 'light');
+    await page.waitForFunction(() => getComputedStyle(document.body).colorScheme === 'light only');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light only');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.body).colorScheme), 'light only');
     assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById('terminal')).backgroundColor), 'rgb(251, 253, 255)');
     await page.reload();
     assert.equal(await page.locator('#terminal-theme').inputValue(), 'light');
     await page.locator('#terminal-theme').selectOption('site');
-    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'dark');
+    await page.waitForFunction(() => getComputedStyle(document.body).colorScheme === 'light dark');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light dark');
+    assert.deepEqual(await page.evaluate(() => {
+        const style = getComputedStyle(document.body);
+        return [style.backgroundColor, style.color];
+    }), ['rgb(11, 16, 24)', 'rgb(225, 234, 243)']);
     assert.deepEqual(errors, []);
     await context.close();
 }
@@ -200,7 +221,7 @@ async function checkMobile(browser) {
     await page.locator('#run-command').click();
     await page.waitForFunction(() => document.getElementById('exit-status').textContent.includes('退出码 0'));
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light dark');
     await page.close();
 }
 

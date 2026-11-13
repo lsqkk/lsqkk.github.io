@@ -1,5 +1,4 @@
 ---
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 import CommentIdentityFields from "../../../../components/CommentIdentityFields.astro";
 ---
@@ -17,18 +16,18 @@ import CommentIdentityFields from "../../../../components/CommentIdentityFields.
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/cursor.css">
     <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <script is:inline src="/assets/js/marked.min.js"></script>
     <script is:inline src="/assets/js/nav.js"></script>
 </head>
 
-<body class="luxury-body">
+<body class="lyb-page">
 
-    <LuxuryBackground />
+
     <div class="container">
 
         <!-- Header -->
-        <header>
-            <h1 class="page-title">留言板 / Message</h1>
+        <header class="lyb-header">
+            <div><h1 class="page-title">留言板</h1><p>给站长的建议、遇到的问题，或想分享的一句话。</p></div>
             <div class="header-toolbar">
                 <a href="/" class="nav-link"><i class="fas fa-home"></i> 主页</a>
                 <a href="/a/chat-room/" class="nav-link"><i class="fas fa-comments"></i> 聊天室</a>
@@ -56,37 +55,54 @@ import CommentIdentityFields from "../../../../components/CommentIdentityFields.
         <div class="main-section">
 
             <!-- Compose area -->
-            <div class="compose-area">
+            <section class="compose-area" aria-labelledby="composeTitle"><h2 id="composeTitle">写一条留言</h2>
                 <div class="compose-identity">
                     <CommentIdentityFields variant="lyb" />
                 </div>
-                <textarea id="messageContent" rows="3" placeholder="写下您的留言..." class="compose-input"></textarea>
+                <div class="lyb-fields">
+                    <label for="messageCategory">话题</label>
+                    <select id="messageCategory">
+                        <option value="general">随手留言</option>
+                        <option value="idea">建议</option>
+                        <option value="issue">问题反馈</option>
+                    </select>
+                </div>
+                <label for="messageContent" class="lyb-sr">留言内容</label>
+                <textarea id="messageContent" rows="5" maxlength="5000" placeholder="写下你的留言…" class="compose-input"></textarea>
+                <div id="messagePreview" class="message-content lyb-preview" aria-label="留言预览" hidden></div>
                 <div class="compose-footer">
                     <label class="markdown-toggle">
                         <input type="checkbox" id="useMarkdown" checked>
                         <span>Markdown</span>
                     </label>
-                    <button class="submit-btn" onclick="submitMessage()"><i class="fas fa-paper-plane"></i> 发布留言</button>
+                    <button type="button" id="previewToggle" class="lyb-secondary" aria-pressed="false">预览</button><button type="button" id="publishMessage" class="submit-btn" onclick="submitMessage()"><i class="fas fa-paper-plane"></i> 发布留言</button>
                 </div>
-            </div>
+                <div class="lyb-compose-meta"><span id="composeStatus" role="status"></span><span id="composeCount">0 / 5000</span></div>
+            </section>
 
             <!-- Messages area -->
-            <div class="messages-area">
+            <section class="messages-area" aria-label="留言列表">
                 <div class="messages-header">
                     <span class="messages-title">全部留言 <span class="messages-count" id="messageCount">0</span></span>
                     <div class="messages-controls">
                         <div class="sort-group" id="sortGroup">
-                            <button class="sort-btn active" data-sort="newest" onclick="setSort('newest')">最新</button>
-                            <button class="sort-btn" data-sort="oldest" onclick="setSort('oldest')">最早</button>
-                            <button class="sort-btn" data-sort="hot" onclick="setSort('hot')">最热</button>
+                            <button class="sort-btn active" aria-pressed="true" data-sort="newest" onclick="setSort('newest')">最新</button>
+                            <button class="sort-btn" aria-pressed="false" data-sort="oldest" onclick="setSort('oldest')">最早</button>
+                            <button class="sort-btn" aria-pressed="false" data-sort="hot" onclick="setSort('hot')">最热</button>
                         </div>
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon-inline"></i>
-                            <input type="text" id="searchInput" placeholder="搜索留言..." class="search-input-inline">
+                            <input type="text" id="searchInput" aria-label="搜索留言" placeholder="搜索留言…" class="search-input-inline">
                         </div>
                     </div>
                 </div>
 
+                <div class="lyb-feed-tools">
+                    <label for="categoryFilter" class="lyb-sr">按话题筛选</label>
+                    <select id="categoryFilter"><option value="">全部话题</option><option value="general">随手留言</option><option value="idea">建议</option><option value="issue">问题反馈</option></select>
+                    <label class="markdown-toggle"><input type="checkbox" id="savedOnly" /> 只看收藏</label>
+                </div>
+                <p id="feedStatus" class="lyb-feed-status" role="status"></p>
                 <div class="messages-list" id="messagesContainer">
                     <!-- 留言将通过JavaScript动态加载 -->
                 </div>
@@ -94,7 +110,7 @@ import CommentIdentityFields from "../../../../components/CommentIdentityFields.
                 <div class="pagination" id="pagination">
                     <!-- 分页按钮将通过JavaScript动态生成 -->
                 </div>
-            </div>
+            </section>
 
         </div>
     </div>
@@ -104,6 +120,7 @@ import CommentIdentityFields from "../../../../components/CommentIdentityFields.
     <script is:inline src="/assets/js/comment-shared.js"></script>
     <script is:inline src="/assets/js/comment-input-shared.js"></script>
     <script is:inline src="/assets/js/comment-list-shared.js"></script>
+    <script is:inline src="/assets/js/safe-markdown.js"></script>
     <script is:inline src="/assets/js/comment-render-shared.js"></script>
     <script is:inline src="/assets/pages/blog/lyb/lyb.js"></script>
 </body>

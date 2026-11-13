@@ -86,8 +86,20 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
             </section>
             <section class="workspace-section ai-section">
                 <div class="section-header">
-                    <h2>AI 命令</h2>
+                    <h2>AI 对话提示词</h2>
                     <a href="/settings/#ai">连接设置</a>
+                </div>
+                <p class="prompt-help">插入到命令栏，替换选中的内容后运行。</p>
+                <div class="example-buttons prompt-buttons">
+                    <button type="button" data-ai-prompt="解释这条命令的行为、输入输出和副作用，并给一个短示例： 【内容】">解释命令</button>
+                    <button type="button" data-ai-prompt="分析这段报错。先指出最可能的原因，再给出可验证的排查步骤： 【内容】">排查报错</button>
+                    <button type="button" data-ai-prompt="检查这段代码的边界情况，按影响排序，并给出最小修复： 【内容】">审阅代码</button>
+                    <button type="button" data-ai-prompt="把这段文本整理为 Markdown。先列结论，再列待办和未决问题： 【内容】">整理笔记</button>
+                </div>
+            </section>
+            <section class="workspace-section ai-section">
+                <div class="section-header">
+                    <h2>AI 命令</h2>
                 </div>
                 <p id="agent-connection"></p>
                 <form id="agent-form">

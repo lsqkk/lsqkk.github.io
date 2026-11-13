@@ -121,6 +121,20 @@ class Terminal {
         for (const button of document.querySelectorAll('[data-example]')) {
             button.addEventListener('click', () => this.executeCommand(button.dataset.example, { shell: true }));
         }
+        for (const button of document.querySelectorAll('[data-ai-prompt]')) {
+            button.addEventListener('click', () => {
+                const prefix = this.commands.isLlmSessionActive() ? '' : 'llm ';
+                const template = prefix + button.dataset.aiPrompt;
+                const start = template.indexOf('【内容】');
+                const { selectionStart, selectionEnd, value } = this.input;
+                const selected = value.slice(selectionStart, selectionEnd);
+                const insert = selected || '【内容】';
+                this.input.value = template.replace('【内容】', () => insert);
+                this.input.focus();
+                this.input.setSelectionRange(start, start + insert.length);
+                this.closeCompletion();
+            });
+        }
 
         document.getElementById('save-multiline').addEventListener('click', () => this.commands.saveMultilineContent());
         document.getElementById('cancel-multiline').addEventListener('click', () => this.commands.hideMultilineInput());
@@ -217,12 +231,16 @@ class Terminal {
     }
 
     output(content, className = '') {
-        const follow = this.isAtBottom();
         const line = document.createElement('div');
         line.className = ('output-line ' + className).trim();
         if (content instanceof Node) line.append(content);
         else line.textContent = String(content ?? '');
-        this.log.append(line);
+        this.updateOutput(() => this.log.append(line));
+    }
+
+    updateOutput(update) {
+        const follow = this.isAtBottom();
+        update();
         if (follow) this.scrollToBottom();
         else this.updateScrollButton();
     }

@@ -1,84 +1,63 @@
 ---
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import tests from "../../../../../assets/pages/tool/test/test_index.json";
 ---
-
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>问卷测试 - {SITE_TITLE}</title>
+    <meta name="description" content="在虚构情境中做选择，校准自己的证据判断，或绘出科技伦理立场。">
+    <title>夸克测试室 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/feature-pages.css">
     <link rel="stylesheet" href="/assets/pages/tool/test/test.css">
     <script is:inline defer src="/assets/js/nav.js"></script>
-    <style>
-        .test-list {
-            display: grid;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .test-card {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .test-card:hover {
-            transform: translateY(-5px);
-            border-color: #4a90e2;
-        }
-
-        .test-card h3 {
-            margin-top: 0;
-            color: #4a90e2;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
-<link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <script is:inline defer src="/assets/pages/tool/test/test.js"></script>
 </head>
-
-<body class="luxury-body feature-page feature-test">
-<nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span>/</span><a href="/tool/">工具箱</a></nav>
-
-    <LuxuryBackground />
-    <div class="page-title">Quark Test / 夸克测试</div>
-
-    <div class="container">
-        <div id="list-view">
-            <h1>选择你喜欢的问卷</h1>
-            <div class="test-list" id="test-index">加载中...</div>
-        </div>
-
-        <div id="test-view" class="hidden">
-            <h1 id="test-title">加载中...</h1>
-            <div class="progress-bar">
-                <div class="progress" style="width: 0%"></div>
+<body class="feature-page feature-test">
+    <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">/</span><span aria-current="page">问卷测试</span></nav>
+    <main class="test-shell">
+        <section id="list-view">
+            <header class="test-hero">
+                <h1>夸克测试室</h1>
+                <p>审阅证据、修订制度，或看看自己会在哪些科技伦理问题上改主意。</p>
+            </header>
+            <div class="test-list" id="test-index">
+                {tests.map((test) => (
+                    <a class="test-card" href={`#test=${test.id}`} data-test={test.id} data-style={test.style}>
+                        <div class="test-card-meta"><span>{test.category}</span><span>{test.count} 题</span></div>
+                        <h2>{test.title}</h2>
+                        <p>{test.description}</p>
+                        <span class="test-card-action">开始测试 <span aria-hidden="true">↗</span></span>
+                    </a>
+                ))}
             </div>
-            <div class="question-container"></div>
-            <div class="navigation">
-                <button onclick="prevQuestion()" disabled id="prevBtn">上一题</button>
-                <button onclick="nextQuestion()" disabled id="nextBtn">下一题</button>
-            </div>
-        </div>
-    </div>
-    <script is:inline src="/assets/pages/tool/test/test.js"></script>
+            <p class="test-privacy">作答进度保存在当前浏览器。</p>
+        </section>
+        <section id="test-view" hidden>
+            <header class="test-session-header">
+                <a href="/tool/test/">← 所有测试</a>
+                <h1 id="test-title" tabindex="-1">正在加载测试</h1>
+                <p id="test-description"></p>
+            </header>
+            <div id="test-loading" role="status">正在读取题目…</div>
+            <section id="test-run" class="test-paper" hidden>
+                <div class="test-progress-header">
+                    <span id="test-position"></span>
+                    <span id="test-progress-label"></span>
+                </div>
+                <progress id="test-progress" value="0" max="1" aria-labelledby="test-progress-label"></progress>
+                <nav id="test-map" class="test-map" aria-label="跳转题目"></nav>
+                <div id="question-container"></div>
+                <div class="test-navigation">
+                    <button type="button" id="prevBtn">上一题</button>
+                    <button type="button" id="nextBtn" class="test-primary">下一题</button>
+                </div>
+            </section>
+            <section id="test-results" class="test-paper" aria-labelledby="result-title" hidden></section>
+        </section>
+    </main>
 </body>
-
 </html>
-
-
-
-
-
-

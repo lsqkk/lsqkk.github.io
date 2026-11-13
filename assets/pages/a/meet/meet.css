@@ -1,311 +1,286 @@
-/* 1. 变量和基础样式 */
-:root {
-    --header-height: 60px;
-    /* 预留顶栏空间 */
-    --main-blue: #007aff;
-    /* iOS 蓝色 */
-    --main-green: var(--ok);
-    /* 成功绿色 */
-    --main-red: var(--danger);
-    /* 警告红色 */
-    --bg-light: #f0f2f5;
-    /* 极浅背景色 */
-    --card-bg-opacity: 0.2;
-    --card-shadow: 0 8px 32px 0 rgba(11, 13, 48, 0.3);
-    --card-border: 1px solid rgba(255, 255, 255, 0.3);
-    --control-bg: rgba(255, 255, 255, 0.1);
-    /* 控制区半透明背景 */
-}
-
-body {
+.qm-body {
     margin: 0;
-    padding: 0;
-    /* 使用与 nav.css 协调的半透明背景 */
     background: var(--page-bg);
-    background-size: cover;
-    position: relative;
-    background-attachment: fixed;
-    
-    color: #333;
-    transition: background-color 0.3s;
+    color: var(--text-main);
 }
-
-/* 核心修改：确保内容在固定顶栏下方，且居中显示 */
-.meeting-wrapper {
-    padding-top: var(--header-height);
-    /* 留出固定顶栏的空间 */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 50px;
+.qm-app {
+    --qm-video: #172234;
+    --qm-video-ink: #edf3ff;
+    --qm-video-muted: #b8c8dd;
+    --qm-video-line: #35455b;
+    --qm-video-surface: #202e43;
+    --qm-cta: #245ed8;
+    --qm-red: #b93343;
+    margin: 60px auto 0;
+    max-width: 1440px;
+    padding: 0 26px;
 }
-
-/* 2. 容器和卡片样式 (沿用毛玻璃风格) */
-.meeting-container {
-    width: 95%;
-    max-width: 1200px;
-    padding: 20px;
-    display: flex;
-    gap: 20px;
-}
-
-/* 会议控制卡片 */
-.control-card {
-    background-color: rgba(255, 255, 255, var(--card-bg-opacity));
+.qm-app *, .qm-app *::before, .qm-app *::after { box-sizing: border-box; }
+.qm-app [hidden] { display: none !important; }
+.qm-app h1, .qm-app h2, .qm-app p { margin: 0; }
+.qm-app button, .qm-app input, .qm-app select, .qm-app textarea { font: inherit; }
+.qm-app button {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text-main);
     border-radius: var(--radius-md);
-    box-shadow: var(--card-shadow);
-
-
-    border: var(--card-border);
-    padding: 20px;
-    flex: 0 0 300px;
-    /* 固定宽度 */
-    max-height: 80vh;
-    overflow-y: auto;
+    min-height: 42px;
+    padding: 8px 12px;
+    cursor: pointer;
 }
-
-/* 视频显示区域 */
-.video-display-area {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.video-player-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    min-height: 400px;
-    /* 最小高度保证显示效果 */
-}
-
-/* 视频播放器卡片 */
-.video-card {
-    background-color: rgba(0, 0, 0, 0.5);
-    /* 视频背景通常用深色 */
+.qm-app button:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface-soft); }
+.qm-app button:disabled { opacity: .52; cursor: not-allowed; }
+.qm-app button[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); border-color: var(--line-strong); }
+.qm-app :is(button, input, textarea, select, a):focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.qm-app :is(input:not([type="checkbox"]), textarea, select) {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 12px;
     border-radius: var(--radius-md);
-    box-shadow: var(--card-shadow);
+    border: 1px solid var(--line-strong);
+    background: var(--surface-soft);
+    color: var(--text-main);
+}
+.qm-app input::placeholder, .qm-app textarea::placeholder { color: var(--text-subtle); opacity: .82; }
+.qm-app button.qm-primary { background: var(--qm-cta); border-color: transparent; color: #fff; font-weight: 700; }
+.qm-app button.qm-primary:hover:not(:disabled) { background: #174cbf; border-color: transparent; }
+.qm-app button.qm-danger { background: var(--qm-red); border-color: transparent; color: #fff; }
+.qm-app button.qm-danger:hover:not(:disabled) { background: #a42a39; border-color: transparent; }
+.qm-lobby { max-width: 1080px; padding: 46px 0 52px; margin: auto; }
+.qm-intro { margin-bottom: 32px; }
+.qm-back { color: var(--text-subtle); font-size: .87rem; text-decoration: none; }
+.qm-back:hover { color: var(--accent); }
+.qm-back i { margin-right: 6px; }
+.qm-intro h1 { font-size: clamp(2.4rem, 7vw, 4.4rem); letter-spacing: -.07em; line-height: 1.1; margin: 18px 0 12px; }
+.qm-intro p { color: var(--text-subtle); font-size: clamp(.95rem, 2vw, 1.12rem); }
+.qm-lobby-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+.qm-preview {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: var(--qm-video);
+    color: var(--qm-video-ink);
+    border: 1px solid var(--qm-video-line);
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    position: relative;
-    flex: 1 1 45%;
-    /* 桌面端默认双列布局 */
-    min-width: 300px;
-    aspect-ratio: 16 / 9;
-    /* 保持视频比例 */
 }
-
-.video-card video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* 填充整个容器，可能裁剪 */
-}
-
-.video-label {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 5px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 0.9em;
-}
-
-/* 3. 会议控制元素样式 (避免与 nav.css 冲突) */
-h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-weight: 600;
-    color: #1a1a1a;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 10px;
-}
-
-.meeting-input-group {
-    margin-bottom: 20px;
-}
-
-.meeting-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: var(--radius-lg);
-    box-sizing: border-box;
-    font-size: 16px;
-    transition: all 0.2s;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: var(--surface-strong);
-    color: #333;
-}
-
-.meeting-input::placeholder {
-    color: #999;
-}
-
-.meeting-action-button {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: var(--radius-lg);
-    box-sizing: border-box;
-    font-size: 16px;
-    transition: all 0.2s;
-    border: none;
-    background-color: var(--main-blue);
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 122, 255, 0.4);
-}
-
-.meeting-action-button:hover {
-    opacity: 0.9;
-}
-
-.meeting-action-button:disabled {
-    background-color: #a0c4ff;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.meeting-action-button.red-btn {
-    background-color: var(--main-red);
-    box-shadow: 0 2px 4px rgba(255, 59, 48, 0.4);
-}
-
-/* 设备控制按钮组 */
-.device-controls {
+.qm-preview-head, .qm-preview-actions {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
     gap: 10px;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--qm-video-surface);
 }
+.qm-preview-head h2 { font-size: .99rem; }
+.qm-preview-head span { color: var(--qm-video-muted); font-size: .8rem; text-align: right; }
+.qm-preview-stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 240px;
+    isolation: isolate;
+    background-image: radial-gradient(circle, #45608555 1px, transparent 1.3px);
+    background-size: 18px 18px;
+}
+.qm-preview-stage video, .qm-tile video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.qm-preview-stage video.qm-mirrored, .qm-tile video.qm-mirrored { transform: scaleX(-1); }
+.qm-preview-avatar, .qm-tile-avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    width: 72px;
+    height: 72px;
+    font-size: 26px;
+    color: #cde0ff;
+    background: #314d78;
+    border: 1px solid #526f99;
+}
+.qm-preview-actions { justify-content: center; border-top: 1px solid var(--qm-video-line); }
+.qm-preview-actions button {
+    background: var(--qm-video);
+    border-color: var(--qm-video-line);
+    color: var(--qm-video-ink);
+    font-size: .82rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.qm-preview-actions button:hover:not(:disabled), .qm-preview-actions button[aria-pressed="true"] {
+    background: #314d78;
+    border-color: #526f99;
+    color: #fff;
+}
+.qm-entry, .qm-recent { border: 1px solid var(--line); border-radius: var(--radius-xl); background: var(--surface); }
+.qm-entry { padding: 20px; }
+.qm-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 4px; margin-bottom: 16px; }
+.qm-modes button { border-color: transparent; background: transparent; font-size: .95rem; font-weight: 650; }
+.qm-modes i, .qm-room-tools i { margin-right: 5px; }
+.qm-entry label, .qm-dialog label, .qm-notes label { display: block; color: var(--text-subtle); font-size: .88rem; margin-bottom: 6px; }
+.qm-entry input { margin-bottom: 15px; }
+.qm-enter { display: flex; width: 100%; align-items: center; justify-content: space-between; margin-top: 2px; }
+.qm-app .qm-caption { margin-top: 13px; font-size: .81rem; line-height: 1.55; color: var(--text-subtle); }
+.qm-app .qm-error { margin-bottom: 10px; font-size: .9rem; color: var(--danger); }
+.qm-recent { margin-top: 20px; padding: 16px 20px; }
+.qm-recent h2 { font-size: 1rem; }
+.qm-recent ul, .qm-members { list-style: none; padding: 0; margin: 6px 0 0; }
+.qm-recent li, .qm-members li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.qm-recent li:last-child, .qm-members li:last-child { border-bottom: 0; }
+.qm-recent-name { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 650; }
+.qm-recent button { font-size: .82rem; white-space: nowrap; min-height: 36px; }
+.qm-recent time { color: var(--text-subtle); font-size: .78rem; }
 
-.device-btn {
-    flex: 1 1 45%;
-    /* 双列布局 */
+.qm-room {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    min-height: min(720px, calc(100dvh - 60px));
+    padding: 18px 0;
+}
+.qm-room-head, .qm-toolbar { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl); }
+.qm-room-head { justify-content: space-between; padding: 13px 17px; }
+.qm-room-identity { min-width: 0; }
+.qm-room-head h1 { font-size: clamp(1.1rem, 4vw, 1.45rem); overflow-wrap: anywhere; }
+.qm-room-meta, .qm-room-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+.qm-room-tools { flex: 0 0 auto; }
+.qm-room-meta { font-size: .82rem; color: var(--text-subtle); margin-top: 5px; }
+.qm-room-meta time, #room-code { font-variant-numeric: tabular-nums; }
+.qm-room-network { color: var(--ok); }
+.qm-room-network[data-state="warn"] { color: var(--warn); }
+.qm-room-network::before { content: ""; display: inline-block; margin: 0 5px 2px 2px; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.qm-workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.qm-workspace.has-panel { grid-template-columns: minmax(0, 1fr) minmax(255px, 310px); }
+.qm-stage {
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 5px;
-    border: none;
+    position: relative;
+    background: var(--qm-video);
+    color: var(--qm-video-ink);
+    border: 1px solid var(--qm-video-line);
+    border-radius: var(--radius-xl);
+    min-height: 380px;
+    padding: 12px;
+}
+.qm-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(205px, 100%), 1fr)); grid-auto-rows: minmax(125px, 1fr); gap: 8px; flex: 1; }
+.qm-tiles[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.qm-tiles.is-focused { grid-template-columns: repeat(auto-fit, minmax(min(115px, 100%), 1fr)); grid-auto-rows: minmax(78px, 1fr); }
+.qm-tiles.is-focused .qm-tile.is-focused { grid-column: 1 / -1; grid-row: 1; min-height: 255px; }
+.qm-tile {
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+    min-height: 125px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--qm-video-line);
     border-radius: var(--radius-lg);
-    background-color: var(--control-bg);
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    font-weight: 500;
+    background: var(--qm-video-surface);
+    overflow: hidden;
 }
-
-.device-btn:hover:not(:disabled) {
-    background-color: rgba(255, 255, 255, 0.4);
+.qm-tile[data-kind="share"] video, .qm-tile.is-focused video { object-fit: contain; }
+.qm-tile.is-focused { border-color: #82aeff; }
+.qm-tile .qm-tile-avatar { width: clamp(42px, 7vw, 72px); height: clamp(42px, 7vw, 72px); font-size: clamp(1rem, 2.6vw, 1.6rem); }
+.qm-tile[data-color="1"] .qm-tile-avatar { background: #305b59; border-color: #4a7774; color: #c5f5e5; }
+.qm-tile[data-color="2"] .qm-tile-avatar { background: #53466e; border-color: #6b5f85; color: #e9dcff; }
+.qm-tile[data-color="3"] .qm-tile-avatar { background: #604e42; border-color: #826a59; color: #ffdfcb; }
+.qm-tile-label, .qm-tile-state {
+    position: absolute;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #111b2aea;
+    font-size: .79rem;
+    max-width: calc(100% - 17px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-
-.device-btn.active {
-    background-color: var(--main-green);
-    color: white;
+.qm-tile-label { bottom: 8px; left: 8px; }
+.qm-tile-state { top: 8px; left: 8px; color: var(--qm-video-muted); }
+.qm-tile-state:empty { display: none; }
+.qm-tile button.qm-tile-focus { position: absolute; right: 7px; bottom: 7px; min-height: 34px; padding: 4px 8px; border-color: var(--qm-video-line); background: #111b2aee; color: #fff; }
+.qm-tile button.qm-tile-focus:hover:not(:disabled) { background: #375378; }
+.qm-tile:has(.qm-tile-focus:not([hidden])) .qm-tile-label { max-width: calc(100% - 58px); }
+.qm-waiting { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; color: var(--qm-video-muted); font-size: .87rem; }
+.qm-waiting button, .qm-app button.qm-audio-prompt { background: #314d78; border-color: #526f99; color: #fff; }
+.qm-waiting button:hover:not(:disabled), .qm-app button.qm-audio-prompt:hover:not(:disabled) { background: #426292; }
+.qm-app button.qm-audio-prompt { align-self: center; margin-top: 8px; }
+.qm-toolbar { flex-wrap: wrap; justify-content: center; padding: 8px 12px; }
+.qm-toolbar button { position: relative; min-width: 70px; min-height: 53px; display: grid; place-items: center; gap: 4px; padding: 5px 8px; font-size: .78rem; }
+.qm-toolbar i { font-size: 1rem; }
+#room-chat-unread { position: absolute; top: 3px; right: 4px; background: var(--qm-red); color: #fff; font-size: .65rem; line-height: 1; padding: 3px 4px; border-radius: 999px; }
+.qm-side { display: flex; flex-direction: column; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl); overflow: hidden; }
+.qm-side-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 8px 12px; }
+.qm-side-head h2 { font-size: 1.02rem; }
+.qm-side-head button { min-height: 34px; min-width: 34px; padding: 4px; }
+.qm-panel { padding: 12px; flex: 1; min-height: 0; }
+.qm-members { margin-top: 0; }
+.qm-members li { align-items: flex-start; }
+.qm-member-icon { display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 auto; border-radius: 50%; color: var(--accent); background: var(--accent-soft); }
+.qm-member-info { display: grid; flex: 1; overflow-wrap: anywhere; }
+.qm-member-info small, #host-controls small { color: var(--text-subtle); font-size: .77rem; }
+#host-controls { display: grid; gap: 6px; margin-top: 14px; }
+#room-lock i { margin-right: 6px; }
+.qm-chat, .qm-notes { display: flex; flex-direction: column; gap: 10px; }
+#room-messages { flex: 1; min-height: 175px; max-height: 380px; overflow: auto; overscroll-behavior: contain; }
+#chat-empty { color: var(--text-subtle); font-size: .86rem; }
+#room-chat-form { display: flex; gap: 6px; }
+.qm-chat-privacy { color: var(--text-subtle); font-size: .75rem; }
+.qm-msg { margin: 2px 0 12px; }
+.qm-msg header { color: var(--text-subtle); font-size: .75rem; margin-bottom: 3px; overflow-wrap: anywhere; }
+.qm-msg p { display: inline-block; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 6px 8px; font-size: .9rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.qm-msg.is-mine { text-align: right; }
+.qm-msg.is-mine p { text-align: left; background: var(--accent-soft); }
+.qm-notes textarea { flex: 1; resize: vertical; min-height: 170px; }
+.qm-notes-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.qm-notes-actions button { font-size: .8rem; }
+.qm-dialog {
+    width: min(430px, calc(100vw - 28px));
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-xl);
+    padding: 20px;
 }
-
-.device-btn.active:hover {
-    background-color: #2ab74d;
+.qm-dialog * { cursor: auto !important; }
+.qm-dialog :is(button, select) { cursor: pointer !important; }
+.qm-dialog::backdrop { background: #101929a6; }
+.qm-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.qm-dialog h2 { font-size: 1.22rem; }
+.qm-dialog header button { min-height: 34px; min-width: 34px; padding: 4px; }
+.qm-dialog select { margin-bottom: 12px; }
+.qm-dialog label.qm-check { display: flex; gap: 8px; align-items: center; }
+.qm-dialog-actions, .qm-dialog .qm-primary { margin-top: 14px; }
+.qm-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.qm-app .qm-toast { position: fixed; z-index: 1100; inset: auto auto 16px 50%; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 28px); padding: 10px 16px; background: var(--qm-video); color: var(--qm-video-ink); border: 1px solid var(--qm-video-line); border-radius: var(--radius-lg); font-size: .9rem; }
+@media (max-width: 850px) {
+    .qm-workspace.has-panel { grid-template-columns: minmax(0, 1fr); }
+    .qm-workspace.has-panel .qm-stage { min-height: 320px; }
+    .qm-side { min-height: 160px; }
+    .qm-toolbar { gap: 6px; }
 }
-
-.device-btn i {
-    font-size: 1.5em;
-    margin-bottom: 5px;
+@media (max-width: 700px) {
+    .qm-app { padding: 0 12px; }
+    .qm-lobby { padding: 28px 0 36px; }
+    .qm-intro { margin-bottom: 20px; }
+    .qm-lobby-grid { display: flex; flex-direction: column; gap: 12px; }
+    .qm-entry { order: -1; padding: 14px; }
+    .qm-preview-stage { min-height: 185px; }
+    .qm-preview-head, .qm-preview-actions { padding: 11px 10px; }
+    .qm-preview-actions button { font-size: .76rem; padding: 7px; }
+    .qm-room { gap: 8px; padding: 8px 0; }
+    .qm-room-head { gap: 6px; padding: 9px; }
+    .qm-room-tools button { min-width: 40px; min-height: 38px; padding: 6px; }
+    .qm-room-tools i { margin-right: 0; }
+    .qm-room-tools span { display: none; }
+    .qm-stage { padding: 7px; min-height: 310px; }
+    .qm-tiles { grid-template-columns: repeat(auto-fit, minmax(min(125px, 100%), 1fr)); }
+    .qm-tiles.is-focused .qm-tile.is-focused { min-height: 190px; }
+    .qm-toolbar { position: sticky; bottom: 4px; z-index: 10; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 5px; gap: 4px; }
+    .qm-toolbar button { min-height: 42px; min-width: 0; font-size: .68rem; padding: 4px 1px; }
+    .qm-waiting p { font-size: .77rem; }
+    .qm-waiting button { flex: 0 0 auto; font-size: .75rem; min-height: 36px; }
+    .qm-recent { padding: 12px; }
+    .qm-recent time { display: none; }
 }
-
-.status-log {
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: var(--radius-lg);
-    max-height: 150px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-    font-size: 0.8em;
-    color: #555;
-    margin-top: 15px;
-}
-
-/* 4. 移动端和响应式 */
-@media (max-width: 800px) {
-    .meeting-container {
-        flex-direction: column;
-        padding: 10px;
-        gap: 10px;
-    }
-
-    .control-card {
-        flex: 1 1 auto;
-        max-height: none;
-        /* 移动端不限制高度 */
-    }
-
-    .video-player-container {
-        flex-direction: column;
-        min-height: 200px;
-    }
-
-    .video-card {
-        flex: 1 1 100%;
-        /* 移动端单列布局 */
-    }
-}
-
-/* 横屏优化 (可选) */
-@media (orientation: landscape) and (max-width: 900px) {
-    .video-card {
-        aspect-ratio: 16 / 9;
-        /* 保持比例 */
-    }
-}
-/* 扁平归一 */
-body { background: var(--page-bg); color: var(--text-main); }
-:root { --card-bg-opacity: 1; --card-shadow: none; --card-border: 1px solid var(--line); --control-bg: var(--surface-soft); }
-.meeting-container, .control-card, .video-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  box-shadow: none;
-  color: var(--text-main);
-}
-.meeting-input { background: var(--surface-soft); border-color: var(--line); color: var(--text-main); }
-
-/* 扁平归一 */
-.video-display-area h1,
-#meeting-title {
-  color: var(--text-main);
-  font-size: 24px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  text-align: left;
-  text-shadow: none;
-}
-.meeting-action-button {
-  color: var(--surface-strong);
-  background: var(--text-main);
-  border: 1px solid var(--text-main);
-  border-radius: var(--radius-sm);
-  box-shadow: none;
-}
-.meeting-action-button:hover { opacity: 0.85; transform: none; box-shadow: none; }
-.meeting-action-button.red-btn { color: var(--danger); background: transparent; border-color: var(--line); }
-.device-btn {
-  color: var(--text-subtle);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-}
-.device-btn:hover:not(:disabled) { color: var(--text-main); background: var(--surface-soft); }
-.device-btn.active { color: var(--surface-strong); background: var(--text-main); border-color: var(--text-main); }
-.video-card { background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-lg); }
-.video-label { color: var(--text-subtle); }

@@ -52,10 +52,10 @@
           "icon": "fa-exchange"
         },
         {
-          "name": "夸克会议(双人)",
+          "name": "夸克会议",
           "link": "meet",
-          "description": "基于 WebRTC 和 Firebase 信令服务器的双人在线会议",
-          "tags": ["双人", "需要摄像头或麦克风"],
+          "description": "浏览器小组会议，支持设备预览、音视频、屏幕共享、聊天和个人纪要。",
+          "tags": ["最多 6 人", "链接入会"],
           "icon": "fa-video-camera"
         },
         {

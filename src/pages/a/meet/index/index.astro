@@ -1,95 +1,191 @@
 ---
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const toolbar = [
+    ["mic", "fa-microphone-slash", "开启麦克风"],
+    ["camera", "fa-video-slash", "开启摄像头"],
+    ["share", "fa-desktop", "共享屏幕"],
+    ["hand", "fa-hand", "举手"],
+    ["people", "fa-users", "成员"],
+    ["chat", "fa-message", "聊天"],
+    ["notes", "fa-clipboard", "纪要"],
+    ["devices", "fa-sliders", "设置"]
+];
 ---
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克会议 | WebRTC 在线视频与屏幕共享 - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
-    <link rel="stylesheet" href="/assets/pages/a/meet/meet.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="在浏览器开会，支持会前设备预览、多人音视频、屏幕共享、聊天和会议纪要。" />
+    <title>夸克会议 | {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
     <link rel="stylesheet" href="/assets/css/fa-local.css" />
-
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+    <link rel="stylesheet" href="/assets/pages/a/meet/meet.css" />
+    <script is:inline src="/assets/js/nav.js"></script>
+    <script is:inline defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script is:inline defer src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script is:inline defer src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline type="module" src="/assets/pages/a/meet/meet.js"></script>
 </head>
+<body class="qm-body">
+    <main class="qm-app">
+        <section id="meet-lobby" class="qm-lobby" aria-labelledby="lobby-title">
+            <header class="qm-intro">
+                <a class="qm-back" href="/a/"><i class="fas fa-arrow-left" aria-hidden="true"></i> 实验室</a>
+                <h1 id="lobby-title">夸克会议</h1>
+                <p>浏览器里的小组会议。最多 6 人，发个链接就能见面。</p>
+            </header>
 
-<body class="luxury-body">
-    <LuxuryBackground />
-    <div class="meeting-wrapper">
-
-        <div class="meeting-container">
-
-            <div class="control-card">
-                <h2>加入/创建会议</h2>
-                <div class="meeting-input-group">
-                    <input type="text" id="room-code-input" class="meeting-input" placeholder="输入三位会议码 (如 XYZ)"
-                        maxlength="3" style="text-transform: uppercase;">
-                    <button id="create-room-btn" class="meeting-action-button">生成会议码并主持</button>
-                    <button id="join-room-btn" class="meeting-action-button">加入房间并参会</button>
-                </div>
-
-                <div id="controls-section" style="display: none;">
-                    <h2>设备控制</h2>
-                    <div class="device-controls">
-                        <button id="camera-btn" class="device-btn">
-                            <i class="fas fa-video-slash"></i>
-                            <span>打开摄像头</span>
-                        </button>
-                        <button id="mic-btn" class="device-btn">
-                            <i class="fas fa-microphone"></i>
-                            <span>启用麦克风</span>
-                        </button>
-                        <button id="screen-share-btn" class="device-btn">
-                            <i class="fas fa-desktop"></i>
-                            <span>共享屏幕</span>
-                        </button>
-                        <button id="hangup-btn" class="meeting-action-button red-btn" style="margin-top: 15px;">
-                            <i class="fas fa-phone-slash"></i>
-                            结束会议
-                        </button>
+            <div class="qm-lobby-grid">
+                <section class="qm-preview" aria-labelledby="preview-title">
+                    <div class="qm-preview-head">
+                        <h2 id="preview-title">会前预览</h2>
+                        <span id="preview-status">摄像头与麦克风已关闭</span>
                     </div>
-                </div>
+                    <div class="qm-preview-stage">
+                        <video id="preview-video" autoplay muted playsinline hidden></video>
+                        <div id="preview-avatar" class="qm-preview-avatar"><i class="fas fa-user" aria-hidden="true"></i></div>
+                    </div>
+                    <div class="qm-preview-actions">
+                        <button type="button" id="preview-mic" aria-pressed="false"><i class="fas fa-microphone-slash" aria-hidden="true"></i><span>开启麦克风</span></button>
+                        <button type="button" id="preview-camera" aria-pressed="false"><i class="fas fa-video-slash" aria-hidden="true"></i><span>开启摄像头</span></button>
+                        <button type="button" id="preview-devices"><i class="fas fa-sliders" aria-hidden="true"></i><span>设备设置</span></button>
+                    </div>
+                </section>
 
-                <h2>状态日志</h2>
-                <pre id="status-log" class="status-log">状态：未连接</pre>
+                <section class="qm-entry" aria-label="进入会议">
+                    <div class="qm-modes" aria-label="会议入口">
+                        <button type="button" id="mode-create" aria-pressed="true"><i class="fas fa-video" aria-hidden="true"></i> 发起会议</button>
+                        <button type="button" id="mode-join" aria-pressed="false"><i class="fas fa-arrow-right" aria-hidden="true"></i> 加入会议</button>
+                    </div>
+                    <form id="lobby-form">
+                        <label for="meet-name">你的显示名称</label>
+                        <input id="meet-name" maxlength="24" autocomplete="nickname" placeholder="访客" />
+                        <div id="topic-field">
+                            <label for="meet-topic">会议主题</label>
+                            <input id="meet-topic" maxlength="64" placeholder="快速会议" />
+                        </div>
+                        <div id="code-field" hidden>
+                            <label for="meet-code">会议码或邀请链接</label>
+                            <input id="meet-code" maxlength="250" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="例如 QM7H-K9PX-W3TA-8RZG" />
+                        </div>
+                        <p id="lobby-error" class="qm-error" role="alert" hidden></p>
+                        <button class="qm-primary qm-enter" id="enter-meet" type="submit">发起会议 <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                    </form>
+                    <p class="qm-caption"><i class="fas fa-circle-info" aria-hidden="true"></i> 设备状态会带入会议，随时可以调整。邀请链接请仅转发给参会者。</p>
+                </section>
             </div>
 
-            <div class="video-display-area">
-                <h1 id="meeting-title">夸克会议 Quark Meet
-                </h1>
-                <div class="video-player-container">
-                    <div class="video-card" id="local-video-card">
-                        <video id="local-video" autoplay muted playsinline></video>
-                        <span class="video-label">我的视频</span>
-                    </div>
+            <section class="qm-recent" aria-labelledby="recent-title" id="recent-meetings" hidden>
+                <h2 id="recent-title">最近会议</h2>
+                <ul id="recent-list"></ul>
+            </section>
+        </section>
 
-                    <div class="video-card" id="remote-video-card" style="display: none;">
-                        <video id="remote-video" autoplay playsinline></video>
-                        <span class="video-label">对方视频</span>
-                    </div>
+        <section id="meet-room" class="qm-room" aria-labelledby="room-title" hidden>
+            <header class="qm-room-head">
+                <div class="qm-room-identity">
+                    <h1 id="room-title"></h1>
+                    <div class="qm-room-meta"><span id="room-code"></span><span aria-hidden="true">·</span><time id="room-elapsed">00:00</time><span class="qm-room-network" id="room-network" role="status"></span></div>
                 </div>
+                <div class="qm-room-tools">
+                    <button type="button" id="room-layout" aria-pressed="false" aria-label="切换平铺与聚焦" title="切换平铺与聚焦"><i class="fas fa-table-cells-large" aria-hidden="true"></i><span>视图</span></button>
+                    <button type="button" id="room-invite" aria-label="邀请参会"><i class="fas fa-link" aria-hidden="true"></i><span>邀请</span></button>
+                </div>
+            </header>
+            <div class="qm-workspace" id="room-workspace">
+                <div class="qm-stage">
+                    <div id="room-tiles" class="qm-tiles"></div>
+                    <div id="room-waiting" class="qm-waiting">
+                        <p>会议已就绪，正在等候其他成员。</p>
+                        <button type="button" id="waiting-invite">复制会议邀请</button>
+                    </div>
+                    <button type="button" id="resume-audio" class="qm-audio-prompt" hidden>点击播放会议声音</button>
+                </div>
+                <aside class="qm-side" id="room-side" aria-labelledby="panel-title" hidden>
+                    <header class="qm-side-head">
+                        <h2 id="panel-title">成员</h2>
+                        <button type="button" id="panel-close" aria-label="关闭侧栏"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+                    </header>
+                    <section id="people-panel" class="qm-panel" aria-label="成员">
+                        <ul id="member-list" class="qm-members"></ul>
+                        <div id="host-controls" hidden>
+                            <button type="button" id="room-lock" aria-pressed="false"><i class="fas fa-lock" aria-hidden="true"></i><span>锁定会议</span></button>
+                            <small>锁定后，其他成员无法加入。</small>
+                        </div>
+                    </section>
+                    <section id="chat-panel" class="qm-panel qm-chat" aria-label="会议聊天" hidden>
+                        <div id="room-messages" role="log" aria-label="聊天消息"><p id="chat-empty">发送第一条会议消息。</p></div>
+                        <form id="room-chat-form">
+                            <input id="room-chat-input" aria-label="会议消息" maxlength="800" autocomplete="off" placeholder="给参会成员发消息…" />
+                            <button id="chat-send" class="qm-primary" type="submit" aria-label="发送"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
+                        </form>
+                        <small class="qm-chat-privacy">消息仅发送给已连接成员，离会后清空。</small>
+                    </section>
+                    <section id="notes-panel" class="qm-panel qm-notes" aria-label="个人会议纪要" hidden>
+                        <label for="room-notes-text">个人纪要 · 保存在当前浏览器</label>
+                        <textarea id="room-notes-text" maxlength="16000" placeholder="记录决定、待办和负责人…"></textarea>
+                        <div class="qm-notes-actions">
+                            <button type="button" id="notes-stamp"><i class="fas fa-clock" aria-hidden="true"></i> 插入时间点</button>
+                            <button type="button" id="notes-export"><i class="fas fa-download" aria-hidden="true"></i> 导出 Markdown</button>
+                        </div>
+                    </section>
+                </aside>
             </div>
+            <footer class="qm-toolbar" aria-label="会议控制">
+                {toolbar.map(([action, icon, label]) => (
+                    <button type="button" id={`room-${action}`} aria-pressed="false">
+                        <i class={`fas ${icon}`} aria-hidden="true"></i><span>{label}</span>
+                        {action === "chat" && <b id="room-chat-unread" hidden></b>}
+                    </button>
+                ))}
+                <button type="button" id="room-leave" class="qm-danger"><i class="fas fa-phone-slash" aria-hidden="true"></i><span>离开</span></button>
+            </footer>
+        </section>
 
-        </div>
-    </div>
+        <dialog class="qm-dialog" id="devices-dialog" aria-labelledby="devices-title">
+            <form method="dialog">
+                <header><h2 id="devices-title">设备设置</h2><button value="close" aria-label="关闭"><i class="fas fa-xmark" aria-hidden="true"></i></button></header>
+                <label for="camera-select">摄像头</label><select id="camera-select"><option value="">系统默认</option></select>
+                <label for="mic-select">麦克风</label><select id="mic-select"><option value="">系统默认</option></select>
+                <label class="qm-check"><input id="mirror-camera" type="checkbox" checked /> 镜像我的摄像头预览</label>
+                <p class="qm-caption">打开设备后可查看浏览器已授权的设备名称。</p>
+                <button class="qm-primary" value="close">完成</button>
+            </form>
+        </dialog>
 
+        <dialog class="qm-dialog" id="invite-dialog" aria-labelledby="invite-title">
+            <form method="dialog">
+                <header><h2 id="invite-title">邀请参会</h2><button value="close" aria-label="关闭"><i class="fas fa-xmark" aria-hidden="true"></i></button></header>
+                <label for="invite-link">入会链接</label>
+                <input id="invite-link" readonly />
+                <p class="qm-caption" id="invite-code"></p>
+                <button type="button" id="invite-copy" class="qm-primary"><i class="fas fa-copy" aria-hidden="true"></i> 复制邀请信息</button>
+            </form>
+        </dialog>
 
-    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
-    <script is:inline src="/assets/pages/a/meet/meet.js"></script>
+        <dialog class="qm-dialog" id="leave-dialog" aria-labelledby="leave-title">
+            <form method="dialog">
+                <header><h2 id="leave-title">结束会议？</h2><button value="cancel" aria-label="取消"><i class="fas fa-xmark" aria-hidden="true"></i></button></header>
+                <p>会议结束后，所有参会者都会返回会前页面。</p>
+                <div class="qm-dialog-actions">
+                    <button value="cancel">继续会议</button>
+                    <button type="button" id="confirm-leave" class="qm-danger">结束会议</button>
+                </div>
+            </form>
+        </dialog>
+        <p id="meet-toast" class="qm-toast" role="status" hidden></p>
+    </main>
+    <template id="tile-template">
+        <article class="qm-tile">
+            <div class="qm-tile-avatar"></div>
+            <video autoplay playsinline hidden></video>
+            <span class="qm-tile-state"></span>
+            <span class="qm-tile-label"></span>
+            <button class="qm-tile-focus" type="button"><i class="fas fa-expand" aria-hidden="true"></i></button>
+        </article>
+    </template>
 </body>
-
 </html>
-
-
-
-
-
-
-

@@ -1,6 +1,5 @@
 :root.terminal-page,
 :root.terminal-page[data-terminal-theme="light"] {
-    color-scheme: light;
     --terminal-page: #edf2f6;
     --terminal-surface: #fff;
     --terminal-soft: #f1f5f9;
@@ -22,7 +21,6 @@
 
 @media (prefers-color-scheme: dark) {
     :root.terminal-page:not([data-terminal-theme]) {
-        color-scheme: dark;
         --terminal-page: #0b1018;
         --terminal-surface: #151e2a;
         --terminal-soft: #1b2634;
@@ -43,7 +41,6 @@
 }
 
 :root.terminal-page[data-terminal-theme="dark"] {
-    color-scheme: dark;
     --terminal-page: #0b1018;
     --terminal-surface: #151e2a;
     --terminal-soft: #1b2634;
@@ -65,19 +62,29 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
-body {
+.terminal-page,
+.terminal-page body {
+    background: var(--terminal-page);
+    color: var(--terminal-text);
+}
+
+:root.terminal-page[data-terminal-theme="light"],
+:root.terminal-page[data-terminal-theme="light"] body { color-scheme: only light; }
+:root.terminal-page[data-terminal-theme="dark"],
+:root.terminal-page[data-terminal-theme="dark"] body { color-scheme: only dark; }
+:root.terminal-page:not([data-terminal-theme]),
+:root.terminal-page:not([data-terminal-theme]) body { color-scheme: light dark; }
+
+.terminal-page body {
     margin: 0;
     height: 100vh;
     height: 100dvh;
     min-height: 0;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
-    color: var(--terminal-text);
-    background: var(--terminal-page);
     font: 14px/1.5 system-ui, "Microsoft YaHei UI", sans-serif;
 }
 
-.terminal-page body.dark-mode { color-scheme: inherit; }
 .terminal-page .quark-bot-launcher, .terminal-page .quark-notice-launcher { display: none; }
 
 button, select, input, textarea { font: inherit; color: inherit; }
@@ -210,6 +217,11 @@ h1 { font-size: clamp(1rem, 2vw, 1.34rem); font-weight: 720; white-space: nowrap
     white-space: normal;
 }
 .terminal-markdown > :first-child { margin-top: 0; }
+.terminal-llm-status { color: var(--terminal-muted); font-size: .78rem; }
+.terminal-llm-status + .terminal-markdown:not(:empty) { margin-top: .5rem; }
+.terminal-markdown :not(pre) > code { background: var(--terminal-console); padding: .1em .25em; border-radius: .25em; }
+.prompt-help { color: var(--terminal-muted); margin-bottom: .55rem; font-size: .82rem; }
+.example-buttons.prompt-buttons button { font: inherit; }
 .terminal-markdown > :last-child { margin-bottom: 0; }
 .terminal-markdown :is(p, ul, ol, blockquote, pre) { margin-block: .6rem; }
 .terminal-markdown blockquote { margin-inline: 0; padding-inline-start: .7rem; border-left: 3px solid var(--terminal-accent); }
