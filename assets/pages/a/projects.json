@@ -26,6 +26,12 @@
           "link": "music-visualizer",
           "description": "用滚动声谱查看声音变化，标记 A–B 循环反复听，或切换三维可视化。",
           "icon": "fa-music"
+        },
+        {
+          "name": "指南车",
+          "link": "/guide-vehicle/",
+          "description": "通过交互动画观察指南车转向时如何保持指向。",
+          "icon": "fa-compass"
         }
       ]
     },
@@ -103,6 +109,23 @@
           "link": "/blog/lyb",
           "description": "用户互动与留言交流平台，支持实时评论和消息通知",
           "icon": "fa-comments"
+        }
+      ]
+    },
+    {
+      "name": "后端与 API",
+      "projects": [
+        {
+          "name": "Quark API",
+          "link": "https://quark-api.130923.xyz/",
+          "description": "查看 Quark API 的服务与接口。",
+          "icon": "fa-code"
+        },
+        {
+          "name": "工作台",
+          "link": "https://lab.130923.xyz/",
+          "description": "奇夸克的个人后端实验室。",
+          "icon": "fa-server"
         }
       ]
     }

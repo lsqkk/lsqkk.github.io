@@ -567,7 +567,7 @@ async function loadHoverSections(key) {
             items: (cat.tools || []).map(item => ({
                 name: item.name || '未命名',
                 link: item.url || '#',
-                target: '_self'
+                target: item.target || '_self'
             }))
         })).filter(section => section.items.length > 0);
     } else if (key === 'games') {
@@ -575,14 +575,14 @@ async function loadHoverSections(key) {
         const groups = [
             { title: '多人联机', items: data.multiplayer || [] },
             { title: '校园探索', items: data.singlePlayer || [] },
-            { title: '经典游戏', items: data.classic || [] }
+            { title: '休闲益智', items: data.classic || [] }
         ];
         sections = groups.map(group => ({
             title: group.title,
             items: group.items.map(item => ({
                 name: item.name || '未命名',
                 link: normalizeGamesLink(item.link || ''),
-                target: '_self'
+                target: /^https?:/.test(item.link) ? '_blank' : '_self'
             }))
         })).filter(section => section.items.length > 0);
     } else if (key === 'a') {

@@ -139,6 +139,12 @@
           "url": "/tool/spotdiff",
           "target": "_self",
           "description": "对比两张图片，查找不同之处。"
+        },
+        {
+          "name": "B 站卡片生成器",
+          "url": "https://bili-card.130923.xyz/",
+          "target": "_blank",
+          "description": "把 B 站内容生成便于分享的卡片。"
         }
       ]
     },
@@ -156,6 +162,12 @@
           "url": "/tool/typeflow",
           "description": "练习中文与英文输入，查看速度、准确率和错误模式。",
           "target": "_self"
+        },
+        {
+          "name": "知识边界",
+          "url": "https://kn-bo.130923.xyz/",
+          "target": "_blank",
+          "description": "通过通识问答，看看自己熟悉哪些领域，还有哪些值得探索。"
         }
       ]
     }

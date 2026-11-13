@@ -11,6 +11,11 @@
     {
       "name": "每日答题",
       "link": "dati"
+    },
+    {
+      "name": "跑团助手 TTRPG",
+      "link": "https://ttrpg.183107.xyz/",
+      "description": "和朋友一起跑团时使用的 AI 助手，与 @txy571 共同开发。"
     }
   ],
   "singlePlayer": [
@@ -19,5 +24,11 @@
       "link": "xjtx"
     }
   ],
-  "classic": []
+  "classic": [
+    {
+      "name": "佛系消消消纯净版",
+      "link": "/foxi-cow-sudoku/",
+      "description": "结合数独的数字推理与扫雷的线索判断。"
+    }
+  ]
 }

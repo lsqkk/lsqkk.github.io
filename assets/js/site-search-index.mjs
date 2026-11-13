@@ -78,7 +78,7 @@ export async function loadSearchIndex() {
         add('/settings/', '网站设置', '导航', '调整主题、字体、动效和 AI 连接');
         for (const key of ['multiplayer', 'singlePlayer', 'classic']) {
             for (const game of games?.[key] || []) {
-                if (game.link) add(game.link.startsWith('/') ? game.link : `/games/${game.link}`, game.name, '游戏', game.description);
+                if (game.link) add(/^(\/|https?:)/i.test(game.link) ? game.link : `/games/${game.link}`, game.name, '游戏', game.description);
             }
         }
         if (![pages, posts, tools, labs, blog, games].some(Boolean)) throw new Error('站点索引暂时无法加载');

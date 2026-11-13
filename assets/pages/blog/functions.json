@@ -177,7 +177,7 @@
             ]
         },
         {
-            "name": "我的其他网站",
+            "name": "学习与阅读",
             "functions": [
                 {
                     "name": "夸克文档 QuarkDoc",
@@ -191,6 +191,33 @@
                     "icon": "¶"
                 },
                 {
+                    "name": "问题链：马克思主义思想问题地形",
+                    "categories": [
+                        "马克思主义",
+                        "学习"
+                    ],
+                    "description": "一个以问题链梳理马克思主义思想的学习网站。",
+                    "link": "https://marxism.130923.xyz/",
+                    "target": "_blank",
+                    "icon": "⌁"
+                },
+                {
+                    "name": "公共休息室",
+                    "categories": [
+                        "公共生活",
+                        "劳动史"
+                    ],
+                    "description": "一个购物袋，一本书，一个卖晨报的地方。沿着物件，走进人们争取劳动尊严、公共资源和共同生活的历史。",
+                    "link": "https://the-communist.party/#/?lang=zh",
+                    "target": "_blank",
+                    "icon": "⌂"
+                }
+            ]
+        },
+        {
+            "name": "网站与应用",
+            "functions": [
+                {
                     "name": "个人学术主页",
                     "categories": [
                         "学术",
@@ -200,17 +227,6 @@
                     "link": "/academic-homepage",
                     "target": "_self",
                     "icon": "◎"
-                },
-                {
-                    "name": "知识边界",
-                    "categories": [
-                        "通识测试",
-                        "自我探索"
-                    ],
-                    "description": "一个有趣的通识测试，探索你的知识边界。",
-                    "link": "https://kn-bo.130923.xyz/",
-                    "target": "_blank",
-                    "icon": "⊙"
                 },
                 {
                     "name": "个人网站画廊",
@@ -224,26 +240,15 @@
                     "icon": "▧"
                 },
                 {
-                    "name": "佛系消消消纯净版",
+                    "name": "自动化 2506 之家",
                     "categories": [
-                        "数独",
-                        "扫雷"
+                        "校园",
+                        "班级互助"
                     ],
-                    "description": "一个结合数独与扫雷的小游戏。",
-                    "link": "/foxi-cow-sudoku/",
-                    "target": "_self",
-                    "icon": "▦"
-                },
-                {
-                    "name": "问题链：马克思主义思想问题地形",
-                    "categories": [
-                        "马克思主义",
-                        "学习"
-                    ],
-                    "description": "一个以问题链梳理马克思主义思想的学习网站。",
-                    "link": "https://marxism.130923.xyz/",
+                    "description": "自动化 2506 班级互助网站。",
+                    "link": "https://auto2506.github.io/",
                     "target": "_blank",
-                    "icon": "⌁"
+                    "icon": "⌂"
                 },
                 {
                     "name": "窗",
@@ -268,17 +273,6 @@
                     "link": "https://ql.130923.xyz/",
                     "target": "_blank",
                     "icon": "▤"
-                },
-                {
-                    "name": "公共休息室",
-                    "categories": [
-                        "公共生活",
-                        "劳动史"
-                    ],
-                    "description": "一个购物袋，一本书，一个卖晨报的地方。沿着物件，走进人们争取劳动尊严、公共资源和共同生活的历史。",
-                    "link": "https://the-communist.party/#/?lang=zh",
-                    "target": "_blank",
-                    "icon": "⌂"
                 }
             ]
         }

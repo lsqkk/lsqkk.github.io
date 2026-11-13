@@ -9,7 +9,16 @@ const descriptions = {
 };
 const groups = [
   {key:'multiplayer',name:'和朋友一起',description:'交流、推理、博弈。让一场游戏成为相聚的理由。',tag:'多人互动'},
-  {key:'singlePlayer',name:'发现校园',description:'从一张照片出发，重新认识熟悉的角落。',tag:'校园原创'}
-].map(group=>({...group,items:data[group.key].map(item=>({name:item.name,href:'/games/'+item.link,description:descriptions[item.link],tags:[group.tag]}))}));
+  {key:'singlePlayer',name:'发现校园',description:'从一张照片出发，重新认识熟悉的角落。',tag:'校园原创'},
+  {key:'classic',name:'休闲益智',tag:'数字推理'}
+].map(group => ({
+  ...group,
+  items: data[group.key].map(item => ({
+    name: item.name,
+    href: /^(\/|https?:)/.test(item.link) ? item.link : '/games/' + item.link,
+    description: item.description ?? descriptions[item.link],
+    tags: [group.tag],
+  })),
+}));
 ---
 <CatalogLayout title="游戏" eyebrow="QUARK / PLAY SOMETHING DIFFERENT" description="留下值得再玩一次的体验。原创推理、校园探索，与朋友一起完成的挑战。" groups={groups} kind="games" />
