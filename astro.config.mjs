@@ -7,6 +7,7 @@ import sitemap from "@astrojs/sitemap";
 import sitemapCompat from "./scripts/sitemap-compat.mjs";
 import directoryPages from "./scripts/directory-pages.mjs";
 import optimizeStatic from "./scripts/optimize-static.mjs";
+import { diagramLanguages, rehypePostMarkdown } from "./scripts/post-markdown.mjs";
 import retiredPages from "./src/config/retired-pages.json" with { type: "json" };
 import rehypeRaw from "rehype-raw";
 
@@ -247,45 +248,6 @@ function rehypeFilePreview() {
         children: [{ type: "text", value: scriptCode }],
       });
     }
-  };
-}
-
-function rehypeMermaid() {
-  return (tree) => {
-    const visit = (node, parent = null, index = -1) => {
-      if (!node || typeof node !== "object") return;
-
-      // Match <pre><code class="language-mermaid">...</code></pre>
-      if (
-        node.type === "element" &&
-        node.tagName === "pre" &&
-        parent && index >= 0 &&
-        Array.isArray(node.children) &&
-        node.children.length === 1 &&
-        node.children[0].type === "element" &&
-        node.children[0].tagName === "code"
-      ) {
-        const codeEl = node.children[0];
-        const classNames = codeEl.properties?.className || [];
-        const isMermaid = classNames.some((c) => String(c) === "language-mermaid");
-        if (isMermaid) {
-          const diagramText = codeEl.children
-            .filter((c) => c.type === "text")
-            .map((c) => c.value)
-            .join("");
-          parent.children[index] = createElement("pre", { className: ["mermaid"] }, [
-            createTextNode(diagramText),
-          ]);
-          return;
-        }
-      }
-
-      if (Array.isArray(node.children)) {
-        node.children.forEach((child, childIndex) => visit(child, node, childIndex));
-      }
-    };
-
-    visit(tree);
   };
 }
 
@@ -591,11 +553,12 @@ export default defineConfig({
   }), sitemapCompat(), directoryPages(), apiBaseInjector(), optimizeStatic()],
   redirects: process.argv.includes("dev") ? buildDevRedirects() : undefined,
   markdown: {
+    syntaxHighlight: { type: "shiki", excludeLangs: diagramLanguages },
     shikiConfig: { themes: { light: "github-light", dark: "github-dark" } },
     remarkRehype: {
       allowDangerousHtml: true,
     },
-    rehypePlugins: [rehypeRaw, rehypePostCard, rehypeFilePreview, rehypeMermaid, rehypeNote],
+    rehypePlugins: [rehypeRaw, rehypePostCard, rehypeFilePreview, rehypeNote, rehypePostMarkdown],
   },
   build: {
     format: "file",

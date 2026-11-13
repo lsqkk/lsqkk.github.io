@@ -94,16 +94,11 @@ try {
     <link rel="stylesheet" href="/assets/css/code.css" />
     <link rel="stylesheet" href="/assets/css/reading-compass.css" />
     <link rel="stylesheet" href="/assets/css/reading-desk.css" />
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="stylesheet" href="/assets/css/fa-local.css" />
     <script is:inline src="/assets/js/nav.js"></script>
     <script is:inline src="/assets/js/copyright-injector.js"></script>
     <script is:inline async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/KaTeX/0.16.9/katex.min.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css"
-    />
   </head>
 
   <body class="luxury-body post-layout-page">
@@ -338,23 +333,9 @@ try {
     </script>
 
 
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script is:inline defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-    <script is:inline>
-      document.addEventListener("DOMContentLoaded", () => {
-        if (typeof mermaid !== "undefined" && document.querySelector(".post-content .mermaid")) {
-          mermaid.initialize({ startOnLoad: false, theme: "default" });
-          mermaid.run({ querySelector: ".post-content .mermaid" });
-        }
-      });
+    <script>
+      import "../scripts/post-markdown.js";
     </script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/typescript.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/cpp.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
-    <script is:inline defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/nginx.min.js"></script>
-    <script is:inline src="/assets/js/code.js"></script>
     <script
       is:inline
       src="https://giscus.app/client.js"

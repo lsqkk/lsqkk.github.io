@@ -20,6 +20,7 @@
 .post-content .overflow-guide { display:flex; justify-content:space-between; gap:16px; border-top:1px solid var(--line); background:linear-gradient(to right,var(--accent) var(--overflow-read,0%),transparent var(--overflow-read,0%)) top left/100% 1px no-repeat; padding:7px 0; margin-top:-14px; margin-bottom:20px; color:var(--text-subtle); font-size:10px; letter-spacing:.03em; }
 .post-content .overflow-guide[hidden] { display:none; }
 .post-content .table-scroll + .overflow-guide { margin-top:-6px; }
+.post-content :is(.post-code-block, .post-diagram) > .overflow-guide { margin:0; padding-inline:0.75rem; }
 body.reading-narrow .post-content { max-width:58ch; margin-inline:auto; }
 @media (max-width:640px) { .reading-compass { display:none; } }
 @media print {

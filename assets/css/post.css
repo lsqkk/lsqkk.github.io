@@ -1340,6 +1340,33 @@ body.post-layout-page { background: var(--page-bg); }
     color: var(--text-main);
 }
 .post-content p { margin: 0 0 1.15em; }
+.post-content :is(ul, ol) {
+    margin-block: 0.9em 1.15em;
+    padding-inline-start: 2em;
+    overflow-wrap: anywhere;
+}
+.post-content ol {
+    padding-inline-start: max(2em, var(--post-list-indent, 0ch));
+}
+.post-content li > :is(ul, ol) {
+    margin-block: 0.35em 0;
+}
+.post-content li + li {
+    margin-block-start: 0.3em;
+}
+.post-content li > p {
+    margin-block: 0.4em;
+}
+.post-content li::marker {
+    color: var(--text-subtle);
+}
+.post-content .task-list-item {
+    list-style: none;
+}
+.post-content .task-list-item > input[type="checkbox"] {
+    margin-inline-end: 0.35em;
+    vertical-align: baseline;
+}
 .post-content h2 {
     margin: 2em 0 0.55em;
     font-size: 1.5rem;
@@ -1525,7 +1552,9 @@ body.post-layout-page .post-hero-title { background:transparent; border:0; paddi
 .post-content :is(h1,h2,h3,h4) { text-wrap:pretty; }
 .post-content :is(h1,h2,h3,h4):target { border-left:2px solid var(--accent); padding-left:12px; }
 .post-content img { max-width:100%; height:auto; }
-.post-content :not(pre)>code { overflow-wrap:anywhere; }
+.post-content :not(pre)>code,
+.post-content :is(p, th, td) { overflow-wrap:anywhere; }
+.post-content .katex-display { overflow-x:auto; overflow-y:hidden; padding-block:0.2em; }
 .post-content .table-scroll { overflow-x:auto; max-width:100%; overscroll-behavior-x:contain; scrollbar-width:thin; }
 .post-content th { background:var(--surface-soft); }
 .post-content blockquote { border-left:2px solid var(--line-strong); color:var(--text-subtle); }

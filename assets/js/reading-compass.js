@@ -31,7 +31,7 @@
     // A ruler appears only for actual horizontal overflow, independently of page scroll.
     const observed = new WeakSet();
     function addOverflowGuides() {
-      content.querySelectorAll('pre,.table-scroll').forEach(scroller => {
+      content.querySelectorAll('pre,.table-scroll,.post-diagram-preview').forEach(scroller => {
         if (observed.has(scroller)) return;
         observed.add(scroller);
         const cue = document.createElement('div');
@@ -44,7 +44,9 @@
           if (max <= 2) return;
           scroller.tabIndex = 0;
           scroller.setAttribute('role','region');
-          scroller.setAttribute('aria-label',scroller.tagName === 'PRE' ? '代码，可左右滚动' : '表格，可左右滚动');
+          if (!scroller.hasAttribute('aria-label')) {
+            scroller.setAttribute('aria-label',scroller.tagName === 'PRE' ? '代码，可左右滚动' : '表格，可左右滚动');
+          }
           const ratio = Math.max(0,Math.min(1,scroller.scrollLeft/max));
           cue.style.setProperty('--overflow-read',(ratio*100)+'%');
           cue.querySelector('.overflow-distance').textContent = ratio >= .99 ? '已到右端 ←' : ratio <= .01 ? '向右滑动 →' : '← 左右滑动 →';
@@ -58,7 +60,7 @@
       });
     }
     addOverflowGuides();
-    // Tables/headers can be enhanced by another deferred script after this one.
+    // Tables and diagram previews can be added by other scripts.
     const mutations = new MutationObserver(addOverflowGuides);
     mutations.observe(content,{childList:true,subtree:true});
   }
