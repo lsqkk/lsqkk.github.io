@@ -2,45 +2,160 @@
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
-<html lang="zh-CN">
-
+<html lang="zh-CN" class="terminal-page">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克终端 Quark Terminal - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/css/cursor.css">
+    <meta name="description" content="在浏览器中使用夸克虚拟终端，组合文本管道、管理本地文件，并审阅和执行 AI 命令计划。">
+    <title>夸克终端 - {SITE_TITLE}</title>
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/pages/a/terminal/css/style.css">
-
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png"></head>
-
+    <script is:inline>
+        try {
+            const override = localStorage.getItem('quark_terminal_theme');
+            const site = JSON.parse(localStorage.getItem('quark_site_preferences') || '{}');
+            const theme = ['light', 'dark'].includes(override) ? override : site?.theme;
+            if (['light', 'dark'].includes(theme)) document.documentElement.dataset.terminalTheme = theme;
+        } catch {}
+    </script>
+</head>
 <body>
-    <div id="terminal">
-        <div id="output"></div>
-        <div id="input-line">
-            <span id="prompt"></span>
-            <input type="text" id="command-input" autocomplete="off" autofocus>
+    <header class="workbench-header">
+        <div class="product-heading">
+            <a class="lab-link" href="/a/">← 实验室</a>
+            <h1><span class="product-icon" aria-hidden="true">&gt;_</span> 夸克终端</h1>
         </div>
-    </div>
+        <div class="header-tools">
+            <label class="theme-control">
+                <span>外观</span>
+                <select id="terminal-theme">
+                    <option value="site">跟随网站</option>
+                    <option value="light">浅色</option>
+                    <option value="dark">深色</option>
+                </select>
+            </label>
+            <button type="button" id="workbench-toggle" aria-controls="workbench-tools" aria-expanded="true">工作区</button>
+            <button type="button" class="terminal-notice" data-quark-notice-open aria-label="通知中心" title="通知中心">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+                <span class="quark-notice-dot" hidden></span>
+            </button>
+        </div>
+    </header>
 
-    <!-- 多行输入模态框 -->
-    <div id="multiline-modal" class="modal">
-        <div class="modal-content">
-            <h3>多行输入 - 按 Ctrl+Enter 保存</h3>
-            <textarea id="multiline-textarea" placeholder="请输入内容..."></textarea>
-            <div class="modal-buttons">
-                <button id="save-multiline">保存</button>
-                <button id="cancel-multiline">取消</button>
+    <main class="workbench">
+        <section id="terminal" aria-label="终端会话">
+            <header class="console-bar">
+                <span class="console-tab"><span aria-hidden="true">&gt;_</span> qsh</span>
+                <span id="console-location"></span>
+                <button type="button" id="open-history" title="搜索命令历史 (Ctrl+R)">历史</button>
+                <button type="button" id="copy-output" title="复制终端记录">复制记录</button>
+            </header>
+            <div id="output" role="log" aria-label="命令输出" tabindex="0"></div>
+            <button type="button" id="scroll-latest" hidden>跳到最新输出 ↓</button>
+            <form id="input-line">
+                <label id="prompt" for="command-input"></label>
+                <input id="command-input" type="text" aria-label="终端命令" autocomplete="off" spellcheck="false"
+                    autocapitalize="off" enterkeyhint="go" placeholder="输入命令…" maxlength="8192">
+                <button type="submit" id="run-command">运行 ↵</button>
+                <button type="button" id="interrupt-command" hidden>停止</button>
+            </form>
+            <div id="completion" hidden>
+                <span id="completion-label"></span>
+                <button type="button" id="accept-completion">补全</button>
             </div>
+            <footer class="console-status">
+                <span id="session-status" role="status"><span class="status-dot" aria-hidden="true"></span> 本地 qsh</span>
+                <span id="exit-status"></span>
+                <span class="keyboard-hints"><kbd>↑</kbd><kbd>↓</kbd> 历史 <kbd>Tab</kbd> 补全 <kbd>Ctrl</kbd>+<kbd>L</kbd> 清屏</span>
+                <a class="quarkbot-link" href="/a/quarkbot/">QuarkBot</a>
+            </footer>
+        </section>
+
+        <aside id="workbench-tools" aria-label="终端工作区">
+            <section class="workspace-section">
+                <div class="section-header">
+                    <h2>文件</h2>
+                    <button type="button" id="import-file">导入文本</button>
+                </div>
+                <div class="path-row">
+                    <button type="button" id="go-up" aria-label="前往上级目录" title="前往上级目录">↑</button>
+                    <span id="file-path"></span>
+                </div>
+                <ul id="workspace-files"></ul>
+                <input type="file" id="file-picker" accept="text/*,.md,.json,.csv,.tsv,.xml,.yaml,.yml,.log,.js,.mjs,.css,.html,.ini,.conf" hidden>
+            </section>
+            <section class="workspace-section ai-section">
+                <div class="section-header">
+                    <h2>AI 命令</h2>
+                    <a href="/settings/#ai">连接设置</a>
+                </div>
+                <p id="agent-connection"></p>
+                <form id="agent-form">
+                    <label for="agent-task" class="visually-hidden">交给 AI 的任务</label>
+                    <textarea id="agent-task" rows="2" maxlength="1200" placeholder="例如：筛选 readme.md 中含 LLM 的行，保存到 /tmp/llm.txt"></textarea>
+                    <button type="submit">生成计划</button>
+                </form>
+                <div id="agent-plan" hidden>
+                    <p id="agent-summary"></p>
+                    <ol id="agent-steps"></ol>
+                    <div class="plan-actions">
+                        <button type="button" id="run-plan">执行计划</button>
+                        <button type="button" id="cancel-plan">丢弃</button>
+                    </div>
+                </div>
+            </section>
+            <section class="workspace-section">
+                <div class="section-header"><h2>试试这些命令</h2></div>
+                <div class="example-buttons">
+                    <button type="button" data-example="help">help</button>
+                    <button type="button" data-example="ls -al">ls -al</button>
+                    <button type="button" data-example="tree /">tree /</button>
+                    <button type="button" data-example="cat readme.md | grep -in llm">cat … | grep</button>
+                </div>
+            </section>
+        </aside>
+    </main>
+
+    <dialog id="multiline-modal" aria-labelledby="editor-title">
+        <div class="dialog-header">
+            <h2 id="editor-title">编辑文件</h2>
+            <span id="editor-path"></span>
         </div>
-    </div>
+        <textarea id="multiline-textarea" aria-label="文件内容" spellcheck="false"></textarea>
+        <p id="editor-error" role="alert"></p>
+        <div class="dialog-actions">
+            <span>Ctrl + Enter 保存</span>
+            <button type="button" id="cancel-multiline">取消</button>
+            <button type="button" id="save-multiline">保存</button>
+        </div>
+    </dialog>
 
-    <script is:inline src="/assets/js/llm-shared.js"></script>
-    <script is:inline src="/assets/js/safe-markdown.js"></script>
-    <script is:inline src="/assets/js/marked.min.js"></script>
-    <script is:inline src="/assets/pages/a/terminal/js/storage.js"></script>
-    <script is:inline src="/assets/pages/a/terminal/js/commands.js"></script>
-    <script is:inline src="/assets/pages/a/terminal/js/main.js"></script>
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
+    <dialog id="history-modal" aria-labelledby="history-title">
+        <div class="dialog-header history-header">
+            <h2 id="history-title">搜索命令历史</h2>
+            <form method="dialog"><button aria-label="关闭历史">关闭</button></form>
+        </div>
+        <input id="history-filter" type="search" placeholder="搜索历史命令…" aria-label="历史关键词" autocomplete="off" spellcheck="false">
+        <p class="history-help">选择一条命令放回输入行，可修改后再执行。</p>
+        <ul id="history-results" aria-label="匹配的命令"></ul>
+    </dialog>
+
+    <dialog id="shutdown-dialog" aria-labelledby="shutdown-title">
+        <div class="dialog-header"><h2 id="shutdown-title">会话已暂停</h2></div>
+        <form method="dialog" class="dialog-actions">
+            <button id="restart-terminal" type="button">重启</button>
+            <button>继续会话</button>
+        </form>
+    </dialog>
+
+    <script is:inline src="/assets/js/llm-shared.js" defer></script>
+    <script is:inline src="/assets/js/marked.min.js" defer></script>
+    <script is:inline src="/assets/js/safe-markdown.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/storage.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/shell.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/text-commands.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/agent.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/commands.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/main.js" defer></script>
 </body>
-
 </html>

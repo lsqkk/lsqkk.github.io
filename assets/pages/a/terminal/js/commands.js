@@ -3,12 +3,10 @@ class CommandManager {
         this.storage = storageManager;
         this.output = outputHandler;
         this.multilineCallback = null;
-        this.currentFileName = null;
         this.presetCommands = { output: {}, redirect: {} };
-        this.dangerAttempts = 0;
+        this.agent = new ShellAgent(this);
         this.contextLimit = 8;
         this.llmSessionActive = false;
-        this.llmSessionBusy = false;
         this.builtinCommands = [
             'help', 'man', 'ls', 'dir', 'pwd', 'cd', 'cd..', 'mkdir', 'rm', 'del', 'unlink',
             'touch', 'write', 'cat', 'type', 'less', 'head', 'tail', 'wc', 'grep', 'find',
@@ -16,15 +14,17 @@ class CommandManager {
             'calc', 'expr', 'search', 'start', 'open', 'tools', 'games', 'whoami', 'uname',
             'env', 'printenv', 'export', 'set', 'unset', 'llm', 'chat', 'ask', 'llm-config',
             'llm-key', 'llm-base', 'llm-model', 'llm-clear', 'llm-history', 'llm-on', 'llm-off',
-            'exit', 'quit', 'bye', 'stat'
+            'exit', 'quit', 'bye', 'stat', 'agent', 'edit', 'nano', 'vim', 'vi',
+            'import', 'download', 'theme', 'rmdir', 'true', 'false', 'test', 'source', 'shutdown',
+            ...Object.keys(textCommands)
         ];
 
-        this.loadPresetCommands();
+        this.presetsReady = this.loadPresetCommands();
     }
 
     async loadPresetCommands() {
         try {
-            const response = await fetch('/assets/pages/a/terminal/js/preset-commands.json');
+            const response = await fetch('/assets/pages/a/terminal/preset-commands.json', { signal: AbortSignal.timeout(3000) });
             if (!response.ok) {
                 throw new Error('preset-commands.json not found');
             }
@@ -32,82 +32,6 @@ class CommandManager {
         } catch (error) {
             this.presetCommands = { output: {}, redirect: {} };
         }
-    }
-
-    tokenize(input) {
-        const tokens = [];
-        let current = '';
-        let quote = '';
-        let escaped = false;
-
-        for (let index = 0; index < input.length; index += 1) {
-            const char = input[index];
-
-            if (escaped) {
-                current += char;
-                escaped = false;
-                continue;
-            }
-
-            if (char === '\\') {
-                escaped = true;
-                continue;
-            }
-
-            if (quote) {
-                if (char === quote) {
-                    quote = '';
-                } else {
-                    current += char;
-                }
-                continue;
-            }
-
-            if (char === '"' || char === '\'') {
-                quote = char;
-                continue;
-            }
-
-            if (/\s/.test(char)) {
-                if (current) {
-                    tokens.push(current);
-                    current = '';
-                }
-                continue;
-            }
-
-            current += char;
-        }
-
-        if (quote) {
-            throw new Error('引号未闭合');
-        }
-
-        if (current) {
-            tokens.push(current);
-        }
-
-        return tokens.map((token) => this.expandEnv(token));
-    }
-
-    expandEnv(token) {
-        const env = this.storage.getEnv();
-        return String(token || '').replace(/\$([A-Za-z_][A-Za-z0-9_]*)/g, (match, name) => {
-            return Object.prototype.hasOwnProperty.call(env, name) ? env[name] : '';
-        });
-    }
-
-    parseOptions(args) {
-        const options = new Set();
-        const values = [];
-        args.forEach((arg) => {
-            if (arg.startsWith('-') && arg.length > 1) {
-                arg.slice(1).split('').forEach((flag) => options.add(flag));
-            } else {
-                values.push(arg);
-            }
-        });
-        return { options, values };
     }
 
     createCodeBlock(text, className = '') {
@@ -148,29 +72,6 @@ class CommandManager {
             .replace(/'/g, '&#39;');
     }
 
-    sanitizeHtml(html) {
-        const template = document.createElement('template');
-        template.innerHTML = String(html || '');
-        const blockedSelectors = ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'];
-
-        template.content.querySelectorAll(blockedSelectors.join(',')).forEach((node) => node.remove());
-        template.content.querySelectorAll('*').forEach((node) => {
-            [...node.attributes].forEach((attr) => {
-                const name = attr.name.toLowerCase();
-                const value = String(attr.value || '').trim().toLowerCase();
-                if (name.startsWith('on')) {
-                    node.removeAttribute(attr.name);
-                    return;
-                }
-                if ((name === 'href' || name === 'src') && value.startsWith('javascript:')) {
-                    node.removeAttribute(attr.name);
-                }
-            });
-        });
-
-        return template.innerHTML;
-    }
-
     renderMarkdownToElement(text) {
         const wrapper = document.createElement('div');
         wrapper.className = 'terminal-block terminal-llm terminal-markdown';
@@ -190,16 +91,8 @@ class CommandManager {
         return wrapper;
     }
 
-    isLlmSessionCommand(raw) {
-        return /^(llm|chat|ask|llm-on)\b/i.test(String(raw || '').trim());
-    }
-
     isLlmSessionActive() {
         return this.llmSessionActive;
-    }
-
-    isLlmSessionBusy() {
-        return this.llmSessionBusy;
     }
 
     shouldHandleAsLlmSession(raw) {
@@ -207,31 +100,22 @@ class CommandManager {
         if (!this.llmSessionActive || !input) {
             return false;
         }
-        if (input.startsWith('!') || /^llm-(?:key|base|model|config|history|clear)(?:\s|$)/i.test(input)) {
+        if (input.startsWith('!') || /^(?:agent|llm-(?:key|base|model|config|history|clear))(?:\s|$)/i.test(input)) {
             return false;
         }
         return true;
     }
 
-    async handleLlmSessionInput(raw) {
+    async handleLlmSessionInput(raw, signal) {
         const input = String(raw || '').trim();
         const lowered = input.toLowerCase();
 
-        if (!input) {
-            return;
-        }
-
-        if (this.llmSessionBusy) {
-            this.output('LLM 仍在回复上一条消息，请稍候再试。', 'warning');
-            return;
-        }
-
         if (['exit', 'quit', 'bye', 'llm-off'].includes(lowered)) {
             this.disableLlmSession();
-            return;
+            return 0;
         }
 
-        await this.requestLlm(input);
+        return this.requestLlm(input, signal);
     }
 
     enableLlmSession() {
@@ -253,52 +137,115 @@ class CommandManager {
         this.output('已退出 LLM 连续对话模式。', 'success');
     }
 
-    async execute(commandLine) {
+    isSensitive(raw) {
+        return /(?:^|[\s!;|&])["']?llm-key["']?(?:[\s;|&]|$)/i.test(raw);
+    }
+
+    async execute(commandLine, signal) {
         const raw = String(commandLine || '').trim();
-        if (!raw) return;
-
+        if (!raw) return 0;
+        if (raw.length > 8192) {
+            this.output('命令超过输入上限', 'error');
+            return 1;
+        }
         if (this.shouldHandleAsLlmSession(raw)) {
-            await this.handleLlmSessionInput(raw);
-            return;
+            if (this.isSensitive(raw)) {
+                this.output('请单独输入 llm-key，或在 AI 设置中保存连接。', 'error');
+                return 1;
+            }
+            return this.handleLlmSessionInput(raw, signal);
+        }
+        const source = raw.startsWith('!') ? raw.slice(1).trimStart() : raw;
+        const command = /^(llm|chat|ask|agent|llm-key)(?:\s|$)/i.exec(source);
+        if (this.isSensitive(raw) && command?.[1].toLowerCase() !== 'llm-key') {
+            this.output('请单独输入 llm-key，或在 AI 设置中保存连接。', 'error');
+            return 1;
+        }
+        if (command) {
+            const message = source.slice(command[0].length).trim();
+            const name = command[1].toLowerCase();
+            if (name === 'agent') return this.agent.execute(message, signal);
+            if (name === 'llm-key') {
+                if (!message || /\s/.test(message)) {
+                    this.output('用法: llm-key <api-key>（单独运行）', 'error');
+                    return 1;
+                }
+                this.setLlmKey([message]);
+                return 0;
+            }
+            if (message) return this.requestLlm(message, signal);
+            this.enableLlmSession();
+            return 0;
         }
 
-        if (raw.startsWith('!') && raw.trim().length > 1) {
-            commandLine = raw.slice(1);
-        }
+        return this.executeShell(source, { signal });
+    }
 
-        if (this.storage.getDangerMode()) {
-            this.handleDangerMode(String(commandLine || '').trim());
-            return;
-        }
-
-        if (this.storage.shouldShowDestruction()) {
-            this.triggerSelfDestruction();
-            return;
-        }
-
-        if (this.storage.checkDangerousCommand(String(commandLine || '').trim())) {
-            this.handleDangerousCommand(String(commandLine || '').trim());
-            return;
-        }
-
-        let tokens;
+    async executeShell(source, { signal, script = false } = {}) {
         try {
-            tokens = this.tokenize(commandLine);
+            const jobs = ShellSyntax.parse(source);
+            if (jobs.length > 120) throw new Error('一次最多执行 120 条命令');
+            let status = 0;
+            for (const job of jobs) {
+                if (signal?.aborted) return 130;
+                if ((job.condition === '&&' && status) || (job.condition === '||' && !status)) continue;
+                status = await this.runJob(ShellSyntax.expand(job, this.storage.getEnv()), {
+                    interactive: !script && jobs.length === 1,
+                    signal,
+                    script
+                });
+            }
+            return status;
         } catch (error) {
             this.output(`错误: ${error.message}`, 'error');
-            return;
+            return 1;
         }
+    }
 
-        const cmd = (tokens[0] || '').toLowerCase();
+    async runJob(job, { interactive = true, agent = false, signal, script = false } = {}) {
+        try {
+            const name = job.stages[0][0].toLowerCase();
+            if (job.stages.length === 1 && !job.redirect && !ShellText.get(name)) {
+                return await this.executeTokens(job.stages[0], { interactive, agent, signal, script });
+            }
+            for (const [stage] of job.stages) {
+                if (!ShellText.get(stage.toLowerCase())) throw new Error('管道和重定向仅支持文本命令: ' + stage);
+            }
+            let result = { text: null, status: 0 };
+            for (const stage of job.stages) {
+                if (signal?.aborted) return 130;
+                result = await ShellText.run(this, stage, result.text);
+            }
+            if (signal?.aborted) return 130;
+            if (job.redirect) {
+                const path = this.storage.resolvePath(job.redirect.target, this.storage.getCurrentPath());
+                this.storage.writeText(path, result.text, job.redirect.append, { protectExisting: agent || script });
+            } else if (result.text) {
+                this.output(this.createCodeBlock(result.text.replace(/\n$/, '')));
+            } else if (interactive && result.status === 1 && name === 'grep') {
+                this.output('没有匹配结果', 'info');
+            }
+            return result.status;
+        } catch (error) {
+            this.output(`错误: ${error.message}`, 'error');
+            return 1;
+        }
+    }
+
+    async executeTokens(tokens, { interactive, agent, signal, script }) {
+        const cmd = tokens[0].toLowerCase();
         const args = tokens.slice(1);
-
-        if (cmd.includes('shutdown')) {
+        if (script && !this.canRunInScript(cmd)) throw new Error('脚本不支持此命令: ' + cmd);
+        if (cmd === 'shutdown') {
+            if (!interactive) throw new Error('shutdown 需单独运行');
             this.shutdown();
-            return;
+            return 0;
         }
-
-        if (this.checkPresetAndCustomCommands(cmd)) {
-            return;
+        if (cmd === 'true' || cmd === 'false') return cmd === 'false' ? 1 : 0;
+        if (!this.isReservedCommand(cmd)) {
+            await this.presetsReady;
+            if (signal?.aborted) return 130;
+            if (this.checkPresetAndCustomCommands(cmd)) return 0;
         }
 
         try {
@@ -306,23 +253,13 @@ class CommandManager {
                 case 'help':
                 case '帮助':
                 case 'man':
-                    this.help();
-                    break;
-                case 'ls':
-                case 'dir':
-                case '列表':
-                    this.list(args);
-                    break;
-                case 'pwd':
-                    this.printWorkingDirectory();
+                    this.help(args[0]);
                     break;
                 case 'cd':
                 case '切换目录':
-                    this.changeDirectory(args);
-                    break;
+                    return this.changeDirectory(args);
                 case 'cd..':
-                    this.changeToParentDirectory();
-                    break;
+                    return this.changeDirectory(['..']);
                 case 'mkdir':
                 case '创建目录':
                     this.createDirectory(args);
@@ -331,8 +268,7 @@ class CommandManager {
                 case 'del':
                 case 'unlink':
                 case '删除':
-                    this.delete(args);
-                    break;
+                    return this.delete(args);
                 case 'clear':
                 case 'cls':
                 case '清屏':
@@ -340,32 +276,15 @@ class CommandManager {
                     break;
                 case 'touch':
                 case '创建文本文档':
-                    this.createTextFile(args);
+                    this.createTextFile(args, { protectExisting: agent || script });
                     break;
                 case 'write':
                 case 'nano':
                 case 'vim':
                 case 'vi':
                 case 'edit':
-                    this.writeFile(args);
-                    break;
-                case 'cat':
-                case 'type':
-                case 'less':
-                case '读取':
-                    this.readFile(args);
-                    break;
-                case 'head':
-                    this.head(args);
-                    break;
-                case 'tail':
-                    this.tail(args);
-                    break;
-                case 'wc':
-                    this.wordCount(args);
-                    break;
-                case 'grep':
-                    this.grep(args);
+                case '写入':
+                    this.writeFile(args, { interactive, protectExisting: agent || script });
                     break;
                 case 'find':
                     this.find(args);
@@ -379,9 +298,6 @@ class CommandManager {
                 case 'mv':
                 case 'rename':
                     this.move(args);
-                    break;
-                case 'echo':
-                    this.echo(args);
                     break;
                 case 'history':
                 case '历史':
@@ -418,7 +334,7 @@ class CommandManager {
                     this.output(this.storage.getEnv().USER || 'quark', 'success');
                     break;
                 case 'uname':
-                    this.output('QuarkTerminal WebShell 2.0 (browser)', 'info');
+                    this.output('Quark Terminal · qsh 3.0 · 浏览器虚拟环境', 'info');
                     break;
                 case 'env':
                 case 'printenv':
@@ -430,11 +346,6 @@ class CommandManager {
                     break;
                 case 'unset':
                     this.unsetEnv(args);
-                    break;
-                case 'llm':
-                case 'chat':
-                case 'ask':
-                    await this.chatWithLlm(args);
                     break;
                 case 'llm-on':
                     this.enableLlmSession();
@@ -449,8 +360,7 @@ class CommandManager {
                     this.showLlmConfig();
                     break;
                 case 'llm-key':
-                    this.setLlmKey(args);
-                    break;
+                    throw new Error('llm-key 须单独输入，或在 AI 设置中保存');
                 case 'llm-base':
                     this.setLlmBase(args);
                     break;
@@ -462,6 +372,22 @@ class CommandManager {
                     break;
                 case 'llm-history':
                     this.showLlmHistory();
+                    break;
+                case 'rmdir':
+                    this.removeEmptyDirectory(args);
+                    break;
+                case 'test':
+                    return this.testCondition(args);
+                case 'source':
+                    return this.runScript(args, signal);
+                case 'theme':
+                    this.ui.theme(args[0]);
+                    break;
+                case 'import':
+                    this.ui.importFile();
+                    break;
+                case 'download':
+                    this.downloadFile(args);
                     break;
                 case 'stat':
                     this.stat(args);
@@ -475,152 +401,33 @@ class CommandManager {
                 default:
                     this.output(`命令未找到: ${cmd}`, 'error');
                     this.output('输入 "help" 查看可用命令', 'info');
+                    return 127;
             }
+            return 0;
         } catch (error) {
             this.output(`错误: ${error.message}`, 'error');
+            return 1;
         }
-    }
-
-    handleDangerousCommand(command) {
-        this.dangerAttempts += 1;
-
-        if (this.dangerAttempts >= 2) {
-            this.triggerSelfDestruction();
-            return;
-        }
-
-        this.output('<span style="color:#ff5f56;font-weight:bold">警告：检测到危险指令</span>', 'error');
-        this.output('系统已进入保护模式。再次尝试危险操作将触发自毁。', 'warning');
-        this.output('输入 "安全模式" 或 "safemode" 可退出保护模式。', 'info');
-
-        this.storage.setDangerMode(true);
-
-        setTimeout(() => {
-            if (this.storage.getDangerMode()) {
-                this.storage.setDangerMode(false);
-                this.dangerAttempts = 0;
-                this.output('系统保护模式已自动关闭。', 'success');
-            }
-        }, 10000);
-    }
-
-    handleDangerMode(command) {
-        if (command.toLowerCase() === '安全模式' || command.toLowerCase() === 'safemode') {
-            this.storage.setDangerMode(false);
-            this.dangerAttempts = 0;
-            this.output('已退出保护模式。', 'success');
-            return;
-        }
-
-        if (this.storage.checkDangerousCommand(command)) {
-            this.triggerSelfDestruction();
-            return;
-        }
-
-        this.output('保护模式启用中，输入 "安全模式" 可恢复正常。', 'warning');
-    }
-
-    triggerSelfDestruction() {
-        this.storage.setSelfDestructTriggered(true);
-        this.storage.destroySystem();
-        this.showDestructionSequence();
-        setTimeout(() => {
-            this.finalDestruction();
-        }, 10000);
-    }
-
-    showDestructionSequence() {
-        const messages = [
-            '危险指令检测到',
-            '系统完整性受到威胁',
-            '启动自毁协议...',
-            '正在擦除所有数据...',
-            '系统核心文件销毁中...',
-            '无法停止此过程',
-            '倒计时: 5',
-            '倒计时: 4',
-            '倒计时: 3',
-            '倒计时: 2',
-            '倒计时: 1',
-            '系统自毁完成'
-        ];
-
-        let index = 0;
-        const interval = setInterval(() => {
-            if (index >= messages.length) {
-                clearInterval(interval);
-                return;
-            }
-            this.output(`<span style="color:#ff5f56;font-weight:bold">${messages[index]}</span>`, 'error');
-            index += 1;
-        }, 600);
-    }
-
-    finalDestruction() {
-        document.open();
-        document.write(`
-            <html>
-            <head><title>系统自毁</title></head>
-            <body style="margin:0;background:#000;color:#f00;font-family:Courier New,monospace;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center">
-                <div>
-                    <div style="font-size:96px;margin-bottom:24px">💀</div>
-                    <div style="font-size:24px;margin-bottom:12px">系统已被破坏</div>
-                    <div style="color:#ff9a9a">请清除站点 LocalStorage / Cookie 后再访问。</div>
-                </div>
-            </body>
-            </html>
-        `);
-        document.close();
     }
 
     checkPresetAndCustomCommands(cmd) {
-        if (this.presetCommands.output[cmd]) {
-            this.output(this.presetCommands.output[cmd], 'info');
+        const outputs = this.storage.getCustomOutputs();
+        const redirects = this.storage.getCustomRedirects();
+        const presetOutput = this.presetCommands.output || {};
+        const presetRedirect = this.presetCommands.redirect || {};
+        if (Object.hasOwn(presetOutput, cmd) || Object.hasOwn(outputs, cmd)) {
+            this.output(Object.hasOwn(presetOutput, cmd) ? presetOutput[cmd] : outputs[cmd], 'info');
             return true;
         }
-
-        if (this.presetCommands.redirect[cmd]) {
-            this.output(`正在跳转到: ${this.presetCommands.redirect[cmd]}`, 'info');
-            setTimeout(() => window.open(this.presetCommands.redirect[cmd], '_blank'), 300);
+        if (Object.hasOwn(presetRedirect, cmd) || Object.hasOwn(redirects, cmd)) {
+            this.openWeb([Object.hasOwn(presetRedirect, cmd) ? presetRedirect[cmd] : redirects[cmd]]);
             return true;
         }
-
-        const customOutputs = this.storage.getCustomOutputs();
-        if (customOutputs[cmd]) {
-            this.output(customOutputs[cmd], 'info');
-            return true;
-        }
-
-        const customRedirects = this.storage.getCustomRedirects();
-        if (customRedirects[cmd]) {
-            this.output(`正在跳转到: ${customRedirects[cmd]}`, 'info');
-            setTimeout(() => window.open(customRedirects[cmd], '_blank'), 300);
-            return true;
-        }
-
         return false;
     }
 
     shutdown() {
-        const outputElement = document.getElementById('output');
-        const inputLine = document.getElementById('input-line');
-        outputElement.innerHTML = '';
-
-        const shutdownScreen = document.createElement('div');
-        shutdownScreen.className = 'shutdown-screen';
-        shutdownScreen.innerHTML = `
-            <div class="shutdown-spinner"></div>
-            <div class="shutdown-text">正在关机...</div>
-        `;
-        document.body.appendChild(shutdownScreen);
-        inputLine.style.display = 'none';
-
-        setTimeout(() => {
-            window.close();
-            setTimeout(() => {
-                document.body.innerHTML = '<div style="color:#7ee787;font-family:Courier New,monospace;text-align:center;margin-top:50px">关机完成<br>刷新以重启</div>';
-            }, 800);
-        }, 2600);
+        document.getElementById('shutdown-dialog').showModal();
     }
 
     addCustomOutput(args) {
@@ -661,269 +468,146 @@ class CommandManager {
             ['帮助', '列表', '切换目录', '创建目录', '删除', '清屏', '创建文本文档', '写入', '读取', '搜索博客', '启动', '工具', '游戏', '时间', '计算器', '历史', '自定义输出', '自定义跳转'].includes(command);
     }
 
-    help() {
-        const helpText = `
-常用命令
-
-文件与目录:
-  ls [路径]           列出目录
-  pwd                 显示当前路径
-  cd <路径>           切换目录，支持 .. / ~
-  mkdir [-p] <目录>   创建目录
-  touch <文件>        创建文件
-  write <文件> [内容] 写入文件，省略内容则打开多行编辑
-  cat <文件>          查看文件
-  head/tail <文件>    查看文件头尾
-  cp <源> <目标>      复制文件或目录
-  mv <源> <目标>      移动或重命名
-  rm <路径>           删除文件或目录
-  tree [路径]         显示目录树
-  find <关键词>       按名称查找
-  grep <词> <文件>    在文件内搜索
-  wc <文件>           统计行数/词数/字符数
-  stat <路径>         查看路径元信息
-
-系统与交互:
-  echo <文本>         输出文本，支持 $HOME 变量
-  env                 查看环境变量
-  export KEY=value    设置环境变量
-  unset KEY           删除环境变量
-  history             查看命令历史
-  clear               清屏
-  date/time           显示时间
-  whoami / uname      系统信息
-  calc <表达式>       计算表达式
-
-LLM:
-  llm <消息>          直接和模型对话
-  llm                 进入连续对话模式
-  llm-on / llm-off    开启 / 关闭连续对话模式
-  exit / quit / bye   在连续对话模式中退出聊天
-  llm-config          查看当前 API Key / Base URL / Model
-  llm-key <key>       设置 API Key
-  llm-base <url>      设置 Base URL
-  llm-model <model>   设置模型
-  llm-history         查看终端对话历史
-  llm-clear           清空终端对话历史
-  !<命令>             在连续对话模式中执行普通终端命令
-
-站内快捷入口:
-  search <关键词>     搜索博客
-  open <网址>         打开网页
-  tools               打开工具页
-  games               打开游戏页
-        `.trim();
-
-        this.output(this.createCodeBlock(helpText), 'info');
-    }
-
-    list(args) {
-        const { options, values } = this.parseOptions(args);
-        const target = values[0] || this.storage.getCurrentPath();
-        const path = this.storage.resolvePath(target, this.storage.getCurrentPath());
-        const items = this.storage.listDirectory(path);
-
-        if (!items.length) {
-            this.output('目录为空', 'info');
+    help(topic) {
+        const textCommand = ShellText.get(topic);
+        if (textCommand) {
+            this.output(this.createCodeBlock(textCommand.usage + '\n' + textCommand.description));
             return;
         }
-
-        const lines = items
-            .filter((item) => options.has('a') || !item.name.startsWith('.'))
-            .map((item) => {
-                const typeMark = item.type === 'dir' ? 'd' : '-';
-                const size = String(item.size).padStart(6, ' ');
-                return `${typeMark} ${size} ${item.name}`;
-            });
-
-        this.output(this.createCodeBlock(lines.join('\n')), 'info');
-    }
-
-    printWorkingDirectory() {
-        this.output(this.storage.getCurrentPath(), 'success');
+        this.output(this.createDefinitionList([
+            ['目录与文件', 'ls -al · pwd · cd · tree · find · stat · mkdir -p · rmdir · touch · write / edit · cp · mv · rm · import · download'],
+            ['文本处理', Object.keys(textCommands).filter((name) => name !== 'ls' && name !== 'pwd').join(' · ')],
+            ['Shell', 'echo "$HOME" · history · clear · date · calc · test · true / false · source · whoami · uname · env · export · unset · theme'],
+            ['AI', 'llm <消息> · llm-on / llm-off · llm-config · agent <任务> · agent run · agent cancel'],
+            ['站内', 'search <关键词> · open <网址> · tools · games'],
+            ['示例', 'cat readme.md | grep -in llm > /tmp/matches.txt && cat /tmp/matches.txt']
+        ]));
+        this.output('man <文本命令> 可查看用法。引号可保护空格或运算符，; / && / || 可串联命令。', 'info');
     }
 
     changeDirectory(args) {
-        const target = args[0] || this.storage.getEnv().HOME || '/home';
-        const path = this.storage.resolvePath(target, this.storage.getCurrentPath());
-        if (!this.storage.fileExists(path) || !this.storage.isDirectory(path)) {
-            this.output(`目录不存在: ${path}`, 'error');
-            return;
-        }
+        if (args.length > 1) throw new Error('用法: cd [目录]');
+        const env = this.storage.getEnv();
+        const target = args[0] === '-' ? env.OLDPWD : args[0] || env.HOME;
+        if (!target) throw new Error('没有上一个目录');
+        const current = this.storage.getCurrentPath();
+        const path = this.storage.resolvePath(target, current);
+        if (!this.storage.isDirectory(path)) throw new Error(`目录不存在: ${path}`);
         this.storage.setCurrentPath(path);
-        this.output(`当前目录: ${path}`, 'success');
-    }
-
-    changeToParentDirectory() {
-        this.changeDirectory(['..']);
+        this.storage.setEnvVar('OLDPWD', current);
+        if (args[0] === '-') this.output(path);
+        return 0;
     }
 
     createDirectory(args) {
-        const { options, values } = this.parseOptions(args);
-        if (!values.length) {
-            this.output('用法: mkdir [-p] <目录名>', 'error');
-            return;
-        }
-        const target = values[0];
-        const path = this.storage.createDirectory(this.storage.getCurrentPath(), target, options.has('p'));
-        this.output(`目录创建成功: ${path}`, 'success');
+        const { flags, values } = ShellText.options(args, 'p');
+        const target = ShellText.oneArg(values, 'mkdir [-p] <目录名>');
+        const path = this.storage.resolvePath(target, this.storage.getCurrentPath());
+        if (flags.has('p') && this.storage.isDirectory(path)) return;
+        this.storage.createDirectory('/', path, flags.has('p'));
     }
 
     delete(args) {
-        if (!args.length) {
-            this.output('用法: rm <文件或目录>', 'error');
-            return;
+        if (args[0] === '自定义输出' || args[0] === '自定义跳转') {
+            if (!args[1]) throw new Error('请提供自定义指令名称');
+            const remove = args[0] === '自定义输出' ? 'deleteCustomOutput' : 'deleteCustomRedirect';
+            const removed = this.storage[remove](args[1].toLowerCase());
+            this.output(removed ? '已删除: ' + args[1] : '未找到: ' + args[1], removed ? 'success' : 'error');
+            return removed ? 0 : 1;
         }
+        const { flags, values } = ShellText.options(args, 'rfi');
+        const path = this.resolveArgument(values, 'rm [-r] [-f] [-i] <路径>');
+        if (flags.has('f') && !this.storage.fileExists(path)) return 0;
+        this.storage.validateRemoval(path);
+        if (this.storage.isDirectory(path) && !flags.has('r')) throw new Error('删除目录需要 -r，空目录可用 rmdir');
+        if ((flags.has('r') || flags.has('i')) && !confirm(`删除 ${path}？`)) return 1;
+        this.storage.deletePath(path);
+        return 0;
+    }
 
-        if (args[0] === '自定义输出' && args[1]) {
-            const removed = this.storage.deleteCustomOutput(args[1].toLowerCase());
-            this.output(removed ? `已删除自定义输出: ${args[1]}` : `未找到自定义输出: ${args[1]}`, removed ? 'success' : 'error');
-            return;
-        }
+    removeEmptyDirectory(args) {
+        const path = this.resolveArgument(args, 'rmdir <空目录>');
+        if (!this.storage.isDirectory(path)) throw new Error('目录不存在: ' + path);
+        if (this.storage.listDirectory(path).length) throw new Error('目录非空: ' + path);
+        this.storage.deletePath(path);
+    }
 
-        if (args[0] === '自定义跳转' && args[1]) {
-            const removed = this.storage.deleteCustomRedirect(args[1].toLowerCase());
-            this.output(removed ? `已删除自定义跳转: ${args[1]}` : `未找到自定义跳转: ${args[1]}`, removed ? 'success' : 'error');
-            return;
+    testCondition(args) {
+        if (args.length === 1) return args[0] ? 0 : 1;
+        if (args.length === 2) {
+            const [flag, value] = args;
+            if (flag === '-n' || flag === '-z') return Boolean(value) === (flag === '-n') ? 0 : 1;
+            const path = this.storage.resolvePath(value, this.storage.getCurrentPath());
+            if (flag === '-f') return this.storage.isFile(path) ? 0 : 1;
+            if (flag === '-d') return this.storage.isDirectory(path) ? 0 : 1;
+            if (flag === '-e') return this.storage.fileExists(path) ? 0 : 1;
         }
+        if (args.length === 3 && ['=', '!='].includes(args[1])) return (args[0] === args[2]) === (args[1] === '=') ? 0 : 1;
+        throw new Error('用法: test -e|-f|-d <路径> 或 test -n|-z <文本> 或 test <左值> =|!= <右值>');
+    }
 
-        const targetPath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
-        if (!this.storage.fileExists(targetPath)) {
-            this.output(`路径不存在: ${args[0]}`, 'error');
-            return;
-        }
-        if (!confirm(`确定要删除 ${targetPath} 吗？`)) {
-            this.output('删除已取消', 'info');
-            return;
-        }
-        this.storage.deletePath(targetPath);
-        this.output(`已删除: ${targetPath}`, 'success');
+    canRunInScript(command) {
+        return ['cd', 'mkdir', 'touch', 'write', 'cp', 'tree', 'find',
+            'stat', 'test', 'true', 'false', 'export', 'unset', 'env', 'calc', 'date'].includes(command);
+    }
+
+    runScript(args, signal) {
+        const path = this.resolveArgument(args, 'source <脚本文件>');
+        const source = this.storage.readFile(path);
+        if (source.length > 32_000) throw new Error('脚本超出 32,000 字符');
+        this.output('运行脚本 ' + path, 'info');
+        return this.executeShell(source, { signal, script: true });
     }
 
     clearScreen() {
-        document.getElementById('output').innerHTML = '';
+        document.getElementById('output').replaceChildren();
     }
 
-    createTextFile(args) {
-        if (!args.length) {
-            this.output('用法: touch <文件名>', 'error');
-            return;
+    createTextFile(args, { protectExisting }) {
+        if (!args.length) throw new Error('用法: touch <文件> [初始内容]');
+        const path = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
+        if (!this.storage.fileExists(path)) {
+            this.storage.createFile('/', path, args.slice(1).join(' '));
+        } else if (protectExisting || args.length > 1) {
+            throw new Error('路径已存在: ' + path);
+        } else {
+            this.storage.touch(path);
         }
-        const fileName = args[0];
-        if (!fileName.includes('.')) {
-            this.output('请指定文件扩展名，例如 .txt / .md / .json', 'warning');
-            return;
-        }
-        if (args.length > 1) {
-            const content = args.slice(1).join(' ');
-            const filePath = this.storage.createFile(this.storage.getCurrentPath(), fileName, content);
-            this.output(`文件创建成功: ${filePath}`, 'success');
-            return;
-        }
-        this.currentFileName = fileName;
-        this.showMultilineInput('', (content) => {
-            const filePath = this.storage.createFile(this.storage.getCurrentPath(), fileName, content);
-            this.output(`文件创建成功: ${filePath}`, 'success');
-            this.currentFileName = null;
-        });
     }
 
-    writeFile(args) {
-        if (!args.length) {
-            this.output('用法: write <文件名> [内容]', 'error');
-            return;
-        }
-
-        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
-        if (!this.storage.fileExists(filePath)) {
-            this.output(`文件不存在: ${filePath}`, 'error');
-            return;
-        }
-
+    writeFile(args, { interactive, protectExisting }) {
+        if (!args.length) throw new Error('用法: write <文件> [内容]');
+        const path = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         if (args.length === 1) {
-            const currentContent = this.storage.readFile(filePath);
-            this.currentFileName = args[0];
-            this.showMultilineInput(currentContent, (newContent) => {
-                this.storage.writeFile(filePath, newContent);
-                this.output(`文件写入成功: ${filePath}`, 'success');
-                this.currentFileName = null;
+            if (!interactive || protectExisting) throw new Error('此处需要显式提供文件内容');
+            const node = this.storage.getNode(path);
+            if (node && node.type !== 'file') throw new Error('不是文件: ' + path);
+            this.showMultilineInput(path, node?.content || '', (content) => {
+                const current = this.storage.getNode(path);
+                if (JSON.stringify(current) !== JSON.stringify(node)) throw new Error('文件在编辑期间已变化，请重新打开后合并修改。');
+                this.storage.writeText(path, content);
             });
             return;
         }
-
-        this.storage.writeFile(filePath, args.slice(1).join(' '));
-        this.output(`文件写入成功: ${filePath}`, 'success');
+        this.storage.writeText(path, args.slice(1).join(' '), false, { protectExisting });
     }
 
-    readFile(args) {
-        if (!args.length) {
-            this.output('用法: cat <文件名>', 'error');
-            return;
-        }
-        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
-        const content = this.storage.readFile(filePath);
-        this.output(this.createCodeBlock(content || '(空文件)'), 'info');
+    resolveArgument(args, usage) {
+        return this.storage.resolvePath(ShellText.oneArg(args, usage), this.storage.getCurrentPath());
     }
 
-    head(args) {
-        this.outputSlice(args, 'head');
-    }
-
-    tail(args) {
-        this.outputSlice(args, 'tail');
-    }
-
-    outputSlice(args, mode) {
-        if (!args.length) {
-            this.output(`用法: ${mode} <文件名>`, 'error');
-            return;
-        }
-        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
-        const lines = this.storage.readFile(filePath).split('\n');
-        const sliced = mode === 'head' ? lines.slice(0, 10) : lines.slice(-10);
-        this.output(this.createCodeBlock(sliced.join('\n')), 'info');
-    }
-
-    wordCount(args) {
-        if (!args.length) {
-            this.output('用法: wc <文件名>', 'error');
-            return;
-        }
-        const filePath = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
-        const content = this.storage.readFile(filePath);
-        const lines = content ? content.split('\n').length : 0;
-        const words = content.trim() ? content.trim().split(/\s+/).length : 0;
-        const chars = content.length;
-        this.output(`${lines} ${words} ${chars} ${filePath}`, 'success');
-    }
-
-    grep(args) {
-        if (args.length < 2) {
-            this.output('用法: grep <关键词> <文件名>', 'error');
-            return;
-        }
-        const keyword = args[0].toLowerCase();
-        const filePath = this.storage.resolvePath(args[1], this.storage.getCurrentPath());
-        const lines = this.storage.readFile(filePath).split('\n');
-        const matches = lines
-            .map((line, index) => ({ line, index: index + 1 }))
-            .filter((item) => item.line.toLowerCase().includes(keyword))
-            .map((item) => `${item.index}: ${item.line}`);
-
-        if (!matches.length) {
-            this.output('没有匹配结果', 'info');
-            return;
-        }
-        this.output(this.createCodeBlock(matches.join('\n')), 'info');
+    downloadFile(args) {
+        const path = this.resolveArgument(args, 'download <文件>');
+        this.ui.download(this.storage.basename(path), this.storage.readFile(path));
     }
 
     find(args) {
         if (!args.length) {
-            this.output('用法: find <关键词> [起始目录]', 'error');
-            return;
+            throw new Error('用法: find <关键词> [起始目录]');
         }
         const keyword = args[0];
         const startPath = args[1] ? this.storage.resolvePath(args[1], this.storage.getCurrentPath()) : this.storage.getCurrentPath();
+        if (!this.storage.fileExists(startPath)) throw new Error('起始路径不存在: ' + startPath);
         const matches = this.storage.findByName(keyword, startPath);
         if (!matches.length) {
             this.output('没有找到匹配路径', 'info');
@@ -936,6 +620,7 @@ LLM:
     tree(args) {
         const target = args[0] || this.storage.getCurrentPath();
         const resolvedPath = this.storage.resolvePath(target, this.storage.getCurrentPath());
+        if (!this.storage.isDirectory(resolvedPath)) throw new Error('目录不存在: ' + resolvedPath);
         const treeItems = this.storage.getDirectoryTree(resolvedPath);
         const lines = [resolvedPath];
 
@@ -950,8 +635,7 @@ LLM:
 
     copy(args) {
         if (args.length < 2) {
-            this.output('用法: cp <源路径> <目标路径>', 'error');
-            return;
+            throw new Error('用法: cp <源路径> <目标路径>');
         }
         const source = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         const destination = this.storage.resolvePath(args[1], this.storage.getCurrentPath());
@@ -961,8 +645,7 @@ LLM:
 
     move(args) {
         if (args.length < 2) {
-            this.output('用法: mv <源路径> <目标路径>', 'error');
-            return;
+            throw new Error('用法: mv <源路径> <目标路径>');
         }
         const source = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         const destination = this.storage.resolvePath(args[1], this.storage.getCurrentPath());
@@ -970,12 +653,8 @@ LLM:
         this.output(`移动成功: ${source} -> ${target}`, 'success');
     }
 
-    echo(args) {
-        this.output(args.join(' '), 'info');
-    }
-
     showHistory() {
-        const history = this.storage.getCommandHistory();
+        const history = this.storage.getCommandHistory().filter((entry) => !this.isSensitive(entry));
         if (!history.length) {
             this.output('命令历史为空', 'info');
             return;
@@ -999,47 +678,34 @@ LLM:
     }
 
     calculator(args) {
-        if (!args.length) {
-            this.output('用法: calc <数学表达式>', 'error');
-            return;
-        }
         const expression = args.join(' ');
-        const safeExpression = expression.replace(/[^0-9+\-*/().%\s]/g, '');
-        try {
-            const result = Function(`"use strict"; return (${safeExpression})`)();
-            this.output(`${expression} = ${result}`, 'success');
-        } catch (error) {
-            this.output('无效的数学表达式', 'error');
-        }
+        if (!expression) throw new Error('用法: calc <数学表达式>');
+        const result = ShellSyntax.calculate(expression);
+        this.output(`${expression} = ${result}`, 'success');
     }
 
     searchBlog(args) {
         if (!args.length) {
-            this.output('用法: search <关键词>', 'error');
-            return;
+            throw new Error('用法: search <关键词>');
         }
         const keyword = encodeURIComponent(args.join(' '));
         const url = `/search?q=${keyword}`;
         this.output(`正在打开博客搜索: ${args.join(' ')}`, 'info');
-        setTimeout(() => window.open(url, '_blank'), 300);
+        setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), 300);
     }
 
     openWeb(args) {
-        if (!args.length) {
-            this.output('用法: open <网址>', 'error');
-            return;
-        }
-        let url = args.join(' ');
-        if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
-            url = `https://${url}`;
-        }
-        this.output(`正在打开: ${url}`, 'info');
-        setTimeout(() => window.open(url, '_blank'), 300);
+        const target = args.join(' ');
+        if (!target) throw new Error('用法: open <网址>');
+        const url = new URL(/^[\w+.-]+:|^\//.test(target) ? target : `https://${target}`, location.href);
+        if (!['http:', 'https:'].includes(url.protocol)) throw new Error('仅支持 HTTP / HTTPS 地址');
+        this.output('正在打开: ' + url.href, 'info');
+        window.open(url.href, '_blank', 'noopener,noreferrer');
     }
 
     openTools() {
         this.output('正在打开工具页...', 'info');
-        setTimeout(() => window.open('/tool', '_blank'), 300);
+        setTimeout(() => window.open('/tool', '_blank', 'noopener,noreferrer'), 300);
     }
 
     openGames() {
@@ -1063,8 +729,7 @@ LLM:
 
     setEnv(args) {
         if (!args.length) {
-            this.output('用法: export KEY=value', 'error');
-            return;
+            throw new Error('用法: export KEY=value');
         }
 
         args.forEach((entry) => {
@@ -1079,18 +744,17 @@ LLM:
 
     unsetEnv(args) {
         if (!args.length) {
-            this.output('用法: unset KEY', 'error');
-            return;
+            throw new Error('用法: unset KEY');
         }
         args.forEach((key) => this.storage.unsetEnvVar(key));
         this.output('环境变量已删除', 'success');
     }
 
-    async requestLlm(prompt) {
+    async requestLlm(prompt, signal) {
         const settings = window.QuarkLLMConfig.getSettings();
         if (!settings.apiKey) {
             this.output('未检测到 API Key。请前往网站设置的「AI 与网站助手」保存连接。', 'error');
-            return;
+            return 1;
         }
 
         const history = this.storage.getLlmHistory()
@@ -1100,7 +764,6 @@ LLM:
                 { role: 'assistant', content: entry.answer }
             ]);
 
-        this.llmSessionBusy = true;
         this.output('正在连接 LLM...', 'info');
 
         try {
@@ -1108,7 +771,7 @@ LLM:
                 model: settings.model,
                 messages: [...history, { role: 'user', content: prompt }],
                 stream: false
-            }, AbortSignal.timeout(90000));
+            }, AbortSignal.any([signal, AbortSignal.timeout(90000)].filter(Boolean)));
 
             if (!response.ok) {
                 throw new Error(await window.QuarkLLMConfig.parseErrorResponse(response, settings.apiKey));
@@ -1120,23 +783,16 @@ LLM:
                 throw new Error('LLM 未返回有效内容');
             }
 
+            if (signal?.aborted) return 130;
             this.storage.addLlmHistory({ prompt, answer, model: settings.model });
             this.output(`模型: ${settings.model}`, 'success');
             this.output(this.renderMarkdownToElement(answer), 'info');
+            return 0;
         } catch (error) {
-            this.output(`模型请求失败：${this.escapeHtml(error.message)}`, 'error');
-        } finally {
-            this.llmSessionBusy = false;
+            if (signal?.aborted) return 130;
+            this.output(`模型请求失败：${error.message}`, 'error');
+            return 1;
         }
-    }
-
-    async chatWithLlm(args) {
-        if (!args.length) {
-            this.enableLlmSession();
-            return;
-        }
-
-        await this.requestLlm(args.join(' '));
     }
 
     showLlmConfig() {
@@ -1156,7 +812,7 @@ LLM:
             return;
         }
         window.QuarkLLMConfig.saveSettings({ apiKey: args.join(' ') });
-        this.output('LLM API Key 已保存，并已同步给 /a/qai。', 'success');
+        this.output('AI 连接密钥已保存，可在夸克 AI 中使用。', 'success');
     }
 
     setLlmBase(args) {
@@ -1196,8 +852,7 @@ LLM:
 
     stat(args) {
         if (!args.length) {
-            this.output('用法: stat <路径>', 'error');
-            return;
+            throw new Error('用法: stat <路径>');
         }
         const path = this.storage.resolvePath(args[0], this.storage.getCurrentPath());
         const stats = this.storage.getStats(path);
@@ -1211,50 +866,71 @@ LLM:
         ]), 'info');
     }
 
-    showMultilineInput(initialContent, callback) {
+    showMultilineInput(path, initialContent, callback) {
         this.multilineCallback = callback;
         const modal = document.getElementById('multiline-modal');
-        const textarea = document.getElementById('multiline-textarea');
-        textarea.value = initialContent;
-        modal.style.display = 'block';
-        textarea.focus();
+        document.getElementById('editor-path').textContent = path;
+        document.getElementById('editor-error').textContent = '';
+        document.getElementById('multiline-textarea').value = initialContent;
+        modal.showModal();
+        document.getElementById('multiline-textarea').focus();
     }
 
     hideMultilineInput() {
-        document.getElementById('multiline-modal').style.display = 'none';
+        document.getElementById('multiline-modal').close();
         this.multilineCallback = null;
     }
 
     saveMultilineContent() {
         if (!this.multilineCallback) return;
         const textarea = document.getElementById('multiline-textarea');
-        this.multilineCallback(textarea.value);
-        this.hideMultilineInput();
+        try {
+            this.multilineCallback(textarea.value);
+            this.hideMultilineInput();
+            this.output('文件已保存', 'success');
+        } catch (error) {
+            document.getElementById('editor-error').textContent = error.message;
+        }
     }
 
-    getAutocompleteCandidates(input) {
-        const raw = String(input || '');
-        const tokens = raw.split(/\s+/);
-        const currentToken = tokens[tokens.length - 1] || '';
-        const isFirstToken = tokens.length <= 1 && !raw.endsWith(' ');
+    getCompletion(input) {
+        if (this.isSensitive(input) || this.shouldHandleAsLlmSession(input) ||
+            /^!?\s*(?:llm|chat|ask|agent)\s/i.test(input)) return null;
 
-        if (isFirstToken) {
-            return this.builtinCommands
-                .filter((command) => command.startsWith(currentToken.toLowerCase()))
-                .sort();
+        const segment = input.match(/(?:^|[|;&])([\s\S]*)$/);
+        const current = segment[1];
+        if (!current.trim()) return null;
+        const beforeSegment = input.slice(0, input.length - current.length);
+        const commandMatch = /^(\s*!?\s*)([\w-]+)$/.exec(current);
+        if (commandMatch) {
+            const [_, prefix, partial] = commandMatch;
+            const available = [...new Set([
+                ...this.builtinCommands,
+                ...Object.keys(this.presetCommands.output || {}),
+                ...Object.keys(this.presetCommands.redirect || {}),
+                ...Object.keys(this.storage.getCustomOutputs()),
+                ...Object.keys(this.storage.getCustomRedirects())
+            ])];
+            const matches = available.filter((cmd) => cmd !== partial && cmd.startsWith(partial.toLowerCase())).sort();
+            return { prefix: beforeSegment + prefix, matches, suffix: ' ' };
         }
 
-        const currentPath = this.storage.getCurrentPath();
-        const basePath = currentToken.includes('/')
-            ? this.storage.getParentPath(this.storage.resolvePath(currentToken, currentPath))
-            : currentPath;
-        const prefix = currentToken.includes('/') ? currentToken.split('/').pop() || '' : currentToken;
-
-        return this.storage.listDirectory(basePath)
-            .filter((item) => item.name.toLowerCase().startsWith(prefix.toLowerCase()))
-            .map((item) => currentToken.includes('/')
-                ? `${currentToken.slice(0, currentToken.lastIndexOf('/') + 1)}${item.name}${item.type === 'dir' ? '/' : ''}`
-                : `${item.name}${item.type === 'dir' ? '/' : ''}`)
-            .sort();
+        const pathMatch = /^(.*\s)([^\s"'|&;<>]*)$/.exec(current);
+        if (!pathMatch) return null;
+        const [_, prefix, partial] = pathMatch;
+        if (!/^\s*!?\s*(cd|ls|dir|cat|type|less|write|edit|nano|vi|vim|tree|stat|touch|rmdir|mkdir|cp|mv|rm|download|source|head|tail|wc|grep|sort|uniq|nl|rev|base64|sha256|json)\s/i.test(current)) return null;
+        const slash = partial.lastIndexOf('/');
+        const dir = partial.slice(0, slash + 1);
+        const stub = partial.slice(slash + 1);
+        const base = this.storage.resolvePath(dir, this.storage.getCurrentPath());
+        if (!this.storage.isDirectory(base)) return null;
+        const directoryOnly = /^\s*!?\s*cd\s/i.test(current);
+        const matches = this.storage.listDirectory(base).filter((item) =>
+            item.name.toLowerCase().startsWith(stub.toLowerCase()) && (!directoryOnly || item.type === 'dir')
+        ).map((item) => {
+            const path = dir + item.name + (item.type === 'dir' ? '/' : '');
+            return /[\s"'\\|&;<>$]/.test(path) ? ShellSyntax.quote(path) : path;
+        }).filter((path) => path !== partial);
+        return { prefix: beforeSegment + prefix, matches, suffix: '' };
     }
 }

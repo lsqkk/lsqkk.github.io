@@ -1,115 +1,28 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-const currentYear = new Date().getFullYear();
+import PhysicsLayout from "../../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../../components/physics/ExperimentWorkbench.astro";
+const parameters = [
+    { id: "wavelength", label: "波长 λ", min: .6, max: 4, step: .1, value: 2.4, initial: "2.4 m" },
+    { id: "frequency", label: "频率 f", min: .1, max: 1.5, step: .05, value: .45, initial: "0.45 Hz" },
+    { id: "amplitude", label: "振幅 A", min: .15, max: 1, step: .05, value: .65, initial: "0.65 m" },
+    { id: "nodes", label: "显示质点数量", min: 9, max: 65, step: 4, value: 33, initial: "33" },
+    { id: "probe", label: "追踪位置", min: 0, max: 8, step: .25, value: 4, initial: "4.00 m" },
+    { id: "rate", label: "播放倍率", min: .25, max: 3, step: .25, value: 1, initial: "1.00×" },
+];
 ---
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>横波的传播 / Physics - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/pages/a/physics/waves/shearwave/shearwave.css">
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-</head>
-
-<body>
-    <div class="header">
-        <h1>横波的传播</h1>
-        <p class="subtitle"><a href="/#home-content">{SITE_TITLE}</a> / <a href="/a">前端实验室</a> /
-            <a href="/a/physics">Physics项目</a> / <a href="/a/physics/waves">波</a> / <a href="/#home-content">横波的传播</a>
-        </p>
-    </div>
-
-    <div class="container">
-        <div class="wave-container">
-            <canvas id="waveCanvas"></canvas>
+<PhysicsLayout title="横波的传播" category="waves" description="追踪绳上的一个质点。波形沿水平方向传播，质点始终停留在同一水平位置。">
+    <ExperimentWorkbench canvasLabel="横波、质点和波长标记" caption="浅青色是绳的瞬时波形，橙色质点沿竖直虚线振动。顶部标尺表示一个波长。"
+        parameters={parameters} measurements={[{ id: "speed", label: "物理波速 v = λf" }, { id: "period", label: "周期 T = 1/f" }, { id: "displacement", label: "追踪质点位移" }]} script="waves/shearwave/shearwave">
+        <label class="physics-parameter">波形<select id="shape"><option value="sine">正弦波</option><option value="triangle">三角波</option><option value="square">方波</option></select></label>
+        <div class="physics-actions">
+            <button id="toggle-animation" type="button">暂停</button>
+            <button id="step" type="button">步进 1/16 周期</button>
+            <button type="reset">重置</button>
         </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <h3>波参数</h3>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>波长</span>
-                        <span id="wavelengthValue">150</span>
-                    </div>
-                    <input type="range" id="wavelength" min="50" max="300" value="150">
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>频率</span>
-                        <span id="frequencyValue">0.03</span>
-                    </div>
-                    <input type="range" id="frequency" min="0.01" max="0.1" step="0.01" value="0.03">
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>振幅</span>
-                        <span id="amplitudeValue">40</span>
-                    </div>
-                    <input type="range" id="amplitude" min="10" max="80" value="40">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>波类型</h3>
-                <div class="wave-type">
-                    <div class="wave-option active" data-type="sine">正弦波</div>
-                    <div class="wave-option" data-type="triangle">三角波</div>
-                    <div class="wave-option" data-type="square">方波</div>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>显示选项</h3>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>节点数量</span>
-                        <span id="nodeCountValue">40</span>
-                    </div>
-                    <input type="range" id="nodeCount" min="10" max="80" value="40">
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>波速</span>
-                        <span id="speedValue">1.0</span>
-                    </div>
-                    <input type="range" id="speed" min="0.5" max="3.0" step="0.1" value="1.0">
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button id="pauseBtn">暂停</button>
-                <button id="resetBtn">重置</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="instructions">
-        <h3>横波传播原理</h3>
-        <ul>
-            <li>横波是振动方向与传播方向垂直的波</li>
-            <li>每个节点在垂直方向上做简谐振动</li>
-            <li>相邻节点间存在相位延迟，形成波向前传播的效果</li>
-            <li>波峰和波谷交替出现，形成三角函数图样</li>
-            <li>调整参数可以观察不同波长、频率和振幅对波形的影响</li>
-        </ul>
-    </div>
-
-    <div class="footer">
-        © 2024 - {currentYear} {SITE_TITLE} / 蓝色奇夸克 All rights reserved.
-    </div>
-
-    <script is:inline src="/assets/pages/a/physics/waves/shearwave/shearwave.js"></script>
-</body>
-
-</html>
+        <section class="physics-notes" slot="notes">
+            <h2>追踪质点与波峰</h2>
+            <p>暂停后多次步进，对照同一个波峰和橙色质点。切换三角波和方波会改变质点的时间波形。方波使用理想不连续模型。</p>
+            <p>播放倍率只改变观察速度。物理波速由 <code>v = λf</code> 决定。</p>
+        </section>
+    </ExperimentWorkbench>
+</PhysicsLayout>

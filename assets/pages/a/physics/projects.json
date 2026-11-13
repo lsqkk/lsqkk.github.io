@@ -1,30 +1,15 @@
 {
-    "optics": [
-        {
-            "name": "光的反射演示",
-            "link": "mirror",
-            "description": "交互式展示光线在不同表面的反射规律，包括镜面反射和漫反射现象。",
-            "icon": "fa-lightbulb"
-        }
-    ],
-    "waves": [
-        {
-            "name": "球面波三维演示",
-            "link": "waves/3dwaves",
-            "description": "展示球面波在三维空间中的传播特性，可调整波源位置和观察角度。",
-            "icon": "fa-globe-americas"
-        },
-        {
-            "name": "平面点波源演示",
-            "link": "waves/planewave",
-            "description": "模拟平面波和点波源的传播特性，展示波的干涉和衍射现象。",
-            "icon": "fa-wave-square"
-        },
-        {
-            "name": "横波演示",
-            "link": "waves/shearwave",
-            "description": "展示横波的传播特性，包括偏振方向和振动模式的交互式控制。",
-            "icon": "fa-sliders-h"
-        }
-    ]
+  "optics": [
+    { "name": "平面镜反射", "link": "mirror", "description": "移动光源和镜面，测量入射角与反射角。", "symbol": "reflection", "topics": "法线 · 反射定律" },
+    { "name": "折射与全反射", "link": "optics/refraction", "description": "在空气、水和玻璃之间追踪光线，测量临界角。", "symbol": "refraction", "topics": "斯涅尔定律 · 临界角" },
+    { "name": "双缝干涉", "link": "optics/double-slit", "description": "调节波长与缝距，对照屏幕条纹和相对光强。", "symbol": "slits", "topics": "光程差 · 衍射包络" }
+  ],
+  "waves": [
+    { "name": "三维球面波", "link": "waves/3dwaves", "description": "旋转观察立方腔内的球面波，比较直达波与各阶反射。", "symbol": "sphere", "topics": "镜像波源 · 球面扩散" },
+    { "name": "二维波场", "link": "waves/planewave", "description": "摆放波源，比较单点、双点与平行波前的传播图样。", "symbol": "field", "topics": "波前 · 波的叠加" },
+    { "name": "横波的传播", "link": "waves/shearwave", "description": "追踪一个质点，比较质点的振动方向与波形传播方向。", "symbol": "wave", "topics": "波速 · 相位" }
+  ],
+  "mechanics": [
+    { "name": "阻尼单摆", "link": "mechanics/pendulum", "description": "记录实际周期，对照小角度公式与能量变化。", "symbol": "pendulum", "topics": "周期 · 能量耗散" }
+  ]
 }

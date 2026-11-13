@@ -1,87 +1,184 @@
 ---
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import apiConfig from "../../../../config/json/api.json";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>夸克闪传 | QuarkShare P2P - {SITE_TITLE}</title>
+    <meta name="referrer" content="no-referrer">
+    <meta name="description" content="用连接码或二维码在线收发文件，或创建限时加密离线包。">
+    <title>夸克闪传 · {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline src="/assets/js/nav.js"></script>
-    <link rel="stylesheet" href="/assets/pages/a/share/share.css">
     <link rel="stylesheet" href="/assets/css/basic.css">
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script is:inline src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script is:inline src="/assets/js/firebase-ready.js"></script>
-    <script is:inline src="/assets/js/comment-shared.js"></script>
-    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="/assets/pages/a/share/share.css">
+    <script is:inline src="/assets/js/nav.js"></script>
 </head>
-
-
-<body class="luxury-body">
-
-    <LuxuryBackground />
-    <div class="main-content-wrapper">
-        <h1 class="page-title">夸克闪传 / Quark Share</h1>
-
-        <div class="container">
-
-            <div class="card" id="join-section">
-                <h2>连接设备</h2>
-                <input type="text" id="room-code-input" class="app-input" placeholder="输入三位连接码 (如 ABC)" maxlength="3"
-                    style="text-transform: uppercase;">
-                <button id="join-btn" class="app-button">加入房间并接收</button>
-                <button id="create-btn" class="app-button">生成连接码并发送</button>
+<body class="share-body">
+    <main class="share-page" data-api-base={apiConfig.apiBase}>
+        <header class="share-hero">
+            <div>
+                <a class="share-back" href="/a/">实验室 <span aria-hidden="true">/</span></a>
+                <h1>夸克闪传</h1>
+                <p>在设备之间直接收发文件，或把文件留给稍后上线的人。</p>
             </div>
+            <div class="share-hero-diagram" aria-hidden="true">
+                <span class="share-device share-device-wide"></span><i></i><b>↔&#xfe0e;</b><i></i><span class="share-device share-device-phone"></span>
+            </div>
+        </header>
 
-            <div class="card" id="transfer-section" style="display: none;">
-                <h2 id="transfer-title">等待连接...</h2>
+        <nav class="share-modes" aria-label="传输方式">
+            <button type="button" data-mode="send" aria-pressed="true"><strong>发文件</strong><span>两端在线 · 直接传输</span></button>
+            <button type="button" data-mode="receive" aria-pressed="false"><strong>取件与收集</strong><span>输入连接码 · 邀请对方发</span></button>
+            <button type="button" data-mode="offline" aria-pressed="false"><strong>离线包</strong><span>限时取件 · 浏览器加密</span></button>
+        </nav>
 
-                <div id="file-selection-area">
-                    <input type="file" id="file-input" multiple>
-                    <label for="file-input" class="file-select-label">选择文件 (可多选)</label>
-                    <ul id="file-list" style="display: none;"></ul>
-                    <button id="send-btn" class="app-button" disabled>等待连接...</button>
+        <div class="share-workbench">
+            <section class="share-panel share-main" aria-labelledby="work-title">
+                <header class="share-panel-header">
+                    <div>
+                        <h2 id="work-title">准备文件</h2>
+                        <p id="work-subtitle">选好内容后，生成连接码交给接收方。</p>
+                    </div>
+                    <button type="button" class="share-btn share-btn-small" id="leave-room" hidden>退出连接</button>
+                </header>
+
+                <section id="join-panel" class="share-join" hidden>
+                    <form id="join-form" class="share-form">
+                        <label for="join-value">连接码或取件链接</label>
+                        <div class="share-inline">
+                            <input id="join-value" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="512" placeholder="输入连接码，或粘贴完整链接">
+                            <button type="submit" class="share-btn share-primary">连接 / 取件</button>
+                        </div>
+                    </form>
+                    <div class="share-collect">
+                        <div><h3>让对方发给我</h3><p>创建收集邀请，对方打开后可以挑选文件发给你。</p></div>
+                        <button type="button" class="share-btn" id="create-collect">创建收集邀请</button>
+                    </div>
+                </section>
+
+                <section id="file-panel">
+                    <input id="pick-files" class="share-sr" type="file" multiple tabindex="-1">
+                    <input id="pick-folder" class="share-sr" type="file" webkitdirectory multiple tabindex="-1">
+                    <div class="share-drop-zone" id="drop-zone">
+                        <span class="share-drop-icon" aria-hidden="true">↑</span>
+                        <div><strong>拖文件到这里</strong><p id="drop-hint">支持多选、文件夹和粘贴截图</p></div>
+                        <div class="share-actions">
+                            <button type="button" class="share-btn" id="add-files">选文件</button>
+                            <button type="button" class="share-btn" id="add-folder">选文件夹</button>
+                        </div>
+                    </div>
+                    <div class="share-list-head">
+                        <span id="queue-count">还没有选文件</span>
+                        <button type="button" class="share-link-button" id="clear-files" hidden>清空</button>
+                    </div>
+                    <ul id="send-queue" class="share-files" aria-label="待发送文件"></ul>
+                    <label class="share-note-label" for="send-note">附言 <span>可选 · 最多 500 字</span></label>
+                    <textarea id="send-note" maxlength="500" rows="2" placeholder="比如提取顺序，或一段需要复制的文字"></textarea>
+                </section>
+
+                <section id="offline-options" hidden>
+                    <div class="share-expiry">
+                        <label for="expire-hours">链接有效期</label>
+                        <select id="expire-hours">
+                            <option value="1">1 小时</option>
+                            <option value="6" selected>6 小时</option>
+                            <option value="24">24 小时</option>
+                        </select>
+                    </div>
+                    <p class="share-help" id="offline-status" role="status">正在检查离线包服务…</p>
+                    <a class="share-link-button" id="offline-login" href="/login/" hidden>登录或验证账号</a>
+                </section>
+
+                <div id="work-actions" class="share-actions share-submit">
+                    <button type="button" class="share-btn share-primary" id="primary-action">生成连接码</button>
+                    <button type="button" class="share-btn" id="cancel-job" hidden>取消</button>
                 </div>
 
-                <p id="current-file-info" style="font-size: 14px; color: #666;"></p>
-                <div class="progress-bar-container">
-                    <div id="progress-bar" class="progress-bar"></div>
-                </div>
+                <section id="incoming-panel" class="share-incoming" hidden>
+                    <h3>对方请求发送</h3>
+                    <p id="incoming-detail"></p>
+                    <ul class="share-files share-incoming-list" id="incoming-list" aria-label="对方要发送的文件"></ul>
+                    <div class="share-actions">
+                        <button type="button" class="share-btn share-primary" id="accept-transfer">接收</button>
+                        <button type="button" class="share-btn" id="decline-transfer">拒绝</button>
+                    </div>
+                </section>
 
-                <div id="download-area" style="display: none;">
-                    <h3>已接收文件列表</h3>
-                    <div id="download-list" class="download-list"></div>
-                    <button id="zip-download-btn" class="app-button zip-button" style="display: none;">打包下载所有文件
-                        (.zip)</button>
-                </div>
+                <section id="received-panel" class="share-received" hidden>
+                    <div class="share-list-head">
+                        <h3 id="received-title">收到的内容</h3>
+                        <button type="button" class="share-btn share-btn-small" id="download-zip" hidden>打包下载 ZIP</button>
+                    </div>
+                    <div id="received-note" class="share-received-note" hidden>
+                        <p id="received-note-value"></p>
+                        <button type="button" class="share-btn share-btn-small" id="copy-note">复制附言</button>
+                    </div>
+                    <ul class="share-files" id="received-files" aria-label="已收到的文件"></ul>
+                </section>
 
-                <button id="clean-room-btn" class="app-button secondary-btn" style="display: none;">清除房间数据并重置</button>
+                <p class="share-message" id="work-message" role="status" hidden></p>
+            </section>
 
-            </div>
-
-            <div class="card" id="status-card">
-                <h2>状态信息</h2>
-                <p id="connection-summary" role="status">未连接。创建房间或输入对方的连接码。</p>
-                <button id="return-to-connect" type="button" class="app-button secondary-btn" hidden>返回连接</button>
-                <div id="status">连接状态：未连接</div>
-            </div>
-
+            <aside class="share-side" aria-label="传输详情">
+                <section class="share-panel share-status">
+                    <h2>传输状态</h2>
+                    <div class="share-state" id="connection-state" data-state="idle">
+                        <span class="share-state-dot" aria-hidden="true"></span>
+                        <strong id="connection-title">等待操作</strong>
+                    </div>
+                    <p class="share-status-detail" id="connection-detail" role="status">创建邀请或输入对方给你的连接码。</p>
+                    <div id="invite-panel" class="share-invite" hidden>
+                        <p id="invite-label">设备连接码</p>
+                        <output id="invite-code" class="share-code"></output>
+                        <canvas id="invite-qr" role="img" aria-label="邀请链接二维码" width="196" height="196"></canvas>
+                        <div class="share-actions">
+                            <button type="button" class="share-btn share-primary" id="copy-invite">复制链接</button>
+                            <button type="button" class="share-btn" id="copy-code">复制码</button>
+                            <button type="button" class="share-btn" id="native-share" hidden>分享</button>
+                        </div>
+                        <input id="manual-invite" type="text" readonly aria-label="邀请链接" hidden>
+                        <button type="button" class="share-link-button share-destructive" id="revoke-drop" hidden>撤回此离线包</button>
+                        <p id="invite-expiry" class="share-help"></p>
+                    </div>
+                    <div id="progress-panel" class="share-progress" hidden>
+                        <div class="share-list-head"><span id="progress-file"></span><strong id="progress-pct">0%</strong></div>
+                        <progress id="transfer-progress" max="100" value="0" aria-label="传输进度"></progress>
+                        <div class="share-metrics"><span id="progress-bytes"></span><span id="progress-speed"></span><span id="progress-eta"></span></div>
+                    </div>
+                </section>
+                <section class="share-panel share-history">
+                    <div class="share-list-head">
+                        <h2>本机记录</h2>
+                        <button type="button" class="share-link-button" id="clear-history" hidden>清空</button>
+                    </div>
+                    <p id="history-empty">完成收发后，会在这里显示时间、数量和大小。</p>
+                    <ul id="transfer-history"></ul>
+                </section>
+                <section class="share-panel share-history" id="drop-history" hidden>
+                    <h2>已创建的离线包</h2>
+                    <p>同一账号可在这台设备上撤回仍有效的包。</p>
+                    <ul id="active-drops" aria-label="有效的离线包"></ul>
+                </section>
+                <details class="share-help-panel">
+                    <summary>两种传输方式怎么选？</summary>
+                    <p><strong>在线直传</strong>适合同一时间在场的两台设备。连接成功后，文件和附言走加密的数据通道。</p>
+                    <p><strong>离线包</strong>适合错开时间取件。发送端先加密并上传，接收端用完整链接在浏览器解密。链接本身可取件，请只发给收件人。</p>
+                    <p>本机记录只存传输时间、数量和大小。下载文件后再关闭或刷新页面。</p>
+                </details>
+            </aside>
         </div>
-    </div>
-
-    <script is:inline src="/assets/pages/a/share/share.js"></script>
+        <noscript>夸克闪传需要 JavaScript 才能连接设备和处理文件。</noscript>
+    </main>
+    <dialog id="file-preview" class="share-preview">
+        <form method="dialog" class="share-list-head"><h2 id="preview-title">文件预览</h2><button class="share-btn share-btn-small">关闭</button></form>
+        <div id="preview-content"></div>
+    </dialog>
+    <script>
+        import { mountShare } from "../../../../../assets/pages/a/share/share.mjs";
+        mountShare();
+    </script>
 </body>
-
 </html>
-
-
-
-
-
-
-

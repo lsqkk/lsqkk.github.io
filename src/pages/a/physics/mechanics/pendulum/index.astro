@@ -1,0 +1,43 @@
+---
+import PhysicsLayout from "../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../components/physics/ExperimentWorkbench.astro";
+const parameters = [
+    { id: "length", label: "摆长 L", min: .25, max: 2.5, step: .05, value: 1, initial: "1.00 m" },
+    { id: "gravity", label: "重力加速度 g", min: 1.6, max: 24.8, step: .01, value: 9.81, initial: "9.81 m/s²" },
+    { id: "release", label: "释放角", min: 3, max: 80, step: 1, value: 24, initial: "24°" },
+    { id: "damping", label: "阻尼系数 γ", min: 0, max: .8, step: .01, value: .08, initial: "0.08 s⁻¹" },
+];
+---
+<PhysicsLayout title="阻尼单摆" category="mechanics" description="放开摆锤，测量它完成一周的时间，并观察机械能如何随阻尼改变。">
+    <ExperimentWorkbench canvasLabel="单摆和最近八秒的摆角曲线" caption="右图显示最近 8 秒摆角。连续两次同向经过平衡点，系统就会更新实测周期。"
+        parameters={parameters} measurements={[{ id: "measured-period", label: "最近一周实测周期" }, { id: "ideal-period", label: "小角度理论周期" }, { id: "energy", label: "剩余机械能" }]} script="pendulum">
+        <div class="physics-actions">
+            <button id="toggle-animation" type="button">暂停</button>
+            <button id="relaunch" type="button">重新释放</button>
+            <button id="moon" type="button">月球重力</button>
+            <button type="reset">重置</button>
+        </div>
+        <Fragment slot="notes">
+        <section class="physics-notes physics-controls" aria-labelledby="measurements-title">
+            <h2 id="measurements-title">周期记录</h2>
+            <p>记录最近完成的一周，再改变参数或重新释放进行对照。记录保留在当前页面，离开前可下载 CSV。</p>
+            <div class="physics-actions">
+                <button id="save-measurement" type="button" disabled>记录本周期</button>
+                <button id="download-measurements" type="button" disabled>下载 CSV</button>
+            </div>
+            <p id="measurement-status" role="status">完成第一个周期后可以记录。</p>
+            <div class="physics-table-scroll" id="measurement-table" tabindex="0" aria-label="周期记录表，可横向滚动" hidden>
+                <table>
+                    <thead><tr><th scope="col">记录</th><th scope="col">周期序号</th><th scope="col">摆长 (m)</th><th scope="col">重力 (m/s²)</th><th scope="col">释放角 (°)</th><th scope="col">阻尼 (s⁻¹)</th><th scope="col">实测 (s)</th><th scope="col">理论 (s)</th></tr></thead>
+                    <tbody id="measurement-rows"></tbody>
+                </table>
+            </div>
+        </section>
+        <section class="physics-notes">
+            <h2>对照理论与测量</h2>
+            <p>先关闭阻尼，把释放角从 5° 调到 70°，比较实测周期与 <code>T₀ = 2π√(L/g)</code>。再开启阻尼，观察振幅和机械能是否以相同速率下降。</p>
+            <p>模型使用完整的 <code>sin θ</code> 回复项与线性角速度阻尼。调整任一实验参数会从选定角度重新释放。</p>
+        </section>
+        </Fragment>
+    </ExperimentWorkbench>
+</PhysicsLayout>

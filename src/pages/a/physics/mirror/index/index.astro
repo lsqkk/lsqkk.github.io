@@ -1,88 +1,30 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import PhysicsLayout from "../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../components/physics/ExperimentWorkbench.astro";
+const parameters = [
+    { id: "light-angle", label: "光束方向（顺时针）", min: -180, max: 180, step: 1, value: 42, initial: "42°" },
+    { id: "mirror-angle", label: "镜面角度（顺时针）", min: -180, max: 180, step: 1, value: 0, initial: "0°" },
+];
 ---
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>光的反射 / Physics - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/pages/a/physics/mirror/style.css">
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
-
-</head>
-
-<body>
-    <h1>光的反射定律演示</h1>
-    <p class="description">通过交互式动画理解光的反射原理：入射角等于反射角</p>
-
-    <div class="container">
-        <div class="canvas-container">
-            <canvas id="reflectionCanvas" width="800" height="500"></canvas>
+<PhysicsLayout title="平面镜反射" category="optics" description="搭建光路，比较每次反射的入射角和反射角。">
+    <ExperimentWorkbench canvasLabel="可拖动的光源与平面镜反射光路" caption="拖动圆点移动光源，拖动小圆点改变方向，拖动方形端点改变镜面。浅青侧为镜面反射侧。"
+        parameters={parameters} measurements={[{ id: "incident", label: "选中光源 · 首次入射角" }, { id: "reflected", label: "选中光源 · 首次反射角" }, { id: "bounces", label: "选中光源 · 反射次数" }]} script="mirror/mirror">
+        <Fragment slot="before-parameters">
+            <label class="physics-parameter">光源<select id="selected-light"></select></label>
+            <label class="physics-parameter">镜面<select id="selected-mirror"></select></label>
+        </Fragment>
+        <div class="physics-actions">
+            <button type="button" id="add-light">添加光源</button>
+            <button type="button" id="remove-light">移除所选光源</button>
+            <button type="button" id="add-mirror">添加镜面</button>
+            <button type="button" id="remove-mirror">移除所选镜面</button>
+            <button type="button" id="toggle-animation">暂停</button>
+            <button type="reset">重置</button>
         </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <h2>光源控制</h2>
-                <div class="button-group">
-                    <button id="addLight">添加新光源</button>
-                    <button id="removeLight">移除光源</button>
-                </div>
-                <p>拖动光源改变位置，拖动光线末端改变方向</p>
-            </div>
-
-            <div class="control-group">
-                <h2>反射面控制</h2>
-                <div class="button-group">
-                    <button id="addMirror">添加新反射面</button>
-                    <button id="removeMirror">移除反射面</button>
-                </div>
-                <p>拖动反射面两端调整位置和角度</p>
-            </div>
-
-            <div class="control-group">
-                <h2>动画控制</h2>
-                <div class="button-group">
-                    <button id="toggleAnimation">暂停动画</button>
-                    <button class="reset" id="resetAll">重置所有</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="info-panel">
-            <h2>物理信息</h2>
-            <div class="info-item">
-                <span class="info-label">入射角:</span>
-                <span class="info-value" id="incidentAngle">30°</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">反射角:</span>
-                <span class="info-value" id="reflectionAngle">30°</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">反射定律:</span>
-                <span class="info-value">入射角 = 反射角</span>
-            </div>
-
-            <div class="instructions">
-                <h3>操作说明</h3>
-                <ul>
-                    <li>拖动光源位置可以改变光线起点</li>
-                    <li>拖动光线末端可以改变光线方向</li>
-                    <li>拖动反射面两端可以调整反射面位置和角度</li>
-                    <li>只有反射面正面（蓝色）能反射光线</li>
-                    <li>可以添加多个光源和反射面</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <script is:inline src="/assets/pages/a/physics/mirror/mirror.js"></script>
-</body>
-
-</html>
+        <section class="physics-notes" slot="notes">
+            <h2>从法线量角</h2>
+            <p>浅色虚线垂直于镜面，表示入射点的法线。拖动光源或调整方向，再比较两个读数。两块镜面可以产生连续反射，模拟最多追踪六次。</p>
+            <p>镜面背面吸收光线。场景使用理想镜面，移动的亮点用于显示传播方向。</p>
+        </section>
+    </ExperimentWorkbench>
+</PhysicsLayout>

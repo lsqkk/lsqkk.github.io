@@ -1,93 +1,32 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import PhysicsLayout from "../../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../../components/physics/ExperimentWorkbench.astro";
+const parameters = [
+    { id: "wavelength", label: "波长 λ", min: .45, max: 3, step: .05, value: 1.25, initial: "1.25 m" },
+    { id: "frequency", label: "频率 f", min: .1, max: 1.2, step: .05, value: .45, initial: "0.45 Hz" },
+    { id: "amplitude", label: "振幅 A", min: .2, max: 1, step: .05, value: .7, initial: "0.70 m" },
+    { id: "source-x", label: "选中波源 x", min: .5, max: 9.5, step: .05, value: 3.5, initial: "3.50 m" },
+    { id: "source-y", label: "选中波源 y", min: .5, max: 5.5, step: .05, value: 3, initial: "3.00 m" },
+    { id: "phase", label: "两源相位差", min: 0, max: 360, step: 15, value: 0, initial: "0°" },
+];
 ---
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>平面点波源演示 / Physics - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/pages/a/physics/waves/planewave/style.css">
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
-</head>
-
-<body>
-    <h1>平面点波源演示</h1>
-
-    <p class="description"><a href="/">{SITE_TITLE}</a> / <a href="/a">前端实验室</a> /
-        <a href="/a/physics">Physics项目</a> / <a href="/a/physics/waves">波</a> / <a href="/">平面点波源演示</a>
-    </p>
-
-    <div class="container">
-        <div class="canvas-container">
-            <canvas id="waveCanvas"></canvas>
+<PhysicsLayout title="二维波场" category="waves" description="摆放相干点波源，切换瞬时波场与干涉振幅图，寻找相消位置。">
+    <ExperimentWorkbench canvasLabel="二维波场及可移动点波源" caption="瞬时图中，浅青是正位移，蓝紫是负位移。振幅图中，亮度代表振幅。点按画布移动选中的波源。"
+        parameters={parameters} measurements={[{ id: "speed", label: "波速 v = λf" }, { id: "separation", label: "波源间距" }, { id: "time", label: "模拟时刻" }]} script="waves/planewave/planewave">
+        <Fragment slot="before-parameters">
+            <label class="physics-parameter">波源配置<select id="mode"><option value="single">单点源</option><option value="double" selected>双点源</option><option value="plane">平面波</option></select></label>
+            <label class="physics-parameter">观察量<select id="view"><option value="instant">瞬时位移</option><option value="amplitude">振幅</option></select></label>
+            <label class="physics-parameter">选中波源<select id="source"><option value="0">波源 A</option><option value="1">波源 B</option></select></label>
+        </Fragment>
+        <div class="physics-actions">
+            <button type="button" id="toggle-animation">暂停</button>
+            <button type="button" id="step">步进 1/16 周期</button>
+            <button type="reset">重置</button>
         </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <h3>波参数</h3>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>波长</span>
-                        <span id="wavelengthValue">50</span>
-                    </div>
-                    <input type="range" id="wavelength" min="20" max="100" value="50">
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>频率</span>
-                        <span id="frequencyValue">0.05</span>
-                    </div>
-                    <input type="range" id="frequency" min="0.01" max="0.1" step="0.01" value="0.05">
-                </div>
-
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>振幅</span>
-                        <span id="amplitudeValue">1.0</span>
-                    </div>
-                    <input type="range" id="amplitude" min="0.5" max="2.0" step="0.1" value="1.0">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>颜色方案</h3>
-                <div class="color-scheme">
-                    <div class="color-option active" data-scheme="blue">蓝色</div>
-                    <div class="color-option" data-scheme="green">绿色</div>
-                    <div class="color-option" data-scheme="red">红色</div>
-                </div>
-                <div class="legend">
-                    <span>波谷</span>
-                    <span>波峰</span>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>其他控制</h3>
-                <button id="pauseBtn">暂停</button>
-                <button id="resetBtn">重置</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="instructions">
-        <h3>使用说明</h3>
-        <ul>
-            <li>调整波长、频率和振幅参数来观察波的变化</li>
-            <li>选择不同的颜色方案来改变波的显示效果</li>
-            <li>使用暂停按钮可以停止波的传播</li>
-            <li>重置按钮会将所有参数恢复为默认值</li>
-        </ul>
-    </div>
-    <script is:inline src="/assets/pages/a/physics/waves/planewave/planewave.js"></script>
-</body>
-
-</html>
+        <section class="physics-notes" slot="notes">
+            <h2>寻找相消的线</h2>
+            <p>切换双点源的振幅图。把相位差从 0° 调到 180°，比较两波源连线的中垂线。两条路径一样长时，初相位差决定两波在此处叠加还是抵消。</p>
+            <p>模型是线性标量波场。点波源幅度按距离平方根的倒数近似衰减，波源附近采用有限振幅。</p>
+        </section>
+    </ExperimentWorkbench>
+</PhysicsLayout>

@@ -6,6 +6,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="用实时声谱、波形、频带独听和频谱叠加分析本地音频。">
     <title>声音频谱实验室 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
@@ -16,59 +17,213 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <body class="feature-page music-page">
     <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/a/">实验室</a></nav>
     <main class="container">
-        <h1>声音频谱实验室</h1>
-        <p class="subtitle">边听边看声音的频率变化，给难辨的片段标上起止点，反复听。</p>
-        <div class="music-actions">
-            <button type="button" id="playBtn">播放扫频示例</button>
-            <label for="audioInput">选择本地音频</label>
-            <input type="file" id="audioInput" accept="audio/*">
-        </div>
-        <p id="audioStatus" role="status">可以载入录音或音乐，音频文件在当前浏览器播放。</p>
-        <audio id="player" controls preload="metadata" aria-label="音频播放器" hidden></audio>
-        <div id="loopControls" class="music-actions" hidden>
-            <button type="button" id="markA">标记 A 点</button>
-            <button type="button" id="markB">标记 B 点</button>
-            <button type="button" id="loopToggle" aria-pressed="false">循环 A–B</button>
-            <button type="button" id="clearLoop">清除标记</button>
-        </div>
-        <p id="loopStatus" role="status" hidden></p>
-
-        <div class="music-actions visualization-controls" aria-label="声音视图">
-            <button type="button" data-viz="spectrogram" aria-pressed="true">滚动声谱</button>
-            <button type="button" data-viz="particles" aria-pressed="false">粒子</button>
-            <button type="button" data-viz="waves" aria-pressed="false">波形</button>
-            <button type="button" data-viz="spectrum" aria-pressed="false">频谱</button>
-            <button type="button" data-viz="rings" aria-pressed="false">光环</button>
-        </div>
-        <section id="spectrogramPanel" aria-label="频率随时间的变化">
-            <div class="spectrogram-plot">
-                <canvas id="spectrogram" width="240" height="144" aria-label="滚动声谱图，横轴为时间，纵轴为频率"></canvas>
-                <div class="frequency-axis" aria-hidden="true">
-                    <span style="top:0%">12 kHz</span>
-                    <span style="top:34%">2 kHz</span>
-                    <span style="top:60%">500 Hz</span>
-                    <span style="top:100%">60 Hz</span>
-                </div>
+        <header class="audio-heading">
+            <div>
+                <h1>声音频谱实验室</h1>
+                <p class="subtitle">在声谱上定位一段声音，独听它的频带，或把两帧频谱叠在一起比较。</p>
             </div>
-            <div class="time-axis"><span>约 8 秒前</span><span>现在</span></div>
-            <p class="music-note">越亮表示该频率分量越强。暂停可留住当前画面，跳转播放位置会清除旧画面。</p>
-        </section>
+            <p class="audio-privacy">本地音频 · 浏览器内分析</p>
+        </header>
 
-        <section id="scenePanel" aria-label="三维可视化" hidden>
+        <section class="source-strip audio-panel" aria-label="音频输入">
             <div class="music-actions">
-                <label for="colorScheme">配色</label>
-                <select id="colorScheme">
-                    <option value="neon">霓虹</option>
-                    <option value="ocean">海洋</option>
-                    <option value="sunset">日落</option>
-                    <option value="forest">森林</option>
+                <button type="button" class="audio-primary" id="playBtn">播放示例</button>
+                <select id="demoType" aria-label="示例音频">
+                    <option value="sweep">扫频与鼓点</option>
+                    <option value="missing">消失的基频</option>
+                    <option value="beats">两个音的拍频</option>
                 </select>
+                <input type="file" id="audioInput" accept="audio/*,.flac,.ogg,.m4a,.opus,.wav,.mp3">
+                <label class="audio-file-label" for="audioInput">打开音频</label>
+                <button type="button" id="micToggle" aria-pressed="false">启用麦克风</button>
             </div>
-            <div id="container"></div>
+            <p id="audioStatus" role="status">播放示例或打开文件。麦克风信号只用于分析。</p>
+            <div class="transport" id="transport" hidden>
+                <audio id="player" controls preload="metadata" aria-label="音频播放器"></audio>
+                <div id="loopControls" class="music-actions" aria-label="播放循环" hidden>
+                    <button type="button" id="markA">标记 A 点</button>
+                    <button type="button" id="markB">标记 B 点</button>
+                    <button type="button" id="loopToggle" aria-pressed="false" disabled>循环 A–B</button>
+                    <button type="button" id="clearLoop" disabled>清除标记</button>
+                </div>
+                <p id="loopStatus" role="status" hidden></p>
+            </div>
         </section>
+
+        <div class="audio-workspace">
+            <section class="audio-panel analysis-panel" aria-labelledby="analysisHeading">
+                <header class="analysis-header">
+                    <div>
+                        <h2 id="analysisHeading">实时分析</h2>
+                        <p id="fftInfo">FFT · 4096 点</p>
+                    </div>
+                    <button type="button" id="freezePlot" aria-pressed="false" disabled>冻结画面</button>
+                </header>
+                <div class="readouts" aria-label="当前分析结果">
+                    <div><span>最强谱峰</span><strong id="peakValue">—</strong></div>
+                    <div><span>估计基频</span><strong id="pitchValue">—</strong></div>
+                    <div><span>有效电平</span><strong id="rmsValue">—</strong></div>
+                </div>
+                <div class="music-actions visualization-controls" role="group" aria-label="分析视图">
+                    <button type="button" data-viz="spectrogram" aria-pressed="true">滚动声谱</button>
+                    <button type="button" data-viz="spectrum" aria-pressed="false">频谱叠加</button>
+                    <button type="button" data-viz="waves" aria-pressed="false">示波器</button>
+                    <button type="button" data-viz="scene" aria-pressed="false">3D 可视化</button>
+                </div>
+
+                <section id="spectrogramPanel" aria-label="频率随时间的变化">
+                    <div class="chart-surface">
+                        <div class="spectrogram-plot">
+                            <div id="spectrogramFrame">
+                                <canvas id="spectrogram" width="360" height="220" aria-label="滚动声谱图，横轴为时间，纵轴为对数频率"></canvas>
+                                <div id="spectrogramGrid" aria-hidden="true"></div>
+                                <span id="probeLine" aria-hidden="true" hidden></span>
+                                <span id="probeFrequencyLine" aria-hidden="true" hidden></span>
+                                <p id="emptyWaterfall">等待音频输入</p>
+                            </div>
+                            <div class="frequency-axis" id="spectrogramAxis" aria-hidden="true"></div>
+                        </div>
+                        <div class="time-axis"><span id="historyLength">约 12 秒视窗</span><span id="historyEnd">最新帧</span></div>
+                    </div>
+                    <div class="chart-caption">
+                        <p class="music-note">每列代表一帧，越亮表示该频率分量越强。点击图中历史帧可冻结并检查。</p>
+                        <div class="color-legend" aria-label="频谱色标，单位 dBFS"><span>−95</span><i></i><span>−25 dBFS</span></div>
+                    </div>
+                    <div class="history-probe">
+                        <label for="frameProbe">历史帧 <output id="probeTime">实时</output></label>
+                        <input type="range" id="frameProbe" min="0" max="0" value="0" disabled>
+                        <div class="music-actions probe-actions" id="probeActions" hidden>
+                            <button type="button" id="seekFrame" hidden>跳转至该时刻</button>
+                            <button type="button" id="bandFromProbe" hidden>用作频带中心</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="spectrumPanel" aria-label="频谱与参考帧" hidden>
+                    <div class="chart-surface">
+                        <canvas id="spectrumCanvas" aria-label="当前频谱和 A、B 参考帧的叠加图，横轴为对数频率，纵轴为 dBFS"></canvas>
+                    </div>
+                    <div class="chart-caption">
+                        <p class="music-note">在图中点击可移动所选位置。标记也可用方向键调整。</p>
+                        <ul class="spectrum-legend" aria-label="频谱图例">
+                            <li><i></i>当前</li><li><i></i>快照 A</li><li><i></i>快照 B</li>
+                        </ul>
+                    </div>
+                    <fieldset class="spectrum-markers">
+                        <legend>谱峰间距</legend>
+                        <div class="marker-settings">
+                            <label>图上点击移动
+                                <select id="spectrumTarget">
+                                    <option value="band">独听频带中心</option>
+                                    <option value="0">标记 1</option>
+                                    <option value="1">标记 2</option>
+                                </select>
+                            </label>
+                            <label>测量曲线
+                                <select id="markerSource">
+                                    <option value="current">当前</option>
+                                    <option value="0" disabled>快照 A</option>
+                                    <option value="1" disabled>快照 B</option>
+                                </select>
+                            </label>
+                            <label class="marker-toggle"><input type="checkbox" id="showMarkers"> 显示标记</label>
+                        </div>
+                        <div id="markerControls" hidden>
+                            <div class="marker-pair">
+                                <div class="marker-row">
+                                    <label for="marker1">标记 1 <output id="markerValue1">440 Hz</output></label>
+                                    <input id="marker1" type="range" min="0" max="1000" value="408">
+                                    <span id="markerLevel1">—</span>
+                                    <button id="snapMarker1" type="button">吸附附近谱峰</button>
+                                </div>
+                                <div class="marker-row">
+                                    <label for="marker2">标记 2 <output id="markerValue2">660 Hz</output></label>
+                                    <input id="marker2" type="range" min="0" max="1000" value="481">
+                                    <span id="markerLevel2">—</span>
+                                    <button id="snapMarker2" type="button">吸附附近谱峰</button>
+                                </div>
+                            </div>
+                            <p class="marker-difference">两标记间距 <output id="markerDelta">220 Hz</output></p>
+                            <p id="markerStatus" class="music-note" role="status"></p>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <section id="wavesPanel" aria-label="采样波形" hidden>
+                    <div class="music-actions wave-modes" role="group" aria-label="示波器时基">
+                        <button type="button" id="waveMode" aria-pressed="true">振幅 · 40 ms</button>
+                        <button type="button" id="envelopeMode" aria-pressed="false">RMS 包络 · 2 s</button>
+                    </div>
+                    <div class="chart-surface">
+                        <canvas id="waveCanvas" aria-label="时域波形，横轴为毫秒，纵轴为相对振幅"></canvas>
+                    </div>
+                    <p class="music-note" id="waveNote">波形以满幅 1.0 为基准。连续、规律的周期通常对应可辨的音高。</p>
+                </section>
+
+                <section id="scenePanel" aria-label="三维可视化" hidden>
+                    <div class="music-actions">
+                        <label for="sceneMode">样式</label>
+                        <select id="sceneMode">
+                            <option value="particles">粒子</option>
+                            <option value="waves">环形波纹</option>
+                            <option value="spectrum">三维频谱</option>
+                            <option value="rings">光环</option>
+                        </select>
+                        <label for="colorScheme">配色</label>
+                        <select id="colorScheme">
+                            <option value="neon">霓虹</option>
+                            <option value="ocean">海洋</option>
+                            <option value="sunset">落日</option>
+                            <option value="forest">森林</option>
+                        </select>
+                    </div>
+                    <div id="container" aria-label="拖动可旋转观察三维场景"></div>
+                </section>
+            </section>
+
+            <aside class="audio-inspector" aria-label="测量与对照">
+                <section class="audio-panel">
+                    <h2>频带独听</h2>
+                    <p class="music-note">分析显示原始输入。独听只影响播放器输出。</p>
+                    <label for="bandCenter">中心频率 <output id="bandValue">440 Hz</output></label>
+                    <input type="range" id="bandCenter" min="0" max="1000" step="1" value="376">
+                    <label for="bandWidth">带宽
+                        <select id="bandWidth">
+                            <option value="0.3333333333333333">⅓ 倍频程</option>
+                            <option value="1" selected>1 倍频程</option>
+                            <option value="2">2 倍频程</option>
+                        </select>
+                    </label>
+                    <div class="music-actions band-controls">
+                        <button type="button" id="bandToggle" aria-pressed="false" disabled>独听频带</button>
+                        <button type="button" id="bandFromPeak" disabled>定位最强谱峰</button>
+                    </div>
+                </section>
+
+                <section class="audio-panel">
+                    <h2>频谱快照</h2>
+                    <p class="music-note">冻结后拖动历史帧可选择要保存的瞬间。A、B 可来自不同音源。</p>
+                    <div class="snapshot-pair">
+                        <div><button type="button" id="captureA" disabled>保存 A</button><p id="snapshotA">尚未保存</p></div>
+                        <div><button type="button" id="captureB" disabled>保存 B</button><p id="snapshotB">尚未保存</p></div>
+                    </div>
+                    <p id="compareStatus" role="status" hidden></p>
+                    <div class="music-actions">
+                        <button type="button" id="exportSpectra" disabled>导出 CSV</button>
+                        <button type="button" id="clearSpectra" disabled>清空快照</button>
+                    </div>
+                </section>
+
+                <details class="audio-panel audio-guide">
+                    <summary>怎样看这些读数</summary>
+                    <p>最强谱峰是某个频率分量。估计基频来自波形的周期，两者可能不同。基频适合单音、哼唱和近似周期信号。</p>
+                    <p>试播“消失的基频”，观察 440 Hz 与 660 Hz 谱线，再对照估计基频 220 Hz。试播“两个音的拍频”，在示波器的 RMS 包络上观察每秒约三次的响度起伏。</p>
+                    <p>多声道音频混合为单声道分析。电平是数字输入的相对幅度（dBFS）。FFT 曲线经过窗函数，电平读数取时域 RMS。麦克风电平没有声压校准。</p>
+                    <p>FFT 分辨率约 12 Hz 时，440 Hz 和 443 Hz 会落在同一条较宽的谱峰内，拍频可从较慢的响度起伏观察。</p>
+                </details>
+            </aside>
+        </div>
     </main>
-    <script is:inline defer src="/assets/js/three.min.js"></script>
-    <script is:inline defer src="/assets/js/OrbitControls.js"></script>
-    <script is:inline type="module" src="/assets/pages/a/music-visualizer/music.js"></script>
+    <script is:inline type="module" src="/assets/pages/a/music-visualizer/playback.mjs"></script>
 </body>
 </html>

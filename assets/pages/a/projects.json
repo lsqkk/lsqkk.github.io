@@ -18,13 +18,13 @@
         {
           "name": "Physics 项目",
           "link": "physics",
-          "description": "物理引擎与交互模拟实验，展示物理规律和碰撞检测",
+          "description": "七个光学、波动与力学实验，可测临界角、干涉条纹、波速和单摆周期",
           "icon": "fa-atom"
         },
         {
           "name": "声音频谱实验室",
           "link": "music-visualizer",
-          "description": "用滚动声谱查看声音变化，标记 A–B 循环反复听，或切换三维可视化。",
+          "description": "用麦克风或本地音频测量声谱和基频，独听指定频带，叠加两帧频谱并导出 CSV。",
           "icon": "fa-music"
         },
         {
@@ -47,8 +47,8 @@
         {
           "name": "夸克闪传",
           "link": "share",
-          "description": "基于 Firebase RTDB 和 STUN 的 P2P 文件闪传",
-          "tags": ["需要两台设备"],
+          "description": "用连接码或二维码在线收发文件，也可以创建加密的限时离线包。",
+          "tags": ["在线直传", "限时取件"],
           "icon": "fa-exchange"
         },
         {

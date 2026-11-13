@@ -1,94 +1,53 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import PhysicsLayout from "../../../../../../components/physics/PhysicsLayout.astro";
+const parameters = [
+    { id: "wavelength", label: "波长 λ", min: .5, max: 3, step: .1, value: 1.5, initial: "1.5 m" },
+    { id: "frequency", label: "频率 f", min: .2, max: 2, step: .1, value: .8, initial: "0.8 Hz" },
+    { id: "amplitude", label: "波源振幅", min: .1, max: 1, step: .1, value: .5, initial: "0.5" },
+    { id: "order", label: "最高反射阶数", min: 0, max: 4, step: 1, value: 1, initial: "1" },
+    { id: "source-x", label: "波源横坐标 x", min: -1.5, max: 1.5, step: .1, value: 0, initial: "0.0 m" },
+    { id: "slice", label: "切面高度 y", min: -2, max: 2, step: .1, value: 0, initial: "0.0 m" },
+];
 ---
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三维球面波演示 / Physics - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/pages/a/physics/waves/3dwaves/style.css">
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-</head>
-
-<body>
-    <div id="container"></div>
-
-    <div id="ui">
-        <h1>三维球面波演示</h1>
-
-        <p>当前位置：<a href="/#home-content">{SITE_TITLE}</a> / <a href="/a">前端实验室</a> /
-            <a href="/a/physics">Physics项目</a> / <a href="/a/physics/waves">波</a> / <a href="/#home-content">三维球面波演示</a>
-        </p>
-
-        <div class="control-group">
-            <h3>波参数</h3>
-
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>波长</span>
-                    <span id="wavelengthValue">1.5</span>
+<PhysicsLayout title="三维球面波" category="waves" description="从直达波开始逐阶加入反射，观察立方腔里的波形如何改变。">
+    <div class="physics-workbench">
+        <figure class="physics-stage">
+            <div id="wave-view" class="physics-webgl" role="img" aria-label="立方腔内的球面波">
+                <canvas id="fallback-view" width="500" height="300" hidden></canvas>
+                <p id="webgl-message" class="physics-error" role="status">正在初始化球面波画布…</p>
+            </div>
+            <dl class="physics-measurements">
+                <div><dt>参与计算的波源（含镜像）</dt><dd id="image-count">—</dd></div>
+                <div><dt>波速 v = λf</dt><dd id="speed">—</dd></div>
+                <div><dt>腔体边长</dt><dd>4.0 m</dd></div>
+            </dl>
+            <figcaption id="scene-caption">浅青为正位移，蓝紫为负位移，橙点是波源。拖动旋转视角，滚轮或双指缩放，也可使用视角按钮。</figcaption>
+        </figure>
+        <section class="physics-controls" aria-labelledby="physics-controls-title">
+            <h2 id="physics-controls-title">实验参数</h2>
+            <form id="experiment-form">
+                {parameters.map(parameter => (
+                    <label class="physics-parameter">
+                        <span>{parameter.label}<output for={parameter.id} id={`${parameter.id}-output`}>{parameter.initial}</output></span>
+                        <input id={parameter.id} type="range" min={parameter.min} max={parameter.max} step={parameter.step} value={parameter.value}>
+                    </label>
+                ))}
+                <label class="physics-parameter">显示方式<select id="view"><option value="slice">水平切面</option><option value="volume">体积点云</option></select></label>
+                <div class="physics-actions">
+                    <button type="button" id="toggle-animation">暂停</button>
+                    <button type="button" id="rotate">旋转视角</button>
+                    <button type="button" id="view-home">初始视角</button>
+                    <button type="reset">重置</button>
                 </div>
-                <input type="range" id="wavelength" min="0.5" max="3" step="0.1" value="1.5">
-            </div>
-
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>频率</span>
-                    <span id="frequencyValue">0.8</span>
-                </div>
-                <input type="range" id="frequency" min="0.2" max="2" step="0.1" value="0.8">
-            </div>
-
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>振幅</span>
-                    <span id="amplitudeValue">0.5</span>
-                </div>
-                <input type="range" id="amplitude" min="0.1" max="1" step="0.1" value="0.5">
-            </div>
-        </div>
-
-        <div class="control-group">
-            <h3>反射次数</h3>
-            <div class="slider-container">
-                <div class="slider-label">
-                    <span>最大反射</span>
-                    <span id="reflectionsValue">2</span>
-                </div>
-                <input type="range" id="reflections" min="0" max="4" step="1" value="2">
-            </div>
-            <div class="legend">
-                <span>直接波</span>
-                <span>多次反射</span>
-            </div>
-        </div>
-
-        <div class="buttons">
-            <button id="pauseBtn">暂停</button>
-            <button id="resetBtn">重置</button>
-        </div>
+            </form>
+        </section>
     </div>
-
-    <div id="instructions">
-        <h3>操作说明</h3>
-        <ul>
-            <li>鼠标拖拽：旋转视角</li>
-            <li>鼠标滚轮：缩放</li>
-            <li>调整参数：改变波的行为</li>
-            <li>暂停/重置：控制动画</li>
-        </ul>
-    </div>
-
-    <!-- 引入Three.js库 -->
+    <section class="physics-notes">
+        <h2>从镜像波源看反射</h2>
+        <p>先选 0 阶看直达波，再依次加入反射。每个虚拟镜像源对应一条反射路径，单次反射取振幅系数 0.5。把波源移到一侧，检查对称性如何变化。</p>
+        <p>模型采用稳态相干叠加，忽略墙面相移，并在波源附近限制振幅。水平切面可观察腔体不同高度的波场。</p>
+    </section>
     <script is:inline src="/assets/js/three.min.js"></script>
     <script is:inline src="/assets/js/OrbitControls.js"></script>
-
-    <script is:inline src="/assets/pages/a/physics/waves/3dwaves/3dwaves.js"></script>
-</body>
-
-</html>
+    <script is:inline type="module" src="/assets/pages/a/physics/waves/3dwaves/3dwaves.mjs"></script>
+</PhysicsLayout>

@@ -1,0 +1,26 @@
+---
+import PhysicsLayout from "../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../components/physics/ExperimentWorkbench.astro";
+const parameters = [
+    { id: "wavelength", label: "波长 λ", min: 400, max: 700, step: 5, value: 550, initial: "550 nm" },
+    { id: "spacing", label: "两缝中心距 d", min: 60, max: 450, step: 5, value: 200, initial: "200 μm" },
+    { id: "slit-width", label: "单缝宽度 a", min: 5, max: 55, step: 1, value: 25, initial: "25 μm" },
+    { id: "distance", label: "屏距 L", min: .5, max: 2.5, step: .1, value: 1.2, initial: "1.2 m" },
+    { id: "probe", label: "探针位置 y", min: -24, max: 24, step: .1, value: 0, initial: "0.0 mm" },
+];
+---
+<PhysicsLayout title="双缝干涉" category="optics" description="移动光强探针，对照亮暗条纹、衍射包络和两束光的光程差。">
+    <ExperimentWorkbench canvasLabel="屏幕条纹、相对光强曲线与衍射包络" caption="上方是屏幕条纹，下方实线是相对光强，虚线是单缝衍射包络。点按图表或移动探针滑块进行测量。"
+        parameters={parameters} measurements={[{ id: "fringe", label: "中心附近的条纹间距" }, { id: "path", label: "光程差 / λ" }, { id: "intensity", label: "探针相对光强" }]} script="double-slit">
+        <div class="physics-actions">
+            <button id="red-light" type="button">红光 650 nm</button>
+            <button id="blue-light" type="button">蓝光 450 nm</button>
+            <button type="reset">重置</button>
+        </div>
+        <section class="physics-notes" slot="notes">
+            <h2>改变缝距与缝宽</h2>
+            <p>先固定波长和屏距，再增大缝距 <code>d</code>，观察中心附近的条纹间距 <code>Δy ≈ λL / d</code>。随后加宽单缝，观察哪些条纹被衍射包络压低。</p>
+            <p>计算采用两条等宽狭缝在远场的相干叠加。屏幕颜色是对可见光的近似显示。</p>
+        </section>
+    </ExperimentWorkbench>
+</PhysicsLayout>

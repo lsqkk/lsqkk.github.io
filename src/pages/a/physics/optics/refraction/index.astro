@@ -1,0 +1,28 @@
+---
+import PhysicsLayout from "../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../components/physics/ExperimentWorkbench.astro";
+---
+<PhysicsLayout title="折射与全反射" category="optics" description="让光束穿过不同介质。调大入射角，观察折射光何时从界面消失。">
+    <ExperimentWorkbench
+        canvasLabel="光线跨越两介质界面的折射、反射和法线示意"
+        caption="浅青线是折射光，蓝线是反射光，虚线是法线。角度从法线量起。"
+        parameters={[{ id: "angle", label: "入射角", min: 0, max: 89, step: 1, value: 35, initial: "35°" }]}
+        measurements={[{ id: "transmitted", label: "折射角" }, { id: "critical", label: "临界角" }, { id: "speed-ratio", label: "折射前后光速比 v₂ / v₁" }]}
+        script="refraction"
+    >
+        <Fragment slot="before-parameters">
+            <label class="physics-parameter">入射介质<select id="source"><option value="1.00">空气 n = 1.00</option><option value="1.33">水 n = 1.33</option><option value="1.50" selected>玻璃 n = 1.50</option></select></label>
+            <label class="physics-parameter">透射介质<select id="target"><option value="1.00" selected>空气 n = 1.00</option><option value="1.33">水 n = 1.33</option><option value="1.50">玻璃 n = 1.50</option></select></label>
+        </Fragment>
+        <div class="physics-actions">
+            <button type="button" id="swap">交换介质</button>
+            <button type="button" id="threshold">跨过临界角</button>
+            <button type="reset">重置</button>
+        </div>
+        <section class="physics-notes" slot="notes">
+            <h2>验证斯涅尔定律</h2>
+            <p><code>n₁ sin θ₁ = n₂ sin θ₂</code>。从玻璃射向空气时，先预测 40° 和 50° 的光路，再拖动滑块核对。只有光从高折射率介质射向低折射率介质时才会出现临界角。</p>
+            <p>图中只画几何光路。线宽表示各条光线的角色，与实际光强无关。</p>
+        </section>
+    </ExperimentWorkbench>
+</PhysicsLayout>

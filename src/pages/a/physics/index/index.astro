@@ -1,95 +1,44 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import PhysicsLayout from "../../../../components/physics/PhysicsLayout.astro";
+import projects from "../../../../../assets/pages/a/physics/projects.json";
+
+const sections = [
+    { id: "optics", title: "光学", projects: projects.optics },
+    { id: "waves", title: "波动", projects: projects.waves },
+    { id: "mechanics", title: "力学", projects: projects.mechanics },
+];
+
+const illustrations = {
+    reflection: "M8 64H152 M80 14V76 M24 22L80 64 136 22",
+    refraction: "M8 48H152 M80 8V88 M34 10L80 48 101 86",
+    slits: "M58 8V26 M58 36V60 M58 70V88 M72 31Q104 6 136 31 M72 65Q104 90 136 65 M75 48H149",
+    sphere: "M80 12a36 36 0 1 0 0 72 36 36 0 1 0 0-72Z M80 12a17 36 0 1 0 0 72 17 36 0 1 0 0-72Z M44 48h72",
+    field: "M64 13a35 35 0 1 0 0 70 35 35 0 1 0 0-70Z M96 13a35 35 0 1 0 0 70 35 35 0 1 0 0-70Z M64 30a18 18 0 1 0 0 36 18 18 0 1 0 0-36Z M96 30a18 18 0 1 0 0 36 18 18 0 1 0 0-36Z",
+    wave: "M8 48H152 M8 48Q26 0 44 48T80 48 116 48 152 48",
+    pendulum: "M52 16h56 M80 16v64 M80 16l37 49 M43 65a62 62 0 0 0 74 0 M124 65a7 7 0 1 0-14 0 7 7 0 0 0 14 0Z",
+};
 ---
-<!DOCTYPE html>
-<html lang="zh-CN">
-
-<head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>光学与波动 / Physics - {SITE_TITLE}</title>
-    <link rel="stylesheet" href="/assets/css/fa-local.css" />
-    <link rel="stylesheet" href="/assets/pages/a/physics/style.css">
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-</head>
-
-<body>
-    <script is:inline src="/assets/js/nav.js"></script>
-
-    <!-- 主内容区 -->
-    <main>
-        <div class="container">
-            <!-- 英雄区 -->
-            <section class="hero">
-                <h1>PHYSICS 实验室</h1>
-                <p>探索物理世界的奇妙现象，交互式模拟理解各种物理现象。这里是Physics项目的实验基地。</p>
-                <a href="#projects" class="cta-button">开始探索</a>
-            </section>
-
-            <!-- 光学实验区 -->
-            <section id="optics" class="category-section">
-                <h2 class="section-title">光学实验</h2>
-                <div class="projects-grid" id="optics-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 波动实验区 -->
-            <section id="waves" class="category-section">
-                <h2 class="section-title">波动实验</h2>
-                <div class="projects-grid" id="waves-container">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- 页脚 -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Physics 项目</h3>
-                    <p>Physics项目致力于通过交互式模拟展示物理现象，帮助用户直观理解复杂的物理概念和原理。</p>
-                </div>
-                <div class="footer-column">
-                    <h3>快速链接</h3>
-                    <ul class="footer-links">
-                        <li><a href="/">首页</a></li>
-                        <li><a href="/posts">技术文章</a></li>
-                        <li><a href="/games">趣味游戏</a></li>
-                        <li><a href="/tool">实用工具</a></li>
-                        <li><a href="/blog/daily">夸克日报</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>实验室项目</h3>
-                    <ul class="footer-links" id="footer-projects">
-                        <!-- 项目链接将通过JavaScript动态加载 -->
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>联系我们</h3>
-                    <ul class="footer-links">
-                        <li><a href="/blog/lyb">留言板</a></li>
-                        <li><a href="mailto:jsxzznz@163.com">邮箱联系</a></li>
-                    </ul>
-                </div>
+<PhysicsLayout title="Physics 实验室" description="在浏览器中做光学、波动与力学实验。改变条件，观察现象，再用读数检验你的预测。">
+    <nav class="physics-jumps" slot="intro" aria-label="实验分类">
+        {sections.map(section => <a href={`#${section.id}`}>{section.title}<span>{section.projects.length}</span></a>)}
+    </nav>
+    {sections.map(section => (
+        <section class="physics-category" id={section.id} aria-labelledby={`${section.id}-title`}>
+            <h2 id={`${section.id}-title`}>{section.title}</h2>
+            <div class="physics-catalog">
+                {section.projects.map(project => (
+                    <a class="physics-card" href={`/a/physics/${project.link}/`}>
+                        <div class="physics-card-figure">
+                            <svg aria-hidden="true" viewBox="0 0 160 96"><path d={illustrations[project.symbol as keyof typeof illustrations]} /></svg>
+                        </div>
+                        <div class="physics-card-body">
+                            <p class="physics-card-topic">{project.topics}</p>
+                            <h3>{project.name}<span aria-hidden="true">↗</span></h3>
+                            <p>{project.description}</p>
+                        </div>
+                    </a>
+                ))}
             </div>
-            <div class="copyright">
-                <p>© 2023 {SITE_TITLE}Physics实验室. 保留所有权利.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script is:inline src="/assets/pages/a/physics/physics.js"></script>
-</body>
-
-</html>
+        </section>
+    ))}
+</PhysicsLayout>

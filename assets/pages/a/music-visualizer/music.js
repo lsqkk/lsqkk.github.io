@@ -1,17 +1,12 @@
-import { sampleAudio } from './playback.mjs';
-
 const stage = document.getElementById('container');
-const scenePanel = document.getElementById('scenePanel');
-const spectrogramPanel = document.getElementById('spectrogramPanel');
-const modeButtons = [...document.querySelectorAll('[data-viz]')];
+const sceneSelect = document.getElementById('sceneMode');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const rings = [];
 const waves = [];
 const spectrumBars = [];
-let scene, camera, renderer, controls, particleSystem, particleColor, audioData;
-let mode = 'spectrogram';
+const audioData = new Uint8Array(128);
+let scene, camera, renderer, controls, particleSystem, particleColor;
 let colorScheme = 'neon';
-let sceneFailed = false;
-
 function initScene() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0a16);
@@ -42,50 +37,67 @@ function resizeScene() {
     renderer.setSize(stage.clientWidth, stage.clientHeight);
 }
 
-function selectMode(nextMode) {
-    mode = nextMode;
-    const showPlot = mode === 'spectrogram';
-    spectrogramPanel.hidden = !showPlot;
-    scenePanel.hidden = showPlot;
-    for (const button of modeButtons) button.setAttribute('aria-pressed', String(button.dataset.viz === mode));
-    if (showPlot || sceneFailed) return;
-    try {
-        if (!renderer) initScene();
-        particleSystem.visible = mode === 'particles';
-        for (const { mesh } of rings) mesh.visible = mode === 'rings';
-        for (const { mesh } of waves) mesh.visible = mode === 'waves';
-        for (const bar of spectrumBars) bar.visible = mode === 'spectrum';
-        controls.autoRotate = mode !== 'spectrum' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-        controls.target.set(0, 0, mode === 'spectrum' ? -10 : 0);
-        camera.position.set(0, 5, 15);
-        resizeScene();
-    } catch {
-        sceneFailed = true;
-        stage.textContent = '此设备暂时无法显示三维画面，可以切换到滚动声谱。';
-    }
+function applySceneMode() {
+    const mode = sceneSelect.value;
+    particleSystem.visible = mode === 'particles';
+    for (const { mesh } of rings) mesh.visible = mode === 'rings';
+    for (const { mesh } of waves) mesh.visible = mode === 'waves';
+    for (const bar of spectrumBars) bar.visible = mode === 'spectrum';
+    controls.autoRotate = mode !== 'spectrum' && !reducedMotion.matches;
+    controls.target.set(0, 0, mode === 'spectrum' ? -10 : 0);
+    camera.position.set(0, 5, 15);
+    resizeScene();
 }
 
-for (const button of modeButtons) button.onclick = () => selectMode(button.dataset.viz);
-document.getElementById('colorScheme').onchange = event => { colorScheme = event.target.value; };
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.append(script);
+    });
+}
 
-function animate(now) {
+export async function startScene(isVisible, readFrame) {
+    stage.textContent = '正在加载三维视图…';
+    await loadScript('/assets/js/three.min.js');
+    await loadScript('/assets/js/OrbitControls.js');
+    stage.textContent = '';
+    initScene();
+    applySceneMode();
+    sceneSelect.onchange = applySceneMode;
+    reducedMotion.addEventListener('change', applySceneMode);
+    document.getElementById('colorScheme').onchange = event => { colorScheme = event.target.value; };
+    const animate = now => {
+        requestAnimationFrame(animate);
+        if (!isVisible()) return;
+        const frame = readFrame();
+        if (frame) {
+            for (let index = 0; index < audioData.length; index++) {
+                const first = Math.floor(2 ** (index / 128 * Math.log2(frame.bins.length)));
+                const last = Math.min(frame.bins.length, Math.floor(2 ** ((index + 1) / 128 * Math.log2(frame.bins.length))) + 1);
+                let amplitude = -95;
+                for (let bin = first; bin < last; bin++) amplitude = Math.max(amplitude, frame.bins[bin]);
+                audioData[index] = Math.min(255, (amplitude + 95) * 255 / 70);
+            }
+        } else {
+            audioData.fill(0);
+        }
+        const time = reducedMotion.matches ? 0 : now / 1000;
+        switch (sceneSelect.value) {
+            case 'particles': updateParticles(time); break;
+            case 'waves': updateWaves(time); break;
+            case 'spectrum': updateSpectrum(); break;
+            case 'rings': updateRings(time); break;
+        }
+        const average = audioData.reduce((sum, bin) => sum + bin, 0) / (audioData.length * 255);
+        updateBackground(average, time);
+        controls.update();
+        renderer.render(scene, camera);
+    };
     requestAnimationFrame(animate);
-    const showPlot = mode === 'spectrogram';
-    audioData = sampleAudio(now, showPlot);
-    if (showPlot || !renderer || sceneFailed) return;
-    const time = now / 1000;
-    switch (mode) {
-        case 'particles': updateParticles(time); break;
-        case 'waves': updateWaves(time); break;
-        case 'spectrum': updateSpectrum(); break;
-        case 'rings': updateRings(time); break;
-    }
-    const average = audioData.reduce((sum, bin) => sum + bin, 0) / (audioData.length * 255);
-    updateBackground(average, time);
-    controls.update();
-    renderer.render(scene, camera);
 }
-
 // 初始化粒子系统
 function initParticleSystem() {
     const particleCount = 1500;
@@ -446,6 +458,3 @@ function updateBackground(average, time) {
     scene.background.setRGB(r, g, b);
     scene.fog.color.setRGB(r, g, b);
 }
-
-
-requestAnimationFrame(animate);

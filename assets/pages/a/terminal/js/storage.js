@@ -50,24 +50,21 @@ class StorageManager {
                 '/home/欢迎.txt': {
                     type: 'file',
                     name: '欢迎.txt',
-                    content: '欢迎使用夸克终端 v2。\n现在支持更完整的 shell 常用命令，并可直接调用 LLM 对话。\n如果你之前在 /a/qai 保存过 API Key，这里会直接读取。',
-                    size: 75,
+                    content: '欢迎使用夸克终端。\n输入 help 查看命令。用管道组合文本处理步骤，或通过 agent 生成和执行命令计划。\n终端与夸克 AI 共用模型连接。',
                     created: now,
                     modified: now
                 },
                 '/home/readme.md': {
                     type: 'file',
                     name: 'readme.md',
-                    content: '# 夸克终端\n\n- help: 查看全部命令\n- pwd / ls / cd / mkdir / touch / cat / cp / mv / find / grep\n- llm \"你好\": 使用共享的 API Key 直接发起对话\n- llm-config: 查看当前 LLM 配置来源\n- llm-key / llm-base / llm-model: 在终端里直接设置',
-                    size: 181,
+                    content: '# 夸克终端\n\n- help 查看命令，man grep 查看文本筛选用法\n- cat readme.md | grep -i llm | nl\n- echo hello > /tmp/hello.txt\n- llm <消息> 与模型对话\n- agent <任务> 生成命令计划，agent run 执行已审阅的计划',
                     created: now,
                     modified: now
                 },
                 '/home/notes.txt': {
                     type: 'file',
                     name: 'notes.txt',
-                    content: '尝试这些命令：\nls\npwd\nfind 终端\ngrep LLM readme.md\nllm 介绍一下夸克终端',
-                    size: 60,
+                    content: '尝试这些命令：\nls -al\npwd\nfind 终端\ncat readme.md | grep -in llm\nprintf "城市,数量" > /tmp/data.csv',
                     created: now,
                     modified: now
                 },
@@ -75,7 +72,6 @@ class StorageManager {
                     type: 'file',
                     name: 'profile',
                     content: 'USER=quark\nHOME=/home\nSHELL=/bin/qsh\nTERM=xterm-256color',
-                    size: 57,
                     created: now,
                     modified: now
                 },
@@ -83,12 +79,19 @@ class StorageManager {
                     type: 'file',
                     name: 'terminal.log',
                     content: `${now} boot: terminal initialized`,
-                    size: 38,
                     created: now,
                     modified: now
                 }
             };
             localStorage.setItem('fileSystem', JSON.stringify(defaultFS));
+        }
+
+        // Earlier versions could lock this terminal after a simulated destructive command.
+        localStorage.removeItem('dangerMode');
+        localStorage.removeItem('selfDestructTriggered');
+        sessionStorage.removeItem('terminal_destroyed');
+        for (const cookie of ['terminal_danger_mode', 'terminal_self_destruct', 'terminal_destroyed', 'quark_terminal_dead']) {
+            if (document.cookie.includes(cookie + '=')) document.cookie = cookie + '=; Max-Age=0; Path=/';
         }
 
         if (!localStorage.getItem('currentPath')) {
@@ -107,14 +110,6 @@ class StorageManager {
             localStorage.setItem('customRedirects', JSON.stringify({}));
         }
 
-        if (!localStorage.getItem('dangerMode')) {
-            localStorage.setItem('dangerMode', 'false');
-        }
-
-        if (!localStorage.getItem('selfDestructTriggered')) {
-            localStorage.setItem('selfDestructTriggered', 'false');
-        }
-
         if (!localStorage.getItem('terminalEnv')) {
             localStorage.setItem('terminalEnv', JSON.stringify({
                 USER: 'quark',
@@ -130,7 +125,7 @@ class StorageManager {
             localStorage.setItem('terminalLlmHistory', JSON.stringify([]));
         }
 
-        this.setDangerCookie();
+        this.recoverCurrentPath();
         this.syncPwdEnv();
     }
 
@@ -149,7 +144,7 @@ class StorageManager {
     setCurrentPath(path) {
         const normalized = this.normalizePath(path);
         localStorage.setItem('currentPath', normalized);
-        this.setEnvVar('PWD', normalized);
+        this.syncPwdEnv();
     }
 
     getCommandHistory() {
@@ -179,6 +174,9 @@ class StorageManager {
 
     setEnvVar(key, value) {
         const env = this.getEnv();
+        if (!/^[A-Za-z_]\w*$/.test(key) || key === '__proto__' || key === 'PWD') {
+            throw new Error('环境变量名称无效或为只读');
+        }
         env[key] = value;
         this.setEnv(env);
     }
@@ -190,7 +188,7 @@ class StorageManager {
     }
 
     syncPwdEnv() {
-        this.setEnvVar('PWD', this.getCurrentPath());
+        this.setEnv(this.getEnv());
     }
 
     getLlmHistory() {
@@ -297,7 +295,7 @@ class StorageManager {
 
     createDirectory(path, name, recursive = false) {
         const fs = this.getFileSystem();
-        const targetPath = this.normalizePath(name.includes('/') ? name : this.pathJoin([path, name]));
+        const targetPath = this.normalizePath(name, path);
 
         if (this.fileExists(targetPath)) {
             throw new Error(`目录已存在: ${targetPath}`);
@@ -308,6 +306,7 @@ class StorageManager {
 
         parts.forEach((part) => {
             const nextPath = this.pathJoin([current, part]);
+            if (fs[nextPath]?.type === 'file') throw new Error('路径包含文件: ' + nextPath);
             if (!fs[nextPath]) {
                 if (!recursive && nextPath !== targetPath) {
                     throw new Error(`上级目录不存在: ${nextPath}`);
@@ -332,7 +331,7 @@ class StorageManager {
 
     createFile(path, name, content = '') {
         const fs = this.getFileSystem();
-        const fullPath = this.normalizePath(name.includes('/') ? name : this.pathJoin([path, name]));
+        const fullPath = this.normalizePath(name, path);
         const parentPath = this.ensureParentDirectory(fullPath, fs);
 
         if (fs[fullPath]) {
@@ -343,7 +342,6 @@ class StorageManager {
             type: 'file',
             name: this.basename(fullPath),
             content,
-            size: content.length,
             created: new Date().toISOString(),
             modified: new Date().toISOString()
         };
@@ -369,18 +367,40 @@ class StorageManager {
         }
 
         fs[normalized].content = content;
-        fs[normalized].size = content.length;
         fs[normalized].modified = new Date().toISOString();
 
         this.setFileSystem(fs);
         return true;
     }
 
-    appendFile(path, content) {
-        const current = this.readFile(path);
-        const nextContent = current ? `${current}\n${content}` : content;
-        this.writeFile(path, nextContent);
-        return nextContent;
+    writeText(path, content, append = false, { protectExisting = false } = {}) {
+        if (!this.fileExists(path)) return this.createFile('/', path, content);
+        if (protectExisting) throw new Error('已有文件，不能覆盖: ' + path);
+        return this.writeFile(path, append ? this.readFile(path) + content : content);
+    }
+
+    touch(path) {
+        const fs = this.getFileSystem();
+        const node = fs[path];
+        if (!node) throw new Error('路径不存在: ' + path);
+        node.modified = new Date().toISOString();
+        this.setFileSystem(fs);
+    }
+
+    recoverCurrentPath() {
+        const fs = this.getFileSystem();
+        let path = this.getCurrentPath();
+        while (path !== '/' && fs[path]?.type !== 'dir') path = this.getParentPath(path);
+        if (path !== this.getCurrentPath()) this.setCurrentPath(path);
+        return path;
+    }
+
+    validateRemoval(path, fs = this.getFileSystem()) {
+        if (!fs[path]) throw new Error('路径不存在: ' + path);
+        const current = this.getCurrentPath();
+        if (path === '/' || current === path || current.startsWith(path + '/')) {
+            throw new Error('无法移除根目录、当前目录或其上级');
+        }
     }
 
     readFile(path) {
@@ -402,13 +422,7 @@ class StorageManager {
         const fs = this.getFileSystem();
         const normalized = this.normalizePath(path);
 
-        if (!fs[normalized]) {
-            throw new Error(`路径不存在: ${normalized}`);
-        }
-
-        if (normalized === '/') {
-            throw new Error('根目录不能删除');
-        }
+        this.validateRemoval(normalized, fs);
 
         this.deletePathFromSnapshot(normalized, fs);
         this.setFileSystem(fs);
@@ -454,7 +468,7 @@ class StorageManager {
                     name: child,
                     path: childPath,
                     type: fs[childPath].type,
-                    size: fs[childPath].size || 0,
+                    size: fs[childPath].type === 'file' ? new TextEncoder().encode(fs[childPath].content).length : 0,
                     created: fs[childPath].created,
                     modified: fs[childPath].modified || fs[childPath].created
                 };
@@ -513,7 +527,7 @@ class StorageManager {
         }
     }
 
-    copyPath(sourcePath, destinationPath) {
+    copyPath(sourcePath, destinationPath, { move = false } = {}) {
         const fs = this.getFileSystem();
         const source = this.normalizePath(sourcePath);
         let destination = this.normalizePath(destinationPath);
@@ -522,6 +536,7 @@ class StorageManager {
             throw new Error(`路径不存在: ${source}`);
         }
 
+        if (move) this.validateRemoval(source, fs);
         if (fs[destination] && fs[destination].type === 'dir') {
             destination = this.pathJoin([destination, this.basename(source)]);
         }
@@ -530,6 +545,9 @@ class StorageManager {
             throw new Error(`目标已存在: ${destination}`);
         }
 
+        if (source === '/' || destination.startsWith(source + '/')) {
+            throw new Error('目标路径位于源目录内');
+        }
         const parentPath = this.ensureParentDirectory(destination, fs);
         this.clonePathData(source, destination, fs);
 
@@ -537,15 +555,13 @@ class StorageManager {
             fs[parentPath].children.push(this.basename(destination));
         }
 
+        if (move) this.deletePathFromSnapshot(source, fs);
         this.setFileSystem(fs);
         return destination;
     }
 
     movePath(sourcePath, destinationPath) {
-        const source = this.normalizePath(sourcePath);
-        const target = this.copyPath(source, destinationPath);
-        this.deletePath(source);
-        return target;
+        return this.copyPath(sourcePath, destinationPath, { move: true });
     }
 
     getStats(path) {
@@ -557,7 +573,7 @@ class StorageManager {
         return {
             path: this.normalizePath(path),
             type: node.type,
-            size: node.size || 0,
+            size: node.type === 'file' ? new TextEncoder().encode(node.content).length : 0,
             created: node.created || '',
             modified: node.modified || node.created || '',
             children: node.children ? node.children.length : 0
@@ -571,7 +587,7 @@ class StorageManager {
         const fs = this.getFileSystem();
 
         Object.keys(fs).forEach((path) => {
-            if (!path.startsWith(normalizedStart)) return;
+            if (path !== normalizedStart && normalizedStart !== '/' && !path.startsWith(normalizedStart + '/')) return;
             if (fs[path].name.toLowerCase().includes(keywordLower)) {
                 matches.push({
                     path,
@@ -593,13 +609,13 @@ class StorageManager {
 
     addCustomOutput(command, outputText) {
         const outputs = this.getCustomOutputs();
-        outputs[command] = outputText;
+        Object.defineProperty(outputs, command, { value: outputText, enumerable: true, configurable: true });
         localStorage.setItem('customOutputs', JSON.stringify(outputs));
     }
 
     addCustomRedirect(command, url) {
         const redirects = this.getCustomRedirects();
-        redirects[command] = url;
+        Object.defineProperty(redirects, command, { value: url, enumerable: true, configurable: true });
         localStorage.setItem('customRedirects', JSON.stringify(redirects));
     }
 
@@ -623,132 +639,4 @@ class StorageManager {
         return false;
     }
 
-    getDangerMode() {
-        return localStorage.getItem('dangerMode') === 'true';
-    }
-
-    setDangerMode(value) {
-        localStorage.setItem('dangerMode', value.toString());
-        this.setDangerCookie();
-    }
-
-    getSelfDestructTriggered() {
-        return localStorage.getItem('selfDestructTriggered') === 'true' ||
-            this.getCookie('terminal_self_destruct') === 'true';
-    }
-
-    setSelfDestructTriggered(value) {
-        localStorage.setItem('selfDestructTriggered', value.toString());
-        this.setCookie('terminal_self_destruct', value.toString(), 365);
-    }
-
-    setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = `expires=${date.toUTCString()}`;
-        document.cookie = `${name}=${value};${expires};path=/`;
-    }
-
-    getCookie(name) {
-        const nameEQ = `${name}=`;
-        const cookies = document.cookie.split(';');
-        for (let index = 0; index < cookies.length; index += 1) {
-            let cookie = cookies[index];
-            while (cookie.charAt(0) === ' ') {
-                cookie = cookie.substring(1);
-            }
-            if (cookie.indexOf(nameEQ) === 0) {
-                return cookie.substring(nameEQ.length);
-            }
-        }
-        return null;
-    }
-
-    setDangerCookie() {
-        this.setCookie('terminal_danger_mode', this.getDangerMode().toString(), 30);
-    }
-
-    checkDangerousCommand(command) {
-        const dangerousCommands = [
-            'rm -rf /',
-            'sudo rm -rf /',
-            'rm -rf /*',
-            'rm -rf .',
-            'rm -rf ~',
-            ':(){ :|:& };:',
-            'del /f /s /q *.*',
-            'rd /s /q c:',
-            'format c: /fs:NTFS /q /y',
-            'format /q /y',
-            'mkfs',
-            'dd if=/dev/zero of=/dev/sda',
-            'mv / /dev/null',
-            'chmod -R 000 /',
-            '强制删除所有文件',
-            '格式化系统',
-            '系统自毁',
-            '摧毁终端'
-        ];
-
-        const cmdLower = String(command || '').toLowerCase().trim();
-        if (dangerousCommands.some((dangerCmd) => cmdLower === dangerCmd.toLowerCase())) {
-            return true;
-        }
-
-        const dangerPatterns = [
-            /rm\s+.*-r.*-f.*\/.*/i,
-            /del\s+.*\/f.*\/s.*\/q.*\*\.\*/i,
-            /format\s+.*\/q.*\/y/i,
-            /rd\s+.*\/s.*\/q.*:\\/i,
-            /sudo\s+rm.*-rf/i,
-            /chmod.*-R.*000.*\//i,
-            /dd.*if=.*zero.*of=.*sda/i,
-            /删除.*所有.*文件/i,
-            /格式化.*系统/i
-        ];
-
-        return dangerPatterns.some((pattern) => pattern.test(command));
-    }
-
-    destroySystem() {
-        localStorage.clear();
-        this.setCookie('terminal_self_destruct', 'true', 365);
-        this.setCookie('terminal_destroyed', 'true', 365);
-        this.setCookie('quark_terminal_dead', 'true', 730);
-        sessionStorage.setItem('terminal_destroyed', 'true');
-
-        if ('indexedDB' in window) {
-            this.setIndexedDBDestruction();
-        }
-    }
-
-    setIndexedDBDestruction() {
-        const request = indexedDB.open('TerminalDestructionDB', 1);
-
-        request.onupgradeneeded = function (event) {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('destruction')) {
-                db.createObjectStore('destruction', { keyPath: 'id' });
-            }
-        };
-
-        request.onsuccess = function (event) {
-            const db = event.target.result;
-            const transaction = db.transaction(['destruction'], 'readwrite');
-            const store = transaction.objectStore('destruction');
-            store.put({
-                id: 'self_destruct',
-                triggered: true,
-                timestamp: new Date().toISOString(),
-                command: '危险指令执行',
-                permanent: true
-            });
-        };
-    }
-
-    shouldShowDestruction() {
-        return this.getSelfDestructTriggered() ||
-            this.getCookie('terminal_destroyed') === 'true' ||
-            sessionStorage.getItem('terminal_destroyed') === 'true';
-    }
 }

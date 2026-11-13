@@ -1,0 +1,39 @@
+---
+import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+interface Props {
+  title: string;
+  description?: string;
+  category?: string;
+}
+
+const { title, description, category } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{title} / {SITE_TITLE}</title>
+    {description && <meta name="description" content={description}>}
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/pages/a/physics/style.css">
+</head>
+<body class="physics-page">
+    <script is:inline src="/assets/js/nav.js"></script>
+    <main class="physics-shell">
+        <nav class="physics-breadcrumb" aria-label="当前位置">
+            <a href="/a/">实验室</a>
+            <span aria-hidden="true">/</span>
+            {category ? <a href={`/a/physics/#${category}`}>Physics</a> : <span aria-current="page">Physics</span>}
+        </nav>
+        <header class="physics-intro">
+            <h1>{title}</h1>
+            {description && <p>{description}</p>}
+            <slot name="intro" />
+        </header>
+        <slot />
+    </main>
+</body>
+</html>

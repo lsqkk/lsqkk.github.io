@@ -130,6 +130,56 @@ async function checkAudioLab(context) {
     await page.waitForFunction(() => window.loopReturned);
     await page.locator('#clearLoop').click();
     assert.equal(await page.locator('#loopToggle').isDisabled(), true);
+
+    await page.locator('#demoType').selectOption('missing');
+    await page.locator('#playBtn').click();
+    await page.waitForFunction(() => {
+        return document.querySelector('#pitchValue').textContent === '220 Hz'
+            && document.querySelector('#player').currentTime > 0.45;
+    });
+    assert.equal(await page.locator('#peakValue').textContent(), '440 Hz');
+    await page.locator('#freezePlot').click();
+    const beforeProbe = await page.locator('#probeTime').innerText();
+    await page.locator('#frameProbe').press('ArrowLeft');
+    assert.notEqual(await page.locator('#probeTime').innerText(), beforeProbe);
+    const selectedTime = Number.parseFloat(await page.locator('#probeTime').innerText());
+    await player.evaluate(node => node.pause());
+    await page.locator('#seekFrame').click();
+    assert.ok(Math.abs(await player.evaluate(node => node.currentTime) - selectedTime) < 0.02);
+    assert.equal(await page.locator('#freezePlot').getAttribute('aria-pressed'), 'false');
+    await player.evaluate(node => node.play());
+    await page.waitForFunction(time => document.querySelector('#player').currentTime >= time + 0.2, selectedTime);
+    await page.locator('#captureA').click();
+    assert.match(await page.locator('#snapshotA').innerText(), /消失的基频/);
+    await page.locator('#showMarkers').check();
+    await page.locator('#markerSource').selectOption('0');
+    await page.locator('#marker1').press('ArrowRight');
+    assert.notEqual(await page.locator('#markerValue1').innerText(), '440.0 Hz');
+    await page.locator('#snapMarker1').click();
+    await page.locator('#snapMarker2').click();
+    const peak1 = Number.parseFloat(await page.locator('#markerValue1').innerText());
+    const peak2 = Number.parseFloat(await page.locator('#markerValue2').innerText());
+    const spacing = Number.parseFloat(await page.locator('#markerDelta').innerText());
+    const probeDetails = JSON.stringify({ peak1, peak2, spacing, status: await page.locator('#markerStatus').innerText() });
+    assert.ok(Math.abs(peak1 - 440) < 1, probeDetails);
+    assert.ok(Math.abs(peak2 - 660) < 1, probeDetails);
+    assert.ok(Math.abs(spacing - 220) < 2, probeDetails);
+    await page.locator('#bandFromPeak').click();
+    await page.locator('#bandToggle').click();
+    assert.equal(await page.locator('#bandToggle').getAttribute('aria-pressed'), 'true');
+    await page.locator('#demoType').selectOption('beats');
+    await page.locator('#playBtn').click();
+    await page.waitForFunction(() => document.querySelector('#player').currentTime > 0.45);
+    assert.equal(await page.locator('#bandToggle').getAttribute('aria-pressed'), 'false');
+    await page.locator('#captureB').click();
+    assert.match(await page.locator('#snapshotB').innerText(), /两个音的拍频/);
+    assert.equal(await page.locator('#markerSource').inputValue(), '0');
+    assert.match(await page.locator('#compareStatus').innerText(), /B − A 有效电平/);
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#exportSpectra').click()]);
+    assert.equal(download.suggestedFilename(), 'spectrum-snapshots.csv');
+    await page.locator('[data-viz="waves"]').click();
+    await page.locator('#envelopeMode').click();
+    assert.equal(await page.locator('#waveCanvas').getAttribute('aria-label'), '最近两秒的 RMS 电平变化');
     await page.close();
 }
 

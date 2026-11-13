@@ -1,0 +1,47 @@
+---
+interface Parameter {
+    id: string;
+    label: string;
+    min: number;
+    max: number;
+    step: number;
+    value: number;
+    initial: string;
+}
+
+interface Props {
+    canvasLabel: string;
+    caption: string;
+    parameters?: Parameter[];
+    measurements: { id: string; label: string; initial?: string }[];
+    script: string;
+}
+
+const { canvasLabel, caption, parameters = [], measurements, script } = Astro.props;
+---
+<div class="physics-workbench">
+    <figure class="physics-stage">
+        <canvas id="simulation" width="720" height="440" role="img" aria-label={canvasLabel}>{canvasLabel}</canvas>
+        <dl class="physics-measurements">
+            {measurements.map(measurement => (
+                <div><dt>{measurement.label}</dt><dd id={measurement.id}>{measurement.initial ?? "—"}</dd></div>
+            ))}
+        </dl>
+        <figcaption>{caption}</figcaption>
+    </figure>
+    <section class="physics-controls" aria-labelledby="physics-controls-title">
+        <h2 id="physics-controls-title">实验参数</h2>
+        <form id="experiment-form">
+            <slot name="before-parameters" />
+            {parameters.map(parameter => (
+                <label class="physics-parameter">
+                    <span>{parameter.label}<output for={parameter.id} id={`${parameter.id}-output`}>{parameter.initial}</output></span>
+                    <input id={parameter.id} type="range" min={parameter.min} max={parameter.max} step={parameter.step} value={parameter.value}>
+                </label>
+            ))}
+            <slot />
+        </form>
+    </section>
+</div>
+<slot name="notes" />
+<script is:inline type="module" src={`/assets/pages/a/physics/${script}.mjs`}></script>
