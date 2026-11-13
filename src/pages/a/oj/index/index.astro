@@ -1,100 +1,41 @@
 ---
 import OjLayout from "../../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../../components/OjSidebar.astro";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-const currentYear = new Date().getFullYear();
+import { SITE_TITLE } from "@siteConfig";
 ---
-<OjLayout
-  title={`Quark OJ - ${SITE_TITLE}`}
-  extraStyles={[
-    "/assets/pages/a/oj/style.css",
-    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css",
-  ]}
-  extraHeadScripts={[
-    "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
-    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js",
-    "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js",
-    "/assets/js/nav.js",
-  ]}
->
-  <script is:inline slot="head">
-    function handleSearch() {
-      const searchInput = document.getElementById("oj-search-input");
-      const searchValue = searchInput.value.trim();
-      if (searchValue) {
-        window.location.href = buildOjUrl("list", { search: searchValue });
-      } else {
-        window.location.href = buildOjUrl("list");
-      }
-    }
-  </script>
-  <style slot="head">
-    .oj-home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-    @media (max-width: 768px) { .oj-home-grid { grid-template-columns: 1fr; } }
-    .oj-fortune-card { min-height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px; }
-    .oj-fortune-status { font-size: 2.4em; font-weight: 650; margin: 4px 0; letter-spacing: -0.02em; }
-    .oj-fortune-yi, .oj-fortune-ji { font-size: 13px; font-weight: 600; margin: 2px 0; }
-    .oj-fortune-button { margin-top: 12px; }
-    #announcement-list ul, .oj-stats-panel ul { list-style: none; padding: 0; margin: 0; }
-    .oj-stats-panel li a { display: block; margin-left: 0; }
-  </style>
-
-  <div class="oj-app-wrapper">
-    <OjSidebar active="home" />
-
-    <main class="oj-main-content">
-      <section class="oj-random-jump glass-card" onclick="jumpToRandomProblem()">
-        <h2>随机跳题</h2>
-        <p>点击开始一趟未知的刷题之旅</p>
+<OjLayout title={`QuarkOJ - ${SITE_TITLE}`} description="免注册的在线编程练习平台，提供专题题单、在线评测和提交记录。">
+  <OjSidebar active="home" />
+  <main class="oj-shell">
+    <div class="oj-home-overview">
+      <section class="oj-hero">
+        <h1>算法练习台</h1>
+        <p>按专题练习算法，在线自测与评测。</p>
+        <div class="oj-actions">
+          <a class="oj-button is-primary" id="oj-continue" href="/a/oj/train?p=1001">开始练习</a>
+          <a class="oj-button" href="/a/oj/problem-list">浏览题库</a>
+          <button id="oj-random" class="oj-quiet" disabled>随机未通过题 ↗</button>
+        </div>
+        <span id="oj-continue-note" class="oj-muted"></span>
       </section>
-
-      <div class="oj-home-grid">
-        <section class="oj-fortune-panel glass-card oj-fortune-card">
-          <h3>今日运势</h3>
-          <div id="fortune-content">
-            <p>抽取你的今日运势，祝你 AC 连连！</p>
-            <button id="draw-fortune-btn" class="oj-fortune-button">抽取今日运势</button>
-          </div>
-        </section>
-
-        <section class="oj-stats-panel glass-card">
-          <ul>
-            <li><a href="/a/oj/train" class="oj-nav-link" style="background: none;">从第一题开始</a></li>
-            <li><a href="/a/oj/problem-list" class="oj-nav-link" style="background: none;">查看完整题库</a></li>
-            <li><a href="/a/oj/discussion" class="oj-nav-link" style="background: none;">当前讨论</a></li>
-            <li><a href="/a/oj/submission-record" class="oj-nav-link" style="background: none;">我的提交记录</a></li>
-            <li><a href="/a/oj/problem-list" class="oj-nav-link" style="background: none;">题库当前总题目数: <strong id="total-problems">加载中...</strong></a></li>
-          </ul>
-        </section>
-      </div>
-
-      <section class="oj-announcement-panel glass-card">
-        <h3>站内公告</h3>
-        <div id="announcement-list">
-          <ul>
-            <li>[2025/12/04] 新主页上线！cos洛谷搞了一个运势</li>
-            <li>[2025/12/03] 夸克 OJ 正式上线~ 免注册，直接刷题！</li>
-          </ul>
+      <section class="oj-card oj-progress-card" aria-labelledby="oj-progress-title">
+        <div class="oj-section-head"><h2 id="oj-progress-title">练习进度</h2><a href="/a/oj/submission-record">记录 ↗</a></div>
+        <div class="oj-count"><strong id="oj-solved">—</strong><span id="oj-total">道题通过</span></div>
+        <progress id="oj-progress" max="1" value="0" aria-label="题库通过进度"></progress>
+        <div class="oj-metrics">
+          <div><strong id="oj-attempted">—</strong><span>已尝试</span></div>
+          <div><strong id="oj-submitted">—</strong><span>提交次数</span></div>
+          <a href="/a/oj/problem-list?state=saved"><strong id="oj-saved">—</strong><span>已收藏 ↗</span></a>
         </div>
       </section>
-
-      <section class="oj-announcement-panel glass-card">
-        <h3>版权信息</h3>
-        <div id="announcement-list">
-          <ul>
-            <li>© 2024 - {currentYear} {SITE_TITLE} / 蓝色奇夸克 / 夸克OJ All rights reserved.</li>
-            <li>API by: judge0</li>
-          </ul>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script is:inline src="/assets/pages/a/oj/js/utils.js"></script>
-  <script is:inline src="/assets/pages/a/oj/js/home.js"></script>
-  <script is:inline>
-    if (typeof initializeHomePage !== "undefined") {
-      initializeHomePage();
-    }
-  </script>
+    </div>
+    <section class="oj-section">
+      <div class="oj-section-head"><h2>专题题单</h2><a href="/a/oj/problem-list">全部题目 ↗</a></div>
+      <div class="oj-track-grid" id="oj-tracks"><p class="oj-muted">正在加载题单…</p></div>
+    </section>
+    <section class="oj-section">
+      <div class="oj-section-head"><h2>最近提交</h2><a href="/a/oj/submission-record">查看全部 ↗</a></div>
+      <div class="oj-card oj-feed" id="oj-recent"></div>
+    </section>
+  </main>
+  <script is:inline type="module" src="/assets/pages/a/oj/js/dashboard.mjs"></script>
 </OjLayout>

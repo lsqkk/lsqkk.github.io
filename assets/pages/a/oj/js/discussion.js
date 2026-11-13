@@ -1,4 +1,4 @@
-firebase.initializeApp(firebaseConfig);
+const escapeDiscussionText = value => window.CommentShared.escapeHtml(String(value ?? ''));
 
 async function waitForAppCheck() {
 }
@@ -361,7 +361,7 @@ window.deleteReply = function (discussionId, replyId) {
  * 加载并渲染讨论列表的总结项
  */
 function loadDiscussionsList() {
-    const searchTerm = (document.getElementById('discussionSearchInput') || { value: '' }).value.trim().toLowerCase();
+    const searchTerm = document.getElementById('discussionSearchInput').value.trim().toLowerCase().replace(/^p(?=\d)/, '');
     const discussionsContainer = document.getElementById('discussionsContainer');
     if (discussionsContainer) discussionsContainer.innerHTML = '正在加载讨论...';
 
@@ -372,8 +372,8 @@ function loadDiscussionsList() {
             discussion.id = childSnapshot.key;
 
             if (searchTerm &&
-                !discussion.title.toLowerCase().includes(searchTerm) &&
-                !discussion.nickname.toLowerCase().includes(searchTerm) &&
+                  !String(discussion.title || '').toLowerCase().includes(searchTerm) &&
+                  !String(discussion.nickname || '').toLowerCase().includes(searchTerm) &&
                 !(discussion.login || '').toLowerCase().includes(searchTerm) &&
                 !(discussion.problemId && discussion.problemId.toString() === searchTerm)) {
                 return;
@@ -411,26 +411,27 @@ function renderDiscussionsSummaries(discussions) {
     }
 
     pageDiscussions.forEach(discussion => {
-        const summaryDiv = document.createElement('div');
+        const summaryDiv = document.createElement('button');
         summaryDiv.className = 'discussion-summary';
         summaryDiv.onclick = () => showDetailView(discussion.id);
 
         // 截取前100字符作为摘要
-        const summaryText = (discussion.text || '').substring(0, 100) + (discussion.text.length > 100 ? '...' : '');
+        const text = String(discussion.text ?? '');
+        const summaryText = text.slice(0, 100) + (text.length > 100 ? '…' : '');
         const replyCount = Object.keys(discussion.replies || {}).length;
 
         summaryDiv.innerHTML = `
             <div class="summary-header">
-                <div class="summary-title">${discussion.title}</div>
+                <div class="summary-title">${escapeDiscussionText(discussion.title)}</div>
                 <div class="summary-meta">
-                    <span class="problem-tag">P${discussion.problemId}</span>
+                    <span class="problem-tag">P${Number(discussion.problemId) || '—'}</span>
                     <span><i class="fas fa-user"></i> ${formatAuthor(discussion.nickname, discussion.login, discussion.loginType, discussion.uid)}</span>
-                    <span><i class="fas fa-heart"></i> ${discussion.likes || 0}</span>
+                    <span><i class="fas fa-heart"></i> ${Number(discussion.likes) || 0}</span>
                     <span><i class="fas fa-comment"></i> ${replyCount}</span>
                 </div>
             </div>
             <p style="color: #a0aec0; font-size: 0.9em; margin: 5px 0 0 0;">
-                ${summaryText}
+                ${escapeDiscussionText(summaryText)}
             </p>
         `;
         container.appendChild(summaryDiv);
@@ -535,28 +536,28 @@ function renderSingleDiscussion(discussion) {
 
     // 主帖内容渲染
     const renderShared = window.CommentRenderShared;
-    const contentHtml = renderShared && typeof renderShared.renderMarkdown === 'function'
+    const contentHtml = window.QuarkSanitizeMarkdownHtml(renderShared && typeof renderShared.renderMarkdown === 'function'
         ? renderShared.renderMarkdown(discussion.text || '', true)
-        : marked.parse(discussion.text || '');
+        : escapeDiscussionText(discussion.text));
 
     // 回复树渲染
     const repliesHtml = renderRepliesTree(discussion.id, discussion.replies || {});
 
     container.innerHTML = `
         <div class="detail-header">
-            <h1 class="discussion-title">${discussion.title}</h1>
+            <h1 class="discussion-title">${escapeDiscussionText(discussion.title)}</h1>
             <div class="detail-meta-row">
                 <div class="author-time">
-                    <span class="problem-tag">P${discussion.problemId}</span>
-                    <span style="font-weight: bold; color: #81D4FA;">作者：${formatAuthor(discussion.nickname, discussion.login, discussion.loginType, discussion.uid)}</span>
+                    <span class="problem-tag">P${Number(discussion.problemId) || '—'}</span>
+                    <span >作者：${formatAuthor(discussion.nickname, discussion.login, discussion.loginType, discussion.uid)}</span>
                     <span>发布于：${formatTime(discussion.timestamp)}</span>
                 </div>
                 <div class="message-actions">
-                    <button class="action-btn" onclick="likeDiscussion('${discussion.id}')">
+                    <button class="action-btn" onclick="likeDiscussion(${escapeDiscussionText(JSON.stringify(discussion.id))})">
                         <i class="fas fa-heart"></i>
-                        <span>${discussion.likes || 0}</span>
+                        <span>${Number(discussion.likes) || 0}</span>
                     </button>
-                    ${isAdmin ? `<button class="delete-btn" onclick="deleteDiscussion('${discussion.id}')">删除主帖</button>` : ''}
+                    ${isAdmin ? `<button class="delete-btn" onclick="deleteDiscussion(${escapeDiscussionText(JSON.stringify(discussion.id))})">删除主帖</button>` : ''}
                 </div>
             </div>
         </div>
@@ -569,7 +570,7 @@ function renderSingleDiscussion(discussion) {
             <div id="replyInputArea" class="reply-input-area">
                 <textarea id="replyContent" rows="4" placeholder="回复此讨论 (支持 Markdown)"></textarea>
                 <div class="reply-actions">
-                    <button class="submit-btn" onclick="submitReply('${discussion.id}', null)">发布回复</button>
+                    <button class="submit-btn" onclick="submitReply(${escapeDiscussionText(JSON.stringify(discussion.id))}, null)">发布回复</button>
                 </div>
             </div>
             
@@ -596,9 +597,9 @@ function renderRepliesTree(discussionId, replies) {
     let html = '';
 
     const renderNode = (node, depth = 0) => {
-        const contentHtml = renderShared && typeof renderShared.renderMarkdown === 'function'
+        const contentHtml = window.QuarkSanitizeMarkdownHtml(renderShared && typeof renderShared.renderMarkdown === 'function'
             ? renderShared.renderMarkdown(node.text || '', true)
-            : marked.parse(node.text || '');
+            : escapeDiscussionText(node.text));
         const parentNickname = node.parentReplyId && replyMap[node.parentReplyId] ? replyMap[node.parentReplyId].nickname : null;
 
         const avatarStyle = node.avatarType === 'image' ?
@@ -613,8 +614,8 @@ function renderRepliesTree(discussionId, replies) {
             ? shared.escapeHtml(spaceUrl)
             : spaceUrl;
         const avatarBlock = `
-                        <div class="message-avatar" style="${avatarStyle}">
-                            ${avatarContent}
+                        <div class="message-avatar" style="${escapeDiscussionText(avatarStyle)}">
+                            ${escapeDiscussionText(avatarContent)}
                         </div>
                     `;
         const avatarHtml = spaceUrl
@@ -629,22 +630,22 @@ function renderRepliesTree(discussionId, replies) {
                         <div class="message-info">
                             <div class="message-author">
                                 ${formatAuthor(node.nickname, node.login, node.loginType, node.uid)} 
-                                ${parentNickname ? `<span class="replying-to">回复 ${parentNickname}</span>` : ''}
+                                ${parentNickname ? `<span class="replying-to">回复 ${escapeDiscussionText(parentNickname)}</span>` : ''}
                             </div>
                             <div class="message-time">${formatTime(node.timestamp)}</div>
                         </div>
                     </div>
                     
                     <div class="message-actions">
-                        <button class="action-btn" onclick="likeReply('${discussionId}', '${node.id}')">
+                        <button class="action-btn" onclick="likeReply(${escapeDiscussionText(JSON.stringify(discussionId))}, ${escapeDiscussionText(JSON.stringify(node.id))})">
                             <i class="fas fa-heart"></i>
-                            <span>${node.likes || 0}</span>
+                            <span>${Number(node.likes) || 0}</span>
                         </button>
-                        <button class="action-btn" onclick="promptReply('${discussionId}', '${node.id}', '${node.nickname}')">
+                        <button class="action-btn" onclick="promptReply(${escapeDiscussionText(JSON.stringify(discussionId))}, ${escapeDiscussionText(JSON.stringify(node.id))}, ${escapeDiscussionText(JSON.stringify(String(node.nickname ?? '')))} )">
                             <i class="fas fa-reply"></i>
                             <span>回复</span>
                         </button>
-                        ${isAdmin ? `<button class="delete-btn" onclick="deleteReply('${discussionId}', '${node.id}')">删除</button>` : ''}
+                        ${isAdmin ? `<button class="delete-btn" onclick="deleteReply(${escapeDiscussionText(JSON.stringify(discussionId))}, ${escapeDiscussionText(JSON.stringify(node.id))})">删除</button>` : ''}
                     </div>
                 </div>
                 <div class="post-content" style="border-bottom: none; padding: 5px 0 10px 0;">${contentHtml}</div>
@@ -676,8 +677,8 @@ window.promptReply = function (discussionId, parentReplyId, parentNickname) {
 
     // 重新绑定提交按钮的事件，确保目标正确
     replyActions.innerHTML = `
-        <button class="submit-btn" onclick="submitReply('${discussionId}', '${parentReplyId}')">发布回复</button>
-        <button class="action-btn" onclick="resetReplyInput('${discussionId}')" style="margin-left: 10px;"><i class="fas fa-times"></i> 取消</button>
+        <button class="submit-btn" onclick="submitReply(${escapeDiscussionText(JSON.stringify(discussionId))}, ${escapeDiscussionText(JSON.stringify(parentReplyId))})">发布回复</button>
+        <button class="action-btn" onclick="resetReplyInput(${escapeDiscussionText(JSON.stringify(discussionId))})" style="margin-left: 10px;"><i class="fas fa-times"></i> 取消</button>
     `;
 }
 
@@ -692,7 +693,7 @@ window.resetReplyInput = function (discussionId) {
 
     if (replyActions) {
         replyActions.innerHTML = `
-            <button class="submit-btn" onclick="submitReply('${discussionId}', null)">发布回复</button>
+            <button class="submit-btn" onclick="submitReply(${escapeDiscussionText(JSON.stringify(discussionId))}, null)">发布回复</button>
         `;
     }
 }
@@ -761,12 +762,12 @@ window.submitReply = function (discussionId, parentReplyId) {
 // --- 初始化入口 ---
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. 初始化 Firebase 引用
-    if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+    if (window.firebase?.database) {
         await waitForAppCheck();
         discussionsRef = firebase.database().ref(BOARD_NAME);
     } else {
         const container = document.getElementById('discussionsContainer');
-        if (container) container.innerHTML = '<div style="color: red; padding: 20px;">Firebase 初始化失败，请检查 /a/oj/discussion 页面头部脚本和配置。</div>';
+        if (container) container.innerHTML = '<div style="color: red; padding: 20px;">讨论服务暂时不可用，请稍后刷新。</div>';
         return;
     }
 
@@ -777,19 +778,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 3. 加载讨论列表 (默认视图)
+    const problemId = new URLSearchParams(location.search).get('p');
+    if (/^\d+$/.test(problemId || '')) {
+        document.getElementById('discussionSearchInput').value = problemId;
+        document.getElementById('newDiscussionProblemId').value = problemId;
+    }
     loadDiscussionsList();
-
-    // 4. 绑定搜索事件
-    const searchInput = document.getElementById('discussionSearchInput');
-    const searchButton = document.getElementById('discussionSearchButton');
-    if (searchInput) {
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') loadDiscussionsList();
-        });
-    }
-    if (searchButton) {
-        searchButton.addEventListener('click', loadDiscussionsList);
-    }
+    document.getElementById('discussionSearch').addEventListener('submit', event => {
+        event.preventDefault();
+        currentPage = 1;
+        loadDiscussionsList();
+    });
 
     // 5. 校验并更新管理员UI状态
     verifyAdminSession();

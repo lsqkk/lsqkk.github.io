@@ -1,62 +1,25 @@
 ---
 import OjLayout from "../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../components/OjSidebar.astro";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE } from "@siteConfig";
 ---
-<OjLayout
-  title={`我的提交记录 - Quark OJ - ${SITE_TITLE}`}
-  extraStyles={["/assets/pages/a/oj/style.css"]}
-  extraHeadScripts={["/assets/js/nav.js"]}
->
-  <script is:inline slot="head">
-    function handleSearch() {
-      const searchInput = document.getElementById("oj-search-input");
-      const searchValue = searchInput.value.trim();
-      if (searchValue) {
-        window.location.href = buildOjUrl("list", { search: searchValue });
-      } else {
-        window.location.href = buildOjUrl("list");
-      }
-    }
-  </script>
-
-  <div class="oj-app-wrapper">
-    <OjSidebar active="record" />
-
-    <main class="oj-main-content">
-      <section class="oj-submission-panel glass-card">
-        <h2 class="oj-problem-title">我的提交记录</h2>
-        <p>这里展示您本地浏览器中存储的每个题目的最新提交结果。</p>
-        <table class="oj-problem-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>状态</th>
-              <th>运行时间</th>
-              <th>内存占用</th>
-              <th>提交时间</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody id="oj-submission-list-body">
-            <tr>
-              <td colspan="6" style="text-align:center;">正在加载记录...</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </main>
-  </div>
-
-  <div id="code-modal" class="oj-modal">
-    <div class="oj-modal-content glass-card">
-      <span class="oj-modal-close" id="code-modal-close">&times;</span>
-      <h3 id="modal-title"></h3>
-      <p id="modal-lang-info" style="font-style: italic;"></p>
-      <pre id="modal-code-display" class="oj-code-pre"></pre>
+<OjLayout title={`提交记录 - QuarkOJ - ${SITE_TITLE}`}>
+  <OjSidebar active="record" />
+  <main class="oj-shell">
+    <div class="oj-page-heading"><h1>提交记录</h1><p>记录保存在当前浏览器。打开一条记录可以查看源码、评测结果，或回到练习台继续修改。</p></div>
+    <div class="oj-card">
+      <div class="oj-filters">
+        <input id="oj-search" type="search" placeholder="搜索题号或标题" aria-label="搜索提交的题号或标题" />
+        <select id="oj-verdict" aria-label="评测结果"><option value="">全部结果</option></select>
+      </div>
+      <div class="oj-list-summary" id="oj-feedback" role="status">正在加载记录…</div>
+      <div id="oj-records" class="oj-feed"></div>
+      <div class="oj-pagination"><button id="oj-prev" disabled>上一页</button><span id="oj-page">—</span><button id="oj-next" disabled>下一页</button></div>
     </div>
-  </div>
-
-  <script is:inline src="/assets/pages/a/oj/js/utils.js"></script>
-  <script is:inline src="/assets/pages/a/oj/js/record.js"></script>
+    <dialog id="oj-record-detail" class="oj-dialog">
+      <div class="oj-section-head"><h2 id="oj-record-title">提交详情</h2><form method="dialog"><button>关闭</button></form></div>
+      <div id="oj-record-content"></div>
+    </dialog>
+  </main>
+  <script is:inline type="module" src="/assets/pages/a/oj/js/history.mjs"></script>
 </OjLayout>

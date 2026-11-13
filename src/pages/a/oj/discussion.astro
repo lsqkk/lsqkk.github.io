@@ -1,41 +1,26 @@
 ---
 import OjLayout from "../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../components/OjSidebar.astro";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE } from "@siteConfig";
 import CommentIdentityFields from "../../../components/CommentIdentityFields.astro";
 ---
 <OjLayout
   title={`讨论区 - Quark OJ - ${SITE_TITLE}`}
   extraStyles={[
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
-    "/assets/pages/a/oj/style.css",
     "/assets/pages/a/oj/discussion.css",
   ]}
   extraHeadScripts={[
     "https://unpkg.com/marked@4.0.0/marked.min.js",
-    "__API_BASE__/api/firebase-config?v=1",
+    "/assets/js/firebase-shim.js",
   ]}
 >
-  <script is:inline slot="head">
-    function handleSearch() {
-      const searchInput = document.getElementById("oj-search-input");
-      const searchValue = searchInput.value.trim();
-      if (searchValue) {
-        window.location.href = buildOjUrl("list", { search: searchValue });
-      } else {
-        window.location.href = buildOjUrl("list");
-      }
-    }
-  </script>
-
-  <div class="header-placeholder"></div>
-  <div class="oj-app-wrapper">
-    <OjSidebar active="discussion" includeAdminLogin={true} />
-
-    <main class="oj-main-content">
+  <OjSidebar active="discussion" />
+  <main class="oj-shell">
+      <div class="oj-page-heading"><h1>讨论区</h1><p>交流解题思路、定位错误，或给题面和用例提建议。</p></div>
       <div id="listView" class="view active">
-        <section id="newDiscussionForm" class="new-post-form glass-card">
-          <h3><i class="fas fa-edit"></i> 发起新讨论</h3>
+        <details id="newDiscussionForm" class="new-post-form oj-card">
+          <summary>发起新讨论</summary>
 
           <CommentIdentityFields variant="oj" />
 
@@ -58,10 +43,16 @@ import CommentIdentityFields from "../../../components/CommentIdentityFields.ast
           <div class="form-submit-row">
             <button class="submit-btn" onclick="submitNewDiscussion()">发布讨论</button>
           </div>
-        </section>
+        </details>
 
         <section class="discussions-list-section">
-          <h2>所有讨论帖</h2>
+          <div class="oj-section-head">
+            <h2>讨论帖</h2>
+            <form class="oj-actions" id="discussionSearch">
+              <input type="search" id="discussionSearchInput" placeholder="搜索题号、主题或作者" aria-label="搜索讨论" />
+              <button>搜索</button>
+            </form>
+          </div>
           <div class="discussions-container" id="discussionsContainer"></div>
           <div class="pagination" id="pagination"></div>
         </section>
@@ -73,10 +64,17 @@ import CommentIdentityFields from "../../../components/CommentIdentityFields.ast
         </button>
         <div id="singleDiscussionContent" class="discussion-detail-card"></div>
       </div>
-    </main>
-  </div>
+      <details class="oj-section">
+        <summary>管理员</summary>
+        <div class="oj-actions" id="admin-login-area">
+          <input type="password" id="adminPassword" placeholder="管理员密码" aria-label="管理员密码" />
+          <button type="button" onclick="adminLogin()">登录</button>
+        </div>
+      </details>
+  </main>
 
-  <script is:inline src="/assets/js/nav.js"></script>
+  <script is:inline src="/assets/js/safe-markdown.js"></script>
+  <script is:inline src="/assets/js/user-profile.js"></script>
   <script is:inline src="/assets/js/comment-shared.js"></script>
   <script is:inline src="/assets/js/comment-input-shared.js"></script>
   <script is:inline src="/assets/js/comment-list-shared.js"></script>

@@ -527,3 +527,16 @@
         gap: 8px;
     }
 }
+
+#newDiscussionForm > summary, .oj-shell > details > summary {
+    cursor: pointer;
+    font-weight: 650;
+}
+#newDiscussionForm[open] > summary { margin-bottom: 16px; }
+#admin-login-area { margin-top: 8px; }
+.discussion-summary { display: block; width: 100%; text-align: left; font-weight: 400; }
+.discussions-list-section > .oj-section-head { margin-bottom: 12px; }
+@media (max-width: 560px) {
+    .oj-shell .form-compact-row { flex-wrap: wrap; }
+    .oj-shell .form-compact-row > * { max-width: 100%; }
+}

@@ -8,7 +8,6 @@ interface Props {
 
 const { title, description = "", extraStyles = [], extraHeadScripts = [] } = Astro.props;
 import { SITE_LOGO_URL } from "@siteConfig";
-import LuxuryBackground from "../components/LuxuryBackground.astro";
 const ojRoutes = {
   home: "/a/oj",
   train: "/a/oj/train",
@@ -27,7 +26,7 @@ const ojRoutes = {
     <meta property="og:image" content={SITE_LOGO_URL} />
     <link rel="alternate" type="application/rss+xml" title="奇夸克 RSS" href="/posts/rss.xml" />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
-    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/pages/a/oj/style.css" />
     {extraStyles.map((href) => <link rel="stylesheet" href={href} />)}
     {extraHeadScripts.map((src) => <script is:inline src={src}></script>)}
     <script is:inline define:vars={{ ojRoutes }}>
@@ -51,8 +50,7 @@ const ojRoutes = {
     </script>
     <slot name="head"></slot>
   </head>
-  <body class="luxury-body">
-    <LuxuryBackground />
+  <body>
     <slot />
   </body>
 </html>
