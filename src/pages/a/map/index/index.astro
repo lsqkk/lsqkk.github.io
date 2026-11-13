@@ -1,91 +1,174 @@
 ---
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+
+const icons = {
+  map: "M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15",
+  search: "M21 21l-5-5M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z",
+  route: "M6 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 7v6a6 6 0 0 0 6 6h4M12 5h4a3 3 0 0 1 0 6h-4",
+  pin: "M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0zM15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+  meet: "M12 3v4m0 10v4M3 12h4m10 0h4M18 12a6 6 0 1 1-12 0 6 6 0 0 1 12 0zM12 11v2m-1-1h2",
+  ruler: "M3 15l12-12 6 6L9 21zM8 10l2 2m1-5 2 2m1-5 2 2",
+  locate: "M12 2v3m0 14v3M2 12h3m14 0h3M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+  layers: "M12 3l9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5",
+  link: "M10 13a4 4 0 0 0 6 .5l4-4a4 4 0 0 0-6-5.5l-2 2m2 5a4 4 0 0 0-6-.5l-4 4a4 4 0 0 0 6 5.5l2-2",
+  cube: "M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9",
+};
+const modes = [
+  { id: "explore", name: "探索", icon: "search" },
+  { id: "directions", name: "路线", icon: "route" },
+  { id: "meet", name: "碰面", icon: "meet" },
+  { id: "library", name: "收藏", icon: "pin" },
+  { id: "tools", name: "测绘", icon: "ruler" },
+] as const;
+const layers = [
+  { id: "vector", name: "标准地图" },
+  { id: "satellite", name: "卫星影像" },
+  { id: "terrain", name: "地形底图" },
+  { id: "osm", name: "开放地图" },
+];
 ---
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>地图 - {SITE_TITLE}</title>
-    <link rel="icon" href={SITE_LOGO_URL} type="image/png">
-    <script is:inline src="/assets/js/nav.js"></script>
-
-    <!-- 引入Leaflet地图库 -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- 引入Leaflet插件 -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.78.0/dist/L.Control.Locate.min.css" />
-    <script is:inline src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.78.0/dist/L.Control.Locate.min.js" defer></script>
-
-    <link rel="stylesheet" href="/assets/pages/a/map/map.css" />
-
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="在夸克地图查地点、规划驾车路线、寻找碰面地点，或绘制并分享自己的地图。" />
+  <title>夸克地图 · {SITE_TITLE}</title>
+  <link rel="icon" href={SITE_LOGO_URL} />
+  <link rel="stylesheet" href="/assets/css/basic.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/assets/pages/a/map/map.css" />
+  <script is:inline src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" defer></script>
+  <script is:inline src="__API_BASE__/api/keys?names=tianditu" defer></script>
+  <script is:inline type="module" src="/assets/pages/a/map/map.js"></script>
 </head>
-
 <body>
-    <!-- 地图容器 -->
-    <div id="map"></div>
-
-    <!-- 侧边控制栏 -->
-    <div class="control-panel">
-        <button class="toggle-panel">≡</button>
-
-        <div class="panel-content">
-            <div class="panel-section">
-                <h3><i class="fas fa-layer-group"></i> 地图视图</h3>
-                <div class="btn-group">
-                    <button id="vector-btn" class="active">矢量地图</button>
-                    <button id="satellite-btn">卫星影像</button>
-                    <button id="terrain-btn">地形地图</button>
-                    <button id="3d-btn">3D模式</button>
-                </div>
+  <svg class="map-icon-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    {Object.entries(icons).map(([key, path]) => <symbol id={`icon-${key}`} viewBox="0 0 24 24"><path d={path} /></symbol>)}
+  </svg>
+  <main class="map-app" id="map-app">
+    <aside class="map-sidebar" aria-label="地图工作区">
+      <header class="map-brand">
+        <a class="map-brand-mark" href="/a/" aria-label="返回应用目录"><svg aria-hidden="true"><use href="#icon-map"></use></svg></a>
+        <h1>夸克地图</h1>
+        <button id="panel-toggle" class="map-icon-button" aria-label="收起工作区" aria-expanded="true" aria-controls="workspace">‹</button>
+      </header>
+      <div id="workspace" class="map-workspace">
+        <form id="search-form" role="search" class="map-search">
+          <svg aria-hidden="true"><use href="#icon-search"></use></svg>
+          <input id="query" type="search" placeholder="搜地点、地址或经纬度" aria-label="地点、地址或经纬度" maxlength="100" required />
+          <button type="submit">搜索</button>
+        </form>
+        <nav class="map-tabs" aria-label="地图功能">
+          {modes.map(({ id, name, icon }) => (
+            <button type="button" data-pane={id} aria-pressed={id === "explore"} aria-controls={`pane-${id}`}><svg aria-hidden="true"><use href={`#icon-${icon}`}></use></svg>{name}</button>
+          ))}
+        </nav>
+        <div class="map-pane-scroll">
+          <section id="pane-explore" class="map-pane" aria-labelledby="explore-title">
+            <div class="map-section-heading"><h2 id="explore-title">探索地图</h2><span id="search-count"></span></div>
+            <div id="explore-home">
+              <div class="map-feature">
+                <svg aria-hidden="true"><use href="#icon-meet"></use></svg>
+                <div><h3>碰面选址</h3><p>标出各自的出发点，比较候选地点离每个人有多远。</p></div>
+                <button type="button" data-open="meet" aria-label="打开碰面选址">→</button>
+              </div>
+              <h3 class="map-subheading">探索周边</h3>
+              <div class="map-chips">
+                {["地铁站", "餐饮", "公园", "停车场", "医院"].map(name => <button type="button" data-nearby={name}>{name}</button>)}
+              </div>
+              <h3 class="map-subheading">常用城市</h3>
+              <div id="city-list" class="map-city-list"></div>
             </div>
-
-            <div class="panel-section">
-                <h3><i class="fas fa-map-marker-alt"></i> 收藏地点</h3>
-                <button id="add-marker-btn">添加标记</button>
-                <div class="saved-items" id="saved-markers">
-                    <!-- 保存的标记将在这里显示 -->
-                </div>
+            <div id="search-results" hidden>
+              <p id="search-feedback" class="map-muted" role="status"></p>
+              <ul id="result-list" class="map-list"></ul>
+              <button id="clear-search" type="button" class="map-quiet">返回探索</button>
             </div>
-
-            <div class="panel-section">
-                <h3><i class="fas fa-route"></i> 路线绘制</h3>
-                <button id="draw-line-btn">绘制线路</button>
-                <button id="clear-lines-btn">清除线路</button>
-                <div class="saved-items" id="saved-routes">
-                    <!-- 保存的路线将在这里显示 -->
-                </div>
+          </section>
+          <section id="pane-directions" class="map-pane" hidden aria-labelledby="directions-title">
+            <div class="map-section-heading"><h2 id="directions-title">驾车路线</h2><button id="swap-route" class="map-quiet" type="button">交换</button></div>
+            <p class="map-muted">点击地图选点，也可在搜索结果中设置起点或终点。</p>
+            <div class="map-route-inputs">
+              <button id="route-start" type="button"><span class="map-point-letter start">起</span><span>选取起点</span></button>
+              <button id="route-end" type="button"><span class="map-point-letter end">终</span><span>选取终点</span></button>
             </div>
-
-            <div class="panel-section">
-                <h3><i class="fas fa-ruler"></i> 测量工具</h3>
-                <button id="measure-distance-btn">距离测量</button>
-                <button id="measure-area-btn">面积测量</button>
+            <div class="map-actions"><button id="plan-route" class="map-primary" type="button" disabled>规划路线</button><button id="clear-route" type="button">清空</button></div>
+            <div id="route-result" aria-live="polite"></div>
+          </section>
+          <section id="pane-meet" class="map-pane" hidden aria-labelledby="meet-title">
+            <div class="map-section-heading"><h2 id="meet-title">碰面选址</h2><button id="clear-meet" class="map-quiet" type="button">清空</button></div>
+            <p class="map-muted">添加 2 至 8 个出发点，找出让最远一方少跑一点的碰面位置。</p>
+            <div class="map-actions"><button id="pick-meet" class="map-primary" type="button">地图选点</button><button id="meet-center" type="button">加入地图中心</button></div>
+            <ul id="meet-origins" class="map-list"></ul>
+            <div id="meet-result" aria-live="polite"></div>
+            <div id="meet-categories" class="map-chips" hidden>
+              {["咖啡厅", "地铁站", "公园"].map(name => <button type="button" data-meet-nearby={name}>找{name}</button>)}
             </div>
+            <p id="meet-feedback" class="map-muted" role="status"></p>
+            <ul id="meet-results" class="map-list"></ul>
+          </section>
+          <section id="pane-library" class="map-pane" hidden aria-labelledby="library-title">
+            <div class="map-section-heading"><h2 id="library-title">我的地图</h2><span id="library-count"></span></div>
+            <p class="map-muted">地点和图形保存在当前浏览器。可导出 GeoJSON 与他人共享。</p>
+            <div class="map-actions"><button id="pick-bookmark" class="map-primary" type="button">地图选点</button><button id="export-map" type="button">导出</button><button id="import-map" type="button">导入</button></div>
+            <input id="import-file" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden />
+            <ul id="library-list" class="map-list"></ul>
+          </section>
+          <section id="pane-tools" class="map-pane" hidden aria-labelledby="tools-title">
+            <div class="map-section-heading"><h2 id="tools-title">测绘</h2></div>
+            <p class="map-muted">点击地图逐点绘制。完成后可将测量图形保存到「我的地图」。</p>
+            <div class="map-chips">
+              <button type="button" data-draw="line" aria-pressed="false">绘制路线</button>
+              <button type="button" data-draw="distance" aria-pressed="false">测距</button>
+              <button type="button" data-draw="area" aria-pressed="false">测面积</button>
+            </div>
+            <output id="drawing-summary" class="map-metric" aria-live="polite">选择一种绘制工具</output>
+            <div class="map-actions"><button id="undo-point" type="button" disabled>撤销上一点</button><button id="finish-drawing" class="map-primary" type="button" disabled>保存图形</button><button id="cancel-drawing" type="button" disabled>取消</button></div>
+          </section>
         </div>
-    </div>
+      </div>
+    </aside>
 
-    <!-- 底部信息栏 -->
-    <div class="info-bar">
-        <i class="fas fa-info-circle"></i>
-        <span id="location-info">正在获取位置信息...</span>
-    </div>
-
-    <!-- 加载动画 -->
-    <div class="loader" id="loader">
-        <div class="spinner"></div>
-        <p>地图加载中...</p>
-    </div>
-
-    <!-- 引入Font Awesome图标 -->
-    <script is:inline src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script is:inline src="__API_BASE__/api/keys?names=tianditu"></script>
-    <script is:inline src="/assets/pages/a/map/map.js"></script>
+    <section class="map-stage" aria-label="交互地图">
+      <div id="map" aria-label="二维地图"></div>
+      <div id="map-3d" aria-label="三维地形" hidden></div>
+      <div class="map-top-controls">
+        <details id="layers" class="map-layer-menu">
+          <summary><svg aria-hidden="true"><use href="#icon-layers"></use></svg><span id="layer-name">标准地图</span></summary>
+          <div class="map-layer-options">
+            {layers.map(({ id, name }) => <button type="button" data-layer={id} aria-pressed={id === "vector"}><span class={`map-layer-swatch swatch-${id}`} aria-hidden="true"></span>{name}</button>)}
+          </div>
+        </details>
+        <button id="toggle-3d" class="map-float-button" type="button" aria-pressed="false" title="切换三维地形"><svg aria-hidden="true"><use href="#icon-cube"></use></svg><span>3D</span></button>
+      </div>
+      <div class="map-side-controls" aria-label="地图操作">
+        <button id="locate" type="button" aria-label="定位到我" title="定位到我"><svg aria-hidden="true"><use href="#icon-locate"></use></svg></button>
+        <button id="zoom-in" type="button" aria-label="放大" title="放大">+</button>
+        <button id="zoom-out" type="button" aria-label="缩小" title="缩小">−</button>
+        <button id="share-view" type="button" aria-label="分享当前视图" title="分享当前视图"><svg aria-hidden="true"><use href="#icon-link"></use></svg></button>
+      </div>
+      <div id="map-notice" class="map-notice" role="status" hidden></div>
+      <div id="pick-bar" class="map-pick-bar" hidden>
+        <span id="pick-hint"></span><button id="cancel-pick" type="button">退出</button>
+      </div>
+      <div class="map-readout">
+        <output id="map-coordinates" aria-label="地图中心坐标"></output>
+        <span id="map-scale"></span>
+      </div>
+      <div id="map-credit" class="map-credit"></div>
+      <div id="map-loading" class="map-loading" role="status">正在加载地图…</div>
+      <noscript><p class="map-loading">请启用 JavaScript 以使用地图。</p></noscript>
+    </section>
+  </main>
+  <dialog id="map-dialog">
+    <form id="map-dialog-form">
+      <h2 id="map-dialog-title"></h2>
+      <label id="map-dialog-label" for="map-dialog-value"></label>
+      <input id="map-dialog-value" maxlength="100" required />
+      <p id="map-dialog-description" class="map-muted" hidden></p>
+      <div class="map-actions"><button id="map-dialog-cancel" type="button">关闭</button><button id="map-dialog-submit" class="map-primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
 </body>
-
 </html>

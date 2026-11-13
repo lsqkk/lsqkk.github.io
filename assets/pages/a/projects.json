@@ -12,7 +12,7 @@
         {
           "name": "夸克地图",
           "link": "map",
-          "description": "基于地理位置的可视化地图应用，支持路径规划和位置标记",
+          "description": "地点搜索、驾车路线、碰面选址与三维地形，支持绘图和 GeoJSON 导入导出",
           "icon": "fa-map-marked-alt"
         },
         {
