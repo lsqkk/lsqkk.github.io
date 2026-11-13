@@ -3,74 +3,202 @@ import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="夸克图床，上传图片到 Cloudflare R2 并生成可访问链接">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="夸克图床支持批量上传、上传前调整尺寸和格式，以及复制图片直链和嵌入代码。">
     <title>夸克图床 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
     <link rel="stylesheet" href="/assets/pages/a/pic/style.css">
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-    <script is:inline src="/assets/js/nav.js"></script>
-    <script is:inline src="/assets/js/comment-shared.js"></script>
-    <script is:inline src="/assets/js/firebase-ready.js"></script>
-    <script is:inline src="__API_BASE__/api/firebase-config?v=1"></script>
+    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
+    <script is:inline defer src="/assets/js/comment-shared.js"></script>
+    <script is:inline defer src="/assets/js/firebase-ready.js"></script>
+    <script is:inline type="module" src="/assets/pages/a/pic/app.js"></script>
 </head>
 
 <body class="luxury-body">
     <LuxuryBackground />
 
-    <main class="pic-shell">
-        <h1 class="page-title">夸克图床 / Pic</h1>
-
-        <section class="pic-panel">
-            <div class="pic-top-row">
-                <a class="pic-back-link" href="/a/">返回实验室</a>
-                <div class="pic-limit-text" id="limitText">上传额度读取中...</div>
+    <main class="pic-shell" id="picApp">
+        <header class="pic-hero">
+            <nav class="pic-breadcrumb" aria-label="页面路径"><a href="/a/">实验室</a><span aria-hidden="true">/</span><span aria-current="page">夸克图床</span></nav>
+            <div class="pic-heading">
+                <div>
+                    <h1>夸克图床</h1>
+                    <p>批量上传图片，生成直链和嵌入代码。</p>
+                </div>
+                <a class="pic-button" href="#picLibrary">查看本机历史 <span aria-hidden="true">↓</span></a>
             </div>
-            <div class="pic-login-tip" id="picLoginTip">未登录用户每日可上传 20 张，登录后提升至 100 张</div>
+        </header>
 
-            <label class="pic-picker" for="fileInput">
-                <span>选择图片（支持批量）</span>
-                <input id="fileInput" type="file" accept="image/*" multiple>
-            </label>
+        <noscript><p class="pic-panel">请启用 JavaScript 后使用夸克图床。</p></noscript>
+        <div class="pic-workspace">
+            <section class="pic-panel pic-uploader" aria-labelledby="uploadTitle">
+                <header class="pic-panel-head">
+                    <h2 id="uploadTitle">上传图片</h2>
+                    <span class="pic-count" id="queueCount">队列为空</span>
+                </header>
 
-            <div class="pic-actions">
-                <button id="uploadBtn" type="button">开始上传</button>
-                <button id="clearBtn" type="button">清空结果</button>
+                <div class="pic-uploader-body">
+                    <div class="pic-drop" id="dropZone">
+                        <div class="pic-upload-icon" aria-hidden="true">
+                            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <path d="m21 15-5-5L5 21"></path>
+                            </svg>
+                        </div>
+                        <strong>拖放图片到这里</strong>
+                        <p id="pasteHint">也可粘贴截图或从设备选择</p>
+                        <button class="pic-button pic-primary" id="pickBtn" type="button" disabled>选择图片</button>
+                        <input id="fileInput" type="file" accept="image/*,.avif,.bmp,.heic,.heif,.svg,.tif,.tiff,.ico,.jxl" multiple hidden>
+                    </div>
+                    <details class="pic-url">
+                        <summary>从图片网址添加</summary>
+                        <form id="urlForm">
+                            <label class="pic-sr" for="urlInput">图片网址</label>
+                            <input id="urlInput" type="url" placeholder="https://example.com/image.png" required>
+                            <button class="pic-button" id="urlBtn" type="submit" disabled>添加</button>
+                        </form>
+                        <p>来源站点需允许跨域读取。图片先进入队列，可预览后再上传。</p>
+                    </details>
+                    <ul class="pic-queue" id="fileList" aria-label="上传队列" hidden></ul>
+                    <div class="pic-recent" id="recentBatch" hidden>
+                        <span id="recentStatus" role="status"></span>
+                        <div class="pic-actions">
+                            <a class="pic-button pic-quiet" href="#picLibrary">查看历史 ↓</a>
+                            <button class="pic-button" id="copyRecent" type="button">复制本批直链</button>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="pic-upload-footer">
+                    <div class="pic-upload-status">
+                        <span id="statusText" role="status">上传后的图片可通过公开链接访问。</span>
+                        <progress id="progressBar" aria-label="本批上传进度" max="100" value="0" hidden></progress>
+                    </div>
+                    <div class="pic-actions">
+                        <button class="pic-button pic-quiet" id="clearBtn" type="button" hidden>清空队列</button>
+                        <button class="pic-button pic-quiet" id="cancelBtn" type="button" hidden>停止上传</button>
+                        <button class="pic-button pic-primary" id="uploadBtn" type="button" disabled>开始上传</button>
+                    </div>
+                </footer>
+            </section>
+
+            <aside class="pic-sidebar" aria-label="上传设置与额度">
+                <section class="pic-panel pic-options" aria-labelledby="settingsTitle">
+                    <header class="pic-panel-head">
+                        <h2 id="settingsTitle">上传设置</h2>
+                        <button class="pic-button pic-quiet" id="resetOptions" type="button" disabled>重置</button>
+                    </header>
+                    <fieldset id="uploadOptions" disabled>
+                        <label for="sizeOption">最长边</label>
+                        <select id="sizeOption">
+                            <option value="0">原始尺寸</option>
+                            <option value="2560">不超过 2560 px</option>
+                            <option value="1920">不超过 1920 px</option>
+                            <option value="1280">不超过 1280 px</option>
+                            <option value="800">不超过 800 px</option>
+                        </select>
+                        <label for="formatOption">输出格式</label>
+                        <select id="formatOption">
+                            <option value="original">原始格式</option>
+                            <option value="image/webp">WebP</option>
+                            <option value="image/jpeg">JPEG</option>
+                            <option value="image/png">PNG</option>
+                        </select>
+                        <div id="qualitySetting" hidden>
+                            <label for="qualityOption">画质 <output id="qualityValue" for="qualityOption">85%</output></label>
+                            <input id="qualityOption" type="range" min="40" max="100" value="85">
+                        </div>
+                        <p id="optionHint">默认原样上传。调整尺寸或格式时，浏览器会重新编码支持的静态图片。</p>
+                    </fieldset>
+                </section>
+
+                <section class="pic-panel pic-quota" aria-labelledby="quotaTitle">
+                    <div class="pic-quota-heading">
+                        <h2 id="quotaTitle">今日额度</h2>
+                        <span id="limitText" aria-live="polite">读取中…</span>
+                    </div>
+                    <meter id="quotaMeter" aria-label="今日已用额度" min="0" max="20" value="0" hidden></meter>
+                    <p id="picLoginTip"><a href="/login">登录</a>后每日额度从 20 张提升至 100 张。</p>
+                </section>
+            </aside>
+        </div>
+
+        <section class="pic-panel pic-library" id="picLibrary" aria-labelledby="libraryTitle">
+            <header class="pic-panel-head">
+                <div>
+                    <h2 id="libraryTitle">上传历史 <span class="pic-count" id="historyCount">0 张</span></h2>
+                    <p id="historyHint">记录保存在当前浏览器，移除记录不会删除云端图片。</p>
+                </div>
+                <button class="pic-button pic-quiet" id="clearHistory" type="button" hidden>清空历史</button>
+            </header>
+            <div class="pic-library-tools" id="libraryTools" hidden>
+                <div class="pic-library-filters">
+                    <label class="pic-sr" for="historySearch">搜索上传历史</label>
+                    <input id="historySearch" type="search" placeholder="搜索文件名或描述">
+                    <button class="pic-button" id="favoritesBtn" type="button" aria-pressed="false">仅收藏</button>
+                    <label class="pic-sr" for="historySort">历史排序</label>
+                    <select id="historySort">
+                        <option value="newest">最新优先</option>
+                        <option value="oldest">最早优先</option>
+                        <option value="name">按文件名</option>
+                        <option value="size">按大小</option>
+                    </select>
+                </div>
+                <div class="pic-share">
+                    <label for="shareFormat">分享格式</label>
+                    <select id="shareFormat">
+                        <option value="url">图片直链</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="html">HTML</option>
+                        <option value="bbcode">BBCode</option>
+                    </select>
+                    <button class="pic-button" id="selectVisible" type="button">全选</button>
+                    <button class="pic-button" id="downloadLinks" type="button">导出 TXT</button>
+                    <button class="pic-button pic-primary" id="copyLinks" type="button">复制全部</button>
+                </div>
             </div>
-
-            <div class="pic-status" id="statusText">等待上传</div>
-            <div class="pic-progress-wrap">
-                <div class="pic-progress" id="progressBar"></div>
+            <p class="pic-library-status" id="libraryStatus" role="status" hidden></p>
+            <div class="pic-empty" id="historyEmpty">
+                <span class="pic-empty-icon" aria-hidden="true">
+                    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="3" width="15" height="15" rx="2"></rect>
+                        <path d="M3 7v12a2 2 0 0 0 2 2h12m-11-8 4-4 4 4 3-3 4 4"></path>
+                    </svg>
+                </span>
+                <strong id="emptyTitle">暂无上传记录</strong>
+                <span id="emptyText">成功上传后，可在这里预览、收藏或复制链接。</span>
             </div>
-
-            <ul class="pic-file-list" id="fileList"></ul>
+            <ul class="pic-gallery" id="historyGrid" aria-label="历史图片" hidden></ul>
         </section>
 
-        <section class="pic-panel">
-            <h2 class="pic-section-title">上传结果</h2>
-            <div class="pic-copy-actions">
-                <button id="copyMarkdownBtn" type="button">复制 Markdown</button>
-                <button id="copyHtmlBtn" type="button">复制 HTML</button>
+        <dialog class="pic-dialog" id="previewDialog" aria-labelledby="previewTitle">
+            <div class="pic-dialog-head">
+                <div><h2 id="previewTitle"></h2><p id="previewMeta"></p></div>
+                <button class="pic-button" id="closePreview" type="button" autofocus>关闭</button>
             </div>
-            <div class="pic-result" id="resultBox"></div>
-        </section>
+            <div class="pic-preview-image"><img id="previewImage" alt=""><p id="previewError" hidden>无法显示图片预览</p></div>
+            <div class="pic-preview-details" id="previewDetails" hidden>
+                <label for="altInput">替代文字 <span>用于 Markdown 和 HTML</span></label>
+                <div class="pic-actions">
+                    <input id="altInput" type="text" maxlength="200" placeholder="描述图片内容">
+                    <button class="pic-button" id="saveAlt" type="button">保存</button>
+                </div>
+                <label for="previewCode">分享内容</label>
+                <textarea id="previewCode" rows="2" readonly></textarea>
+                <div class="pic-actions">
+                    <a class="pic-button" id="openOriginal" target="_blank" rel="noopener noreferrer">打开原图 ↗</a>
+                    <button class="pic-button pic-primary" id="copyPreview" type="button">复制</button>
+                </div>
+                <p id="previewStatus" role="status"></p>
+            </div>
+        </dialog>
     </main>
-
-    <script is:inline src="/assets/pages/a/pic/app.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-
-

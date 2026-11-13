@@ -95,7 +95,7 @@
         {
           "name": "夸克图床",
           "link": "pic",
-          "description": "批量上传图片到 GitHub 图床，自动生成加速链接和 Raw 直链",
+          "description": "批量上传图片到 Cloudflare R2，支持尺寸与格式调整、嵌入代码和本机历史",
           "icon": "fa-image"
         },
         {
