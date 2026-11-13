@@ -24,7 +24,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <body class=" feature-page feature-random-wheel">
     <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
     <main class="container">
-        <h1><i class="fas fa-dharmachakra"></i> 随机转盘抽取器</h1>
+        <header class="draw-heading"><h1>随机转盘</h1><p>自定义签池和权重。抽活动名额时，可同时排好候补顺序。</p></header>
 
         <div class="main-content">
             <!-- 左侧：转盘控制和显示区域 -->
@@ -37,28 +37,38 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                                 <i class="fas fa-play"></i> 开始抽取
                             </button>
                             <button id="reset-btn" class="btn-secondary">
-                                <i class="fas fa-redo"></i> 重置
+                                <i class="fas fa-redo"></i> 开启新一轮
                             </button>
                         </div>
                     </div>
 
                     <div class="wheel-wrapper">
-                        <canvas id="wheel-canvas" width="500" height="500"></canvas>
+                        <canvas aria-hidden="true" id="wheel-canvas" width="500" height="500"></canvas>
                         <div class="wheel-pointer"></div>
                     </div>
 
+                    <div class="draw-reveal"><span>本次抽取</span><p id="draw-announcement" role="status">等待抽取</p></div>
                     <div class="wheel-stats">
                         <div class="stat-item">
-                            <span class="stat-label">选项数量:</span>
+                            <span class="stat-label">剩余签数</span>
                             <span id="option-count" class="stat-value">8</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">抽取模式:</span>
+                            <span class="stat-label">抽取模式</span>
                             <span id="draw-mode" class="stat-value">不放回</span>
                         </div>
                     </div>
                 </div>
 
+                <section id="roster-panel" class="glass-card roster-panel" hidden>
+                    <div class="roster-heading">
+                        <h3>递补名册</h3>
+                        <button id="copy-roster" type="button" class="btn-secondary btn-small">复制名册</button>
+                    </div>
+                    <ol id="roster-seats"></ol>
+                    <p id="roster-reserve"></p>
+                    <p id="roster-log"></p>
+                </section>
                 <div class="results-container glass-card">
                     <h3><i class="fas fa-list"></i> 抽取结果</h3>
                     <div id="results-list" class="results-list">
@@ -101,8 +111,14 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                         </div>
 
                         <div class="form-group">
-                            <label for="draw-count">抽取数量:</label>
-                            <input type="number" id="draw-count" min="1" max="10" value="1">
+                            <label for="draw-count">正选人数</label>
+                            <input type="number" id="draw-count" min="1" max="10" value="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reserve-count">候补人数</label>
+                            <input type="number" id="reserve-count" min="0" max="20" value="0" required aria-describedby="reserve-help">
+                            <small id="reserve-help">不放回时可同时抽出有序候补。正选缺席时，按顺序递补。</small>
                         </div>
 
                         <div class="form-group">
@@ -131,6 +147,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                         </div>
                     </div>
 
+                    <details class="bulk-options"><summary>批量录入签名</summary><label for="bulk-options">每行一项</label><textarea id="bulk-options" rows="4" placeholder="直接粘贴名单"></textarea><button id="append-options" class="btn-secondary">追加到签池</button></details>
                     <div class="quick-actions">
                         <button id="normalize-weights" class="btn-secondary">
                             <i class="fas fa-balance-scale"></i> 归一化权重

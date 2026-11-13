@@ -148,3 +148,24 @@ body.quark-chat.qc-dark {
     .qc-compose { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
     .qc-keyhint { display: none; }
 }
+
+.qc-room-form .qc-create { width: 100%; margin-top: 8px; background: var(--qc-tint); color: var(--qc-accent); font-weight: 650; }
+.qc-rail-foot #profileButton { display: flex; align-items: center; gap: 8px; }
+.qc-rail-foot #profileButton span { overflow: hidden; text-overflow: ellipsis; }
+.qc-profile-image { width: 24px; height: 24px; flex: 0 0 24px; border-radius: 50%; object-fit: cover; }
+.qc-avatar { position: relative; overflow: hidden; }
+.qc-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.quark-chat .qc-dialog select { background: var(--qc-paper); color: var(--qc-text); font: inherit; border: 1px solid var(--qc-border); border-radius: 9px; padding: 9px 11px; }
+.qc-form-error:empty { display: none; }
+.qc-dialog .qc-form-error { color: var(--qc-accent); }
+.quark-chat :is(#notifications, #themeToggle, #attachImage, #addTask) span { display: inline-block; min-width: 14px; line-height: 1; text-align: center; }
+.quark-chat :is(#notifications, #themeToggle) { aspect-ratio: 1; }
+@media (max-width: 450px) {
+    .qc-head { gap: 5px; padding-inline: 8px; flex-wrap: wrap; }
+    .qc-head-actions { gap: 4px; }
+    .qc-head-actions button { padding-inline: 6px; font-size: 12px; }
+    .qc-heading h2 { font-size: 16px; }
+}
+.qc-task-list { padding: 0; list-style: none; max-height: 45vh; overflow: auto; }
+.qc-task-list li + li { margin-top: 6px; }
+.qc-task-list button { width: 100%; text-align: left; overflow-wrap: anywhere; }

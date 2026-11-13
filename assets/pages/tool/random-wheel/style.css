@@ -592,3 +592,95 @@ body {
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
+/* 抽签台 */
+.feature-random-wheel {
+    --draw-accent: #b9f875;
+    --draw-ink: #edf6f0;
+    background: radial-gradient(ellipse at 20% 0%, #1b3f37, #101d1c 65%);
+    color: var(--draw-ink);
+}
+
+.feature-random-wheel .container { max-width: 1250px; }
+.feature-random-wheel .draw-heading { margin: 25px 0 30px; }
+.feature-random-wheel .draw-heading h1 {
+    margin: 0 0 8px;
+    color: var(--draw-ink);
+    text-align: left;
+    font-size: clamp(2.5rem, 7vw, 4.7rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -.06em;
+}
+.draw-heading p { color: #bdd1ca; }
+.feature-random-wheel .main-content { display: grid; grid-template-columns: minmax(0, 1.48fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.feature-random-wheel :is(.left-panel,.right-panel) { min-width: 0; }
+.feature-random-wheel .right-panel { gap: 14px; }
+.feature-random-wheel .right-panel .glass-card { margin-bottom: 0; }
+.feature-random-wheel .glass-card {
+    --text-color: #edf6f0;
+    --text-secondary: #b7cac2;
+    --primary-color: #b9f875;
+    --input-bg: #112521;
+    --border-color: #45645b;
+    color: var(--text-color);
+    background: #192e29;
+    border: 1px solid #45645b;
+    border-radius: 19px;
+    box-shadow: none;
+    padding: clamp(15px, 3vw, 27px);
+}
+.feature-random-wheel .glass-card:hover { transform: none; box-shadow: none; }
+.feature-random-wheel .wheel-container {
+    background: radial-gradient(circle at 50% 42%, #33594c, #172c28 72%);
+}
+.feature-random-wheel .wheel-header { align-items: flex-start; flex-wrap: wrap; gap: 14px; }
+.feature-random-wheel .wheel-header h2 { font-size: clamp(1.25rem, 3vw, 1.8rem); font-weight: 700; overflow-wrap: anywhere; }
+.feature-random-wheel .wheel-wrapper {
+    width: min(100%, 440px);
+    height: auto;
+    aspect-ratio: 1;
+    margin: 22px auto;
+}
+.feature-random-wheel #wheel-canvas {
+    display: block;
+    background: #132924;
+    border: 1px solid #608478;
+    box-shadow: 0 18px 60px #071c16b0;
+}
+.feature-random-wheel .wheel-pointer {
+    top: -10px;
+    width: 27px;
+    height: 38px;
+    background: var(--draw-accent);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.feature-random-wheel .btn-primary { background: var(--draw-accent); color: #142417; border: 1px solid transparent; font-weight: 750; }
+.feature-random-wheel .btn-secondary { color: #e2efe9; border: 1px solid #618174; background: #203a33; }
+.feature-random-wheel .wheel-item.active { border-color: var(--draw-accent); }
+.feature-random-wheel :is(input:not([type=color]), textarea, select) {
+    background: #112521;
+    color: #edf6f0;
+    border: 1px solid #618174;
+}
+.draw-reveal { width: 100%; padding: 13px 17px; background: #0f201c; border-radius: 12px; text-align: center; }
+.draw-reveal span { color: #b7cac2; font-size: .82rem; }
+.draw-reveal p { margin: 5px 0 0; font-weight: 750; font-size: clamp(1.05rem, 3vw, 1.6rem); color: #ddfbc4; overflow-wrap: anywhere; }
+.feature-random-wheel .wheel-stats { margin: 14px 0 0; }
+.feature-random-wheel .option-color { width: 12px; height: 12px; flex: 0 0 12px; border-radius: 50%; }
+.feature-random-wheel :is(.option-name, .result-text, .wheel-name) { overflow-wrap: anywhere; min-width: 0; }
+.feature-random-wheel .drawn-option .option-name { color: #b7cac2; }
+.bulk-options { margin: 14px 0; }
+.bulk-options summary { cursor: pointer; color: #ddfbc4; }
+.bulk-options label { display: block; margin-top: 10px; }
+.bulk-options textarea { display: block; width: 100%; padding: 9px; margin: 5px 0 8px; border-radius: 8px; }
+.roster-heading, #roster-seats li { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.roster-heading h3 { margin: 0; }
+#roster-seats { padding-inline-start: 0; counter-reset: seat; }
+#roster-seats li { counter-increment: seat; border-bottom: 1px solid #45645b; padding: 8px 0; }
+#roster-seats li::before { content: counter(seat); color: #b9f875; font-variant-numeric: tabular-nums; }
+#roster-seats li span { flex: 1; overflow-wrap: anywhere; }
+#roster-reserve { color: #ddfbc4; overflow-wrap: anywhere; }
+#roster-log { white-space: pre-line; color: #bdd1ca; overflow-wrap: anywhere; }
+@media (max-width: 770px) {
+    .feature-random-wheel .main-content { grid-template-columns: minmax(0, 1fr); }
+}

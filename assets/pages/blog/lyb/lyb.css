@@ -522,22 +522,6 @@ header {
 .message-row {
     padding: 20px 24px;
     transition: background var(--transition), transform 0.25s ease;
-    opacity: 0;
-    transform: translateX(-10px);
-    animation: msg-row-in 0.35s ease forwards;
-}
-.message-row:nth-child(1) { animation-delay: 0.04s; }
-.message-row:nth-child(2) { animation-delay: 0.08s; }
-.message-row:nth-child(3) { animation-delay: 0.12s; }
-.message-row:nth-child(4) { animation-delay: 0.16s; }
-.message-row:nth-child(5) { animation-delay: 0.20s; }
-.message-row:nth-child(6) { animation-delay: 0.24s; }
-.message-row:nth-child(7) { animation-delay: 0.28s; }
-.message-row:nth-child(8) { animation-delay: 0.32s; }
-.message-row:nth-child(9) { animation-delay: 0.36s; }
-.message-row:nth-child(10) { animation-delay: 0.40s; }
-@keyframes msg-row-in {
-    to { opacity: 1; transform: translateX(0); }
 }
 
 .message-row + .message-row {
@@ -1133,7 +1117,7 @@ body.lyb-page.dark-mode {
 .lyb-page .lyb-feed-tools { border-bottom: 1px solid var(--lyb-line); padding-bottom: 12px; }
 .lyb-feed-status, .lyb-reply-status { font-size: 13px; color: var(--lyb-muted); }
 .lyb-feed-status:not(:empty) { margin: 12px 0; }
-.lyb-page .message-row { padding: 16px 0; border-bottom: 1px solid var(--lyb-line); animation: none; }
+.lyb-page .message-row { padding: 16px 0; border-bottom: 1px solid var(--lyb-line); }
 .lyb-page .message-row:hover, .lyb-page .reply-row:hover { background: transparent; }
 .lyb-page .message-header, .lyb-page .reply-header { align-items: center; }
 .lyb-page .message-avatar, .lyb-page .reply-avatar { background: #4258b8; overflow: hidden; }

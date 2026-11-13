@@ -1,6 +1,7 @@
 // /api/db.js - minimal Firebase RTDB proxy (read-only for now)
 import { getDatabase } from './_firebase-admin.js';
 import { resolveOrigin } from './_cors.js';
+import managedChat from './_chat-room.js';
 
 const onlineWindowMs = 15 * 60 * 1000;
 
@@ -54,6 +55,8 @@ function applyQuery(ref, query) {
 }
 
 export default async function handler(req, res) {
+  if (req.query?.view === 'chat-room' || (req.method === 'GET' && process.env.CRON_SECRET &&
+      req.headers.authorization === 'Bearer ' + process.env.CRON_SECRET)) return managedChat(req, res);
   const requestOrigin = isAllowedOrigin(req);
   const path = String(req.query?.path || req.body?.path || '').trim();
   const view = req.query?.view;

@@ -6,7 +6,7 @@ import { SITE_TITLE } from "@siteConfig";
   pageTitle={`夸克聊天室 - ${SITE_TITLE}`}
   bodyClass="quark-chat"
   pageStyles={["/assets/pages/a/chat-room/chat.css"]}
-  tailScripts={["/assets/js/firebase-ready.js", "/assets/pages/a/chat-room/chat.js"]}
+  tailScripts={["/assets/js/user-profile.js", "/assets/js/firebase-ready.js", "/assets/pages/a/chat-room/chat.js"]}
 >
   <div class="qc-layout">
     <aside class="qc-rail" id="chatRail">
@@ -14,12 +14,13 @@ import { SITE_TITLE } from "@siteConfig";
       <div class="qc-brand"><span aria-hidden="true" class="qc-mark"><i class="fas fa-comments"></i></span><h1>夸克聊天室</h1></div>
       <form id="roomForm" class="qc-room-form">
         <label for="roomInput">输入房间号</label>
-        <div><input id="roomInput" required maxlength="64" autocomplete="off" placeholder="例如：周五讨论" /><button class="qc-primary">进入</button></div>
+        <div><input id="roomInput" required maxlength="64" autocomplete="off" placeholder="房间号或旧公开房间名" /><button class="qc-primary">加入</button></div>
+        <button id="createRoom" class="qc-create" type="button"><span aria-hidden="true">＋</span> 创建房间</button>
       </form>
       <div class="qc-rooms"><h2>最近访问</h2><div id="roomList"></div></div>
       <div class="qc-rail-foot">
         <button id="profileButton" type="button">设置昵称</button>
-        <button id="themeToggle" type="button" aria-label="切换深浅色"><i class="fas fa-adjust" aria-hidden="true"></i></button>
+        <button id="themeToggle" type="button" aria-label="切换深浅色"><span aria-hidden="true">☾</span></button>
       </div>
     </aside>
     <main class="qc-main">
@@ -27,15 +28,17 @@ import { SITE_TITLE } from "@siteConfig";
         <button class="qc-mobile" type="button" id="mobileMenuBtn" aria-controls="chatRail" aria-expanded="true">房间</button>
         <div class="qc-heading"><h2 id="currentRoomTitle">聊天</h2><p id="connection" role="status">请选择房间</p></div>
         <div class="qc-head-actions" id="roomActions" hidden>
-          <button type="button" id="shareRoom">分享</button>
-          <button type="button" id="notifications" aria-label="开启桌面通知"><i class="fas fa-bell" aria-hidden="true"></i></button>
+          <button type="button" id="roomTasks">待办</button>
+          <button type="button" id="copyRoomCode">复制房号</button>
+          <button type="button" id="shareRoom">分享链接</button>
+          <button type="button" id="notifications" aria-label="开启桌面通知"><span aria-hidden="true">♢</span></button>
         </div>
       </header>
       <section class="qc-stream" id="messagesContainer" aria-label="聊天记录" tabindex="0">
         <div class="qc-empty" id="chatEmpty">
           <span aria-hidden="true" class="qc-mark"><i class="fas fa-comment-dots"></i></span>
-          <h2>聊点什么？</h2><p>输入一个房间号即可开始聊天，或进入最近访问的房间。</p>
-          <p>房间号可转发给其他人，知道房间号的人可以加入。</p>
+          <h2>开始一场聊天</h2><p>创建限时房间，或使用朋友分享的房间号加入。</p>
+          <p>旧房间名仍可用于进入公开聊天。</p>
         </div>
         <button class="qc-history" type="button" id="moreHistory" hidden>加载更早消息</button>
         <ol class="qc-list" id="messagesList"></ol>
@@ -51,9 +54,9 @@ import { SITE_TITLE } from "@siteConfig";
         <textarea id="messageInput" rows="2" maxlength="2400" placeholder="写消息…"></textarea>
         <div class="qc-compose-foot">
           <div class="qc-tools">
-            <button type="button" id="attachImage"><i class="fas fa-image" aria-hidden="true"></i> 图片</button>
+            <button type="button" id="attachImage"><span aria-hidden="true">▧</span> 图片</button>
             <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" hidden />
-            <button type="button" id="addTask"><i class="fas fa-tasks" aria-hidden="true"></i> 待办</button>
+            <button type="button" id="addTask"><span aria-hidden="true">☑</span> 待办</button>
           </div>
           <span class="qc-keyhint">Enter 发送 · Shift + Enter 换行</span>
           <button id="sendMessage" type="submit" class="qc-primary">发送</button>
@@ -69,7 +72,37 @@ import { SITE_TITLE } from "@siteConfig";
       <input id="nicknameInput" required maxlength="32" autocomplete="nickname" />
       <label for="profileColor">头像颜色</label>
       <input id="profileColor" type="color" value="#5874dd" />
-      <div class="qc-dialog-actions"><button type="button" data-close="profileDialog">取消</button><button class="qc-primary" type="submit">保存</button></div>
+      <div class="qc-dialog-actions"><button type="button" data-close="profileDialog">取消</button><a id="accountProfileLink" href="/auth" hidden>管理博客身份</a><button id="profileSave" class="qc-primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+  <dialog class="qc-dialog" id="roomTasksDialog" aria-labelledby="roomTasksHeading">
+    <h2 id="roomTasksHeading">未完成待办</h2>
+    <p>显示已加载消息里的待办，点选可跳到对应消息。</p>
+    <ul id="roomTasksList" class="qc-task-list"></ul>
+    <div class="qc-dialog-actions"><button type="button" data-close="roomTasksDialog">关闭</button></div>
+  </dialog>
+  <dialog class="qc-dialog" id="createDialog">
+    <form id="createForm">
+      <h2>创建聊天房间</h2>
+      <label for="createTitle">房间名称</label>
+      <input id="createTitle" required maxlength="40" placeholder="例如：周五讨论" />
+      <label for="createPassword">加入口令（可选）</label>
+      <input id="createPassword" type="password" minlength="8" maxlength="80" autocomplete="new-password" placeholder="至少 8 个字符" />
+      <label for="createRetention">房间开放时间</label>
+      <select id="createRetention"><option value="1">1 小时</option><option value="24" selected>24 小时</option><option value="168">7 天</option></select>
+      <p>房间到期后无法再打开聊天记录。邀请链接只含随机房间号，口令请单独分享。</p>
+      <p id="createError" role="status" class="qc-form-error"></p>
+      <div class="qc-dialog-actions"><button type="button" data-close="createDialog">取消</button><button class="qc-primary" type="submit">创建</button></div>
+    </form>
+  </dialog>
+  <dialog class="qc-dialog" id="accessDialog">
+    <form id="accessForm">
+      <h2>输入房间口令</h2>
+      <input id="accessCode" type="hidden" />
+      <label for="accessPassword">房间口令</label>
+      <input id="accessPassword" type="password" maxlength="80" autocomplete="current-password" required />
+      <p id="accessError" role="status" class="qc-form-error"></p>
+      <div class="qc-dialog-actions"><button type="button" data-close="accessDialog">取消</button><button class="qc-primary" type="submit">加入</button></div>
     </form>
   </dialog>
   <dialog class="qc-dialog" id="taskDialog">

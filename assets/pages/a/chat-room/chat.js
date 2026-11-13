@@ -10,6 +10,14 @@
     const timeLabel = new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit' });
     const mobile = matchMedia('(max-width: 700px)');
     let feedbackTimer;
+    const managedPattern = /^QC-[A-Z0-9_-]{12}$/;
+    let managed;
+    let pollTimer;
+    let requestVersion = 0;
+    let presenceRef;
+    let presenceListener;
+    let presenceEntry;
+    let presenceCount = null;
     let databasePromise;
     let room = '';
     let version = 0;
@@ -40,10 +48,16 @@
 
     const deviceId = localStorage.getItem('qc-device') || crypto.randomUUID();
     localStorage.setItem('qc-device', deviceId);
-    const profile = stored('qc-profile', {
-        name: window.QuarkUserProfile?.getProfile()?.nickname || localStorage.getItem('nickname') || '',
-        color: localStorage.getItem('userColor') || '#5874dd'
-    });
+    const guest = stored('qc-profile', { name: localStorage.getItem('nickname') || '', color: '#5874dd' });
+    let profile = guest;
+
+    function avatarUrl(value) {
+        try {
+            if (typeof value !== 'string' || value.length > 500) return '';
+            const url = new URL(value);
+            return url.protocol === 'https:' && !url.username && !url.password ? url.href : '';
+        } catch { return ''; }
+    }
 
     function node(tag, className, content) {
         const element = document.createElement(tag);
@@ -75,6 +89,7 @@
     function applyTheme(dark) {
         document.body.classList.toggle('qc-dark', dark);
         byId('themeToggle').setAttribute('aria-pressed', String(dark));
+        byId('themeToggle').querySelector('span').textContent = dark ? '☀' : '☾';
     }
 
     applyTheme((localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark');
@@ -90,12 +105,31 @@
     });
 
     function updateProfile() {
-        byId('profileButton').textContent = profile.name || '设置昵称';
+        const account = window.QuarkUserProfile?.getProfile();
+        profile = account?.login && account.nickname ? {
+            name: account.nickname.slice(0, 32), color: account.avatarColor || guest.color,
+            avatarUrl: avatarUrl(account.avatarUrl), account: true
+        } : guest;
+        const control = byId('profileButton');
+        control.replaceChildren();
+        const avatar = profile.avatarUrl && node('img', 'qc-profile-image');
+        if (avatar) {
+            avatar.src = profile.avatarUrl;
+            avatar.referrerPolicy = 'no-referrer';
+            avatar.alt = '';
+            avatar.onerror = () => avatar.remove();
+            control.append(avatar);
+        }
+        control.append(node('span', '', profile.name || '设置昵称'));
         compose.hidden = !room || !profile.name;
     }
 
     function openProfile() {
         byId('nicknameInput').value = profile.name || '';
+        byId('nicknameInput').disabled = Boolean(profile.account);
+        byId('profileColor').disabled = Boolean(profile.account);
+        byId('profileSave').hidden = Boolean(profile.account);
+        byId('accountProfileLink').hidden = !profile.account;
         byId('profileColor').value = /^#[a-f0-9]{6}$/i.test(profile.color) ? profile.color : '#5874dd';
         byId('profileDialog').showModal();
     }
@@ -103,7 +137,7 @@
     byId('profileForm').onsubmit = (event) => {
         event.preventDefault();
         const name = byId('nicknameInput').value.trim();
-        if (!name) return;
+        if (!name || profile.account) return;
         profile.name = name;
         profile.color = byId('profileColor').value;
         localStorage.setItem('qc-profile', JSON.stringify(profile));
@@ -112,12 +146,15 @@
         if (room) input.focus();
     };
 
+    window.addEventListener('quark-user-updated', updateProfile);
+    window.addEventListener('storage', updateProfile);
+
     function validRoom(name) {
         return !!name && name.length <= 64 && !/[.#$\[\]/\u0000-\u001f\u007f]/u.test(name) && name !== 'lsqkk-lyb';
     }
 
     function updateRooms() {
-        const rooms = stored('recentRooms', []);
+        const rooms = stored('qc-recentRooms', stored('recentRooms', []));
         const container = byId('roomList');
         container.replaceChildren();
         rooms.filter((name) => typeof name === 'string' && validRoom(name)).forEach((name) => {
@@ -137,7 +174,7 @@
     }
 
     function markRead() {
-        if (!room || !latestKey || document.hidden || !nearBottom() || (unread && lastRead)) return;
+        if (!room || managed?.private || !latestKey || document.hidden || !nearBottom() || (unread && lastRead)) return;
         localStorage.setItem(roomStorage('read'), latestKey);
     }
 
@@ -201,12 +238,150 @@
         return databasePromise;
     }
 
-    async function join(name) {
+    async function api(action, payload) {
+        const response = await fetch('__API_BASE__/api/db?view=chat-room', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, member: deviceId, ...payload }),
+            signal: AbortSignal.timeout(12000)
+        });
+        const data = await response.json();
+        if (!response.ok) throw Object.assign(new Error(data.error || '聊天室服务暂不可用'), { status: response.status });
+        return data;
+    }
+
+    function managedCall(action, payload = {}, session = managed) {
+        return api(action, { ...payload, code: session.code, token: session.token });
+    }
+
+    function updateConnection() {
+        const label = byId('connection');
+        const count = presenceCount === null ? '在线人数暂不可用' : presenceCount + ' 个在线设备';
+        if (!online) label.textContent = '正在重新连接…';
+        else if (managed) label.textContent = (managed.private ? '口令房间' : '链接房间') + ' · ' + count + ' · ' + dateLabel.format(managed.expiresAt) + ' ' + timeLabel.format(managed.expiresAt) + ' 到期';
+        else label.textContent = '公开房间 · ' + count + ' · 旧房间不自动清理';
+    }
+
+    function disconnectRoom() {
+        clearTimeout(pollTimer);
+        if (managed) void managedCall('leave').catch(() => {});
+        managed = null;
+        if (presenceRef) presenceRef.off('value', presenceListener);
+        if (presenceEntry) {
+            const entry = presenceEntry;
+            void entry.remove().then(() => entry.onDisconnect().cancel()).catch(() => {});
+        }
+        presenceRef = null;
+        presenceEntry = null;
+        presenceCount = null;
+    }
+
+    function openAccess(name) {
+        byId('accessCode').value = name;
+        byId('accessPassword').value = '';
+        byId('accessError').textContent = '';
+        byId('accessDialog').showModal();
+    }
+
+    async function enterManaged(name, password) {
+        const active = ++requestVersion;
+        try {
+            const token = sessionStorage.getItem(roomStorage('token', name));
+            const session = await api('join', { code: name, token, password });
+            if (active !== requestVersion) return;
+            if (byId('accessDialog').open) byId('accessDialog').close();
+            sessionStorage.setItem(roomStorage('token', name), session.token);
+            await join(name, session);
+        } catch (error) {
+            if (active !== requestVersion) return;
+            if (byId('accessDialog').open) byId('accessError').textContent = error.message;
+            else if (error.status === 401 || error.status === 403) openAccess(name);
+            else inform(error.message || '无法加入房间');
+        }
+    }
+
+    byId('accessForm').onsubmit = async event => {
+        event.preventDefault();
+        const submit = event.currentTarget.querySelector('button[type=submit]');
+        submit.disabled = true;
+        try { await enterManaged(byId('accessCode').value, byId('accessPassword').value); }
+        finally { submit.disabled = false; }
+    };
+    byId('accessDialog').addEventListener('close', () => { requestVersion++; });
+    byId('createRoom').onclick = () => {
+        byId('createError').textContent = '';
+        byId('createDialog').showModal();
+    };
+    byId('createForm').onsubmit = async event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const submit = form.querySelector('button[type=submit]');
+        const active = ++requestVersion;
+        submit.disabled = true;
+        byId('createError').textContent = '';
+        try {
+            const session = await api('create', {
+                title: byId('createTitle').value,
+                password: byId('createPassword').value,
+                hours: Number(byId('createRetention').value)
+            });
+            if (active !== requestVersion || !byId('createDialog').open) return;
+            sessionStorage.setItem(roomStorage('token', session.code), session.token);
+            byId('createDialog').close();
+            form.reset();
+            await join(session.code, session);
+        } catch (error) { byId('createError').textContent = error.message; }
+        finally { submit.disabled = false; }
+    };
+
+    async function poll(session, active) {
+        if (active !== version) return;
+        try {
+            const update = await managedCall('poll', { revision: session.revision }, session);
+            if (active !== version) return;
+            online = true;
+            presenceCount = update.online;
+            session.revision = update.revision;
+            if (update.items) acceptMessages(update.items, active, update.hasMore);
+        } catch (error) {
+            if (active !== version) return;
+            if ([401, 404, 410].includes(error.status)) {
+                online = false;
+                received = false;
+                messages.clear();
+                messageRows.clear();
+                list.replaceChildren();
+                byId('moreHistory').hidden = true;
+                byId('jumpBar').hidden = true;
+                byId('connection').textContent = error.message;
+                compose.hidden = true;
+                sessionStorage.removeItem(roomStorage('token', room));
+                resetComposer();
+                input.value = '';
+                return;
+            }
+            online = false;
+        }
+        updateConnection();
+        updateComposer();
+        pollTimer = setTimeout(() => void poll(session, active), document.hidden ? 12000 : 4500);
+    }
+
+    async function join(name, session) {
+        if (/^QC-/i.test(name) && !session) {
+            if (!managedPattern.test(name.toUpperCase())) { inform('房间号格式有误，请检查邀请链接。'); return; }
+            await enterManaged(name.toUpperCase());
+            return;
+        }
+        requestVersion++;
         if (!validRoom(name)) {
             inform('请输入有效房间号，房间号不能包含 . # $ [ ] /。');
             return;
         }
-        if (room) localStorage.setItem(roomStorage('draft'), input.value);
+        if (room === name && online) return;
+        if (room && !managed) localStorage.setItem(roomStorage('draft'), input.value);
+        disconnectRoom();
+        managed = session || null;
         if (query) query.off('value', queryListener);
         if (connectionRef) connectionRef.off('value', connectionListener);
         const active = ++version;
@@ -220,14 +395,14 @@
         latestKey = '';
         historyCursor = '';
         unread = 0;
-        lastRead = localStorage.getItem(roomStorage('read')) || '';
+        lastRead = managed?.private ? '' : localStorage.getItem(roomStorage('read')) || '';
         messages.clear();
         messageRows.clear();
         list.replaceChildren();
         resetComposer();
         byId('roomInput').value = room;
-        input.value = localStorage.getItem(roomStorage('draft')) || '';
-        byId('currentRoomTitle').textContent = '# ' + room;
+        input.value = managed ? '' : localStorage.getItem(roomStorage('draft')) || '';
+        byId('currentRoomTitle').textContent = managed?.title || '# ' + room;
         byId('connection').textContent = '连接中…';
         byId('chatEmpty').hidden = true;
         byId('moreHistory').hidden = true;
@@ -235,66 +410,93 @@
         const url = new URL(location.href);
         url.searchParams.set('room', room);
         history.replaceState(null, '', url);
-        const recent = stored('recentRooms', []).filter((item) => item !== room);
-        localStorage.setItem('recentRooms', JSON.stringify([room, ...recent].slice(0, 10)));
+        const recent = stored('qc-recentRooms', stored('recentRooms', [])).filter((item) => item !== room);
+        localStorage.setItem('qc-recentRooms', JSON.stringify([room, ...recent].slice(0, 10)));
         updateRooms();
         updateProfile();
         updateJump();
         if (mobile.matches) setRail(false);
+        if (managed) {
+            void poll(managed, active);
+            if (!profile.name && !byId('profileDialog').open) openProfile();
+            return;
+        }
 
         try {
             const database = await getDatabase();
             if (active !== version) return;
             reference = database.ref('chatrooms/' + name + '/messages');
             query = reference.orderByKey().limitToLast(pageSize);
+            presenceRef = database.ref('chatrooms/' + name + '/presence');
+            presenceEntry = presenceRef.child(crypto.randomUUID());
+            presenceListener = snapshot => {
+                if (active !== version) return;
+                presenceCount = snapshot.numChildren();
+                updateConnection();
+            };
+            presenceRef.on('value', presenceListener, () => { presenceCount = null; });
             connectionRef = database.ref('.info/connected');
             connectionListener = (snapshot) => {
                 online = snapshot.val() === true;
-                byId('connection').textContent = online ? '实时连接' : '正在重新连接…';
+                if (online) {
+                    const entry = presenceEntry;
+                    entry.onDisconnect().remove().then(() => {
+                        if (active === version) return entry.set(true);
+                        return entry.onDisconnect().cancel();
+                    }).catch(() => {});
+                }
+                updateConnection();
                 updateComposer();
             };
             connectionRef.on('value', connectionListener);
-            queryListener = (snapshot) => {
-                const shouldFollow = nearBottom() && !document.hidden && (!unread || !lastRead);
-                const nextKeys = new Set();
-                let unseen = 0;
-                snapshot.forEach((child) => {
-                    const value = child.val();
-                    nextKeys.add(child.key);
-                    if (value && typeof value === 'object') {
-                        messages.set(child.key, value);
-                        if (received && child.key > latestKey && value.sender !== deviceId) {
-                            unseen++;
-                            notify(value);
-                        }
-                    }
-                });
-                const first = nextKeys.values().next().value;
-                if (!historyCursor && first) historyCursor = first;
-                recentKeys.forEach((key) => {
-                    if (!nextKeys.has(key) && (!first || key > first || nextKeys.size < pageSize)) messages.delete(key);
-                });
-                recentKeys = nextKeys;
-                latestKey = Array.from(nextKeys).at(-1) || '';
-                byId('moreHistory').hidden = byId('moreHistory').dataset.exhausted === String(active) || nextKeys.size < pageSize;
-                if (!received) {
-                    unread = lastRead ? [...nextKeys].filter((key) => key > lastRead).length : 0;
-                } else if (!shouldFollow && unseen) {
-                    if (!unread) lastRead = localStorage.getItem(roomStorage('read')) || '';
-                    unread += unseen;
-                }
-                const wasReceived = received;
-                received = true;
-                render();
-                if ((!wasReceived && !unread) || (wasReceived && shouldFollow)) scrollLatest();
-                else if (!wasReceived && messageRows.has(lastRead)) messageRows.get(lastRead).scrollIntoView({ block: 'center' });
-                updateJump();
+            queryListener = snapshot => {
+                const items = [];
+                snapshot.forEach(child => { items.push([child.key, child.val()]); });
+                acceptMessages(items, active);
             };
             query.on('value', queryListener, showConnectionError);
             if (!profile.name && !byId('profileDialog').open) openProfile();
         } catch {
             if (active === version) showConnectionError();
         }
+    }
+
+    function acceptMessages(items, active, hasMore = items.length >= pageSize) {
+        if (active !== version) return;
+        const shouldFollow = nearBottom() && !document.hidden && (!unread || !lastRead);
+        const nextKeys = new Set();
+        let unseen = 0;
+        items.forEach(([key, value]) => {
+            nextKeys.add(key);
+            if (value && typeof value === 'object') {
+                messages.set(key, value);
+                if (received && key > latestKey && value.sender !== deviceId) {
+                    unseen++;
+                    notify(value);
+                }
+            }
+        });
+        const first = nextKeys.values().next().value;
+        if (!historyCursor && first) historyCursor = first;
+        recentKeys.forEach((key) => {
+            if (!nextKeys.has(key) && (!first || key > first || !hasMore)) messages.delete(key);
+        });
+        recentKeys = nextKeys;
+        const previousLatest = latestKey;
+        latestKey = Array.from(nextKeys).at(-1) || '';
+        byId('moreHistory').hidden = byId('moreHistory').dataset.exhausted === String(active) || !hasMore;
+        if (!received) {
+            unread = lastRead ? [...nextKeys].filter((key) => key > lastRead).length : 0;
+        } else if (!shouldFollow && unseen) {
+            if (!unread) lastRead = managed?.private ? previousLatest : localStorage.getItem(roomStorage('read')) || '';
+            unread += unseen;
+        }
+        const wasReceived = received;
+        received = true;
+        render();
+        if ((!wasReceived && !unread) || (wasReceived && shouldFollow)) scrollLatest();
+        else if (!wasReceived && messageRows.has(lastRead)) messageRows.get(lastRead).scrollIntoView({ block: 'center' });
+        updateJump();
     }
 
     function showConnectionError() {
@@ -331,12 +533,13 @@
 
     function notify(message) {
         if (!document.hidden || localStorage.getItem('qc-notifications') !== 'yes' || window.Notification?.permission !== 'granted') return;
+        if (managed?.private) return;
         try { new Notification('夸克聊天室 · ' + room, { body: (message.nickname || '访客') + '：' + excerpt(message), tag: 'qc-' + room }); }
         catch { /* Browsers with service-worker-only notifications can still read the in-page count. */ }
     }
 
     async function loadHistory() {
-        if (!reference || byId('moreHistory').disabled) return;
+        if ((!reference && !managed) || byId('moreHistory').disabled) return;
         const active = version;
         const first = historyCursor;
         if (!first) return;
@@ -344,16 +547,22 @@
         control.disabled = true;
         control.textContent = '加载中…';
         try {
-            const snapshot = await reference.orderByKey().endAt(first).limitToLast(pageSize + 1).once('value');
+            let items = [];
+            let hasMore;
+            if (managed) {
+                ({ items, hasMore } = await managedCall('history', { before: first }));
+            } else {
+                const snapshot = await reference.orderByKey().endAt(first).limitToLast(pageSize + 1).once('value');
+                snapshot.forEach(child => { if (child.key !== first) items.push([child.key, child.val()]); });
+            }
             if (active !== version) return;
-            snapshot.forEach((child) => {
-                const value = child.val();
-                if (child.key < historyCursor) historyCursor = child.key;
-                if (child.key !== first && value && typeof value === 'object') messages.set(child.key, value);
+            items.forEach(([key, value]) => {
+                if (key < historyCursor) historyCursor = key;
+                if (value && typeof value === 'object') messages.set(key, value);
             });
             const oldTop = stream.scrollTop;
             const oldHeight = stream.scrollHeight;
-            control.hidden = snapshot.numChildren() <= pageSize;
+            control.hidden = !(hasMore ?? items.length >= pageSize);
             if (control.hidden) control.dataset.exhausted = String(active);
             render();
             stream.scrollTop = oldTop + stream.scrollHeight - oldHeight;
@@ -368,16 +577,23 @@
 
     async function reveal(key) {
         if (typeof key !== 'string' || !/^[-\w]{1,128}$/.test(key)) return;
-        if (!messageRows.has(key) && reference) {
+        if (!messageRows.has(key) && (reference || managed)) {
             const active = version;
             try {
-                const snapshot = await reference.orderByKey().endAt(key).limitToLast(pageSize).once('value');
-                if (active !== version) return;
-                snapshot.forEach((child) => {
-                    const value = child.val();
-                    if (value && typeof value === 'object') messages.set(child.key, value);
-                });
-                render();
+                if (managed) {
+                    const { item } = await managedCall('read', { key });
+                    if (active !== version) return;
+                    messages.set(...item);
+                    render();
+                } else {
+                    const snapshot = await reference.orderByKey().endAt(key).limitToLast(pageSize).once('value');
+                    if (active !== version) return;
+                    snapshot.forEach((child) => {
+                        const value = child.val();
+                        if (value && typeof value === 'object') messages.set(child.key, value);
+                    });
+                    render();
+                }
             } catch { if (active === version) inform('无法加载原消息'); return; }
         }
         const row = messageRows.get(key);
@@ -403,6 +619,16 @@
         const avatar = node('span', 'qc-avatar', [...name][0]);
         if (typeof message.color === 'string' && (/^#[a-f\d]{3,8}$/i.test(message.color) || /^rgb\([\d ,]+\)$/.test(message.color))) avatar.style.backgroundColor = message.color;
         avatar.setAttribute('aria-hidden', 'true');
+        const photoUrl = avatarUrl(message.avatarUrl);
+        if (photoUrl) {
+            const photo = node('img');
+            photo.src = photoUrl;
+            photo.alt = '';
+            photo.loading = 'lazy';
+            photo.referrerPolicy = 'no-referrer';
+            photo.onerror = () => photo.remove();
+            avatar.append(photo);
+        }
         const body = node('div', 'qc-body');
         const meta = node('div', 'qc-meta');
         meta.append(node('strong', '', name), node('time', '', formatDate(timeLabel, message.timestamp)));
@@ -436,10 +662,15 @@
             card.append(node('span', 'qc-task-state', done ? '已完成 · ' + String(message.task.by || '房间成员').slice(0, 32) : '待处理'),
                 node('strong', '', String(message.task.title).slice(0, 160)));
             card.append(button(done ? '重新打开' : '标为完成', async (event) => {
-                if (!online || !reference || !profile.name) { inform('连接后设置昵称即可更新待办'); return; }
+                if (!online || (!reference && !managed) || !profile.name) { inform('连接后设置昵称即可更新待办'); return; }
                 event.currentTarget.disabled = true;
                 try {
                     const active = version;
+                    if (managed) {
+                        const { item } = await managedCall('task', { key, done: !done, nickname: profile.name });
+                        if (active === version) { messages.set(...item); render(); }
+                        return;
+                    }
                     const taskRef = reference.child(key).child('task');
                     if (!recentKeys.has(key)) await taskRef.once('value');
                     const result = await taskRef.transaction((task) => task && task.done === done
@@ -494,6 +725,7 @@
         });
         if (!fragment.children.length) fragment.append(node('li', 'qc-no-messages', '房间还没有消息。'));
         list.replaceChildren(fragment);
+        if (byId('roomTasksDialog').open) renderTasks();
         stream.scrollTop = oldTop;
         if (focusedKey) messageRows.get(focusedKey)?.focus({ preventScroll: true });
     }
@@ -542,16 +774,16 @@
             if (active !== version) return;
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
-            for (const maxSide of [1440, 1080, 800, 560, 360]) {
+            for (const maxSide of [1440, 1080, 800, 560, 360, 240]) {
                 const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
                 canvas.width = Math.max(1, Math.round(bitmap.width * scale));
                 canvas.height = Math.max(1, Math.round(bitmap.height * scale));
                 context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
                 const image = canvas.toDataURL('image/webp', .76);
-                if (safeImage(image)) {
+                if (safeImage(image) && (!managed || image.length <= 85000)) {
                     attachment = { image, imageWidth: canvas.width, imageHeight: canvas.height };
                     taskTitle = '';
-                    inform('图片将随消息发送，使用 Firebase 流量。GIF 会发送静态预览。');
+                    if (file.type === 'image/gif') inform('GIF 将以静态预览发送。');
                     return;
                 }
             }
@@ -579,7 +811,7 @@
     };
 
     input.addEventListener('input', () => {
-        if (room) localStorage.setItem(roomStorage('draft'), input.value);
+        if (room && !managed) localStorage.setItem(roomStorage('draft'), input.value);
     });
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && event.keyCode !== 229) {
@@ -591,20 +823,24 @@
     compose.onsubmit = async (event) => {
         event.preventDefault();
         const text = input.value.trim();
-        if (!reference || !online || !profile.name || sending || preparing || (!text && !attachment && !taskTitle)) return;
+        if ((!reference && !managed) || !online || !profile.name || sending || preparing || (!text && !attachment && !taskTitle)) return;
         const active = version;
         const draft = input.value;
         const currentReply = reply;
         const currentAttachment = attachment;
         const currentTask = taskTitle;
-        const record = { text, nickname: profile.name, color: profile.color, sender: deviceId, timestamp: firebase.database.ServerValue.TIMESTAMP };
+        const record = { text, nickname: profile.name, color: profile.color, avatarUrl: profile.avatarUrl || '', sender: deviceId };
+        if (!managed) record.timestamp = firebase.database.ServerValue.TIMESTAMP;
         if (reply) record.reply = reply;
         if (attachment) Object.assign(record, attachment);
         if (taskTitle) record.task = { title: taskTitle, done: false };
         sending = true;
         updateComposer();
         try {
-            await reference.push(record);
+            if (managed) {
+                const { item } = await managedCall('send', { message: record });
+                if (active === version) { messages.set(...item); render(); }
+            } else await reference.push(record);
             if (active !== version) return;
             if (input.value === draft) {
                 input.value = '';
@@ -616,6 +852,31 @@
             scrollLatest();
         } catch { if (active === version) inform('消息发送失败，内容已保留'); }
         finally { sending = false; updateComposer(); }
+    };
+
+    byId('roomTasks').onclick = () => {
+        renderTasks();
+        byId('roomTasksDialog').showModal();
+    };
+
+    function renderTasks() {
+        const tasks = byId('roomTasksList');
+        tasks.replaceChildren();
+        const pending = [...messages].filter(([, message]) => message.task?.title && !message.task.done).reverse();
+        if (!pending.length) tasks.append(node('li', '', '已加载的消息中没有未完成待办。'));
+        for (const [key, message] of pending) {
+            const item = node('li');
+            item.append(button(String(message.task.title).slice(0, 160), () => {
+                byId('roomTasksDialog').close();
+                void reveal(key);
+            }));
+            tasks.append(item);
+        }
+    }
+
+    byId('copyRoomCode').onclick = async () => {
+        try { await navigator.clipboard.writeText(room); inform('房间号已复制'); }
+        catch { inform('可从房间输入框复制房间号'); }
     };
 
     updateProfile();

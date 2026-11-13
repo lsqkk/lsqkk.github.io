@@ -61,7 +61,7 @@ const state = {
     results: [],
     lastSaved: null,
     isSpinning: false,
-    spinAnimation: null
+    displayOptions: null
 };
 
 // DOM元素
@@ -125,6 +125,16 @@ const utils = {
     generateId: () => {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
     },
+
+    prepareWheel: (wheel) => {
+        wheel.options.forEach(option => { option.id ??= utils.generateId(); });
+        wheel.usedIds ??= [];
+        return wheel;
+    },
+
+    pool: (wheel) => wheel.drawMode === 'with-replacement'
+        ? [...wheel.options]
+        : wheel.options.filter(option => !wheel.usedIds.includes(option.id)),
 
     // 格式化日期
     formatDate: (date) => {
@@ -213,9 +223,7 @@ const utils = {
 // 转盘绘制函数
 const wheelRenderer = {
     ctx: null,
-    spinning: false,
     rotation: 0,
-    spinSpeed: 0,
 
     init: function () {
         this.ctx = elements.wheelCanvas.getContext('2d');
@@ -225,13 +233,13 @@ const wheelRenderer = {
 
     resizeCanvas: function () {
         const container = elements.wheelCanvas.parentElement;
-        const size = Math.min(container.clientWidth, 500);
+        const size = Math.max(24, Math.round(container.clientWidth * window.devicePixelRatio));
 
         elements.wheelCanvas.width = size;
         elements.wheelCanvas.height = size;
 
         if (state.currentWheel) {
-            this.drawWheel(state.currentWheel.options);
+            this.drawWheel(state.displayOptions ?? utils.pool(state.currentWheel));
         }
     },
 
@@ -246,7 +254,7 @@ const wheelRenderer = {
         const height = elements.wheelCanvas.height;
         const centerX = width / 2;
         const centerY = height / 2;
-        const radius = Math.min(width, height) / 2 - 10;
+        const radius = Math.min(width, height) * 0.48;
 
         // 清空画布
         ctx.clearRect(0, 0, width, height);
@@ -283,13 +291,13 @@ const wheelRenderer = {
             ctx.rotate(startAngle + angle / 2);
             ctx.textAlign = 'right';
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 14px Arial';
+            ctx.font = 'bold ' + Math.max(10, width * 0.031) + 'px Arial';
             ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
             ctx.shadowBlur = 3;
 
             // 调整文字位置
-            ctx.translate(radius - 30, 0);
-            ctx.rotate(Math.PI / 2);
+            ctx.translate(radius * 0.92, 0);
+            ctx.textBaseline = 'middle';
 
             // 限制文字长度
             let text = option.text;
@@ -298,7 +306,7 @@ const wheelRenderer = {
                 text = text.substring(0, maxLength - 2) + '...';
             }
 
-            ctx.fillText(text, 0, 0);
+            ctx.fillText(text, 0, 0, radius * 0.66);
             ctx.restore();
 
             startAngle += angle;
@@ -306,7 +314,7 @@ const wheelRenderer = {
 
         // 绘制中心圆
         ctx.beginPath();
-        ctx.arc(0, 0, 20, 0, 2 * Math.PI);
+        ctx.arc(0, 0, radius * 0.105, 0, 2 * Math.PI);
         ctx.fillStyle = '#fff';
         ctx.fill();
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
@@ -322,7 +330,7 @@ const wheelRenderer = {
         const height = elements.wheelCanvas.height;
         const centerX = width / 2;
         const centerY = height / 2;
-        const radius = Math.min(width, height) / 2 - 10;
+        const radius = Math.min(width, height) * 0.48;
 
         // 清空画布
         ctx.clearRect(0, 0, width, height);
@@ -345,76 +353,28 @@ const wheelRenderer = {
         ctx.fillText('点击"添加选项"按钮', centerX, centerY + 15);
     },
 
-    spin: function (onComplete) {
-        if (this.spinning || !state.currentWheel || state.currentWheel.options.length === 0) {
-            return;
-        }
+    spin(options, winner, duration) {
+        const turn = 2 * Math.PI;
+        const before = utils.calculateTotalWeight(options.slice(0, options.indexOf(winner)));
+        const midpoint = turn * (before + winner.weight / 2) / utils.calculateTotalWeight(options);
+        const start = this.rotation;
+        const offset = ((-Math.PI / 2 - midpoint - start) % turn + turn) % turn;
+        const distance = 4 * turn + offset;
+        const startTime = performance.now();
+        state.displayOptions = options;
 
-        this.spinning = true;
-        state.isSpinning = true;
-        elements.spinBtn.disabled = true;
-        elements.spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 抽取中...';
-
-        // 随机旋转角度和减速曲线
-        const spins = 5 + Math.random() * 3; // 5-8圈
-        const targetRotation = this.rotation + spins * 2 * Math.PI + (Math.random() * 2 * Math.PI);
-
-        const startTime = Date.now();
-        const duration = 3000 + Math.random() * 2000; // 3-5秒
-
-        const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            // 使用缓动函数（先快后慢）
-            const easeOut = 1 - Math.pow(1 - progress, 3);
-
-            this.rotation = easeOut * targetRotation;
-            this.drawWheel(state.currentWheel.options);
-
-            if (progress < 1) {
-                this.spinAnimation = requestAnimationFrame(animate);
-            } else {
-                this.spinning = false;
-                state.isSpinning = false;
-                elements.spinBtn.disabled = false;
-                elements.spinBtn.innerHTML = '<i class="fas fa-play"></i> 开始抽取';
-
-                // 计算选中项
-                const normalizedRotation = this.rotation % (2 * Math.PI);
-                const options = state.currentWheel.options;
-                const totalWeight = utils.calculateTotalWeight(options);
-
-                let currentAngle = 0;
-                let selectedOption = null;
-
-                for (const option of options) {
-                    const angle = (option.weight / totalWeight) * 2 * Math.PI;
-                    if (normalizedRotation >= currentAngle && normalizedRotation < currentAngle + angle) {
-                        selectedOption = option;
-                        break;
-                    }
-                    currentAngle += angle;
-                }
-
-                if (selectedOption && onComplete) {
-                    onComplete(selectedOption);
-                }
-            }
-        };
-
-        animate();
-    },
-
-    stopSpin: function () {
-        if (this.spinAnimation) {
-            cancelAnimationFrame(this.spinAnimation);
-            this.spinning = false;
-            state.isSpinning = false;
-            elements.spinBtn.disabled = false;
-            elements.spinBtn.innerHTML = '<i class="fas fa-play"></i> 开始抽取';
-        }
+        return new Promise(resolve => {
+            const animate = now => {
+                const progress = duration ? Math.min((now - startTime) / duration, 1) : 1;
+                this.rotation = (start + distance * (1 - (1 - progress) ** 3)) % turn;
+                this.drawWheel(options);
+                if (progress < 1) requestAnimationFrame(animate);
+                else resolve();
+            };
+            requestAnimationFrame(animate);
+        });
     }
+
 };
 
 // 数据管理
@@ -426,8 +386,7 @@ const dataManager = {
             if (savedWheels) {
                 const parsed = JSON.parse(savedWheels);
                 state.wheels = parsed.wheels || [];
-                state.currentWheel = parsed.currentWheel ?
-                    state.wheels.find(w => w.id === parsed.currentWheel.id) : null;
+                state.currentWheel = state.wheels.find(w => w.id === parsed.currentWheel?.id) ?? state.wheels[0];
                 state.results = parsed.results || [];
                 state.lastSaved = parsed.lastSaved;
 
@@ -527,8 +486,8 @@ const uiManager = {
 
             wheelItem.innerHTML = `
                 <div class="wheel-info">
-                    <div class="wheel-name">${wheel.name}</div>
-                    <div class="wheel-description">${wheel.description || ''}</div>
+                    <div class="wheel-name"></div>
+                    <div class="wheel-description"></div>
                 </div>
                 <div class="wheel-meta">
                     <span class="wheel-options-count">${wheel.options.length}项</span>
@@ -543,6 +502,9 @@ const uiManager = {
                 </div>
             `;
 
+            wheelItem.querySelector('.wheel-name').textContent = wheel.name;
+            wheelItem.querySelector('.wheel-description').textContent = wheel.description || '';
+
             // 点击切换转盘
             wheelItem.addEventListener('click', (e) => {
                 if (!e.target.closest('.item-actions')) {
@@ -553,7 +515,7 @@ const uiManager = {
             // 编辑转盘
             wheelItem.querySelector('.edit-wheel').addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showEditWheelModal(wheel);
+                this.showCreateWheelModal(wheel);
             });
 
             // 删除转盘
@@ -568,7 +530,11 @@ const uiManager = {
 
     // 设置当前转盘
     setCurrentWheel: function (wheel) {
-        state.currentWheel = wheel;
+        if (state.isSpinning) return;
+        state.currentWheel = utils.prepareWheel(wheel);
+        document.getElementById('draw-announcement').textContent = wheel.roster
+            ? wheel.roster.seats.map(seat => seat.original.text).join('、') : '等待抽取';
+        document.getElementById('reserve-count').value = 0;
 
         // 更新标题
         elements.currentWheelTitle.textContent = wheel.name;
@@ -576,13 +542,8 @@ const uiManager = {
         elements.drawCount.value = wheel.drawCount;
         elements.drawModeSelect.value = wheel.drawMode;
         elements.drawMode.textContent = wheel.drawMode === 'with-replacement' ? '放回' : '不放回';
-        elements.optionCount.textContent = wheel.options.length;
-
-        // 更新选项列表
-        this.updateOptionsList();
-
-        // 更新转盘显示
-        wheelRenderer.drawWheel(wheel.options);
+        this.refreshPool();
+        this.renderRoster();
 
         // 更新转盘列表的高亮
         document.querySelectorAll('.wheel-item').forEach(item => {
@@ -611,9 +572,9 @@ const uiManager = {
             optionItem.dataset.index = index;
 
             optionItem.innerHTML = `
-                <div class="option-color" style="width: 12px; height: 12px; border-radius: 50%; background: ${option.color}; margin-right: 10px;"></div>
-                <div class="option-name">${option.text}</div>
-                <div class="option-weight">${option.weight.toFixed(2)}</div>
+                <span class="option-color"></span>
+                <div class="option-name"></div>
+                <div class="option-weight"></div>
                 <div class="item-actions">
                     <button class="item-action-btn edit-option" title="编辑">
                         <i class="fas fa-edit"></i>
@@ -623,6 +584,12 @@ const uiManager = {
                     </button>
                 </div>
             `;
+
+            const used = state.currentWheel.drawMode !== 'with-replacement' && state.currentWheel.usedIds.includes(option.id);
+            optionItem.classList.toggle('drawn-option', used);
+            optionItem.querySelector('.option-color').style.backgroundColor = option.color;
+            optionItem.querySelector('.option-name').textContent = option.text;
+            optionItem.querySelector('.option-weight').textContent = used ? '已抽出' : Number(option.weight.toPrecision(3));
 
             // 编辑选项
             optionItem.querySelector('.edit-option').addEventListener('click', () => {
@@ -662,7 +629,7 @@ const uiManager = {
             resultItem.innerHTML = `
                 <div class="result-content">
                     <span class="result-index">${state.results.length - index}.</span>
-                    <span class="result-text">${result.option.text}</span>
+                    <span class="result-text"></span>
                     <small class="result-time">${utils.formatDate(result.timestamp)}</small>
                 </div>
                 <div class="result-actions">
@@ -672,6 +639,8 @@ const uiManager = {
                 </div>
             `;
 
+            resultItem.querySelector('.result-text').textContent = result.option.text;
+            resultItem.querySelector('.result-text').title = result.wheelName;
             // 删除单条结果
             resultItem.querySelector('.delete-result').addEventListener('click', (e) => {
                 const resultIndex = parseInt(e.target.closest('.delete-result').dataset.index);
@@ -682,19 +651,6 @@ const uiManager = {
         });
     },
 
-    // 添加抽取结果
-    addResult: function (option) {
-        const result = {
-            option: option,
-            wheelId: state.currentWheel.id,
-            wheelName: state.currentWheel.name,
-            timestamp: new Date().toISOString()
-        };
-
-        state.results.push(result);
-        this.updateResultsList();
-        dataManager.saveToStorage();
-    },
 
     // 删除单条结果
     deleteResult: function (index) {
@@ -749,12 +705,12 @@ const uiManager = {
             return;
         }
 
-        if (isNaN(weight) || weight <= 0) {
+        if (!Number.isFinite(weight) || weight <= 0 || weight > 1e9) {
             alert('请输入有效的权重值（大于0）');
             return;
         }
 
-        const option = { text, weight, color };
+        const option = { id: state.currentWheel.options[state.editingOption]?.id ?? utils.generateId(), text, weight, color };
 
         if (state.editingOption !== null) {
             // 更新现有选项
@@ -765,9 +721,7 @@ const uiManager = {
         }
 
         // 更新UI
-        this.updateOptionsList();
-        wheelRenderer.drawWheel(state.currentWheel.options);
-        elements.optionCount.textContent = state.currentWheel.options.length;
+        this.refreshPool();
 
         // 保存数据
         dataManager.saveToStorage();
@@ -786,12 +740,11 @@ const uiManager = {
     deleteOption: function (index) {
         if (state.currentWheel && index >= 0 && index < state.currentWheel.options.length) {
             if (confirm('确定要删除这个选项吗？')) {
-                state.currentWheel.options.splice(index, 1);
+                const [removed] = state.currentWheel.options.splice(index, 1);
+                state.currentWheel.usedIds = state.currentWheel.usedIds.filter(id => id !== removed.id);
 
                 // 更新UI
-                this.updateOptionsList();
-                wheelRenderer.drawWheel(state.currentWheel.options);
-                elements.optionCount.textContent = state.currentWheel.options.length;
+                this.refreshPool();
 
                 // 保存数据
                 dataManager.saveToStorage();
@@ -952,124 +905,121 @@ const uiManager = {
     },
 
     // 执行抽取
-    performDraw: function () {
-        if (!state.currentWheel || state.currentWheel.options.length === 0) {
-            alert('当前转盘没有选项，请先添加选项');
-            return;
-        }
-
-        if (state.isSpinning) {
-            return;
-        }
-
-        const drawCount = parseInt(elements.drawCount.value) || 1;
-        const drawMode = elements.drawModeSelect.value;
-
-        // 验证抽取数量
-        if (drawMode === 'without-replacement' && drawCount > state.currentWheel.options.length) {
-            alert(`不放回抽取时，抽取数量不能超过选项数量（当前有${state.currentWheel.options.length}个选项）`);
-            return;
-        }
-
-        // 开始转盘动画
-        wheelRenderer.spin((selectedOption) => {
-            // 单次抽取
-            if (drawCount === 1) {
-                this.addResult(selectedOption);
-
-                // 如果不放回抽取，从转盘中移除该选项
-                if (drawMode === 'without-replacement') {
-                    const optionIndex = state.currentWheel.options.findIndex(
-                        opt => opt.text === selectedOption.text && opt.color === selectedOption.color
-                    );
-
-                    if (optionIndex !== -1) {
-                        state.currentWheel.options.splice(optionIndex, 1);
-                        this.updateOptionsList();
-                        elements.optionCount.textContent = state.currentWheel.options.length;
-                        dataManager.saveToStorage();
-
-                        // 如果转盘空了，重置转盘
-                        if (state.currentWheel.options.length === 0) {
-                            alert('所有选项都已被抽取！转盘已重置。');
-                            this.resetWheel();
-                        }
-                    }
-                }
-            } else {
-                // 多次抽取
-                const results = [];
-                let availableOptions = [...state.currentWheel.options];
-
-                for (let i = 0; i < drawCount; i++) {
-                    if (availableOptions.length === 0) {
-                        alert(`只有${state.currentWheel.options.length}个选项，无法抽取${drawCount}次`);
-                        break;
-                    }
-
-                    const selected = utils.weightedRandom(availableOptions);
-                    results.push(selected);
-
-                    // 如果不放回抽取，从可用选项中移除
-                    if (drawMode === 'without-replacement') {
-                        const optionIndex = availableOptions.findIndex(
-                            opt => opt.text === selected.text && opt.color === selected.color
-                        );
-                        availableOptions.splice(optionIndex, 1);
-                    }
-                }
-
-                // 添加所有结果
-                results.forEach(option => {
-                    this.addResult(option);
-                });
-
-                // 如果不放回抽取，更新转盘
-                if (drawMode === 'without-replacement') {
-                    state.currentWheel.options = availableOptions;
-                    this.updateOptionsList();
-                    elements.optionCount.textContent = state.currentWheel.options.length;
-                    dataManager.saveToStorage();
-
-                    // 如果转盘空了，重置转盘
-                    if (state.currentWheel.options.length === 0) {
-                        alert('所有选项都已被抽取！转盘已重置。');
-                        this.resetWheel();
-                    }
-                }
-            }
-
-            // 重新绘制转盘
-            wheelRenderer.drawWheel(state.currentWheel.options);
-        });
+    refreshPool() {
+        const wheel = state.currentWheel;
+        state.displayOptions = null;
+        wheelRenderer.rotation = 0;
+        const available = utils.pool(wheel);
+        wheelRenderer.drawWheel(available);
+        elements.optionCount.textContent = available.length + ' / ' + wheel.options.length;
+        elements.spinBtn.disabled = !available.length || Boolean(wheel.roster);
+        this.updateOptionsList();
+        this.updateWheelList();
     },
 
-    // 重置转盘
-    resetWheel: function () {
-        if (!state.currentWheel) return;
+    async performDraw() {
+        const wheel = state.currentWheel;
+        if (!wheel || state.isSpinning || wheel.roster) return;
+        const reserveInput = document.getElementById('reserve-count');
+        if (!elements.drawCount.reportValidity() || !reserveInput.reportValidity()) return;
+        const drawCount = Number(elements.drawCount.value);
+        const withoutReplacement = elements.drawModeSelect.value === 'without-replacement';
+        const reserveCount = withoutReplacement ? Number(reserveInput.value) : 0;
+        const available = utils.pool(wheel);
+        const message = document.getElementById('draw-announcement');
 
-        // 恢复所有选项（从原始数据中找回）
-        const originalWheel = DEFAULT_WHEELS.find(w => w.id === state.currentWheel.id);
-        if (originalWheel) {
-            state.currentWheel.options = [...originalWheel.options];
-        } else {
-            // 如果没有原始数据，至少保留一个选项
-            if (state.currentWheel.options.length === 0) {
-                state.currentWheel.options = [
-                    { text: '选项1', weight: 1, color: '#3498db' },
-                    { text: '选项2', weight: 1, color: '#2ecc71' }
-                ];
-            }
+        if (!available.length || (withoutReplacement && drawCount + reserveCount > available.length)) {
+            message.textContent = '仅余 ' + available.length + ' 签，请减少正选或候补人数。';
+            return;
         }
 
-        // 更新UI
-        this.updateOptionsList();
-        wheelRenderer.drawWheel(state.currentWheel.options);
-        elements.optionCount.textContent = state.currentWheel.options.length;
+        state.isSpinning = true;
+        elements.spinBtn.disabled = true;
+        const editor = document.querySelector('.right-panel');
+        editor.inert = true;
+        elements.resetBtn.disabled = true;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const primary = [];
+        for (let i = 0; i < drawCount; i++) {
+            message.textContent = '正在抽取第 ' + (i + 1) + ' / ' + drawCount + ' 签';
+            const winner = utils.weightedRandom(available);
+            await wheelRenderer.spin([...available], winner, reducedMotion ? 0 : i === 0 ? 2100 : 850);
+            primary.push({ ...winner });
+            if (withoutReplacement) available.splice(available.indexOf(winner), 1);
+        }
 
-        // 保存数据
+        const reserve = [];
+        for (let i = 0; i < reserveCount; i++) {
+            const winner = utils.weightedRandom(available);
+            reserve.push({ ...winner });
+            available.splice(available.indexOf(winner), 1);
+        }
+        if (withoutReplacement) wheel.usedIds.push(...primary.concat(reserve).map(option => option.id));
+        if (reserve.length) {
+            wheel.roster = { seats: primary.map(option => ({ original: option, current: option })), reserve, withdrawals: [] };
+        }
+        const timestamp = new Date().toISOString();
+        state.results.push(...primary.map(option => ({ option, wheelId: wheel.id, wheelName: wheel.name, timestamp })));
+        state.isSpinning = false;
+        editor.inert = false;
+        elements.resetBtn.disabled = false;
+        elements.spinBtn.disabled = !available.length || Boolean(wheel.roster);
+        elements.optionCount.textContent = available.length + ' / ' + wheel.options.length;
+        message.textContent = primary.map(option => option.text).join('、');
+        this.updateOptionsList();
+        this.updateResultsList();
+        this.renderRoster();
         dataManager.saveToStorage();
     },
+
+    renderRoster() {
+        const roster = state.currentWheel.roster;
+        document.getElementById('copy-roster').textContent = '复制名册';
+        const panel = document.getElementById('roster-panel');
+        const reserveInput = document.getElementById('reserve-count');
+        reserveInput.disabled = Boolean(roster) || elements.drawModeSelect.value === 'with-replacement';
+        if (reserveInput.disabled) reserveInput.value = 0;
+        panel.hidden = !roster;
+        if (!roster) return;
+        const list = document.getElementById('roster-seats');
+        list.replaceChildren();
+        roster.seats.forEach((seat, index) => {
+            const row = document.createElement('li');
+            const label = document.createElement('span');
+            label.textContent = seat.current.text;
+            const button = document.createElement('button');
+            button.className = 'btn-secondary btn-small';
+            button.textContent = '缺席 · 递补';
+            button.disabled = !roster.reserve.length;
+            button.addEventListener('click', () => {
+                const next = roster.reserve[0];
+                if (!confirm('确认由 ' + next.text + ' 递补 ' + seat.current.text + ' 的名额？')) return;
+                roster.reserve.shift();
+                roster.withdrawals.push({ seat: index + 1, from: seat.current.text, to: next.text, timestamp: new Date().toISOString() });
+                seat.current = next;
+                dataManager.saveToStorage();
+                this.renderRoster();
+            });
+            row.append(label, button);
+            list.append(row);
+        });
+        document.getElementById('roster-reserve').textContent = roster.reserve.length
+            ? '候补顺序 · ' + roster.reserve.map(option => option.text).join(' → ') : '候补已用完';
+        document.getElementById('roster-log').textContent = roster.withdrawals
+            .map(entry => '第 ' + entry.seat + ' 席 · ' + entry.from + ' → ' + entry.to).join('\n');
+    },
+
+    resetWheel() {
+        if (!state.currentWheel || state.isSpinning) return;
+        if (state.currentWheel.roster && !confirm('结束本轮并清除递补名册？可先导出结果留档。')) return;
+        state.currentWheel.usedIds = [];
+        delete state.currentWheel.roster;
+        document.getElementById('draw-announcement').textContent = '等待抽取';
+        this.refreshPool();
+        this.renderRoster();
+        dataManager.saveToStorage();
+    },
+
 
     // 归一化权重
     normalizeWeights: function () {
@@ -1078,8 +1028,7 @@ const uiManager = {
         }
 
         state.currentWheel.options = utils.normalizeWeights(state.currentWheel.options);
-        this.updateOptionsList();
-        wheelRenderer.drawWheel(state.currentWheel.options);
+        this.refreshPool();
         dataManager.saveToStorage();
     },
 
@@ -1090,8 +1039,7 @@ const uiManager = {
         }
 
         state.currentWheel.options = utils.setEqualWeights(state.currentWheel.options);
-        this.updateOptionsList();
-        wheelRenderer.drawWheel(state.currentWheel.options);
+        this.refreshPool();
         dataManager.saveToStorage();
     },
 
@@ -1103,16 +1051,15 @@ const uiManager = {
 
         if (confirm('确定要清空所有选项吗？此操作不可撤销。')) {
             state.currentWheel.options = [];
-            this.updateOptionsList();
-            wheelRenderer.drawWheel(state.currentWheel.options);
-            elements.optionCount.textContent = 0;
+            state.currentWheel.usedIds = [];
+            this.refreshPool();
             dataManager.saveToStorage();
         }
     },
 
     // 导出结果
     exportResults: function () {
-        if (state.results.length === 0) {
+        if (!state.results.length && !state.wheels.some(wheel => wheel.roster)) {
             alert('没有可导出的结果');
             return;
         }
@@ -1123,7 +1070,8 @@ const uiManager = {
                 name: state.currentWheel.name,
                 id: state.currentWheel.id
             } : null,
-            results: state.results
+            results: state.results,
+            rosters: state.wheels.filter(wheel => wheel.roster).map(({ id, name, roster }) => ({ id, name, ...roster }))
         };
 
         const filename = `随机转盘结果_${new Date().toISOString().slice(0, 10)}.json`;
@@ -1139,7 +1087,7 @@ const uiManager = {
 
         const data = {
             exportDate: new Date().toISOString(),
-            wheels: state.wheels
+            wheels: state.wheels.map(({ id, name, description, drawCount, drawMode, options }) => ({ id, name, description, drawCount, drawMode, options }))
         };
 
         const filename = `转盘数据_${new Date().toISOString().slice(0, 10)}.json`;
@@ -1150,7 +1098,7 @@ const uiManager = {
     importWheelsJson: function () {
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '/assets/pages/tool/random-wheel/.json';
+        input.accept = '.json,application/json';
 
         input.onchange = async (e) => {
             const file = e.target.files[0];
@@ -1159,14 +1107,23 @@ const uiManager = {
             try {
                 const importedData = await utils.importFromJson(file);
 
-                if (!importedData.wheels || !Array.isArray(importedData.wheels)) {
+                if (state.isSpinning) return;
+                if (!Array.isArray(importedData.wheels) || !importedData.wheels.length ||
+                    importedData.wheels.some(wheel => typeof wheel?.name !== 'string' || !Array.isArray(wheel.options) ||
+                        wheel.options.some(option => typeof option?.text !== 'string' ||
+                            !Number.isFinite(option.weight) || option.weight <= 0 || option.weight > 1e9))) {
                     throw new Error('无效的转盘数据格式');
                 }
 
                 if (confirm(`是否导入 ${importedData.wheels.length} 个转盘？现有数据将被覆盖。`)) {
                     state.wheels = importedData.wheels.map(wheel => ({
                         ...wheel,
-                        id: wheel.id || utils.generateId()
+                        options: wheel.options.map(option => ({ ...option, id: utils.generateId() })),
+                        id: utils.generateId(),
+                        drawCount: Math.min(10, Math.max(1, Math.trunc(Number(wheel.drawCount)) || 1)),
+                        drawMode: wheel.drawMode === 'with-replacement' ? 'with-replacement' : 'without-replacement',
+                        usedIds: [],
+                        roster: undefined
                     }));
 
                     // 设置第一个转盘为当前转盘
@@ -1225,6 +1182,33 @@ function setupEventListeners() {
 
     // 重置转盘
     elements.resetBtn.addEventListener('click', () => uiManager.resetWheel());
+
+    document.getElementById('append-options').addEventListener('click', () => {
+        const input = document.getElementById('bulk-options');
+        const names = input.value.split(/\r?\n/).map(name => name.trim()).filter(Boolean);
+        const colors = ['#137e71', '#8746af', '#c24c62', '#2b68b0', '#a85d24', '#476b3e'];
+        state.currentWheel.options.push(...names.slice(0, 1000).map((text, index) => ({
+            id: utils.generateId(), text, weight: 1, color: colors[index % colors.length]
+        })));
+        input.value = names.slice(1000).join('\n');
+        uiManager.refreshPool();
+        dataManager.saveToStorage();
+    });
+
+    document.getElementById('copy-roster').addEventListener('click', async event => {
+        const button = event.currentTarget;
+        const { seats, reserve } = state.currentWheel.roster;
+        try {
+            await navigator.clipboard.writeText([
+                state.currentWheel.name,
+                ...seats.map((seat, index) => (index + 1) + '. ' + seat.current.text),
+                '候补 · ' + (reserve.map(option => option.text).join(' → ') || '无')
+            ].join('\n'));
+            button.textContent = '已复制';
+        } catch {
+            button.textContent = '复制失败，可导出结果';
+        }
+    });
 
     // 清空结果
     elements.clearResults.addEventListener('click', () => uiManager.clearResults());
@@ -1310,6 +1294,8 @@ function setupEventListeners() {
     elements.drawModeSelect.addEventListener('change', () => {
         if (state.currentWheel) {
             state.currentWheel.drawMode = elements.drawModeSelect.value;
+            uiManager.refreshPool();
+            uiManager.renderRoster();
             elements.drawMode.textContent = state.currentWheel.drawMode === 'with-replacement' ? '放回' : '不放回';
             dataManager.saveToStorage();
         }
