@@ -210,7 +210,7 @@ class CommandManager {
             let result = { text: null, status: 0 };
             for (const stage of job.stages) {
                 if (signal?.aborted) return 130;
-                result = await ShellText.run(this, stage, result.text);
+                result = await ShellText.run(this, stage, result.text, { signal, agent, script });
             }
             if (signal?.aborted) return 130;
             if (job.redirect) {
@@ -223,6 +223,7 @@ class CommandManager {
             }
             return result.status;
         } catch (error) {
+            if (signal?.aborted) return 130;
             this.output(`错误: ${error.message}`, 'error');
             return 1;
         }
@@ -472,8 +473,9 @@ class CommandManager {
         }
         this.output(this.createDefinitionList([
             ['目录与文件', 'ls -al · pwd · cd · tree · find · stat · mkdir -p · rmdir · touch · write / edit · cp · mv · rm · import · download'],
-            ['文本处理', Object.keys(textCommands).filter((name) => name !== 'ls' && name !== 'pwd').join(' · ')],
+            ['文本处理', Object.keys(textCommands).filter((name) =>  !['ls', 'pwd', 'curl', 'ping', 'dig'].includes(name)).join(' · ')],
             ['Shell', 'echo "$HOME" · history · clear · date · calc · test · true / false · source · whoami · uname · env · export · unset · theme'],
+            ['网络', 'curl -I https://example.com · ping example.org · dig example.org AAAA'],
             ['AI', 'llm <消息> · llm-on / llm-off · llm-config · agent <任务> · agent run · agent cancel'],
             ['站内', 'search <关键词> · open <网址> · tools · games'],
             ['示例', 'cat readme.md | grep -in llm > /tmp/matches.txt && cat /tmp/matches.txt']

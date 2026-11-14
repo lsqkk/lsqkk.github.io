@@ -248,10 +248,12 @@ class ShellText {
         return Object.hasOwn(textCommands, name) ? textCommands[name] : null;
     }
 
-    static async run(manager, tokens, input) {
+    static async run(manager, tokens, input, { signal, agent, script } = {}) {
         const name = tokens[0].toLowerCase();
         const command = ShellText.get(name);
         if (!command) throw new Error('管道和重定向仅支持文本命令: ' + name);
+
+        if (command.manualOnly && (agent || script)) throw new Error('此命令仅支持手动运行: ' + name);
 
         const read = (stdin, files, usage = command.usage) => {
             if (!files.length) {
@@ -264,7 +266,7 @@ class ShellText {
                 return manager.storage.readFile(path);
             }).join('');
         };
-        const result = await command.run({ manager, args: tokens.slice(1), input, read });
+        const result = await command.run({ manager, args: tokens.slice(1), input, read, signal });
         return typeof result === 'string' ? { text: result, status: 0 } : result;
     }
 }

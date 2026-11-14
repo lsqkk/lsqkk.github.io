@@ -795,3 +795,56 @@ body { background: #121419; }
 .secondary-btn { color: var(--text-subtle); background: transparent; border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .secondary-btn:hover { color: var(--text-main); background: var(--surface-soft); }
 .glass-card { background: var(--surface); border: 1px solid var(--line); box-shadow: none; }
+
+.feature-typeflow .typeflow-container { max-width: 1120px; }
+.feature-typeflow .hero-section { margin-bottom: 22px; }
+.feature-typeflow .hero-section h1 { font-size: clamp(2rem, 5vw, 3.15rem); margin-bottom: 4px; }
+.feature-typeflow .hero-section .subtitle { margin: 0; }
+.feature-typeflow .content-wrapper { grid-template-columns: minmax(0, 1fr) minmax(225px, 290px); align-items: start; gap: 16px; }
+.feature-typeflow .typing-header { margin-bottom: 12px; padding-block: 13px; }
+.feature-typeflow .text-display { padding: clamp(14px, 2.5vw, 24px); margin-bottom: 16px; }
+.feature-typeflow .text-content {
+    border: 0;
+    padding: 12px 0 20px;
+    background: transparent;
+    color: var(--text-main);
+    font-size: clamp(17px, 2.4vw, 22px);
+    line-height: 1.85;
+    min-height: 120px;
+    max-height: 235px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    scrollbar-gutter: stable;
+}
+.feature-typeflow .typing-input { min-height: 100px; resize: vertical; line-height: 1.65; }
+.feature-typeflow .char-pending { color: var(--text-subtle); }
+.feature-typeflow .char-correct { color: var(--text-main); }
+.feature-typeflow .char-wrong { color: #e96876; background: color-mix(in srgb, #e96876 16%, transparent); text-decoration: underline; }
+.feature-typeflow .char-current { color: var(--text-main); background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: -2px 0 var(--accent); }
+.feature-typeflow .practice-actions { margin: 12px 0 0; gap: 8px; }
+.feature-typeflow .analysis-panel { grid-column: 1/-1; display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.feature-typeflow .analysis-panel h2 { grid-column: 1/-1; margin-bottom: 0; }
+.feature-typeflow .analysis-section { margin: 0; }
+.feature-typeflow .practice-status { display: flex; justify-content: space-between; gap: 8px; color: var(--text-subtle); font-size: .8rem; }
+.feature-typeflow .race-track { position: relative; margin-top: 8px; height: 6px; border-radius: 999px; background: var(--line); }
+.feature-typeflow .race-track span { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.feature-typeflow .race-track i { position: absolute; top: -2px; height: 10px; width: 3px; background: var(--text-main); border-radius: 3px; transform: translateX(-50%); }
+.feature-typeflow .custom-practice { margin: 4px 0 16px; }
+.feature-typeflow .custom-practice summary { font-size: .9rem; cursor: pointer; }
+.feature-typeflow .custom-practice label, .feature-typeflow #custom-status { display: block; margin: 8px 0; color: var(--text-subtle); font-size: .8rem; }
+.feature-typeflow #custom-text { box-sizing: border-box; width: 100%; margin-bottom: 8px; background: var(--surface-soft); color: var(--text-main); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 8px; font: inherit; resize: vertical; }
+.feature-typeflow .key { min-width: 0; width: clamp(19px, 3vw, 29px); }
+.feature-typeflow .key-space { width: min(90%, 145px); }
+.feature-typeflow .modal-actions { flex-wrap: wrap; }
+.feature-typeflow .modal-content { max-height: 88vh; overflow: auto; }
+@media (max-width: 850px) {
+    .feature-typeflow .content-wrapper { grid-template-columns: minmax(0, 1fr); }
+    .feature-typeflow .control-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .feature-typeflow .control-panel > :is(h2, .stats-preview, .custom-practice) { grid-column: 1/-1; }
+    .feature-typeflow .control-panel > .form-group { margin: 0; }
+}
+@media (max-width: 530px) {
+    .feature-typeflow .control-panel, .feature-typeflow .analysis-panel { grid-template-columns: minmax(0, 1fr); }
+    .feature-typeflow .practice-actions button { flex: 1 1 auto; }
+    .feature-typeflow .live-stats { gap: 10px; }
+}

@@ -1,5 +1,4 @@
 ---
-import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
 import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 ---
 
@@ -12,30 +11,103 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <title>TypeFlow Pro - 智能打字测试 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
     <link rel="stylesheet" href="/assets/css/basic.css">
-    <link rel="stylesheet" href="/assets/css/cursor.css">
-    <script is:inline defer src="/assets/js/cursor-trail.js"></script>
     <script is:inline defer src="/assets/js/nav.js"></script>
 
     <!-- 自定义样式和脚本 -->
-    <link rel="stylesheet" href="/assets/pages/tool/typeflow/style.css">
 
     <!-- 图表库 -->
     <script is:inline defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="/assets/css/feature-pages.css">
+    <link rel="stylesheet" href="/assets/pages/tool/typeflow/style.css">
     <script is:inline defer src="/assets/pages/tool/typeflow/app.js"></script>
 </head>
 
 <body class="luxury-body feature-page feature-typeflow">
     <nav class="feature-breadcrumb" aria-label="当前位置"><a href="/">首页</a><span aria-hidden="true">/</span><a href="/tool/">工具箱</a><span aria-hidden="true">↗</span></nav>
-    <LuxuryBackground />
     <!-- 页面内容 -->
     <main class="typeflow-container">
         <div class="hero-section">
             <h1>TypeFlow Pro</h1>
-            <p class="subtitle">智能打字分析与技能提升系统</p>
+            <p class="subtitle">练习中英文、标点和代码，和自己上一次的节奏比一比。</p>
         </div>
 
         <div class="content-wrapper">
+            <!-- 打字区域 -->
+            <div class="typing-area-wrapper">
+                <div class="typing-header glass-card">
+                    <div class="timer-display">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span id="timer">02:00</span>
+                    </div>
+                    <div class="live-stats">
+                        <div class="live-stat">
+                            <span class="live-stat-label">WPM</span>
+                            <span class="live-stat-value" id="liveWPM">0</span>
+                        </div>
+                        <div class="live-stat">
+                            <span class="live-stat-label">准确率</span>
+                            <span class="live-stat-value" id="liveAccuracy">100%</span>
+                        </div>
+                        <div class="live-stat">
+                            <span class="live-stat-label">进度</span>
+                            <span class="live-stat-value" id="liveProgress">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-display glass-card">
+                    <div class="practice-status">
+                        <span id="practice-mode">随机练习</span>
+                        <span id="race-status" hidden></span>
+                    </div>
+                    <div class="race-track" id="race-track" hidden aria-label="同文竞速进度">
+                        <span id="race-player"></span><i id="race-ghost" title="上次进度"></i>
+                    </div>
+                    <div id="textDisplay" class="text-content">
+                        请选择文本类型并点击"开始测试"按钮
+                    </div>
+                    <textarea id="typingInput" class="typing-input" placeholder="在这里开始打字..." disabled
+                        rows="3" aria-label="打字练习输入" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+                    <div class="button-group practice-actions">
+                        <button id="startTest" class="primary-btn">开始测试</button>
+                        <button id="pauseTest" class="secondary-btn" disabled>暂停</button>
+                        <button id="resetTest" class="secondary-btn">重置</button>
+                    </div>
+                </div>
+
+                <!-- 实时可视化反馈 -->
+                <div class="visualization-section">
+                    <div class="visualization-card glass-card">
+                        <h3><i class="fas fa-tachometer-alt"></i> 速度热力图</h3>
+                        <div class="chart-container">
+                            <canvas id="speedHeatmap"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-item slow">慢</span>
+                            <span class="legend-item medium">中</span>
+                            <span class="legend-item fast">快</span>
+                        </div>
+                    </div>
+
+                    <div class="visualization-card glass-card">
+                        <h3><i class="fas fa-keyboard"></i> 错误分布</h3>
+                        <div class="keyboard-error-map">
+                            <!-- 键盘布局将通过JS动态生成 -->
+                        </div>
+                        <div class="error-stats">
+                            <div class="error-stat">
+                                <span class="error-stat-label">总错误</span>
+                                <span class="error-stat-value" id="totalErrors">0</span>
+                            </div>
+                            <div class="error-stat">
+                                <span class="error-stat-label">退格使用</span>
+                                <span class="error-stat-value" id="backspaceCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 左侧控制面板 -->
             <div class="control-panel glass-card">
                 <h2><i class="fas fa-cogs"></i> 测试设置</h2>
@@ -67,17 +139,13 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                     </select>
                 </div>
 
-                <div class="button-group">
-                    <button id="startTest" class="primary-btn">
-                        <i class="fas fa-play"></i> 开始测试
-                    </button>
-                    <button id="pauseTest" class="secondary-btn" disabled>
-                        <i class="fas fa-pause"></i> 暂停
-                    </button>
-                    <button id="resetTest" class="secondary-btn">
-                        <i class="fas fa-redo"></i> 重置
-                    </button>
-                </div>
+                <details class="custom-practice">
+                    <summary>自定义练习文本</summary>
+                    <label for="custom-text">输入要练习的内容（5–600 字符）</label>
+                    <textarea id="custom-text" rows="4" maxlength="600" spellcheck="false"></textarea>
+                    <button type="button" class="secondary-btn" id="use-custom">使用这段文本</button>
+                    <p id="custom-status" role="status"></p>
+                </details>
 
                 <div class="stats-preview glass-card">
                     <h3><i class="fas fa-chart-line"></i> 历史记录</h3>
@@ -93,70 +161,6 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                         <div class="stat-item">
                             <div class="stat-value" id="testsCompleted">0</div>
                             <div class="stat-label">完成测试</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 中间打字区域 -->
-            <div class="typing-area-wrapper">
-                <div class="typing-header glass-card">
-                    <div class="timer-display">
-                        <i class="fas fa-hourglass-half"></i>
-                        <span id="timer">02:00</span>
-                    </div>
-                    <div class="live-stats">
-                        <div class="live-stat">
-                            <span class="live-stat-label">WPM</span>
-                            <span class="live-stat-value" id="liveWPM">0</span>
-                        </div>
-                        <div class="live-stat">
-                            <span class="live-stat-label">准确率</span>
-                            <span class="live-stat-value" id="liveAccuracy">100%</span>
-                        </div>
-                        <div class="live-stat">
-                            <span class="live-stat-label">进度</span>
-                            <span class="live-stat-value" id="liveProgress">0%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-display glass-card">
-                    <div id="textDisplay" class="text-content">
-                        请选择文本类型并点击"开始测试"按钮
-                    </div>
-                    <textarea id="typingInput" class="typing-input" placeholder="在这里开始打字..." disabled
-                        rows="4"></textarea>
-                </div>
-
-                <!-- 实时可视化反馈 -->
-                <div class="visualization-section">
-                    <div class="visualization-card glass-card">
-                        <h3><i class="fas fa-tachometer-alt"></i> 速度热力图</h3>
-                        <div class="chart-container">
-                            <canvas id="speedHeatmap"></canvas>
-                        </div>
-                        <div class="chart-legend">
-                            <span class="legend-item slow">慢</span>
-                            <span class="legend-item medium">中</span>
-                            <span class="legend-item fast">快</span>
-                        </div>
-                    </div>
-
-                    <div class="visualization-card glass-card">
-                        <h3><i class="fas fa-keyboard"></i> 错误分布</h3>
-                        <div class="keyboard-error-map">
-                            <!-- 键盘布局将通过JS动态生成 -->
-                        </div>
-                        <div class="error-stats">
-                            <div class="error-stat">
-                                <span class="error-stat-label">总错误</span>
-                                <span class="error-stat-value" id="totalErrors">0</span>
-                            </div>
-                            <div class="error-stat">
-                                <span class="error-stat-label">退格使用</span>
-                                <span class="error-stat-value" id="backspaceCount">0</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,11 +216,11 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
 
         <!-- 结果模态框 -->
-        <div id="resultsModal" class="modal-overlay">
+        <div id="resultsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="测试结果">
             <div class="modal-content glass-card">
                 <div class="modal-header">
                     <h2><i class="fas fa-trophy"></i> 测试完成!</h2>
-                    <button class="modal-close">&times;</button>
+                    <button class="modal-close" aria-label="关闭测试结果">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="result-highlights">
@@ -257,6 +261,8 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                     </div>
 
                     <div class="modal-actions">
+                        <button id="raceAgain" class="primary-btn">与本次成绩竞速</button>
+                        <button id="drillErrors" class="secondary-btn">复练易错片段</button>
                         <button id="saveResult" class="primary-btn">
                             <i class="fas fa-save"></i> 保存结果
                         </button>

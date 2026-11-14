@@ -18,8 +18,15 @@ let totalCharsTyped = 0;
 let correctChars = 0;
 let testHistory = [];
 let isComposing = false; // 中文输入法状态
-let pendingInput = ""; // 待处理的输入
-let lastInputTime = 0; // 上次输入时间
+let pausedAt = 0;
+let pausedDuration = 0;
+let completedResult = null;
+let practiceMode = '随机练习';
+let race = null;
+let lastDrill = '';
+let raceTrace = [];
+let previousChars = [];
+let attemptsByPosition = new Map();
 
 // DOM元素
 const textDisplay = document.getElementById('textDisplay');
@@ -84,7 +91,7 @@ async function init() {
     setupEventListeners();
 
     // 初始化图表
-    initCharts();
+    if (typeof Chart !== 'undefined') initCharts();
 
     // 初始化键盘错误分布图
     initKeyboardErrorMap();
@@ -134,6 +141,8 @@ function populateTextCategories() {
 
 // 生成随机文本
 function generateRandomText() {
+    practiceMode = textCategory.selectedOptions[0]?.textContent || '随机练习';
+    race = null;
     const categoryId = textCategory.value;
     const lengthOption = textLength.value;
 
@@ -165,64 +174,70 @@ function generateRandomText() {
         text += ' ' + selectedCategory.texts[Math.floor(Math.random() * selectedCategory.texts.length)];
     }
 
-    // 截取到目标长度
-    currentText = text.substring(0, targetLength);
-    currentTextArray = currentText.split('');
-    currentCharIndex = 0;
+    setPracticeText(text.substring(0, targetLength).normalize('NFC'));
+}
 
-    // 重置错误和打字数据
+function setPracticeText(text) {
+    currentText = text;
+    currentTextArray = Array.from(text);
+    prepareAttempt();
+}
+
+function prepareAttempt() {
+    currentCharIndex = 0;
     errors = [];
     typingData = [];
     keyErrors = {};
-    backspaceCount = 0;
-    totalCharsTyped = 0;
-    correctChars = 0;
-    pendingInput = "";
+    attemptsByPosition = new Map();
+    raceTrace = [];
+    previousChars = [];
+    backspaceCount = totalCharsTyped = correctChars = 0;
+    startTime = endTime = null;
+    pausedAt = pausedDuration = 0;
     isComposing = false;
-
-    // 显示文本
-    displayText();
-
-    // 更新键盘错误分布图
-    resetKeyboardErrorMap();
-
-    // 重置实时显示
-    updateLiveStats();
-
-    // 清空输入框
     typingInput.value = '';
+    document.getElementById('practice-mode').textContent = practiceMode;
+    displayText();
+    updateLiveStats();
+    updateRace();
+    resetKeyboardErrorMap();
+    resetCharts();
 }
 
 // 显示文本（带高亮）
 function displayText() {
-    let html = '';
+    const mistakes = new Set(errors.map(error => error.index));
+    const nodes = currentTextArray.map((char, index) => {
+        const span = document.createElement('span');
+        span.className = index === currentCharIndex ? 'char-current' : index > currentCharIndex ? 'char-pending' :
+            mistakes.has(index) ? 'char-wrong' : 'char-correct';
+        span.textContent = char === '\n' ? '↵\n' : char;
+        return span;
+    });
+    textDisplay.replaceChildren(...nodes);
+    if (!isTesting || !nodes[currentCharIndex]) return;
+    const target = nodes[currentCharIndex].getBoundingClientRect();
+    const viewport = textDisplay.getBoundingClientRect();
+    if (target.bottom > viewport.bottom - 12) textDisplay.scrollTop += target.bottom - viewport.bottom + 32;
+    else if (target.top < viewport.top + 8) textDisplay.scrollTop += target.top - viewport.top - 18;
+}
 
-    for (let i = 0; i < currentTextArray.length; i++) {
-        let charClass = 'char-pending';
+function activeTime() {
+    return startTime ? (endTime?.getTime() ?? (pausedAt || Date.now())) - startTime.getTime() - pausedDuration : 0;
+}
 
-        if (i < currentCharIndex) {
-            // 已输入的字符
-            const isError = errors.some(error => error.index === i);
-            charClass = isError ? 'char-wrong' : 'char-correct';
-        } else if (i === currentCharIndex) {
-            // 当前字符
-            charClass = 'char-current';
-        }
-
-        // 处理换行符和空格
-        const char = currentTextArray[i];
-        const displayChar = char === '\n' ? '↵\n' : (char === ' ' ? '&nbsp;' : char);
-
-        html += `<span class="${charClass}">${displayChar}</span>`;
-    }
-
-    textDisplay.innerHTML = html;
-
-    // 滚动到当前字符位置
-    const currentCharElement = textDisplay.querySelector('.char-current');
-    if (currentCharElement && isTesting) {
-        currentCharElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-    }
+function updateRace() {
+    const track = document.getElementById('race-track');
+    const status = document.getElementById('race-status');
+    track.hidden = status.hidden = !race;
+    if (!race) return;
+    const elapsed = activeTime();
+    const ghost = race.trace.findLast(point => point.time <= elapsed)?.position ?? 0;
+    const playerPercent = calculateProgress();
+    const ghostPercent = Math.round(100 * ghost / currentTextArray.length);
+    document.getElementById('race-player').style.width = playerPercent + '%';
+    document.getElementById('race-ghost').style.left = ghostPercent + '%';
+    status.textContent = `本次 ${playerPercent}% · 上次 ${ghostPercent}%`;
 }
 
 // 设置事件监听器
@@ -240,19 +255,39 @@ function setupEventListeners() {
     typingInput.addEventListener('input', handleTypingOptimized);
     typingInput.addEventListener('keydown', handleKeyDown);
 
-    // 中文输入法事件监听
-    typingInput.addEventListener('compositionstart', () => {
-        isComposing = true;
-        console.log('开始中文输入法组合');
-    });
-
-    typingInput.addEventListener('compositionend', (e) => {
+    typingInput.addEventListener('compositionstart', () => { isComposing = true; });
+    typingInput.addEventListener('compositionend', () => {
         isComposing = false;
-        console.log('结束中文输入法组合，输入内容:', e.data);
-        // 延迟处理，确保输入框内容已更新
-        setTimeout(() => {
-            processInputAfterComposition();
-        }, 10);
+        handleTypingOptimized();
+    });
+    typingInput.addEventListener('paste', event => event.preventDefault());
+    typingInput.addEventListener('drop', event => event.preventDefault());
+    document.getElementById('use-custom').addEventListener('click', () => {
+        const text = document.getElementById('custom-text').value.trim().normalize('NFC');
+        const status = document.getElementById('custom-status');
+        if (Array.from(text).length < 5) {
+            status.textContent = '请至少输入 5 个字符。';
+            return;
+        }
+        resetTest();
+        practiceMode = '自定义练习';
+        race = null;
+        setPracticeText(text);
+        status.textContent = '已载入练习区。';
+    });
+    document.getElementById('raceAgain').addEventListener('click', () => {
+        race = completedResult;
+        practiceMode = '同文竞速';
+        setPracticeText(race.text);
+        closeResultsModal();
+        startTest();
+    });
+    document.getElementById('drillErrors').addEventListener('click', () => {
+        race = null;
+        practiceMode = '易错片段复练';
+        setPracticeText(lastDrill);
+        closeResultsModal();
+        startTest();
     });
 
     // 文本类型变化
@@ -260,7 +295,7 @@ function setupEventListeners() {
     textLength.addEventListener('change', generateRandomText);
 
     // 时间限制变化
-    timeLimit.addEventListener('change', updateTimerDisplay);
+    timeLimit.addEventListener('change', () => updateTimerDisplay());
 
     // 模态框相关
     modalClose.addEventListener('click', closeResultsModal);
@@ -275,263 +310,71 @@ function setupEventListeners() {
         }
     });
 
-    // 键盘快捷键
-    document.addEventListener('keydown', (e) => {
-        // Ctrl+Enter 开始/重新开始测试
-        if (e.ctrlKey && e.key === 'Enter') {
-            if (isTesting) {
-                resetTest();
-            } else {
-                startTest();
-            }
-        }
-
-        // Esc 暂停/继续
-        if (e.key === 'Escape' && isTesting) {
-            togglePause();
-        }
-
-        // 空格键重新开始（当测试未进行时）
-        if (e.key === ' ' && !isTesting && e.target !== typingInput) {
+    document.addEventListener('keydown', event => {
+        if (event.isComposing || isComposing) return;
+        if (event.ctrlKey && event.key === 'Enter' && !resultsModal.classList.contains('active')) {
+            event.preventDefault();
+            if (isTesting) resetTest();
             startTest();
-            e.preventDefault();
+        }
+        if (event.key === 'Escape') {
+            if (resultsModal.classList.contains('active')) closeResultsModal();
+            else if (isTesting) togglePause();
         }
     });
 }
 
-// 优化的打字处理函数
-function handleTypingOptimized(e) {
-    if (!isTesting || isPaused) return;
-
-    // 如果是中文输入法组合期间，不处理
-    if (isComposing) {
-        console.log('中文输入法组合中，跳过处理');
-        return;
+function handleTypingOptimized(event) {
+    if (!isTesting || isPaused || isComposing || event?.isComposing) return;
+    const chars = Array.from(typingInput.value.normalize('NFC')).slice(0, currentTextArray.length);
+    const previous = previousChars;
+    let prefix = 0;
+    while (prefix < previous.length && previous[prefix] === chars[prefix]) prefix++;
+    let end = chars.length, oldEnd = previous.length;
+    while (end > prefix && oldEnd > prefix && chars[end - 1] === previous[oldEnd - 1]) {
+        end--;
+        oldEnd--;
     }
-
-    const inputText = typingInput.value;
-    const inputLength = inputText.length;
-    const now = Date.now();
-
-    // 限制输入频率，防止过快的输入事件
-    if (now - lastInputTime < 10) {
-        console.log('输入事件过快，跳过');
-        return;
-    }
-    lastInputTime = now;
-
-    // 如果输入长度减少（退格），不记录错误
-    if (inputLength < currentCharIndex) {
-        const charsDeleted = currentCharIndex - inputLength;
-        currentCharIndex = inputLength;
-
-        // 移除最近删除的错误记录
-        for (let i = 0; i < charsDeleted; i++) {
-            const removedIndex = currentCharIndex + i;
-            const errorIndex = errors.findIndex(error => error.index === removedIndex);
-            if (errorIndex !== -1) {
-                const error = errors[errorIndex];
-                // 减少键位错误计数
-                const key = error.typedChar.toLowerCase();
-                if (keyErrors[key]) {
-                    keyErrors[key]--;
-                    if (keyErrors[key] <= 0) {
-                        delete keyErrors[key];
-                    }
-                }
-                errors.splice(errorIndex, 1);
-            }
+    const now = new Date();
+    currentCharIndex = chars.length;
+    errors = [];
+    keyErrors = Object.create(null);
+    correctChars = 0;
+    chars.forEach((typedChar, index) => {
+        const targetChar = currentTextArray[index];
+        const isCorrect = typedChar === targetChar;
+        if (isCorrect) correctChars++;
+        else {
+            errors.push({ index, typedChar, targetChar });
+            const key = typedChar.toLowerCase();
+            keyErrors[key] = (keyErrors[key] ?? 0) + 1;
         }
-
-        displayText();
-        updateLiveStats();
-        updateKeyboardErrorMap();
-        return;
-    }
-
-    // 处理正常输入
-    processTypingInput(inputText);
-}
-
-// 处理打字输入
-function processTypingInput(inputText) {
-    if (!isTesting || isPaused) return;
-
-    // 检查输入文本是否比当前索引长
-    if (inputText.length <= currentCharIndex) {
-        return;
-    }
-
-    // 获取新输入的字符
-    const newChar = inputText[currentCharIndex];
-    const targetChar = currentTextArray[currentCharIndex];
-
-    // 特殊处理：如果用户按回车键跳过
-    if (newChar === '\n' && targetChar !== '\n') {
-        // 回车键跳过当前字符，不记录为错误
-        console.log('用户按回车跳过字符:', targetChar);
-        currentCharIndex++;
-        typingInput.value = inputText.substring(0, currentCharIndex);
-        displayText();
-        updateLiveStats();
-        return;
-    }
-
-    // 检查字符是否正确
-    const isCorrect = newChar === targetChar;
-
-    // 记录打字数据
-    typingData.push({
-        time: new Date(),
-        charIndex: currentCharIndex,
-        typedChar: newChar,
-        targetChar: targetChar,
-        isCorrect: isCorrect,
-        wpm: calculateCurrentWPM()
+        if (index < prefix || index >= end) return;
+        if (!isCorrect) attemptsByPosition.set(index, (attemptsByPosition.get(index) ?? 0) + 1);
+        typingData.push({ time: now, charIndex: index, typedChar, targetChar, isCorrect });
     });
-
-    if (!isCorrect) {
-        // 记录错误
-        errors.push({
-            index: currentCharIndex,
-            typedChar: newChar,
-            targetChar: targetChar,
-            timestamp: new Date()
-        });
-
-        // 记录键位错误（只记录字母和数字）
-        if (/[a-zA-Z0-9]/.test(newChar)) {
-            const key = newChar.toLowerCase();
-            keyErrors[key] = (keyErrors[key] || 0) + 1;
-        }
-    } else {
-        correctChars++;
-    }
-
-    totalCharsTyped++;
-    currentCharIndex++;
-
-    // 检查是否完成
-    if (currentCharIndex >= currentTextArray.length) {
-        finishTest();
-    }
-
-    // 更新显示
+    totalCharsTyped = chars.length;
+    previousChars = chars;
+    if (typingData.at(-1)?.time === now) typingData.at(-1).wpm = calculateCurrentWPM();
+    if (raceTrace.at(-1)?.position !== currentCharIndex) raceTrace.push({ time: activeTime(), position: currentCharIndex });
     displayText();
     updateLiveStats();
+    updateRace();
     updateCharts();
     updateKeyboardErrorMap();
+    if (currentCharIndex === currentTextArray.length) finishTest();
 }
 
-// 中文输入法组合结束后处理
-function processInputAfterComposition() {
-    if (!isTesting || isPaused) return;
-
-    const inputText = typingInput.value;
-
-    // 检查输入是否比当前索引长（中文可能一次输入多个字符）
-    if (inputText.length <= currentCharIndex) {
-        return;
-    }
-
-    // 获取从当前索引开始的新输入
-    const newInput = inputText.substring(currentCharIndex);
-
-    // 逐个字符处理新输入
-    for (let i = 0; i < newInput.length; i++) {
-        if (currentCharIndex >= currentTextArray.length) break;
-
-        const newChar = newInput[i];
-        const targetChar = currentTextArray[currentCharIndex];
-
-        // 检查字符是否正确
-        const isCorrect = newChar === targetChar;
-
-        // 记录打字数据
-        typingData.push({
-            time: new Date(),
-            charIndex: currentCharIndex,
-            typedChar: newChar,
-            targetChar: targetChar,
-            isCorrect: isCorrect,
-            wpm: calculateCurrentWPM()
-        });
-
-        if (!isCorrect) {
-            // 记录错误
-            errors.push({
-                index: currentCharIndex,
-                typedChar: newChar,
-                targetChar: targetChar,
-                timestamp: new Date()
-            });
-
-            // 记录键位错误（只记录字母和数字）
-            if (/[a-zA-Z0-9]/.test(newChar)) {
-                const key = newChar.toLowerCase();
-                keyErrors[key] = (keyErrors[key] || 0) + 1;
-            }
-        } else {
-            correctChars++;
-        }
-
-        totalCharsTyped++;
-        currentCharIndex++;
-    }
-
-    // 检查是否完成
-    if (currentCharIndex >= currentTextArray.length) {
-        finishTest();
-    }
-
-    // 更新显示
-    displayText();
-    updateLiveStats();
-    updateCharts();
-    updateKeyboardErrorMap();
-}
-
-// 处理按键事件（记录退格）
-function handleKeyDown(e) {
-    if (!isTesting || isPaused) return;
-
-    // 如果是中文输入法组合期间，不处理退格计数
-    if (isComposing) return;
-
-    if (e.key === 'Backspace') {
-        backspaceCount++;
-        totalErrors.textContent = errors.length;
-        backspaceCountDisplay.textContent = backspaceCount;
-
-        // 记录退格事件
-        typingData.push({
-            time: new Date(),
-            type: 'backspace',
-            charIndex: currentCharIndex
-        });
-    } else if (e.key === 'Enter' && !e.ctrlKey) {
-        // 回车键处理 - 防止默认行为干扰
-        e.preventDefault();
-
-        // 如果当前字符不是换行符，我们已经在processTypingInput中处理了跳过逻辑
-        // 这里只需要确保不会产生额外的换行
-        if (currentCharIndex < currentTextArray.length) {
-            const targetChar = currentTextArray[currentCharIndex];
-            if (targetChar === '\n') {
-                // 如果目标字符就是换行符，正常处理
-                return;
-            }
-            // 否则，我们已经在processTypingInput中处理了跳过逻辑
-        }
-    }
+function handleKeyDown(event) {
+    if (!isTesting || isPaused || isComposing || event.isComposing) return;
+    if (event.key === 'Backspace') backspaceCountDisplay.textContent = ++backspaceCount;
 }
 
 // 计算当前WPM
 function calculateCurrentWPM() {
     if (!startTime || currentCharIndex === 0) return 0;
 
-    const now = new Date();
-    const minutesElapsed = (now - startTime) / (1000 * 60);
+    const minutesElapsed = activeTime() / 60000;
     const wordsTyped = correctChars / 5; // 平均每个单词5个字符
 
     return Math.round(wordsTyped / Math.max(minutesElapsed, 0.0167)); // 至少0.0167分钟（1秒）
@@ -547,7 +390,7 @@ function calculateAccuracy() {
 
 // 计算进度
 function calculateProgress() {
-    return Math.min(100, Math.round((currentCharIndex / currentTextArray.length) * 100));
+    return Math.min(100, Math.round(100 * currentCharIndex / (currentTextArray.length || 1)));
 }
 
 // 更新实时统计
@@ -567,20 +410,8 @@ function updateLiveStats() {
 function startTest() {
     if (isTesting) return;
 
-    // 生成新文本
-    generateRandomText();
-
-    // 重置状态
-    currentCharIndex = 0;
-    errors = [];
-    typingData = [];
-    keyErrors = {};
-    backspaceCount = 0;
-    totalCharsTyped = 0;
-    correctChars = 0;
-    pendingInput = "";
-    isComposing = false;
-    lastInputTime = 0;
+    if (!currentText) generateRandomText();
+    prepareAttempt();
     startTime = new Date();
     isTesting = true;
     isPaused = false;
@@ -594,6 +425,7 @@ function startTest() {
     textCategory.disabled = true;
     textLength.disabled = true;
     timeLimit.disabled = true;
+    document.getElementById('use-custom').disabled = true;
 
     // 启动计时器
     startTimer();
@@ -607,23 +439,17 @@ function startTest() {
 
 // 开始计时器
 function startTimer() {
-    const limit = parseInt(timeLimit.value);
-    let timeLeft = limit;
-
-    updateTimerDisplay(timeLeft);
-
-    if (limit > 0) {
-        timerInterval = setInterval(() => {
-            if (!isPaused) {
-                timeLeft--;
-                updateTimerDisplay(timeLeft);
-
-                if (timeLeft <= 0) {
-                    finishTest();
-                }
-            }
-        }, 1000);
-    }
+    const limit = Number(timeLimit.value);
+    updateTimerDisplay(limit);
+    timerInterval = setInterval(() => {
+        if (isPaused) return;
+        const elapsed = activeTime() / 1000;
+        const seconds = limit ? Math.max(0, Math.ceil(limit - elapsed)) : Math.floor(elapsed);
+        updateTimerDisplay(seconds);
+        updateLiveStats();
+        updateRace();
+        if (limit && seconds === 0) finishTest();
+    }, 100);
 }
 
 // 更新计时器显示
@@ -643,7 +469,7 @@ function updateTimerDisplay(timeLeft) {
     timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
     // 添加警告样式
-    if (timeLeft <= 10) {
+    if (Number(timeLimit.value) && timeLeft <= 10 && !timerDisplay.classList.contains('pulse')) {
         timerDisplay.classList.add('pulse');
         setTimeout(() => {
             timerDisplay.classList.remove('pulse');
@@ -658,6 +484,7 @@ function togglePause() {
     isPaused = !isPaused;
 
     if (isPaused) {
+        pausedAt = Date.now();
         pauseTestBtn.innerHTML = '<i class="fas fa-play"></i> 继续';
         typingInput.disabled = true;
 
@@ -668,6 +495,8 @@ function togglePause() {
             charIndex: currentCharIndex
         });
     } else {
+        pausedDuration += Date.now() - pausedAt;
+        pausedAt = 0;
         pauseTestBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
         typingInput.disabled = false;
         typingInput.focus();
@@ -693,7 +522,6 @@ function resetTest() {
     isTesting = false;
     isPaused = false;
     isComposing = false;
-    pendingInput = "";
 
     // 更新UI
     typingInput.disabled = true;
@@ -703,12 +531,12 @@ function resetTest() {
     textCategory.disabled = false;
     textLength.disabled = false;
     timeLimit.disabled = false;
+    document.getElementById('use-custom').disabled = false;
 
     // 重置计时器显示
     updateTimerDisplay();
 
-    // 生成新文本
-    generateRandomText();
+    prepareAttempt();
 }
 
 // 完成测试
@@ -731,12 +559,22 @@ function finishTest() {
     textCategory.disabled = false;
     textLength.disabled = false;
     timeLimit.disabled = false;
+    document.getElementById('use-custom').disabled = false;
 
     // 计算最终结果
-    const testDuration = (endTime - startTime) / 1000; // 秒
+    const testDuration = activeTime() / 1000; // 秒
     const finalWPM = calculateCurrentWPM();
     const finalAccuracy = calculateAccuracy();
 
+    completedResult = { text: currentText, trace: raceTrace };
+    lastDrill = [...attemptsByPosition].sort((a, b) => b[1] - a[1]).slice(0, 8)
+        .map(([index]) => currentTextArray.slice(Math.max(0, index - 3), index + 4).join(''))
+        .filter(Boolean).join('  ');
+    if (lastDrill) lastDrill = Array(3).fill(lastDrill).join('  ');
+    document.getElementById('raceAgain').disabled = !raceTrace.some(point => point.position > 0);
+    document.getElementById('drillErrors').disabled = !lastDrill;
+    saveResultBtn.disabled = false;
+    saveResultBtn.textContent = '保存结果';
     // 显示结果模态框
     showResultsModal(finalWPM, finalAccuracy, testDuration);
 
@@ -762,17 +600,19 @@ function showResultsModal(wpm, accuracy, time) {
     detailBackspaces.textContent = backspaceCount;
 
     resultsModal.classList.add('active');
+    modalClose.focus();
 }
 
 // 关闭结果模态框
 function closeResultsModal() {
     resultsModal.classList.remove('active');
+    startTestBtn.focus();
 }
 
 // 开始新测试
 function startNewTest() {
     closeResultsModal();
-    resetTest();
+    generateRandomText();
     startTest();
 }
 
@@ -799,7 +639,8 @@ function saveTestResult() {
     updateHistoryStats();
 
     // 显示成功消息
-    alert('结果已保存到本地存储中！');
+    saveResultBtn.disabled = true;
+    saveResultBtn.textContent = '已保存';
 }
 
 // 分享测试结果
@@ -1024,7 +865,7 @@ function updateCharts() {
         for (let i = 1; i < typingData.length; i++) {
             if (typingData[i].time && typingData[i - 1].time) {
                 const interval = typingData[i].time - typingData[i - 1].time;
-                intervals.push(interval);
+                if (interval > 0 && !typingData[i].type && !typingData[i - 1].type) intervals.push(interval);
             }
         }
 

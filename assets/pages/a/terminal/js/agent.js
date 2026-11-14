@@ -45,7 +45,7 @@ class ShellAgent {
         }
 
         const path = storage.getCurrentPath();
-        const catalog = [...Object.values(textCommands).map(({ usage }) => usage), ...Object.values(this.actions)].join('\n');
+        const catalog = [...Object.values(textCommands).filter(command => !command.manualOnly).map(({ usage }) => usage), ...Object.values(this.actions)].join('\n');
         const system = `你是浏览器虚拟终端的命令计划助手。用用户的语言回答。
 只返回一个 JSON 对象，格式为 {"summary":"简短说明","steps":[{"commands":[["echo","示例"]],"redirect":"/tmp/新文件.txt"}]}。
 steps 最多 ${this.maxSteps} 项，可为空。commands 是管道，由 1 至 4 个参数数组组成。参数是字面字符串，不要加 shell 引号或变量。redirect 可省略，表示输出到新文件。只有文本命令能使用管道和重定向。
@@ -110,7 +110,7 @@ ${catalog}`;
                     throw new Error('模型返回了无效的参数');
                 }
                 const name = args[0];
-                if (Object.hasOwn(textCommands, name)) continue;
+                if (Object.hasOwn(textCommands, name) && !textCommands[name].manualOnly) continue;
                 if (!Object.hasOwn(this.actions, name) || stages.length > 1 || step.redirect !== undefined) {
                     throw new Error('计划包含不可执行的命令: ' + name);
                 }

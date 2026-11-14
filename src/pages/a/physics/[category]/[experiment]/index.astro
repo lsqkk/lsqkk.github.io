@@ -1,0 +1,33 @@
+---
+import PhysicsLayout from "../../../../../components/physics/PhysicsLayout.astro";
+import ExperimentWorkbench from "../../../../../components/physics/ExperimentWorkbench.astro";
+import { categories, experiments } from "../../../../../../assets/pages/a/physics/experiments.mjs";
+
+export function getStaticPaths() {
+    return experiments.map(lab => ({ params: { category: lab.category, experiment: lab.slug }, props: { lab } }));
+}
+
+const { lab } = Astro.props;
+const neighbors = experiments.filter(item => item.category === lab.category && item !== lab && item.slug !== lab.slug);
+---
+<PhysicsLayout title={lab.name} description={lab.description} category={lab.category}>
+    <p class="physics-lab-meta" slot="intro">{categories[lab.category as keyof typeof categories]} / {lab.topics}</p>
+    <div id="physics-lab" data-experiment={lab.slug}>
+        <ExperimentWorkbench canvasLabel={lab.name + "曲线"} caption={lab.axes.join(" / ")}
+            parameters={lab.parameters.map(parameter => ({ ...parameter, id: "lab-" + parameter.id }))} script="curve-workbench"
+            measurements={[{ id: "reading-x", label: lab.axes[0] }, { id: "reading-y", label: lab.axes[1] }, { id: "reading-extra", label: "补充读数" }]}>
+            <div class="physics-actions">
+                <button type="button" id="pin-run">保存对照曲线</button>
+                <button type="button" id="clear-run" disabled>移除对照</button>
+                <button type="reset">恢复初值</button>
+            </div>
+            <p id="curve-status" role="status">调节参数后，可保存一条曲线与下一组参数对照。</p>
+            <section class="physics-notes" slot="notes">
+                <h2>模型与探究</h2>
+                <p><code>{lab.formula}</code></p>
+                <p>{lab.question}</p>
+                {neighbors.length > 0 && <div class="physics-related">{neighbors.map(item => <a href={`/a/physics/${item.category}/${item.slug}/`}>{item.name} ↗</a>)}</div>}
+            </section>
+        </ExperimentWorkbench>
+    </div>
+</PhysicsLayout>

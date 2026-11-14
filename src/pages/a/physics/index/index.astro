@@ -2,11 +2,17 @@
 import PhysicsLayout from "../../../../components/physics/PhysicsLayout.astro";
 import projects from "../../../../../assets/pages/a/physics/projects.json";
 
-const sections = [
-    { id: "optics", title: "光学", projects: projects.optics },
-    { id: "waves", title: "波动", projects: projects.waves },
-    { id: "mechanics", title: "力学", projects: projects.mechanics },
-];
+import { categories, experiments, previewCurve } from "../../../../../assets/pages/a/physics/experiments.mjs";
+
+const sections = Object.entries(categories).map(([id, title]) => ({
+    id, title, projects: [
+        ...(projects[id as keyof typeof projects] ?? []).map(project => ({ ...project, curve: "" })),
+        ...experiments.filter(lab => lab.category === id).map(lab => ({
+            ...lab, link: lab.category + "/" + lab.slug, symbol: "", curve: previewCurve(lab)
+        }))
+    ]
+}));
+const count = sections.reduce((sum, section) => sum + section.projects.length, 0);
 
 const illustrations = {
     reflection: "M8 64H152 M80 14V76 M24 22L80 64 136 22",
@@ -18,18 +24,23 @@ const illustrations = {
     pendulum: "M52 16h56 M80 16v64 M80 16l37 49 M43 65a62 62 0 0 0 74 0 M124 65a7 7 0 1 0-14 0 7 7 0 0 0 14 0Z",
 };
 ---
-<PhysicsLayout title="Physics 实验室" description="在浏览器中做光学、波动与力学实验。改变条件，观察现象，再用读数检验你的预测。">
+<PhysicsLayout title="Physics 实验室" description="改变条件，观察现象，再用读数检验你的预测。">
     <nav class="physics-jumps" slot="intro" aria-label="实验分类">
         {sections.map(section => <a href={`#${section.id}`}>{section.title}<span>{section.projects.length}</span></a>)}
     </nav>
+    <div class="physics-search">
+        <label for="lab-search">查找实验</label>
+        <input id="lab-search" type="search" placeholder="例如：周期、电容、浮力">
+        <span id="lab-count" role="status">{count} 个实验 · {sections.length} 个类别</span>
+    </div>
     {sections.map(section => (
-        <section class="physics-category" id={section.id} aria-labelledby={`${section.id}-title`}>
-            <h2 id={`${section.id}-title`}>{section.title}</h2>
+        <section class="physics-category" data-category={section.id} id={section.id} aria-labelledby={`${section.id}-title`}>
+            <h2 id={`${section.id}-title`}>{section.title} <span>{section.projects.length} 个实验</span></h2>
             <div class="physics-catalog">
                 {section.projects.map(project => (
                     <a class="physics-card" href={`/a/physics/${project.link}/`}>
                         <div class="physics-card-figure">
-                            <svg aria-hidden="true" viewBox="0 0 160 96"><path d={illustrations[project.symbol as keyof typeof illustrations]} /></svg>
+                            <svg aria-hidden="true" viewBox="0 0 160 96"><path d={project.curve || illustrations[project.symbol as keyof typeof illustrations]} /></svg>
                         </div>
                         <div class="physics-card-body">
                             <p class="physics-card-topic">{project.topics}</p>
@@ -42,3 +53,30 @@ const illustrations = {
         </section>
     ))}
 </PhysicsLayout>
+<script>
+    const search = document.querySelector<HTMLInputElement>("#lab-search")!;
+    const count = document.querySelector("#lab-count")!;
+    const sections = Array.from(document.querySelectorAll<HTMLElement>(".physics-category"));
+    function filter() {
+        const terms = search.value.trim().toLowerCase().split(/\s+/);
+        let visible = 0;
+        let categories = 0;
+        for (const section of sections) {
+            const title = section.querySelector("h2")?.textContent ?? "";
+            let hits = 0;
+            for (const card of section.querySelectorAll<HTMLElement>(".physics-card")) {
+                const content = (title + card.textContent).toLowerCase();
+                card.hidden = !terms.every(term => content.includes(term));
+                if (!card.hidden) hits++;
+            }
+            section.hidden = !hits;
+            const link = document.querySelector<HTMLElement>('.physics-jumps a[href="#' + section.id + '"]');
+            if (link) link.hidden = !hits;
+            if (hits) categories++;
+            visible += hits;
+        }
+        count.textContent = visible ? visible + " 个实验 · " + categories + " 个类别" : "未找到实验";
+    }
+    search.addEventListener("input", filter);
+    window.addEventListener("pageshow", filter);
+</script>

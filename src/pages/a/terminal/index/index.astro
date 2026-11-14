@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE, SITE_LOGO_URL, API_BASE } from "@siteConfig";
 ---
 <!DOCTYPE html>
 <html lang="zh-CN" class="terminal-page">
@@ -43,7 +43,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
         </div>
     </header>
 
-    <main class="workbench">
+    <main class="workbench" data-terminal-api={API_BASE}>
         <section id="terminal" aria-label="终端会话">
             <header class="console-bar">
                 <span class="console-tab"><span aria-hidden="true">&gt;_</span> qsh</span>
@@ -168,6 +168,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
     <script is:inline src="/assets/pages/a/terminal/js/shell.js" defer></script>
     <script is:inline src="/assets/pages/a/terminal/js/text-commands.js" defer></script>
     <script is:inline src="/assets/pages/a/terminal/js/agent.js" defer></script>
+    <script is:inline src="/assets/pages/a/terminal/js/developer-commands.js" defer></script>
     <script is:inline src="/assets/pages/a/terminal/js/commands.js" defer></script>
     <script is:inline src="/assets/pages/a/terminal/js/main.js" defer></script>
 </body>

@@ -86,3 +86,35 @@
 .physics-webgl { position: relative; aspect-ratio: 5 / 3; overflow: hidden; background: #111c2a; }
 .physics-webgl canvas { width: 100%; height: 100%; touch-action: none; }
 .physics-webgl .physics-error { position: absolute; inset: auto 0 0; width: fit-content; max-width: 95%; margin: 8px auto; padding: 6px 10px; border-radius: var(--radius-sm); color: #edf5fb; background: #111c2a; font-size: .8rem; }
+
+.physics-intro {
+    padding: clamp(20px, 4vw, 42px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: linear-gradient(120deg, var(--surface), var(--surface-soft));
+}
+.physics-intro h1 { letter-spacing: -.045em; line-height: 1.16; }
+.physics-intro .physics-lab-meta { color: var(--accent); font-size: .85rem; }
+.physics-search { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.physics-search label { font-weight: 600; }
+.physics-search input {
+    flex: 1 1 220px;
+    padding: 10px 12px;
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    font: inherit;
+}
+.physics-search [role="status"], .physics-category h2 span { color: var(--text-subtle); font-size: .83rem; font-weight: 400; }
+.physics-category h2 { display: flex; align-items: baseline; gap: 12px; }
+.physics-card-figure { background-size: 20px 20px; }
+.physics-card-figure svg { stroke: var(--figure-color, #80e5db); }
+[data-category="optics"] { --figure-color: #ffcd8c; }
+[data-category="waves"] { --figure-color: #a6bdff; }
+[data-category="electricity"] { --figure-color: #dfb5ff; }
+[data-category="thermal"] { --figure-color: #ffa992; }
+[data-category="modern"] { --figure-color: #c6e78d; }
+.physics-measurements > div { border-inline-start: 2px solid var(--accent); }
+.physics-related { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
+.physics-related a { color: var(--accent); }
