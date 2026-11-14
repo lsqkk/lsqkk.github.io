@@ -20,7 +20,7 @@
 | POST `/api/share` | `{action,...}`，在线直传信令、离线包上传签名和限时取件 | [share.js](../../../api/share.js) |
 | POST `/api/turnstile-verify` | `{token,purpose}`，验证人机校验结果 | [turnstile-verify.js](../../../api/turnstile-verify.js) |
 | GET `/api/ip` | 返回请求 IP 相关信息 | [ip.js](../../../api/ip.js) |
-| GET `/api/stream-proxy?mode=bili&url=...` | 仅代理 `https://uapis.cn` 的 B 站投稿列表与视频详情 JSON | [stream-proxy.js](../../../api/stream-proxy.js) |
+| GET `/api/stream-proxy?mode=bili&url=...` | 仅代理 `https://uapis.cn` 的 B 站投稿列表与视频详情 JSON | [_stream-proxy.js](../../../api/_stream-proxy.js) |
 | POST `/api/quarkbot-free` | QuarkBot 免费对话，固定模型、共享日限额，流式返回 | [quarkbot-free.js](../../../api/quarkbot-free.js) |
 
 管理员与邮箱分别使用同一处理器的 action 参数。路由和字段以对应源码为准，不能根据旧文档推导出独立函数文件。
