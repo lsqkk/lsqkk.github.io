@@ -72,8 +72,17 @@ function check(name,value){assert(value,name);passed++;}
         await p.waitForFunction(()=>document.documentElement.scrollWidth<=innerWidth,null,{timeout:3000});
         check(route+' fits '+width+' '+theme,await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         if(width===390&&route==='/tool/'){
-          await p.locator('#hamburgerMenu').click();check('mobile menu opens in '+theme,await p.locator('#mobilenavsidebar').evaluate(el=>el.classList.contains('active')));
-          await p.locator('#navsidebarClose').click();
+          const toggle=p.locator('#hamburgerMenu');
+          const menu=p.locator('#mobilenavsidebar');
+          await toggle.click();
+          await menu.waitFor({state:'visible'});
+          check('mobile navigation indicates the current page in '+theme,await menu.locator('[aria-current="page"]').count()===1);
+          check('settings and login stay in the top bar',await menu.locator('a[href*="/settings"], a[href*="/login"]').count()===0);
+          await p.evaluate(()=>window.scrollTo(0,250));
+          await p.waitForFunction(()=>scrollY>=150);
+          await toggle.click();
+          await menu.waitFor({state:'hidden'});
+          check('top bar toggle still closes the menu after scrolling',await toggle.getAttribute('aria-expanded')==='false');
         }
         if(['/tool/','/games/'].includes(route)) await p.screenshot({path:path.join(out,route.replaceAll('/','_')+'-'+width+'-'+theme+'.png')});
       }

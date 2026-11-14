@@ -397,56 +397,38 @@ function generateNavHTML(config) {
                 </div>
                 <div class="header-user" id="header-user"></div>
                 <!-- 移动端菜单始终位于操作区最右侧 -->
-                <button class="hamburger-menu" id="hamburgerMenu" aria-label="打开导航菜单" aria-controls="mobilenavsidebar" aria-expanded="false">
+                <button class="hamburger-menu" id="hamburgerMenu" type="button" aria-label="打开导航菜单" aria-controls="mobilenavsidebar" aria-expanded="false">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
             </div>
         </div>
-    </div>
-
-    <!-- 移动端侧边栏 -->
-    <div class="mobile-navsidebar" id="mobilenavsidebar">
-        <div class="navsidebar-overlay" id="navsidebarOverlay"></div>
-        <div class="navsidebar-content">
-            <div class="navsidebar-header">
-                <h2>导航菜单</h2>
-                <button class="navsidebar-close" id="navsidebarClose" aria-label="关闭导航菜单">&times;</button>
-            </div>
-            <div class="navsidebar-nav">
-                <ul>
-                    ${config.navItems.map(item => {
-        return `<li><a href="${buildLocalizedUrl(item.link)}" target="${normalizeTarget(item.target)}">${item.name}</a></li>`;
+        <nav class="mobile-nav-menu" id="mobilenavsidebar" aria-label="站点导航" inert>
+            <ul class="mobile-nav-links">
+                ${config.navItems.map(item => {
+        const href = buildLocalizedUrl(item.link);
+        const url = new URL(href, location.origin);
+        const path = url.pathname.replace(/\/$/, '');
+        const page = location.pathname.replace(/\/$/, '');
+        let current = '';
+        if (url.origin === location.origin) {
+            if (page === path) current = 'page';
+            else if (path && page.startsWith(path + '/')) current = 'location';
+        }
+        return `<li><a href="${href}" target="${normalizeTarget(item.target)}"${current ? ` aria-current="${current}"` : ''}>${item.name}</a></li>`;
     }).join('')}
-                </ul>
-            </div>
-            <div class="navsidebar-controls">
+            </ul>
+            <div class="mobile-nav-tools">
+                <label class="mobile-nav-language ignore" data-language-picker>
+                    <span>语言</span>
+                    <select id="mobileLanguageSelector" class="language-selector">
+                        ${renderLanguageSelectOptions()}
+                    </select>
+                </label>
                 <span data-quark-bot-mobile-slot></span>
-                <a class="navsidebar-settings" href="${buildLocalizedUrl('/settings')}">
-                    ${svgIcon('gear')}
-                    <span>网站设置</span>
-                </a>
-                <div class="navsidebar-language">
-                    <div class="language-picker" data-language-picker>
-                        <button class="language-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                            <span class="language-label">${getLanguageOption(currentLanguage).label}</span>
-                            ${svgIcon('chevron-down')}
-                        </button>
-                        <ul class="language-menu" role="listbox">
-                            ${renderLanguageMenuItems()}
-                        </ul>
-                        <select id="mobileLanguageSelector" class="language-selector" aria-hidden="true" tabindex="-1">
-                            ${renderLanguageSelectOptions()}
-                        </select>
-                    </div>
-                </div>
-                <div class="navsidebar-login" id="mobile-login-button">
-                    <a href="${buildLocalizedUrl(config.login.url)}">登录</a>
-                </div>
-                <div class="navsidebar-user" id="mobile-user"></div>
             </div>
-        </div>
+        </nav>
     </div>
   `;
 }
@@ -464,46 +446,36 @@ function mountNavigation() {
 if (document.body) mountNavigation();
 else document.addEventListener('DOMContentLoaded', mountNavigation, { once: true });
 
-// 侧边栏控制函数
-function openSidebar() {
-    document.getElementById('mobilenavsidebar').classList.add('active');
-    document.getElementById('hamburgerMenu')?.setAttribute('aria-expanded','true');
-    document.body.style.overflow = 'hidden'; // 防止背景滚动
-}
+function initializeMobileNavigation() {
+    const toggle = document.getElementById('hamburgerMenu');
+    const menu = document.getElementById('mobilenavsidebar');
+    if (!toggle || !menu) return;
+    const header = toggle.closest('.header');
 
-function closeSidebar() {
-    document.getElementById('mobilenavsidebar').classList.remove('active');
-    document.getElementById('hamburgerMenu')?.setAttribute('aria-expanded','false');
-    document.body.style.overflow = ''; // 恢复背景滚动
-}
+    const setOpen = (open, restoreFocus = false) => {
+        if (restoreFocus) toggle.focus({ preventScroll: true });
+        header.classList.toggle('mobile-nav-open', open);
+        if (open) header.classList.remove('header-hidden');
+        menu.inert = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? '关闭导航菜单' : '打开导航菜单');
+    };
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
 
-// 初始化侧边栏事件
-function initializeSidebar() {
-    const hamburgerMenu = document.getElementById('hamburgerMenu');
-    const sidebarClose = document.getElementById('navsidebarClose');
-    const sidebarOverlay = document.getElementById('navsidebarOverlay');
-
-    if (hamburgerMenu) {
-        hamburgerMenu.addEventListener('click', () => { openSidebar(); sidebarClose?.focus(); });
-    }
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
+    menu.addEventListener('click', event => {
+        if (event.target.closest('a[href]')) setOpen(false, true);
+    });
+    document.addEventListener('click', event => {
+        if (isOpen() && !menu.contains(event.target) && !toggle.contains(event.target)) setOpen(false);
+    }, true);
     document.addEventListener('keydown', event => {
-        const sidebar = document.getElementById('mobilenavsidebar');
-        if (!sidebar?.classList.contains('active')) return;
-        if (event.key === 'Escape') { closeSidebar(); hamburgerMenu?.focus(); }
-        if (event.key === 'Tab') {
-            const items = Array.from(sidebar.querySelectorAll('a,button,input,select')).filter(el => el.getClientRects().length);
-            const first = items[0], last = items[items.length-1];
-            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); if (last instanceof HTMLElement) last.focus(); }
-            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); if (first instanceof HTMLElement) first.focus(); }
+        if (event.key === 'Escape' && !event.defaultPrevented && isOpen() && !event.target.closest?.('dialog[open]')) {
+            event.preventDefault();
+            setOpen(false, true);
         }
     });
-    window.matchMedia('(min-width:769px)').addEventListener('change', event => { if (event.matches) closeSidebar(); });
-    if (sidebarClose) {
-        sidebarClose.addEventListener('click', closeSidebar);
-    }
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', closeSidebar);
-    }
+    window.matchMedia('(max-width: 768px)').addEventListener('change', () => setOpen(false));
 }
 
 const navHoverCache = {
@@ -918,18 +890,15 @@ function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user');
 
     const loginButton = document.getElementById('login-button');
-    const mobileLoginButton = document.getElementById('mobile-login-button');
     const headerLoginButton = document.getElementById('header-login');
 
     if (isLoggedIn) {
         // 隐藏电脑端和移动端的登录按钮
         if (loginButton) loginButton.style.display = 'none';
-        if (mobileLoginButton) mobileLoginButton.style.display = 'none';
         if (headerLoginButton) headerLoginButton.style.display = 'none';
     } else {
         // 确保登录按钮显示（可能在之前被隐藏了）
         if (loginButton) loginButton.style.display = 'block';
-        if (mobileLoginButton) mobileLoginButton.style.display = 'block';
         if (headerLoginButton) headerLoginButton.style.display = 'flex';
     }
 
@@ -978,8 +947,7 @@ function readLocalUserFallback() {
 function renderUserProfile() {
     let profile = getUserProfile();
     const headerUser = document.getElementById('header-user');
-    const mobileUser = document.getElementById('mobile-user');
-    if (!headerUser && !mobileUser) return;
+    if (!headerUser) return;
 
     const isLoggedIn = localStorage.getItem('github_code') || localStorage.getItem('github_user') || localStorage.getItem('qb_user');
     if (!profile || (!profile.nickname && !profile.avatarUrl)) {
@@ -992,7 +960,6 @@ function renderUserProfile() {
     if (!profile || (!profile.nickname && !profile.avatarUrl)) {
         if (!isLoggedIn) {
             if (headerUser) headerUser.innerHTML = '';
-            if (mobileUser) mobileUser.innerHTML = '';
             return;
         }
         profile = profile || { nickname: '', avatarUrl: '', profileUrl: '' };
@@ -1003,7 +970,6 @@ function renderUserProfile() {
 
     if (!profile.nickname && !profile.avatarUrl) {
         if (headerUser) headerUser.innerHTML = '';
-        if (mobileUser) mobileUser.innerHTML = '';
         return;
     }
 
@@ -1049,9 +1015,6 @@ function renderUserProfile() {
     `;
 
     if (headerUser) headerUser.innerHTML = wrapped;
-    if (mobileUser) mobileUser.innerHTML = inner
-        .replace(/<button[^>]*>/, '<a class="user-pill" href="' + buildLocalizedUrl('/a/account') + '">')
-        .replace('</button>', '</a>');
 
     if (headerUser) {
         bindUserMenu(headerUser);
@@ -1182,7 +1145,7 @@ function initializeAll() {
     updateDocumentLanguage(currentLanguage);
     initializeLanguagePickers();
     initializeTranslation();
-    initializeSidebar();
+    initializeMobileNavigation();
     initializeNavHoverMenus();
     initializeNavThemeMode();
     initializeNavScrollBehavior();
@@ -1237,12 +1200,10 @@ function initializeNavThemeMode() {
         const isDark = preference ? preference.isDark : darkModeQuery.matches;
         const body = document.body;
         const header = document.querySelector('.header');
-        const mobileSidebar = document.getElementById('mobilenavsidebar');
 
         // 统一控制 body.dark-mode——触发全站所有深色模式 CSS 规则
         if (body) body.classList.toggle('dark-mode', isDark);
         if (header) header.classList.toggle('nav-dark', isDark);
-        if (mobileSidebar) mobileSidebar.classList.toggle('nav-dark', isDark);
     };
 
     applyTheme();
@@ -1266,6 +1227,11 @@ function initializeNavScrollBehavior() {
 
     const update = () => {
         const currentY = window.scrollY;
+        if (header.classList.contains('mobile-nav-open')) {
+            lastY = currentY;
+            ticking = false;
+            return;
+        }
         const delta = currentY - lastY;
         if (Math.abs(delta) > threshold) {
             const coverEnd = mountAfter ? currentY + mountAfter.getBoundingClientRect().bottom : 0;
