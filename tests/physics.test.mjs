@@ -105,3 +105,39 @@ test('pendulum CSV retains two trials with their conditions and four-decimal per
         '',
     ]);
 });
+
+test('advanced optics models reproduce diffraction minima and reflected fringe orders', async () => {
+    const { opticsLabs } = await import('../assets/pages/a/physics/optics-labs.mjs');
+    const run = (slug, values) => {
+        const lab = opticsLabs.find(item => item.slug === slug);
+        return lab.model({ ...Object.fromEntries(lab.parameters.map(p => [p.id, p.value])), ...values });
+    };
+    const slit = run('single-slit', {});
+    assert(slit.read(slit.extra[1] / 2) < 1e-20);
+    const grating = run('diffraction-grating', { lambda: 532, d: 500, f: .5 });
+    assert(grating.read(Math.asin(2 * 532 * 500 / 1e6) * 180 / Math.PI) < 1e-20);
+    const wedge = run('equal-thickness', { g: 0 });
+    assert(wedge.read(0) < 1e-20);
+    assert(wedge.read(wedge.extra[1]) < 1e-20);
+    assert(run('equal-inclination', { lambda: 532, d: 133 }).read(0) > 1 - 1e-12);
+    assert(run('equal-inclination', { lambda: 532, d: 133.133 }).read(0) < 1e-20);
+    assert(run('newton-rings', { lambda: 532, R: 1, g: 0 }).read(Math.sqrt(6 * .532)) < 1e-20);
+});
+
+test('advanced instrument models reproduce beam refocus, polarity and response limits', async () => {
+    const { magneticBeam, magneticPoint, hallVoltage, photoelectricSignal, torsionResponse } =
+        await import('../assets/pages/a/physics/advanced-labs.mjs');
+    const beam = magneticBeam({ u: 400, b: 1.67, a: 10 });
+    assert(Math.abs(beam.pitch - .25) < .003);
+    for (const azimuth of [0, 1, 2, 3]) {
+        const [, y, z] = magneticPoint(beam, beam.pitch, azimuth);
+        assert(Math.hypot(y, z) < 1e-12);
+    }
+    assert.equal(hallVoltage(18, -.65, 1.5, .15, 1), hallVoltage(18, .65, 1.5, .15, -1));
+    const signal = photoelectricSignal(365, 2.2, 60);
+    assert.equal(signal.current(-signal.stopping), 0);
+    assert.equal(signal.current(1), 6);
+    assert.equal(photoelectricSignal(650, 2.2, 60).current(1), 0);
+    assert.equal(torsionResponse(1, 1, .18).phase, Math.PI / 2);
+    assert(torsionResponse(.97, 1, .18).amplitude > torsionResponse(.5, 1, .18).amplitude);
+});

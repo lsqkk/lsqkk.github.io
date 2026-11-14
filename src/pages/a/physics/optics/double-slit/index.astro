@@ -10,9 +10,10 @@ const parameters = [
 ];
 ---
 <PhysicsLayout title="双缝干涉" category="optics" description="移动光强探针，对照亮暗条纹、衍射包络和两束光的光程差。">
-    <ExperimentWorkbench canvasLabel="屏幕条纹、相对光强曲线与衍射包络" caption="上方是屏幕条纹，下方实线是相对光强，虚线是单缝衍射包络。点按图表或移动探针滑块进行测量。"
+    <ExperimentWorkbench canvasLabel="双缝光路、屏幕条纹、相对光强曲线与衍射包络" caption="移动探针可以同时观察两条示意光路、屏幕亮暗和曲线读数。虚线为单缝衍射包络。"
         parameters={parameters} measurements={[{ id: "fringe", label: "中心附近的条纹间距" }, { id: "path", label: "光程差 / λ" }, { id: "intensity", label: "探针相对光强" }]} script="double-slit">
         <div class="physics-actions">
+            <button id="toggle-animation" type="button">暂停</button>
             <button id="red-light" type="button">红光 650 nm</button>
             <button id="blue-light" type="button">蓝光 450 nm</button>
             <button type="reset">重置</button>

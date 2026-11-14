@@ -1,8 +1,9 @@
-import { backdrop, colors, controlChanges, dot, experimentCanvas, get, label, line, number, pointerPosition, write } from './workbench.mjs';
+import { backdrop, colors, controlChanges, dot, experimentCanvas, get, label, lightPulse, line, number, pointerPosition, simulationClock, write } from './workbench.mjs';
 import { doubleSlitIntensity } from './models.mjs';
 
-const bounds = { left: 68, right: 683, top: 186, bottom: 382 };
+const bounds = { left: 68, right: 683, top: 232, bottom: 382 };
 const halfScreen = 24;
+let travel = 0;
 
 function parameters() {
     return {
@@ -35,15 +36,28 @@ const { canvas, paint, width, height } = experimentCanvas((ctx, w, h) => {
     const intensityAt = (x) => doubleSlitIntensity(screenPosition(x) / 1000, wavelength, spacing, slitWidth, distance);
 
     backdrop(ctx, w, h, false);
-    label(ctx, '屏幕上的亮暗条纹', left, 34);
+    const ink = `rgb(${red}, ${green}, ${blue})`;
+    const probeX = left + (probe + halfScreen) * (right - left) / (2 * halfScreen);
+    const slitLeft = 360 - number('spacing') * .2;
+    const slitRight = 360 + number('spacing') * .2;
+    const slitHalf = 1 + number('slit-width') * .07;
+    label(ctx, '双缝与探针光路', left, 32);
+    const paths = [[left, slitLeft - slitHalf], [slitLeft + slitHalf, slitRight - slitHalf], [slitRight + slitHalf, right]];
+    for (const [a, b] of paths) line(ctx, a, 57, b, 57, colors.muted, 5);
+    for (const slit of [slitLeft, slitRight]) {
+        line(ctx, slit, 57, probeX, 148, '#dbe6fa70', 1.5);
+        lightPulse(ctx, slit, 57, probeX, 148, travel, ink, 38);
+        dot(ctx, slit, 57, 3.5, ink);
+    }
+    label(ctx, '探测屏', left, 135);
     for (let x = left; x <= right; x++) {
         const glow = Math.sqrt(intensityAt(x).intensity);
         ctx.fillStyle = `rgb(${red * glow}, ${green * glow}, ${blue * glow})`;
-        ctx.fillRect(x, 53, 1, 79);
+        ctx.fillRect(x, 148, 1, 38);
     }
     ctx.strokeStyle = colors.grid;
-    ctx.strokeRect(left - .5, 52.5, right - left + 1, 80);
-    label(ctx, '相对光强', left, 166);
+    ctx.strokeRect(left - .5, 147.5, right - left + 1, 39);
+    label(ctx, '相对光强', left, 216);
     for (let level = 0; level <= 4; level++) {
         const y = bottom - (bottom - top) * level / 4;
         line(ctx, left, y, right, y);
@@ -69,8 +83,8 @@ const { canvas, paint, width, height } = experimentCanvas((ctx, w, h) => {
         ctx.stroke();
     }
     ctx.setLineDash([]);
-    const probeX = left + (probe + halfScreen) * (right - left) / (2 * halfScreen);
-    line(ctx, probeX, 45, probeX, bottom, colors.amber);
+    line(ctx, probeX, 148, probeX, 188, colors.amber);
+    line(ctx, probeX, top, probeX, bottom, colors.amber);
     dot(ctx, probeX, bottom - intensityAt(probeX).intensity * (bottom - top), 5, colors.amber);
 });
 
@@ -103,4 +117,5 @@ for (const [id, wavelength] of [['red-light', 650], ['blue-light', 450]]) {
 }
 
 controlChanges(render);
+simulationClock(paint, dt => { travel += 135 * dt; });
 render();

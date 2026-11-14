@@ -1,6 +1,5 @@
 ---
 import PhysicsLayout from "../../../../../components/physics/PhysicsLayout.astro";
-import ExperimentWorkbench from "../../../../../components/physics/ExperimentWorkbench.astro";
 import { categories, experiments } from "../../../../../../assets/pages/a/physics/experiments.mjs";
 
 export function getStaticPaths() {
@@ -8,26 +7,72 @@ export function getStaticPaths() {
 }
 
 const { lab } = Astro.props;
-const neighbors = experiments.filter(item => item.category === lab.category && item !== lab && item.slug !== lab.slug);
+const neighbors = experiments.filter(item => item.category === lab.category && item.slug !== lab.slug);
+const readings = [["reading-x", lab.axes[0]], ["reading-y", lab.axes[1]], ["reading-extra", "补充读数"]];
 ---
 <PhysicsLayout title={lab.name} description={lab.description} category={lab.category}>
-    <p class="physics-lab-meta" slot="intro">{categories[lab.category as keyof typeof categories]} / {lab.topics}</p>
-    <div id="physics-lab" data-experiment={lab.slug}>
-        <ExperimentWorkbench canvasLabel={lab.name + "曲线"} caption={lab.axes.join(" / ")}
-            parameters={lab.parameters.map(parameter => ({ ...parameter, id: "lab-" + parameter.id }))} script="curve-workbench"
-            measurements={[{ id: "reading-x", label: lab.axes[0] }, { id: "reading-y", label: lab.axes[1] }, { id: "reading-extra", label: "补充读数" }]}>
-            <div class="physics-actions">
-                <button type="button" id="pin-run">保存对照曲线</button>
-                <button type="button" id="clear-run" disabled>移除对照</button>
-                <button type="reset">恢复初值</button>
+    <p class="physics-lab-meta" slot="intro">{categories[lab.category as keyof typeof categories]} · {lab.topics}{lab.level === "university" && " · 大学物理"}</p>
+    <div id="physics-lab" class="physics-lab" data-experiment={lab.slug}>
+        <section class="physics-stage physics-live-stage" aria-labelledby="stage-title">
+            <div class="physics-instrument-bar">
+                <h2 id="stage-title">{lab.sceneTitle}</h2>
+                <div class="physics-view-actions">
+                    <button id="play-lab" type="button" aria-pressed="false">播放演示</button>
+                    {lab.three && <>
+                        <button id="switch-view" type="button" aria-pressed="false">打开三维视角</button>
+                        <button id="rotate-view" type="button" hidden>旋转视角</button>
+                        <button id="home-view" type="button" hidden>复位视角</button>
+                    </>}
+                </div>
             </div>
-            <p id="curve-status" role="status">调节参数后，可保存一条曲线与下一组参数对照。</p>
-            <section class="physics-notes" slot="notes">
-                <h2>模型与探究</h2>
-                <p><code>{lab.formula}</code></p>
-                <p>{lab.question}</p>
-                {neighbors.length > 0 && <div class="physics-related">{neighbors.map(item => <a href={`/a/physics/${item.category}/${item.slug}/`}>{item.name} ↗</a>)}</div>}
-            </section>
-        </ExperimentWorkbench>
+            <div class="physics-scene-viewport">
+                <canvas id="simulation" width="960" height="520" role="img" aria-label={lab.sceneTitle}>{lab.sceneTitle}</canvas>
+                {lab.three && <div id="physics-three" class="physics-webgl" role="img" aria-label={lab.name + "三维装置"} hidden></div>}
+            </div>
+            <p class="physics-instrument-caption">{lab.sceneCaption}{lab.category === 'optics' && ' 在二维探测屏上点按或拖动可移动游标。'}</p>
+            <dl class="physics-measurements">
+                {readings.map(([id, label]) => <div><dt>{label}</dt><dd id={id}>—</dd></div>)}
+            </dl>
+        </section>
+        <section class="physics-controls physics-lab-controls" aria-labelledby="physics-controls-title">
+            <h2 id="physics-controls-title">实验参数</h2>
+            <form id="experiment-form">
+                {lab.parameters.map(parameter => (
+                    <label class="physics-parameter">
+                        <span>{parameter.label}<output for={"lab-" + parameter.id} id={`lab-${parameter.id}-output`}>{parameter.initial}</output></span>
+                        <input id={"lab-" + parameter.id} type="range" min={parameter.min} max={parameter.max} step={parameter.step} value={parameter.value} />
+                    </label>
+                ))}
+                {lab.presets?.length > 0 && <div class="physics-preset-group" role="group" aria-label="实验预设">
+                    {lab.presets.map((preset, index) => <button type="button" data-preset={index}>{preset.label}</button>)}
+                </div>}
+                <div class="physics-actions">
+                    <button type="button" id="pin-run">保存对照</button>
+                    <button type="button" id="clear-run" disabled>移除对照</button>
+                    <button type="reset">恢复初值</button>
+                </div>
+                <p id="curve-status" role="status"></p>
+            </form>
+        </section>
+        <figure class="physics-stage physics-lab-plot">
+            <div class="physics-instrument-bar">
+                <h2>测量曲线</h2>
+                <div class="physics-series">
+                    <span>{lab.series?.[0] ?? "当前曲线"}</span>
+                    {lab.series?.[1] && <span>{lab.series[1]}</span>}
+                    <span class="physics-series-reference">对照</span>
+                </div>
+            </div>
+            <canvas id="measurement-plot" width="960" height="520" role="img" aria-label={lab.axes.join(" / ")}></canvas>
+            {(lab.probe || lab.playback) && <figcaption>点按或沿曲线拖动以移动探针，也可以使用参数滑块。</figcaption>}
+        </figure>
+        <section class="physics-notes physics-lab-notes">
+            <h2>模型与探究</h2>
+            <p><code>{lab.formula}</code></p>
+            {lab.notes?.length > 0 && <ol>{lab.notes.map(note => <li>{note}</li>)}</ol>}
+            <p class="physics-question">{lab.question}</p>
+            {neighbors.length > 0 && <div class="physics-related">{neighbors.map(item => <a href={`/a/physics/${item.category}/${item.slug}/`}>{item.name} ↗</a>)}</div>}
+        </section>
     </div>
+    <script is:inline type="module" src="/assets/pages/a/physics/curve-workbench.mjs"></script>
 </PhysicsLayout>

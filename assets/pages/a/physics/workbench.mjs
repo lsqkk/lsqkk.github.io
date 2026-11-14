@@ -53,11 +53,26 @@ export function label(ctx, text, x, y, fill = colors.text, align = 'left') {
 }
 
 export function backdrop(ctx, width, height, grid = true) {
-    ctx.fillStyle = colors.background;
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, '#192d44');
+    gradient.addColorStop(1, '#0a1421');
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
     if (!grid) return;
     for (let x = 0; x < width; x += 24) line(ctx, x + .5, 0, x + .5, height);
     for (let y = 0; y < height; y += 24) line(ctx, 0, y + .5, width, y + .5);
+}
+
+export function lightPulse(ctx, x1, y1, x2, y2, offset, ink, spacing = 48) {
+    const length = Math.hypot(x2 - x1, y2 - y1);
+    ctx.save();
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = ink;
+    for (let distance = ((offset % spacing) + spacing) % spacing; distance < length; distance += spacing) {
+        const fraction = distance / length;
+        dot(ctx, x1 + (x2 - x1) * fraction, y1 + (y2 - y1) * fraction, 3, ink);
+    }
+    ctx.restore();
 }
 
 export function experimentCanvas(draw) {

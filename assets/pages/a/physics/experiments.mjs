@@ -1,3 +1,7 @@
+import { opticsLabs } from './optics-labs.mjs';
+import { advancedLabs } from './advanced-labs.mjs';
+import { foundationScenes } from './foundation-scenes.mjs';
+
 const slider = (id, label, min, max, step, value, unit = '') => ({
     id, label, min, max, step, value, unit, initial: value + unit
 });
@@ -7,7 +11,7 @@ const distance = slider('x', '读数位置', 0, 10, .05, 2, ' m');
 const tau = slider('k', '时间常数', .5, 5, .1, 2, ' s');
 const temperature = slider('k', '环境温度', 0, 40, 1, 20, ' °C');
 
-export const experiments = [
+const foundations = [
     {
         category: 'mechanics', slug: 'projectile', name: '斜抛运动', topics: '轨迹 · 射程',
         description: '改变初速度和仰角，测量无空气阻力时的轨迹与落点。',
@@ -117,6 +121,18 @@ export const experiments = [
         axes: ['时间 (h)', '剩余核数期望值'],
         model: ({ n, k, t }) => ({ end: 10, at: t, read: x => n * 2 ** (-x / k), extra: ['剩余比例', 100 * 2 ** (-t / k), '%'] })
     }
+];
+
+const foundationProbes = {
+    projectile: { probe: 't', probeScale: (x, model) => 100 * x / model.end, curveStaticAt: ['t'] },
+    standing: { probe: 'x', curveStaticAt: ['x'] },
+    divider: { probe: 'x', curveStaticAt: ['x'] },
+    'ideal-gas': { probe: 'x', curveStaticAt: ['x'] },
+};
+
+export const experiments = [
+    ...foundations.map(lab => ({ ...lab, ...foundationScenes[lab.slug], ...foundationProbes[lab.slug] })),
+    ...[...opticsLabs, ...advancedLabs].map(lab => ({ ...lab, level: 'university' })),
 ];
 
 export const categories = {

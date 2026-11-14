@@ -15,6 +15,7 @@ import ExperimentWorkbench from "../../../../../components/physics/ExperimentWor
             <label class="physics-parameter">透射介质<select id="target"><option value="1.00" selected>空气 n = 1.00</option><option value="1.33">水 n = 1.33</option><option value="1.50">玻璃 n = 1.50</option></select></label>
         </Fragment>
         <div class="physics-actions">
+            <button type="button" id="toggle-animation">暂停</button>
             <button type="button" id="swap">交换介质</button>
             <button type="button" id="threshold">跨过临界角</button>
             <button type="reset">重置</button>
@@ -22,7 +23,7 @@ import ExperimentWorkbench from "../../../../../components/physics/ExperimentWor
         <section class="physics-notes" slot="notes">
             <h2>验证斯涅尔定律</h2>
             <p><code>n₁ sin θ₁ = n₂ sin θ₂</code>。从玻璃射向空气时，先预测 40° 和 50° 的光路，再拖动滑块核对。只有光从高折射率介质射向低折射率介质时才会出现临界角。</p>
-            <p>图中只画几何光路。线宽表示各条光线的角色，与实际光强无关。</p>
+            <p>亮点用相同的发射间隔示意传播速度，因此进入高折射率介质后，亮点移动更慢、间距更小。图中的光线宽度与实际光强无关。</p>
         </section>
     </ExperimentWorkbench>
 </PhysicsLayout>
