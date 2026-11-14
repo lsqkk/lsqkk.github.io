@@ -3,8 +3,14 @@
   "installCommand": "npm install --no-audit --no-fund",
   "buildCommand": "echo \"Skip Vercel static build (GitHub Pages handles site build)\"",
   "functions": {
+    "api/resources.js": { "maxDuration": 25 },
     "api/quarkbot-free.js": { "maxDuration": 45 }
   },
+  "rewrites": [
+    {"source": "/api/remote-import", "destination": "/api/resources?resourceRoute=remote-import"},
+    {"source": "/api/terminal-http", "destination": "/api/resources?resourceRoute=terminal-http"},
+    {"source": "/api/stream-proxy", "destination": "/api/resources?resourceRoute=stream-proxy"}
+  ],
   "crons": [{ "path": "/api/db", "schedule": "17 3 * * *" }],
   "outputDirectory": "."
 }
