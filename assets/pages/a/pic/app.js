@@ -527,11 +527,11 @@ urlForm.addEventListener('submit', async event => {
     renderQueue();
     setStatus('正在读取图片网址…');
     try {
-        const file = await importImage(urlInput.value);
+        const file = await importImage(urlInput.value, document.getElementById('picApp').dataset.apiBase);
         if (addFiles([file])) urlInput.value = '';
     } catch (error) {
         setStatus(error.name === 'TypeError'
-            ? '无法读取该图片，请检查网址及来源站点的跨域权限'
+            ? '无法读取该图片，请检查网址或换一个图片来源'
             : error.message);
     } finally {
         importing = false;

@@ -29,14 +29,32 @@ export function httpUrl(value) {
     return '';
 }
 
-export async function importImage(value) {
+export async function importImage(value, apiBase) {
     const url = httpUrl(value);
     if (!url) throw new Error('请输入 HTTP 或 HTTPS 图片网址');
-    const response = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(20000) });
+    let response;
+    try {
+        response = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(8000) });
+    } catch (error) {
+        if (!apiBase || !url.startsWith('https:')) throw error;
+    }
+    let source = response?.url || url;
+    if ((!response?.ok || !response.headers.get('Content-Type')?.toLowerCase().startsWith('image/')) &&
+        apiBase && url.startsWith('https:')) {
+        await response?.body?.cancel().catch(() => {});
+        const query = new URLSearchParams({ kind: 'image', url });
+        response = await fetch(apiBase + '/api/remote-import?' + query, { signal: AbortSignal.timeout(15000) });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || '图片中转失败（HTTP ' + response.status + '）');
+        }
+        source = response.headers.get('X-Resource-Url') || url;
+    }
+    if (!response) throw new Error('无法读取该图片');
     if (!response.ok) throw new Error('无法读取图片（HTTP ' + response.status + '）');
 
     const type = (response.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
-    let name = new URL(response.url || url).pathname.split('/').pop() || '';
+    let name = new URL(source).pathname.split('/').pop() || '';
     try { name = decodeURIComponent(name); } catch { /* Keep the encoded name. */ }
     name = name.replace(/[\\/]/g, '_').replace(/[\u0000-\u001f\u007f]/g, '');
     const contentType = imageType({ name, type });

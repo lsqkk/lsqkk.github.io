@@ -122,8 +122,6 @@ const developerCommands = {
     }
 };
 
-const relayHosts = new Set(['api.github.com', 'raw.githubusercontent.com', 'registry.npmjs.org', 'www.iana.org', 'example.com', 'example.org']);
-
 function publicHttps(value) {
     const url = new URL(value.includes('://') ? value : 'https://' + value);
     if (url.protocol !== 'https:' || url.username || url.password || url.port ||
@@ -132,7 +130,7 @@ function publicHttps(value) {
     return url;
 }
 
-async function responseText(response) {
+async function responseText(response, limit = 512 * 1024) {
     if (!response.body) return '';
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -142,7 +140,7 @@ async function responseText(response) {
             const { done, value } = await reader.read();
             if (done) return text + decoder.decode();
             bytes += value.length;
-            if (bytes > 512 * 1024) throw new Error('响应超过 512 KiB');
+            if (bytes > limit) throw new Error('响应体积超出限制');
             text += decoder.decode(value, { stream: true });
         }
     } finally {
@@ -151,29 +149,29 @@ async function responseText(response) {
 }
 
 async function requestUrl(url, method, signal) {
-    const timeout = AbortSignal.any([signal, AbortSignal.timeout(8000)].filter(Boolean));
-    if (relayHosts.has(url.hostname)) {
-        const api = document.querySelector('[data-terminal-api]').dataset.terminalApi;
-        const response = await fetch(api.replace(/\/$/, '') + '/api/terminal-http?' + new URLSearchParams({ url: url.href, method }), { signal: timeout });
-        const data = JSON.parse(await responseText(response));
-        if (!response.ok) throw new Error(data.error || '转发服务不可用');
-        return data;
-    }
+    const timeout = AbortSignal.any([signal, AbortSignal.timeout(12000)].filter(Boolean));
+    const api = document.querySelector('[data-terminal-api]').dataset.terminalApi;
+    const endpoint = api.replace(/\/$/, '') + '/api/terminal-http?' + new URLSearchParams({ url: url.href, method });
     let response;
     try {
-        response = await fetch(url, { method, signal: timeout, credentials: 'omit', redirect: 'error' });
+        response = await fetch(endpoint, { signal: timeout });
     } catch (error) {
         if (timeout.aborted) throw timeout.reason;
-        throw new Error('请求失败：请检查 HTTPS、CORS 和重定向');
+        throw new Error('无法连接终端 HTTPS 中转服务');
     }
-    return { status: response.status, headers: [...response.headers], body: await responseText(response) };
+    if (!response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('中转服务返回异常响应（HTTP ' + response.status + '）');
+    }
+    const data = JSON.parse(await responseText(response, 4 * 1024 * 1024));
+    if (!response.ok) throw new Error(data.error || '中转服务不可用');
+    return data;
 }
 
 Object.assign(developerCommands, {
     curl: {
         manualOnly: true,
         usage: 'curl [-Iif] <HTTPS URL>',
-        description: 'GET 文本，-I 请求响应头，-i 同时输出响应头，-f 在 HTTP 错误时返回失败。支持 CORS 直连及 GitHub、npm、IANA、example.com/.org 的 Vercel 转发',
+        description: 'GET 文本，-I 请求响应头，-i 同时输出响应头，-f 在 HTTP 错误时返回失败。通过中转访问公网 HTTPS 域名，支持 HTTPS 跳转，响应上限 1 MiB',
         run: async ({ args, signal }) => {
             const { flags, values } = ShellText.options(args, 'Iif');
             const url = publicHttps(ShellText.oneArg(values, 'curl [-Iif] <HTTPS URL>'));
@@ -191,8 +189,9 @@ Object.assign(developerCommands, {
         run: async ({ args, signal }) => {
             const url = publicHttps(ShellText.oneArg(args, 'ping <域名或 HTTPS URL>'));
             const start = performance.now();
-            const { status } = await requestUrl(url, 'HEAD', signal);
-            return `HTTPS ${url.hostname}: status=${status} time=${Math.round(performance.now() - start)} ms\n`;
+            const { status, url: finalUrl } = await requestUrl(url, 'HEAD', signal);
+            const host = finalUrl ? new URL(finalUrl).hostname : url.hostname;
+            return `HTTPS ${url.hostname}${host === url.hostname ? '' : ' → ' + host}: status=${status} time=${Math.round(performance.now() - start)} ms\n`;
         }
     },
     dig: {

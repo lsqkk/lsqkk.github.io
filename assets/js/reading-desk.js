@@ -1,4 +1,4 @@
-import {createDesk,toMarkdown} from './reading-desk-store.mjs';
+import { externalURL,createDesk,toMarkdown} from './reading-desk-store.mjs';
 import {openHandoff} from './tool-handoff.mjs';
 import {resumeHref} from './reading-position.mjs';
 const desk=createDesk();
@@ -56,21 +56,67 @@ sendNotes.onclick = () => {
   openHandoff(sendNotes, 'editor', '拾页摘录', toMarkdown({ queue: [], clips }, location.origin));
 };
 
+const linkForm = $('desk-link-form');
+linkForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const input = $('desk-link-url');
+  const feedback = $('desk-link-feedback');
+  const button = linkForm.querySelector('button');
+  const url = externalURL(input.value.trim());
+  if (!url) { feedback.textContent = '请输入完整的 HTTPS 链接。'; return; }
+  input.disabled = button.disabled = true;
+  feedback.textContent = '正在读取网页信息…';
+  const fallback = { url, source: url, title: new URL(url).hostname };
+  let card = fallback;
+  try {
+    const api = $('desk-main').dataset.apiBase;
+    const query = new URLSearchParams({ kind: 'link', url });
+    const response = await fetch(api + '/api/remote-import?' + query, { signal: AbortSignal.timeout(15000) });
+    if (response.ok) {
+      const data = await response.json();
+      if (externalURL(data.url) && typeof data.title === 'string' && data.title.trim()) {
+        card = { ...data, source: url };
+      }
+    }
+  } catch { /* The original link is still a valid bookmark. */ }
+  if (desk.saveLink(card)) {
+    feedback.textContent = card === fallback ? '已收藏原链接，暂时无法读取网页信息。' : '已收藏网页。';
+    input.value = '';
+  } else feedback.textContent = desk.error;
+  input.disabled = button.disabled = false;
+});
+
 function queue() {
   const data=desk.read(),waiting=data.queue.filter(item=>!item.completed),list=$('desk-queue-list');
   $('desk-queue-count').textContent=String(waiting.length).padStart(2,'0');
-  $('desk-queue-summary').textContent=waiting.length?waiting.length+' 篇待读 · 合计约 '+waiting.reduce((sum,item)=>sum+item.minutes,0)+' 分钟'+(data.queue.length>waiting.length?' · '+(data.queue.length-waiting.length)+' 篇已读':''):'给下一次打开博客，留一个入口。';
+  const knownMinutes = waiting.reduce((sum,item)=>sum+item.minutes,0);
+  $('desk-queue-summary').textContent=waiting.length?waiting.length+' 项待读'+(knownMinutes?' · 已知阅读时间约 '+knownMinutes+' 分钟':'')+(data.queue.length>waiting.length?' · '+(data.queue.length-waiting.length)+' 篇已读':''):'给下一次打开博客，留一个入口。';
   list.replaceChildren();
   if(!data.queue.length){const empty=make('div','desk-queue-empty');empty.append(make('span','','⌑'),document.createTextNode('还没有放下书签。点文章旁的 +，或收下一整条路线。'));list.append(empty);}
   data.queue.forEach((post,index)=>{
-    const row=make('article','desk-queue-item'+(post.completed?' is-complete':'')),link=make('a','',post.title);link.href=post.completed?post.url:resumeHref(post.url);row.append(link,make('small','',post.completed?'已读完':'约 '+post.minutes+' 分钟'));
+    const row=make('article','desk-queue-item'+(post.completed?' is-complete':'')),link=make('a','',post.title);link.href=post.external||post.completed?post.url:resumeHref(post.url);
+    if (post.external) {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      if (post.image) {
+        const cover = make('img', 'desk-link-cover');
+        cover.alt = '';
+        cover.loading = 'lazy';
+        cover.referrerPolicy = 'no-referrer';
+        cover.addEventListener('error', () => cover.remove(), { once: true });
+        cover.src = post.image;
+        link.prepend(cover);
+      }
+    }
+    row.append(link,make('small','',post.completed?'已读完':post.external?new URL(post.url).hostname:'约 '+post.minutes+' 分钟'));
+    if (post.description) row.append(make('p', 'desk-link-description', post.description));
     const controls=make('div','desk-queue-controls');
     const complete=action(post.completed?'重新待读':'标为读完',(post.completed?'重新待读：':'标为读完：')+post.title,()=>{if(!desk.complete(post.url))status(desk.error);});
     complete.dataset.focusKey='complete:'+post.url;complete.setAttribute('aria-pressed',String(post.completed));controls.append(complete);
     for(const [text,delta,label] of [['↑',-1,'上移'],['↓',1,'下移']]) {
       const button=action(text,label+'：'+post.title,()=>{if(!desk.move(post.url,delta))status(desk.error);});button.disabled=delta<0?index===0:index===data.queue.length-1;controls.append(button);
     }
-    controls.append(action('移除','移除：'+post.title,()=>save(desk.toggle(post),'已移出清单')));row.append(controls);list.append(row);
+    controls.append(action('移除','移除：'+post.title,()=>save(desk.remove(post.url),'已移出清单')));row.append(controls);list.append(row);
   });
 }
 function notes() {

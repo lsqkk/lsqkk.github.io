@@ -1,6 +1,6 @@
 ---
 import LuxuryBackground from "../../../../components/LuxuryBackground.astro";
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
+import { SITE_TITLE, SITE_LOGO_URL, API_BASE } from "@siteConfig";
 ---
 
 <!doctype html>
@@ -23,7 +23,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
 <body class="luxury-body">
     <LuxuryBackground />
 
-    <main class="pic-shell" id="picApp">
+    <main class="pic-shell" id="picApp" data-api-base={API_BASE}>
         <header class="pic-hero">
             <nav class="pic-breadcrumb" aria-label="页面路径"><a href="/a/">实验室</a><span aria-hidden="true">/</span><span aria-current="page">夸克图床</span></nav>
             <div class="pic-heading">
@@ -64,7 +64,7 @@ import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
                             <input id="urlInput" type="url" placeholder="https://example.com/image.png" required>
                             <button class="pic-button" id="urlBtn" type="submit" disabled>添加</button>
                         </form>
-                        <p>来源站点需允许跨域读取。图片先进入队列，可预览后再上传。</p>
+                        <p>图片先进入队列，可预览后再上传。HTTPS 外链可通过中转读取（最多 4 MiB）。</p>
                     </details>
                     <ul class="pic-queue" id="fileList" aria-label="上传队列" hidden></ul>
                     <div class="pic-recent" id="recentBatch" hidden>

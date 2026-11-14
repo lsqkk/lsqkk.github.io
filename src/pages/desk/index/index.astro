@@ -1,6 +1,6 @@
 ---
 import { readFileSync } from 'node:fs';
-import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL, API_BASE } from '@siteConfig';
 import navConfig from '../../../config/json/nav.json';
 import paths from '../../../config/reading-paths.json';
 import ReadingRouteMap from '../../../components/ReadingRouteMap.astro';
@@ -24,7 +24,7 @@ const routes = paths.map(route=>({...route,steps:route.steps.map(step=>({...step
 </head>
 <body class="desk-page">
   <a href="#desk-main" class="desk-skip">跳到阅读工作台</a>
-  <main class="desk-shell" id="desk-main">
+  <main class="desk-shell" id="desk-main" data-api-base={API_BASE}>
     <header class="desk-hero">
       <div class="desk-eyebrow"><span aria-hidden="true">⌑</span> QUARK / A PLACE FOR YOUR CURIOSITY</div>
       <div class="desk-hero-line"><h1>拾页<span>把好奇心，<br />留成下一页。</span></h1>
@@ -48,6 +48,11 @@ const routes = paths.map(route=>({...route,steps:route.steps.map(step=>({...step
         <div class="desk-section-label"><span>下次，从这里开始</span><span aria-hidden="true">↗</span></div>
         <div class="desk-queue-title"><h2 id="queue-title" tabindex="-1">待读书签</h2><span id="desk-queue-count">00</span></div>
         <p id="desk-queue-summary">给下一次打开博客，留一个入口。</p>
+        <form id="desk-link-form" class="desk-link-form">
+          <label for="desk-link-url">收藏站外网页</label>
+          <div><input type="url" id="desk-link-url" placeholder="https://…" maxlength="2048" required aria-describedby="desk-link-feedback" /><button type="submit">收藏</button></div>
+          <p id="desk-link-feedback" role="status"></p>
+        </form>
         <div id="desk-queue-list" role="region" aria-label="待读清单，可上下滚动" tabindex="0"></div>
         <div class="desk-queue-foot"><span aria-hidden="true">⌑</span><p>文章页也能加入清单。<br />读到喜欢的句子，选中后点「摘录到拾页」。</p></div>
       </aside>

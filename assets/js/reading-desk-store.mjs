@@ -12,6 +12,26 @@ export function postURL(value) {
     return url.pathname.replace(/\/$/, '') + url.hash;
   } catch { return ''; }
 }
+export function externalURL(value) {
+  try {
+    if (typeof value !== 'string' || value.length > 2048 || /[\\\s]/.test(value)) return '';
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password || url.port ||
+        !/^(?:[a-z0-9-]+\.)+[a-z][a-z0-9-]*$/i.test(url.hostname)) return '';
+    return url.href;
+  } catch { return ''; }
+}
+
+function queueItem(item) {
+  const local = postURL(item?.url);
+  const url = local || (item?.external === true && externalURL(item.url));
+  const title = short(item?.title).trim();
+  if (!url || !title) return null;
+  if (local) return { url, title, minutes: Math.max(1, Math.min(999, Number(item.minutes) || 1)), completed: !!item.completed };
+  return { url, title, minutes: 0, completed: !!item.completed, external: true,
+    description: short(item.description, 420), image: externalURL(item.image), source: externalURL(item.source) || url };
+}
+
 export function deskPostFromMeta({ postPath, postTitle, wordCount }) {
   const path = postPath || globalThis.location?.pathname || '';
   const url = postURL('/posts/' + path.replace(/^\/?posts\//, '').replace(/^\/+|\.md$/g, ''));
@@ -21,9 +41,8 @@ export function normalize(raw) {
   if (!raw || raw.version !== 1 || !Array.isArray(raw.queue) || !Array.isArray(raw.clips)) throw new Error('这不是拾页 v1 备份文件');
   const queue = new Map(), clips = new Map();
   for (const item of raw.queue.slice(0,200)) {
-    const url = postURL(item?.url);
-    if (!url || !short(item.title)) continue;
-    queue.set(url.split('#')[0], {url, title:short(item.title), minutes:Math.max(1,Math.min(999,Number(item.minutes)||1)), completed:!!item.completed});
+    const entry = queueItem(item);
+    if (entry) queue.set(entry.url.split('#')[0], entry);
   }
   for (const item of raw.clips.slice(0,500)) {
     const url = postURL(item?.url), text = short(item?.text,4000);
@@ -72,6 +91,26 @@ export function createDesk(storage) {
       });
     },
     add(posts) {return update(data=>{for(const post of posts){const url=postURL(post.url);if(url&&!data.queue.some(item=>item.url.split('#')[0]===url.split('#')[0])){if(data.queue.length>=200)throw new RangeError('待读或摘录数量已达上限，请先导出备份并移除不再需要的内容。');data.queue.push({url,title:short(post.title),minutes:post.minutes||1,completed:false});}}});},
+    saveLink(link) {
+      const item = queueItem({ ...link, external: true });
+      if (!item) { storageError = '请输入有效的 HTTPS 链接。'; return false; }
+      return update(data => {
+        const key = item.url.split('#')[0];
+        const sourceKey = item.source?.split('#')[0];
+        const index = data.queue.findIndex(old => old.url.split('#')[0] === key ||
+          (sourceKey && old.source?.split('#')[0] === sourceKey));
+        if (index >= 0) {
+          const old = data.queue[index];
+          if (old.external && (item.url !== item.source || item.description || item.image || item.title !== new URL(item.url).hostname)) {
+            data.queue[index] = { ...item, completed: old.completed };
+          }
+        } else {
+          if (data.queue.length >= 200) throw new RangeError('待读清单已达上限。');
+          data.queue.push(item);
+        }
+      });
+    },
+    remove(url) { return update(data => { data.queue = data.queue.filter(item => item.url !== url); }); },
     complete(url) { return update(data=>{const item=data.queue.find(item=>item.url===url); if(item)item.completed=!item.completed;}); },
     move(url,direction) { return update(data=>{const from=data.queue.findIndex(item=>item.url===url),to=from+direction;if(from>=0&&to>=0&&to<data.queue.length)[data.queue[from],data.queue[to]]=[data.queue[to],data.queue[from]];}); },
     clip(item) {
@@ -97,7 +136,7 @@ export function createDesk(storage) {
 }
 export function toMarkdown(data, origin) {
   const lines=['# 拾页 · 阅读手记',''];
-  if(data.queue.length)lines.push('## 阅读清单','',...data.queue.map(item=>'- ['+(item.completed?'x':' ')+'] ['+md(item.title)+']('+new URL(item.url,origin).href+') · 约 '+item.minutes+' 分钟'),'');
+  if(data.queue.length)lines.push('## 阅读清单','',...data.queue.map(item=>'- ['+(item.completed?'x':' ')+'] ['+md(item.title)+']('+new URL(item.url,origin).href+')'+(item.external?' · 站外链接':' · 约 '+item.minutes+' 分钟')),'');
   if(data.clips.length) {
     lines.push('## 摘录与想法','');
     for(const item of data.clips) {
