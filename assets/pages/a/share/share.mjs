@@ -213,6 +213,8 @@ export function mountShare() {
     let transfer = null;
     let offlineJob = null;
     let offlineEnabled = null;
+    let offlineLimit = MAX_OFFLINE;
+    let offlineInline = false;
     let invitation = null;
     let previewUrl = null;
     let history = readHistory();
@@ -416,7 +418,9 @@ export function mountShare() {
             : room ? role === 'send' ? ['准备发送', '对方确认文件清单后，浏览器才会开始发送。']
                 : ['接收文件', legacy ? '旧版设备连接成功后即可直接发送文件。' : '确认对方的发送请求后再接收。']
             : mode === 'receive' ? ['取件与收集', '打开对方分享的链接，或创建一个收集邀请。']
-            : offline ? ['创建离线包', '文件名、内容和附言一起加密。单包最多 25 MiB。']
+            : offline ? ['创建离线包', offlineEnabled
+                ? `文件名、内容和附言一起加密。单包最多 ${bytes(offlineLimit)}。`
+                : '文件名、内容和附言一起加密。']
             : ['准备文件', '选好内容后，生成连接码交给接收方。'];
         el('work-title').textContent = titles[0];
         el('work-subtitle').textContent = titles[1];
@@ -623,8 +627,10 @@ export function mountShare() {
         el('offline-login').href = quotaLoginUrl();
         el('offline-login').hidden = Boolean(accountScope());
         el('offline-status').textContent = '正在检查离线包服务…';
-        dropCheck = api('status').then(({ offline }) => {
+        dropCheck = api('status').then(({ offline, maxBytes, inline }) => {
             offlineEnabled = offline === true && Boolean(crypto.subtle);
+            offlineLimit = maxBytes || MAX_OFFLINE;
+            offlineInline = inline === true;
             el('offline-status').textContent = !offlineEnabled
                 ? '离线包暂不可用。你仍可使用在线直传。'
                 : accountScope() ? '此功能每天最多创建 10 个包。取件方无需登录。'
@@ -642,7 +648,7 @@ export function mountShare() {
         const accountHeaders = quotaHeaders();
         const account = accountScope(accountHeaders);
         if (!account) { message('请登录并验证账号后创建离线包。', true); return; }
-        if (offlineSize(queue, note) > MAX_OFFLINE) { message('加密后离线包超过 25 MiB。请减少文件或使用在线直传。', true); return; }
+        if (offlineSize(queue, note) > offlineLimit) { message(`加密后离线包超过 ${bytes(offlineLimit)}。请减少文件或使用在线直传。`, true); return; }
         const job = new AbortController();
         offlineJob = job;
         flow = 'offline-create';
@@ -654,16 +660,28 @@ export function mountShare() {
         try {
             const { key, blob } = await sealDrop(queue, note);
             job.signal.throwIfAborted();
-            const { uploadUrl, day, id } = await api('drop-create', {
-                size: blob.size, hours: Number(el('expire-hours').value)
-            }, { accountHeaders });
-            record = { day, id };
-            job.signal.throwIfAborted();
             status('working', '正在上传加密后的离线包。');
             const start = performance.now();
             showProgress(0, blob.size, '上传密文', start, true);
-            await upload(uploadUrl, blob, job.signal, (count) => showProgress(count, blob.size, '上传密文', start));
-            const { expiresAt } = await api('drop-finish', record, { signal: job.signal, accountHeaders });
+            const payload = { size: blob.size, hours: Number(el('expire-hours').value) };
+            if (offlineInline) {
+                const data = new Uint8Array(await blob.arrayBuffer());
+                let raw = '';
+                for (let offset = 0; offset < data.length; offset += 8192) {
+                    raw += String.fromCharCode(...data.subarray(offset, offset + 8192));
+                }
+                payload.ciphertext = btoa(raw);
+            }
+            job.signal.throwIfAborted();
+            const created = await api('drop-create', payload, { accountHeaders });
+            const { day, id, uploadUrl } = created;
+            record = { day, id };
+            job.signal.throwIfAborted();
+            let { expiresAt } = created;
+            if (uploadUrl) {
+                await upload(uploadUrl, blob, job.signal, (count) => showProgress(count, blob.size, '上传密文', start));
+                ({ expiresAt } = await api('drop-finish', record, { signal: job.signal, accountHeaders }));
+            }
             const link = makeLink({ day, drop: id, key });
             renderInvitation({ day, id, expiresAt, offline: true, link });
             dropHistory = [{ day, id, expiresAt, account }, ...dropHistory.filter((row) => row.id !== id)].slice(0, 100);
@@ -696,11 +714,14 @@ export function mountShare() {
         render();
         try {
             if (!crypto.subtle) throw new Error('请使用 HTTPS 和支持 Web Crypto 的浏览器打开取件链接。');
-            const { downloadUrl, size } = await api('drop-read', { day, id }, { signal: job.signal });
+            const { downloadUrl, ciphertext, size } = await api('drop-read', { day, id }, { signal: job.signal });
             if (!Number.isSafeInteger(size) || size <= 0 || size > MAX_OFFLINE) throw new Error('离线包大小超出限制。');
             const start = performance.now();
             showProgress(0, size, '下载密文', start, true);
-            const buffer = await downloadDrop(downloadUrl, size, job.signal, (count) => showProgress(count, size, '下载密文', start));
+            const buffer = typeof ciphertext === 'string'
+                ? Uint8Array.from(atob(ciphertext), (char) => char.charCodeAt(0)).buffer
+                : await downloadDrop(downloadUrl, size, job.signal, (count) => showProgress(count, size, '下载密文', start));
+            if (buffer.byteLength !== size) throw new Error('离线包大小与登记信息不符。');
             status('working', '正在浏览器内解密。');
             const { files, note } = await openDrop(buffer, key);
             job.signal.throwIfAborted();

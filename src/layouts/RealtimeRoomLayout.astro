@@ -6,6 +6,7 @@ interface Props {
   headScripts?: string[];
   tailScripts?: string[];
   includeCursor?: boolean;
+  systemTheme?: boolean;
 }
 
 const {
@@ -15,11 +16,12 @@ const {
   headScripts = [],
   tailScripts = [],
   includeCursor = false,
+  systemTheme = false,
 } = Astro.props as Props;
 import { SITE_LOGO_URL } from "@siteConfig";
 ---
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-system-theme={systemTheme ? "" : undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

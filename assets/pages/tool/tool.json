@@ -82,28 +82,16 @@
           "tags": ["本地处理"]
         },
         {
-          "name": "Markdown 编辑器",
+          "name": "Markdown 万能工具",
           "url": "/tool/markdown",
           "target": "_self",
-          "description": "编写 Markdown，实时预览排版。"
-        },
-        {
-          "name": "Markdown 定制导出",
-          "url": "/tool/markdown/export",
-          "target": "_self",
-          "description": "将 Markdown 内容按所需格式导出。"
+          "description": "本地笔记、实时预览、多人协同，以及 PDF、Word 和 HTML 排版导出。"
         }
       ]
     },
     {
       "name": "实时协同",
       "tools": [
-        {
-          "name": "多人协同 Markdown 编辑器",
-          "url": "/tool/markdown/co",
-          "target": "_self",
-          "description": "多人一起编辑 Markdown 文档。"
-        },
         {
           "name": "夸克闪传 QuarkShare",
           "url": "/a/share",

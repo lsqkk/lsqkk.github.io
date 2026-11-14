@@ -1,24 +1,8 @@
 import { normalizedCode } from './share-model.mjs';
 
 const iceServers = [
-    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }
 ];
-
-function waitIce(pc, signal, wait = 2600) {
-    if (signal.aborted || pc.iceGatheringState === 'complete') return Promise.resolve();
-    return new Promise((resolve) => {
-        const finish = () => {
-            clearTimeout(timer);
-            pc.removeEventListener('icegatheringstatechange', changed);
-            signal.removeEventListener('abort', finish);
-            resolve();
-        };
-        const changed = () => { if (pc.iceGatheringState === 'complete') finish(); };
-        const timer = setTimeout(finish, wait);
-        pc.addEventListener('icegatheringstatechange', changed);
-        signal.addEventListener('abort', finish, { once: true });
-    });
-}
 
 function signalingDescription(pc) {
     return { type: pc.localDescription.type, sdp: pc.localDescription.sdp };
@@ -48,7 +32,6 @@ export class LiveRoom {
         this.api = api;
         this.events = events;
         this.abort = new AbortController();
-        this.pc = new RTCPeerConnection({ iceServers, ...config });
         this.timer = null;
         this.disconnectTimer = null;
         this.channel = null;
@@ -56,14 +39,30 @@ export class LiveRoom {
         this.failedPolls = 0;
         this.connected = false;
         this.legacy = false;
+        this.config = config;
+        this.candidates = [];
+        this.sent = 0;
+        this.received = 0;
+        this.answerReady = false;
+    }
+
+    async setup() {
+        const signal = AbortSignal.any([this.abort.signal, AbortSignal.timeout(4500)]);
+        const relay = await this.api('ice-config', {}, { signal, auth: true }).catch(() => ({}));
+        if (this.abort.signal.aborted) return false;
+        const extra = Array.isArray(relay.iceServers) ? relay.iceServers : [];
+        this.pc = new RTCPeerConnection({ iceServers: [...iceServers, ...extra], ...this.config });
+        this.pc.onicecandidate = ({ candidate }) => {
+            if (candidate && this.candidates.length < 48) this.candidates.push(candidate.toJSON());
+        };
         this.pc.ondatachannel = (event) => {
             if (!this.channel && event.channel.label === 'fileTransfer') this.attach(event.channel);
             else event.channel.close();
         };
         this.pc.onconnectionstatechange = () => {
             if (this.abort.signal.aborted) return;
-            if (this.pc.connectionState === 'failed') this.fail('这两台设备无法建立直连，请尝试同一 Wi-Fi，或改用离线包。');
-            if (this.pc.connectionState === 'disconnected') {
+            if (this.pc.connectionState === 'failed' && this.connected) this.fail('设备连接已中断，请重新连接。');
+            if (this.pc.connectionState === 'disconnected' && this.connected) {
                 this.events.reconnecting();
                 clearTimeout(this.disconnectTimer);
                 this.disconnectTimer = setTimeout(() => this.fail('网络中断，请重新连接设备。'), 12_000);
@@ -73,6 +72,7 @@ export class LiveRoom {
                 if (this.connected) this.events.reconnected(this.pc);
             }
         };
+        return true;
     }
 
     attach(channel) {
@@ -94,9 +94,9 @@ export class LiveRoom {
     }
 
     async host(intent) {
+        if (!await this.setup()) return;
         this.attach(this.pc.createDataChannel('fileTransfer', { ordered: true }));
         await this.pc.setLocalDescription(await this.pc.createOffer());
-        await waitIce(this.pc, this.abort.signal);
         if (this.abort.signal.aborted) return;
         const invite = await this.api('room-create', { intent, offer: signalingDescription(this.pc) }, { auth: true });
         this.invite = invite;
@@ -105,16 +105,20 @@ export class LiveRoom {
             return;
         }
         this.events.invite(invite);
-        this.poll();
+        void this.poll();
     }
 
     async join(raw) {
         const code = normalizedCode(raw);
         this.legacy = code.length === 3;
         const action = this.legacy ? 'legacy-read' : 'room-join';
+        const setup = this.setup();
         const response = await this.request(action, { code });
-        if (this.abort.signal.aborted) return;
         if (!this.legacy) this.invite = { code, token: response.token, expiresAt: response.expiresAt };
+        if (!await setup || this.abort.signal.aborted) {
+            this.closeSignal();
+            return;
+        }
         this.events.role(response.intent === 'collect' ? 'send' : 'receive', this.legacy);
         await this.pc.setRemoteDescription(response.offer);
         if (this.legacy) {
@@ -123,40 +127,68 @@ export class LiveRoom {
             }
         }
         await this.pc.setLocalDescription(await this.pc.createAnswer());
-        await waitIce(this.pc, this.abort.signal);
         if (this.abort.signal.aborted) return;
-        const answer = signalingDescription(this.pc);
-        if (this.legacy) await this.request('legacy-answer', { code, claim: response.claim, expiresAt: response.expiresAt, answer });
-        else await this.request('room-answer', { code, token: response.token, answer });
-        if (!this.connected && !this.abort.signal.aborted) {
-            this.timer = setTimeout(() => this.fail('设备连接超时。请确认对方仍在线，或改用离线包。'), 30_000);
+        if (this.legacy) {
+            // Older hosts consume an answer SDP once and do not poll for candidates.
+            const deadline = Date.now() + 7500;
+            while (!this.abort.signal.aborted && this.pc.iceGatheringState !== 'complete' && Date.now() < deadline) {
+                await new Promise((resolve) => setTimeout(resolve, 150));
+            }
+            if (this.abort.signal.aborted) return;
+            await this.request('legacy-answer', { code, claim: response.claim, expiresAt: response.expiresAt, answer: signalingDescription(this.pc) });
+        } else {
+            await this.request('room-answer', { code, token: response.token, answer: signalingDescription(this.pc) });
+            this.answerReady = true;
+            void this.poll();
         }
+        this.startDeadline();
     }
 
-    poll() {
-        if (this.abort.signal.aborted) return;
+    startDeadline() {
+        this.connectUntil ??= Date.now() + 40_000;
+        if (!this.legacy || this.connected || this.abort.signal.aborted) return;
+        this.timer = setTimeout(() => this.fail('设备连接超时。请尝试同一 Wi-Fi，或使用离线包。'), 40_000);
+    }
+
+    async poll() {
+        if (this.abort.signal.aborted || this.connected) return;
+        if (Date.now() >= this.connectUntil) {
+            this.fail('设备连接超时。请尝试同一 Wi-Fi，或使用离线包。');
+            return;
+        }
         if (Date.now() >= this.invite.expiresAt) {
             this.fail('这次连接邀请已过期，请重新生成连接码。');
             return;
         }
         const { code, token } = this.invite;
-        this.request('room-poll', { code, token }).then(async ({ answer }) => {
+        try {
+            const candidates = this.candidates.slice(this.sent);
+            const { answer, candidates: remote = [] } = await this.request('room-poll', { code, token, candidates });
             if (this.abort.signal.aborted) return;
+            this.sent += candidates.length;
             this.failedPolls = 0;
-            if (!answer) {
-                this.timer = setTimeout(() => this.poll(), 2500);
-                return;
+            if (answer && !this.answerReady) {
+                await this.pc.setRemoteDescription(answer);
+                this.answerReady = true;
+                this.startDeadline();
             }
-            await this.pc.setRemoteDescription(answer);
-            if (!this.connected && !this.abort.signal.aborted) {
-                this.timer = setTimeout(() => this.fail('设备连接超时。请检查对方是否在线，或改用离线包。'), 30_000);
+            if (this.answerReady) {
+                for (const candidate of remote.slice(this.received)) {
+                    await this.pc.addIceCandidate(candidate).catch(() => {});
+                    this.received++;
+                }
             }
-        }).catch((error) => {
+        } catch (error) {
             if (this.abort.signal.aborted) return;
             this.failedPolls += 1;
-            if (this.failedPolls >= 3 || [403, 404].includes(error.status)) this.fail(error.message);
-            else this.timer = setTimeout(() => this.poll(), 3500);
-        });
+            if (this.failedPolls >= 5 || [403, 404].includes(error.status)) {
+                this.fail(error.message);
+                return;
+            }
+        }
+        if (!this.connected && !this.abort.signal.aborted) {
+            this.timer = setTimeout(() => void this.poll(), this.failedPolls ? 3000 : this.answerReady ? 800 : 2200);
+        }
     }
 
     fail(message) {
@@ -177,7 +209,7 @@ export class LiveRoom {
         this.abort.abort();
         clearTimeout(this.timer);
         clearTimeout(this.disconnectTimer);
-        this.pc.close();
+        this.pc?.close();
         this.closeSignal();
     }
 }

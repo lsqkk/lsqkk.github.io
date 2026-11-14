@@ -86,19 +86,11 @@
         byId('mobileMenuBtn').setAttribute('aria-expanded', String(open));
     }
 
-    function applyTheme(dark) {
-        document.body.classList.toggle('qc-dark', dark);
-        byId('themeToggle').setAttribute('aria-pressed', String(dark));
-        byId('themeToggle').querySelector('span').textContent = dark ? '☀' : '☾';
-    }
-
-    applyTheme((localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark');
-    byId('themeToggle').onclick = () => {
-        const dark = !document.body.classList.contains('qc-dark');
-        localStorage.setItem('theme', dark ? 'dark' : 'light');
-        applyTheme(dark);
-    };
     byId('mobileMenuBtn').onclick = () => setRail(byId('chatRail').classList.contains('qc-closed'));
+    byId('closeChatRail').onclick = () => {
+        setRail(false);
+        byId('mobileMenuBtn').focus();
+    };
     byId('profileButton').onclick = openProfile;
     document.querySelectorAll('[data-close]').forEach((control) => {
         control.addEventListener('click', () => byId(control.dataset.close).close());
@@ -691,6 +683,10 @@
             updateComposer();
             input.focus();
         }));
+        if (message.text) actions.append(button('复制', async () => {
+            try { await navigator.clipboard.writeText(String(message.text)); inform('消息已复制'); }
+            catch { inform('无法访问剪贴板'); }
+        }));
         body.append(meta, bubble, actions);
         row.append(avatar, body);
         return row;
@@ -726,6 +722,7 @@
         if (!fragment.children.length) fragment.append(node('li', 'qc-no-messages', '房间还没有消息。'));
         list.replaceChildren(fragment);
         if (byId('roomTasksDialog').open) renderTasks();
+        if (byId('searchChatDialog').open) renderSearch();
         stream.scrollTop = oldTop;
         if (focusedKey) messageRows.get(focusedKey)?.focus({ preventScroll: true });
     }
@@ -874,6 +871,37 @@
         }
     }
 
+    const searchDialog = byId('searchChatDialog');
+    const searchInput = byId('searchChatInput');
+    function renderSearch() {
+        const query = searchInput.value.trim().toLocaleLowerCase();
+        const results = byId('searchChatResults');
+        const status = byId('searchChatStatus');
+        results.replaceChildren();
+        if (!query) { status.textContent = '搜索当前已加载的消息。'; return; }
+        const matches = [...messages].sort(([a], [b]) => b.localeCompare(a)).filter(([, message]) =>
+            [message.text, message.nickname, message.task?.title].some((value) =>
+                String(value || '').toLocaleLowerCase().includes(query)));
+        status.textContent = matches.length > 50
+            ? '找到 ' + matches.length + ' 条消息，显示最近 50 条。'
+            : '找到 ' + matches.length + ' 条消息。';
+        matches.slice(0, 50).forEach(([key, message]) => {
+            const item = node('li');
+            const caption = (message.nickname || '访客') + ' · ' + excerpt(message);
+            item.append(button(caption, () => { searchDialog.close(); void reveal(key); }));
+            results.append(item);
+        });
+    }
+    byId('searchChat').onclick = () => {
+        searchInput.value = '';
+        renderSearch();
+        searchDialog.showModal();
+        searchInput.focus();
+    };
+    searchInput.addEventListener('input', renderSearch);
+    searchDialog.querySelector('form').addEventListener('submit', (event) => {
+        if (event.submitter?.tagName !== 'BUTTON') event.preventDefault();
+    });
     byId('copyRoomCode').onclick = async () => {
         try { await navigator.clipboard.writeText(room); inform('房间号已复制'); }
         catch { inform('可从房间输入框复制房间号'); }

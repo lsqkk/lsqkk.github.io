@@ -143,7 +143,7 @@ export function mountNotices() {
         }
         if (dialog.open && !footer.hidden) render();
         const prefs = window.QuarkUserPreferences?.get();
-        if (!autoOpen || dialog.open || document.querySelector('dialog[open]') || prefs?.noticePopups === false) return;
+        if (!autoOpen || !document.querySelector(':is(.header, header) [data-quark-notice-open]') || dialog.open || document.querySelector('dialog[open]') || prefs?.noticePopups === false) return;
         const item = groups.active.find((notice) => notice.popup && !reads[notice.key]
             && localStorage.getItem(`popup_never_${notice.id}`) !== 'true'
             && (notice.kind !== 'celebration' || prefs?.noticeCelebrations !== false));

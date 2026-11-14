@@ -115,10 +115,11 @@
         const reduceMotion = next.motion === 'reduce' || (next.motion === 'system' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
         document.documentElement.dataset.motion = reduceMotion ? 'reduce' : 'full';
         document.documentElement.dataset.cursorTrail = next.cursorTrail ? 'on' : 'off';
-        document.documentElement.dataset.siteTheme = next.theme;
+        const theme = document.documentElement.hasAttribute('data-system-theme') ? 'system' : next.theme;
+        document.documentElement.dataset.siteTheme = theme;
         document.documentElement.dataset.readingSize = next.readingSize;
 
-        const dark = isDark(next);
+        const dark = isDark({ ...next, theme });
 
         if (document.body) {
             document.body.classList.toggle('dark-mode', dark);

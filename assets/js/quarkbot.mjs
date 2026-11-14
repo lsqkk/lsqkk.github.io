@@ -6,12 +6,11 @@ import { quotaLoginUrl, quotaNeedsVerification } from './quota-session.mjs';
 import { requestFreeChat } from './free-ai.mjs';
 import { isSessionChange, listSessions, newSession, preferredMode, readSession, rememberMode, sessionUrl, updateSession } from './quarkbot-sessions.mjs';
 
-const botFace = `<svg class="quark-bot-face" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-  <path d="M20 10V6m-2 0h4M8 19H5v7h3m24-7h3v7h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="8" y="11" width="24" height="22" rx="8" fill="currentColor"/>
-  <rect x="11" y="15" width="18" height="13" rx="5" class="quark-bot-visor"/>
-  <g class="quark-bot-eyes"><rect x="15" y="19" width="2.5" height="5" rx="1.25"/><rect x="22.5" y="19" width="2.5" height="5" rx="1.25"/></g>
-  <path d="M18 30h4" stroke="var(--bot-visor)" stroke-width="1.4" stroke-linecap="round"/>
+const botFace = `<svg class="quark-bot-face" viewBox="0 0 28 28" aria-hidden="true">
+  <g class="quark-bot-eyes" fill="currentColor">
+    <rect x="6" y="7" width="6" height="14" rx="3"/>
+    <rect x="16" y="7" width="6" height="14" rx="3"/>
+  </g>
 </svg>`;
 
 async function requestBotFreeChat(body, signal) {
@@ -96,8 +95,7 @@ function linkifyReply(root, sources, { streaming = false } = {}) {
 const toolPages = {
     '/tool/ocr': ['OCR 在浏览器内识别图片。可以加载示例图片、选择识别语言、开始识别，之后将识别结果送到 Markdown。', ['怎么用示例试 OCR？', '识别后如何整理成 PDF？']],
     '/tool/audio2txt': ['说明麦克风授权、浏览器兼容和复制转写的步骤。', ['无法录音怎么办？', '怎样保存转写结果？']],
-    '/tool/markdown': ['说明如何编辑或新建笔记、接收 OCR 和拾页的内容，以及进入定制导出。', ['怎么接收 OCR 的结果？', '怎么把笔记导出成 PDF？']],
-    '/tool/markdown/export': ['说明样式、纸张和导出步骤。编辑器传来的内容会先显示预览，需要手动应用。', ['如何调整 PDF 排版？', '如何接收上一篇笔记？']],
+    '/tool/markdown': ['说明本地笔记、多人协同、导入 OCR 和拾页内容，以及在同一工作区定制导出。', ['怎么邀请朋友协同编辑？', '怎么把笔记导出成 PDF？']],
     '/tool/ref': ['说明选择文献类型、填写必填项和使用专著示例的步骤。', ['怎样用示例生成一条文献？', '期刊和专著需要哪些字段？']],
     '/tool/decision': ['用预置示例解释方案、指标权重、偏好沙盘和本地草稿。', ['怎么用示例开始比较？', '怎么判断权重变动会不会改变结果？']],
     '/desk': ['解释待读、摘录和选择摘录送到 Markdown 的操作。只解释功能，私人摘录和想法留在本机。', ['怎么把几条摘录整理成笔记？', '拾页里下一篇读什么？']],
@@ -138,6 +136,16 @@ export function mountBot({ loadScript }) {
         mountConversation(workspace.querySelector('[data-chat]'), loadScript, workspace);
         return;
     }
+    const slot = document.querySelector('.post-fab-stack') || document.querySelector('[data-quark-bot-slot]');
+    if (!slot) {
+        document.addEventListener('quark-navigation-mounted', () => mountBot({ loadScript }), { once: true });
+        return;
+    }
+    const host = document.createElement('quark-bot-trigger');
+    const shadow = host.attachShadow({ mode: 'open' });
+    const style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = '/assets/css/quarkbot-trigger.css';
     const launcher = document.createElement('button');
     launcher.className = 'quark-bot-launcher';
     launcher.type = 'button';
@@ -148,7 +156,12 @@ export function mountBot({ loadScript }) {
     const panel = document.createElement('dialog');
     panel.className = 'quark-site-dialog quark-bot-panel quark-bot-chat';
     panel.setAttribute('aria-labelledby', 'quark-bot-title');
-    (document.querySelector('.post-fab-stack') || document.body).append(launcher);
+    shadow.append(style, launcher);
+    const compactSlot = document.querySelector('[data-quark-bot-mobile-slot]');
+    const compact = matchMedia('(max-width: 768px)');
+    const placeLauncher = () => (compact.matches && compactSlot && !slot.matches('.post-fab-stack') ? compactSlot : slot).append(host);
+    placeLauncher();
+    if (compactSlot && !slot.matches('.post-fab-stack')) compact.addEventListener('change', placeLauncher);
     document.body.append(panel);
     const refresh = mountConversation(panel, loadScript);
     const viewport = window.visualViewport;
@@ -177,8 +190,9 @@ export function mountBot({ loadScript }) {
         startedOutside = false;
     });
     function showLauncher() {
-        launcher.hidden = window.QuarkUserPreferences?.get().botEnabled === false;
-        if (launcher.hidden && panel.open) panel.close();
+        host.hidden = window.QuarkUserPreferences?.get().botEnabled === false;
+        host.toggleAttribute('reduce-motion', document.documentElement.dataset.motion === 'reduce');
+        if (host.hidden && panel.open) panel.close();
     }
     window.addEventListener('quark-preferences-updated', showLauncher);
     showLauncher();

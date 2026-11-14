@@ -535,7 +535,7 @@ export default defineConfig({
       "astro:config:setup": ({ injectScript }) => {
         injectScript("head-inline", `try {
           const theme = JSON.parse(localStorage.getItem('quark_site_preferences') || '{}').theme;
-          if (theme === 'light' || theme === 'dark') document.documentElement.dataset.siteTheme = theme;
+          if (!document.documentElement.hasAttribute('data-system-theme') && (theme === 'light' || theme === 'dark')) document.documentElement.dataset.siteTheme = theme;
         } catch {}`);
         injectScript("page", `const entry = '/assets/js/site-services.mjs'; import(/* @vite-ignore */ entry);`);
       },

@@ -5,12 +5,13 @@ import { SITE_TITLE } from "@siteConfig";
 <RealtimeRoomLayout
   pageTitle={`夸克聊天室 - ${SITE_TITLE}`}
   bodyClass="quark-chat"
+  systemTheme
   pageStyles={["/assets/pages/a/chat-room/chat.css"]}
   tailScripts={["/assets/js/user-profile.js", "/assets/js/firebase-ready.js", "/assets/pages/a/chat-room/chat.js"]}
 >
   <div class="qc-layout">
     <aside class="qc-rail" id="chatRail">
-      <nav class="qc-nav" aria-label="站点"><a href="/a/">实验室</a><a href="/blog/lyb/">留言板</a></nav>
+      <nav class="qc-nav" aria-label="站点"><a href="/a/">实验室</a><a href="/blog/lyb/">留言板</a><button id="closeChatRail" class="qc-rail-close" type="button" aria-label="关闭房间列表">×</button></nav>
       <div class="qc-brand"><span aria-hidden="true" class="qc-mark"><i class="fas fa-comments"></i></span><h1>夸克聊天室</h1></div>
       <form id="roomForm" class="qc-room-form">
         <label for="roomInput">输入房间号</label>
@@ -20,7 +21,7 @@ import { SITE_TITLE } from "@siteConfig";
       <div class="qc-rooms"><h2>最近访问</h2><div id="roomList"></div></div>
       <div class="qc-rail-foot">
         <button id="profileButton" type="button">设置昵称</button>
-        <button id="themeToggle" type="button" aria-label="切换深浅色"><span aria-hidden="true">☾</span></button>
+        <span data-quark-bot-slot></span>
       </div>
     </aside>
     <main class="qc-main">
@@ -28,10 +29,11 @@ import { SITE_TITLE } from "@siteConfig";
         <button class="qc-mobile" type="button" id="mobileMenuBtn" aria-controls="chatRail" aria-expanded="true">房间</button>
         <div class="qc-heading"><h2 id="currentRoomTitle">聊天</h2><p id="connection" role="status">请选择房间</p></div>
         <div class="qc-head-actions" id="roomActions" hidden>
+          <button type="button" id="searchChat">搜索</button>
           <button type="button" id="roomTasks">待办</button>
           <button type="button" id="copyRoomCode">复制房号</button>
           <button type="button" id="shareRoom">分享链接</button>
-          <button type="button" id="notifications" aria-label="开启桌面通知"><span aria-hidden="true">♢</span></button>
+          <button type="button" id="notifications" aria-label="开启桌面通知"><i class="far fa-bell" aria-hidden="true"></i></button>
         </div>
       </header>
       <section class="qc-stream" id="messagesContainer" aria-label="聊天记录" tabindex="0">
@@ -73,6 +75,15 @@ import { SITE_TITLE } from "@siteConfig";
       <label for="profileColor">头像颜色</label>
       <input id="profileColor" type="color" value="#5874dd" />
       <div class="qc-dialog-actions"><button type="button" data-close="profileDialog">取消</button><a id="accountProfileLink" href="/auth" hidden>管理博客身份</a><button id="profileSave" class="qc-primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+  <dialog class="qc-dialog" id="searchChatDialog" aria-labelledby="searchChatHeading">
+    <form method="dialog">
+      <h2 id="searchChatHeading">搜索消息</h2>
+      <input type="search" id="searchChatInput" placeholder="消息内容、昵称或待办" aria-label="搜索已加载消息" autocomplete="off" />
+      <p id="searchChatStatus" role="status"></p>
+      <ul class="qc-search-list" id="searchChatResults"></ul>
+      <div class="qc-dialog-actions"><button>关闭</button></div>
     </form>
   </dialog>
   <dialog class="qc-dialog" id="roomTasksDialog" aria-labelledby="roomTasksHeading">

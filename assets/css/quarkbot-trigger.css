@@ -1,0 +1,28 @@
+:host { display: inline-flex; vertical-align: middle; }
+:host([hidden]) { display: none; }
+button {
+    all: unset;
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border: 1px solid var(--line, #d9dce2);
+    border-radius: 6px;
+    background: var(--surface, white);
+    color: var(--accent, #2563eb);
+    cursor: pointer;
+}
+button:hover { background: var(--accent-soft, #edf2ff); }
+button:focus-visible { outline: 2px solid var(--focus-ring, #2563eb); outline-offset: 2px; }
+svg { display: block; width: 24px; height: 24px; }
+.quark-bot-eyes { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+    :host(:not([reduce-motion])) .quark-bot-eyes { animation: gaze 7s ease-in-out infinite; }
+}
+@keyframes gaze {
+    0%, 70%, 100% { transform: none; }
+    78%, 84% { transform: translateX(2px); }
+    88% { transform: scaleY(.15); }
+    92% { transform: translateX(-1px); }
+}

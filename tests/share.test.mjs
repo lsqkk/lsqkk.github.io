@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { S3Client } from '@aws-sdk/client-s3';
 import admin from 'firebase-admin';
-import { signedUpload } from '../api/_share-drop.js';
+import { handleDrop, signedUpload } from '../api/_share-drop.js';
+import { issueQuotaSession } from '../api/_quota-session.js';
 import { handleRoom } from '../api/_share-room.js';
 import shareApi from '../api/share.js';
 import { bytes, manifestItems, normalizedCode, parseInvite, PathIndex, previewType, safePath } from '../assets/pages/a/share/share-model.mjs';
@@ -104,6 +105,13 @@ function roomDatabase() {
             orderByKey() { return ref; }, endAt() { return ref; },
             once: async () => snapshot(data.get(path)),
             remove: async () => data.delete(path),
+            update: async (changes) => {
+                for (const [key, value] of Object.entries(changes)) {
+                    if (value === null) data.delete(key);
+                    else if (key.endsWith('/revoked')) data.get(key.slice(0, -8)).revoked = value;
+                    else data.set(key, value);
+                }
+            },
             transaction: async (update) => {
                 const existing = data.get(path);
                 let next = update(null);
@@ -143,10 +151,17 @@ test('room actions enforce guest and host claims, expiry, and legacy write bindi
     assert.equal(guest.intent, 'collect');
     assert.notEqual(guest.token, room.token);
     await assert.rejects(call('room-join', { code: room.code }), { status: 409 });
-    await assert.rejects(call('room-poll', { code: room.code, token: guest.token }), { status: 403 });
+    const ice = { candidate: 'candidate:1 1 UDP 1 203.0.113.4 443 typ relay', sdpMLineIndex: 0, sdpMid: '0' };
+    const hostSignal = { code: room.code, token: room.token };
+    const guestSignal = { code: room.code, token: guest.token };
+    await assert.rejects(call('room-poll', { ...guestSignal, token: 'x'.repeat(32) }), { status: 403 });
+    await assert.rejects(call('room-poll', { ...guestSignal, candidates: [{}] }), { status: 400 });
+    await call('room-poll', { ...hostSignal, candidates: [ice] });
+    await call('room-poll', { ...hostSignal, candidates: [ice] });
+    assert.deepEqual(await call('room-poll', { ...guestSignal, candidates: [ice] }), { answer: null, candidates: [ice] });
     await assert.rejects(call('room-answer', { code: room.code, token: room.token, answer }), { status: 403 });
     await call('room-answer', { code: room.code, token: guest.token, answer });
-    assert.deepEqual(await call('room-poll', { code: room.code, token: room.token }), { answer });
+    assert.deepEqual(await call('room-poll', hostSignal), { answer, candidates: [ice] });
     await call('room-close', { code: room.code, token: room.token });
     await assert.rejects(call('room-join', { code: room.code }), { status: 404 });
 
@@ -157,6 +172,44 @@ test('room actions enforce guest and host claims, expiry, and legacy write bindi
     await call('legacy-answer', { code: 'ABC', answer, claim: legacy.claim, expiresAt: legacy.expiresAt });
     assert.deepEqual(db.data.get('rooms/ABC').receiver.sdp, answer);
     await assert.rejects(call('legacy-answer', { code: 'ABC', answer, claim: legacy.claim, expiresAt: legacy.expiresAt }), { status: 409 });
+});
+
+test('Firebase offline fallback stores only ciphertext and enforces expiry and ownership', async (t) => {
+    const db = roomDatabase();
+    const previous = Object.getOwnPropertyDescriptor(admin, 'database');
+    Object.defineProperty(admin, 'database', { configurable: true, value: () => db });
+    const prior = Object.fromEntries(['FIREBASE_SERVICE_ACCOUNT', 'FIREBASE_DATABASE_URL', 'R2_SHARE_BUCKET']
+        .map((name) => [name, process.env[name]]));
+    process.env.FIREBASE_SERVICE_ACCOUNT = 'share-offline-test';
+    process.env.FIREBASE_DATABASE_URL = 'https://example.firebaseio.com';
+    delete process.env.R2_SHARE_BUCKET;
+    const app = admin.initializeApp({ projectId: 'share-test' });
+    t.after(async () => {
+        if (previous) Object.defineProperty(admin, 'database', previous);
+        else delete admin.database;
+        for (const [name, value] of Object.entries(prior)) {
+            if (value === undefined) delete process.env[name];
+            else process.env[name] = value;
+        }
+        await app.delete();
+    });
+    const auth = (id) => ({ headers: { authorization: `Bearer ${issueQuotaSession(id).token}`, 'x-vercel-forwarded-for': '203.0.113.4' } });
+    const { blob } = await sealDrop([], '测试离线留言');
+    const ciphertext = Buffer.from(await blob.arrayBuffer()).toString('base64');
+    const payload = { action: 'drop-create', size: blob.size, hours: 1, ciphertext };
+    assert.equal((await invokeApi()).body.maxBytes, 1024 * 1024);
+    await assert.rejects(handleDrop(auth('owner'), { ...payload, ciphertext: 'broken' }), { status: 400 });
+    const record = await handleDrop(auth('owner'), payload);
+    const read = () => handleDrop({ headers: {} }, { ...record, action: 'drop-read' });
+    const revoke = (id) => handleDrop(auth(id), { ...record, action: 'drop-revoke' });
+    assert.equal((await read()).ciphertext, ciphertext);
+    await assert.rejects(revoke('stranger'), { status: 403 });
+    const meta = db.data.get(`quark_share_drops/${record.day}/${record.id}`);
+    assert.equal(meta.ciphertext, undefined);
+    meta.expiresAt = Date.now() - 100;
+    await assert.rejects(read(), { status: 410 });
+    await revoke('owner');
+    assert.equal(db.data.has(`quark_share_drop_ciphertext/${record.day}/${record.id}`), false);
 });
 
 test('multi-frame offer negotiates a 500-file Unicode manifest and receives an acknowledgement', async () => {

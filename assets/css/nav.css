@@ -852,3 +852,8 @@
 .translation-status { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:2100; max-width:calc(100vw - 40px); padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--surface-strong); color:var(--text-main); font-size:13px; }
 .translation-status[hidden] { display:none; }
 .translation-status button { margin-left:12px; padding:6px 10px; color:var(--accent); background:var(--accent-soft); border:0; border-radius:var(--radius-sm); cursor:pointer; }
+
+@media (max-width: 360px) {
+  .header .nav-settings-btn:not(.nav-quick-search) { width: 38px; min-width: 38px; }
+  .header .header-login a { padding-inline: 6px; }
+}

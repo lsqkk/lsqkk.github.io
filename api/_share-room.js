@@ -68,7 +68,8 @@ async function joinRoom(ref, room, now) {
   const result = await ref.transaction((current) => {
     if (!current) return null;
     if (current.expiresAt <= now || current.answer || current.claimUntil > now) return;
-    return { ...current, guest, claimUntil: now + CLAIM_TTL };
+    const { guestIce, ...available } = current;
+    return { ...available, guest, claimUntil: now + CLAIM_TTL };
   }, undefined, false);
   if (!result.committed || result.snapshot.val()?.guest !== guest) throw new ShareError(409, '此连接码正在使用，请向对方索取新的连接码。');
   return { offer: room.offer, intent: room.intent, token: guest, expiresAt: room.expiresAt };
@@ -77,7 +78,34 @@ async function joinRoom(ref, room, now) {
 async function updateRoom(ref, room, body, now) {
   const token = tokenValue(body.token);
   if (token !== room.host && token !== room.guest) throw new ShareError(403, '设备连接凭证无效。');
-  if (body.action === 'room-poll' && token === room.host) return { answer: room.answer || null };
+  if (body.action === 'room-poll') {
+    const isHost = token === room.host;
+    const side = isHost ? 'hostIce' : 'guestIce';
+    const incoming = body.candidates ?? [];
+    if (!Array.isArray(incoming) || incoming.length > 48 || incoming.some((item) =>
+      !item || typeof item.candidate !== 'string' || item.candidate.length > 1024
+      || !item.candidate.startsWith('candidate:') || !Number.isSafeInteger(item.sdpMLineIndex)
+      || item.sdpMLineIndex < 0 || item.sdpMLineIndex > 5
+      || typeof item.sdpMid !== 'string' || item.sdpMid.length > 32
+    )) throw new ShareError(400, '网络候选信令格式无效。');
+    if (incoming.length) {
+      const result = await ref.transaction((current) => {
+        if (!current) return null;
+        if (current.expiresAt <= now || token !== current[isHost ? 'host' : 'guest']) return;
+        const candidates = [...(current[side] || [])];
+        const seen = new Set(candidates.map(({ candidate }) => candidate));
+        for (const { candidate, sdpMid, sdpMLineIndex } of incoming) {
+          if (seen.has(candidate) || candidates.length >= 48) continue;
+          seen.add(candidate);
+          candidates.push({ candidate, sdpMid, sdpMLineIndex });
+        }
+        return { ...current, [side]: candidates };
+      }, undefined, false);
+      if (!result.committed || !result.snapshot.val()) throw new ShareError(403, '设备连接凭证已失效。');
+      room = result.snapshot.val();
+    }
+    return { answer: isHost ? room.answer || null : null, candidates: room[isHost ? 'guestIce' : 'hostIce'] || [] };
+  }
 
   if (body.action === 'room-answer' && token === room.guest) {
     const answer = description(body.answer, 'answer');
@@ -96,7 +124,7 @@ async function updateRoom(ref, room, body, now) {
     else await ref.transaction((current) => {
       if (!current) return null;
       if (current.guest !== token || current.answer) return;
-      const { guest, claimUntil, ...released } = current;
+      const { guest, claimUntil, guestIce, ...released } = current;
       return released;
     }, undefined, false);
     return { ok: true };

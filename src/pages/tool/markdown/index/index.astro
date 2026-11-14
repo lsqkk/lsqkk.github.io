@@ -1,123 +1,137 @@
 ---
-import { SITE_TITLE, SITE_LOGO_URL } from "@siteConfig";
-const currentYear = new Date().getFullYear();
+import { SITE_TITLE, SITE_LOGO_URL, API_BASE } from "@siteConfig";
 ---
-<!DOCTYPE html>
-<html lang="zh">
-
+<!doctype html>
+<html lang="zh-CN">
 <head>
-    <link rel="stylesheet" href="/assets/css/basic.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown编辑器 - {SITE_TITLE}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Markdown 万能工具 - {SITE_TITLE}</title>
     <link rel="icon" href={SITE_LOGO_URL} type="image/png">
+    <link rel="stylesheet" href="/assets/css/basic.css">
+    <link rel="stylesheet" href="/assets/css/fa-local.css">
+    <link rel="stylesheet" href="/assets/css/tool-handoff.css">
+    <link rel="stylesheet" href="/assets/pages/tool/markdown/workspace.css">
+    <script is:inline defer src="/assets/js/marked.min.js"></script>
+    <script is:inline defer src="/assets/js/safe-markdown.js"></script>
     <script is:inline src="/assets/pages/tool/markdown/bootstrap.js"></script>
-    <script is:inline src="/assets/js/safe-markdown.js"></script>
-    <link rel="stylesheet" href="/assets/css/tool-handoff.css" />
-
-    <!-- 使用可靠的CDN源，添加备用源 -->
-    <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" onerror="loadMermaidFallback()"></script>
     <script is:inline id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-    <script is:inline src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
-
-    <link rel="stylesheet" href="/assets/css/fa-local.css" />
-    <link rel="stylesheet" href="/assets/css/md.css">
-
-    <script is:inline src="/assets/js/cursor-trail.js"></script>
-<link rel="stylesheet" href="/assets/css/editor-refresh.css">
+    <script is:inline id="mermaid-script" async src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script is:inline async src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
 </head>
+<body class="markdown-workspace" data-firebase-config={API_BASE + "/api/firebase-config?v=1"}>
+    <header class="workspace-header">
+        <h1>Markdown 万能工具</h1>
+        <div class="toolbar">
+            <button id="sidebarToggle" type="button" aria-controls="sidebar" aria-expanded="false">本地笔记</button>
+            <button id="collaboration-button" type="button">协同</button>
+            <button id="markdownHandoff" type="button">导出</button>
+            <a href="/tool/">工具箱</a>
+        </div>
+    </header>
 
-<body class="markdown-workspace">
-    <button class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3 class="sidebar-title">我的笔记</h3>
-            <div class="sidebar-actions">
-                <button class="sidebar-btn" id="refreshNotes">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
+    <main class="workspace-layout">
+        <aside class="sidebar" id="sidebar" hidden>
+            <div class="toolbar sidebar-header">
+                <h2>本地笔记</h2>
+                <button id="refreshNotes" type="button">刷新</button>
             </div>
-        </div>
+            <div class="toolbar">
+                <input id="newNoteName" placeholder="新笔记名称" aria-label="新笔记名称">
+                <button id="addNoteBtn" type="button">新建</button>
+            </div>
+            <button id="open-draft-btn" type="button">临时草稿</button>
+            <ul class="notes-list" id="notesList"></ul>
+        </aside>
 
-        <ul class="notes-list" id="notesList"></ul>
-
-        <div class="add-note-form">
-            <input type="text" class="add-note-input" id="newNoteName" placeholder="新笔记名称">
-            <button class="add-note-btn" id="addNoteBtn">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="header">
-            <h1 class="title">
-                夸克 Markdown 编辑器
-            </h1>
-            <a href="/tool/" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                返回工具箱
-            </a>
-        </div>
-
-        <div class="grid">
-            <div class="panel">
-                <div class="panel-header">
-                    <label class="label">Markdown 输入</label>
-                    <span id="word-count" class="word-count">0 字</span>
-                </div>
-                <textarea id="markdown-input" class="textarea" placeholder="在这里输入 Markdown 文本..."
-                    spellcheck="false"></textarea>
-                <div class="toolbar">
-                    <button id="clear-btn" class="btn btn-secondary">
-                        <i class="fas fa-trash-alt"></i>
-                        清空
-                    </button>
-                    <button id="sample-btn" class="btn btn-secondary">
-                        <i class="fas fa-lightbulb"></i>
-                        示例
-                    </button>
+        <section class="workspace-main" id="workspace" data-view="split">
+            <div class="workspace-bar toolbar">
+                <div id="workspace-document" class="document-label">临时草稿</div>
+                <div class="toolbar workspace-view" aria-label="视图">
+                    <button type="button" data-view="edit" aria-pressed="false">编辑</button>
+                    <button type="button" data-view="split" aria-pressed="true">分栏</button>
+                    <button type="button" data-view="preview" aria-pressed="false">预览</button>
                 </div>
             </div>
-            <div class="panel">
-                <div class="panel-header">
-                    <label class="label">实时预览</label>
-                </div>
-                <div class="preview-container">
-                    <div id="preview" class="preview"></div>
-                    <div class="toolbar">
-                        <button id="download-html-btn" class="btn">
-                            <i class="fas fa-file-code"></i>
-                            下载HTML
-                        </button>
-                        <button id="download-md-btn" class="btn">
-                            <i class="fas fa-file-alt"></i>
-                            下载MD
-                        </button>
-                        <button id="download-word-btn" class="btn">
-                            <i class="fas fa-file-word"></i>
-                            下载Word
-                            <span class="loader"></span>
-                        </button>
-                        <button id="markdownHandoff" type="button" class="btn">定制导出 PDF / Word</button>
+            <div id="collaboration-status" class="workspace-bar toolbar" hidden>
+                <span id="document-code"></span>
+                <span id="user-list" aria-live="polite"></span>
+                <button id="copy-code-btn" type="button">复制邀请链接</button>
+                <button id="leave-doc-btn" type="button">返回本地笔记</button>
+            </div>
+            <div class="workspace-bar toolbar" aria-label="编辑工具">
+                <button type="button" data-format="heading">标题</button>
+                <button type="button" data-format="bold" title="Ctrl / ⌘ + B">加粗</button>
+                <button type="button" data-format="italic" title="Ctrl / ⌘ + I">斜体</button>
+                <button type="button" data-format="link">链接</button>
+                <button type="button" data-format="task">任务</button>
+                <button type="button" data-format="code">代码块</button>
+                <button type="button" id="import-btn">导入文件</button>
+                <input id="import-file" type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
+                <button type="button" id="copy-source-btn">复制源码</button>
+                <button type="button" id="sample-btn">示例</button>
+                <button type="button" id="clear-btn">清空</button>
+            </div>
+            <div class="workspace-editor">
+                <section class="source-pane">
+                    <div class="pane-heading"><label for="markdown-input">Markdown 源码</label><span id="word-count"></span></div>
+                    <textarea id="markdown-input" placeholder="在这里输入 Markdown…" spellcheck="false"></textarea>
+                </section>
+                <section class="preview-pane">
+                    <div class="pane-heading">
+                        <span>实时预览</span>
+                        <select id="outline" aria-label="跳转到标题" hidden><option value="">跳转到标题</option></select>
                     </div>
-                </div>
+                    <article id="preview" class="preview"></article>
+                </section>
             </div>
+        </section>
+    </main>
+    <div id="toast" class="toast" role="status"><span id="toast-message"></span></div>
+
+    <dialog id="collaboration-dialog" aria-labelledby="collaboration-title">
+        <div class="dialog-heading"><h2 id="collaboration-title">多人协同</h2><form method="dialog"><button aria-label="关闭协同设置">关闭</button></form></div>
+        <p>共享文档会按最后一次保存更新。请错开修改同一段文本，并用版本历史保留重要内容。</p>
+        <label>昵称<input id="nickname-input" maxlength="32" autocomplete="nickname"></label>
+        <button type="button" id="new-doc-btn">共享当前内容</button>
+        <label>文档代码<input id="doc-code-input" maxlength="6" autocomplete="off" placeholder="六位文档代码"></label>
+        <button type="button" id="join-doc-btn">加入文档</button>
+        <div class="toolbar">
+            <button type="button" id="save-version-btn" disabled>保存版本</button>
+            <button type="button" id="view-versions-btn" disabled>查看历史</button>
         </div>
-    </div>
+        <p id="collaboration-feedback" role="status"></p>
+        <h3>最近文档</h3><ul id="docsList"></ul>
+        <ul id="versions-list" hidden></ul>
+    </dialog>
 
-    <a href="/posts/copyright" class="footer">© 2024 - {currentYear} 蓝色奇夸克 / {SITE_TITLE} All rights
-        reserved. </a>
+    <dialog id="export-dialog" aria-labelledby="export-title">
+        <div class="dialog-heading"><h2 id="export-title">导出文档</h2><form method="dialog"><button aria-label="关闭导出设置">关闭</button></form></div>
+        <div class="export-fields">
+            <label>文件名<input id="export-name" value="markdown" maxlength="120"></label>
+            <label>字体<input id="font-family" value="sans-serif" maxlength="100"></label>
+            <label>正文字号（px）<input type="number" id="base-font-size" min="8" max="40" value="16"></label>
+            <label>正文颜色<input type="color" id="text-color" value="#333333"></label>
+            <label>一级标题字号（px）<input type="number" id="h1-size" min="12" max="72" value="32"></label>
+            <label>一级标题颜色<input type="color" id="h1-color" value="#1a531a"></label>
+            <label>纸张<select id="paper-size"><option value="a4">A4</option><option value="letter">Letter</option><option value="legal">Legal</option></select></label>
+            <label>页边距（mm）<input type="number" id="margin-top" min="5" max="45" value="20"></label>
+        </div>
+        <div class="toolbar">
+            <button type="button" id="download-md-btn">Markdown</button>
+            <button type="button" id="download-html-btn">HTML</button>
+            <button type="button" id="download-word-btn">Word (.docx)</button>
+            <button type="button" id="export-doc-btn">排版 Word (.doc)</button>
+            <button type="button" id="export-pdf-btn">打印 / 存为 PDF</button>
+        </div>
+        <div class="toolbar">
+            <button type="button" id="save-styles-btn">保存导出设置</button>
+            <button type="button" id="load-content-btn" hidden>导入旧版导出稿</button>
+        </div>
+        <p id="export-feedback" role="status"></p>
+    </dialog>
 
-    <div id="toast" class="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toast-message">操作成功</span>
-    </div>
     <script is:inline type="module" src="/assets/pages/tool/markdown/index.js"></script>
 </body>
-
 </html>
 

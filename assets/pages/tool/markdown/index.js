@@ -1,4 +1,4 @@
-import { appendHandoff, openHandoff, showHandoff } from '/assets/js/tool-handoff.mjs';
+import { appendHandoff, showHandoff } from '/assets/js/tool-handoff.mjs';
 
 // DOM 元素
 const markdownInput = document.getElementById('markdown-input');
@@ -17,7 +17,8 @@ const notesList = document.getElementById('notesList');
 const newNoteName = document.getElementById('newNoteName');
 const addNoteBtn = document.getElementById('addNoteBtn');
 const refreshNotes = document.getElementById('refreshNotes');
-const handoff = document.getElementById('markdownHandoff');
+import { setupCollaboration } from './co.js';
+import { setupExport } from './export.js';
 const draftKey = 'quark.markdown.draft.v1';
 const lastNoteKey = 'quark.markdown.last-note.v1';
 
@@ -42,14 +43,16 @@ $$
 `;
 
 // 笔记管理
-let notes = JSON.parse(localStorage.getItem('markdown-notes')) || [];
+let notes = readNotes();
 let currentNoteId = null;
 
 // 显示 Toast 通知
+let toastTimer;
 function showToast(message, isError = false) {
+    clearTimeout(toastTimer);
     toastMessage.textContent = message;
     toast.className = isError ? 'toast error show' : 'toast show';
-    setTimeout(() => {
+    toastTimer = setTimeout(() => {
         toast.className = 'toast';
     }, 3000);
 }
@@ -57,95 +60,55 @@ function showToast(message, isError = false) {
 // 更新字数统计
 function updateWordCount() {
     const text = markdownInput.value;
-    const count = text.trim() === '' ? 0 : text.length;
-    wordCount.textContent = `${count} 字`;
+    const count = Array.from(text.trim()).length;
+    const lines = count ? text.split(/\r?\n/).length : 0;
+    wordCount.textContent = `${count} 字符 · ${lines} 行`;
 }
 
-// 手动触发 MathJax 渲染
+// 渲染公式和图表，保留失败时的源码。
+let renderTimer;
+let mathQueue = Promise.resolve();
+let mermaidInitialized = false;
 function renderAll() {
-    try {
-        if (window.MathJax?.typeset) {
-            MathJax.typeset();
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(() => {
+        const generation = preview.firstChild;
+        if (window.MathJax?.typesetPromise) {
+            mathQueue = mathQueue.then(() => {
+                if (generation === preview.firstChild) return window.MathJax.typesetPromise([preview]);
+            }).catch(console.error);
         }
+        const diagrams = [...preview.querySelectorAll('code.language-mermaid')];
+        if (!window.mermaid?.run || !diagrams.length) return;
+        if (!mermaidInitialized) {
+            window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' });
+            mermaidInitialized = true;
+        }
+        for (const source of diagrams) {
+            const node = document.createElement('div');
+            node.className = 'mermaid';
+            node.textContent = source.textContent;
+            source.parentElement.after(node);
+            window.mermaid.run({ nodes: [node], suppressErrors: true }).then(() => {
+                if (node.querySelector('svg')) source.parentElement?.remove();
+                else node.remove();
+            }).catch(() => node.remove());
+        }
+    }, 180);
+}
 
-        if (window.mermaid?.init) {
-            try {
-                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
-            } catch (mermaidErr) {
-                console.error('Mermaid渲染错误:', mermaidErr);
-            }
-        } else {
-            console.warn('Mermaid未加载完成');
-        }
-    } catch (err) {
-        console.error('渲染错误:', err);
+function convertToHTML(md) {
+    return window.QuarkSafeMarkdown(md, { editor: true });
+}
+
+function readNotes() {
+    try {
+        const items = JSON.parse(localStorage.getItem('markdown-notes'));
+        return Array.isArray(items) ? items.filter(note => typeof note?.id === 'string' && typeof note.name === 'string' && typeof note.content === 'string') : [];
+    } catch {
+        return [];
     }
 }
-
-// Markdown 转 HTML 函数
-function convertToHTML(md) {
-    const mermaidBlocks = [];
-    let html = md.replace(/```mermaid([\s\S]*?)```/g, (match, code) => {
-        mermaidBlocks.push(code.trim());
-        return `<div class="mermaid">${code.trim()}</div>`;
-    });
-
-    const codeBlocks = [];
-    html = html.replace(/```([\s\S]*?)```/g, (match, code) => {
-        codeBlocks.push(code);
-        return `\x1BCODE${codeBlocks.length - 1}\x1B`;
-    });
-
-    const inlineCodes = [];
-    html = html.replace(/`([^`]+)`/g, (match, code) => {
-        inlineCodes.push(code);
-        return `\x1BINLINE${inlineCodes.length - 1}\x1B`;
-    });
-
-    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) => {
-        return `<img src="${src.trim()}" alt="${alt.trim()}" class="md-image">`;
-    });
-
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-        return `<a href="${url.trim()}" class="md-link">${text.trim()}</a>`;
-    });
-
-    html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
-        const cleaned = formula.trim();
-        return cleaned ? `<div class="math-block">\\[ ${cleaned} \\]</div>` : '';
-    });
-
-    html = html.replace(/(^|[^\\\$])\$([^$\n]+?)\$($|[^$])/g, (_, prefix, formula, suffix) => {
-        return `${prefix}<span class="math-inline">\\( ${formula.trim()} \\)</span>${suffix}`;
-    });
-
-    html = html
-        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/^\s*[\-+*]\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>')
-        .replace(/(<li>.*<\/li>)+/g, (m) =>
-            m.match(/^\d/) ? `<ol>${m}</ol>` : m
-        )
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
-
-    html = html.replace(/\x1BCODE(\d+)\x1B/g, (_, n) =>
-        `<pre><code>${codeBlocks[n]}</code></pre>`
-    );
-    html = html.replace(/\x1BINLINE(\d+)\x1B/g, (_, n) =>
-        `<code>${inlineCodes[n]}</code>`
-    );
-
-    html = html.replace(/([^\n]+)(\n\n|$)/g, '<p>$1</p>');
-
-    return window.QuarkSanitizeMarkdownHtml(html, { editor: true });
-}
-
 // 渲染笔记列表
 function renderNotesList() {
     notesList.innerHTML = '';
@@ -155,7 +118,7 @@ function renderNotesList() {
         li.dataset.id = note.id;
 
         li.innerHTML = `
-                <span class="note-name"></span>
+                <button type="button" class="note-name"></button>
                 <div class="note-actions">
                     <button class="note-action-btn edit-note" title="重命名">
                         <i class="fas fa-edit"></i>
@@ -198,12 +161,11 @@ function renderNotesList() {
 function loadNote(noteId) {
     const note = notes.find(n => n.id === noteId);
     if (note) {
+        collaboration?.leave(false);
         currentNoteId = noteId;
         try { localStorage.setItem(lastNoteKey, noteId); } catch {}
         markdownInput.value = note.content;
-        preview.innerHTML = convertToHTML(note.content);
-        updateWordCount();
-        renderAll();
+        refreshEditor();
         renderNotesList();
         showToast(`已加载笔记: ${note.name}`);
     }
@@ -225,7 +187,7 @@ function addNote() {
         updatedAt: new Date().toISOString()
     };
 
-    notes.push(newNote);
+    notes = [...readNotes(), newNote];
     saveNotes();
     newNoteName.value = '';
     loadNote(newNote.id);
@@ -257,9 +219,7 @@ function deleteNote(noteId) {
     if (currentNoteId === noteId) {
         currentNoteId = null;
         try { localStorage.removeItem(lastNoteKey); } catch {}
-        markdownInput.value = '';
-        preview.innerHTML = '';
-        updateWordCount();
+        if (!collaboration.code) loadLocalDraft();
     }
 
     renderNotesList();
@@ -278,46 +238,19 @@ function saveCurrentNote() {
         return;
     }
 
+    notes = readNotes();
     const note = notes.find(n => n.id === currentNoteId);
     if (note) {
         note.content = markdownInput.value;
         note.updatedAt = new Date().toISOString();
         saveNotes();
+    } else {
+        throw new Error('笔记已在另一个标签页中删除');
     }
 }
 
-// 下载HTML文件
-function downloadHtml() {
-    const htmlContent = preview.innerHTML;
-    const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown Export</title></head><body>${htmlContent}</body></html>`], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = currentNoteId ? `note-${currentNoteId}.html` : 'markdown-export.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('HTML文件已下载');
-}
-
-// 下载Markdown文件
-function downloadMd() {
-    const mdContent = markdownInput.value;
-    const blob = new Blob([mdContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = currentNoteId ? `note-${currentNoteId}.md` : 'markdown-export.md';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Markdown文件已下载');
-}
-
 // 下载Word文件
-async function downloadWord() {
+async function downloadWord(filename) {
     const markdownText = markdownInput.value.trim();
     if (!markdownText) {
         showToast('没有内容可导出', true);
@@ -518,7 +451,7 @@ async function downloadWord() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = currentNoteId ? `note-${currentNoteId}.docx` : 'markdown-export.docx';
+        a.download = filename + '.docx';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -607,95 +540,164 @@ function parseInlineNodes(parentNode) {
     return children;
 }
 
-// 事件监听器
+
+const byId = (id) => document.getElementById(id);
+const outline = byId('outline');
+const workspace = byId('workspace');
+const documentLabel = byId('workspace-document');
+const collaboration = setupCollaboration({
+    input: markdownInput,
+    refresh: refreshEditor,
+    onExit: restoreLocal,
+    feedback: showToast
+});
+
 function refreshEditor() {
+    window.MathJax?.typesetClear?.([preview]);
     preview.innerHTML = convertToHTML(markdownInput.value);
+    const headings = [...preview.querySelectorAll('h1,h2,h3,h4,h5,h6')];
+    outline.length = 1;
+    for (const [index, heading] of headings.entries()) {
+        outline.add(new Option(heading.textContent, index));
+    }
+    outline.hidden = !headings.length;
+    documentLabel.textContent = collaboration?.code
+        ? '共享文档 ' + collaboration.code
+        : notes.find(note => note.id === currentNoteId)?.name || '临时草稿';
     updateWordCount();
     renderAll();
 }
+outline.onchange = () => {
+    if (outline.value !== '') preview.querySelectorAll('h1,h2,h3,h4,h5,h6')[Number(outline.value)]?.scrollIntoView({ block: 'nearest' });
+};
+for (const button of workspace.querySelectorAll('button[data-view]')) {
+    button.onclick = () => {
+        workspace.dataset.view = button.dataset.view;
+        for (const peer of workspace.querySelectorAll('button[data-view]')) {
+            peer.setAttribute('aria-pressed', String(peer === button));
+        }
+    };
+}
+function loadLocalDraft() {
+    collaboration.leave(false);
+    currentNoteId = null;
+    localStorage.removeItem(lastNoteKey);
+    markdownInput.value = localStorage.getItem(draftKey) ?? '';
+    renderNotesList();
+    refreshEditor();
+}
+function restoreLocal() {
+    const local = notes.find(note => note.id === currentNoteId);
+    if (local) loadNote(local.id);
+    else loadLocalDraft();
+}
+
 markdownInput.addEventListener('input', () => {
     refreshEditor();
+    if (collaboration.code) {
+        collaboration.write(markdownInput.value);
+        return;
+    }
     try { saveCurrentNote(); }
     catch { showToast('草稿未能保存，请导出或复制当前内容。', true); }
 });
 
-clearBtn.addEventListener('click', function () {
-    if (markdownInput.value.trim() && !confirm('清空当前编辑内容？')) return;
-    markdownInput.value = '';
+function replaceText(value, warning) {
+    if (warning && markdownInput.value.trim() && !confirm(warning)) return false;
+    markdownInput.value = value;
     markdownInput.dispatchEvent(new Event('input'));
-    showToast('已清空输入');
-});
+    return true;
+}
+clearBtn.onclick = () => replaceText('', '清空当前编辑内容？');
+sampleBtn.onclick = () => replaceText(sampleMarkdown, '用示例替换当前编辑内容？');
 
-sampleBtn.addEventListener('click', function () {
-    if (markdownInput.value.trim() && !confirm('用示例替换当前编辑内容？')) return;
-    markdownInput.value = sampleMarkdown;
+const templates = {
+    heading: ['## ', '', '标题'],
+    bold: ['**', '**', '粗体文字'],
+    italic: ['*', '*', '斜体文字'],
+    link: ['[', '](https://example.com)', '链接文字'],
+    task: ['- [ ] ', '', '任务'],
+    code: ['```text\n', '\n```', '代码']
+};
+function format(type) {
+    if (workspace.dataset.view === 'preview') workspace.querySelector('button[data-view=split]').click();
+    const [prefix, suffix, placeholder] = templates[type];
+    const start = markdownInput.selectionStart;
+    const end = markdownInput.selectionEnd;
+    const selection = markdownInput.value.slice(start, end) || placeholder;
+    const block = ['heading', 'task', 'code'].includes(type);
+    const boundary = block && start > 0 && markdownInput.value[start - 1] !== '\n' ? '\n' : '';
+    markdownInput.setRangeText(boundary + prefix + selection + suffix, start, end, 'end');
+    markdownInput.focus();
+    markdownInput.setSelectionRange(start + boundary.length + prefix.length, start + boundary.length + prefix.length + selection.length);
     markdownInput.dispatchEvent(new Event('input'));
-    showToast('已加载示例内容');
-});
-
-downloadHtmlBtn.addEventListener('click', downloadHtml);
-downloadMdBtn.addEventListener('click', downloadMd);
-downloadWordBtn.addEventListener('click', downloadWord);
-handoff.onclick = () => openHandoff(handoff, 'export', 'Markdown 编辑稿', markdownInput.value);
-
-sidebarToggle.addEventListener('click', function () {
-    sidebar.classList.toggle('active');
-});
-
-addNoteBtn.addEventListener('click', addNote);
-newNoteName.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') addNote();
-});
-
-refreshNotes.addEventListener('click', function () {
-    notes = JSON.parse(localStorage.getItem('markdown-notes')) || [];
-    renderNotesList();
-    showToast('笔记列表已刷新');
-});
-
-// 初始化
-document.addEventListener('DOMContentLoaded', function () {
-    updateWordCount();
-    renderNotesList();
-
-    // 检查窗口大小
-    function checkWindowSize() {
-        if (window.innerWidth <= 1024) { sidebar.classList.remove('active'); sidebarToggle.style.display = 'block'; } else {
-            sidebar.classList.add('active'); sidebarToggle.style.display = 'none';
-        }
+}
+for (const button of workspace.querySelectorAll('[data-format]')) button.onclick = () => format(button.dataset.format);
+markdownInput.addEventListener('keydown', event => {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
+    const key = event.key.toLowerCase();
+    if (key === 'b' || key === 'i') {
+        event.preventDefault();
+        format(key === 'b' ? 'bold' : 'italic');
     }
-    window.addEventListener('resize', checkWindowSize);
-    checkWindowSize();
-
-    const previous = localStorage.getItem(lastNoteKey);
-    if (notes.some(note => note.id === previous)) loadNote(previous);
-    else {
-        markdownInput.value = localStorage.getItem(draftKey) ?? (location.search.includes('handoff=') ? '' : sampleMarkdown);
-        refreshEditor();
-    }
-    showHandoff('editor', markdownInput, [
-        ['新建笔记', (text, title) => {
-            const stored = JSON.parse(localStorage.getItem('markdown-notes') || '[]');
-            const date = new Date().toISOString();
-            const note = { id: crypto.randomUUID(), name: String(title || '接力笔记'), content: text, createdAt: date, updatedAt: date };
-            localStorage.setItem('markdown-notes', JSON.stringify([...stored, note]));
-            notes = [...stored, note];
-            loadNote(note.id);
-        }],
-        ['追加到当前内容', (text) => {
-            const content = appendHandoff(markdownInput.value, text);
-            if (currentNoteId) {
-                const stored = JSON.parse(localStorage.getItem('markdown-notes') || '[]');
-                const note = stored.find(item => item.id === currentNoteId);
-                const old = notes.find(item => item.id === currentNoteId);
-                if (!note || note.content !== old?.content) throw new Error('笔记在另一个标签页发生了变化');
-                note.content = content;
-                note.updatedAt = new Date().toISOString();
-                localStorage.setItem('markdown-notes', JSON.stringify(stored));
-                notes = stored;
-            } else localStorage.setItem(draftKey, content);
-            markdownInput.value = content;
-            refreshEditor();
-        }]
-    ]);
 });
+byId('copy-source-btn').onclick = async () => {
+    try {
+        await navigator.clipboard.writeText(markdownInput.value);
+        showToast('已复制 Markdown 源码');
+    } catch { showToast('无法访问剪贴板，请手动复制。', true); }
+};
+const importFile = byId('import-file');
+byId('import-btn').onclick = () => importFile.click();
+importFile.onchange = async () => {
+    const file = importFile.files[0];
+    importFile.value = '';
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { showToast('请选择 2 MB 以内的文本文件。', true); return; }
+    const original = markdownInput.value;
+    try {
+        const text = await file.text();
+        if (markdownInput.value !== original) { showToast('内容已变化，请重新导入。', true); return; }
+        if (replaceText(text, '用导入的文件替换当前内容？')) showToast('已导入 ' + file.name);
+    } catch { showToast('文件读取失败。', true); }
+};
+
+sidebarToggle.onclick = () => {
+    sidebar.hidden = !sidebar.hidden;
+    sidebarToggle.setAttribute('aria-expanded', String(!sidebar.hidden));
+};
+byId('open-draft-btn').onclick = loadLocalDraft;
+addNoteBtn.onclick = addNote;
+newNoteName.onkeydown = event => { if (event.key === 'Enter') addNote(); };
+refreshNotes.onclick = () => { notes = readNotes(); renderNotesList(); };
+
+setupExport({ input: markdownInput, preview, downloadWord, replaceText });
+
+const previous = localStorage.getItem(lastNoteKey);
+if (!matchMedia('(max-width: 950px)').matches) sidebarToggle.click();
+renderNotesList();
+if (notes.some(note => note.id === previous)) loadNote(previous);
+else {
+    markdownInput.value = localStorage.getItem(draftKey) ?? (location.search.includes('handoff=') ? '' : sampleMarkdown);
+    refreshEditor();
+}
+const path = location.pathname.replace(/\/$/, '');
+const url = new URL(location.href);
+const handoffTarget = path.endsWith('/export') || url.searchParams.get('source') === 'export' ? 'export' : 'editor';
+if (handoffTarget === 'export' && !url.searchParams.has('handoff')) byId('markdownHandoff').click();
+if (path.endsWith('/co') || url.searchParams.has('doc')) byId('collaboration-button').click();
+showHandoff(handoffTarget, markdownInput, [
+    ['新建笔记', (text, title) => {
+        const stored = readNotes();
+        const date = new Date().toISOString();
+        const note = { id: crypto.randomUUID(), name: String(title || '接力笔记'), content: text, createdAt: date, updatedAt: date };
+        localStorage.setItem('markdown-notes', JSON.stringify([...stored, note]));
+        notes = [...stored, note];
+        loadNote(note.id);
+    }],
+    ['追加到当前内容', (text) => replaceText(appendHandoff(markdownInput.value, text))]
+]);
+
+for (const id of ['MathJax-script', 'mermaid-script']) {
+    byId(id)?.addEventListener('load', renderAll);
+}

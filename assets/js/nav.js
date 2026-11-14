@@ -387,6 +387,7 @@ function generateNavHTML(config) {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
                     <span class="quark-notice-dot" hidden></span>
                 </button>
+                <span data-quark-bot-slot></span>
                 <a class="nav-settings-btn" href="${buildLocalizedUrl('/settings')}" aria-label="网站设置" title="网站设置">
                     ${svgIcon('gear')}
                 </a>
@@ -421,6 +422,7 @@ function generateNavHTML(config) {
                 </ul>
             </div>
             <div class="navsidebar-controls">
+                <span data-quark-bot-mobile-slot></span>
                 <a class="navsidebar-settings" href="${buildLocalizedUrl('/settings')}">
                     ${svgIcon('gear')}
                     <span>网站设置</span>
@@ -457,6 +459,7 @@ function mountNavigation() {
     const mountAfter = document.querySelector('[data-nav-after]');
     if (mountAfter) mountAfter.insertAdjacentHTML('afterend', generateNavHTML(navConfig));
     else document.body.insertAdjacentHTML('afterbegin', generateNavHTML(navConfig));
+    document.dispatchEvent(new Event('quark-navigation-mounted'));
 }
 if (document.body) mountNavigation();
 else document.addEventListener('DOMContentLoaded', mountNavigation, { once: true });

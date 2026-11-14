@@ -19,6 +19,7 @@ const errors = [];
 let room;
 let object;
 const screenshotDir = process.env.SHARE_SCREENSHOTS;
+const inlineDrop = process.env.SHARE_INLINE_DROP === '1';
 const quotaSession = (subject) => ({
     token: Buffer.from(JSON.stringify({ sub: subject.repeat(64) })).toString('base64url') + '.mock',
     expiresAt: Date.now() + 600_000
@@ -47,14 +48,27 @@ async function mockApi(context) {
             case 'room-join':
                 result = { ...room, token: 'guest', expiresAt: now + 120_000 };
                 break;
-            case 'room-poll': result = { answer: room.answer }; break;
+            case 'ice-config': result = { iceServers: [] }; break;
+            case 'room-poll': {
+                const isHost = body.token === 'host';
+                const side = isHost ? 'hostIce' : 'guestIce';
+                room[side] = [...(room[side] || []), ...body.candidates];
+                result = { answer: isHost ? room.answer : null, candidates: room[isHost ? 'guestIce' : 'hostIce'] || [] };
+                break;
+            }
             case 'room-answer': room.answer = body.answer; result = { ok: true }; break;
             case 'room-close': result = { ok: true }; break;
-            case 'status': result = { offline: true }; break;
+            case 'status': result = { offline: true, inline: inlineDrop, maxBytes: (inlineDrop ? 1 : 25) * 1024 * 1024 }; break;
             case 'drop-create':
                 assert.match(request.headers().authorization, /^Bearer /);
                 assert.ok(body.size > 100);
                 result = { uploadUrl: objectUrl, day: '2026-11-13', id: 'ab'.repeat(16) };
+                if (inlineDrop) {
+                    object = Buffer.from(body.ciphertext, 'base64');
+                    assert.equal(object.length, body.size);
+                    delete result.uploadUrl;
+                    result.expiresAt = now + 6 * 3600_000;
+                }
                 break;
             case 'drop-finish':
                 assert.ok(object && object.length > 100);
@@ -63,7 +77,7 @@ async function mockApi(context) {
             case 'drop-read':
                 assert.equal(request.headers().authorization, undefined);
                 assert.deepEqual(Object.keys(body).sort(), ['action', 'day', 'id']);
-                result = { downloadUrl: objectUrl, size: object.length };
+                result = { size: object.length, ...(inlineDrop ? { ciphertext: object.toString('base64') } : { downloadUrl: objectUrl }) };
                 break;
             case 'drop-revoke': result = { ok: true }; break;
             default: throw new Error('Unexpected request ' + body.action);
@@ -82,6 +96,11 @@ async function mockApi(context) {
 
 async function createPage(browser, options) {
     const context = await browser.newContext(options);
+    const localOrigin = new URL(base).origin;
+    await context.route('**/*', (route) => {
+        const url = new URL(route.request().url());
+        return url.origin === localOrigin ? route.continue() : route.abort();
+    });
     await mockApi(context);
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));

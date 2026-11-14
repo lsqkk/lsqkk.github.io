@@ -9,28 +9,9 @@
     border-radius: 50%;
     background: var(--accent);
 }
-.quark-bot-launcher, .quark-notice-launcher {
-    position: fixed;
-    z-index: 800;
-    right: max(14px, env(safe-area-inset-right));
-    bottom: max(14px, env(safe-area-inset-bottom));
-    display: grid;
-    place-items: center;
-    width: 42px;
-    height: 42px;
-    border: 1px solid var(--line-strong);
-    border-radius: 50%;
-    background: var(--surface);
-    color: var(--text-subtle);
-    box-shadow: var(--shadow-main);
-    cursor: pointer;
-}
-.quark-notice-launcher { bottom: auto; top: max(14px, env(safe-area-inset-top)); }
-body:has(.header [data-quark-notice-open]) .quark-notice-launcher,
-.quark-bot-launcher[hidden], .quark-site-dialog [hidden] { display: none !important; }
-.quark-bot-launcher:hover, .quark-notice-launcher:hover { color: var(--accent); border-color: var(--accent); }
-.post-fab-stack .quark-bot-launcher { position: static; width: 44px; height: 44px; flex-shrink: 0; }
-.post-fab-stack:has(.quark-bot-launcher:not([hidden])) .back-to-top[aria-hidden="true"] { display: none; }
+quark-bot-trigger[hidden], .quark-site-dialog [hidden] { display: none !important; }
+:is([data-quark-bot-slot], [data-quark-bot-mobile-slot]):is(:empty, :has(> quark-bot-trigger[hidden])) { display: none; }
+.post-fab-stack:has(quark-bot-trigger:not([hidden])) .back-to-top[aria-hidden="true"] { display: none; }
 
 .quark-site-dialog {
     box-sizing: border-box;
@@ -75,7 +56,7 @@ body:has(.header [data-quark-notice-open]) .quark-notice-launcher,
 .quark-site-dialog button:disabled, .quark-bot-chat button:disabled { opacity: .55; cursor: wait; }
 .quark-site-dialog header button { min-width: 36px; font-size: 1.1rem; }
 .quark-site-dialog a { color: var(--accent); }
-.quark-site-dialog :focus-visible, .quark-bot-launcher:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.quark-site-dialog :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .quark-notice-body { overflow: auto; padding: 8px 16px 16px; }
 .quark-notice-body h3 { margin: 14px 0 6px; font-size: 1rem; }
 .quark-notice-body p { margin: 4px 0; }
@@ -97,24 +78,13 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
 }
 .quark-bot-panel::backdrop { background: #0a102026; }
 .quark-bot-chat [hidden] { display: none !important; }
-.quark-bot-launcher, .quark-bot-avatar { --bot-visor: var(--surface); color: var(--ok); }
-.quark-bot-launcher {
-    background: var(--surface);
-    border-color: var(--ok);
-    border-radius: 14px;
-    width: 46px;
-    height: 46px;
-}
-.quark-bot-launcher:hover { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
-.quark-bot-face { display: block; width: 34px; height: 34px; }
-.quark-bot-visor { fill: var(--bot-visor); }
-.quark-bot-eyes { fill: currentColor; transform-box: fill-box; transform-origin: center; }
-.quark-bot-avatar { display: grid; place-items: center; flex: none; width: 39px; height: 39px; border-radius: 11px; background: var(--ok-soft); }
+.quark-bot-face { display: block; width: 28px; height: 28px; }
+.quark-bot-avatar { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent); }
+.quark-bot-eyes { transform-box: fill-box; transform-origin: center; }
 @media (prefers-reduced-motion: no-preference) {
-    html:not([data-motion="reduce"]) .quark-bot-launcher:hover .quark-bot-eyes { animation: quark-bot-blink .42s ease-in-out; }
     html:not([data-motion="reduce"]) .quark-bot-chat[data-state="thinking"] .quark-bot-eyes { animation: quark-bot-blink 1.65s ease-in-out infinite; }
 }
-@keyframes quark-bot-blink { 0%, 100% { transform: scaleY(1); } 45%, 55% { transform: scaleY(.2); } }
+@keyframes quark-bot-blink { 0%, 100% { transform: scaleY(1); } 45%, 55% { transform: scaleY(.18); } }
 .quark-bot-chat .quark-bot-header {
     display: flex;
     justify-content: flex-start;
@@ -220,5 +190,4 @@ html:not([data-motion="reduce"]) .quark-site-dialog.is-celebration[open] { anima
     .quark-bot-panel .quark-bot-log { min-height: 0; }
     .quark-bot-chat .quark-bot-form textarea { font-size: 16px; }
     .quark-bot-chat .quark-bot-send button { min-height: 40px; }
-    body:has(:is(textarea, [contenteditable="true"]):focus) .quark-bot-launcher { visibility: hidden; }
 }
