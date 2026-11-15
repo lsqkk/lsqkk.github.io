@@ -63,7 +63,6 @@ async function history(db, account, cursor) {
         nextCursor: rows.length > page.length ? page.at(-1)[0] : null,
     };
 }
-
 async function saveHistory(db, account, body) {
     if (!Array.isArray(body?.entries) || body.entries.length < 1 || body.entries.length > OJ_BATCH_SIZE) {
         throw new OjError(400, '提交记录批次无效。');
@@ -164,5 +163,3 @@ export function createOjHandler(openDatabase = getDatabase) {
         }
     };
 }
-
-export default createOjHandler();

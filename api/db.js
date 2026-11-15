@@ -2,8 +2,10 @@
 import { getDatabase } from './_firebase-admin.js';
 import { resolveOrigin } from './_cors.js';
 import managedChat from './_chat-room.js';
+import { createOjHandler } from './_quark-oj.js';
 
 const onlineWindowMs = 15 * 60 * 1000;
+const quarkOj = createOjHandler();
 
 function isAllowedOrigin(req) {
   const requestOrigin = resolveOrigin(req, ['localhost:8000', 'lsqkk.github.io']);
@@ -57,7 +59,6 @@ function applyQuery(ref, query) {
 export default async function handler(req, res) {
   if (req.query?.view === 'quark-oj') {
     try {
-      const { default: quarkOj } = await import('./_quark-oj.js');
       return await quarkOj(req, res);
     } catch (error) {
       console.error('Unable to start QuarkOJ:', error.code || error.name);
