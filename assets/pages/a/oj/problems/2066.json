@@ -1,0 +1,39 @@
+{
+  "id": 2066,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "最低成本凑指定积分",
+  "tags": [
+    "完全背包",
+    "最优值"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每种礼券贡献若干积分并消耗若干成本，同类礼券可以重复选。用礼券精确凑到目标积分，求最小成本。",
+  "input_format": "首行 n、s（1 ≤ n ≤ 80，0 ≤ s ≤ 20000）。随后 n 行为积分 p 和成本 c，1 ≤ p ≤ 20000，0 ≤ c ≤ 10^9。",
+  "output_format": "输出最低成本，无法恰好凑出时输出 -1。",
+  "sample_input": "3 10\n2 10\n3 4\n4 7",
+  "sample_output": "15",
+  "hidden_tests": [
+    {
+      "input": "1 0\n5 10",
+      "expected_output": "0"
+    },
+    {
+      "input": "2 7\n2 1\n4 2",
+      "expected_output": "-1"
+    },
+    {
+      "input": "2 12\n3 0\n1 5",
+      "expected_output": "0"
+    },
+    {
+      "input": "1 20000\n1 1000000000",
+      "expected_output": "20000000000000"
+    }
+  ],
+  "source": {
+    "title": "力扣 322 · 同类拓展",
+    "url": "https://leetcode.cn/problems/coin-change/"
+  }
+}

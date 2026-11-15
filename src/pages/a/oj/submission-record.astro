@@ -3,10 +3,11 @@ import OjLayout from "../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../components/OjSidebar.astro";
 import { SITE_TITLE } from "@siteConfig";
 ---
-<OjLayout title={`提交记录 - QuarkOJ - ${SITE_TITLE}`}>
+<OjLayout title={`提交记录 - QuarkOJ - ${SITE_TITLE}`} extraStyles={["/assets/pages/a/oj/account.css"]}>
   <OjSidebar active="record" />
   <main class="oj-shell">
-    <div class="oj-page-heading"><h1>提交记录</h1><p>记录保存在当前浏览器。打开一条记录可以查看源码、评测结果，或回到练习台继续修改。</p></div>
+    <div class="oj-page-heading"><h1>提交记录</h1><p>查看源码和评测结果，或用已有提交继续练习。</p></div>
+    <div id="oj-account-sync" class="oj-card oj-sync" aria-label="提交同步"></div>
     <div class="oj-card">
       <div class="oj-filters">
         <input id="oj-search" type="search" placeholder="搜索题号或标题" aria-label="搜索提交的题号或标题" />

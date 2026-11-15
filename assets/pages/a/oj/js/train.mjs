@@ -1,6 +1,10 @@
 import { $, params, tracks, loadProblems, loadProblem, titleText, node, link, badge, favoriteButton,
-    problemUrl, languages, historyEntries, progress, saveResult, draftKey, read, write, verdicts } from './workspace.mjs';
+    problemUrl, languages, progress, draftKey, read, write, verdicts } from './workspace.mjs';
 import { evaluate, normalizeSample } from './judge.mjs';
+import { account } from './active-account.mjs';
+import { mountOjSolutions } from './account.mjs';
+import { mountBot } from '../../../../js/quarkbot.mjs';
+import { loadScript } from '../../../../js/load-script.mjs';
 
 const editor = $('oj-code');
 const language = $('oj-language');
@@ -81,10 +85,17 @@ async function start() {
     const problem = index.find(item => item.id === id);
     if (!problem) throw new Error('没有找到这道题，请从题库重新选择。');
     const data = await loadProblem(id);
-    const savedEntries = historyEntries().filter(entry => entry.problemId === id);
-    const imported = savedEntries.find(entry => entry.id === params.get('from') && typeof entry.code === 'string');
+    const from = params.get('from');
+    const history = () => account.entries().filter(entry => entry.problemId === id);
+    const matchingEntry = entry => entry?.problemId === id && typeof entry.code === 'string';
+    const fromEntry = from && await account.findEntry(from);
+    const savedEntries = history();
+    const imported = matchingEntry(fromEntry) ? fromEntry : null;
     const recent = imported || savedEntries[0];
-    const resumeLanguage = imported?.languageId ?? read(`quark_oj_language_${id}`, recent?.languageId ?? read('quark_oj_language', '105'));
+    let draftAccount = account.accountId;
+    const draftStorageKey = () => draftKey(id, language.value) + (draftAccount ? `:${draftAccount}` : '');
+    const resumeLanguage = imported?.languageId ?? read(`quark_oj_language_${id}`,
+        recent?.languageId ?? problem.recommendedLanguage ?? read('quark_oj_language', '105'));
     const track = tracks.find(([key, , , match]) => key === params.get('topic') && match(problem));
     const neighbors = track ? index.filter(track[3]) : index;
     const position = neighbors.indexOf(problem);
@@ -100,6 +111,7 @@ async function start() {
     let status = badge(progress(savedEntries).get(id));
     meta.append(node('span', `P${id}`), node('span', problem.difficulty === '未知' ? '未评级' : problem.difficulty),
         node('span', data.time_limit), node('span', data.memory_limit), status);
+    if (problem.origin) meta.append(node('span', problem.origin));
     markdown('oj-description', data.description);
     markdown('oj-input-format', data.input_format);
     markdown('oj-output-format', data.output_format);
@@ -109,18 +121,23 @@ async function start() {
     $('oj-sample-output').textContent = sampleOutput;
     $('oj-related').append(link('本题提交 ↗', window.buildOjUrl('record', { p: id })),
         link('本题讨论 ↗', window.buildOjUrl('discussion', { p: id })));
+    if (problem.track === 'cs61b') $('oj-related').append(link('CS61B 课程路线 ↗', '/a/oj/cs61b'));
+    if (data.source?.title && data.source.url?.startsWith('https://')) {
+        $('oj-related').append(link(`参考：${data.source.title} ↗`, data.source.url));
+    }
+    if (problem.tags?.length) meta.append(...problem.tags.map(tag => link(tag, window.buildOjUrl('list', { search: tag }), 'oj-tag')));
     $('oj-statement').hidden = false;
-    $('oj-feedback').textContent = track ? track[1] : '';
+    $('oj-feedback').textContent = from && !imported ? '找不到这条提交的源码。请确认当前登录账号。' : track ? track[1] : '';
     write('quark_oj_last_problem', id);
 
     for (const lang of ['105', '103', '109', '91', '102', '108', '107', '54', '71', '62']) {
         language.add(new Option(languages[lang][0], lang));
     }
     language.value = languages[resumeLanguage] ? String(resumeLanguage) : '105';
-    const restore = () => setSource(read(draftKey(id, language.value), languages[language.value][2]));
+    const restore = () => setSource(read(draftStorageKey(), languages[language.value][2]));
     let importedCode = Boolean(imported);
     if (imported) setSource(imported.code);
-    else setSource(read(draftKey(id, language.value), String(recent?.languageId) === language.value && typeof recent.code === 'string'
+    else setSource(read(draftStorageKey(), String(recent?.languageId) === language.value && typeof recent.code === 'string'
         ? recent.code : languages[language.value][2]));
 
     const draftStatus = $('oj-draft-status');
@@ -128,9 +145,56 @@ async function start() {
     function persistDraft() {
         if (programmaticChange) return;
         importedCode = false;
-        const saved = write(draftKey(id, language.value), source());
+        const saved = write(draftStorageKey(), source());
         draftStatus.textContent = saved ? '草稿已保存' : '草稿未能保存';
     }
+
+    function refreshProgress() {
+        const updated = badge(progress(history()).get(id));
+        status.replaceWith(updated);
+        status = updated;
+    }
+    account.addEventListener('change', () => {
+        if (draftAccount !== account.accountId) {
+            activeRun?.abort();
+            draftAccount = account.accountId;
+            importedCode = false;
+            restore();
+            stdin.value = '';
+            resultBox.replaceChildren();
+            draftStatus.textContent = '已切换账号草稿';
+        }
+        refreshProgress();
+    });
+    mountOjSolutions($('oj-solutions'), { account, problemId: id, languages });
+
+    const aliases = { cpp: ['c++', 'cxx'], python: ['py', 'python3'], javascript: ['js', 'node', 'nodejs'], rust: ['rs'], go: ['golang'] };
+    const trigger = $('oj-quarkbot');
+    mountBot({ loadScript, practice: {
+        trigger,
+        path: problemUrl(id),
+        language: () => languages[language.value][0],
+        readCode: () => source().slice(0, 6000),
+        publicContext: () => JSON.stringify({
+            id, title: titleText(data.title), description: (data.description || '').slice(0, 2400),
+            input: (data.input_format || '').slice(0, 1000), output: (data.output_format || '').slice(0, 1000),
+            sampleInput: sampleInput.slice(0, 450), sampleOutput: sampleOutput.slice(0, 450),
+        }),
+        insertCode(code, name) {
+            const selected = languages[language.value][1];
+            if (![selected, ...(aliases[selected] || [])].includes(name.toLowerCase())) {
+                window.alert('这段代码与当前编辑语言不匹配。请选择对应语言后再填入。');
+                return false;
+            }
+            if (!code.trim() || code.length > 16000 || activeRun) return false;
+            if (!window.confirm('将这段 AI 代码替换到当前编辑器并保存为草稿？请检查代码后自行运行。')) return false;
+            setSource(code);
+            persistDraft();
+            requestAnimationFrame(() => richEditor ? richEditor.focus() : editor.focus());
+            return true;
+        },
+    } });
+    trigger.disabled = false;
 
     editor.addEventListener('input', persistDraft);
     language.onchange = () => {
@@ -169,6 +233,7 @@ async function start() {
         }
         if (!importedCode) persistDraft();
         const languageId = language.value;
+        const submittingAccount = draftAccount;
         const tests = submit ? data.hidden_tests.map(test => ({ input: test.input, expected: test.expected_output })) :
             [{ input: stdin.value, expected: stdin.value === sampleInput ? sampleOutput : undefined }];
         const controller = new AbortController();
@@ -202,16 +267,14 @@ async function start() {
                     const values = cases.map(test => test[key]).filter(value => value != null).map(Number);
                     return values.length ? Math.max(...values) : null;
                 };
-                const saved = saveResult({
+                const saved = account.save({
                     id: crypto.randomUUID(), problemId: id, languageId, code, status: outcome,
                     timestamp: Date.now(), time: peak('time'), memory: peak('memory'), cases, totalCases: tests.length,
-                });
-                if (!saved) runStatus.textContent = `${message}。浏览器存储不可用，记录未保存。`;
-                else {
-                    const updated = badge(progress().get(id));
-                    status.replaceWith(updated);
-                    status = updated;
-                }
+                }, submittingAccount);
+                if (!saved) runStatus.textContent = submittingAccount !== account.accountId
+                    ? `${message}。账号已切换，本次提交未保存。`
+                    : `${message}。无法写入本机存储，请检查提交记录的同步状态。`;
+                else refreshProgress();
             }
         } catch (error) {
             runStatus.textContent = controller.signal.aborted ? '已停止等待，远端已提交的任务可能仍会运行。' :

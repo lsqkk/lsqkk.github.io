@@ -1,0 +1,38 @@
+{
+  "id": 6120,
+  "title": "归一化年度词频",
+  "difficulty": "中等",
+  "track": "cs61b",
+  "stage": "ngordnet",
+  "tags": [
+    "时间序列",
+    "整数运算"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "比较不同年份的出现比例时，应考虑各年语料量不相同。某年相对词频用以万为单位的整数表示，即单词出现次数乘以 10000，再除以该年总词数并向下取整。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Project 2A: Ngordnet (NGrams)](https://sp25.datastructur.es/projects/proj2a/)",
+  "input_format": "第一行 m q（0 ≤ m ≤ 100000，1 ≤ q ≤ 100000）。第二行 t（1 ≤ t ≤ 9999），接下来 t 行为 `年份 总词数`，年份各异。随后 m 行为 `单词 年份 次数`，每种单词与年份的组合至多一次，年份都有总词数，0 < 次数 ≤ 总词数 ≤ 1000000000。最后 q 行为 `单词 起始年 结束年`，起始年不超过结束年。年份 1 至 9999，单词由 1 至 20 个小写英文字母组成。匹配记录总数不超过 100000。",
+  "output_format": "每个查询输出一行，按年份升序列出匹配的 `年份:相对词频`，用空格分隔。无匹配输出 `NONE`，保留结果为 0 的记录。",
+  "sample_input": "3 2\n2\n2000 3\n2001 4\na 2001 1\na 2000 1\nb 2001 2\na 2000 2001\nb 2000 2000\n",
+  "sample_output": "2000:3333 2001:2500\nNONE\n",
+  "hidden_tests": [
+    {
+      "input": "0 1\n1\n1 1\na 1 1\n",
+      "expected_output": "NONE"
+    },
+    {
+      "input": "1 1\n1\n1 1000000000\na 1 1\na 1 2\n",
+      "expected_output": "1:0"
+    },
+    {
+      "input": "1 2\n1\n2010 1000000000\na 2010 999999999\na 2010 2010\na 2011 2011\n",
+      "expected_output": "2010:9999\nNONE"
+    },
+    {
+      "input": "2 2\n2\n9999 100\n1 1\na 9999 100\na 1 1\na 1 9999\na 1 1\n",
+      "expected_output": "1:10000 9999:10000\n1:10000"
+    }
+  ]
+}

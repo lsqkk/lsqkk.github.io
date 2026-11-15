@@ -1,0 +1,35 @@
+{
+  "id": 2001,
+  "track": "basics",
+  "difficulty": "入门",
+  "title": "装箱补零",
+  "tags": [
+    "整除",
+    "取模"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "工厂把零件装入容量相同的箱子。零件不拆分。求所需箱数，以及最后一个箱子剩下多少空位。恰好装满时空位为 0，没有零件时两个答案均为 0。",
+  "input_format": "一行两个整数 n、k，分别为零件数和箱容量。0 ≤ n ≤ 10^12，1 ≤ k ≤ 10^9。",
+  "output_format": "一行两个整数，依次为箱数和空位数。",
+  "sample_input": "27 8",
+  "sample_output": "4 5",
+  "hidden_tests": [
+    {
+      "input": "0 7",
+      "expected_output": "0 0"
+    },
+    {
+      "input": "32 8",
+      "expected_output": "4 0"
+    },
+    {
+      "input": "1 1000000000",
+      "expected_output": "1 999999999"
+    },
+    {
+      "input": "999999999999 1000000000",
+      "expected_output": "1000 1"
+    }
+  ]
+}

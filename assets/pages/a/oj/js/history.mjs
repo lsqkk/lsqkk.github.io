@@ -1,7 +1,9 @@
-import { $, params, loadProblems, historyEntries, titleText, node, link, badge, dateLabel, problemUrl, verdicts, languages } from './workspace.mjs';
+import { $, params, loadProblems, titleText, node, link, badge, dateLabel, problemUrl, verdicts, languages } from './workspace.mjs';
+import { account } from './active-account.mjs';
+import { mountOjSync } from './account.mjs';
 
 async function start() {
-    const entries = historyEntries();
+    mountOjSync($('oj-account-sync'), account);
     const titles = new Map((await loadProblems().catch(() => [])).map(problem => [problem.id, titleText(problem.title)]));
     const label = entry => titles.get(entry.problemId) || `P${entry.problemId}`;
     const statusFilter = $('oj-verdict');
@@ -39,11 +41,13 @@ async function start() {
     }
 
     function render() {
+        const entries = account.entries();
         const query = search.value.trim().toLowerCase().replace(/^p(?=\d)/, '');
         const filtered = entries.filter(entry =>
             (!statusFilter.value || entry.status === statusFilter.value) &&
             (!query || String(entry.problemId).includes(query) || label(entry).toLowerCase().includes(query)));
         const pages = Math.max(1, Math.ceil(filtered.length / size));
+        page = Math.min(page, pages);
         $('oj-feedback').textContent = `${filtered.length} 条提交`;
         $('oj-page').textContent = `${page} / ${pages}`;
         $('oj-prev').disabled = page === 1;
@@ -63,8 +67,21 @@ async function start() {
     $('oj-prev').onclick = () => { page--; render(); };
     $('oj-next').onclick = () => { page++; render(); };
     render();
-    const selected = entries.find(entry => entry.id === params.get('entry'));
-    if (selected) open(selected);
+    let activeAccount = account.accountId;
+    account.addEventListener('change', () => {
+        if (account.accountId !== activeAccount && dialog.open) {
+            activeAccount = account.accountId;
+            dialog.close();
+            $('oj-record-content').replaceChildren();
+        }
+        activeAccount = account.accountId;
+        render();
+    });
+    const selectedId = params.get('entry');
+    if (selectedId) {
+        const selected = await account.findEntry(selectedId);
+        if (selected && !dialog.open) open(selected);
+    }
 }
 
 start();

@@ -1,0 +1,31 @@
+{
+  "id": 2058,
+  "track": "graphs",
+  "difficulty": "中等",
+  "title": "有向线路的转乘次数",
+  "tags": [
+    "图",
+    "广度优先搜索"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "线路只能按箭头方向走，每段用时相同。求从起点到终点经过的最少线路数，并统计共有多少个基站可以从起点到达（计入起点）。",
+  "input_format": "首行 n、m、s、t（1 ≤ n ≤ 50000，0 ≤ m ≤ 100000，1 ≤ s,t ≤ n）。随后 m 行分别给出线路起点和终点。",
+  "output_format": "输出最少线路数和可达基站数。无法到达终点时线路数输出 -1。",
+  "sample_input": "5 5 2 4\n1 2\n2 3\n2 5\n3 4\n5 3",
+  "sample_output": "2 4",
+  "hidden_tests": [
+    {
+      "input": "1 0 1 1",
+      "expected_output": "0 1"
+    },
+    {
+      "input": "2 1 1 2\n2 1",
+      "expected_output": "-1 1"
+    },
+    {
+      "input": "4 4 1 4\n1 2\n2 1\n2 3\n3 4",
+      "expected_output": "3 4"
+    }
+  ]
+}

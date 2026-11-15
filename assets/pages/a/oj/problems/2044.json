@@ -1,0 +1,35 @@
+{
+  "id": 2044,
+  "track": "search",
+  "difficulty": "困难",
+  "title": "只带一把钥匙的迷宫",
+  "tags": [
+    "广度优先搜索",
+    "状态压缩"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "找到起点 S 到出口 E 的最少步数。可每次向上下左右移动一格，# 不可通过。第一次踏上 K 时永久取得钥匙，此后才能进入门 D。",
+  "input_format": "第一行 n、m（1 ≤ n,m ≤ 200）。随后 n 行，每行 m 个字符，取自 # . S E K D。S 和 E 各一个，K 至多一个，D 可以有多个。",
+  "output_format": "输出最少步数，不能到达时输出 -1。",
+  "sample_input": "3 5\nS.D.E\n.#.##\nK....",
+  "sample_output": "8",
+  "hidden_tests": [
+    {
+      "input": "1 2\nSE",
+      "expected_output": "1"
+    },
+    {
+      "input": "1 3\nSDE",
+      "expected_output": "-1"
+    },
+    {
+      "input": "3 3\nS#E\n.#.\nKDD",
+      "expected_output": "6"
+    },
+    {
+      "input": "3 3\nS..\n##D\nKE.",
+      "expected_output": "-1"
+    }
+  ]
+}

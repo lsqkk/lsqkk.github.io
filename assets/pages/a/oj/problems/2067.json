@@ -1,0 +1,35 @@
+{
+  "id": 2067,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "仓库采购清单",
+  "tags": [
+    "0-1 背包",
+    "滚动数组"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "仓库最多有预算 C。每种物资可选购一次或完全不买。每件物资有费用和收益，计算预算内的最大总收益。",
+  "input_format": "首行 n、C（1 ≤ n ≤ 150，0 ≤ C ≤ 10000）。随后 n 行为费用 w 和收益 v，1 ≤ w ≤ 10000，0 ≤ v ≤ 10^9。",
+  "output_format": "输出最大总收益。",
+  "sample_input": "4 7\n3 6\n4 7\n5 8\n2 5",
+  "sample_output": "13",
+  "hidden_tests": [
+    {
+      "input": "1 0\n1 9",
+      "expected_output": "0"
+    },
+    {
+      "input": "1 8\n2 100",
+      "expected_output": "100"
+    },
+    {
+      "input": "3 6\n2 1000000000\n2 1000000000\n2 1000000000",
+      "expected_output": "3000000000"
+    },
+    {
+      "input": "3 5\n6 100\n2 0\n3 2",
+      "expected_output": "2"
+    }
+  ]
+}

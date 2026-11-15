@@ -2,6 +2,7 @@
 import { getDatabase } from './_firebase-admin.js';
 import { resolveOrigin } from './_cors.js';
 import managedChat from './_chat-room.js';
+import quarkOj from './_quark-oj.js';
 
 const onlineWindowMs = 15 * 60 * 1000;
 
@@ -55,6 +56,7 @@ function applyQuery(ref, query) {
 }
 
 export default async function handler(req, res) {
+  if (req.query?.view === 'quark-oj') return quarkOj(req, res);
   if (req.query?.view === 'chat-room' || (req.method === 'GET' && process.env.CRON_SECRET &&
       req.headers.authorization === 'Bearer ' + process.env.CRON_SECRET)) return managedChat(req, res);
   const requestOrigin = isAllowedOrigin(req);

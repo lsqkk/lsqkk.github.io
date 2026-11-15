@@ -1,4 +1,5 @@
-import { $, tracks, loadProblems, progress, favorites, titleText, node, link, badge, problemUrl, randomProblem, favoriteButton } from './workspace.mjs';
+import { $, tracks, loadProblems, progress, favorites, titleText, node, link, badge, problemUrl, randomProblem, favoriteButton, matchesSearch } from './workspace.mjs';
+import { account } from './active-account.mjs';
 
 const filters = { search: $('oj-search'), topic: $('oj-topic'), difficulty: $('oj-difficulty'), state: $('oj-state'), size: $('oj-size') };
 let page = 1;
@@ -33,14 +34,14 @@ async function start() {
     readUrl();
 
     function render() {
-        const states = progress();
+        const states = progress(account.entries());
         const saved = favorites();
-        const search = filters.search.value.trim().toLowerCase().replace(/^p(?=\d)/, '');
+        const search = filters.search.value.trim().toLowerCase();
         const topic = tracks.find(([key]) => key === filters.topic.value);
         const state = filters.state.value;
         matching = problems.filter(problem => {
             const status = states.get(problem.id);
-            return (!search || String(problem.id).includes(search) || titleText(problem.title).toLowerCase().includes(search)) &&
+            return matchesSearch(problem, search) &&
                 (!topic || topic[3](problem)) &&
                 (!filters.difficulty.value || problem.difficulty === filters.difficulty.value) &&
                 (state !== 'saved' || saved.has(problem.id)) &&
@@ -56,6 +57,7 @@ async function start() {
         $('oj-next').disabled = page >= pages;
         $('oj-random').disabled = !matching.length;
         $('oj-feedback').textContent = `找到 ${matching.length} 道题`;
+        $('oj-roadmap-link').hidden = topic?.[0] !== 'cs61b';
         const rows = matching.slice((page - 1) * size, page * size).map(problem => {
             const row = node('tr');
             const title = link(null, problemUrl(problem.id, { topic: topic?.[0] }), 'oj-problem-link');
@@ -89,8 +91,9 @@ async function start() {
     };
     $('oj-prev').onclick = () => { page--; render(); };
     $('oj-next').onclick = () => { page++; render(); };
-    $('oj-random').onclick = () => randomProblem(matching);
+    $('oj-random').onclick = () => randomProblem(matching, { topic: filters.topic.value });
     window.addEventListener('popstate', () => { readUrl(); render(); });
+    account.addEventListener('change', render);
     render();
 }
 

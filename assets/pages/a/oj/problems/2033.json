@@ -1,0 +1,31 @@
+{
+  "id": 2033,
+  "track": "sorting",
+  "difficulty": "简单",
+  "title": "同分保持签到顺序",
+  "tags": [
+    "稳定排序",
+    "记录"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "按得分从高到低公布签到选手。同分选手的相对顺序保持为输入顺序。",
+  "input_format": "第一行 n（1 至 50000）。随后 n 行每行两个整数 id、score，id 是唯一正整数（不超过 10^9），得分绝对值不超过 10^9。",
+  "output_format": "在一行用空格输出排序后的编号。",
+  "sample_input": "4\n90 10\n20 40\n10 40\n30 32",
+  "sample_output": "20 10 30 90",
+  "hidden_tests": [
+    {
+      "input": "1\n8 0",
+      "expected_output": "8"
+    },
+    {
+      "input": "3\n9 -1\n1 -2\n7 1",
+      "expected_output": "7 9 1"
+    },
+    {
+      "input": "4\n8 3\n6 3\n4 3\n2 3",
+      "expected_output": "8 6 4 2"
+    }
+  ]
+}

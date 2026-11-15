@@ -1,9 +1,9 @@
-import { $, tracks, loadProblems, historyEntries, progress, favorites, titleText, node, link, badge, dateLabel, problemUrl, randomProblem, read } from './workspace.mjs';
+import { $, tracks, loadProblems, progress, favorites, titleText, node, link, badge, dateLabel, problemUrl, randomProblem, read } from './workspace.mjs';
+import { account } from './active-account.mjs';
 
-async function showDashboard() {
-    const problems = await loadProblems();
+function showDashboard(problems) {
     const byId = new Map(problems.map(problem => [problem.id, problem]));
-    const entries = historyEntries().filter(entry => byId.has(entry.problemId));
+    const entries = account.entries().filter(entry => byId.has(entry.problemId));
     const states = progress(entries);
     const remaining = problems.filter(problem => states.get(problem.id) !== 'AC');
     const resume = byId.get(read('quark_oj_last_problem', null));
@@ -26,12 +26,14 @@ async function showDashboard() {
     } else {
         $('oj-continue').textContent = '复习已通过题';
         $('oj-continue').href = window.buildOjUrl('list', { state: 'solved' });
+        $('oj-continue-note').textContent = '';
+        $('oj-random').disabled = true;
     }
 
     $('oj-tracks').replaceChildren(...tracks.map(([key, label, description, matches]) => {
         const group = problems.filter(matches);
         const done = group.filter(problem => states.get(problem.id) === 'AC').length;
-        const card = link(null, window.buildOjUrl('list', { topic: key }), 'oj-card oj-track');
+        const card = link(null, key === 'cs61b' ? '/a/oj/cs61b' : window.buildOjUrl('list', { topic: key }), 'oj-card oj-track');
         const heading = node('div', null, 'oj-section-head');
         heading.append(node('h3', label), node('span', '↗'));
         const bar = node('progress');
@@ -43,6 +45,7 @@ async function showDashboard() {
     }));
 
     const recent = $('oj-recent');
+    recent.replaceChildren();
     if (!entries.length) recent.append(node('p', '完成一次评测后，这里会显示你的提交。', 'oj-empty'));
     for (const entry of entries.slice(0, 4)) {
         const row = link(null, window.buildOjUrl('record', { entry: entry.id }), 'oj-feed-row');
@@ -51,4 +54,8 @@ async function showDashboard() {
     }
 }
 
-showDashboard().catch(() => { $('oj-tracks').textContent = '题库暂时无法加载，请刷新重试。'; });
+loadProblems().then(problems => {
+    const render = () => showDashboard(problems);
+    render();
+    account.addEventListener('change', render);
+}).catch(() => { $('oj-tracks').textContent = '题库暂时无法加载，请刷新重试。'; });

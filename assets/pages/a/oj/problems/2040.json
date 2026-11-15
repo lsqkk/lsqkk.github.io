@@ -1,0 +1,36 @@
+{
+  "id": 2040,
+  "track": "sorting",
+  "difficulty": "中等",
+  "title": "容量固定的快递班次",
+  "tags": [
+    "排序",
+    "双指针",
+    "贪心"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "一辆车每班最多运两个箱子，两个箱子合计重量不得超过容量。每个箱子都可以单独运走，求运完所有箱子的最少班次。",
+  "input_format": "第一行 n、w（1 ≤ n ≤ 100000，1 ≤ w ≤ 10^9）。第二行 n 个整数重量，每个在 1 到 w 之间。",
+  "output_format": "输出最少班次。",
+  "sample_input": "5 10\n3 8 2 7 6",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "1 4\n4",
+      "expected_output": "1"
+    },
+    {
+      "input": "4 5\n5 5 5 5",
+      "expected_output": "4"
+    },
+    {
+      "input": "4 6\n3 3 3 3",
+      "expected_output": "2"
+    },
+    {
+      "input": "5 8\n5 2 5 2 7",
+      "expected_output": "3"
+    }
+  ]
+}

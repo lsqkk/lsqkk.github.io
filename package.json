@@ -17,6 +17,8 @@
     "check:words": "node scripts/verify-spy-words.mjs",
     "test:spy-signal": "node --test \"tests/spy-signal/**/*.test.mjs\"",
     "test:sitemap": "node --test tests/sitemap.test.mjs",
+    "test:oj": "node scripts/generate-oj-general.mjs --check && node scripts/generate-oj-cs61b.mjs --check && node --test tests/quark-oj-account.test.mjs tests/quark-oj-catalog.test.mjs",
+    "test:ui:oj": "node tests/ui/quark-oj.cjs",
     "test:ui": "node tests/ui/site-smoke.cjs",
     "test:ui:polish": "node tests/ui/site-polish.cjs",
     "test:desk": "node --test tests/reading-desk.test.mjs",

@@ -1,0 +1,38 @@
+{
+  "id": 6115,
+  "title": "有序映射的区间键",
+  "difficulty": "中等",
+  "track": "cs61b",
+  "stage": "maps",
+  "tags": [
+    "有序映射",
+    "BST"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "维护一个从整数键到整数值的映射。除了读写和删除，还能列出闭区间内现有的键。可先用有序集合写基准版本，再尝试用搜索树剪去整棵不相关的子树。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Lab 06: BSTMap](https://sp25.datastructur.es/labs/lab06/)",
+  "input_format": "第一行 q（1 ≤ q ≤ 100000）。接下来 q 行命令：`put x y` 写入或覆盖，`get x` 查值，`drop x` 删除（不存在时忽略），`keys l r` 查询 l ≤ x ≤ r。所有数的绝对值不超过 1000000000。保证至少一次查询，输出键的总数不超过 100000。",
+  "output_format": "每次查询占一行。`get` 输出对应值或 `NONE`。`keys` 输出按数值升序排列的键，用空格相隔，无匹配时输出 `NONE`。",
+  "sample_input": "8\nput 3 30\nput -2 20\nput 1 10\nkeys -2 2\nput 1 99\nget 1\ndrop -2\nkeys -2 -2\n",
+  "sample_output": "-2 1\n99\nNONE\n",
+  "hidden_tests": [
+    {
+      "input": "4\nget 1\nkeys 1 1\ndrop 8\nget 8\n",
+      "expected_output": "NONE\nNONE\nNONE"
+    },
+    {
+      "input": "3\nput 0 0\nget 0\nkeys 0 0\n",
+      "expected_output": "0\n0"
+    },
+    {
+      "input": "6\nput 5 1\nput 6 6\nput 4 4\ndrop 5\nkeys 4 6\nget 5\n",
+      "expected_output": "4 6\nNONE"
+    },
+    {
+      "input": "5\nput 10 -1\nput 2 10\nput -10 0\nkeys -1000000000 1000000000\nkeys 3 9\n",
+      "expected_output": "-10 2 10\nNONE"
+    }
+  ]
+}

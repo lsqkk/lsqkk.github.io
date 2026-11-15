@@ -1,0 +1,171 @@
+[
+  {
+    "id": "java",
+    "title": "Java 与集合热身",
+    "description": "先练方法、遍历与边界，再用列表和映射表达数据。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Homework 0A: Java Syntax",
+        "url": "https://sp25.datastructur.es/homeworks/hw0/hw0a/"
+      },
+      {
+        "label": "Spring 2025 · Homework 0B: Data Structures",
+        "url": "https://sp25.datastructur.es/homeworks/hw0/hw0b/"
+      }
+    ],
+    "problemIds": [
+      6101,
+      6102,
+      6103,
+      6104
+    ]
+  },
+  {
+    "id": "board",
+    "title": "2048 棋盘模拟",
+    "description": "拆解一次移动，再练习合并判定和连续状态更新。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Project 0: 2048",
+        "url": "https://sp25.datastructur.es/projects/proj0/"
+      }
+    ],
+    "problemIds": [
+      6105,
+      6106,
+      6107
+    ]
+  },
+  {
+    "id": "deque",
+    "title": "链表与双端队列",
+    "description": "先用命令验证双端队列语义，再练固定容量回绕与单调队列。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Project 1A: LinkedListDeque61B",
+        "url": "https://sp25.datastructur.es/projects/proj1a/"
+      },
+      {
+        "label": "Spring 2025 · Project 1B: ArrayDeque61B",
+        "url": "https://sp25.datastructur.es/projects/proj1b/"
+      }
+    ],
+    "problemIds": [
+      6108,
+      6109,
+      6110
+    ]
+  },
+  {
+    "id": "disjoint-sets",
+    "title": "并查集与渗流",
+    "description": "掌握连通性和加权合并，再区分从顶部可达与已经渗透。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Homework 2: Percolation",
+        "url": "https://sp25.datastructur.es/homeworks/hw2/"
+      },
+      {
+        "label": "Spring 2024 · Lab 05: Disjoint Sets",
+        "url": "https://sp24.datastructur.es/labs/lab05/"
+      }
+    ],
+    "problemIds": [
+      6111,
+      6112,
+      6113
+    ]
+  },
+  {
+    "id": "maps",
+    "title": "有序映射、平衡树与哈希",
+    "description": "用相同的键值语义比较树和哈希，再处理冲突、范围和回收策略。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Lab 06: BSTMap",
+        "url": "https://sp25.datastructur.es/labs/lab06/"
+      },
+      {
+        "label": "Spring 2025 · Lab 07: Hashmaps",
+        "url": "https://sp25.datastructur.es/labs/lab07/"
+      },
+      {
+        "label": "Spring 2025 · Lab 08: LLRBs",
+        "url": "https://sp25.datastructur.es/labs/lab08/"
+      }
+    ],
+    "problemIds": [
+      6114,
+      6115,
+      6116,
+      6117,
+      6118
+    ]
+  },
+  {
+    "id": "ngordnet",
+    "title": "Ngordnet：词频与语义图",
+    "description": "先练区间统计，再从语义图中提取可达词、交集和排名。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Project 2A: Ngordnet (NGrams)",
+        "url": "https://sp25.datastructur.es/projects/proj2a/"
+      },
+      {
+        "label": "Spring 2025 · Project 2B: Ngordnet (WordNet)",
+        "url": "https://sp25.datastructur.es/projects/proj2b/"
+      }
+    ],
+    "problemIds": [
+      6119,
+      6120,
+      6121,
+      6122
+    ]
+  },
+  {
+    "id": "graphs",
+    "title": "世界地图与图算法",
+    "description": "把地图变成隐式图，练习可达性、最短路与连接成本。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Project 3: Build Your Own World",
+        "url": "https://sp25.datastructur.es/projects/proj3/"
+      },
+      {
+        "label": "Spring 2025 · Project 3A: World Generation",
+        "url": "https://sp25.datastructur.es/projects/proj3/proj3a/"
+      },
+      {
+        "label": "Spring 2025 · Discussion 09: Shortest Paths, MSTs",
+        "url": "https://sp25.datastructur.es/assets/discussions/examlevel09.pdf"
+      }
+    ],
+    "problemIds": [
+      6123,
+      6124,
+      6125,
+      6126
+    ]
+  },
+  {
+    "id": "sorting",
+    "title": "比较排序与优先队列",
+    "description": "观察稳定排序保留的顺序，并用堆处理多路合并。",
+    "sources": [
+      {
+        "label": "Spring 2025 · Lab 11: Comparison-Based Sorts",
+        "url": "https://sp25.datastructur.es/labs/lab11/"
+      },
+      {
+        "label": "Spring 2025 · Course Schedule",
+        "url": "https://sp25.datastructur.es/"
+      }
+    ],
+    "problemIds": [
+      6127,
+      6128,
+      6129
+    ]
+  }
+]

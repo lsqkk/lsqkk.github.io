@@ -1,0 +1,38 @@
+{
+  "id": 6108,
+  "title": "双端队列接口",
+  "difficulty": "简单",
+  "track": "cs61b",
+  "stage": "deque",
+  "tags": [
+    "双向链表",
+    "Deque"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "课程练习改编",
+  "description": "空双端队列可从两端插入、移除和查询位置。建议自己实现带哨兵结点的双向链表，并把位置 0 视作队首。\n\n课程练习改编 · [Berkeley CS 61B Spring 2025 · Project 1A: LinkedListDeque61B](https://sp25.datastructur.es/projects/proj1a/)",
+  "input_format": "第一行 q（1 ≤ q ≤ 100000）。接下来每行一个命令。`push_front x`、`push_back x`、`pop_front`、`pop_back`、`size`。x 为绝对值不超过 1000000000 的整数。 另有 `get i`（0 ≤ i ≤ 100000），查询位置 i，越界时为空。保证至少有一个产生输出的命令，`get` 最多出现 20 次。",
+  "output_format": "每次弹出输出移除的值，空队列输出 `EMPTY`。每次 `size` 输出当前元素个数。 每次 `get` 输出元素或 `EMPTY`。每次输出独占一行。",
+  "sample_input": "7\npush_back 7\npush_front 3\nget 1\npop_back\nsize\npop_front\npop_front\n",
+  "sample_output": "7\n7\n1\n3\nEMPTY\n",
+  "hidden_tests": [
+    {
+      "input": "1\nget 0\n",
+      "expected_output": "EMPTY"
+    },
+    {
+      "input": "4\npush_front 0\nget 1\npop_back\nsize\n",
+      "expected_output": "EMPTY\n0\n0"
+    },
+    {
+      "input": "6\npush_back -2\npush_front -3\nget 0\nget 1\npop_front\npop_back\n",
+      "expected_output": "-3\n-2\n-3\n-2"
+    },
+    {
+      "input": "6\npush_back 1000000000\npop_back\npush_front -1000000000\nget 0\npop_back\npop_back\n",
+      "expected_output": "1000000000\n-1000000000\n-1000000000\nEMPTY"
+    }
+  ]
+}

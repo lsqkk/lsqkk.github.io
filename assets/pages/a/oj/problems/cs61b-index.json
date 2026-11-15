@@ -1,0 +1,438 @@
+[
+  {
+    "id": 6101,
+    "title": "三角形星号",
+    "difficulty": "入门",
+    "track": "cs61b",
+    "stage": "java",
+    "tags": [
+      "Java",
+      "循环"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6102,
+    "title": "数组的最大最小差",
+    "difficulty": "入门",
+    "track": "cs61b",
+    "stage": "java",
+    "tags": [
+      "数组",
+      "遍历"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6103,
+    "title": "冰雹序列",
+    "difficulty": "入门",
+    "track": "cs61b",
+    "stage": "java",
+    "tags": [
+      "递归",
+      "整数"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6104,
+    "title": "单词频数排名",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "java",
+    "tags": [
+      "哈希映射",
+      "排序"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6105,
+    "title": "2048 单行左移",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "board",
+    "tags": [
+      "模拟",
+      "数组"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6106,
+    "title": "2048 还可以走吗",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "board",
+    "tags": [
+      "棋盘",
+      "枚举"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6107,
+    "title": "2048 连续移动计分",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "board",
+    "tags": [
+      "矩阵",
+      "状态模拟"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6108,
+    "title": "双端队列接口",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "deque",
+    "tags": [
+      "双向链表",
+      "Deque"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6109,
+    "title": "固定容量的循环双端队列",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "deque",
+    "tags": [
+      "循环数组",
+      "Deque"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6110,
+    "title": "窗口里最大的数",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "deque",
+    "tags": [
+      "单调队列",
+      "滑动窗口"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6111,
+    "title": "维护连通分组",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "disjoint-sets",
+    "tags": [
+      "并查集",
+      "数据结构"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6112,
+    "title": "何时首次渗透",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "disjoint-sets",
+    "tags": [
+      "并查集",
+      "网格连通"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6113,
+    "title": "渗透与反洗",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "disjoint-sets",
+    "tags": [
+      "并查集",
+      "虚拟结点"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6114,
+    "title": "BST 的插入深度",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "maps",
+    "tags": [
+      "二叉搜索树",
+      "树高"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6115,
+    "title": "有序映射的区间键",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "maps",
+    "tags": [
+      "有序映射",
+      "BST"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6116,
+    "title": "桶内冲突与更新",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "maps",
+    "tags": [
+      "哈希表",
+      "链地址法"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6117,
+    "title": "最近最少使用缓存",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "maps",
+    "tags": [
+      "哈希映射",
+      "双向链表"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6118,
+    "title": "检查左倾红黑树",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "maps",
+    "tags": [
+      "红黑树",
+      "树遍历"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6119,
+    "title": "指定年代的词频总量",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "ngordnet",
+    "tags": [
+      "前缀和",
+      "二分查找",
+      "时间序列"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6120,
+    "title": "归一化年度词频",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "ngordnet",
+    "tags": [
+      "时间序列",
+      "整数运算"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6121,
+    "title": "语义图中的下位词",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "ngordnet",
+    "tags": [
+      "有向图",
+      "多源遍历"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6122,
+    "title": "多个词的共同下位词",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "ngordnet",
+    "tags": [
+      "图遍历",
+      "集合交集"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6123,
+    "title": "走廊中的最短路线",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "graphs",
+    "tags": [
+      "BFS",
+      "网格"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "课程练习改编"
+  },
+  {
+    "id": 6124,
+    "title": "环形世界的最短路线",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "graphs",
+    "tags": [
+      "BFS",
+      "坐标取模"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6125,
+    "title": "有向路网的到达成本",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "graphs",
+    "tags": [
+      "Dijkstra",
+      "优先队列"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6126,
+    "title": "最少铺设多少通道",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "graphs",
+    "tags": [
+      "最小生成树",
+      "并查集"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6127,
+    "title": "稳定整理报名表",
+    "difficulty": "简单",
+    "track": "cs61b",
+    "stage": "sorting",
+    "tags": [
+      "稳定排序",
+      "比较器"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6128,
+    "title": "严格逆序对",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "sorting",
+    "tags": [
+      "归并排序",
+      "分治"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  },
+  {
+    "id": 6129,
+    "title": "合并多份有序日志",
+    "difficulty": "中等",
+    "track": "cs61b",
+    "stage": "sorting",
+    "tags": [
+      "多路归并",
+      "优先队列"
+    ],
+    "recommendedLanguage": 91,
+    "time_limit": "1000ms",
+    "memory_limit": "256MB",
+    "origin": "延伸变体"
+  }
+]

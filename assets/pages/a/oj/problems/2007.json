@@ -1,0 +1,35 @@
+{
+  "id": 2007,
+  "track": "basics",
+  "difficulty": "入门",
+  "title": "阶梯运费",
+  "tags": [
+    "分支",
+    "算术"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "寄件按整数千克计费。前 3 千克每千克 8 元，超过 3 至 10 千克的部分每千克 5 元，其余部分每千克 3 元。目的地在偏远区时，总价另加 12 元。",
+  "input_format": "一行两个整数 w 和 r。1 ≤ w ≤ 10^9，r 为 1 表示偏远，为 0 表示普通。",
+  "output_format": "输出运费金额。",
+  "sample_input": "12 1",
+  "sample_output": "77",
+  "hidden_tests": [
+    {
+      "input": "1 0",
+      "expected_output": "8"
+    },
+    {
+      "input": "3 1",
+      "expected_output": "36"
+    },
+    {
+      "input": "10 0",
+      "expected_output": "59"
+    },
+    {
+      "input": "1000000000 1",
+      "expected_output": "3000000041"
+    }
+  ]
+}

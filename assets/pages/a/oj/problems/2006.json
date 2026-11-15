@@ -1,0 +1,35 @@
+{
+  "id": 2006,
+  "track": "basics",
+  "difficulty": "简单",
+  "title": "末尾零的数量",
+  "tags": [
+    "阶乘",
+    "质因数"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "给定 n，只输出 n! 的十进制表示末尾有多少个零。定义 0! = 1。",
+  "input_format": "一行整数 n（0 ≤ n ≤ 10^12）。",
+  "output_format": "输出一个整数。",
+  "sample_input": "30",
+  "sample_output": "7",
+  "hidden_tests": [
+    {
+      "input": "0",
+      "expected_output": "0"
+    },
+    {
+      "input": "4",
+      "expected_output": "0"
+    },
+    {
+      "input": "125",
+      "expected_output": "31"
+    },
+    {
+      "input": "1000000000000",
+      "expected_output": "249999999997"
+    }
+  ]
+}

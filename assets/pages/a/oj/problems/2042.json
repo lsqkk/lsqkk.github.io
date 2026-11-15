@@ -1,0 +1,35 @@
+{
+  "id": 2042,
+  "track": "search",
+  "difficulty": "中等",
+  "title": "均衡分队",
+  "tags": [
+    "回溯",
+    "子集枚举"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "将所有选手分成两组，允许其中一组为空。两组能力值分别求和。求两个和的最小绝对差。",
+  "input_format": "第一行 n（1 至 18）。第二行 n 个正整数能力值，每个不超过 10^9。",
+  "output_format": "输出最小绝对差。",
+  "sample_input": "5\n3 7 8 10 17",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "1\n6",
+      "expected_output": "6"
+    },
+    {
+      "input": "3\n10 10 20",
+      "expected_output": "0"
+    },
+    {
+      "input": "5\n1000000000 1000000000 1000000000 1000000000 5",
+      "expected_output": "5"
+    },
+    {
+      "input": "18\n1 14 27 40 53 66 79 92 105 5 18 31 44 57 70 83 96 109",
+      "expected_output": "0"
+    }
+  ]
+}

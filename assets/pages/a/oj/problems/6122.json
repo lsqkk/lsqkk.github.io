@@ -1,0 +1,38 @@
+{
+  "id": 6122,
+  "title": "多个词的共同下位词",
+  "difficulty": "中等",
+  "track": "cs61b",
+  "stage": "ngordnet",
+  "tags": [
+    "图遍历",
+    "集合交集"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "先分别计算每个查询词对应的下位词集合，包含其起始词义组中的单词。返回出现在每个集合里的单词。同一个词可能通过不同的词义组进入不同的集合，因此应按单词取交集。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Project 2B: Ngordnet (WordNet)](https://sp25.datastructur.es/projects/proj2b/)",
+  "input_format": "第一行 n m q（1 ≤ n ≤ 1000，0 ≤ m ≤ 5000，1 ≤ q ≤ 300）。接下来 n 行各为一个词义组的全部单词（1 至 5 个），按 0 至 n−1 的编号顺序给出。随后 m 行各给出一条有向边的两个词义组编号。允许重边和自环。每个单词仅含 1 至 12 个小写英文字母。 最后 q 行，每行 1 至 8 个查询词，空格分隔。",
+  "output_format": "每个查询占一行，按字典序输出所有共同单词，用空格分隔。交集为空输出 `NONE`。",
+  "sample_input": "4 3 3\nplant\ntree\noak\ntree wood\n0 1\n1 2\n3 2\nplant wood\nplant tree\noak missing\n",
+  "sample_output": "oak tree\noak tree\nNONE\n",
+  "hidden_tests": [
+    {
+      "input": "2 0 3\na x\nb x\na b\nx x\nb y\n",
+      "expected_output": "x\na b x\nNONE"
+    },
+    {
+      "input": "4 4 3\na\nb\nc\nd\n0 1\n1 2\n2 1\n3 2\na b d\na\nz\n",
+      "expected_output": "b c\na b c\nNONE"
+    },
+    {
+      "input": "2 0 1\ndog\ncat\ndog cat\n",
+      "expected_output": "NONE"
+    },
+    {
+      "input": "1 1 1\nremote far\n0 0\nremote far remote\n",
+      "expected_output": "far remote"
+    }
+  ]
+}

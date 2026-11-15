@@ -1,0 +1,35 @@
+{
+  "id": 2008,
+  "track": "basics",
+  "difficulty": "简单",
+  "title": "循环岗哨重逢",
+  "tags": [
+    "最小公倍数",
+    "循环"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "两盏巡逻灯都于第 0 秒闪烁，随后分别每 a 秒和每 b 秒闪一次。统计到第 t 秒为止，两灯同时闪烁了多少次，不计第 0 秒，计入第 t 秒。",
+  "input_format": "一行三个整数 a、b、t。1 ≤ a,b ≤ 10^6，0 ≤ t ≤ 10^15。",
+  "output_format": "输出同时闪烁次数。",
+  "sample_input": "6 8 50",
+  "sample_output": "2",
+  "hidden_tests": [
+    {
+      "input": "1 1 0",
+      "expected_output": "0"
+    },
+    {
+      "input": "5 10 10",
+      "expected_output": "1"
+    },
+    {
+      "input": "999983 999979 1000000000000000",
+      "expected_output": "1000"
+    },
+    {
+      "input": "10 20 19",
+      "expected_output": "0"
+    }
+  ]
+}

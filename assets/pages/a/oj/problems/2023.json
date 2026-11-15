@@ -1,0 +1,35 @@
+{
+  "id": 2023,
+  "track": "structures",
+  "difficulty": "简单",
+  "title": "两个矩形相交的面积",
+  "tags": [
+    "结构体",
+    "矩形"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "画板上有两个与坐标轴平行的矩形，每个矩形由一对对角点描述。求它们共有部分的面积，只碰到边或顶点时算 0。",
+  "input_format": "两行，每行给一个矩形的 x1、y1、x2、y2，坐标是绝对值不超过 10^9 的整数。对角点顺序任意，允许退化为线段或点。",
+  "output_format": "输出相交面积。",
+  "sample_input": "5 5 0 1\n2 0 7 3",
+  "sample_output": "6",
+  "hidden_tests": [
+    {
+      "input": "0 0 1 1\n1 1 5 5",
+      "expected_output": "0"
+    },
+    {
+      "input": "0 1 10 6\n1 2 5 5",
+      "expected_output": "12"
+    },
+    {
+      "input": "2 0 2 9\n0 1 7 4",
+      "expected_output": "0"
+    },
+    {
+      "input": "-1000000000 -1000000000 1000000000 1000000000\n1000000000 -1000000000 -1000000000 1000000000",
+      "expected_output": "4000000000000000000"
+    }
+  ]
+}

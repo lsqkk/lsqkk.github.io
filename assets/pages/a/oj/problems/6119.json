@@ -1,0 +1,39 @@
+{
+  "id": 6119,
+  "title": "指定年代的词频总量",
+  "difficulty": "中等",
+  "track": "cs61b",
+  "stage": "ngordnet",
+  "tags": [
+    "前缀和",
+    "二分查找",
+    "时间序列"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "课程练习改编",
+  "description": "语料统计给出若干单词、年份和次数的记录，可能乱序或重复。对每个查询，求指定单词在闭区间内的总出现次数。\n\n课程练习改编 · [Berkeley CS 61B Spring 2025 · Project 2A: Ngordnet (NGrams)](https://sp25.datastructur.es/projects/proj2a/)",
+  "input_format": "第一行 m q（0 ≤ m ≤ 100000，1 ≤ q ≤ 100000）。接下来 m 行为 `单词 年份 次数`。随后 q 行为 `单词 起始年 结束年`，起始年不超过结束年。年份 1 至 9999，次数 1 至 1000000000。单词长度 1 至 20，仅含小写英文字母。",
+  "output_format": "每个查询输出一行总次数；没有匹配时输出 0。结果可能超出 32 位有符号整数范围。",
+  "sample_input": "4 3\nink 2002 5\noak 2001 7\nink 2000 3\nink 2002 2\nink 2000 2002\nink 2001 2001\noak 2001 2001\n",
+  "sample_output": "10\n0\n7\n",
+  "hidden_tests": [
+    {
+      "input": "0 1\nash 1 9999\n",
+      "expected_output": "0"
+    },
+    {
+      "input": "1 2\na 2 10\na 2 2\nb 2 2\n",
+      "expected_output": "10\n0"
+    },
+    {
+      "input": "3 2\nx 1 1000000000\nx 1 1000000000\nx 9999 1000000000\nx 1 9999\nx 2 9998\n",
+      "expected_output": "3000000000\n0"
+    },
+    {
+      "input": "4 3\na 3 3\na 2 2\na 1 1\nb 2 100\na 2 2\na 3 4\na 1 2\n",
+      "expected_output": "2\n3\n3"
+    }
+  ]
+}

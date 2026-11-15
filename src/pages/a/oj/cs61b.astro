@@ -1,0 +1,22 @@
+---
+import OjLayout from "../../../layouts/OjLayout.astro";
+import OjSidebar from "../../../components/OjSidebar.astro";
+import { SITE_TITLE } from "@siteConfig";
+---
+<OjLayout title={`CS61B 数据结构题单 - QuarkOJ - ${SITE_TITLE}`} description="按伯克利 CS61B 的课程项目、实验和知识点练习数据结构。">
+  <OjSidebar active="cs61b" />
+  <main class="oj-shell">
+    <section class="oj-hero">
+      <h1>CS61B 数据结构</h1>
+      <p>按阶段做题：先读 UC Berkeley 发布的作业，再用 QuarkOJ 的独立改编和变体检验关键知识点。</p>
+      <div class="oj-actions">
+        <a class="oj-button is-primary" id="oj-cs-next" href="/a/oj/problem-list?topic=cs61b&amp;state=unsolved">从未通过题开始</a>
+        <a class="oj-button" href="/a/oj/problem-list?topic=cs61b">浏览全部练习</a>
+      </div>
+      <p class="oj-fineprint">课程原作业在学校官网打开。站内题采用标准输入输出，默认推荐 Java，可用其他受支持的语言。</p>
+    </section>
+    <p class="oj-section oj-muted" id="oj-cs-status" role="status">正在加载课程路线…</p>
+    <div id="oj-roadmap" class="oj-roadmap"></div>
+  </main>
+  <script is:inline type="module" src="/assets/pages/a/oj/js/cs61b.mjs"></script>
+</OjLayout>

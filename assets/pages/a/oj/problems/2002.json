@@ -1,0 +1,35 @@
+{
+  "id": 2002,
+  "track": "basics",
+  "difficulty": "入门",
+  "title": "末班接驳车",
+  "tags": [
+    "整除",
+    "分支"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "接驳车从第 s 分钟起每隔 d 分钟发一班，发车时刻不超过第 e 分钟。旅客在第 t 分钟抵达，可以赶上恰好在这一分钟出发的车。求他最早可以乘坐的班次时刻。",
+  "input_format": "一行四个整数 s、d、e、t。0 ≤ s ≤ e ≤ 10^9，1 ≤ d ≤ 10^9，0 ≤ t ≤ 10^9。",
+  "output_format": "输出发车分钟，已无班次时输出 -1。",
+  "sample_input": "10 6 34 17",
+  "sample_output": "22",
+  "hidden_tests": [
+    {
+      "input": "10 6 34 34",
+      "expected_output": "34"
+    },
+    {
+      "input": "10 6 33 33",
+      "expected_output": "-1"
+    },
+    {
+      "input": "8 12 40 0",
+      "expected_output": "8"
+    },
+    {
+      "input": "0 1 0 1",
+      "expected_output": "-1"
+    }
+  ]
+}

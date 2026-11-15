@@ -38,6 +38,7 @@ jobs:
         run: |
           npm run check:syntax
           npm run check:docs
+          npm run test:oj
 
       - name: Build
         run: npm run build

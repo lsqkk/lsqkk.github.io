@@ -1,0 +1,36 @@
+{
+  "id": 2024,
+  "track": "structures",
+  "difficulty": "简单",
+  "title": "带符号的时区转换",
+  "tags": [
+    "结构体",
+    "日期",
+    "整数运算"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "两个城市相对 UTC 的偏移以分钟表示。把出发地当地钟面时间换成目的地钟面时间，并报告目的地相对出发地日期变化了几天。",
+  "input_format": "一行四个整数 h、m、a、b。0 ≤ h < 24，0 ≤ m < 60。a、b 是两个城市的 UTC 偏移，均在 −720 到 840 分钟之间。",
+  "output_format": "一行输出日期偏移、小时、分钟。",
+  "sample_input": "23 40 480 600",
+  "sample_output": "1 1 40",
+  "hidden_tests": [
+    {
+      "input": "0 5 0 -60",
+      "expected_output": "-1 23 5"
+    },
+    {
+      "input": "12 45 330 345",
+      "expected_output": "0 13 0"
+    },
+    {
+      "input": "23 59 -720 840",
+      "expected_output": "2 1 59"
+    },
+    {
+      "input": "17 20 480 480",
+      "expected_output": "0 17 20"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": 6105,
+  "title": "2048 单行左移",
+  "difficulty": "简单",
+  "track": "cs61b",
+  "stage": "board",
+  "tags": [
+    "模拟",
+    "数组"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "课程练习改编",
+  "description": "将一行的非零方块向左挤紧，再从左向右合并相邻且相等的一对方块。新生成的方块当次移动不能再次合并。空位补到右侧，不产生随机方块。\n\n课程练习改编 · [Berkeley CS 61B Spring 2025 · Project 0: 2048](https://sp25.datastructur.es/projects/proj0/)",
+  "input_format": "第一行 n（1 ≤ n ≤ 1000）。第二行 n 个数，每个是 0 或不超过 2048 的 2 的正整数次幂。",
+  "output_format": "一行输出移动后的 n 个值，用空格分隔。",
+  "sample_input": "5\n0 2 2 2 4\n",
+  "sample_output": "4 2 4 0 0\n",
+  "hidden_tests": [
+    {
+      "input": "1\n0\n",
+      "expected_output": "0"
+    },
+    {
+      "input": "4\n2 2 2 2\n",
+      "expected_output": "4 4 0 0"
+    },
+    {
+      "input": "6\n2 2 4 4 8 0\n",
+      "expected_output": "4 8 8 0 0 0"
+    },
+    {
+      "input": "3\n0 0 0\n",
+      "expected_output": "0 0 0"
+    },
+    {
+      "input": "2\n2048 2048\n",
+      "expected_output": "4096 0"
+    }
+  ]
+}

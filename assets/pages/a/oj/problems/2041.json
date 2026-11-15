@@ -1,0 +1,35 @@
+{
+  "id": 2041,
+  "track": "search",
+  "difficulty": "中等",
+  "title": "含禁选组合的实验计划",
+  "tags": [
+    "状态枚举",
+    "位运算"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "实验课有 n 个项目，每个项目带来一定收益。一些项目不能一起选。要求恰好选 k 个项目，使总收益最大。",
+  "input_format": "第一行 n、k、m（1 ≤ n ≤ 15，0 ≤ k ≤ n，0 ≤ m ≤ n(n−1)/2）。第二行 n 个整数收益（绝对值不超过 10^6）。随后 m 行每行两个不同的编号，表示不能同时选择，编号为 1 至 n。",
+  "output_format": "输出最大总收益，无合法计划时输出 IMPOSSIBLE。",
+  "sample_input": "4 2 2\n8 7 -2 3\n1 2\n1 4",
+  "sample_output": "10",
+  "hidden_tests": [
+    {
+      "input": "1 0 0\n-5",
+      "expected_output": "0"
+    },
+    {
+      "input": "2 2 1\n-1 -2\n1 2",
+      "expected_output": "IMPOSSIBLE"
+    },
+    {
+      "input": "3 2 0\n-5 -2 -3",
+      "expected_output": "-5"
+    },
+    {
+      "input": "15 7 0\n-9 -8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5",
+      "expected_output": "14"
+    }
+  ]
+}

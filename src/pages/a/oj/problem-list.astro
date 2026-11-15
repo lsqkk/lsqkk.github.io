@@ -9,7 +9,7 @@ import { SITE_TITLE } from "@siteConfig";
     <div class="oj-page-heading"><h1>题库</h1><p>按专题、难度或练习状态选题。</p></div>
     <div class="oj-card">
       <div class="oj-filters">
-        <input type="search" id="oj-search" placeholder="搜索题号或标题" aria-label="搜索题号或标题" />
+        <input type="search" id="oj-search" placeholder="搜索题号、标题或知识点" aria-label="搜索题号、标题或知识点" />
         <select id="oj-topic" aria-label="专题"><option value="">全部专题</option></select>
         <select id="oj-difficulty" aria-label="难度"><option value="">全部难度</option></select>
         <select id="oj-state" aria-label="练习状态">
@@ -18,7 +18,7 @@ import { SITE_TITLE } from "@siteConfig";
         </select>
         <button id="oj-clear" type="button">清空筛选</button>
       </div>
-      <div class="oj-list-summary"><span id="oj-feedback" role="status">正在加载题库…</span><button id="oj-random" disabled>当前筛选中随机跳题</button></div>
+      <div class="oj-list-summary"><span id="oj-feedback" role="status">正在加载题库…</span><a id="oj-roadmap-link" href="/a/oj/cs61b" hidden>课程路线和原作业 ↗</a><button id="oj-random" disabled>当前筛选中随机跳题</button></div>
       <div class="oj-table-scroll">
         <table class="oj-table"><thead><tr><th scope="col">题目</th><th scope="col">难度</th><th scope="col">状态</th><th scope="col">收藏</th></tr></thead>
           <tbody id="oj-problems"></tbody>

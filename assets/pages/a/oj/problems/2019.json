@@ -1,0 +1,31 @@
+{
+  "id": 2019,
+  "track": "structures",
+  "difficulty": "简单",
+  "title": "合并图书条目",
+  "tags": [
+    "结构体",
+    "字典"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "两批图书入库记录混在一起，每条记录含简短书号和册数。同书号的记录需要合并。按书号首次出现的顺序输出库存。",
+  "input_format": "第一行记录数 n（1 至 10000）。其后 n 行，每行一个长 1 至 12 的小写英文书号及正整数册数（至多 10^9）。",
+  "output_format": "每种书一行，输出书号和合计册数。",
+  "sample_input": "4\ncat 3\nart 4\ncat 8\nmap 2",
+  "sample_output": "cat 11\nart 4\nmap 2",
+  "hidden_tests": [
+    {
+      "input": "1\na 4",
+      "expected_output": "a 4"
+    },
+    {
+      "input": "3\nz 1\ny 2\nx 3",
+      "expected_output": "z 1\ny 2\nx 3"
+    },
+    {
+      "input": "4\nb 1000000000\nb 1000000000\na 1\nb 1000000000",
+      "expected_output": "b 3000000000\na 1"
+    }
+  ]
+}

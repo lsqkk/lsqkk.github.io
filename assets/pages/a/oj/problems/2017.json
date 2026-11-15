@@ -1,0 +1,36 @@
+{
+  "id": 2017,
+  "track": "structures",
+  "difficulty": "简单",
+  "title": "分数账单相加",
+  "tags": [
+    "函数",
+    "分数",
+    "最大公约数"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "把两项以分数表示的账单相加。用一个包含分子和分母的记录表示结果，并约分。分母固定为正数，零用 0/1 表示。",
+  "input_format": "一行 a、b、c、d，分别表示 a/b 与 c/d。|a|、|c| ≤ 10^6，1 ≤ b,d ≤ 10^6。",
+  "output_format": "输出约分后的分子和分母，用一个空格分隔。",
+  "sample_input": "1 6 -5 8",
+  "sample_output": "-11 24",
+  "hidden_tests": [
+    {
+      "input": "1 2 -3 6",
+      "expected_output": "0 1"
+    },
+    {
+      "input": "-3 2 -3 2",
+      "expected_output": "-3 1"
+    },
+    {
+      "input": "1000000 999997 1000000 999983",
+      "expected_output": "1999980000000 999980000051"
+    },
+    {
+      "input": "0 19 4 6",
+      "expected_output": "2 3"
+    }
+  ]
+}

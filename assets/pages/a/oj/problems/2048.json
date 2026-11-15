@@ -1,0 +1,35 @@
+{
+  "id": 2048,
+  "track": "search",
+  "difficulty": "中等",
+  "title": "方阵词牌",
+  "tags": [
+    "回溯",
+    "深度优先搜索"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "给定字符方阵和关键词。路径可以从任意格开始，每步上下左右走一格，同一格不能重复走。判断是否有一条路径能按顺序拼出关键词。",
+  "input_format": "第一行 n（1 至 7），接下来 n 行各 n 个小写字母，最后一行是关键词（1 至 12 个小写字母）。",
+  "output_format": "存在时输出 YES，否则输出 NO。",
+  "sample_input": "3\nabx\nxcd\nxxe\nabcde",
+  "sample_output": "YES",
+  "hidden_tests": [
+    {
+      "input": "1\na\naa",
+      "expected_output": "NO"
+    },
+    {
+      "input": "1\nb\nb",
+      "expected_output": "YES"
+    },
+    {
+      "input": "2\nab\ncd\nad",
+      "expected_output": "NO"
+    },
+    {
+      "input": "3\naba\naaa\nabz\naaaaaab",
+      "expected_output": "NO"
+    }
+  ]
+}

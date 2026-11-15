@@ -1,0 +1,35 @@
+{
+  "id": 2035,
+  "track": "sorting",
+  "difficulty": "简单",
+  "title": "直播榜的相邻差值",
+  "tags": [
+    "排序",
+    "相邻元素"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "从所有观众数记录里挑两条不同记录，使两个观众数之差的绝对值最小。并列时选择较小观众数最小的那一组。",
+  "input_format": "第一行 n（2 至 100000）。第二行 n 个整数，每个在 0 至 10^9 之间。",
+  "output_format": "按升序输出选中的两个观众数，允许相等。",
+  "sample_input": "6\n14 9 11 3 17 1",
+  "sample_output": "1 3",
+  "hidden_tests": [
+    {
+      "input": "2\n5 2",
+      "expected_output": "2 5"
+    },
+    {
+      "input": "4\n9 9 8 8",
+      "expected_output": "8 8"
+    },
+    {
+      "input": "5\n0 4 1 3 5",
+      "expected_output": "0 1"
+    },
+    {
+      "input": "2\n1000000000 0",
+      "expected_output": "0 1000000000"
+    }
+  ]
+}

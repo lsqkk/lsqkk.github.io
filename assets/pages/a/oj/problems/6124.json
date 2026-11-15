@@ -1,0 +1,42 @@
+{
+  "id": 6124,
+  "title": "环形世界的最短路线",
+  "difficulty": "简单",
+  "track": "cs61b",
+  "stage": "graphs",
+  "tags": [
+    "BFS",
+    "坐标取模"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "地图的左右边缘相接，上下边缘也相接。一步离开边缘时会进入相对的边缘格，进入墙格始终禁止。求从起点到出口的最少步数。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Project 3: Build Your Own World](https://sp25.datastructur.es/projects/proj3/)",
+  "input_format": "第一行 h w（1 ≤ h, w ≤ 500，h × w ≥ 2）。接下来 h 行每行 w 个字符，仅含 `#`、`.`、`S`、`E`。`#` 是墙，`.` 可走，`S` 与 `E` 各出现一次。",
+  "output_format": "输出最少步数，出口不可达时输出 `-1`。",
+  "sample_input": "2 4\nS##E\n####\n",
+  "sample_output": "1\n",
+  "hidden_tests": [
+    {
+      "input": "1 2\nSE\n",
+      "expected_output": "1"
+    },
+    {
+      "input": "3 1\nS\n#\nE\n",
+      "expected_output": "1"
+    },
+    {
+      "input": "5 3\n###\n#S#\n###\n#E#\n###\n",
+      "expected_output": "-1"
+    },
+    {
+      "input": "3 3\nS..\n###\n.E.\n",
+      "expected_output": "2"
+    },
+    {
+      "input": "3 3\n#.S\nE##\n...\n",
+      "expected_output": "3"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": 6104,
+  "title": "单词频数排名",
+  "difficulty": "简单",
+  "track": "cs61b",
+  "stage": "java",
+  "tags": [
+    "哈希映射",
+    "排序"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "统计语料中不同单词的出现次数。取频数最高的 k 个单词，频数相同按字典序升序。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Homework 0B: Data Structures](https://sp25.datastructur.es/homeworks/hw0/hw0b/)",
+  "input_format": "第一行 n k（0 ≤ n ≤ 100000，1 ≤ k ≤ 100）。接下来 n 个小写英文字母单词，单词长度 1 至 20。",
+  "output_format": "每行输出一个单词及其频数。不同单词不足 k 个时全部输出，语料为空时输出 `EMPTY`。",
+  "sample_input": "6 2\nink oak ink ash oak oak\n",
+  "sample_output": "oak 3\nink 2\n",
+  "hidden_tests": [
+    {
+      "input": "0 5\n",
+      "expected_output": "EMPTY"
+    },
+    {
+      "input": "1 4\nx\n",
+      "expected_output": "x 1"
+    },
+    {
+      "input": "5 2\nb a b a c\n",
+      "expected_output": "a 2\nb 2"
+    },
+    {
+      "input": "3 2\nab aa a\n",
+      "expected_output": "a 1\naa 1"
+    }
+  ]
+}

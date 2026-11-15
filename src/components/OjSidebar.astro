@@ -1,11 +1,12 @@
 ---
 interface Props {
-  active: "home" | "train" | "list" | "discussion" | "record";
+  active: "home" | "train" | "list" | "discussion" | "record" | "cs61b";
 }
 const { active } = Astro.props;
 const items = [
   ["home", "/a/oj", "总览"],
   ["list", "/a/oj/problem-list", "题库"],
+  ["cs61b", "/a/oj/cs61b", "CS61B"],
   ["train", "/a/oj/train", "练习"],
   ["record", "/a/oj/submission-record", "提交记录"],
   ["discussion", "/a/oj/discussion", "讨论区"],

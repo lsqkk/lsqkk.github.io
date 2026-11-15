@@ -1,0 +1,35 @@
+{
+  "id": 2045,
+  "track": "search",
+  "difficulty": "中等",
+  "title": "互不相邻的展位",
+  "tags": [
+    "组合枚举",
+    "回溯"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "一排展位从 1 至 n 编号，选恰好 k 个来展示。相邻的两个展位不能同时选。计算选择方案数。",
+  "input_format": "一行 n、k，1 ≤ n ≤ 30，0 ≤ k ≤ n。",
+  "output_format": "输出方案数。",
+  "sample_input": "6 3",
+  "sample_output": "4",
+  "hidden_tests": [
+    {
+      "input": "1 0",
+      "expected_output": "1"
+    },
+    {
+      "input": "1 1",
+      "expected_output": "1"
+    },
+    {
+      "input": "5 4",
+      "expected_output": "0"
+    },
+    {
+      "input": "30 8",
+      "expected_output": "490314"
+    }
+  ]
+}

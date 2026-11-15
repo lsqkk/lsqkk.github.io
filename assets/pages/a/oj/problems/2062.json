@@ -1,0 +1,35 @@
+{
+  "id": 2062,
+  "track": "graphs",
+  "difficulty": "中等",
+  "title": "给相邻展馆分两色",
+  "tags": [
+    "二分图",
+    "图染色"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每条连接边的两个展馆必须刷成不同颜色。仅允许使用两种颜色，判断能否完成。",
+  "input_format": "首行 n、m（1 ≤ n ≤ 50000，0 ≤ m ≤ 100000）。随后 m 行为两个馆号，馆号从 1 至 n，允许自环和重复边。",
+  "output_format": "可以时输出 YES，否则输出 NO。",
+  "sample_input": "5 4\n1 2\n2 3\n3 4\n4 1",
+  "sample_output": "YES",
+  "hidden_tests": [
+    {
+      "input": "1 1\n1 1",
+      "expected_output": "NO"
+    },
+    {
+      "input": "5 3\n2 3\n3 4\n4 2",
+      "expected_output": "NO"
+    },
+    {
+      "input": "4 0",
+      "expected_output": "YES"
+    },
+    {
+      "input": "3 3\n1 2\n1 2\n2 3",
+      "expected_output": "YES"
+    }
+  ]
+}

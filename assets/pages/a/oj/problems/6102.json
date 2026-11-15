@@ -1,0 +1,38 @@
+{
+  "id": 6102,
+  "title": "数组的最大最小差",
+  "difficulty": "入门",
+  "track": "cs61b",
+  "stage": "java",
+  "tags": [
+    "数组",
+    "遍历"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "课程练习改编",
+  "description": "给定一个非空整数数组，求最大元素与最小元素的差。\n\n课程练习改编 · [Berkeley CS 61B Spring 2025 · Homework 0B: Data Structures](https://sp25.datastructur.es/homeworks/hw0/hw0b/)",
+  "input_format": "第一行 n（1 ≤ n ≤ 100000）。第二行 n 个整数，每个值的绝对值不超过 2000000000。",
+  "output_format": "输出一个整数表示极差。结果可能超出 32 位有符号整数范围。",
+  "sample_input": "5\n9 -4 8 -4 0\n",
+  "sample_output": "13\n",
+  "hidden_tests": [
+    {
+      "input": "1\n-9\n",
+      "expected_output": "0"
+    },
+    {
+      "input": "3\n7 7 7\n",
+      "expected_output": "0"
+    },
+    {
+      "input": "4\n-2 -7 -8 -3\n",
+      "expected_output": "6"
+    },
+    {
+      "input": "2\n-2000000000 2000000000\n",
+      "expected_output": "4000000000"
+    }
+  ]
+}

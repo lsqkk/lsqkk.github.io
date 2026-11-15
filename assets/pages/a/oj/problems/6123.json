@@ -1,0 +1,42 @@
+{
+  "id": 6123,
+  "title": "走廊中的最短路线",
+  "difficulty": "简单",
+  "track": "cs61b",
+  "stage": "graphs",
+  "tags": [
+    "BFS",
+    "网格"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "课程练习改编",
+  "description": "地图中的每次移动只能去相邻的上、下、左或右的格子。给定起点与出口，求需要的最少步数。\n\n课程练习改编 · [Berkeley CS 61B Spring 2025 · Project 3A: World Generation](https://sp25.datastructur.es/projects/proj3/proj3a/)",
+  "input_format": "第一行 h w（1 ≤ h, w ≤ 500，h × w ≥ 2）。接下来 h 行每行 w 个字符，仅含 `#`、`.`、`S`、`E`。`#` 是墙，`.` 可走，`S` 与 `E` 各出现一次。",
+  "output_format": "输出最少步数，出口不可达时输出 `-1`。",
+  "sample_input": "3 4\nS.#.\n#...\n..#E\n",
+  "sample_output": "5\n",
+  "hidden_tests": [
+    {
+      "input": "1 2\nSE\n",
+      "expected_output": "1"
+    },
+    {
+      "input": "1 3\nS#E\n",
+      "expected_output": "-1"
+    },
+    {
+      "input": "4 1\nS\n.\n#\nE\n",
+      "expected_output": "-1"
+    },
+    {
+      "input": "3 4\nS...\n.##.\n...E\n",
+      "expected_output": "5"
+    },
+    {
+      "input": "3 3\nS#E\n###\n...\n",
+      "expected_output": "-1"
+    }
+  ]
+}

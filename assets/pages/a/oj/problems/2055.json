@@ -1,0 +1,31 @@
+{
+  "id": 2055,
+  "track": "data-structures",
+  "difficulty": "中等",
+  "title": "可回退的最小报价",
+  "tags": [
+    "栈",
+    "维护最小值"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每次输入 PUSH x 时登记一个报价，POP 撤销当前最新的一笔有效报价（如果没有，则忽略），MIN 查询所有仍有效报价中的最小值。",
+  "input_format": "第一行 q（1 至 100000）。随后 q 行给出 PUSH x、POP 或 MIN。x 是绝对值不超过 10^9 的整数。至少有一次 MIN。",
+  "output_format": "每次 MIN 输出一行最小值，空时输出 EMPTY。",
+  "sample_input": "7\nPUSH 8\nPUSH 2\nPUSH 5\nMIN\nPOP\nPOP\nMIN",
+  "sample_output": "2\n8",
+  "hidden_tests": [
+    {
+      "input": "1\nMIN",
+      "expected_output": "EMPTY"
+    },
+    {
+      "input": "5\nPUSH -4\nPUSH -4\nPOP\nMIN\nPOP",
+      "expected_output": "-4"
+    },
+    {
+      "input": "5\nPOP\nMIN\nPUSH 0\nPUSH 1\nMIN",
+      "expected_output": "EMPTY\n0"
+    }
+  ]
+}

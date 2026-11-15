@@ -1,0 +1,39 @@
+{
+  "id": 2068,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "两封电报中的公共顺序",
+  "tags": [
+    "最长公共子序列",
+    "滚动数组"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "可以从两封电报中各删除一些字符，剩余字符的相对顺序保持不变。求两封电报能保留的最长相同内容的长度。",
+  "input_format": "两行各一个小写英文串，长度 1 至 1000。",
+  "output_format": "输出最长长度。",
+  "sample_input": "abdcab\nbadba",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "a\nb",
+      "expected_output": "0"
+    },
+    {
+      "input": "a\na",
+      "expected_output": "1"
+    },
+    {
+      "input": "aaaa\naa",
+      "expected_output": "2"
+    },
+    {
+      "input": "abc\ncba",
+      "expected_output": "1"
+    },
+    {
+      "input": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab\nbabababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa",
+      "expected_output": "999"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": 2005,
+  "track": "basics",
+  "difficulty": "简单",
+  "title": "批量电量告警",
+  "tags": [
+    "前缀累加",
+    "阈值"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "电池初始电量为 b。每分钟末发生一次变化，负数代表耗电。找到第一次电量严格低于阈值 k 的分钟。初始电量也要检测。",
+  "input_format": "第一行 n、b、k，1 ≤ n ≤ 100000。第二行 n 个电量变化值。b、k 和每次变化值的绝对值均不超过 10^9。",
+  "output_format": "输出首次告警时刻，初始时刻为 0。始终不告警则输出 -1。",
+  "sample_input": "4 8 5\n-2 -1 -1 8",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "1 4 5\n100",
+      "expected_output": "0"
+    },
+    {
+      "input": "3 0 0\n0 1 -1",
+      "expected_output": "-1"
+    },
+    {
+      "input": "3 1 0\n-1 -1 10",
+      "expected_output": "2"
+    },
+    {
+      "input": "4 1 0\n1000000000 1000000000 1000000000 1000000000",
+      "expected_output": "-1"
+    }
+  ]
+}

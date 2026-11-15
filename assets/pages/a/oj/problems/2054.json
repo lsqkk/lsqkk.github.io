@@ -1,0 +1,31 @@
+{
+  "id": 2054,
+  "track": "data-structures",
+  "difficulty": "中等",
+  "title": "命令前缀索引",
+  "tags": [
+    "字典树",
+    "二分查找"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "给出一批已经注册的命令名和若干前缀。对每个前缀，统计有多少条命令以它开头。相同命令名可以注册多次，每次单独计入。",
+  "input_format": "第一行 n、q（1 ≤ n,q ≤ 50000）。随后 n 行每行一个命令名，再 q 行每行一个前缀。所有串由 1 至 20 个小写英文字母组成。",
+  "output_format": "每个前缀输出一行统计结果。",
+  "sample_input": "5 4\nmap\nmake\nmath\nmap\nmove\nma\nmap\nm\nmozz",
+  "sample_output": "4\n2\n5\n0",
+  "hidden_tests": [
+    {
+      "input": "1 2\nx\ny\nx",
+      "expected_output": "0\n1"
+    },
+    {
+      "input": "2 3\na\nab\na\nab\nabc",
+      "expected_output": "2\n1\n0"
+    },
+    {
+      "input": "3 4\nz\nza\nzz\nz\nzz\nzzy\nzza",
+      "expected_output": "3\n1\n0\n0"
+    }
+  ]
+}

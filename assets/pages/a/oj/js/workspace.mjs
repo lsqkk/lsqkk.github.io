@@ -9,7 +9,12 @@ export const tracks = [
     ['simulation', '模拟与高精度', '从规则模拟到大整数四则运算。', p => p.title.startsWith('模拟与高精度 - ')],
     ['sorting', '排序', '练习比较规则、常用排序与顺序统计。', p => p.title.startsWith('排序 - ')],
     ['search', '枚举与搜索', '通过枚举、回溯和状态搜索解决问题。', p => p.title.startsWith('暴力枚举 - ')],
-];
+    ['data-structures', '数据结构', '练习堆、栈、并查集等常用结构。'],
+    ['graphs', '图论', '从图的遍历进阶到最短路与生成树。'],
+    ['dynamic-programming', '动态规划', '练习定义状态、推导转移、处理边界。'],
+    ['cs61b', 'CS61B 数据结构', '配合伯克利课程原作业，按阶段完成站内练习。'],
+].map(([key, label, description, legacy]) => [key, label, description,
+    problem => problem.track ? problem.track === key : Boolean(legacy?.(problem))]);
 
 export const verdicts = {
     AC: '通过', WA: '答案错误', TLE: '超时', CE: '编译错误', RTE: '运行错误',
@@ -44,11 +49,24 @@ export function link(label, href, className) {
     return element;
 }
 
-export async function loadProblems() {
-    const response = await fetch(`${prefix}/index.json`);
+async function fetchProblemData(file) {
+    const response = await fetch(`${prefix}/${file}`);
     if (!response.ok) throw new Error('题库加载失败，请刷新重试。');
-    const index = await response.json();
+    return response.json();
+}
+
+export async function loadProblems() {
+    const index = (await Promise.all(['index.json', 'general-index.json', 'cs61b-index.json'].map(fetchProblemData))).flat();
     return [...new Map(index.map(problem => [problem.id, problem])).values()].sort((a, b) => a.id - b.id);
+}
+
+export const loadCs61bRoadmap = () => fetchProblemData('cs61b-roadmap.json');
+
+export function matchesSearch(problem, search) {
+    if (!search) return true;
+    const haystack = [problem.id, `p${problem.id}`, titleText(problem.title), problem.stage, ...(problem.tags || [])]
+        .join(' ').toLowerCase();
+    return search.split(/\s+/).every(term => haystack.includes(term));
 }
 
 export async function loadProblem(id) {
@@ -104,8 +122,8 @@ export function badge(status) {
     return node('span', text, `oj-badge ${status === 'AC' || status === 'OK' ? 'is-good' : status ? 'is-warn' : ''}`);
 }
 
-export function randomProblem(problems) {
-    if (problems.length) location.assign(problemUrl(problems[Math.floor(Math.random() * problems.length)].id));
+export function randomProblem(problems, options) {
+    if (problems.length) location.assign(problemUrl(problems[Math.floor(Math.random() * problems.length)].id, options));
 }
 
 export function favoriteButton(problem, onToggle) {

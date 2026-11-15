@@ -120,6 +120,21 @@ progress::-moz-progress-bar { background: var(--oj-accent); border-radius: 8px; 
 .oj-track p, .oj-track small { color: var(--text-soft); }
 .oj-track .oj-section-head span { color: var(--oj-accent); }
 .oj-track progress { margin-top: auto; }
+.oj-roadmap { display: grid; gap: 14px; margin-block: 14px 28px; }
+.oj-stage { padding: clamp(14px, 2.4vw, 23px); }
+.oj-stage > p { margin: 6px 0 12px; }
+.oj-stage-sources { margin-bottom: 14px; }
+.oj-stage-problems { list-style: none; margin: 6px 0 0; padding: 0; }
+.oj-stage-problems li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px 14px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.oj-stage-problems a { overflow-wrap: anywhere; }
+.oj-tag { border-radius: 100px; padding: 0 7px; background: var(--oj-accent-soft); }
+.oj-bot-scope { margin-top: 6px; }
+.oj-bot-scope input, .quark-bot-options .quark-bot-scope input { min-height: 0; }
+[data-practice-prompts] .quark-bot-suggestions { margin: 0 0 8px; }
+@media (max-width: 560px) {
+    .oj-stage-problems li { grid-template-columns: minmax(0, 1fr) auto; gap: 1px 8px; }
+    .oj-stage-problems li a { grid-column: 1 / -1; }
+}
 .oj-feed { overflow: hidden; }
 .oj-feed-row {
     width: 100%;

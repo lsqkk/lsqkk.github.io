@@ -1,0 +1,38 @@
+{
+  "id": 6121,
+  "title": "语义图中的下位词",
+  "difficulty": "中等",
+  "track": "cs61b",
+  "stage": "ngordnet",
+  "tags": [
+    "有向图",
+    "多源遍历"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "课程练习改编",
+  "description": "每个词义组是一批同义词，同一个单词可以属于多个组。边由上位词义指向下位词义。查询单词的每个起始组以及从它们沿边可到达的所有组，收集其中的单词并去重。起始组自身也算可达。\n\n课程练习改编 · [Berkeley CS 61B Spring 2025 · Project 2B: Ngordnet (WordNet)](https://sp25.datastructur.es/projects/proj2b/)",
+  "input_format": "第一行 n m q（1 ≤ n ≤ 1000，0 ≤ m ≤ 5000，1 ≤ q ≤ 300）。接下来 n 行各为一个词义组的全部单词（1 至 5 个），按 0 至 n−1 的编号顺序给出。随后 m 行各给出一条有向边的两个词义组编号。允许重边和自环。每个单词仅含 1 至 12 个小写英文字母。 最后 q 行，每行给出一个查询单词。",
+  "output_format": "每个查询占一行，按字典序输出所有匹配单词，用空格分隔。没有匹配时输出 `NONE`。",
+  "sample_input": "4 2 3\nplant flora\noak\nplant factory\nmill\n0 1\n2 3\nplant\nflora\nunknown\n",
+  "sample_output": "factory flora mill oak plant\nflora oak plant\nNONE\n",
+  "hidden_tests": [
+    {
+      "input": "1 0 2\na\na\nb\n",
+      "expected_output": "a\nNONE"
+    },
+    {
+      "input": "3 4 1\na\nb\nc\n0 1\n1 2\n2 0\n0 1\nb\n",
+      "expected_output": "a b c"
+    },
+    {
+      "input": "3 3 2\na b\nb c\nd\n0 1\n1 2\n0 2\na\nc\n",
+      "expected_output": "a b c d\nb c d"
+    },
+    {
+      "input": "3 2 2\na\nb\nc\n0 0\n1 0\na\nc\n",
+      "expected_output": "a\nc"
+    }
+  ]
+}

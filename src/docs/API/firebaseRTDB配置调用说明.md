@@ -46,3 +46,25 @@ const database = await window.QuarkFirebaseReady.ensureDatabase({loadConfig:true
 ~~~
 
 限时房间的在线数按浏览器设备的近期心跳统计。旧公开房间使用 Firebase 断线事件，可按现有 `chatrooms/$room` 权限模式为其 `presence` 子节点开启读取和写入。
+
+## QuarkOJ 账号同步
+
+`/api/db?view=quark-oj` 使用 Vercel 的既有 Firebase Admin SDK 配置。请将以下条目并入 Firebase RTDB 的 `rules`，并检查根路径和各祖先路径没有授予匿名或一般客户端读取及写入的规则。题解的公开读取经过专用 API。
+
+~~~json
+{
+  "quark_oj_v1": {
+    ".read": false,
+    ".write": false,
+    "solutions": {
+      "$problemId": {
+        ".indexOn": ["updatedAt"]
+      }
+    }
+  }
+}
+~~~
+
+私有提交按签名会话的账号主体隔离，并在写入数据库前加密。GitHub 会话主体取自 GitHub 用户 ID，邮箱验证码会话主体取自经过验证的邮箱地址，密码登录用户可通过邮箱验证码登录启用同步。当前会话主体、题解作者键和历史数据加密都由服务账号环境变量派生。轮换 `FIREBASE_SERVICE_ACCOUNT` 或 `FIREBASE_SERVICE_ACCOUNT_JSON` 的值前需保留原值，以便迁移旧数据并重新建立会话。仅切换为同值的环境变量名称不会改变派生结果。
+
+游客记录由用户选择导入。每条同步记录最多包含 24,000 字符的源码。题解发布时由服务端读取当前账号已同步的通过记录，复制其中的代码和语言。QuarkOJ 的评测记录来自浏览器的练习流程，适用于复盘和交流。

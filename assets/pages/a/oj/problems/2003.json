@@ -1,0 +1,35 @@
+{
+  "id": 2003,
+  "track": "basics",
+  "difficulty": "入门",
+  "title": "三角形分类器",
+  "tags": [
+    "分支",
+    "勾股定理"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "用三根给定长度的木条组成三角形。无法组成面积大于零的三角形时判为无效，否则按最大内角分为锐角、直角、钝角。无需计算浮点角度。",
+  "input_format": "一行三个整数 a、b、c，长度均在 1 到 10^9 之间。",
+  "output_format": "输出 INVALID、ACUTE、RIGHT 或 OBTUSE。",
+  "sample_input": "13 5 12",
+  "sample_output": "RIGHT",
+  "hidden_tests": [
+    {
+      "input": "3 7 4",
+      "expected_output": "INVALID"
+    },
+    {
+      "input": "1000000000 1000000000 1000000000",
+      "expected_output": "ACUTE"
+    },
+    {
+      "input": "2 3 4",
+      "expected_output": "OBTUSE"
+    },
+    {
+      "input": "6 5 7",
+      "expected_output": "ACUTE"
+    }
+  ]
+}

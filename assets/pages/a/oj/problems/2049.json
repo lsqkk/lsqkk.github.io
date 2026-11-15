@@ -1,0 +1,31 @@
+{
+  "id": 2049,
+  "track": "data-structures",
+  "difficulty": "简单",
+  "title": "工单两端进出",
+  "tags": [
+    "双端队列",
+    "模拟"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "工单存放在一个空队列中。LF x、RT x 分别在左端、右端插入编号 x。PL、PR 分别取出并报告左端、右端编号。空队列的取出操作不会改变状态。",
+  "input_format": "第一行 q（1 至 100000）。随后 q 行每行一条操作，工单编号是 1 至 10^9 的整数。保证有取出操作。",
+  "output_format": "每次取出输出一行编号，空时输出 EMPTY。",
+  "sample_input": "6\nLF 4\nRT 9\nLF 7\nPR\nPL\nPR",
+  "sample_output": "9\n7\n4",
+  "hidden_tests": [
+    {
+      "input": "1\nPR",
+      "expected_output": "EMPTY"
+    },
+    {
+      "input": "4\nPL\nRT 3\nPR\nPR",
+      "expected_output": "EMPTY\n3\nEMPTY"
+    },
+    {
+      "input": "5\nRT 3\nRT 3\nPR\nPL\nPR",
+      "expected_output": "3\n3\nEMPTY"
+    }
+  ]
+}

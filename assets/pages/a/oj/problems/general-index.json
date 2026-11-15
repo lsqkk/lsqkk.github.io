@@ -1,0 +1,881 @@
+[
+  {
+    "id": 2001,
+    "title": "装箱补零",
+    "track": "basics",
+    "tags": [
+      "整除",
+      "取模"
+    ],
+    "difficulty": "入门",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2002,
+    "title": "末班接驳车",
+    "track": "basics",
+    "tags": [
+      "整除",
+      "分支"
+    ],
+    "difficulty": "入门",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2003,
+    "title": "三角形分类器",
+    "track": "basics",
+    "tags": [
+      "分支",
+      "勾股定理"
+    ],
+    "difficulty": "入门",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2004,
+    "title": "连续正收益",
+    "track": "basics",
+    "tags": [
+      "循环",
+      "连续段"
+    ],
+    "difficulty": "入门",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2005,
+    "title": "批量电量告警",
+    "track": "basics",
+    "tags": [
+      "前缀累加",
+      "阈值"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2006,
+    "title": "末尾零的数量",
+    "track": "basics",
+    "tags": [
+      "阶乘",
+      "质因数"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2007,
+    "title": "阶梯运费",
+    "track": "basics",
+    "tags": [
+      "分支",
+      "算术"
+    ],
+    "difficulty": "入门",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2008,
+    "title": "循环岗哨重逢",
+    "track": "basics",
+    "tags": [
+      "最小公倍数",
+      "循环"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2009,
+    "title": "雨量区间合计",
+    "track": "arrays",
+    "tags": [
+      "前缀和",
+      "区间查询"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2010,
+    "title": "净值为零的工作段",
+    "track": "arrays",
+    "tags": [
+      "前缀和",
+      "哈希计数"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2011,
+    "title": "两路传感器合流",
+    "track": "arrays",
+    "tags": [
+      "双指针",
+      "去重"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2012,
+    "title": "打乱字母的窗口",
+    "track": "arrays",
+    "tags": [
+      "滑动窗口",
+      "字符频次"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2013,
+    "title": "矩阵的鞍点",
+    "track": "arrays",
+    "tags": [
+      "二维数组",
+      "最值"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2014,
+    "title": "会合位置旋转",
+    "track": "arrays",
+    "tags": [
+      "字符串",
+      "循环数组"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2015,
+    "title": "每个位置被覆盖几次",
+    "track": "arrays",
+    "tags": [
+      "差分",
+      "区间操作"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2016,
+    "title": "环形货架的下一件",
+    "track": "arrays",
+    "tags": [
+      "单调栈",
+      "环形数组"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2017,
+    "title": "分数账单相加",
+    "track": "structures",
+    "tags": [
+      "函数",
+      "分数",
+      "最大公约数"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2018,
+    "title": "实验成绩加权排名",
+    "track": "structures",
+    "tags": [
+      "结构体",
+      "多关键字"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2019,
+    "title": "合并图书条目",
+    "track": "structures",
+    "tags": [
+      "结构体",
+      "字典"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2020,
+    "title": "公告时段合并",
+    "track": "structures",
+    "tags": [
+      "区间",
+      "结构体",
+      "贪心"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2021,
+    "title": "旋转后的左右判定",
+    "track": "structures",
+    "tags": [
+      "叉积",
+      "点",
+      "64 位整数"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2022,
+    "title": "时刻规范化",
+    "track": "structures",
+    "tags": [
+      "结构体",
+      "负数取模"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2023,
+    "title": "两个矩形相交的面积",
+    "track": "structures",
+    "tags": [
+      "结构体",
+      "矩形"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2024,
+    "title": "带符号的时区转换",
+    "track": "structures",
+    "tags": [
+      "结构体",
+      "日期",
+      "整数运算"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2025,
+    "title": "百位整数比较",
+    "track": "simulation",
+    "tags": [
+      "大整数",
+      "前导零"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2026,
+    "title": "跨日票据校验",
+    "track": "simulation",
+    "tags": [
+      "模拟",
+      "闰年",
+      "日期"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2027,
+    "title": "任意长流水号的模",
+    "track": "simulation",
+    "tags": [
+      "大整数",
+      "逐位取模"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2028,
+    "title": "中央闸门排队",
+    "track": "simulation",
+    "tags": [
+      "模拟",
+      "队列"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2029,
+    "title": "货架双向巡检",
+    "track": "simulation",
+    "tags": [
+      "模拟",
+      "越界"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2030,
+    "title": "书签撤销栈",
+    "track": "simulation",
+    "tags": [
+      "模拟",
+      "栈",
+      "撤销"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2031,
+    "title": "任意长整数的进制牌",
+    "track": "simulation",
+    "tags": [
+      "高精度",
+      "进制转换"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2032,
+    "title": "进位接力完成后",
+    "track": "simulation",
+    "tags": [
+      "高精度",
+      "逐位运算"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2033,
+    "title": "同分保持签到顺序",
+    "track": "sorting",
+    "tags": [
+      "稳定排序",
+      "记录"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2034,
+    "title": "出库队列的逆序对",
+    "track": "sorting",
+    "tags": [
+      "归并排序",
+      "树状数组",
+      "逆序对"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2035,
+    "title": "直播榜的相邻差值",
+    "track": "sorting",
+    "tags": [
+      "排序",
+      "相邻元素"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2036,
+    "title": "路边牌子的密集区",
+    "track": "sorting",
+    "tags": [
+      "排序",
+      "滑动窗口"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2037,
+    "title": "最少需要几个教室",
+    "track": "sorting",
+    "tags": [
+      "扫描线",
+      "排序",
+      "半开区间"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2038,
+    "title": "字典中有多少张票",
+    "track": "sorting",
+    "tags": [
+      "排序",
+      "二分查找"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2039,
+    "title": "压缩楼层号",
+    "track": "sorting",
+    "tags": [
+      "离散化",
+      "排序"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2040,
+    "title": "容量固定的快递班次",
+    "track": "sorting",
+    "tags": [
+      "排序",
+      "双指针",
+      "贪心"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2041,
+    "title": "含禁选组合的实验计划",
+    "track": "search",
+    "tags": [
+      "状态枚举",
+      "位运算"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2042,
+    "title": "均衡分队",
+    "track": "search",
+    "tags": [
+      "回溯",
+      "子集枚举"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2043,
+    "title": "带跳板的轨道",
+    "track": "search",
+    "tags": [
+      "广度优先搜索",
+      "状态图"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2044,
+    "title": "只带一把钥匙的迷宫",
+    "track": "search",
+    "tags": [
+      "广度优先搜索",
+      "状态压缩"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2045,
+    "title": "互不相邻的展位",
+    "track": "search",
+    "tags": [
+      "组合枚举",
+      "回溯"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2046,
+    "title": "让货物按时出发",
+    "track": "search",
+    "tags": [
+      "答案二分",
+      "贪心"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2047,
+    "title": "枚举三人接力队",
+    "track": "search",
+    "tags": [
+      "枚举",
+      "计数"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2048,
+    "title": "方阵词牌",
+    "track": "search",
+    "tags": [
+      "回溯",
+      "深度优先搜索"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2049,
+    "title": "工单两端进出",
+    "track": "data-structures",
+    "tags": [
+      "双端队列",
+      "模拟"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2050,
+    "title": "连通站点的规模",
+    "track": "data-structures",
+    "tags": [
+      "并查集",
+      "连通分量"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2051,
+    "title": "滑动窗口最低报价",
+    "track": "data-structures",
+    "tags": [
+      "单调队列",
+      "滑动窗口"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2052,
+    "title": "实时订单金额区间",
+    "track": "data-structures",
+    "tags": [
+      "树状数组",
+      "单点更新",
+      "区间和"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2053,
+    "title": "维修任务的优先队列",
+    "track": "data-structures",
+    "tags": [
+      "堆",
+      "优先队列",
+      "稳定性"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2054,
+    "title": "命令前缀索引",
+    "track": "data-structures",
+    "tags": [
+      "字典树",
+      "二分查找"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2055,
+    "title": "可回退的最小报价",
+    "track": "data-structures",
+    "tags": [
+      "栈",
+      "维护最小值"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2056,
+    "title": "括号日志的最大嵌套",
+    "track": "data-structures",
+    "tags": [
+      "栈",
+      "括号匹配"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2057,
+    "title": "一共有几个通信网",
+    "track": "graphs",
+    "tags": [
+      "图",
+      "连通分量"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2058,
+    "title": "有向线路的转乘次数",
+    "track": "graphs",
+    "tags": [
+      "图",
+      "广度优先搜索"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2059,
+    "title": "准时抵达过夜站",
+    "track": "graphs",
+    "tags": [
+      "最短路",
+      "Dijkstra",
+      "堆"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2060,
+    "title": "修通各村的道路",
+    "track": "graphs",
+    "tags": [
+      "最小生成树",
+      "Kruskal",
+      "并查集"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2061,
+    "title": "依赖顺序编号优先",
+    "track": "graphs",
+    "tags": [
+      "拓扑排序",
+      "堆",
+      "有向图"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2062,
+    "title": "给相邻展馆分两色",
+    "track": "graphs",
+    "tags": [
+      "二分图",
+      "图染色"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2063,
+    "title": "最大的盐湖面积",
+    "track": "graphs",
+    "tags": [
+      "洪水填充",
+      "连通分量"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2064,
+    "title": "树上相隔最远的站点",
+    "track": "graphs",
+    "tags": [
+      "树",
+      "直径",
+      "广度优先搜索"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2065,
+    "title": "避开坏台阶的登顶路线",
+    "track": "dynamic-programming",
+    "tags": [
+      "动态规划",
+      "计数"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2066,
+    "title": "最低成本凑指定积分",
+    "track": "dynamic-programming",
+    "tags": [
+      "完全背包",
+      "最优值"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2067,
+    "title": "仓库采购清单",
+    "track": "dynamic-programming",
+    "tags": [
+      "0-1 背包",
+      "滚动数组"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2068,
+    "title": "两封电报中的公共顺序",
+    "track": "dynamic-programming",
+    "tags": [
+      "最长公共子序列",
+      "滚动数组"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2069,
+    "title": "不下降的观测序列",
+    "track": "dynamic-programming",
+    "tags": [
+      "最长子序列",
+      "二分查找"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2070,
+    "title": "相邻路灯交替亮起",
+    "track": "dynamic-programming",
+    "tags": [
+      "线性动态规划",
+      "相邻约束"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2071,
+    "title": "分批合并连续录音",
+    "track": "dynamic-programming",
+    "tags": [
+      "区间动态规划",
+      "合并代价"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2072,
+    "title": "蚂蚁绕开积水",
+    "track": "dynamic-programming",
+    "tags": [
+      "网格动态规划",
+      "计数"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  }
+]

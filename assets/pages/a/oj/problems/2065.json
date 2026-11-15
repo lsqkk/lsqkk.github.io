@@ -1,0 +1,35 @@
+{
+  "id": 2065,
+  "track": "dynamic-programming",
+  "difficulty": "简单",
+  "title": "避开坏台阶的登顶路线",
+  "tags": [
+    "动态规划",
+    "计数"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "从第 0 阶出发，每次上升 1 或 2 阶。不能落在损坏的台阶上。计算到达第 n 阶的路线数量，结果对 1000000007 取余。",
+  "input_format": "首行 n、m（1 ≤ n ≤ 100000，0 ≤ m ≤ n）。其后给出 m 个互异的损坏台阶编号，范围 1 至 n。m 为 0 时没有编号。",
+  "output_format": "输出余数。",
+  "sample_input": "6 1\n3",
+  "sample_output": "4",
+  "hidden_tests": [
+    {
+      "input": "1 0",
+      "expected_output": "1"
+    },
+    {
+      "input": "1 1\n1",
+      "expected_output": "0"
+    },
+    {
+      "input": "5 2\n2 3",
+      "expected_output": "0"
+    },
+    {
+      "input": "100000 0",
+      "expected_output": "967618232"
+    }
+  ]
+}

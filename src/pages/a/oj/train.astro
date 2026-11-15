@@ -3,7 +3,7 @@ import OjLayout from "../../../layouts/OjLayout.astro";
 import OjSidebar from "../../../components/OjSidebar.astro";
 import { SITE_TITLE } from "@siteConfig";
 ---
-<OjLayout title={`在线练习 - QuarkOJ - ${SITE_TITLE}`} extraStyles={["https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"]}>
+<OjLayout title={`在线练习 - QuarkOJ - ${SITE_TITLE}`} extraStyles={["/assets/css/site-services.css", "/assets/pages/a/oj/account.css", "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"]}>
   <OjSidebar active="train" />
   <main class="oj-shell oj-workbench">
     <div class="oj-workbar">
@@ -35,6 +35,7 @@ import { SITE_TITLE } from "@siteConfig";
             <label for="oj-language">语言</label><select id="oj-language" disabled></select>
             <span id="oj-draft-status" class="oj-muted" aria-live="polite"></span>
             <button id="oj-reset-code" disabled>模板</button>
+            <button id="oj-quarkbot" type="button" disabled>QuarkBot 助教</button>
           </div>
           <textarea id="oj-code" aria-label="源代码" spellcheck="false" autocapitalize="off" autocomplete="off" disabled></textarea>
           <div class="oj-editor-footer">
@@ -49,15 +50,17 @@ import { SITE_TITLE } from "@siteConfig";
           <p id="oj-run-status" role="status" class="oj-muted">运行样例或提交评测后，结果将在这里显示。</p>
           <div id="oj-run-results"></div>
         </section>
-        <p class="oj-fineprint">代码由 Judge0 执行。题库用例公开，草稿和提交记录保存在此浏览器。</p>
+        <p class="oj-fineprint">代码由 Judge0 执行，用例公开。草稿留在浏览器；查看<a href="/a/oj/submission-record">提交记录与账号同步</a>。</p>
       </div>
     </div>
+    <section id="oj-solutions" class="oj-card oj-solutions" aria-label="本题题解"></section>
     <dialog id="oj-template-dialog" class="oj-dialog">
       <h2>恢复语言模板？</h2><p>当前语言的草稿将被模板替换。</p>
       <form method="dialog" class="oj-actions"><button value="cancel">取消</button><button value="reset" class="is-primary">恢复模板</button></form>
     </dialog>
   </main>
-  <script is:inline defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script is:inline defer src="/assets/js/user-preferences.js"></script>
+  <script is:inline defer src="/assets/js/marked.min.js"></script>
   <script is:inline defer src="/assets/js/safe-markdown.js"></script>
   <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>

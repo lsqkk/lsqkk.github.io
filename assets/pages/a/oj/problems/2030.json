@@ -1,0 +1,32 @@
+{
+  "id": 2030,
+  "track": "simulation",
+  "difficulty": "中等",
+  "title": "书签撤销栈",
+  "tags": [
+    "模拟",
+    "栈",
+    "撤销"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "初始没有书签。P a 在栈顶加入编号 a，U 撤销最近一次仍存在的添加操作（空栈时什么都不做），Q 查询栈顶编号。",
+  "input_format": "第一行操作数 q（1 至 50000）。随后 q 行每行一条操作，书签编号为 1 至 10^9。保证至少有一次 Q。",
+  "output_format": "每次查询输出一行编号，空栈时输出 EMPTY。",
+  "sample_input": "7\nQ\nP 5\nP 8\nQ\nU\nU\nQ",
+  "sample_output": "EMPTY\n8\nEMPTY",
+  "hidden_tests": [
+    {
+      "input": "1\nQ",
+      "expected_output": "EMPTY"
+    },
+    {
+      "input": "4\nU\nU\nP 10\nQ",
+      "expected_output": "10"
+    },
+    {
+      "input": "6\nP 7\nP 7\nU\nQ\nU\nQ",
+      "expected_output": "7\nEMPTY"
+    }
+  ]
+}

@@ -16,6 +16,7 @@
 | GET / POST `/api/db` | GET 查询允许路径；POST `{path,op,value}`，op 为 set / update / remove / push | [db.js](../../../api/db.js) |
 | GET `/api/db?path=user_activity&view=count` | 只返回用户数，CDN 缓存 5 分钟 | [db.js](../../../api/db.js) |
 | GET `/api/db?path=presence&view=online` | 返回最近 15 分钟在线记录。可在 Firebase 规则的 `presence` 节点增加 `".indexOn": ["lastSeen"]` 以减少数据库读取量 | [db.js](../../../api/db.js) |
+| GET / POST `/api/db?view=quark-oj` | `op=history/sync` 同步账号提交；`op=solutions/publish/withdraw` 读取、发布或撤回题解 | [_quark-oj.js](../../../api/_quark-oj.js) |
 | POST `/api/r2-presign` | `{originalName,contentType,folder}`，返回上传签名与公开地址；全景上传应用访客和账号日限额 | [r2-presign.js](../../../api/r2-presign.js) |
 | POST `/api/share` | `{action,...}`，在线直传信令、离线包上传签名和限时取件 | [share.js](../../../api/share.js) |
 | POST `/api/turnstile-verify` | `{token,purpose}`，验证人机校验结果 | [turnstile-verify.js](../../../api/turnstile-verify.js) |

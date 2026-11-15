@@ -1,0 +1,35 @@
+{
+  "id": 2011,
+  "track": "arrays",
+  "difficulty": "简单",
+  "title": "两路传感器合流",
+  "tags": [
+    "双指针",
+    "去重"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "两路传感器分别给出已经按时间非降序排列的事件序列。合并为一个按时间严格递增的序列，同一时刻只保留一次。",
+  "input_format": "第一行 n、m（各 1 至 100000）。第二行 n 个整数，第三行 m 个整数，绝对值不超过 10^9。两个序列均非降序。",
+  "output_format": "在一行用空格输出所有不同的时刻。",
+  "sample_input": "4 3\n-3 2 2 7\n2 3 9",
+  "sample_output": "-3 2 3 7 9",
+  "hidden_tests": [
+    {
+      "input": "1 1\n6\n6",
+      "expected_output": "6"
+    },
+    {
+      "input": "2 2\n-2 -1\n2 3",
+      "expected_output": "-2 -1 2 3"
+    },
+    {
+      "input": "4 1\n1 1 1 1\n0",
+      "expected_output": "0 1"
+    },
+    {
+      "input": "3 4\n-1 5 12\n-100 -1 5 12",
+      "expected_output": "-100 -1 5 12"
+    }
+  ]
+}

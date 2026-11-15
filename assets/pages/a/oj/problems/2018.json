@@ -1,0 +1,31 @@
+{
+  "id": 2018,
+  "track": "structures",
+  "difficulty": "简单",
+  "title": "实验成绩加权排名",
+  "tags": [
+    "结构体",
+    "多关键字"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每位学生有实验、报告、答辩三项分数，权重分别为 4、3、3。找出加权总分最高的学生。并列时选实验分更高者，再并列时选编号更小者。",
+  "input_format": "第一行 n（1 ≤ n ≤ 10000）。接下来 n 行各有四个整数：唯一编号（1 至 10^9），以及三项 0 至 100 的整数分数。",
+  "output_format": "输出获胜编号和未除以 10 的加权总分。",
+  "sample_input": "3\n14 70 90 80\n17 85 80 75\n2 85 75 80",
+  "sample_output": "2 805",
+  "hidden_tests": [
+    {
+      "input": "1\n999999999 0 0 0",
+      "expected_output": "999999999 0"
+    },
+    {
+      "input": "2\n9 90 80 70\n1 75 90 80",
+      "expected_output": "9 810"
+    },
+    {
+      "input": "3\n8 100 100 100\n1 99 100 100\n5 100 100 100",
+      "expected_output": "5 1000"
+    }
+  ]
+}

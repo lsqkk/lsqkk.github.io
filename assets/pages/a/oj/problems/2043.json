@@ -1,0 +1,35 @@
+{
+  "id": 2043,
+  "track": "search",
+  "difficulty": "中等",
+  "title": "带跳板的轨道",
+  "tags": [
+    "广度优先搜索",
+    "状态图"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "轨道位置从 0 到 U 编号。每一步可以向左一格、向右一格，或跳到当前位置的两倍；落点必须在轨道内。求从 s 到 t 的最少步数。",
+  "input_format": "一行 U、s、t，1 ≤ U ≤ 100000，0 ≤ s,t ≤ U。",
+  "output_format": "输出最少步数。",
+  "sample_input": "20 3 10",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "1 0 0",
+      "expected_output": "0"
+    },
+    {
+      "input": "10 7 3",
+      "expected_output": "4"
+    },
+    {
+      "input": "12 0 12",
+      "expected_output": "5"
+    },
+    {
+      "input": "99999 1 99999",
+      "expected_output": "23"
+    }
+  ]
+}

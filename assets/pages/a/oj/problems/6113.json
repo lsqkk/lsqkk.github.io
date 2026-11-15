@@ -1,0 +1,38 @@
+{
+  "id": 6113,
+  "title": "渗透与反洗",
+  "difficulty": "中等",
+  "track": "cs61b",
+  "stage": "disjoint-sets",
+  "tags": [
+    "并查集",
+    "虚拟结点"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "水只从第一行的开放格流入，沿上下左右的开放格移动。要同时查询某个格子是否已被水到达，以及水是否能到最后一行。即使系统已经渗透，孤立的底部开放格仍然是干的。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Homework 2: Percolation](https://sp25.datastructur.es/homeworks/hw2/)",
+  "input_format": "第一行 n q（1 ≤ n ≤ 500，1 ≤ q ≤ 250000）。接下来 q 行命令。`open r c` 开放格子，`wet r c` 查询该格，`flow` 查询是否渗透。坐标从 0 开始，允许重复开放。保证至少有一个查询。",
+  "output_format": "每次查询输出一行 `YES` 或 `NO`。",
+  "sample_input": "3 7\nopen 0 0\nopen 1 0\nopen 2 0\nflow\nopen 2 2\nwet 2 2\nwet 2 0\n",
+  "sample_output": "YES\nNO\nYES\n",
+  "hidden_tests": [
+    {
+      "input": "1 5\nflow\nwet 0 0\nopen 0 0\nflow\nwet 0 0\n",
+      "expected_output": "NO\nNO\nYES\nYES"
+    },
+    {
+      "input": "2 7\nopen 0 0\nopen 1 1\nwet 1 1\nflow\nopen 0 1\nwet 1 1\nflow\n",
+      "expected_output": "NO\nNO\nYES\nYES"
+    },
+    {
+      "input": "4 6\nopen 1 1\nwet 1 1\nopen 0 1\nopen 0 1\nwet 1 1\nflow\n",
+      "expected_output": "NO\nYES\nNO"
+    },
+    {
+      "input": "500 5\nopen 499 499\nwet 499 499\nopen 0 499\nwet 0 499\nflow\n",
+      "expected_output": "NO\nYES\nNO"
+    }
+  ]
+}

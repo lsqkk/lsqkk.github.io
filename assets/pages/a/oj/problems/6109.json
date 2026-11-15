@@ -1,0 +1,38 @@
+{
+  "id": 6109,
+  "title": "固定容量的循环双端队列",
+  "difficulty": "简单",
+  "track": "cs61b",
+  "stage": "deque",
+  "tags": [
+    "循环数组",
+    "Deque"
+  ],
+  "recommendedLanguage": 91,
+  "time_limit": "1000ms",
+  "memory_limit": "256MB",
+  "origin": "延伸变体",
+  "description": "在容量 c 固定的队列中反复进行两端操作。队列已满时，插入命令只报告 `FULL`，队列保持原状。建议用数组保存数据，通过下标取模复用空间。\n\n延伸变体 · [Berkeley CS 61B Spring 2025 · Project 1B: ArrayDeque61B](https://sp25.datastructur.es/projects/proj1b/)",
+  "input_format": "第一行 c q（1 ≤ c ≤ 100000，1 ≤ q ≤ 100000）。接下来每行一个命令。`push_front x`、`push_back x`、`pop_front`、`pop_back`、`size`。x 为绝对值不超过 1000000000 的整数。 保证至少一次命令会产生输出。",
+  "output_format": "每次弹出输出移除的值，空队列输出 `EMPTY`。每次 `size` 输出当前元素个数。 插入成功不输出，插入失败输出一行 `FULL`。",
+  "sample_input": "2 7\npush_back 1\npush_back 2\npop_front\npush_back 3\npush_front 4\npop_front\npop_back\n",
+  "sample_output": "1\nFULL\n2\n3\n",
+  "hidden_tests": [
+    {
+      "input": "1 5\npush_front 3\npush_back 2\nsize\npop_back\npop_front\n",
+      "expected_output": "FULL\n1\n3\nEMPTY"
+    },
+    {
+      "input": "3 8\npush_front 3\npush_front 2\npush_front 1\npop_back\npush_front 0\npop_front\npop_back\nsize\n",
+      "expected_output": "3\n0\n2\n1"
+    },
+    {
+      "input": "4 3\npop_front\npop_back\nsize\n",
+      "expected_output": "EMPTY\nEMPTY\n0"
+    },
+    {
+      "input": "2 8\npush_back -1\npush_back 0\npop_front\npush_back -2\npop_front\npush_back -3\npop_front\npop_front\n",
+      "expected_output": "-1\n0\n-2\n-3"
+    }
+  ]
+}

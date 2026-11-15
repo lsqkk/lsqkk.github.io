@@ -1,0 +1,35 @@
+{
+  "id": 2022,
+  "track": "structures",
+  "difficulty": "简单",
+  "title": "时刻规范化",
+  "tags": [
+    "结构体",
+    "负数取模"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "某个时刻由一小时数和一分钟数给出，两者可能超出通常范围。先换算为以当天午夜为零点的总分钟，再分解为天数偏移和一个 24 小时制时刻。例如倒退一分钟应落在前一天 23:59。",
+  "input_format": "一行两个整数 h、m，绝对值均不超过 10^9。",
+  "output_format": "输出天数偏移、小时（0 至 23）、分钟（0 至 59），各用空格分隔。",
+  "sample_input": "1 -61",
+  "sample_output": "-1 23 59",
+  "hidden_tests": [
+    {
+      "input": "0 0",
+      "expected_output": "0 0 0"
+    },
+    {
+      "input": "49 121",
+      "expected_output": "2 3 1"
+    },
+    {
+      "input": "-24 0",
+      "expected_output": "-1 0 0"
+    },
+    {
+      "input": "1000000000 -1000000000",
+      "expected_output": "40972222 5 20"
+    }
+  ]
+}

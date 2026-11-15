@@ -1,0 +1,36 @@
+{
+  "id": 2020,
+  "track": "structures",
+  "difficulty": "中等",
+  "title": "公告时段合并",
+  "tags": [
+    "区间",
+    "结构体",
+    "贪心"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "将多个公告有效时段合并。每个时段覆盖半开区间 [l,r)，允许把重叠或端点相接的时段合并。输出覆盖范围与原时段合在一起完全相同且数量最少的新时段。",
+  "input_format": "第一行 n（1 至 50000）。随后 n 行每行两个整数 l、r，−10^9 ≤ l < r ≤ 10^9。",
+  "output_format": "第一行是合并后的时段数量，其后按起点升序每行输出一个时段的 l、r。",
+  "sample_input": "5\n7 9\n0 2\n2 4\n1 3\n8 10",
+  "sample_output": "2\n0 4\n7 10",
+  "hidden_tests": [
+    {
+      "input": "1\n-5 0",
+      "expected_output": "1\n-5 0"
+    },
+    {
+      "input": "3\n0 9\n0 1\n2 5",
+      "expected_output": "1\n0 9"
+    },
+    {
+      "input": "4\n-2 0\n0 1\n1 7\n8 9",
+      "expected_output": "2\n-2 7\n8 9"
+    },
+    {
+      "input": "3\n-9 -8\n-4 -3\n-2 -1",
+      "expected_output": "3\n-9 -8\n-4 -3\n-2 -1"
+    }
+  ]
+}
