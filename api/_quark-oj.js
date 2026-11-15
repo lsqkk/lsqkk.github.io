@@ -5,7 +5,7 @@ import { quotaAccount } from './_quota-session.js';
 import {
     canPublishSubmission, normalizeSubmission, submissionKey, validProblemId, validSubmissionKey,
     OJ_BATCH_SIZE, OJ_HISTORY_PAGE_SIZE, OJ_SOLUTION_TITLE_LIMIT, OJ_SOLUTION_BODY_LIMIT,
-} from '../assets/pages/a/oj/js/account-schema.mjs';
+} from './_quark-oj-schema.js';
 
 const root = 'quark_oj_v1';
 

@@ -1,9 +1,29 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import dbHandler from '../api/db.js';
 import { createOjHandler } from '../api/_quark-oj.js';
 import { issueQuotaSession } from '../api/_quota-session.js';
 import { submissionKey } from '../assets/pages/a/oj/js/account-schema.mjs';
 import { openOjAccount } from '../assets/pages/a/oj/js/account.mjs';
+
+test('Vercel entry point loads the local OJ module without affecting legacy routes', async () => {
+    // Keep the mirrored schema in deployable files for both the browser and Vercel.
+    const [backend, frontend] = await Promise.all(['../api/_quark-oj-schema.js',
+        '../assets/pages/a/oj/js/account-schema.mjs'].map(file => readFile(new URL(file, import.meta.url), 'utf8')));
+    assert.equal(backend.replaceAll('\r\n', '\n'), frontend.replaceAll('\r\n', '\n'));
+    async function call(query) {
+        const res = {
+            setHeader() {},
+            status(code) { this.code = code; return this; },
+            json() { return this; },
+        };
+        await dbHandler({ method: 'GET', query, headers: { origin: 'https://lsqkk.github.io' } }, res);
+        return res.code;
+    }
+    assert.equal(await call({ view: 'quark-oj', op: 'history' }), 401);
+    assert.equal(await call({ path: 'quark_oj_v1/history/blocked' }), 400);
+});
 
 function memoryDatabase() {
     const data = new Map();
