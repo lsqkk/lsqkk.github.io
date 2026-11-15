@@ -37,6 +37,12 @@
 .oj-solutions-list summary > strong,
 .oj-solution-text { overflow-wrap: anywhere; }
 .oj-solution-text { white-space: pre-wrap; }
+.oj-solution-text.oj-markdown { white-space: normal; }
+.oj-solution-text a { text-decoration: underline; }
+.oj-solution-text blockquote { margin-inline: 0; padding-inline-start: 12px; border-inline-start: 3px solid var(--line); }
+.oj-solution-text table { display: block; width: max-content; max-width: 100%; border-collapse: collapse; }
+.oj-solution-text :is(th, td) { border: 1px solid var(--line); padding: 4px 8px; }
+.oj-solution-text pre code { font: inherit; color: inherit; background: transparent; padding: 0; }
 .oj-solution-detail {
     min-width: 0;
     padding: 7px 10px;

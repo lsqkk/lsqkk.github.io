@@ -1,0 +1,32 @@
+{
+  "id": 2077,
+  "track": "data-structures",
+  "difficulty": "困难",
+  "title": "动态库存第 k 小",
+  "tags": [
+    "离散化",
+    "树状数组",
+    "顺序统计"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "库存是可含重复项的多重集合，初始为空。插入一个编号、删除一个已有编号，或查询从小到大排列后的第 k 项。",
+  "input_format": "第一行 q（1 ≤ q ≤ 200000）。接下来 q 行，每行 I x、D x 或 K k。编号绝对值不超过 10^9，保证删除合法、查询时 1 ≤ k ≤ 库存总量，且至少有一次查询。",
+  "output_format": "每次查询输出一行对应编号。",
+  "sample_input": "8\nI 5\nI 2\nI 5\nK 2\nD 5\nK 2\nI -4\nK 1",
+  "sample_output": "5\n5\n-4",
+  "hidden_tests": [
+    {
+      "input": "4\nI 0\nK 1\nD 0\nI 1",
+      "expected_output": "0"
+    },
+    {
+      "input": "5\nI 3\nI 3\nD 3\nK 1\nK 1",
+      "expected_output": "3\n3"
+    },
+    {
+      "input": "5\nI 1000000000\nI -1000000000\nK 2\nD 1000000000\nK 1",
+      "expected_output": "1000000000\n-1000000000"
+    }
+  ]
+}

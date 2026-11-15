@@ -37,11 +37,13 @@ function enhanceEditor(onEdit, run, submit) {
         window.require(['vs/editor/editor.main'], () => {
             const host = node('div', null, 'oj-monaco');
             editor.after(host);
+            const theme = () => document.documentElement.dataset.siteResolvedTheme === 'dark' ? 'vs-dark' : 'vs';
             richEditor = window.monaco.editor.create(host, {
-                value: editor.value, language: languages[language.value][1], theme: 'vs',
+                value: editor.value, language: languages[language.value][1], theme: theme(),
                 automaticLayout: true, minimap: { enabled: false }, tabSize: 4,
                 fontSize: 14, scrollBeyondLastLine: false, ariaLabel: '源代码', wordWrap: 'on',
             });
+            window.addEventListener('quark-preferences-updated', () => window.monaco.editor.setTheme(theme()));
             richEditor.onDidChangeModelContent(onEdit);
             const { KeyMod, KeyCode } = window.monaco;
             richEditor.addCommand(KeyMod.CtrlCmd | KeyCode.Enter, run);

@@ -28,6 +28,8 @@ async function accountSmoke(browser) {
     await page.addInitScript(value => {
         if (!sessionStorage.getItem('oj-signed')) {
             localStorage.setItem('quark_quota_session', JSON.stringify({ token: value, expiresAt: Date.now() + 360000 }));
+            localStorage.setItem('github_user', JSON.stringify({ login: 'test-user', name: '测试账号' }));
+            localStorage.setItem('nickname', '站内昵称');
             sessionStorage.setItem('oj-signed', '1');
         }
     }, token);
@@ -59,11 +61,12 @@ async function accountSmoke(browser) {
         assert.equal(await page.locator('#oj-code').inputValue(), accepted.code);
         const solutions = page.locator('#oj-solutions');
         await solutions.getByLabel('题解标题').fill('循环逐行构造');
-        await solutions.getByLabel('正文').fill('第 i 行添加 i 个字符。');
+        await solutions.getByLabel('正文').fill('### 解题思路\n\n第 **i** 行添加 i 个字符。\n\n```java\nSystem.out.println(i);\n```\n\n[不安全链接](javascript:alert(1))');
         await solutions.getByRole('button', { name: '发布题解' }).click();
         await solutions.getByText('题解已发布。').waitFor();
         assert.equal(posts.length, 1);
         assert.equal(posts[0].submission, '1700000000000_from-other-device');
+        assert.equal(posts[0].authorName, '站内昵称');
         assert.equal(Object.hasOwn(posts[0], 'code'), false);
         await page.evaluate(() => {
             localStorage.removeItem('quark_quota_session');
@@ -73,6 +76,11 @@ async function accountSmoke(browser) {
         assert.notEqual(await page.locator('#oj-code').inputValue(), accepted.code);
         assert.equal(await solutions.getByRole('button', { name: /发布题解|更新题解/ }).isVisible(), false);
         await solutions.getByText('循环逐行构造', { exact: true }).click();
+        await solutions.locator('summary').getByText('站内昵称', { exact: true }).waitFor();
+        const markdown = solutions.locator('.oj-solution-text');
+        await markdown.getByRole('heading', { name: '解题思路' }).waitFor();
+        await markdown.locator('pre code.language-java').getByText('System.out.println(i);').waitFor();
+        assert.equal(await markdown.locator('a[href^="javascript:"]').count(), 0);
         await solutions.locator('.oj-solutions-list').getByText(accepted.code, { exact: true }).waitFor();
     } finally {
         await page.close();
@@ -82,7 +90,7 @@ async function accountSmoke(browser) {
 async function main() {
     const browser = await playwright.chromium.launch();
     try {
-        const page = await browser.newPage();
+        const page = await browser.newPage({ colorScheme: 'dark' });
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
         await page.route(/^https:\/\/(cdnjs|cdn\.jsdelivr|unpkg)\./, route => route.abort());
@@ -124,8 +132,15 @@ async function main() {
         assert.equal(await page.locator('.oj-track').count(), 10);
         const total = Number((await page.locator('#oj-total').innerText()).match(/\d+/)[0]);
         assert.ok(total >= 220);
+        const hero = page.locator('.oj-hero');
+        const darkHero = await hero.evaluate(el => getComputedStyle(el).backgroundImage);
+        await page.evaluate(() => window.QuarkUserPreferences.update({ theme: 'light' }, { sync: false }));
+        assert.notEqual(await hero.evaluate(el => getComputedStyle(el).backgroundImage), darkHero);
+        await page.evaluate(() => window.QuarkUserPreferences.update({ theme: 'dark' }, { sync: false }));
+        assert.equal(await hero.evaluate(el => getComputedStyle(el).backgroundImage), darkHero);
         await page.getByRole('link', { name: 'CS61B 课程题单', exact: true }).click();
         await page.locator('.oj-stage').first().waitFor();
+        assert.equal(await hero.evaluate(el => getComputedStyle(el).backgroundImage), darkHero);
         assert.ok(await page.locator('.oj-stage').count() >= 7);
         assert.match(await page.locator('.oj-stage-sources a').first().getAttribute('href'), /^https:\/\/sp25\.datastructur\.es\//);
         await page.locator('#oj-cs-next').click();

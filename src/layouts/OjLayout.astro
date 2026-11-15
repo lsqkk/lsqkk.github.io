@@ -26,7 +26,9 @@ const ojRoutes = {
     <meta property="og:image" content={SITE_LOGO_URL} />
     <link rel="alternate" type="application/rss+xml" title="奇夸克 RSS" href="/posts/rss.xml" />
     <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
     <link rel="stylesheet" href="/assets/pages/a/oj/style.css" />
+    <script is:inline defer src="/assets/js/user-preferences.js"></script>
     {extraStyles.map((href) => <link rel="stylesheet" href={href} />)}
     {extraHeadScripts.map((src) => <script is:inline src={src}></script>)}
     <script is:inline define:vars={{ ojRoutes }}>

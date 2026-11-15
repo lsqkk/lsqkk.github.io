@@ -1,0 +1,39 @@
+{
+  "id": 2085,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "保留最长的回文暗号",
+  "tags": [
+    "区间动态规划",
+    "最长回文子序列"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "删除若干字符并保持其余字符原来的相对顺序，使剩余暗号正着读和反着读相同。求最长能保留多少字符。",
+  "input_format": "一行小写英文字母串，长度为 1 到 1500。",
+  "output_format": "输出最长回文子序列长度。",
+  "sample_input": "bbabc",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "z",
+      "expected_output": "1"
+    },
+    {
+      "input": "abcd",
+      "expected_output": "1"
+    },
+    {
+      "input": "aaaaa",
+      "expected_output": "5"
+    },
+    {
+      "input": "agbdba",
+      "expected_output": "5"
+    },
+    {
+      "input": "ababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa",
+      "expected_output": "361"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": 2083,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "修订抄写记录",
+  "tags": [
+    "编辑距离",
+    "字符串动态规划"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每次可以插入一个字符、删除一个字符或替换一个字符。求把第一份记录变成第二份所需的最少操作次数。",
+  "input_format": "两行小写英文字母串，每行长度为 1 到 1500。",
+  "output_format": "输出最少操作次数。",
+  "sample_input": "garden\nguard",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "a\na",
+      "expected_output": "0"
+    },
+    {
+      "input": "a\nzzzz",
+      "expected_output": "4"
+    },
+    {
+      "input": "abcd\nabdc",
+      "expected_output": "2"
+    },
+    {
+      "input": "aaaa\naaa",
+      "expected_output": "1"
+    },
+    {
+      "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "expected_output": "300"
+    }
+  ]
+}

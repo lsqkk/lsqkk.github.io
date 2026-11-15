@@ -1,0 +1,32 @@
+{
+  "id": 2081,
+  "track": "graphs",
+  "difficulty": "困难",
+  "title": "山路巡检距离",
+  "tags": [
+    "树",
+    "最近公共祖先",
+    "倍增"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "站点构成一棵带权树。对每对站点求沿唯一简单路径的边权总和。",
+  "input_format": "首行 n、q（1 ≤ n,q ≤ 100000）。接下来 n−1 行 u、v、w，w 范围为 0 到 10^9。随后 q 行 u、v 表示查询。站点从 1 编号。",
+  "output_format": "每次查询输出一行距离。结果可能超过 32 位有符号整数范围。",
+  "sample_input": "4 3\n1 2 5\n2 3 7\n2 4 9\n3 4\n1 4\n2 2",
+  "sample_output": "16\n14\n0",
+  "hidden_tests": [
+    {
+      "input": "1 1\n1 1",
+      "expected_output": "0"
+    },
+    {
+      "input": "3 2\n1 2 0\n1 3 2\n2 3\n1 2",
+      "expected_output": "2\n0"
+    },
+    {
+      "input": "5 2\n1 2 1000000000\n2 3 1000000000\n3 4 1000000000\n4 5 1000000000\n1 5\n4 2",
+      "expected_output": "4000000000\n2000000000"
+    }
+  ]
+}

@@ -93,7 +93,7 @@
 }
 
 .avatar-toggle button.active {
-    background: var(--oj-accent);
+    background: var(--oj-action);
     color: #fff;
     font-weight: bold;
 }
@@ -198,7 +198,7 @@
 .submit-btn {
     padding: 10px 20px;
     font-size: 0.95em;
-    background: var(--oj-accent);
+    background: var(--oj-action);
     color: #fff;
     border: none;
     border-radius: var(--radius-md);
@@ -302,7 +302,7 @@
 }
 
 .problem-tag {
-    background: var(--oj-accent);
+    background: var(--oj-action);
     padding: 3px 10px;
     border-radius: var(--radius-lg);
     color: #fff;
@@ -482,9 +482,9 @@
 }
 
 .page-btn.active {
-    background: var(--oj-accent);
+    background: var(--oj-action);
     color: #fff;
-    border-color: var(--oj-accent);
+    border-color: var(--oj-action);
 }
 
 .page-btn:hover:not(.active) {

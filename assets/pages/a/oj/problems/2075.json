@@ -1,0 +1,31 @@
+{
+  "id": 2075,
+  "track": "data-structures",
+  "difficulty": "中等",
+  "title": "传感器区间异或",
+  "tags": [
+    "树状数组",
+    "异或"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "维护一排读数。修改时替换指定读数，查询时计算指定闭区间内所有读数的按位异或。",
+  "input_format": "首行 n、q（1 ≤ n,q ≤ 200000）；第二行 n 个读数。随后 q 行，S i x 表示把第 i 项改为 x，Q l r 表示查询 [l,r]。下标从 1 起，值在 0 到 2^30-1 之间，至少一次查询。",
+  "output_format": "每次查询输出一行整数。",
+  "sample_input": "3 4\n1 2 7\nQ 1 3\nS 2 6\nQ 1 3\nQ 2 2",
+  "sample_output": "4\n0\n6",
+  "hidden_tests": [
+    {
+      "input": "1 4\n0\nQ 1 1\nS 1 1073741823\nS 1 1073741823\nQ 1 1",
+      "expected_output": "0\n1073741823"
+    },
+    {
+      "input": "4 2\n4 4 4 4\nQ 1 4\nQ 2 4",
+      "expected_output": "0\n4"
+    },
+    {
+      "input": "3 3\n1 1 0\nS 2 0\nQ 2 3\nQ 1 2",
+      "expected_output": "0\n1"
+    }
+  ]
+}

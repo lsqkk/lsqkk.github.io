@@ -877,5 +877,191 @@
     "difficulty": "中等",
     "time_limit": "1500ms",
     "memory_limit": "128MB"
+  },
+  {
+    "id": 2073,
+    "title": "逆波兰式计算器",
+    "track": "data-structures",
+    "tags": [
+      "栈",
+      "表达式"
+    ],
+    "difficulty": "简单",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2074,
+    "title": "左边最近的高塔",
+    "track": "data-structures",
+    "tags": [
+      "单调栈",
+      "相等元素"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2075,
+    "title": "传感器区间异或",
+    "track": "data-structures",
+    "tags": [
+      "树状数组",
+      "异或"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2076,
+    "title": "静态区间节拍",
+    "track": "data-structures",
+    "tags": [
+      "稀疏表",
+      "最大公约数"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2077,
+    "title": "动态库存第 k 小",
+    "track": "data-structures",
+    "tags": [
+      "离散化",
+      "树状数组",
+      "顺序统计"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2078,
+    "title": "免费通道与收费门",
+    "track": "graphs",
+    "tags": [
+      "最短路",
+      "0-1 BFS",
+      "双端队列"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2079,
+    "title": "彼此可达的城市对",
+    "track": "graphs",
+    "tags": [
+      "强连通分量",
+      "有向图",
+      "计数"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2080,
+    "title": "维修会断网的光纤",
+    "track": "graphs",
+    "tags": [
+      "桥",
+      "低链值",
+      "无向图"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2081,
+    "title": "山路巡检距离",
+    "track": "graphs",
+    "tags": [
+      "树",
+      "最近公共祖先",
+      "倍增"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2082,
+    "title": "流水线的最长传递路线",
+    "track": "graphs",
+    "tags": [
+      "有向无环图",
+      "拓扑排序",
+      "最长路径"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2083,
+    "title": "修订抄写记录",
+    "track": "dynamic-programming",
+    "tags": [
+      "编辑距离",
+      "字符串动态规划"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2084,
+    "title": "不拆封的兑换券",
+    "track": "dynamic-programming",
+    "tags": [
+      "多重背包",
+      "计数"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2085,
+    "title": "保留最长的回文暗号",
+    "track": "dynamic-programming",
+    "tags": [
+      "区间动态规划",
+      "最长回文子序列"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2086,
+    "title": "给树上站点选巡检员",
+    "track": "dynamic-programming",
+    "tags": [
+      "树形动态规划",
+      "最大权独立集"
+    ],
+    "difficulty": "中等",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
+  },
+  {
+    "id": 2087,
+    "title": "样品车的最短巡回",
+    "track": "dynamic-programming",
+    "tags": [
+      "状压动态规划",
+      "旅行商问题"
+    ],
+    "difficulty": "困难",
+    "time_limit": "1500ms",
+    "memory_limit": "128MB"
   }
 ]

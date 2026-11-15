@@ -1,0 +1,35 @@
+{
+  "id": 2084,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "不拆封的兑换券",
+  "tags": [
+    "多重背包",
+    "计数"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每种券有固定面额和数量上限。统计总额恰好为 m 的选法。同一种券只区分使用数量，改变取券顺序算同一种选法。总额为零时，什么都不取算一种。",
+  "input_format": "第一行 n、m（1 ≤ n ≤ 100，0 ≤ m ≤ 10000）。接下来 n 行 v、c（1 ≤ v ≤ 10000，0 ≤ c ≤ 10000），面额两两不同。",
+  "output_format": "输出选法数对 1000000007 取余的结果。",
+  "sample_input": "3 8\n1 2\n2 3\n4 1",
+  "sample_output": "3",
+  "hidden_tests": [
+    {
+      "input": "1 0\n7 0",
+      "expected_output": "1"
+    },
+    {
+      "input": "1 2\n1 1",
+      "expected_output": "0"
+    },
+    {
+      "input": "2 4\n2 2\n4 1",
+      "expected_output": "2"
+    },
+    {
+      "input": "3 6\n3 0\n5 4\n1 5",
+      "expected_output": "1"
+    }
+  ]
+}

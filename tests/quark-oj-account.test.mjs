@@ -108,18 +108,20 @@ test('QuarkOJ API isolates history, merges retryable uploads and copies the acce
         assert.equal(ownEntries.find(entry => entry.id === 'accepted-one')?.code, accepted.code);
         assert.deepEqual((await call('solutions')).body, { solutions: [], own: null });
 
-        const publish = (token, entry, p) => call('publish', {
+        const publish = (token, entry, p, authorName) => call('publish', {
             p, token, method: 'POST',
-            body: { submission: submissionKey(entry), title: '<题解>', explanation: '<script>正文</script>', code: 'arbitrary source' },
+            body: { submission: submissionKey(entry), title: '<题解>', explanation: '<script>正文</script>', code: 'arbitrary source', authorName },
         });
         assert.equal((await publish(a, partial)).code, 409);
         assert.equal((await publish(a, accepted, '1002')).code, 409);
         assert.equal((await publish(b, accepted)).code, 409);
-        assert.equal((await publish(a, accepted)).code, 200);
+        assert.equal((await publish(a, accepted, '1001', '  站内\u202e昵称  ')).code, 200);
+        assert.equal((await publish(a, accepted)).body.own.authorName, '站内昵称');
         const published = (await call('solutions')).body.solutions;
         assert.equal(published.length, 1);
         assert.equal(published[0].code, accepted.code);
         assert.equal(published[0].languageId, '109');
+        assert.equal(published[0].authorName, '站内昵称');
         assert.equal(Object.hasOwn(published[0], 'submission'), false);
         const own = (await call('solutions', { token: a })).body.own;
         assert.equal(own.author, published[0].author);

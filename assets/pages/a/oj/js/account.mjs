@@ -287,9 +287,10 @@ export function openOjAccount(guestHistory, saveGuest) {
         if (!context?.confirmed) throw new Error('请先登录并完成账号同步。');
         await flush(context);
         if (active !== context) throw new Error('登录账号已切换。');
+        const profile = window.QuarkUserProfile?.getProfile();
         return request('publish', {
             problemId, headers: context.headers, signal: context.controller.signal,
-            data: { ...values, submission },
+            data: { ...values, submission, authorName: profile?.login ? profile.nickname || profile.login : undefined },
         });
     };
     account.withdraw = problemId => request('withdraw', {
@@ -409,7 +410,7 @@ export function mountOjSolutions(host, { account, problemId, languages }) {
     explanation.rows = 5;
     explanation.maxLength = OJ_SOLUTION_BODY_LIMIT;
     explanation.required = true;
-    explanation.placeholder = '说明思路、关键步骤和复杂度';
+    explanation.placeholder = '用 Markdown 说明思路、关键步骤和复杂度';
     const explanationLabel = element('label', '正文');
     explanationLabel.append(explanation);
     const selection = element('select');
@@ -486,10 +487,16 @@ export function mountOjSolutions(host, { account, problemId, languages }) {
     function renderSolution(solution) {
         const detail = element('details', '', 'oj-solution-detail');
         const summary = element('summary');
-        const label = solution.author === own?.author ? '我的题解' : `练习者 ${solution.author.slice(0, 6)}`;
+        const isOwn = solution.author === own?.author;
+        const label = solution.authorName || (isOwn ? '我的题解' : `练习者 ${solution.author.slice(0, 6)}`);
         summary.append(element('strong', solution.title), element('span', label, 'oj-muted'));
+        const explanation = element('div', solution.explanation, 'oj-solution-text');
+        if (window.QuarkSafeMarkdown) {
+            explanation.classList.add('oj-markdown');
+            explanation.innerHTML = window.QuarkSafeMarkdown(solution.explanation);
+        }
         detail.append(summary,
-            element('p', solution.explanation, 'oj-solution-text'),
+            explanation,
             element('p', languageName(solution.languageId), 'oj-muted'),
             element('pre', solution.code));
         return detail;

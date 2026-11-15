@@ -1,0 +1,36 @@
+{
+  "id": 2080,
+  "track": "graphs",
+  "difficulty": "困难",
+  "title": "维修会断网的光纤",
+  "tags": [
+    "桥",
+    "低链值",
+    "无向图"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "每条光纤连接两个站点。统计有多少条光纤单独停用后会使连通分量增加。同一对站点的多条光纤各自独立。",
+  "input_format": "第一行 n、m（1 ≤ n ≤ 100000，0 ≤ m ≤ 200000）。接下来 m 行是不同的两个端点，编号 1 到 n。允许重边。",
+  "output_format": "输出会造成连通分量增加的光纤数量。",
+  "sample_input": "5 5\n1 2\n2 3\n3 1\n3 4\n4 5",
+  "sample_output": "2",
+  "hidden_tests": [
+    {
+      "input": "5 0",
+      "expected_output": "0"
+    },
+    {
+      "input": "2 2\n1 2\n1 2",
+      "expected_output": "0"
+    },
+    {
+      "input": "5 3\n1 2\n2 3\n4 5",
+      "expected_output": "3"
+    },
+    {
+      "input": "4 4\n1 2\n2 3\n3 4\n4 1",
+      "expected_output": "0"
+    }
+  ]
+}

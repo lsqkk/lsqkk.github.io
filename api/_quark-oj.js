@@ -82,8 +82,14 @@ function solutionKey(account) {
 }
 
 function publicSolution(solution) {
-    const { author, title, explanation, code, languageId, updatedAt } = solution;
-    return { author, title, explanation, code, languageId, updatedAt };
+    const { author, authorName, title, explanation, code, languageId, updatedAt } = solution;
+    return { author, authorName, title, explanation, code, languageId, updatedAt };
+}
+
+function normalizeAuthorName(value) {
+    if (typeof value !== 'string') return '';
+    const clean = value.replace(/[\p{Cc}\p{Bidi_Control}]/gu, '').replace(/\s+/g, ' ').trim();
+    return Array.from(clean).slice(0, 80).join('');
 }
 
 async function listSolutions(db, account, problemId) {
@@ -112,11 +118,18 @@ async function saveSolution(db, account, problemId, body) {
     }
 
     const author = solutionKey(account);
+    const ref = db.ref(`${root}/solutions/${problemId}/${author}`);
     const solution = {
         author, title, explanation, code: entry.code, languageId: entry.languageId,
         submission: body.submission, updatedAt: Date.now(),
     };
-    await db.ref(`${root}/solutions/${problemId}/${author}`).set(solution);
+    const authorName = normalizeAuthorName(body.authorName);
+    if (authorName) solution.authorName = authorName;
+    else {
+        const previous = (await ref.once('value')).val();
+        if (previous?.authorName) solution.authorName = previous.authorName;
+    }
+    await ref.set(solution);
     return { own: solution };
 }
 

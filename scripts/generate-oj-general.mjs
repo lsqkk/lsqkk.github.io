@@ -1116,6 +1116,308 @@ function dynamicProgramming() {
         });
 }
 
+function advancedStructures() {
+    const track = 'data-structures';
+    add(2073, track, '简单', '逆波兰式计算器', ['栈', '表达式'],
+        '从左到右读后缀表达式。每遇到运算符，从栈顶先取右操作数，再取左操作数，计算后把结果压回栈。',
+        '一行以空格分隔的整数和运算符 +、-、*，共 1 到 100000 项。保证表达式合法，所有中间值的绝对值不超过 10^12。',
+        '输出表达式的值。', '5 2 - 4 * 3 +', '15',
+        ['-7', '2 5 -', '4 2 3 + *', '1000000 1000000 * 1 -'],
+        input => {
+            const stack = [];
+            for (const token of words(input)) {
+                if (!['+', '-', '*'].includes(token)) {
+                    stack.push(Number(token));
+                    continue;
+                }
+                const right = stack.pop(), left = stack.pop();
+                stack.push(token === '+' ? left + right : token === '-' ? left - right : left * right);
+            }
+            return stack[0];
+        });
+
+    add(2074, track, '中等', '左边最近的高塔', ['单调栈', '相等元素'],
+        '对每座塔，找左边最近的一座严格比它高的塔。一样高的塔不算。',
+        '第一行 n（1 ≤ n ≤ 200000），第二行 n 个塔高，范围为 1 到 10^9。',
+        '按顺序输出 n 个位置，从 1 编号。找不到时输出 0。', '6\n8 4 4 7 3 9', '0 1 1 1 4 0',
+        ['1\n8', '5\n1 1 1 1 1', '5\n1 2 3 4 5', '5\n5 4 3 2 1', arrayInput(repeated(2048, i => i % 23 + 1))],
+        input => {
+            const [, ...heights] = nums(input);
+            const stack = [];
+            return space(heights.map((height, i) => {
+                while (stack.length && heights[stack.at(-1)] <= height) stack.pop();
+                const answer = (stack.at(-1) ?? -1) + 1;
+                stack.push(i);
+                return answer;
+            }));
+        });
+
+    add(2075, track, '中等', '传感器区间异或', ['树状数组', '异或'],
+        '维护一排读数。修改时替换指定读数，查询时计算指定闭区间内所有读数的按位异或。',
+        '首行 n、q（1 ≤ n,q ≤ 200000）；第二行 n 个读数。随后 q 行，S i x 表示把第 i 项改为 x，Q l r 表示查询 [l,r]。下标从 1 起，值在 0 到 2^30-1 之间，至少一次查询。',
+        '每次查询输出一行整数。', '3 4\n1 2 7\nQ 1 3\nS 2 6\nQ 1 3\nQ 2 2', '4\n0\n6',
+        ['1 4\n0\nQ 1 1\nS 1 1073741823\nS 1 1073741823\nQ 1 1', '4 2\n4 4 4 4\nQ 1 4\nQ 2 4', '3 3\n1 1 0\nS 2 0\nQ 2 3\nQ 1 2'],
+        input => {
+            const [, initial, ...commands] = lines(input);
+            const data = nums(initial), result = [];
+            for (const command of commands) {
+                const [op, a, b] = words(command);
+                if (op === 'S') data[Number(a) - 1] = Number(b);
+                else result.push(data.slice(Number(a) - 1, Number(b)).reduce((value, item) => value ^ item, 0));
+            }
+            return rows(result);
+        });
+
+    add(2076, track, '中等', '静态区间节拍', ['稀疏表', '最大公约数'],
+        '给定一组节拍长度，回答多个区间中的最大公约数。节拍长度在查询过程中固定。',
+        '第一行 n、q（1 ≤ n,q ≤ 200000）。第二行 n 个正整数，均不超过 10^9。随后每行两个整数 l、r（1 ≤ l ≤ r ≤ n）。',
+        '每行输出对应闭区间的最大公约数。', '4 3\n12 18 24 5\n1 3\n2 2\n3 4', '6\n18\n1',
+        ['1 1\n1000000000\n1 1', '4 3\n3 3 3 3\n1 4\n2 3\n4 4', '4 2\n8 32 64 12\n2 4\n1 3'],
+        input => {
+            const [, initial, ...queries] = lines(input);
+            const data = nums(initial);
+            const gcd = (a, b) => b ? gcd(b, a % b) : a;
+            return rows(queries.map(query => {
+                const [l, r] = nums(query);
+                return data.slice(l - 1, r).reduce(gcd, 0);
+            }));
+        });
+
+    add(2077, track, '困难', '动态库存第 k 小', ['离散化', '树状数组', '顺序统计'],
+        '库存是可含重复项的多重集合，初始为空。插入一个编号、删除一个已有编号，或查询从小到大排列后的第 k 项。',
+        '第一行 q（1 ≤ q ≤ 200000）。接下来 q 行，每行 I x、D x 或 K k。编号绝对值不超过 10^9，保证删除合法、查询时 1 ≤ k ≤ 库存总量，且至少有一次查询。',
+        '每次查询输出一行对应编号。', '8\nI 5\nI 2\nI 5\nK 2\nD 5\nK 2\nI -4\nK 1', '5\n5\n-4',
+        ['4\nI 0\nK 1\nD 0\nI 1', '5\nI 3\nI 3\nD 3\nK 1\nK 1', '5\nI 1000000000\nI -1000000000\nK 2\nD 1000000000\nK 1'],
+        input => {
+            const data = [], result = [];
+            for (const command of lines(input).slice(1)) {
+                const [op, raw] = words(command);
+                const value = Number(raw);
+                if (op === 'I') data.push(value);
+                else if (op === 'D') data.splice(data.indexOf(value), 1);
+                else result.push([...data].sort(order)[value - 1]);
+            }
+            return rows(result);
+        });
+}
+
+function advancedGraphs() {
+    const track = 'graphs';
+    const graph = (vertices, edges, undirected = false) => {
+        const adjacency = repeated(vertices + 1, () => []);
+        for (const [from, to] of edges) {
+            adjacency[from].push(to);
+            if (undirected) adjacency[to].push(from);
+        }
+        return adjacency;
+    };
+    function reachable(adjacency, start) {
+        const seen = new Set([start]);
+        for (const from of seen) for (const to of adjacency[from]) seen.add(to);
+        return seen;
+    }
+
+    add(2078, track, '中等', '免费通道与收费门', ['最短路', '0-1 BFS', '双端队列'],
+        '一张有向图的每条边通过成本为 0 或 1。求从起点到终点的最小总成本。',
+        '首行 n、m、s、t（1 ≤ n ≤ 100000，0 ≤ m ≤ 200000）。随后 m 行 u、v、w，表示从 u 到 v 成本为 w。顶点从 1 编号，允许重边和自环。',
+        '输出最小总成本。不可达时输出 -1。', '4 5 1 4\n1 4 1\n1 2 0\n2 3 0\n3 4 0\n2 4 1', '0',
+        ['1 0 1 1', '3 1 1 3\n3 1 0', '4 4 1 4\n1 2 1\n2 3 0\n3 4 1\n2 1 0', '3 3 1 3\n2 3 1\n1 2 1\n1 2 0'],
+        input => {
+            const [header, ...rawEdges] = lines(input);
+            const [n, , start, end] = nums(header);
+            const edges = rawEdges.map(nums);
+            const best = Array(n + 1).fill(Infinity);
+            best[start] = 0;
+            for (let i = 1; i < n; i++) {
+                for (const [from, to, cost] of edges) best[to] = Math.min(best[to], best[from] + cost);
+            }
+            return Number.isFinite(best[end]) ? best[end] : -1;
+        });
+
+    add(2079, track, '困难', '彼此可达的城市对', ['强连通分量', '有向图', '计数'],
+        '统计有向图中彼此可达的不同城市对。无序对只算一次，往返可以分别走不同路线。',
+        '第一行 n、m（1 ≤ n ≤ 100000，0 ≤ m ≤ 200000）。接下来 m 行 u、v，表示从 u 到 v 的道路。城市从 1 编号。',
+        '输出无序城市对数量，可能超过 32 位有符号整数范围。', '5 6\n1 2\n2 3\n3 1\n3 4\n4 5\n5 4', '4',
+        ['1 0', '4 3\n1 2\n2 3\n3 4', '4 4\n1 2\n2 3\n3 4\n4 1', '3 5\n1 1\n1 2\n1 2\n2 1\n2 3'],
+        input => {
+            const [header, ...edges] = lines(input);
+            const [n] = nums(header);
+            const adjacency = graph(n, edges.map(nums));
+            const paths = repeated(n, i => reachable(adjacency, i + 1));
+            let answer = 0;
+            for (let i = 1; i <= n; i++) {
+                for (let j = i + 1; j <= n; j++) {
+                    if (paths[i - 1].has(j) && paths[j - 1].has(i)) answer++;
+                }
+            }
+            return answer;
+        });
+
+    add(2080, track, '困难', '维修会断网的光纤', ['桥', '低链值', '无向图'],
+        '每条光纤连接两个站点。统计有多少条光纤单独停用后会使连通分量增加。同一对站点的多条光纤各自独立。',
+        '第一行 n、m（1 ≤ n ≤ 100000，0 ≤ m ≤ 200000）。接下来 m 行是不同的两个端点，编号 1 到 n。允许重边。',
+        '输出会造成连通分量增加的光纤数量。', '5 5\n1 2\n2 3\n3 1\n3 4\n4 5', '2',
+        ['5 0', '2 2\n1 2\n1 2', '5 3\n1 2\n2 3\n4 5', '4 4\n1 2\n2 3\n3 4\n4 1'],
+        input => {
+            const [header, ...rawEdges] = lines(input);
+            const [n] = nums(header);
+            const edges = rawEdges.map(nums);
+            return edges.filter(([from, to], skip) => {
+                const adjacency = graph(n, edges.filter((_, i) => i !== skip), true);
+                return !reachable(adjacency, from).has(to);
+            }).length;
+        });
+
+    add(2081, track, '困难', '山路巡检距离', ['树', '最近公共祖先', '倍增'],
+        '站点构成一棵带权树。对每对站点求沿唯一简单路径的边权总和。',
+        '首行 n、q（1 ≤ n,q ≤ 100000）。接下来 n−1 行 u、v、w，w 范围为 0 到 10^9。随后 q 行 u、v 表示查询。站点从 1 编号。',
+        '每次查询输出一行距离。结果可能超过 32 位有符号整数范围。', '4 3\n1 2 5\n2 3 7\n2 4 9\n3 4\n1 4\n2 2', '16\n14\n0',
+        ['1 1\n1 1', '3 2\n1 2 0\n1 3 2\n2 3\n1 2', '5 2\n1 2 1000000000\n2 3 1000000000\n3 4 1000000000\n4 5 1000000000\n1 5\n4 2'],
+        input => {
+            const [header, ...rest] = lines(input);
+            const [n] = nums(header);
+            const adjacency = repeated(n + 1, () => []);
+            for (const [a, b, length] of rest.slice(0, n - 1).map(nums)) {
+                adjacency[a].push([b, length]);
+                adjacency[b].push([a, length]);
+            }
+            return rows(rest.slice(n - 1).map(query => {
+                const [start, end] = nums(query);
+                const queue = [[start, 0, 0]];
+                for (const [from, parent, distance] of queue) {
+                    if (from === end) return distance;
+                    for (const [to, length] of adjacency[from]) {
+                        if (to !== parent) queue.push([to, from, distance + length]);
+                    }
+                }
+            }));
+        });
+
+    add(2082, track, '中等', '流水线的最长传递路线', ['有向无环图', '拓扑排序', '最长路径'],
+        '流水线的有向依赖图没有环。从工位 s 出发，每次沿一条边交接。求到达 t 时最多经过多少条边，并统计达到这个长度的路线数量。',
+        '第一行 n、m、s、t（1 ≤ n ≤ 100000，0 ≤ m ≤ 200000）。随后 m 行 u、v 表示边 u→v。工位从 1 编号，无重边。',
+        '输出最长长度和方案数，方案数对 1000000007 取余。不可达时输出 -1 0。s=t 时空路线长度为 0，算一种。', '5 6 1 5\n1 2\n1 3\n2 4\n3 4\n4 5\n1 5', '3 2',
+        ['1 0 1 1', '3 1 3 1\n1 3', '4 4 4 2\n4 3\n3 1\n1 2\n4 2', '4 3 1 4\n1 2\n2 3\n3 4'],
+        input => {
+            const [header, ...rawEdges] = lines(input);
+            const [n, , start, end] = nums(header);
+            const adjacency = graph(n, rawEdges.map(nums));
+            let best = -1, count = 0;
+            function walk(from, distance) {
+                if (from === end) {
+                    if (distance > best) { best = distance; count = 0; }
+                    if (distance === best) count = (count + 1) % 1000000007;
+                    return;
+                }
+                for (const to of adjacency[from]) walk(to, distance + 1);
+            }
+            walk(start, 0);
+            return space([best, count]);
+        });
+}
+
+function advancedDynamicProgramming() {
+    const track = 'dynamic-programming';
+    add(2083, track, '中等', '修订抄写记录', ['编辑距离', '字符串动态规划'],
+        '每次可以插入一个字符、删除一个字符或替换一个字符。求把第一份记录变成第二份所需的最少操作次数。',
+        '两行小写英文字母串，每行长度为 1 到 1500。',
+        '输出最少操作次数。', 'garden\nguard', '3',
+        ['a\na', 'a\nzzzz', 'abcd\nabdc', 'aaaa\naaa', `${'a'.repeat(300)}\n${'b'.repeat(300)}`],
+        input => {
+            const [a, b] = lines(input);
+            let previous = repeated(b.length + 1, i => i);
+            for (let i = 0; i < a.length; i++) {
+                const next = [i + 1];
+                for (let j = 0; j < b.length; j++) {
+                    next.push(Math.min(previous[j + 1] + 1, next[j] + 1, previous[j] + Number(a[i] !== b[j])));
+                }
+                previous = next;
+            }
+            return previous.at(-1);
+        });
+
+    add(2084, track, '中等', '不拆封的兑换券', ['多重背包', '计数'],
+        '每种券有固定面额和数量上限。统计总额恰好为 m 的选法。同一种券只区分使用数量，改变取券顺序算同一种选法。总额为零时，什么都不取算一种。',
+        '第一行 n、m（1 ≤ n ≤ 100，0 ≤ m ≤ 10000）。接下来 n 行 v、c（1 ≤ v ≤ 10000，0 ≤ c ≤ 10000），面额两两不同。',
+        '输出选法数对 1000000007 取余的结果。', '3 8\n1 2\n2 3\n4 1', '3',
+        ['1 0\n7 0', '1 2\n1 1', '2 4\n2 2\n4 1', '3 6\n3 0\n5 4\n1 5'],
+        input => {
+            const [header, ...types] = lines(input);
+            const [, target] = nums(header);
+            let ways = Array(target + 1).fill(0);
+            ways[0] = 1;
+            for (const [value, limit] of types.map(nums)) {
+                const next = Array(target + 1).fill(0);
+                for (let current = 0; current <= target; current++) {
+                    for (let used = 0; used <= limit && used * value <= current; used++) {
+                        next[current] = (next[current] + ways[current - used * value]) % 1000000007;
+                    }
+                }
+                ways = next;
+            }
+            return ways[target];
+        });
+
+    add(2085, track, '中等', '保留最长的回文暗号', ['区间动态规划', '最长回文子序列'],
+        '删除若干字符并保持其余字符原来的相对顺序，使剩余暗号正着读和反着读相同。求最长能保留多少字符。',
+        '一行小写英文字母串，长度为 1 到 1500。',
+        '输出最长回文子序列长度。', 'bbabc', '3',
+        ['z', 'abcd', 'aaaaa', 'agbdba', `${'ab'.repeat(180)}a`],
+        input => {
+            const text = input.trim(), n = text.length;
+            const best = repeated(n, i => {
+                const row = new Int32Array(n);
+                row[i] = 1;
+                return row;
+            });
+            for (let left = n - 1; left >= 0; left--) {
+                for (let right = left + 1; right < n; right++) {
+                    best[left][right] = text[left] === text[right] ? 2 + best[left + 1][right - 1]
+                        : Math.max(best[left + 1][right], best[left][right - 1]);
+                }
+            }
+            return best[0][n - 1];
+        });
+
+    add(2086, track, '中等', '给树上站点选巡检员', ['树形动态规划', '最大权独立集'],
+        '站点和道路构成一棵树，每个站点派驻巡检员可获得指定收益。任一道路两端不能同时派驻。允许不选任何站点，求最大总收益。',
+        '第一行 n（1 ≤ n ≤ 100000）。第二行 n 个收益，每个绝对值不超过 10^9。随后 n−1 行 u、v 表示道路，站点从 1 编号。',
+        '输出最大总收益，结果可能超过 32 位有符号整数范围。', '5\n5 3 4 9 -1\n1 2\n1 3\n2 4\n2 5', '14',
+        ['1\n-1', '2\n6 6\n1 2', '4\n-1 -2 -3 -4\n1 2\n2 3\n3 4', '5\n1000000000 1000000000 1000000000 1000000000 1000000000\n1 2\n2 3\n3 4\n4 5'],
+        input => {
+            const [header, initial, ...rawEdges] = lines(input);
+            const n = Number(header), values = nums(initial);
+            const edges = rawEdges.map(line => nums(line).map(node => node - 1));
+            let best = 0;
+            for (let mask = 0; mask < (1 << n); mask++) {
+                const selected = i => (mask >>> i) & 1;
+                if (edges.some(([from, to]) => selected(from) && selected(to))) continue;
+                best = Math.max(best, sum(values.map((value, i) => selected(i) * value)));
+            }
+            return best;
+        });
+
+    add(2087, track, '困难', '样品车的最短巡回', ['状压动态规划', '旅行商问题'],
+        '样品车从站点 1 出发，访问每个其他站点恰好一次，随后回到站点 1。已知任意两点之间可直接驾驶的成本，求最小总成本。',
+        '首行 n（1 ≤ n ≤ 16）。随后 n 行各 n 个整数，分别是从行编号站点到列编号站点的成本。成本在 0 到 10^9 之间，主对角线为 0，矩阵不一定对称。',
+        '输出最小成本。只有一个站点时输出 0。', '3\n0 5 2\n4 0 6\n7 3 0', '9',
+        ['1\n0', '2\n0 7\n2 0', '3\n0 0 9\n3 0 0\n0 4 0', '3\n0 1000000000 1000000000\n1000000000 0 1000000000\n1000000000 1000000000 0'],
+        input => {
+            const [, ...matrix] = lines(input);
+            const costs = matrix.map(nums);
+            let best = Infinity;
+            function visit(from, remaining, total) {
+                if (!remaining.length) {
+                    best = Math.min(best, total + costs[from][0]);
+                    return;
+                }
+                for (const to of remaining) visit(to, remaining.filter(node => node !== to), total + costs[from][to]);
+            }
+            visit(0, repeated(costs.length - 1, i => i + 1), 0);
+            return best;
+        });
+}
+
 basics();
 arrays();
 structures();
@@ -1125,6 +1427,9 @@ search();
 dataStructures();
 graphProblems();
 dynamicProgramming();
+advancedStructures();
+advancedGraphs();
+advancedDynamicProgramming();
 
 const check = process.argv.includes('--check');
 const directory = new URL('../assets/pages/a/oj/problems/',import.meta.url);

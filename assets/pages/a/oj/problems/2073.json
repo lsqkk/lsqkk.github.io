@@ -1,0 +1,35 @@
+{
+  "id": 2073,
+  "track": "data-structures",
+  "difficulty": "简单",
+  "title": "逆波兰式计算器",
+  "tags": [
+    "栈",
+    "表达式"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "从左到右读后缀表达式。每遇到运算符，从栈顶先取右操作数，再取左操作数，计算后把结果压回栈。",
+  "input_format": "一行以空格分隔的整数和运算符 +、-、*，共 1 到 100000 项。保证表达式合法，所有中间值的绝对值不超过 10^12。",
+  "output_format": "输出表达式的值。",
+  "sample_input": "5 2 - 4 * 3 +",
+  "sample_output": "15",
+  "hidden_tests": [
+    {
+      "input": "-7",
+      "expected_output": "-7"
+    },
+    {
+      "input": "2 5 -",
+      "expected_output": "-3"
+    },
+    {
+      "input": "4 2 3 + *",
+      "expected_output": "20"
+    },
+    {
+      "input": "1000000 1000000 * 1 -",
+      "expected_output": "999999999999"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": 2086,
+  "track": "dynamic-programming",
+  "difficulty": "中等",
+  "title": "给树上站点选巡检员",
+  "tags": [
+    "树形动态规划",
+    "最大权独立集"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "站点和道路构成一棵树，每个站点派驻巡检员可获得指定收益。任一道路两端不能同时派驻。允许不选任何站点，求最大总收益。",
+  "input_format": "第一行 n（1 ≤ n ≤ 100000）。第二行 n 个收益，每个绝对值不超过 10^9。随后 n−1 行 u、v 表示道路，站点从 1 编号。",
+  "output_format": "输出最大总收益，结果可能超过 32 位有符号整数范围。",
+  "sample_input": "5\n5 3 4 9 -1\n1 2\n1 3\n2 4\n2 5",
+  "sample_output": "14",
+  "hidden_tests": [
+    {
+      "input": "1\n-1",
+      "expected_output": "0"
+    },
+    {
+      "input": "2\n6 6\n1 2",
+      "expected_output": "6"
+    },
+    {
+      "input": "4\n-1 -2 -3 -4\n1 2\n2 3\n3 4",
+      "expected_output": "0"
+    },
+    {
+      "input": "5\n1000000000 1000000000 1000000000 1000000000 1000000000\n1 2\n2 3\n3 4\n4 5",
+      "expected_output": "3000000000"
+    }
+  ]
+}

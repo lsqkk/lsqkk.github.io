@@ -1,0 +1,31 @@
+{
+  "id": 2076,
+  "track": "data-structures",
+  "difficulty": "中等",
+  "title": "静态区间节拍",
+  "tags": [
+    "稀疏表",
+    "最大公约数"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "给定一组节拍长度，回答多个区间中的最大公约数。节拍长度在查询过程中固定。",
+  "input_format": "第一行 n、q（1 ≤ n,q ≤ 200000）。第二行 n 个正整数，均不超过 10^9。随后每行两个整数 l、r（1 ≤ l ≤ r ≤ n）。",
+  "output_format": "每行输出对应闭区间的最大公约数。",
+  "sample_input": "4 3\n12 18 24 5\n1 3\n2 2\n3 4",
+  "sample_output": "6\n18\n1",
+  "hidden_tests": [
+    {
+      "input": "1 1\n1000000000\n1 1",
+      "expected_output": "1000000000"
+    },
+    {
+      "input": "4 3\n3 3 3 3\n1 4\n2 3\n4 4",
+      "expected_output": "3\n3\n3"
+    },
+    {
+      "input": "4 2\n8 32 64 12\n2 4\n1 3",
+      "expected_output": "4\n8"
+    }
+  ]
+}

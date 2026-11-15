@@ -1,0 +1,35 @@
+{
+  "id": 2087,
+  "track": "dynamic-programming",
+  "difficulty": "困难",
+  "title": "样品车的最短巡回",
+  "tags": [
+    "状压动态规划",
+    "旅行商问题"
+  ],
+  "time_limit": "1500ms",
+  "memory_limit": "128MB",
+  "description": "样品车从站点 1 出发，访问每个其他站点恰好一次，随后回到站点 1。已知任意两点之间可直接驾驶的成本，求最小总成本。",
+  "input_format": "首行 n（1 ≤ n ≤ 16）。随后 n 行各 n 个整数，分别是从行编号站点到列编号站点的成本。成本在 0 到 10^9 之间，主对角线为 0，矩阵不一定对称。",
+  "output_format": "输出最小成本。只有一个站点时输出 0。",
+  "sample_input": "3\n0 5 2\n4 0 6\n7 3 0",
+  "sample_output": "9",
+  "hidden_tests": [
+    {
+      "input": "1\n0",
+      "expected_output": "0"
+    },
+    {
+      "input": "2\n0 7\n2 0",
+      "expected_output": "9"
+    },
+    {
+      "input": "3\n0 0 9\n3 0 0\n0 4 0",
+      "expected_output": "0"
+    },
+    {
+      "input": "3\n0 1000000000 1000000000\n1000000000 0 1000000000\n1000000000 1000000000 0",
+      "expected_output": "3000000000"
+    }
+  ]
+}
