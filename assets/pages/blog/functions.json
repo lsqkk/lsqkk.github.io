@@ -49,17 +49,6 @@
                     "icon": "◉"
                 },
                 {
-                    "name": "视频 Q-TV",
-                    "categories": [
-                        "多媒体",
-                        "内容"
-                    ],
-                    "description": "视频内容专区，观看和分享站主视频",
-                    "link": "/blog/qtv",
-                    "target": "_target",
-                    "icon": "▷"
-                },
-                {
                     "name": "站主动态",
                     "categories": [
                         "社交",
@@ -120,25 +109,14 @@
             "name": "实验功能",
             "functions": [
                 {
-                    "name": "夸克日报",
+                    "name": "热榜对照",
                     "categories": [
                         "资讯",
-                        "实验"
+                        "跨平台"
                     ],
-                    "description": "每日知乎精选内容",
-                    "link": "/blog/daily",
-                    "target": "_target",
-                    "icon": "☰"
-                },
-                {
-                    "name": "实时热榜",
-                    "categories": [
-                        "资讯",
-                        "实验"
-                    ],
-                    "description": "实时热门话题汇总",
-                    "link": "/blog/hot",
-                    "target": "_target",
+                    "description": "并排查看两个平台的热榜，用真实快照追踪名次变化，并按关键词筛选。",
+                    "link": "/blog/hot/",
+                    "target": "_self",
                     "icon": "▲"
                 },
                 {
@@ -162,23 +140,23 @@
                     "link": "/a/live",
                     "target": "_target",
                     "icon": "◐"
-                },
-                {
-                    "name": "夸克贴吧",
-                    "categories": [
-                        "论坛",
-                        "实验"
-                    ],
-                    "description": "畅所欲言的全站公共论坛",
-                    "link": "/blog/tieba",
-                    "target": "_target",
-                    "icon": "◫"
                 }
             ]
         },
         {
             "name": "学习与阅读",
             "functions": [
+                {
+                    "name": "知选 · 阅读档案",
+                    "categories": [
+                        "知乎精选",
+                        "阅读"
+                    ],
+                    "description": "回看原夸克日报的收藏，按主题和空闲时间挑选文章，生成一组短读清单。",
+                    "link": "/blog/daily/",
+                    "target": "_self",
+                    "icon": "☰"
+                },
                 {
                     "name": "夸克文档 QuarkDoc",
                     "categories": [
@@ -273,6 +251,30 @@
                     "link": "https://ql.130923.xyz/",
                     "target": "_blank",
                     "icon": "▤"
+                },
+                {
+                    "name": "回线",
+                    "type": "app",
+                    "categories": [
+                        "自研应用",
+                        "Windows 11 x64"
+                    ],
+                    "description": "基于 WinUI 的 Windows 11 x64 窗口回访工具。",
+                    "link": "https://lsqkk.github.io/Backthread/",
+                    "target": "_blank",
+                    "icon": "↻"
+                },
+                {
+                    "name": "藏书录",
+                    "type": "app",
+                    "categories": [
+                        "自研应用",
+                        "安卓"
+                    ],
+                    "description": "安卓私人书架应用，整理和查找自己的藏书。",
+                    "link": "https://my-library.130923.xyz/",
+                    "target": "_blank",
+                    "icon": "▥"
                 }
             ]
         }

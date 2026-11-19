@@ -1,0 +1,72 @@
+[
+  {
+    "name": "视频/社区",
+    "sources": {
+      "weibo": "微博热搜",
+      "zhihu": "知乎热榜",
+      "bilibili": "哔哩哔哩",
+      "douyin": "抖音热榜",
+      "zhihu-daily": "知乎日报",
+      "acfun": "AcFun",
+      "kuaishou": "快手热榜",
+      "douban-movie": "豆瓣电影",
+      "douban-group": "豆瓣小组",
+      "tieba": "百度贴吧",
+      "hupu": "虎扑热帖",
+      "miyoushe": "米游社",
+      "ngabbs": "NGA论坛",
+      "v2ex": "V2EX技术",
+      "52pojie": "吾爱破解",
+      "hostloc": "主机论坛",
+      "coolapk": "酷安热榜"
+    }
+  },
+  {
+    "name": "新闻/资讯",
+    "sources": {
+      "baidu": "百度热搜",
+      "toutiao": "今日头条",
+      "thepaper": "澎湃新闻",
+      "qq-news": "腾讯新闻",
+      "sina": "新浪热搜",
+      "sina-news": "新浪新闻",
+      "netease-news": "网易新闻",
+      "huxiu": "虎嗅网",
+      "ifanr": "爱范儿"
+    }
+  },
+  {
+    "name": "技术/IT",
+    "sources": {
+      "juejin": "掘金社区",
+      "sspai": "少数派",
+      "ithome": "IT之家",
+      "ithome-xijiayi": "IT喜加一",
+      "csdn": "CSDN博客",
+      "jianshu": "简书热榜",
+      "guokr": "果壳热榜",
+      "36kr": "36氪热榜",
+      "51cto": "51CTO",
+      "nodeseek": "NodeSeek",
+      "hellogithub": "HelloGitHub"
+    }
+  },
+  {
+    "name": "游戏",
+    "sources": {
+      "lol": "英雄联盟",
+      "genshin": "原神热榜",
+      "honkai": "崩坏3热榜",
+      "starrail": "星穹铁道"
+    }
+  },
+  {
+    "name": "其他",
+    "sources": {
+      "weread": "微信读书",
+      "weatheralarm": "天气预警",
+      "earthquake": "地震速报",
+      "history": "历史上的今天"
+    }
+  }
+]

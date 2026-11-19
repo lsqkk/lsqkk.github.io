@@ -98,5 +98,15 @@
     "path": "/a/uni",
     "to": "/a/",
     "reason": "项目下线，相关代码与数据不再维护"
+  },
+  {
+    "path": "/blog/qtv",
+    "to": "https://space.bilibili.com/2105459088",
+    "reason": "视频聚合下线，投稿在哔哩哔哩原频道查看"
+  },
+  {
+    "path": "/blog/tieba",
+    "to": "/blog/lyb/",
+    "reason": "公开文本库论坛下线，站点反馈可使用留言板"
   }
 ]

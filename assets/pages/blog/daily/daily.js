@@ -1,434 +1,112 @@
-// 全局变量
-let allDailyArticles = [];
-let filteredArticles = [];
-let currentPage = 1;
-let articlesPerPage = 15;
-let currentDateFilter = null;
-let isCalendarOpen = false;
-let selectedCalendarDate = null;
+const archive = document.querySelector('[data-reading-archive]');
+const months = [...archive.querySelectorAll('[data-archive-months] details')];
+const search = archive.querySelector('[data-archive-search]');
+const tag = archive.querySelector('[data-archive-tag]');
+const budget = archive.querySelector('[data-archive-budget]');
+const pick = archive.querySelector('[data-archive-pick]');
+const reset = archive.querySelector('[data-archive-reset]');
+const heading = archive.querySelector('[data-archive-heading]');
+const status = archive.querySelector('[data-archive-status]');
+const archiveStatus = status.textContent;
+const originalOpen = new Map();
+const storageKey = 'quark:reading-archive:v1:read';
+const normalize = value => value.normalize('NFKC').toLowerCase();
+let read = new Set();
+let plan = null;
+let filtered = false;
+let storageUnavailable = false;
 
-// 获取当前日期并显示
-function updateCurrentDate() {
-    const now = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-    document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
-    return now;
+try {
+    const saved = JSON.parse(localStorage.getItem(storageKey));
+    if (Array.isArray(saved)) read = new Set(saved.filter(value => typeof value === 'string'));
+} catch {
+    // Missing browser storage should not block browsing or making a list.
 }
 
-// 格式化日期为YYYY-MM-DD
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+const entries = [...archive.querySelectorAll('[data-archive-entry]')].map(row => ({
+    row,
+    url: row.querySelector('a').href,
+    tags: JSON.parse(row.dataset.tags),
+    minutes: Number(row.dataset.minutes),
+    index: normalize(row.textContent),
+    button: row.querySelector('[data-archive-read]'),
+}));
+
+function matches(entry) {
+    const query = normalize(search.value.trim());
+    return (!tag.value || entry.tags.includes(tag.value)) && entry.index.includes(query);
 }
 
-// 格式化日期显示为中文
-function formatDateDisplay(dateStr) {
-    const date = new Date(dateStr);
-    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-    return date.toLocaleDateString('zh-CN', options);
+function render() {
+    const filtering = Boolean(search.value.trim() || tag.value || plan);
+    const visibleEntries = plan ?? entries.filter(matches);
+    const visibleRows = new Set(visibleEntries.map(entry => entry.row));
+    for (const entry of entries) {
+        entry.row.hidden = !visibleRows.has(entry.row);
+        const marked = read.has(entry.url);
+        entry.button.hidden = false;
+        entry.button.textContent = marked ? '已读' : '标为已读';
+        entry.button.setAttribute('aria-pressed', String(marked));
+    }
+    for (const month of months) {
+        if (filtering && !filtered) originalOpen.set(month, month.open);
+        month.hidden = !month.querySelector('[data-archive-entry]:not([hidden])');
+        if (filtering) month.open = !month.hidden;
+        else if (filtered) month.open = originalOpen.get(month);
+    }
+    filtered = filtering;
+    reset.hidden = !plan;
+    heading.textContent = plan ? '短读清单' : '收藏档案';
+    if (plan) {
+        const minutes = plan.reduce((total, entry) => total + entry.minutes, 0);
+        const finished = plan.filter(entry => read.has(entry.url)).length;
+        status.textContent = plan.length
+            ? '共 ' + plan.length + ' 篇，已读 ' + finished + ' 篇，预计 ' + minutes + ' / ' + budget.value + ' 分钟。'
+            : '当前条件下没有符合时间预算的未读收藏。';
+    } else {
+        status.textContent = filtering ? '匹配 ' + visibleEntries.length + ' 篇收藏。' : archiveStatus;
+    }
+    if (storageUnavailable) status.textContent += ' 已读状态仅保留到本页关闭。';
 }
 
-// 从JSON加载文章数据
-async function loadArticles() {
+function makePlan() {
+    let remaining = Number(budget.value);
+    plan = [];
+    for (const entry of entries) {
+        if (!matches(entry) || read.has(entry.url) || !Number.isFinite(entry.minutes)
+            || entry.minutes <= 0 || entry.minutes > remaining) continue;
+        plan.push(entry);
+        remaining -= entry.minutes;
+        if (remaining === 0) break;
+    }
+    render();
+}
+
+archive.addEventListener('click', event => {
+    const entry = entries.find(item => item.button === event.target);
+    if (!entry) return;
+    if (read.has(entry.url)) read.delete(entry.url);
+    else read.add(entry.url);
     try {
-        showLoading(true);
-        const response = await fetch('/assets/pages/blog/daily/articles.json');
-        const data = await response.json();
-        allDailyArticles = data.dailyArticles;
-
-        // 过滤掉未来日期的文章
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        allDailyArticles = allDailyArticles.filter(day => {
-            const articleDate = new Date(day.date);
-            articleDate.setHours(0, 0, 0, 0);
-            return articleDate <= today;
-        });
-
-        // 按日期降序排序
-        allDailyArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        // 初始化显示
-        filteredArticles = [...allDailyArticles];
-        displayArticles();
-        initCalendar();
-
-    } catch (error) {
-        console.error('加载文章失败:', error);
-        // 如果加载失败，显示示例数据
-        allDailyArticles = getSampleArticles();
-        filteredArticles = [...allDailyArticles];
-        displayArticles();
-        initCalendar();
-    } finally {
-        showLoading(false);
+        localStorage.setItem(storageKey, JSON.stringify([...read]));
+    } catch {
+        storageUnavailable = true;
     }
-}
-
-// 显示文章（分页）
-function displayArticles() {
-    const container = document.getElementById('daily-sections');
-    container.innerHTML = '';
-
-    if (filteredArticles.length === 0) {
-        container.innerHTML = '<div class="empty-placeholder">暂无内容</div>';
-        updatePaginationInfo();
-        return;
-    }
-
-    // 计算分页
-    const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
-    const startIndex = (currentPage - 1) * articlesPerPage;
-    const endIndex = Math.min(startIndex + articlesPerPage, filteredArticles.length);
-    const pageArticles = filteredArticles.slice(startIndex, endIndex);
-
-    // 获取已读文章列表
-    const readArticles = JSON.parse(localStorage.getItem('readArticles') || '[]');
-
-    pageArticles.forEach(day => {
-        const section = document.createElement('div');
-        section.className = 'daily-section';
-
-        const header = document.createElement('div');
-        header.className = 'daily-header';
-        header.innerHTML = `
-                    <span>${formatDateDisplay(day.date)}</span>
-                    <span>${day.articles.length}篇文章</span>
-                `;
-
-        const articlesContainer = document.createElement('div');
-        articlesContainer.className = 'articles-container';
-
-        day.articles.forEach(article => {
-            const isRead = readArticles.includes(article.id);
-
-            const card = document.createElement('div');
-            card.className = `article-card ${isRead ? 'read' : ''}`;
-            card.dataset.id = article.id;
-
-            card.innerHTML = `
-                        <div class="article-content">
-                            <div class="tags">
-                                ${article.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
-                            <h3 class="article-title">${article.title}</h3>
-                            <div class="article-meta">
-                                <span>${article.author}</span>
-                                <span class="read-time">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                    </svg>
-                                    ${article.readTime}分钟
-                                </span>
-                            </div>
-                        </div>
-                    `;
-
-            card.addEventListener('click', () => {
-                // 标记为已读
-                if (!isRead) {
-                    readArticles.push(article.id);
-                    localStorage.setItem('readArticles', JSON.stringify(readArticles));
-                    card.classList.add('read');
-                }
-                // 打开文章链接
-                window.open(article.url, '_blank');
-            });
-
-            articlesContainer.appendChild(card);
-        });
-
-        section.appendChild(header);
-        section.appendChild(articlesContainer);
-        container.appendChild(section);
-    });
-
-    // 更新分页信息
-    updatePaginationInfo();
-    updatePaginationControls(totalPages);
-}
-
-// 更新分页信息
-function updatePaginationInfo() {
-    const totalArticles = filteredArticles.reduce((sum, day) => sum + day.articles.length, 0);
-    const startIndex = (currentPage - 1) * articlesPerPage + 1;
-    const endIndex = Math.min(currentPage * articlesPerPage, filteredArticles.length);
-
-    let infoText = '';
-    if (currentDateFilter) {
-        const dateStr = formatDateDisplay(currentDateFilter);
-        infoText = `显示 ${dateStr} 的日报 (${filteredArticles.length}天)`;
-    } else {
-        infoText = `第 ${startIndex}-${endIndex} 天，共 ${filteredArticles.length} 天`;
-    }
-
-    document.getElementById('paginationInfo').textContent = infoText;
-
-    // 更新筛选状态显示
-    const filterStatus = document.getElementById('filterStatus');
-    if (currentDateFilter) {
-        filterStatus.querySelector('span').textContent = `显示 ${formatDateDisplay(currentDateFilter)} 的日报`;
-        filterStatus.classList.add('active');
-    } else {
-        filterStatus.querySelector('span').textContent = '显示全部日报';
-        filterStatus.classList.remove('active');
-    }
-}
-
-// 更新分页控件
-function updatePaginationControls(totalPages) {
-    const pageNumbersContainer = document.getElementById('pageNumbers');
-    pageNumbersContainer.innerHTML = '';
-
-    // 最多显示7个页码
-    let startPage = Math.max(1, currentPage - 3);
-    let endPage = Math.min(totalPages, startPage + 6);
-
-    if (endPage - startPage < 6) {
-        startPage = Math.max(1, endPage - 6);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
-        pageBtn.textContent = i;
-        pageBtn.addEventListener('click', () => {
-            currentPage = i;
-            displayArticles();
-        });
-        pageNumbersContainer.appendChild(pageBtn);
-    }
-
-    // 更新上一页/下一页按钮状态
-    document.getElementById('prevPageBtn').disabled = currentPage === 1;
-    document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-}
-
-// 日历相关功能
-function initCalendar() {
-    const calendarContainer = document.getElementById('calendarContainer');
-    const toggleBtn = document.getElementById('toggleCalendarBtn');
-    const clearFilterBtn = document.getElementById('clearFilterBtn');
-
-    // 获取所有有文章的日期
-    const articleDates = allDailyArticles.map(day => day.date);
-
-    // 初始化日历显示
-    updateCalendar();
-
-    // 切换日历显示/隐藏
-    toggleBtn.addEventListener('click', () => {
-        isCalendarOpen = !isCalendarOpen;
-        calendarContainer.classList.toggle('open');
-        toggleBtn.classList.toggle('active');
-    });
-
-    // 清除筛选
-    clearFilterBtn.addEventListener('click', () => {
-        currentDateFilter = null;
-        filteredArticles = [...allDailyArticles];
-        currentPage = 1;
-        displayArticles();
-        clearFilterBtn.style.display = 'none';
-    });
-
-    // 绑定日历导航按钮
-    document.getElementById('prevMonthBtn').addEventListener('click', () => {
-        selectedCalendarDate.setMonth(selectedCalendarDate.getMonth() - 1);
-        updateCalendar();
-    });
-
-    document.getElementById('nextMonthBtn').addEventListener('click', () => {
-        selectedCalendarDate.setMonth(selectedCalendarDate.getMonth() + 1);
-        updateCalendar();
-    });
-
-    document.getElementById('prevYearBtn').addEventListener('click', () => {
-        selectedCalendarDate.setFullYear(selectedCalendarDate.getFullYear() - 1);
-        updateCalendar();
-    });
-
-    document.getElementById('nextYearBtn').addEventListener('click', () => {
-        selectedCalendarDate.setFullYear(selectedCalendarDate.getFullYear() + 1);
-        updateCalendar();
-    });
-
-    // 今天按钮
-    document.getElementById('goToTodayBtn').addEventListener('click', () => {
-        selectedCalendarDate = new Date();
-        updateCalendar();
-    });
-
-    // 确定按钮
-    document.getElementById('confirmDateBtn').addEventListener('click', () => {
-        if (selectedCalendarDate) {
-            applyDateFilter(formatDate(selectedCalendarDate));
-            isCalendarOpen = false;
-            calendarContainer.classList.remove('open');
-            toggleBtn.classList.remove('active');
-        }
-    });
-}
-
-// 更新日历显示
-function updateCalendar() {
-    if (!selectedCalendarDate) {
-        selectedCalendarDate = new Date();
-    }
-
-    const year = selectedCalendarDate.getFullYear();
-    const month = selectedCalendarDate.getMonth();
-
-    // 更新日历标题
-    const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月',
-        '七月', '八月', '九月', '十月', '十一月', '十二月'];
-    document.getElementById('calendarMonth').textContent = `${year}年 ${monthNames[month]}`;
-
-    // 生成日历
-    const calendarGrid = document.querySelector('.calendar-grid');
-    // 清空前6个工作日元素之后的内容
-    const weekdays = calendarGrid.querySelectorAll('.weekday');
-    for (let i = 6; i < calendarGrid.children.length; i++) {
-        calendarGrid.removeChild(calendarGrid.children[i]);
-    }
-
-    // 获取月份第一天和最后一天
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const firstDayOfWeek = firstDay.getDay();
-
-    // 获取所有有文章的日期
-    const articleDates = allDailyArticles.map(day => day.date);
-
-    // 添加空白格
-    for (let i = 0; i < firstDayOfWeek; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day empty';
-        calendarGrid.appendChild(emptyCell);
-    }
-
-    // 添加日期格
-    const today = formatDate(new Date());
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayCell = document.createElement('div');
-        dayCell.className = 'calendar-day';
-
-        if (dateStr === today) {
-            dayCell.classList.add('today');
-        }
-
-        if (articleDates.includes(dateStr)) {
-            dayCell.classList.add('has-articles');
-        }
-
-        if (currentDateFilter === dateStr) {
-            dayCell.classList.add('selected');
-        }
-
-        dayCell.textContent = day;
-        dayCell.dataset.date = dateStr;
-
-        dayCell.addEventListener('click', () => {
-            // 清除之前的选择
-            document.querySelectorAll('.calendar-day.selected').forEach(cell => {
-                cell.classList.remove('selected');
-            });
-
-            // 选择当前日期
-            dayCell.classList.add('selected');
-            selectedCalendarDate = new Date(dateStr);
-        });
-
-        calendarGrid.appendChild(dayCell);
-    }
-}
-
-// 应用日期筛选
-function applyDateFilter(date) {
-    currentDateFilter = date;
-    filteredArticles = allDailyArticles.filter(day => day.date === date);
-    currentPage = 1;
-    displayArticles();
-    document.getElementById('clearFilterBtn').style.display = 'inline-block';
-}
-
-// 显示/隐藏加载指示器
-function showLoading(show) {
-    const indicator = document.getElementById('loadingIndicator');
-    indicator.style.display = show ? 'flex' : 'none';
-}
-
-// 示例数据（当JSON加载失败时使用）
-function getSampleArticles() {
-    const articles = [];
-    const today = new Date();
-
-    // 生成30天的示例数据
-    for (let i = 0; i < 30; i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        const dateStr = formatDate(date);
-
-        const dayArticles = [];
-        const articleCount = Math.floor(Math.random() * 3) + 2; // 2-4篇文章
-
-        for (let j = 0; j < articleCount; j++) {
-            dayArticles.push({
-                id: `${i}-${j}-${dateStr}`,
-                title: `示例文章 ${i + 1}-${j + 1}: 关于${['机器学习', '前端开发', '数据科学', '产品设计'][j % 4]}的话题`,
-                author: ['李沐', '张华', '王明', '赵蕾'][j % 4],
-                url: 'https://zhuanlan.zhihu.com/p/12345678',
-                readTime: Math.floor(Math.random() * 15) + 5,
-                tags: ['示例', ['技术', '设计', '科学', '学习'][j % 4]]
-            });
-        }
-
-        articles.push({
-            date: dateStr,
-            articles: dayArticles
-        });
-    }
-
-    return articles;
-}
-
-// 分页按钮事件
-document.getElementById('prevPageBtn').addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        displayArticles();
-    }
+    render();
+});
+const updateFilters = () => {
+    if (plan) makePlan();
+    else render();
+};
+search.addEventListener('input', updateFilters);
+tag.addEventListener('change', updateFilters);
+budget.addEventListener('change', updateFilters);
+pick.addEventListener('click', makePlan);
+reset.addEventListener('click', () => {
+    plan = null;
+    render();
+    pick.focus();
 });
 
-document.getElementById('nextPageBtn').addEventListener('click', () => {
-    const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        displayArticles();
-    }
-});
-
-// 初始化
-document.addEventListener('DOMContentLoaded', () => {
-    updateCurrentDate();
-    loadArticles();
-
-    // 点击外部关闭日历
-    document.addEventListener('click', (e) => {
-        const calendarContainer = document.getElementById('calendarContainer');
-        const toggleBtn = document.getElementById('toggleCalendarBtn');
-
-        if (isCalendarOpen &&
-            !calendarContainer.contains(e.target) &&
-            !toggleBtn.contains(e.target)) {
-            isCalendarOpen = false;
-            calendarContainer.classList.remove('open');
-            toggleBtn.classList.remove('active');
-        }
-    });
-});
+archive.querySelector('[data-archive-controls]').hidden = false;
+render();

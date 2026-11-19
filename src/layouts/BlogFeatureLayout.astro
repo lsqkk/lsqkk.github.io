@@ -1,0 +1,35 @@
+---
+import LuxuryBackground from '../components/LuxuryBackground.astro';
+import navConfig from '../config/json/nav.json';
+import { SITE_TITLE, SITE_LOGO_URL, SITE_URL } from '@siteConfig';
+
+interface Props { title: string; description: string; path: string }
+const { title, description, path } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} - {SITE_TITLE}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(path, SITE_URL)} />
+    <link rel="icon" href={SITE_LOGO_URL} type="image/png" />
+    <link rel="stylesheet" href="/assets/css/basic.css" />
+    <link rel="stylesheet" href="/assets/css/nav.css" />
+    <link rel="stylesheet" href="/assets/pages/blog/feature.css" />
+    <script is:inline define:vars={{ navConfig }}>window.__NAV_CONFIG__ = navConfig;</script>
+    <script is:inline defer src="/assets/js/nav.js"></script>
+  </head>
+  <body class="luxury-body">
+    <LuxuryBackground />
+    <main class="blog-feature">
+      <header class="blog-feature-header">
+        <a href="/blog/">功能导航</a>
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </header>
+      <slot />
+    </main>
+  </body>
+</html>

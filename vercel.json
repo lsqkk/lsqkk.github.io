@@ -8,8 +8,7 @@
   },
   "rewrites": [
     {"source": "/api/remote-import", "destination": "/api/resources?resourceRoute=remote-import"},
-    {"source": "/api/terminal-http", "destination": "/api/resources?resourceRoute=terminal-http"},
-    {"source": "/api/stream-proxy", "destination": "/api/resources?resourceRoute=stream-proxy"}
+    {"source": "/api/terminal-http", "destination": "/api/resources?resourceRoute=terminal-http"}
   ],
   "crons": [{ "path": "/api/db", "schedule": "17 3 * * *" }],
   "outputDirectory": "."

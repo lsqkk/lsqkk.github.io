@@ -1,11 +1,9 @@
 import remoteImport from './_remote-import.js';
 import terminalHttp from './_terminal-http.js';
-import streamProxy from './_stream-proxy.js';
 
 const handlers = new Map([
     ['remote-import', remoteImport],
-    ['terminal-http', terminalHttp],
-    ['stream-proxy', streamProxy]
+    ['terminal-http', terminalHttp]
 ]);
 
 export default function handler(req, res) {

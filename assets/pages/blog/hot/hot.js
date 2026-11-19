@@ -1,261 +1,192 @@
-// API端点
-const API_URL = 'https://uapis.cn/api/v1/misc/hotboard';
-
-// 平台图标映射
-const platformIcons = {
-    'weibo': 'fab fa-weibo',
-    'zhihu': 'fab fa-zhihu',
-    'bilibili': 'fas fa-play-circle',
-    'douyin': 'fas fa-music',
-    'zhihu-daily': 'far fa-newspaper',
-    'acfun': 'fas fa-tv',
-    'kuaishou': 'fas fa-video',
-    'douban-movie': 'fas fa-film',
-    'douban-group': 'fas fa-users',
-    'tieba': 'fab fa-baidu',
-    'hupu': 'fas fa-basketball-ball',
-    'miyoushe': 'fas fa-gamepad',
-    'ngabbs': 'fas fa-dragon',
-    'v2ex': 'fas fa-code',
-    '52pojie': 'fas fa-lock-open',
-    'hostloc': 'fas fa-server',
-    'coolapk': 'fas fa-mobile-alt',
-    'baidu': 'fas fa-search',
-    'toutiao': 'fas fa-newspaper',
-    'thepaper': 'fas fa-newspaper',
-    'qq-news': 'fab fa-qq',
-    'sina': 'fas fa-globe',
-    'sina-news': 'far fa-newspaper',
-    'netease-news': 'fas fa-portrait',
-    'huxiu': 'fas fa-paw',
-    'ifanr': 'fas fa-mobile-alt',
-    'juejin': 'fas fa-gem',
-    'sspai': 'fas fa-pen-fancy',
-    'ithome': 'fas fa-home',
-    'ithome-xijiayi': 'fas fa-gift',
-    'csdn': 'fas fa-laptop-code',
-    'jianshu': 'fas fa-book',
-    'guokr': 'fas fa-flask',
-    '36kr': 'fas fa-chart-line',
-    '51cto': 'fas fa-network-wired',
-    'nodeseek': 'fas fa-search',
-    'hellogithub': 'fab fa-github',
-    'lol': 'fas fa-gamepad',
-    'genshin': 'fas fa-wind',
-    'honkai': 'fas fa-meteor',
-    'starrail': 'fas fa-star',
-    'weread': 'fas fa-book-reader',
-    'weatheralarm': 'fas fa-cloud-sun-rain',
-    'earthquake': 'fas fa-mountain',
-    'history': 'fas fa-history'
-};
-
-// 平台名称映射
-const platformNames = {
-    'weibo': '微博热搜',
-    'zhihu': '知乎热榜',
-    'bilibili': '哔哩哔哩热榜',
-    'douyin': '抖音热榜',
-    'zhihu-daily': '知乎日报热榜',
-    'acfun': 'AcFun弹幕视频网',
-    'kuaishou': '快手热榜',
-    'douban-movie': '豆瓣电影榜单',
-    'douban-group': '豆瓣小组话题',
-    'tieba': '百度贴吧热帖',
-    'hupu': '虎扑热帖',
-    'miyoushe': '米游社话题榜',
-    'ngabbs': 'NGA游戏论坛热帖',
-    'v2ex': 'V2EX技术社区热帖',
-    '52pojie': '吾爱破解热帖',
-    'hostloc': '全球主机交流论坛',
-    'coolapk': '酷安热榜',
-    'baidu': '百度热搜',
-    'toutiao': '今日头条热榜',
-    'thepaper': '澎湃新闻热榜',
-    'qq-news': '腾讯新闻热榜',
-    'sina': '新浪热搜',
-    'sina-news': '新浪新闻热榜',
-    'netease-news': '网易新闻热榜',
-    'huxiu': '虎嗅网热榜',
-    'ifanr': '爱范儿热榜',
-    'juejin': '掘金社区热榜',
-    'sspai': '少数派热榜',
-    'ithome': 'IT之家热榜',
-    'ithome-xijiayi': 'IT之家·喜加一栏目',
-    'csdn': 'CSDN博客热榜',
-    'jianshu': '简书热榜',
-    'guokr': '果壳热榜',
-    '36kr': '36氪热榜',
-    '51cto': '51CTO热榜',
-    'nodeseek': 'NodeSeek 技术社区',
-    'hellogithub': 'HelloGitHub 项目推荐',
-    'lol': '英雄联盟热帖',
-    'genshin': '原神热榜',
-    'honkai': '崩坏3热榜',
-    'starrail': '星穹铁道热榜',
-    'weread': '微信读书热门书籍',
-    'weatheralarm': '天气预警信息',
-    'earthquake': '地震速报',
-    'history': '历史上的今天'
-};
-
-// 当前选中的平台
-let currentPlatform = 'weibo';
-
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', function () {
-    // 初始化加载微博热搜
-    loadHotData('weibo');
-
-    // 为分类导航项添加点击事件
-    const categoryItems = document.querySelectorAll('.category-item');
-    categoryItems.forEach(item => {
-        item.addEventListener('click', function () {
-            // 更新选中状态
-            categoryItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-
-            // 获取平台类型
-            const platformType = this.getAttribute('data-type');
-
-            // 更新平台标题和图标
-            updatePlatformHeader(platformType);
-
-            // 加载新数据
-            loadHotData(platformType);
-        });
-    });
+const board = document.querySelector('[data-hotboard]');
+const selects = [...board.querySelectorAll('[data-hot-source]')];
+const panels = [...board.querySelectorAll('[data-hot-panel]')];
+const search = board.querySelector('[data-hot-search]');
+const refresh = board.querySelector('[data-hot-refresh]');
+const dateFormat = new Intl.DateTimeFormat('zh-CN', {
+    dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Shanghai',
 });
+const cache = new Map();
+const requests = new Map();
+const errors = new Set();
 
-// 更新平台标题和图标
-function updatePlatformHeader(platformType) {
-    const platformTitle = document.querySelector('.platform-title');
-    const platformIcon = document.querySelector('.platform-icon i');
-
-    platformTitle.innerHTML = `
-                <span class="platform-icon">
-                    <i class="${platformIcons[platformType]}"></i>
-                </span>
-                ${platformNames[platformType]}
-            `;
+function parseSnapshot(data) {
+    if (!Array.isArray(data?.list)) throw new Error('缺少榜单数据');
+    const items = new Map();
+    for (const [index, row] of data.list.slice(0, 100).entries()) {
+        const title = typeof row?.title === 'string' ? row.title.trim() : '';
+        if (!title) continue;
+        const key = title.normalize('NFKC').toLowerCase();
+        if (items.has(key)) continue;
+        let url;
+        try {
+            const link = new URL(row.url);
+            if (['https:', 'http:'].includes(link.protocol) && !link.username && !link.password) url = link.href;
+        } catch {
+            // Some sources return entries without a link.
+        }
+        const rank = Number(row.index);
+        const hot = row.hot_value ?? row.hot;
+        items.set(key, {
+            key, title, url,
+            index: Number.isSafeInteger(rank) && rank > 0 ? rank : index + 1,
+            hot_value: typeof hot === 'string' || typeof hot === 'number' ? String(hot) : '',
+        });
+    }
+    const time = Date.parse(data.update_time);
+    return {
+        update_time: Number.isFinite(time) ? new Date(time).toISOString() : '',
+        list: [...items.values()].sort((a, b) => a.index - b.index),
+    };
 }
 
-// 加载热搜数据
-async function loadHotData(platform) {
-    currentPlatform = platform;
+function storageKey(source) {
+    return 'quark:hotboard:v1:' + source;
+}
 
-    // 显示加载状态
-    const contentArea = document.getElementById('hot-content');
-    contentArea.innerHTML = `
-                <div class="loading">
-                    <div class="loading-spinner"></div>
-                    <div>正在加载热搜数据...</div>
-                </div>
-            `;
+function snapshots(source) {
+    if (!cache.has(source)) {
+        let history = {};
+        try {
+            const saved = JSON.parse(localStorage.getItem(storageKey(source)));
+            if (saved?.current) history = {
+                current: parseSnapshot(saved.current),
+                previous: saved.previous ? parseSnapshot(saved.previous) : undefined,
+            };
+        } catch {
+            // A blocked or invalid cache should leave the live board usable.
+        }
+        cache.set(source, history);
+    }
+    return cache.get(source);
+}
 
+function saveSnapshot(source, current) {
+    const old = snapshots(source);
+    if (old.current?.update_time && current.update_time && old.current.update_time > current.update_time) return;
+    const previous = old.current?.update_time && current.update_time > old.current.update_time
+        ? old.current
+        : old.previous;
+    const history = { current, previous };
+    cache.set(source, history);
     try {
-        // 调用API获取数据
-        const response = await fetch(`${API_URL}?type=${platform}`);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // 更新更新时间
-        const updateTimeElement = document.getElementById('update-time');
-        updateTimeElement.textContent = data.update_time || new Date().toLocaleString();
-
-        // 渲染热搜列表
-        renderHotList(data.list);
-
-    } catch (error) {
-        console.error('获取热搜数据失败:', error);
-        contentArea.innerHTML = `
-                    <div class="error">
-                        <div class="error-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        加载失败: ${error.message}<br>
-                        请稍后重试
-                    </div>
-                `;
+        localStorage.setItem(storageKey(source), JSON.stringify(history));
+    } catch {
+        // Memory cache still works for the current page.
     }
 }
 
-// 渲染热搜列表
-function renderHotList(hotList) {
-    const contentArea = document.getElementById('hot-content');
+function renderPanel(panel, select) {
+    const source = select.value;
+    const { current, previous } = snapshots(source);
+    const loading = requests.has(source);
+    const failed = errors.has(source);
+    const status = panel.querySelector('[data-hot-status]');
+    const list = panel.querySelector('[data-hot-list]');
+    const query = search.value.trim().normalize('NFKC').toLowerCase();
+    const visible = current?.list.filter(item => item.key.includes(query)) ?? [];
+    const canCompare = current?.update_time && previous?.update_time
+        && current.update_time > previous.update_time && previous.list.length;
+    const oldRanks = new Map(canCompare ? previous.list.map(item => [item.key, item.index]) : []);
 
-    if (!hotList || hotList.length === 0) {
-        contentArea.innerHTML = `
-                    <div class="error">
-                        <div class="error-icon">
-                            <i class="far fa-frown"></i>
-                        </div>
-                        暂无数据
-                    </div>
-                `;
-        return;
+    panel.querySelector('[data-hot-title]').textContent = select.selectedOptions[0].textContent;
+    panel.querySelector('[data-hot-upstream]').href = 'https://uapis.cn/hotboard/' + source;
+    const message = [];
+    if (loading) message.push('正在获取榜单');
+    if (failed) message.push(current ? '更新失败，显示本地缓存' : '暂时无法获取榜单，请刷新重试');
+    if (current) {
+        message.push(current.update_time ? '榜单更新于 ' + dateFormat.format(new Date(current.update_time)) + '（北京时间）' : '上游未提供更新时间');
+        if (canCompare) message.push('对照 ' + dateFormat.format(new Date(previous.update_time)));
+        if (!current.list.length) message.push('暂无条目');
+        else if (query) message.push(visible.length ? '匹配 ' + visible.length + ' 条' : '没有匹配的话题');
     }
+    status.textContent = message.join(' · ');
+    status.hidden = false;
 
-    let html = '';
-
-    hotList.forEach((item, index) => {
-        // 生成排名样式
-        const rankClass = index < 3 ? `rank-${index + 1}` : '';
-
-        // 随机生成趋势（实际应用中应从API获取）
-        const trendTypes = ['up', 'down', 'new', ''];
-        const trendType = trendTypes[Math.floor(Math.random() * trendTypes.length)];
-        let trendHtml = '';
-
-        if (trendType === 'up') {
-            trendHtml = `<span class="hot-trend trend-up"><i class="fas fa-caret-up"></i> 上升</span>`;
-        } else if (trendType === 'down') {
-            trendHtml = `<span class="hot-trend trend-down"><i class="fas fa-caret-down"></i> 下降</span>`;
-        } else if (trendType === 'new') {
-            trendHtml = `<span class="hot-trend trend-new"><i class="fas fa-star"></i> 新上榜</span>`;
+    list.replaceChildren(...visible.map(item => {
+        const row = document.createElement('li');
+        const detail = document.createElement('div');
+        const heading = document.createElement('h3');
+        const rank = document.createElement('span');
+        rank.className = 'feature-count';
+        rank.textContent = item.index + '. ';
+        heading.append(rank);
+        if (item.url) {
+            const link = document.createElement('a');
+            link.href = item.url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = item.title;
+            heading.append(link);
+        } else {
+            heading.append(item.title);
         }
-
-        // 处理热度值显示
-        let hotValue = '';
-        if (item.hot) {
-            hotValue = `<div class="hot-value"><i class="fas fa-fire"></i> ${formatHotValue(item.hot)}</div>`;
+        detail.append(heading);
+        if (item.hot_value) {
+            const hot = document.createElement('p');
+            hot.className = 'feature-meta';
+            hot.textContent = '热度 ' + item.hot_value;
+            detail.append(hot);
         }
+        row.append(detail);
+        if (canCompare) {
+            const old = oldRanks.get(item.key);
+            const change = old - item.index;
+            const trend = document.createElement('span');
+            trend.className = 'feature-meta';
+            trend.dataset.rankChange = '';
+            trend.textContent = old === undefined ? '新上榜'
+                : change > 0 ? '升 ' + change + ' 位'
+                : change < 0 ? '降 ' + Math.abs(change) + ' 位'
+                : '持平';
+            row.append(trend);
+        }
+        return row;
+    }));
+    list.hidden = visible.length === 0;
+}
 
-        // 创建热搜项HTML
-        html += `
-                    <div class="hot-card ${rankClass}">
-                        <div class="hot-header">
-                            <div class="hot-rank ${rankClass}">${index + 1}</div>
-                            <a href="${item.url || '#'}" target="_blank" class="hot-link">
-                                <div class="hot-title">${item.title} ${trendHtml}</div>
-                            </a>
-                        </div>
-                        <div class="hot-meta">
-                            ${hotValue}
-                            <div class="hot-link-icon">
-                                <i class="fas fa-external-link-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
+function render() {
+    panels.forEach((panel, index) => renderPanel(panel, selects[index]));
+    refresh.disabled = selects.some(select => requests.has(select.value));
+}
+
+async function load(source) {
+    if (requests.has(source)) return;
+    requests.set(source, true);
+    errors.delete(source);
+    render();
+    try {
+        const endpoint = new URL('https://uapis.cn/api/v1/misc/hotboard');
+        endpoint.searchParams.set('type', source);
+        const response = await fetch(endpoint, { signal: AbortSignal.timeout(10000) });
+        if (!response.ok) throw new Error('热榜请求失败');
+        const snapshot = parseSnapshot(await response.json());
+        if (!snapshot.list.length && snapshots(source).current?.list.length) throw new Error('榜单暂时为空');
+        saveSnapshot(source, snapshot);
+    } catch {
+        errors.add(source);
+    } finally {
+        requests.delete(source);
+        render();
+    }
+}
+
+function updateChoices() {
+    selects.forEach((select, index) => {
+        const otherSource = selects[1 - index].value;
+        for (const option of select.options) option.disabled = option.value === otherSource;
     });
-
-    contentArea.innerHTML = html;
 }
 
-// 格式化热度值
-function formatHotValue(value) {
-    if (typeof value === 'number') {
-        if (value >= 100000000) {
-            return (value / 100000000).toFixed(1) + '亿';
-        } else if (value >= 10000) {
-            return (value / 10000).toFixed(1) + '万';
-        }
-        return value.toString();
-    }
-    return value;
-}
+selects.forEach(select => select.addEventListener('change', () => {
+    updateChoices();
+    load(select.value);
+    render();
+}));
+search.addEventListener('input', render);
+refresh.addEventListener('click', () => selects.forEach(select => load(select.value)));
+
+board.querySelector('[data-hot-controls]').hidden = false;
+updateChoices();
+selects.forEach(select => load(select.value));

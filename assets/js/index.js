@@ -5,7 +5,6 @@
  * @typedef {{file: string, title: string, date: string, wordCount?: number, tags?: string[], columns?: string[], cover?: string}} PostItem
  * @typedef {{url: string, icon: string, nickname: string, describe: string}} FriendLink
  * @typedef {{id?: string, title: string, content: string[], date: string}} DynamicEntry
- * @typedef {{cover: string, title: string, play_count: number, publish_time: number, duration: number, bvid: string}} VideoItem
  * @typedef {{ip: string, province: string, city: string, district: string, latitude: number, longitude: number, distance: number | string}} VisitorInfo
  * @typedef {{
  *   showPostNum?: number,
@@ -96,18 +95,11 @@ function initSkeletonImages(root) {
 
 /**
  * Show structured skeleton HTML for a dynamically loaded section.
- * @param {string} type - 'video' | 'github' | 'online' | 'messages' | 'announcement'
+ * @param {string} type - 'github' | 'online' | 'messages' | 'announcement'
  * @returns {string}
  */
 function createSkeletonHTML(type) {
     var skeletons = {
-        video: [
-            '<div class="video-skeleton">',
-            '  <div class="skeleton-cover skeleton-block"></div>',
-            '  <div class="skeleton-title skeleton-block"></div>',
-            '  <div class="skeleton-meta skeleton-block"></div>',
-            '</div>'
-        ].join('\n'),
         github: [
             '<div class="github-skeleton">',
             '  <div class="skeleton-head">',
@@ -1023,137 +1015,6 @@ function applyDynamicClamp(container) {
     });
 }
 
-// 加载最新视频
-async function loadLatestVideo() {
-    var videoContainer = document.getElementById('latest-video-container');
-    if (videoContainer) {
-        videoContainer.innerHTML = createSkeletonHTML('video');
-    }
-    try {
-        const uid = '2105459088';
-        const proxyUrl = '__API_BASE__/api/stream-proxy?mode=bili&url=';
-        const targetUrl = `https://uapis.cn/api/v1/social/bilibili/archives?${new URLSearchParams({
-            mid: uid,
-            pn: '1',
-            ps: '1',
-            orderby: 'pubdate'
-        })}`;
-        const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.videos && data.videos.length > 0) {
-            const latestVideo = /** @type {VideoItem} */ (data.videos[0]);
-            renderLatestVideo(latestVideo);
-        } else {
-            throw new Error('No videos found');
-        }
-    } catch (error) {
-        console.error('加载最新视频失败:', error);
-        if (videoContainer) {
-            videoContainer.innerHTML = '<p class="latest-video-fallback">站内视频预览暂不可用。 <a href="https://space.bilibili.com/2105459088" target="_blank" rel="noopener noreferrer">去 B 站查看 ↗</a></p>';
-        }
-    }
-}
-
-// 渲染最新视频
-/**
- * @param {VideoItem} video
- */
-function renderLatestVideo(video) {
-    const container = document.getElementById('latest-video-container');
-    if (!container) return;
-    if (!/^BV[0-9a-z]+$/i.test(video.bvid)) throw new Error('Invalid video ID');
-
-    // 使用图片代理服务解决防盗链问题
-    const proxyCoverUrl = `https://images.weserv.nl/?url=${encodeURIComponent(video.cover)}&w=320&h=180`;
-
-    // 格式化播放量
-    const playCount = formatVideoCount(video.play_count);
-    // 格式化发布时间
-    const publishTime = formatVideoTime(video.publish_time);
-
-    container.innerHTML = `
-        <a class="latest-video-card" href="https://www.bilibili.com/video/${video.bvid}" target="_blank" rel="noopener noreferrer">
-            <div class="latest-video-cover-wrap">
-                <img src="${proxyCoverUrl}"
-                     alt=""
-                     class="latest-video-cover"
-                     data-skeleton-img
-                     onerror="this.parentElement.classList.add('is-error')">
-                <div class="latest-video-duration">
-                    ${formatVideoDuration(video.duration)}
-                </div>
-            </div>
-            <div class="latest-video-body">
-                <h4 class="latest-video-title"></h4>
-                <div class="latest-video-meta">
-                    <span>播放: ${playCount}</span>
-                    <span>${publishTime}</span>
-                </div>
-            </div>
-        </a>
-    `;
-    container.querySelector('.latest-video-title').textContent = video.title;
-
-    // Initialize skeleton for the newly rendered video cover
-    var newCover = container.querySelector('img[data-skeleton-img]');
-    if (newCover) initSkeletonImages(newCover.parentNode);
-
-}
-
-// 格式化视频时长（秒 -> MM:SS）
-/**
- * @param {number} seconds
- * @returns {string}
- */
-function formatVideoDuration(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-// 格式化视频播放量
-/**
- * @param {number} count
- * @returns {string}
- */
-function formatVideoCount(count) {
-    if (count >= 100000000) {
-        return (count / 100000000).toFixed(1) + '亿';
-    } else if (count >= 10000) {
-        return (count / 10000).toFixed(1) + '万';
-    }
-    return String(count);
-}
-
-// 格式化视频发布时间
-/**
- * @param {number} timestamp
- * @returns {string}
- */
-function formatVideoTime(timestamp) {
-    const date = new Date(timestamp * 1000);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diff === 0) {
-        return '今天';
-    } else if (diff === 1) {
-        return '昨天';
-    } else if (diff < 7) {
-        return `${diff}天前`;
-    } else if (diff < 30) {
-        return `${Math.floor(diff / 7)}周前`;
-    } else {
-        return `${date.getMonth() + 1}-${date.getDate()}`;
-    }
-}
-
 function formatCompactNumber(value) {
     const count = Number(value) || 0;
     if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
@@ -1430,11 +1291,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const friendLinksElement = document.getElementById('friend-links');
     if (friendLinksElement) {
         loadFriendLinks();
-    }
-
-    const latestVideoContainer = document.getElementById('latest-video-container');
-    if (latestVideoContainer) {
-        loadLatestVideo();
     }
 
     if (document.getElementById('github-promo-card')) {
